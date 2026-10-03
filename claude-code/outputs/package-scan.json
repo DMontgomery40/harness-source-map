@@ -337,10 +337,10 @@
    "length": 6170,
    "sha256": "86fa422e96ef6a120e0364472114b5445c1f7957eff0ffa76cb7cb48a93a95d7"
   },
-  "/$bunfs/root/claude-code.d.ts-816aab49.txt.zst": {
+  "/$bunfs/root/claude-code.d.ts-30639c1e.txt.zst": {
    "kind": "zst",
-   "length": 128670,
-   "sha256": "c5820572b21945c9c7d33f0cef4dbc4320b9930159c9281b236e5f6d88c848a2"
+   "length": 130857,
+   "sha256": "d9ce7b8d77f31e631d912070aebf9bb8965702ba7148569f0c767dc5769803af"
   },
   "/$bunfs/root/claude-platform-on-aws-dy6hstzj.md": {
    "kind": "md",
@@ -355,7 +355,7 @@
   "/$bunfs/root/cli": {
    "kind": "(none)",
    "length": 23638,
-   "sha256": "1b3da44db9b5731c47251472e10a27e0086e4cafb8f5eaa9e16ba84e5bad713a"
+   "sha256": "3e74130740fca8f64bbb9283e96483c18db43a1c3ee0dffe9c2e99083be44fd5"
   },
   "/$bunfs/root/cli-40vh1c3p.md": {
    "kind": "md",
@@ -842,10 +842,10 @@
    "length": 9970,
    "sha256": "6aa2f3a69c9328037791b6ac15d9b664f42ae56b4f3a01fb052566ce2dda6d34"
   },
-  "/$bunfs/root/reference-0c14d839.md.zst": {
+  "/$bunfs/root/reference-a3dfe203.md.zst": {
    "kind": "zst",
-   "length": 12714,
-   "sha256": "e417a7e188ee878ff9f2fef569f6fab74ef9cc6deac4dba3fee82d0b17eb8498"
+   "length": 13732,
+   "sha256": "8c62e3635b395c8141863f37369b9404c8fe85ce9a2a0a8aa6a3b9242b0ba200"
   },
   "/$bunfs/root/remote-diff.mjs-a2ecedbc.txt.zst": {
    "kind": "zst",
@@ -1136,8 +1136,8 @@
  "files": {
   "package/claude": {
    "kind": "macho-executable",
-   "sha256": "bbe93063f7a0879a1021b2891e5c9354e5b3b98433e32efe6750f7710afed750",
-   "size": 229255312
+   "sha256": "03d66745e3bb69ec727d66023696f3820bc0a00a8a5ba725eb6706d0c67cbe69",
+   "size": 229616464
   },
   "package/package.json": {
    "kind": "config",
@@ -9840,13 +9840,13 @@
  "source": {
   "bun_section": {
    "fileoff": 68206592,
-   "filesize": 160382976
+   "filesize": 160743424
   },
   "package": "@anthropic-ai/claude-code-darwin-arm64",
-  "version": "2.1.288"
+  "version": "2.1.289"
  },
  "summary": {
-  "bytes": 229427013,
+  "bytes": 229788165,
   "files": 6,
   "kinds": {
    "config": {
@@ -9858,7 +9858,7 @@
     "count": 2
    },
    "macho-executable": {
-    "bytes": 229255312,
+    "bytes": 229616464,
     "count": 1
    },
    "web-code": {

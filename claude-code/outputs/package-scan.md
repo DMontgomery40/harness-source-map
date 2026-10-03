@@ -2,7 +2,7 @@
 
 Everything the Claude Code release ships besides the JavaScript the other pages read: every file in the darwin-arm64 package and the npm wrapper, the code signing, entitlements and linking of the native binary, the interesting strings in its native code, and the native addons and other files embedded in it. Each new release is compared with this one, so a new permission, endpoint, flag, addon or codename shows up the day the release ships. The `__BUN` section, which holds the JavaScript, is left out of the string scan. Credential-looking strings are never shown; only their kind and a hash.
 
-Source: Claude Code 2.1.288, `@anthropic-ai/claude-code-darwin-arm64`; paths are relative to the release folder (`package/` is the platform package, `wrapper/package/` the npm wrapper). `__BUN`: 160,382,976 bytes at offset 68206592.
+Source: Claude Code 2.1.289, `@anthropic-ai/claude-code-darwin-arm64`; paths are relative to the release folder (`package/` is the platform package, `wrapper/package/` the npm wrapper). `__BUN`: 160,743,424 bytes at offset 68206592.
 
 ## Security-relevant surface
 
@@ -110,13 +110,13 @@ Rust crates compiled into first-party binaries (from source paths in panic locat
 
 ## File inventory
 
-6 files, 218.8 MB. Kinds in the first table are listed file by file in the JSON; the rest are counted and hashed as a group.
+6 files, 219.1 MB. Kinds in the first table are listed file by file in the JSON; the rest are counted and hashed as a group.
 
 | Kind | Files | MB |
 | --- | ---: | ---: |
 | config | 2 | 0.0 |
 | document (grouped) | 2 | 0.0 |
-| macho-executable | 1 | 218.6 |
+| macho-executable | 1 | 219.0 |
 | web-code (grouped) | 1 | 0.2 |
 
 Mach-O files:

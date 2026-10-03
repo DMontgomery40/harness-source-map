@@ -6,7 +6,7 @@ Built-in subagent definitions and their system prompts in Claude Code.
 
 ### Explore
 
-Source: `chunk-acxptg39.js` · offset 187091092 · sha256 `9308c3cb…` (+5 more ranges in JSON)
+Source: `chunk-x2pwb441.js` · offset 187391744 · sha256 `e978df17…` (+5 more ranges in JSON)
 
 Built-in subagent (source: built-in) that the main agent launches through the Agent tool for read-only code search. whenToUseLean replaces whenToUse when the agent listing is built with its lean flag (from code). Model inherits the session model; docs: capped at Opus on the Claude API. Docs: https://code.claude.com/docs/en/sub-agents#built-in-subagents
 
@@ -104,7 +104,7 @@ New-Item, Remove-Item, Copy-Item, Move-Item, git add, git commit, npm install, p
 
 ### Plan
 
-Source: `chunk-acxptg39.js` · offset 187095032 · sha256 `4ed172cb…` (+3 more ranges in JSON)
+Source: `chunk-x2pwb441.js` · offset 187395684 · sha256 `2192cd5a…` (+3 more ranges in JSON)
 
 Built-in read-only planning subagent launched through the Agent tool (source: built-in). It shares Explore's tool list (from code: tools: MS.tools). Docs: https://code.claude.com/docs/en/sub-agents#built-in-subagents
 
@@ -209,7 +209,7 @@ New-Item, Remove-Item, Copy-Item, Move-Item, git add, git commit, npm install, p
 
 ### general-purpose
 
-Source: `chunk-acxptg39.js` · offset 188392965 · sha256 `42738df7…` (+1 more ranges in JSON)
+Source: `chunk-x2pwb441.js` · offset 188696251 · sha256 `42738df7…` (+1 more ranges in JSON)
 
 Built-in subagent with all tools, launched through the Agent tool (source: built-in). Docs: the fallback when an Agent call omits subagent_type. Docs: https://code.claude.com/docs/en/sub-agents#built-in-subagents
 
@@ -246,7 +246,7 @@ Guidelines:
 
 ### statusline-setup
 
-Source: `chunk-acxptg39.js` · offset 188395219 · sha256 `76ab097b…` (+2 more ranges in JSON)
+Source: `chunk-x2pwb441.js` · offset 188698505 · sha256 `dab19869…` (+2 more ranges in JSON)
 
 Built-in subagent that edits the statusLine setting (source: built-in). Docs: used when you run /statusline. Docs: https://code.claude.com/docs/en/sub-agents#built-in-subagents
 
@@ -479,7 +479,7 @@ Conditional fragments:
 
 ### claude-code-guide
 
-Source: `chunk-acxptg39.js` · offset 188392652 · sha256 `547ea346…` (+9 more ranges in JSON)
+Source: `chunk-x2pwb441.js` · offset 188695938 · sha256 `8bc021e7…` (+9 more ranges in JSON)
 
 Built-in subagent (source: built-in, model haiku, permission mode dontAsk) for questions about Claude Code, the Agent SDK and the Claude API. Docs: used when you ask about Claude Code features. Docs: https://code.claude.com/docs/en/sub-agents#built-in-subagents
 
@@ -671,7 +671,7 @@ Section (settings keys):
 
 ### web-fetch
 
-Source: `chunk-acxptg39.js` · offset 188408555 · sha256 `e1f0b2f8…` (+3 more ranges in JSON)
+Source: `chunk-x2pwb441.js` · offset 188711841 · sha256 `623375f7…` (+3 more ranges in JSON)
 
 Built-in subagent (source: built-in) with only the WebFetch tool, maxTurns 15, for reading web pages and reporting back. Not registered when CLAUDE_CODE_SIMPLE or CLAUDE_CODE_DISABLE_WEB_FETCH is set, among other gates (from code).
 
@@ -712,7 +712,7 @@ Expect follow-up questions about pages you have already read. Answer them from t
 
 ### fork
 
-Source: `chunk-acxptg39.js` · offset 188316581 · sha256 `eb266b3b…`
+Source: `chunk-x2pwb441.js` · offset 188619867 · sha256 `1c8094f7…`
 
 Built-in fork subagent (source: built-in): its getSystemPrompt returns an empty string; docs: a fork reuses the conversation's own prompt and context. Enabled unless CLAUDE_CODE_FORK_SUBAGENT is set to false or fork mode is otherwise disabled (from code). Docs: https://code.claude.com/docs/en/sub-agents#fork-the-current-conversation
 
@@ -736,7 +736,7 @@ The text is empty.
 
 ### claude (catch-all)
 
-Source: `chunk-y7cmwh7q.js` · offset 193198142 · sha256 `f91b1fc9…` (+1 more ranges in JSON)
+Source: `chunk-qvhw7ajn.js` · offset 193511527 · sha256 `f91b1fc9…` (+1 more ranges in JSON)
 
 Built-in catch-all subagent (source: built-in; its definition sets appendSystemPrompt: true; from code).
 
@@ -776,7 +776,7 @@ Everything else: keep working.
 
 ### worker (coordinator mode)
 
-Source: `chunk-p55tt0rx.js` · offset 201793043 · sha256 `9b8165dc…` (+1 more ranges in JSON)
+Source: `chunk-v5hrmrk2.js` · offset 202122043 · sha256 `664b49b7…` (+1 more ranges in JSON)
 
 Built-in worker subagent exported by getCoordinatorAgents (from code): the agent a coordinator session assigns tasks to. maxTurns 500, permission mode bubble.
 
@@ -854,7 +854,7 @@ Conditional fragments:
 
 ### workflow-subagent
 
-Source: `chunk-t65a4tk3.js` · offset 199715298 · sha256 `d1127d08…` (+1 more ranges in JSON)
+Source: `chunk-2jg0m5tp.js` · offset 200037275 · sha256 `d1127d08…` (+1 more ranges in JSON)
 
 Built-in subagent used by workflow scripts for agent() calls (source: built-in; whenToUse: internal). A second definition with the same agentType swaps in the structured-output prompt (from code: {...Mn, getSystemPrompt: () => Vr}).
 
@@ -916,7 +916,7 @@ NOTE: You are running inside a workflow script. You MUST return your final answe
 
 ### comment-thread-analyst
 
-Source: `chunk-1crmj929.js` · offset 210254551 · sha256 `9bb6aa1f…` (+4 more ranges in JSON)
+Source: `chunk-51rd3cje.js` · offset 210594487 · sha256 `b916b48c…` (+4 more ranges in JSON)
 
 Built-in read-only subagent (source: built-in, maxTurns 6) dispatched to study one artifact comment thread; spawned with displayName comment-thread-analyst and querySource artifact_comment_analyst (from code).
 

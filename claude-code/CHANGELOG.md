@@ -1,5 +1,155 @@
 # Changelog
 
+## 2026-10-03 · Claude Code 2.1.289
+
+## Claude Code 2.1.289 (from 2.1.288)
+
+### Default requests
+
+cli system prompt:
+
+~~~~~~diff
+- x-anthropic-billing-header: cc_version=2.1.288.fb6; cc_entrypoint=cli;
++ x-anthropic-billing-header: cc_version=2.1.289.84b; cc_entrypoint=cli;
+~~~~~~
+sdk system prompt:
+
+~~~~~~diff
+- x-anthropic-billing-header: cc_version=2.1.288.fb6; cc_entrypoint=sdk-cli;
++ x-anthropic-billing-header: cc_version=2.1.289.84b; cc_entrypoint=sdk-cli;
+~~~~~~
+
+### Records whose source changed (23)
+
+- **cli** `cli-cmd-project-purge` (claude project purge [path]): text changed and no position estimate
+- **decisions** `auth-source` (API credential): text or code in this range changed
+- **decisions** `auto-compact` (Auto-compact window): text changed and no position estimate
+- **decisions** `effort-level` (Reasoning effort): text changed and no position estimate
+- **decisions** `feedback-survey` (Feedback survey): text changed and no position estimate
+- **decisions** `thinking-mode` (Thinking mode): range too large to match by pattern
+- **decisions** `total-tokens-reminder` (Total tokens reminder): nearest match is 527 bytes, was 126
+- **settings** `settings-safe-env-check` (Safe env check): text changed and no position estimate
+- **slash-commands** `slash-exit-2` (/exit (definition 2 of 2, `chunk-acxptg39.js`)): text inside this range changed
+- **slash-commands** `slash-fast-2` (/fast (definition 2 of 2, `chunk-acxptg39.js`)): text inside this range changed
+- **slash-commands** `slash-ultrareview-2` (/ultrareview (definition 2 of 3, `chunk-acxptg39.js`)): text inside this range changed
+- **system-prompt** `billing-header` (Billing header block): text inside this range changed
+- **system-prompt** `session-guidance` (session_guidance: # Session-specific guidance): same bytes occur 13+ times and no position estimate
+- **system-prompt** `session-guidance-skill` (session_guidance bullet: slash skills): same bytes occur 13+ times and no position estimate
+- **system-prompt** `memory-lean` (memory: lean (# Memory)): nearest match is 3 bytes, was 21
+- **system-prompt** `memory-team` (memory: team (text not rendered)): same code node, contents changed
+- **system-reminders** `at-mention-reference` (@-mention without attached contents): text inside this range changed
+- **system-reminders** `brief-mode-toggle` (Brief mode toggled on): nearest match is 24 bytes, was 135
+- **system-reminders** `brief-mode-toggle-off` (Brief mode toggled off): nearest match is 3 bytes, was 97
+- **utility-prompts** `compact-partial-summary-prompt` (Compaction: summarize part of the conversation): nearest match is 7 bytes, was 2452
+- **utility-prompts** `tool-use-summary` (Tool-use summary label): nearest match is 6481 bytes, was 36
+- **utility-prompts** `auto-mode-security-monitor` (Auto mode: security monitor (permission classifier)): nearest match is 46 bytes, was 44052
+- **utility-prompts** `command-commit-push-pr` (/commit-push-pr): duplicates, none near the expected position
+
+### Regenerated from the new build (27)
+
+- **skills** `skill-claude-code-docs` (/claude-code-docs): text inside this range changed
+- **skills** `skill-claude-code-docs` (/claude-code-docs): text inside this range changed
+- **skills** `skill-commit` (/commit): duplicates, none near the expected position
+- **skills** `skill-doctor` (/doctor): same code node, contents changed
+- **skills** `skill-pr` (/pr): duplicates, none near the expected position
+- **skills** `skill-pr` (/pr): nearest match is 81 bytes, was 178
+- **skills** `skill-pr` (/pr): duplicates, none near the expected position
+- **tools** `tool-write` (Write): same bytes occur 50+ times and no position estimate
+- **tools** `tool-write` (Write): same bytes occur 50+ times and no position estimate
+- **tools** `tool-write` (Write): same bytes occur 50+ times and no position estimate
+- **tools** `tool-edit` (Edit): same bytes occur 50+ times and no position estimate
+- **tools** `tool-edit` (Edit): same bytes occur 50+ times and no position estimate
+- **tools** `tool-notebookedit` (NotebookEdit): same bytes occur 50+ times and no position estimate
+- **tools** `tool-notebookedit` (NotebookEdit): same bytes occur 50+ times and no position estimate
+- **tools** `tool-powershell` (PowerShell): same bytes occur 50+ times and no position estimate
+- **tools** `tool-monitor` (Monitor): same bytes occur 7+ times and no position estimate
+- **tools** `tool-agent` (Agent): same bytes occur 50+ times and no position estimate
+- **tools** `tool-sendmessage` (SendMessage): range too large to match by pattern
+- **tools** `tool-askuserquestion` (AskUserQuestion): same bytes occur 21+ times and no position estimate
+- **tools** `tool-askuserquestion` (AskUserQuestion): same bytes occur 21+ times and no position estimate
+- **tools** `tool-enterplanmode` (EnterPlanMode): same bytes occur 50+ times and no position estimate
+- **tools** `tool-enterplanmode` (EnterPlanMode): same bytes occur 21+ times and no position estimate
+- **tools** `tool-enterplanmode` (EnterPlanMode): same bytes occur 50+ times and no position estimate
+- **tools** `tool-croncreate` (CronCreate): same bytes occur 50+ times and no position estimate
+- **tools** `tool-croncreate` (CronCreate): same bytes occur 50+ times and no position estimate
+- **tools** `tool-fetchinboxmessage` (FetchInboxMessage): same bytes occur 50+ times and no position estimate
+- **tools** `tool-artifact` (Artifact): range too large to match by pattern
+
+### New model-facing text (386, published on "Other model-facing text")
+
+- "file_path: the path was changed to ${Axt(e)} ${r} (usually by a hook or SDK host), so nothing was published. Do not retry this call; if the new path is the file"
+- "\n\n[A quickstart in this conversation already listed the design systems and saved the files of ${Ti(t.saved_system,\"(unrecognized address)\")} on disk — skip the "
+- "If the request is about files or folders on the user's computer and you have device tools here (loaded or through tool search), such as mcp__${Tc}__device_list_"
+- "The /loop input to fire on wake-up. Pass the same /loop input verbatim each turn so the next firing re-enters the skill and continues the loop. For autonomous /"
+- "${r} that is an artifact from a claude.ai chat (the chat's artifact panel or its public page), which is separate from artifacts published with this tool and has"
+- "${r} that is a claude.ai ${i} link, not a published artifact, and this tool cannot read a ${i}. If the user meant an artifact shown in that ${i}, ask them for t"
+- "files: total content exceeds ${xq/1024/1024}MB at ${JSON.stringify(R)} — the most one publish sends; publish the files up to it now and the rest in another publ"
+- "\n<${Blr}>\nThis session began as a fork (copy) of another session that is still running: ${b}. The conversation up to ${u} is shared history with it; the two ses"
+- "No completion record was found for it in the previous session. It may have been stopped (via the UI or TaskStop — these leave no transcript marker), or it may h"
+- "MCP tool \"${dj(e,n)}\" started server-side task ${a}, running in the background as task ${r}. The server's own note follows; it is content returned by MCP server"
+- "${Kn}\n\n---\nYou are running in an isolated git worktree at `${Ewr(He.worktreePath)}` (a separate working copy of the repo). Changes you make here do NOT affect t"
+- "This page declares ${Kht(c)} \"${p}\" but no successful call to it was observed in this session, so the page is published against an unobserved interface. Check t"
+- "Sandbox profile has ${r.length} bwrap arguments and bwrap accepts at most ${Yu} (about ${Yu/3} mounts); reduce what the configuration expands to: each path take"
+- "[sandbox] credential file mask for '${lt}' from ${at} forwards sentinel-only (whole-file sentinel: injectHosts forced empty, extract options dropped): a degrade"
+- "[sandbox] credentials.awsPairs: '${lt}' fills a slot in both the '${at}' and '${rt.label}' pairs — each variable can fill exactly one slot, so the '${rt.label}'"
+- "[sandbox] credentials.awsPairs entry '${at.label}': key-id slot holds a CC-synthesized placeholder but secret '${ze.secretAccessKeyVar}' is still whole-value ma"
+- "Its other cards are not attached: read one when you need it with ${rl('action \"read_file\"',()=>'action \"read\"')}, `url`: ${S(e)}, and a `path`: \"project/api/tok"
+- "Its other cards are not attached: read one when you need it with ${rl('action \"read_db\" and `db_op`: \"get\"',()=>`the ${Um} tool}, `url`: ${S(e)}, and a `collect"
+- "Its other cards are not attached: read one when you need it with ${rl('action \"read_file\"',()=>'action \"read\"')}, `url`: ${S(e)}, and a `path`: \"api/tokens.md\" "
+- "\n\n${Og}\nDesign system ${i}.${_} Its ${d.path} (${n.store===!0?\"a document of its store\":\"a published file\"}) follows — do not fetch it again${l?\" unless you nee"
+- "the `${cn}` tool's `action: \"watch\"` / `\"status\"` / `\"unwatch\"` and its comment verbs are the `${zy}` tool (`action: \"watch\"` with the `url`; with no `url` it l"
+- "It has no file of its own yet — ${s}, so there is no file of its own to list or read before writing. ${mjn(e,r,i)} If the user says this Artifact already has co"
+- "List its files first, before any other call (${i.list}). This Artifact's content lives in its own files under `project/`${i.storeDescribed?\", never in its store"
+- "\n\n[This Artifact's type ships an instructions file (${OE}) describing the content its page expects, but it could not be read here: ${e.why}. If what it expects "
+- "<${aOe} url=\"${t}\"/> The user deleted this Artifact from /artifacts: its link no longer works for anyone, it cannot be restored, and it cannot be published to a"
+- "Re-read the ${IT} tool guidance below. Confirm this conversation meets those criteria and that you are certain you want to end it. If so, call ${IT} again immed"
+- "The evaluation author listed conditions under which this run must be STOPPED because the agent has gone off the rails. If — and only if — the current call meets"
+- "${Io(e.focus)} cannot be shown to the judge as text — ${r.binaryHead}. It is not a supported image either (PNG/JPEG/GIF/WebP), so have the case render it to an "
+- "${Ie.deniedByChild} agent-mock ${I(Ie.deniedByChild,\"call\")} ${I(Ie.deniedByChild,\"was\",\"were\")} refused by the child itself (a permission rule or the plugin's "
+- "${Ie.inputsRewritten} agent-mock ${I(Ie.inputsRewritten,\"call\")} reached the mock with arguments different from the model's tool_use (rewritten before dispatch,"
+- "Note: the plugin in ${ql(x)} is NOT loaded — ${nt(x)}; each case that would auto-detect it is reported as refused instead of running — fix that, or name that di"
+- "Note: the plugin in ${ql(be)} is NOT loaded — ${nt(be)}; cases run against baseline Claude (unless they load a plugin beneath the target) — fix that, or name th"
+- "Follow-up from the thread while you hold the artifact ${e}. The thread participant's message is the text between the two markers below tagged ${n}; only the end"
+- "Correction: if you saw a note saying the artifact editor worker ${e} is applying ${bm(r)}, disregard it — that follow-up did NOT reach ${e} (${n}). If you have "
+- "This session restarted during your previous turn. Besides the tool calls answered above, that turn had also issued ${Ie===1?\"a call whose result was\":\"calls who"
+- "ui_attach: surface must be \"desktop\", \"mobile\" or \"vscode\", client_id 1-64 of letters, digits, . _ - (the colon is the engine's), viewport (when given) positive"
+- "The completion condition to propose, written so a separate evaluator can verify it from the conversation (e.g. \"all tests in test/auth pass (bun test exits 0)\")"
+- "; a comment on it sent to Claude reaches this session while this artifact's status row says ${lat}, and plain comments never notify — read them with ${rl('actio"
+- ". Rows starting \"${xjn}\": only that marker is emitted by the tool — it introduces the artifact text a thread's comments refer to; everything after it is a viewe"
+- ". Rows starting \"${bne}\": only that marker is emitted by the tool — it names the element in the artifact over part of which the commenter drew a rectangle; ever"
+
+# Binwalk: Claude Code 2.1.289
+
+## Claude Code native binary (macOS arm64)
+
+Changed payloads (11):
+
+- `0x475BDF5` svg, 242,009 bytes, SHA-256 `47c3a2137ea2` (was `0x475ACC5` svg, 229,421 bytes, SHA-256 `27abd5638f69`)
+- `0x48FB341` svg, 461,856 bytes, SHA-256 `ef7db21e1966` (was `0x48F87B1` svg, 467,456 bytes, SHA-256 `158ed0956061`)
+- `0xB34B853` copyright, 3,687,085 bytes, SHA-256 `74dc07bba7bb` (was `0xB3020B5` copyright, 3,676,155 bytes, SHA-256 `dd42565d0382`)
+- `0xB787903` copyright, 457,398 bytes, SHA-256 `5e4615c28f55` (was `0xB73B554` copyright, 457,398 bytes, SHA-256 `5dcf7e2fd8fa`)
+- `0xBD7CF60` copyright, 123,084 bytes, SHA-256 `920a9d6c150c` (was `0xBD2E903` copyright, 123,084 bytes, SHA-256 `0dc6fe13941f`)
+- `0xC72C1E3` copyright, 1,126,479 bytes, SHA-256 `08695bd339a0` (was `0xC6D9E40` copyright, 1,125,101 bytes, SHA-256 `605728c8abc8`)
+- `0xC9349FC` svg, 166,227 bytes, SHA-256 `dadc007ae57c` (was `0xC8E19F3` svg, 166,227 bytes, SHA-256 `fd92e291c6a3`)
+- `0xCC257D2` copyright, 217,748 bytes, SHA-256 `f9d6ebb5e9ee` (was `0xCBD1048` copyright, 217,748 bytes, SHA-256 `06bd24b17d88`)
+- `0xD14847A` copyright, 142 bytes, SHA-256 `c6a8d8f1dd71` (was `0xD0EF2FC` copyright, 142 bytes, SHA-256 `82327577ba62`)
+- `0xD2A1BDE` zstd (zstd frame), 168,267 bytes → text, 596,493 bytes, SHA-256 `365c36d29ed4` (was `0xD2480C7` zstd (zstd frame), 167,117 bytes → text, 593,163 bytes, SHA-256 `40bb2eea6ff6`)
+- `0xD705EC0` zstd (zstd frame), 130,857 bytes → text, 586,065 bytes, SHA-256 `791464683ba0` (was `0xD6ABF2C` zstd (zstd frame), 128,670 bytes → text, 576,270 bytes, SHA-256 `82131ac1421b`)
+
+# Claude Code package changes
+
+## Files
+
+- changed (1): `package/claude`
+
+## Other
+
+- `package/claude (__BUN)`: New embedded zst: /$bunfs/root/claude-code.d.ts-30639c1e.txt.zst — **routine** (0.97)
+- `package/claude (__BUN)`: Changed embedded (none): /$bunfs/root/cli — **routine** (0.82)
+- `package/claude (__BUN)`: New embedded zst: /$bunfs/root/reference-a3dfe203.md.zst — **routine** (0.9)
+- `package/claude (__BUN)`: Removed embedded zst: /$bunfs/root/claude-code.d.ts-816aab49.txt.zst — **routine** (0.99)
+- `package/claude (__BUN)`: Removed embedded zst: /$bunfs/root/reference-0c14d839.md.zst — **routine** (0.98)
+
 ## 2026-10-02 · Claude Code 2.1.288
 
 ## Claude Code 2.1.288 (from 2.1.287)

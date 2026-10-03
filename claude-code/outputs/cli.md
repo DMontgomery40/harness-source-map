@@ -6,7 +6,7 @@
 
 ### claude [prompt]
 
-Source: `chunk-g6yz7gnr.js` · offset 196530512 · sha256 `427deb45…`
+Source: `chunk-jp1gdfy4.js` · offset 196845829 · sha256 `427deb45…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -18,7 +18,7 @@ Claude Code - starts an interactive session by default, use -p/--print for non-i
 
 ### -h, --help
 
-Source: `chunk-g6yz7gnr.js` · offset 196530679 · sha256 `7d6f87f1…`
+Source: `chunk-jp1gdfy4.js` · offset 196845996 · sha256 `7d6f87f1…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -30,7 +30,7 @@ Display help for command
 
 ### -d, --debug [filter]
 
-Source: `chunk-g6yz7gnr.js` · offset 196530737 · sha256 `8275069e…`
+Source: `chunk-jp1gdfy4.js` · offset 196846054 · sha256 `8275069e…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -42,7 +42,7 @@ Enable debug mode with optional category filtering (e.g., "api,hooks" or "!1p,!f
 
 ### -d2e, --debug-to-stderr
 
-Source: `chunk-g6yz7gnr.js` · offset 196530877 · sha256 `9bd20688…`
+Source: `chunk-jp1gdfy4.js` · offset 196846194 · sha256 `9bd20688…`
 
 Status: hidden; undocumented
 
@@ -54,7 +54,7 @@ Visibility: hidden (from code)
 
 ### --debug-file <path>
 
-Source: `chunk-g6yz7gnr.js` · offset 196531003 · sha256 `079ce9a1…`
+Source: `chunk-jp1gdfy4.js` · offset 196846320 · sha256 `079ce9a1…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -66,7 +66,7 @@ Write debug logs to a specific file path (implicitly enables debug mode)
 
 ### --verbose
 
-Source: `chunk-g6yz7gnr.js` · offset 196531105 · sha256 `3e9ef17a…`
+Source: `chunk-jp1gdfy4.js` · offset 196846422 · sha256 `3e9ef17a…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -78,7 +78,7 @@ Override verbose mode setting from config
 
 ### -p, --print
 
-Source: `chunk-g6yz7gnr.js` · offset 196531178 · sha256 `4b5c10eb…`
+Source: `chunk-jp1gdfy4.js` · offset 196846495 · sha256 `4b5c10eb…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -90,7 +90,7 @@ Print response and exit (useful for pipes). Note: The workspace trust dialog is 
 
 ### --bare
 
-Source: `chunk-g6yz7gnr.js` · offset 196531545 · sha256 `1e19e09f…`
+Source: `chunk-jp1gdfy4.js` · offset 196846862 · sha256 `1e19e09f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -102,7 +102,7 @@ Minimal mode: skip hooks (those defined in settings and by installed plugins; fe
 
 ### --safe-mode
 
-Source: `chunk-g6yz7gnr.js` · offset 196532224 · sha256 `f45e548b…`
+Source: `chunk-jp1gdfy4.js` · offset 196847541 · sha256 `f45e548b…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -114,7 +114,7 @@ Start with all customizations (CLAUDE.md, skills, installed plugins, hooks, MCP 
 
 ### --init
 
-Source: `chunk-g6yz7gnr.js` · offset 196532671 · sha256 `067bf733…`
+Source: `chunk-jp1gdfy4.js` · offset 196847988 · sha256 `067bf733…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -126,7 +126,7 @@ Run Setup hooks with init trigger, then continue
 
 ### --init-only
 
-Source: `chunk-g6yz7gnr.js` · offset 196532766 · sha256 `c434dc2c…`
+Source: `chunk-jp1gdfy4.js` · offset 196848083 · sha256 `c434dc2c…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -138,7 +138,7 @@ Run Setup and SessionStart:startup hooks, then exit
 
 ### --maintenance
 
-Source: `chunk-g6yz7gnr.js` · offset 196532866 · sha256 `104fd7d2…`
+Source: `chunk-jp1gdfy4.js` · offset 196848183 · sha256 `104fd7d2…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -150,7 +150,7 @@ Run Setup hooks with maintenance trigger, then continue
 
 ### --output-format <format>
 
-Source: `chunk-g6yz7gnr.js` · offset 196532981 · sha256 `2fa2ad04…`
+Source: `chunk-jp1gdfy4.js` · offset 196848298 · sha256 `2fa2ad04…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -164,7 +164,7 @@ Output format (only works with --print): "text" (default), "json" (single result
 
 ### --json-schema <schema>
 
-Source: `chunk-g6yz7gnr.js` · offset 196533187 · sha256 `c0809fb3…`
+Source: `chunk-jp1gdfy4.js` · offset 196848504 · sha256 `c0809fb3…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -176,7 +176,7 @@ JSON Schema for structured output validation. Example: {"type":"object","propert
 
 ### --include-hook-events
 
-Source: `chunk-g6yz7gnr.js` · offset 196533373 · sha256 `6bedb3ac…`
+Source: `chunk-jp1gdfy4.js` · offset 196848690 · sha256 `6bedb3ac…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -188,7 +188,7 @@ Include all hook lifecycle events in the output stream (only works with --output
 
 ### --include-partial-messages
 
-Source: `chunk-g6yz7gnr.js` · offset 196533520 · sha256 `872f2741…`
+Source: `chunk-jp1gdfy4.js` · offset 196848837 · sha256 `872f2741…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -200,7 +200,7 @@ Include partial message chunks as they arrive (only works with --print and --out
 
 ### --forward-subagent-text
 
-Source: `chunk-g6yz7gnr.js` · offset 196533667 · sha256 `022b2d83…`
+Source: `chunk-jp1gdfy4.js` · offset 196848984 · sha256 `022b2d83…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -212,7 +212,7 @@ Forward subagent text and thinking blocks as assistant/user messages with parent
 
 ### --session-mirror
 
-Source: `chunk-g6yz7gnr.js` · offset 196533868 · sha256 `f31634e6…`
+Source: `chunk-jp1gdfy4.js` · offset 196849185 · sha256 `f31634e6…`
 
 Status: hidden; undocumented
 
@@ -224,7 +224,7 @@ Emit transcript_mirror frames on stdout (SDK-internal; set by ProcessTransport w
 
 ### --await-claim
 
-Source: `chunk-g6yz7gnr.js` · offset 196534028 · sha256 `334d7c34…`
+Source: `chunk-jp1gdfy4.js` · offset 196849345 · sha256 `334d7c34…`
 
 Status: hidden; undocumented
 
@@ -236,7 +236,7 @@ Start as a pre-warmed spare for an SDK host: boot with host-level options in a n
 
 ### --input-format <format>
 
-Source: `chunk-g6yz7gnr.js` · offset 196534369 · sha256 `9b530dff…`
+Source: `chunk-jp1gdfy4.js` · offset 196849686 · sha256 `9b530dff…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -250,7 +250,7 @@ Input format (only works with --print): "text" (default), or "stream-json" (real
 
 ### --await-initialize
 
-Source: `chunk-g6yz7gnr.js` · offset 196534545 · sha256 `ef671d8e…`
+Source: `chunk-jp1gdfy4.js` · offset 196849862 · sha256 `ef671d8e…`
 
 Status: hidden; undocumented
 
@@ -262,7 +262,7 @@ Read the initialize control request from stdin during startup so its launch-scop
 
 ### --dangerously-skip-permissions
 
-Source: `chunk-g6yz7gnr.js` · offset 196534878 · sha256 `01121dc1…`
+Source: `chunk-jp1gdfy4.js` · offset 196850195 · sha256 `01121dc1…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -274,7 +274,7 @@ Bypass all permission checks. Recommended only for sandboxes with no internet ac
 
 ### --allow-dangerously-skip-permissions
 
-Source: `chunk-g6yz7gnr.js` · offset 196535020 · sha256 `bd68a876…`
+Source: `chunk-jp1gdfy4.js` · offset 196850337 · sha256 `bd68a876…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -286,7 +286,7 @@ Enable bypassing all permission checks as an option, without it being enabled by
 
 ### --thinking <mode>
 
-Source: `chunk-g6yz7gnr.js` · offset 196535213 · sha256 `8d5aa49f…`
+Source: `chunk-jp1gdfy4.js` · offset 196850530 · sha256 `8d5aa49f…`
 
 Status: hidden; undocumented
 
@@ -300,7 +300,7 @@ Thinking mode: enabled (equivalent to adaptive), disabled
 
 ### --thinking-display <display>
 
-Source: `chunk-g6yz7gnr.js` · offset 196535377 · sha256 `e4bcb22f…`
+Source: `chunk-jp1gdfy4.js` · offset 196850694 · sha256 `e4bcb22f…`
 
 Status: hidden; undocumented
 
@@ -314,7 +314,7 @@ How thinking content appears in the response
 
 ### --max-thinking-tokens <tokens>
 
-Source: `chunk-g6yz7gnr.js` · offset 196535500 · sha256 `f8db03e4…`
+Source: `chunk-jp1gdfy4.js` · offset 196850817 · sha256 `f8db03e4…`
 
 Status: hidden; undocumented
 
@@ -326,7 +326,7 @@ Visibility: hidden (from code)
 
 ### --max-turns <turns>
 
-Source: `chunk-g6yz7gnr.js` · offset 196535682 · sha256 `7e9be2ed…`
+Source: `chunk-jp1gdfy4.js` · offset 196850999 · sha256 `7e9be2ed…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -338,7 +338,7 @@ Maximum number of agentic turns in non-interactive mode. This will early exit th
 
 ### --max-budget-usd <amount>
 
-Source: `chunk-g6yz7gnr.js` · offset 196535914 · sha256 `3a50bc2f…`
+Source: `chunk-jp1gdfy4.js` · offset 196851231 · sha256 `3a50bc2f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -350,7 +350,7 @@ Maximum dollar amount to spend on API calls (only works with --print)
 
 ### --task-budget <tokens>
 
-Source: `chunk-g6yz7gnr.js` · offset 196536159 · sha256 `49cfeb17…`
+Source: `chunk-jp1gdfy4.js` · offset 196851476 · sha256 `49cfeb17…`
 
 Status: hidden; undocumented
 
@@ -362,7 +362,7 @@ API-side task budget in tokens (output_config.task_budget)
 
 ### --replay-user-messages
 
-Source: `chunk-g6yz7gnr.js` · offset 196536402 · sha256 `6664b09e…`
+Source: `chunk-jp1gdfy4.js` · offset 196851719 · sha256 `6664b09e…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -374,7 +374,7 @@ Re-emit user messages from stdin back on stdout for acknowledgment (only works w
 
 ### --prompt-suggestions [value]
 
-Source: `chunk-g6yz7gnr.js` · offset 196536604 · sha256 `18e939dd…`
+Source: `chunk-jp1gdfy4.js` · offset 196851921 · sha256 `18e939dd…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -388,7 +388,7 @@ Enable prompt suggestions. In print/SDK mode, emits a prompt_suggestion message 
 
 ### --enable-auth-status
 
-Source: `chunk-g6yz7gnr.js` · offset 196536972 · sha256 `31d7beab…`
+Source: `chunk-jp1gdfy4.js` · offset 196852289 · sha256 `31d7beab…`
 
 Status: hidden; undocumented
 
@@ -402,7 +402,7 @@ Enable auth status messages in SDK mode
 
 ### --allowedTools, --allowed-tools <tools...>
 
-Source: `chunk-g6yz7gnr.js` · offset 196537091 · sha256 `c1350ee3…`
+Source: `chunk-jp1gdfy4.js` · offset 196852408 · sha256 `c1350ee3…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -414,7 +414,7 @@ Comma or space-separated list of tool names to allow (e.g. "Bash(git *) Edit")
 
 ### --tools <tools...>
 
-Source: `chunk-g6yz7gnr.js` · offset 196537201 · sha256 `18294216…`
+Source: `chunk-jp1gdfy4.js` · offset 196852518 · sha256 `18294216…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -426,7 +426,7 @@ Specify the list of available tools from the built-in set. Use "" to disable all
 
 ### --restricted
 
-Source: `chunk-g6yz7gnr.js` · offset 196537389 · sha256 `00f8d0fa…`
+Source: `chunk-jp1gdfy4.js` · offset 196852706 · sha256 `00f8d0fa…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -438,7 +438,7 @@ Restricted mode: removes the built-in tools that run commands or code (Bash, Pow
 
 ### --disallowedTools, --disallowed-tools <tools...>
 
-Source: `chunk-g6yz7gnr.js` · offset 196537992 · sha256 `c5c0ac2b…`
+Source: `chunk-jp1gdfy4.js` · offset 196853309 · sha256 `c5c0ac2b…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -450,7 +450,7 @@ Comma or space-separated list of tool names to deny (e.g. "Bash(git *) Edit")
 
 ### --mcp-config <configs...>
 
-Source: `chunk-g6yz7gnr.js` · offset 196538108 · sha256 `b482700f…`
+Source: `chunk-jp1gdfy4.js` · offset 196853425 · sha256 `b482700f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -462,7 +462,7 @@ Load MCP servers from JSON files or strings (space-separated)
 
 ### --permission-prompt-tool <tool>
 
-Source: `chunk-g6yz7gnr.js` · offset 196538224 · sha256 `4d9ce2ee…`
+Source: `chunk-jp1gdfy4.js` · offset 196853541 · sha256 `4d9ce2ee…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -474,7 +474,7 @@ MCP tool to use for permission prompts (only works with --print)
 
 ### --permission-prompts <target>
 
-Source: `chunk-g6yz7gnr.js` · offset 196538371 · sha256 `b1dfb2a8…`
+Source: `chunk-jp1gdfy4.js` · offset 196853688 · sha256 `b1dfb2a8…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -490,7 +490,7 @@ Who answers permission prompts with --print: "host" (the SDK host or --permissio
 
 ### --system-prompt <prompt>
 
-Source: `chunk-g6yz7gnr.js` · offset 196538665 · sha256 `801062d8…`
+Source: `chunk-jp1gdfy4.js` · offset 196853982 · sha256 `801062d8…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -502,7 +502,7 @@ System prompt to use for the session
 
 ### --system-prompt-file <file>
 
-Source: `chunk-g6yz7gnr.js` · offset 196538771 · sha256 `a433f985…`
+Source: `chunk-jp1gdfy4.js` · offset 196854088 · sha256 `a433f985…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -514,7 +514,7 @@ Read system prompt from a file
 
 ### --append-system-prompt <prompt>
 
-Source: `chunk-g6yz7gnr.js` · offset 196538886 · sha256 `61d4e6f0…`
+Source: `chunk-jp1gdfy4.js` · offset 196854203 · sha256 `61d4e6f0…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -526,7 +526,7 @@ Append a system prompt to the default system prompt
 
 ### --append-system-prompt-file <file>
 
-Source: `chunk-g6yz7gnr.js` · offset 196539014 · sha256 `91f23867…`
+Source: `chunk-jp1gdfy4.js` · offset 196854331 · sha256 `91f23867…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -538,7 +538,7 @@ Read system prompt from a file and append to the default system prompt
 
 ### --system-prompt-snapshot <on|off>
 
-Source: `chunk-g6yz7gnr.js` · offset 196539171 · sha256 `e74caa10…`
+Source: `chunk-jp1gdfy4.js` · offset 196854488 · sha256 `e74caa10…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -552,7 +552,7 @@ Record the system prompt once per conversation and reuse it verbatim on every re
 
 ### --append-subagent-system-prompt <prompt>
 
-Source: `chunk-g6yz7gnr.js` · offset 196539916 · sha256 `95152402…`
+Source: `chunk-jp1gdfy4.js` · offset 196855233 · sha256 `95152402…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -564,7 +564,7 @@ Append a system prompt to every Task-tool subagent's system prompt, propagated t
 
 ### --append-subagent-system-prompt-file <file>
 
-Source: `chunk-g6yz7gnr.js` · offset 196540191 · sha256 `956de877…`
+Source: `chunk-jp1gdfy4.js` · offset 196855508 · sha256 `956de877…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -576,7 +576,7 @@ Read a system prompt from a file and append it to every Task-tool subagent's sys
 
 ### --plan-mode-instructions <instructions>
 
-Source: `chunk-g6yz7gnr.js` · offset 196540400 · sha256 `4c02d3cf…`
+Source: `chunk-jp1gdfy4.js` · offset 196855717 · sha256 `4c02d3cf…`
 
 Status: hidden; undocumented
 
@@ -588,7 +588,7 @@ Custom workflow body for plan mode. Replaces the default code-implementation pha
 
 ### --exclude-dynamic-system-prompt-sections
 
-Source: `chunk-g6yz7gnr.js` · offset 196540696 · sha256 `01e6152d…`
+Source: `chunk-jp1gdfy4.js` · offset 196856013 · sha256 `01e6152d…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -602,7 +602,7 @@ Move per-machine sections (cwd, env info, memory paths, git status) from the sys
 
 ### --permission-mode <mode>
 
-Source: `chunk-g6yz7gnr.js` · offset 196540992 · sha256 `ee8ca5f7…`
+Source: `chunk-jp1gdfy4.js` · offset 196856309 · sha256 `ee8ca5f7…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -616,7 +616,7 @@ Permission mode to use for the session
 
 ### --inherit-permission-mode <mode>
 
-Source: `chunk-g6yz7gnr.js` · offset 196541113 · sha256 `6a64015d…`
+Source: `chunk-jp1gdfy4.js` · offset 196856430 · sha256 `6a64015d…`
 
 Status: hidden; undocumented
 
@@ -628,7 +628,7 @@ Permission mode carried from a parent session, used only when nothing else confi
 
 ### -c, --continue
 
-Source: `chunk-g6yz7gnr.js` · offset 196541256 · sha256 `90b260bf…`
+Source: `chunk-jp1gdfy4.js` · offset 196856573 · sha256 `90b260bf…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -640,7 +640,7 @@ Continue the most recent conversation in the current directory
 
 ### -r, --resume [value]
 
-Source: `chunk-g6yz7gnr.js` · offset 196541359 · sha256 `fbeb6013…`
+Source: `chunk-jp1gdfy4.js` · offset 196856676 · sha256 `fbeb6013…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -652,7 +652,7 @@ Resume a conversation by session ID, or open interactive picker with optional se
 
 ### --fork-session
 
-Source: `chunk-g6yz7gnr.js` · offset 196541487 · sha256 `59e5eb91…`
+Source: `chunk-jp1gdfy4.js` · offset 196856804 · sha256 `59e5eb91…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -664,7 +664,7 @@ When resuming, create a new session ID instead of reusing the original (use with
 
 ### --watch-artifact <artifact>
 
-Source: `chunk-g6yz7gnr.js` · offset 196541649 · sha256 `9e4b6ca0…`
+Source: `chunk-jp1gdfy4.js` · offset 196856966 · sha256 `9e4b6ca0…`
 
 Status: hidden; undocumented
 
@@ -676,17 +676,17 @@ Watch a Claude artifact (id or URL) in this session and hear about new versions 
 
 ### --watch-artifact-no-autoreact <artifact>
 
-Source: `chunk-g6yz7gnr.js` · offset 196530483 · sha256 `b3c63c0e…`
+Source: `chunk-jp1gdfy4.js` · offset 196845800 · sha256 `d69d646a…`
 
 Status: hidden; undocumented
 
 Visibility: hidden (from code)
 
-Undocumented; read at `chunk-g6yz7gnr.js` offset 196530483.
+Undocumented; read at `chunk-jp1gdfy4.js` offset 196845800.
 
 ### --prefill <text>
 
-Source: `chunk-g6yz7gnr.js` · offset 196541866 · sha256 `9745b732…`
+Source: `chunk-jp1gdfy4.js` · offset 196857183 · sha256 `9745b732…`
 
 Status: hidden; undocumented
 
@@ -698,7 +698,7 @@ Pre-fill the prompt input with text without submitting it
 
 ### --deep-link-origin
 
-Source: `chunk-g6yz7gnr.js` · offset 196541977 · sha256 `8fc46b90…`
+Source: `chunk-jp1gdfy4.js` · offset 196857294 · sha256 `8fc46b90…`
 
 Status: hidden; undocumented
 
@@ -710,7 +710,7 @@ Signal that this session was launched from a deep link
 
 ### --deep-link-repo <slug>
 
-Source: `chunk-g6yz7gnr.js` · offset 196542090 · sha256 `8b02e122…`
+Source: `chunk-jp1gdfy4.js` · offset 196857407 · sha256 `8b02e122…`
 
 Status: hidden; undocumented
 
@@ -722,7 +722,7 @@ Repo slug the deep link ?repo= parameter resolved to the current cwd
 
 ### --deep-link-last-fetch <ms>
 
-Source: `chunk-g6yz7gnr.js` · offset 196542221 · sha256 `d5d9da83…`
+Source: `chunk-jp1gdfy4.js` · offset 196857538 · sha256 `d5d9da83…`
 
 Status: hidden; undocumented
 
@@ -734,7 +734,7 @@ FETCH_HEAD mtime in epoch ms, precomputed by the deep link trampoline
 
 ### --prefill-b64 <b64>
 
-Source: `chunk-g6yz7gnr.js` · offset 196542414 · sha256 `5991de0a…`
+Source: `chunk-jp1gdfy4.js` · offset 196857731 · sha256 `5991de0a…`
 
 Status: hidden; undocumented
 
@@ -746,7 +746,7 @@ Base64url-encoded --prefill value (deep-link shell-safe launch paths)
 
 ### --deep-link-cwd-b64 <b64>
 
-Source: `chunk-g6yz7gnr.js` · offset 196542604 · sha256 `fe981868…`
+Source: `chunk-jp1gdfy4.js` · offset 196857921 · sha256 `fe981868…`
 
 Status: hidden; undocumented
 
@@ -758,7 +758,7 @@ Base64url-encoded working directory (deep-link shell-safe launch paths)
 
 ### --from-pr [value]
 
-Source: `chunk-g6yz7gnr.js` · offset 196542778 · sha256 `168d0595…`
+Source: `chunk-jp1gdfy4.js` · offset 196858095 · sha256 `168d0595…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -770,7 +770,7 @@ Resume a session linked to a PR by PR number/URL, or open interactive picker wit
 
 ### --no-session-persistence
 
-Source: `chunk-g6yz7gnr.js` · offset 196542929 · sha256 `bc1e6a8f…`
+Source: `chunk-jp1gdfy4.js` · offset 196858246 · sha256 `bc1e6a8f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -782,7 +782,7 @@ Disable session persistence - sessions will not be saved to disk and cannot be r
 
 ### --resume-session-at <message id>
 
-Source: `chunk-g6yz7gnr.js` · offset 196543097 · sha256 `56c5ed9b…`
+Source: `chunk-jp1gdfy4.js` · offset 196858414 · sha256 `56c5ed9b…`
 
 Status: hidden; undocumented
 
@@ -794,7 +794,7 @@ When resuming, only messages up to and including the chain entry with <message.i
 
 ### --resume-drops-turn <message id>
 
-Source: `chunk-g6yz7gnr.js` · offset 196543365 · sha256 `4d52eeb6…`
+Source: `chunk-jp1gdfy4.js` · offset 196858682 · sha256 `4d52eeb6…`
 
 Status: hidden; undocumented
 
@@ -806,7 +806,7 @@ With --resume-session-at in print mode: declare the prompt uuid of the turn the 
 
 ### --reply-on-resume
 
-Source: `chunk-g6yz7gnr.js` · offset 196543774 · sha256 `bcb4b72b…`
+Source: `chunk-jp1gdfy4.js` · offset 196859091 · sha256 `bcb4b72b…`
 
 Status: hidden; undocumented
 
@@ -818,7 +818,7 @@ When resuming, immediately query if the loaded transcript ends in a user-role me
 
 ### --rewind-files <user-message-id>
 
-Source: `chunk-g6yz7gnr.js` · offset 196543999 · sha256 `5a0dfe57…`
+Source: `chunk-jp1gdfy4.js` · offset 196859316 · sha256 `5a0dfe57…`
 
 Status: hidden; undocumented
 
@@ -830,7 +830,7 @@ Restore files to state at the specified user message and exit (requires --resume
 
 ### --model <model>
 
-Source: `chunk-g6yz7gnr.js` · offset 196544121 · sha256 `650530a1…`
+Source: `chunk-jp1gdfy4.js` · offset 196859438 · sha256 `650530a1…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -842,7 +842,7 @@ Model for the current session. Provide an alias for the latest model (e.g. 'fabl
 
 ### --effort <level>
 
-Source: `chunk-g6yz7gnr.js` · offset 196544289 · sha256 `35b36317…`
+Source: `chunk-jp1gdfy4.js` · offset 196859606 · sha256 `35b36317…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -856,7 +856,7 @@ Effort level for the current session (low, medium, high, xhigh, max)
 
 ### --agent <agent>
 
-Source: `chunk-g6yz7gnr.js` · offset 196544484 · sha256 `158b1acf…`
+Source: `chunk-jp1gdfy4.js` · offset 196859801 · sha256 `158b1acf…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -868,7 +868,7 @@ Agent for the current session. Overrides the 'agent' setting.
 
 ### --betas <betas...>
 
-Source: `chunk-g6yz7gnr.js` · offset 196544577 · sha256 `52636163…`
+Source: `chunk-jp1gdfy4.js` · offset 196859894 · sha256 `52636163…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -880,7 +880,7 @@ Beta headers to include in API requests (API key users only)
 
 ### --fallback-model <model>
 
-Source: `chunk-g6yz7gnr.js` · offset 196544675 · sha256 `bf1fccf5…`
+Source: `chunk-jp1gdfy4.js` · offset 196859992 · sha256 `bf1fccf5…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -892,7 +892,7 @@ Enable automatic fallback to specified model(s) when the default model is overlo
 
 ### --workload <tag>
 
-Source: `chunk-g6yz7gnr.js` · offset 196544923 · sha256 `34614821…`
+Source: `chunk-jp1gdfy4.js` · offset 196860240 · sha256 `34614821…`
 
 Status: hidden; undocumented
 
@@ -904,7 +904,7 @@ Workload tag for billing-header attribution (cc_workload). Process-scoped; set b
 
 ### --settings <file-or-json>
 
-Source: `chunk-g6yz7gnr.js` · offset 196545139 · sha256 `11edd9e1…`
+Source: `chunk-jp1gdfy4.js` · offset 196860456 · sha256 `11edd9e1…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -916,7 +916,7 @@ Path to a settings JSON file or a JSON string to load additional settings from
 
 ### --client-data-url <url>
 
-Source: `chunk-g6yz7gnr.js` · offset 196545264 · sha256 `f066938d…`
+Source: `chunk-jp1gdfy4.js` · offset 196860581 · sha256 `f066938d…`
 
 Status: hidden; undocumented
 
@@ -928,7 +928,7 @@ URL for a signed configuration document. Claude Code exits if it cannot load it 
 
 ### --managed-settings <json>
 
-Source: `chunk-g6yz7gnr.js` · offset 196545527 · sha256 `6d2e39dd…`
+Source: `chunk-jp1gdfy4.js` · offset 196860844 · sha256 `6d2e39dd…`
 
 Status: hidden; undocumented
 
@@ -940,7 +940,7 @@ Policy-tier settings JSON from a spawning parent process (SDK use only)
 
 ### --add-dir <directories...>
 
-Source: `chunk-g6yz7gnr.js` · offset 196545650 · sha256 `66b5e64c…`
+Source: `chunk-jp1gdfy4.js` · offset 196860967 · sha256 `66b5e64c…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -952,7 +952,7 @@ Additional directories to allow tool access to
 
 ### --project-config-root <dir>
 
-Source: `chunk-g6yz7gnr.js` · offset 196545747 · sha256 `3c10bb71…`
+Source: `chunk-jp1gdfy4.js` · offset 196861064 · sha256 `3c10bb71…`
 
 Status: hidden; undocumented
 
@@ -964,7 +964,7 @@ Read project settings, .mcp.json and the .claude config trees (commands, agents,
 
 ### --ide
 
-Source: `chunk-g6yz7gnr.js` · offset 196546043 · sha256 `48f23b4f…`
+Source: `chunk-jp1gdfy4.js` · offset 196861360 · sha256 `48f23b4f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -976,7 +976,7 @@ Automatically connect to IDE on startup if exactly one valid IDE is available
 
 ### --desktop
 
-Source: `chunk-g6yz7gnr.js` · offset 196546150 · sha256 `cd8b4ccf…`
+Source: `chunk-jp1gdfy4.js` · offset 196861467 · sha256 `cd8b4ccf…`
 
 Status: undocumented
 
@@ -988,7 +988,7 @@ Open in the Claude Desktop app instead of the terminal (with --continue or --res
 
 ### --strict-mcp-config
 
-Source: `chunk-g6yz7gnr.js` · offset 196546299 · sha256 `fdacce09…`
+Source: `chunk-jp1gdfy4.js` · offset 196861616 · sha256 `fdacce09…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1000,7 +1000,7 @@ Only use MCP servers from --mcp-config, ignoring all other MCP configurations
 
 ### --session-id <uuid>
 
-Source: `chunk-g6yz7gnr.js` · offset 196546416 · sha256 `eaf9d8bd…`
+Source: `chunk-jp1gdfy4.js` · offset 196861733 · sha256 `eaf9d8bd…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1012,7 +1012,7 @@ Use a specific session ID for the conversation (must be a valid UUID)
 
 ### -n, --name <name>
 
-Source: `chunk-g6yz7gnr.js` · offset 196546516 · sha256 `3452a7e7…`
+Source: `chunk-jp1gdfy4.js` · offset 196861833 · sha256 `3452a7e7…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1024,7 +1024,7 @@ Set a display name for this session (shown in the prompt box, /resume picker, an
 
 ### --agents <json-or-file>
 
-Source: `chunk-g6yz7gnr.js` · offset 196546650 · sha256 `ca155706…`
+Source: `chunk-jp1gdfy4.js` · offset 196861967 · sha256 `ca155706…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1036,7 +1036,7 @@ JSON object defining custom agents, or with --print the path to a file that hold
 
 ### --setting-sources <sources>
 
-Source: `chunk-g6yz7gnr.js` · offset 196546868 · sha256 `86cc120f…`
+Source: `chunk-jp1gdfy4.js` · offset 196862185 · sha256 `86cc120f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1048,7 +1048,7 @@ Comma-separated list of setting sources to load (user, project, local).
 
 ### --plugin-dir <path>
 
-Source: `chunk-g6yz7gnr.js` · offset 196546972 · sha256 `9f887027…`
+Source: `chunk-jp1gdfy4.js` · offset 196862289 · sha256 `9f887027…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1062,7 +1062,7 @@ Load a plugin from a directory or .zip for this session only; a folder of plugin
 
 ### --plugin-dir-no-mcp <path>
 
-Source: `chunk-g6yz7gnr.js` · offset 196547187 · sha256 `6da390b4…`
+Source: `chunk-jp1gdfy4.js` · offset 196862504 · sha256 `6da390b4…`
 
 Status: hidden; undocumented
 
@@ -1076,7 +1076,7 @@ Like --plugin-dir but the engine will not read this plugin's .mcp.json (caller o
 
 ### --plugin-url <url>
 
-Source: `chunk-g6yz7gnr.js` · offset 196547374 · sha256 `6351ba83…`
+Source: `chunk-jp1gdfy4.js` · offset 196862691 · sha256 `6351ba83…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1090,7 +1090,7 @@ Fetch a plugin .zip from a URL for this session only (repeatable: --plugin-url A
 
 ### --disable-slash-commands
 
-Source: `chunk-g6yz7gnr.js` · offset 196547559 · sha256 `3664ad6e…`
+Source: `chunk-jp1gdfy4.js` · offset 196862876 · sha256 `3664ad6e…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1102,7 +1102,7 @@ Disable all skills
 
 ### --chrome
 
-Source: `chunk-g6yz7gnr.js` · offset 196547606 · sha256 `f9666da5…`
+Source: `chunk-jp1gdfy4.js` · offset 196862923 · sha256 `f9666da5…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1114,7 +1114,7 @@ Enable Claude in Chrome integration
 
 ### --no-chrome
 
-Source: `chunk-g6yz7gnr.js` · offset 196547666 · sha256 `77c71749…`
+Source: `chunk-jp1gdfy4.js` · offset 196862983 · sha256 `77c71749…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1126,7 +1126,7 @@ Disable Claude in Chrome integration
 
 ### --file <specs...>
 
-Source: `chunk-g6yz7gnr.js` · offset 196547733 · sha256 `0bbe8db4…`
+Source: `chunk-jp1gdfy4.js` · offset 196863050 · sha256 `0bbe8db4…`
 
 Status: undocumented
 
@@ -1138,7 +1138,7 @@ File resources to download at startup. Format: file_id:relative_path (e.g., --fi
 
 ### -w, --worktree [name]
 
-Source: `chunk-g6yz7gnr.js` · offset 196549146 · sha256 `6d6b19f7…`
+Source: `chunk-jp1gdfy4.js` · offset 196864463 · sha256 `6d6b19f7…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1150,7 +1150,7 @@ Create a new git worktree for this session (optionally specify a name)
 
 ### --tmux
 
-Source: `chunk-g6yz7gnr.js` · offset 196549238 · sha256 `9dcc0c2a…`
+Source: `chunk-jp1gdfy4.js` · offset 196864555 · sha256 `9dcc0c2a…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1162,7 +1162,7 @@ Create a tmux session for the worktree (requires --worktree). Uses iTerm2 native
 
 ### --advisor <model>
 
-Source: `chunk-g6yz7gnr.js` · offset 196549424 · sha256 `c1cabbd1…`
+Source: `chunk-jp1gdfy4.js` · offset 196864741 · sha256 `c1cabbd1…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1174,7 +1174,7 @@ Enable the server-side advisor tool with the specified model (alias or full ID).
 
 ### --autocompact <auto|tokens>
 
-Source: `chunk-g6yz7gnr.js` · offset 196549569 · sha256 `d3fb1d45…`
+Source: `chunk-jp1gdfy4.js` · offset 196864886 · sha256 `d3fb1d45…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1186,7 +1186,7 @@ Auto-compact window size (auto, or 100k–1M tokens)
 
 ### --enable-auto-mode
 
-Source: `chunk-g6yz7gnr.js` · offset 196549823 · sha256 `cfaa1223…`
+Source: `chunk-jp1gdfy4.js` · offset 196865140 · sha256 `cfaa1223…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1198,7 +1198,7 @@ Visibility: hidden (from code)
 
 ### --bg, --background
 
-Source: `chunk-g6yz7gnr.js` · offset 196549911 · sha256 `2e0025a1…`
+Source: `chunk-jp1gdfy4.js` · offset 196865228 · sha256 `2e0025a1…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1210,7 +1210,7 @@ Start the session in the background and return immediately. Prints the id that `
 
 ### --brief
 
-Source: `chunk-g6yz7gnr.js` · offset 196550477 · sha256 `7bdd2c86…`
+Source: `chunk-jp1gdfy4.js` · offset 196865794 · sha256 `7bdd2c86…`
 
 Status: undocumented
 
@@ -1222,7 +1222,7 @@ Enable SendUserMessage tool for agent-to-user communication
 
 ### --ax-screen-reader
 
-Source: `chunk-g6yz7gnr.js` · offset 196550581 · sha256 `e9aa884a…`
+Source: `chunk-jp1gdfy4.js` · offset 196865898 · sha256 `e9aa884a…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1234,7 +1234,7 @@ Render screen-reader friendly output (flat text, no decorative borders or animat
 
 ### --channels <servers...>
 
-Source: `chunk-g6yz7gnr.js` · offset 196550717 · sha256 `2d249335…`
+Source: `chunk-jp1gdfy4.js` · offset 196866034 · sha256 `2d249335…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1246,7 +1246,7 @@ MCP servers whose channel notifications (inbound push) should register this sess
 
 ### --dangerously-load-development-channels <servers...>
 
-Source: `chunk-g6yz7gnr.js` · offset 196550921 · sha256 `cb2474ba…`
+Source: `chunk-jp1gdfy4.js` · offset 196866238 · sha256 `cb2474ba…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1258,7 +1258,7 @@ Load channel servers not on the approved allowlist. For local channel developmen
 
 ### --agent-id <id>
 
-Source: `chunk-g6yz7gnr.js` · offset 196551101 · sha256 `e11299be…`
+Source: `chunk-jp1gdfy4.js` · offset 196866418 · sha256 `e11299be…`
 
 Status: hidden; undocumented
 
@@ -1270,7 +1270,7 @@ Teammate agent ID
 
 ### --agent-name <name>
 
-Source: `chunk-g6yz7gnr.js` · offset 196551175 · sha256 `59acad2d…`
+Source: `chunk-jp1gdfy4.js` · offset 196866492 · sha256 `59acad2d…`
 
 Status: hidden; undocumented
 
@@ -1282,7 +1282,7 @@ Teammate display name
 
 ### --team-name <name>
 
-Source: `chunk-g6yz7gnr.js` · offset 196551252 · sha256 `dde33ae1…`
+Source: `chunk-jp1gdfy4.js` · offset 196866569 · sha256 `dde33ae1…`
 
 Status: hidden; undocumented
 
@@ -1294,7 +1294,7 @@ Team name for teammate coordination
 
 ### --agent-color <color>
 
-Source: `chunk-g6yz7gnr.js` · offset 196551346 · sha256 `589a0b8b…`
+Source: `chunk-jp1gdfy4.js` · offset 196866663 · sha256 `589a0b8b…`
 
 Status: hidden; undocumented
 
@@ -1306,7 +1306,7 @@ Teammate UI color
 
 ### --plan-mode-required
 
-Source: `chunk-g6yz7gnr.js` · offset 196551421 · sha256 `85dbd05e…`
+Source: `chunk-jp1gdfy4.js` · offset 196866738 · sha256 `85dbd05e…`
 
 Status: hidden; undocumented
 
@@ -1318,7 +1318,7 @@ Require plan mode before implementation
 
 ### --parent-session-id <id>
 
-Source: `chunk-g6yz7gnr.js` · offset 196551522 · sha256 `a7f4d7ba…`
+Source: `chunk-jp1gdfy4.js` · offset 196866839 · sha256 `a7f4d7ba…`
 
 Status: hidden; undocumented
 
@@ -1330,7 +1330,7 @@ Parent session ID for analytics correlation
 
 ### --teammate-mode <mode>
 
-Source: `chunk-g6yz7gnr.js` · offset 196551625 · sha256 `491c4249…`
+Source: `chunk-jp1gdfy4.js` · offset 196866942 · sha256 `491c4249…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1344,7 +1344,7 @@ How to spawn teammates: "tmux", "iterm2", "in-process", or "auto"
 
 ### --agent-type <type>
 
-Source: `chunk-g6yz7gnr.js` · offset 196551794 · sha256 `c797206f…`
+Source: `chunk-jp1gdfy4.js` · offset 196867111 · sha256 `c797206f…`
 
 Status: hidden; undocumented
 
@@ -1356,7 +1356,7 @@ Custom agent type for this teammate
 
 ### --sdk-url <url>
 
-Source: `chunk-g6yz7gnr.js` · offset 196551882 · sha256 `5bc5a6c2…`
+Source: `chunk-jp1gdfy4.js` · offset 196867199 · sha256 `5bc5a6c2…`
 
 Status: hidden; undocumented
 
@@ -1368,7 +1368,7 @@ Use remote WebSocket endpoint for SDK I/O streaming (only with -p and stream-jso
 
 ### --teleport [session]
 
-Source: `chunk-g6yz7gnr.js` · offset 196552029 · sha256 `b5dc3a19…`
+Source: `chunk-jp1gdfy4.js` · offset 196867346 · sha256 `b5dc3a19…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1380,7 +1380,7 @@ Resume a teleport session, optionally specify session ID
 
 ### --cloud [description|session_id|url]
 
-Source: `chunk-g6yz7gnr.js` · offset 196552148 · sha256 `41798a2d…`
+Source: `chunk-jp1gdfy4.js` · offset 196867465 · sha256 `41798a2d…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1392,7 +1392,7 @@ Create a cloud session with the given description, or attach to an existing one 
 
 ### --forward-home-settings <true|false>
 
-Source: `chunk-g6yz7gnr.js` · offset 196552326 · sha256 `f7f53093…`
+Source: `chunk-jp1gdfy4.js` · offset 196867643 · sha256 `f7f53093…`
 
 Status: hidden; undocumented
 
@@ -1406,7 +1406,7 @@ Whether this launch sends this machine's settings (CLAUDE.md, rules, output styl
 
 ### --remote [description|session_id|url]
 
-Source: `chunk-g6yz7gnr.js` · offset 196552753 · sha256 `f513960e…`
+Source: `chunk-jp1gdfy4.js` · offset 196868070 · sha256 `f513960e…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1418,7 +1418,7 @@ Deprecated alias for --cloud
 
 ### --attach-serve <session_id>
 
-Source: `chunk-g6yz7gnr.js` · offset 196552846 · sha256 `0e2afb30…`
+Source: `chunk-jp1gdfy4.js` · offset 196868163 · sha256 `0e2afb30…`
 
 Status: hidden; undocumented
 
@@ -1430,7 +1430,7 @@ Attach a serve-only helper to a bound cloud session (spawned by the desktop app;
 
 ### --environment <environment_id>
 
-Source: `chunk-g6yz7gnr.js` · offset 196553020 · sha256 `26596302…`
+Source: `chunk-jp1gdfy4.js` · offset 196868337 · sha256 `26596302…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1442,7 +1442,7 @@ Create a new cloud session that runs on the given self-hosted environment (ccpoo
 
 ### --pool <pool_id>
 
-Source: `chunk-g6yz7gnr.js` · offset 196553150 · sha256 `21e3ae84…`
+Source: `chunk-jp1gdfy4.js` · offset 196868467 · sha256 `21e3ae84…`
 
 Status: hidden; undocumented
 
@@ -1454,7 +1454,7 @@ Deprecated alias for --environment
 
 ### --correlation-id <id>
 
-Source: `chunk-g6yz7gnr.js` · offset 196553243 · sha256 `90c28cec…`
+Source: `chunk-jp1gdfy4.js` · offset 196868560 · sha256 `90c28cec…`
 
 Status: hidden; undocumented
 
@@ -1466,7 +1466,7 @@ Opaque id echoed back to the environment orchestrator on the work order (require
 
 ### --ref <ref>
 
-Source: `chunk-g6yz7gnr.js` · offset 196553389 · sha256 `02c4c5f2…`
+Source: `chunk-jp1gdfy4.js` · offset 196868706 · sha256 `02c4c5f2…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1478,7 +1478,7 @@ Branch, tag, or SHA to check out in the remote session; defaults to local curren
 
 ### --on-branch <branch>
 
-Source: `chunk-g6yz7gnr.js` · offset 196553571 · sha256 `153d5166…`
+Source: `chunk-jp1gdfy4.js` · offset 196868888 · sha256 `153d5166…`
 
 Status: hidden; undocumented
 
@@ -1490,7 +1490,7 @@ Work directly on <branch> in the remote session (checkout and push to it). On se
 
 ### --remote-control [name]
 
-Source: `chunk-g6yz7gnr.js` · offset 196553918 · sha256 `92e655a9…`
+Source: `chunk-jp1gdfy4.js` · offset 196869235 · sha256 `92e655a9…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1502,7 +1502,7 @@ Start an interactive session with Remote Control enabled (optionally named)
 
 ### --rc [name]
 
-Source: `chunk-g6yz7gnr.js` · offset 196554053 · sha256 `bf4320b8…`
+Source: `chunk-jp1gdfy4.js` · offset 196869370 · sha256 `bf4320b8…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1514,7 +1514,7 @@ Alias for --remote-control
 
 ### --remote-control-session-name-prefix <prefix>
 
-Source: `chunk-g6yz7gnr.js` · offset 196554174 · sha256 `2f659ef6…`
+Source: `chunk-jp1gdfy4.js` · offset 196869491 · sha256 `2f659ef6…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1528,7 +1528,7 @@ Prefix for auto-generated Remote Control session names (default: hostname)
 
 ### claude agents
 
-Source: `chunk-g6yz7gnr.js` · offset 196565366 · sha256 `69641675…`
+Source: `chunk-jp1gdfy4.js` · offset 196880683 · sha256 `69641675…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1540,7 +1540,7 @@ Manage background agents
 
 ### claude agents --setting-sources <sources>
 
-Source: `chunk-g6yz7gnr.js` · offset 196565456 · sha256 `86cc120f…`
+Source: `chunk-jp1gdfy4.js` · offset 196880773 · sha256 `86cc120f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1552,7 +1552,7 @@ Comma-separated list of setting sources to load (user, project, local).
 
 ### claude agents --cwd <path>
 
-Source: `chunk-g6yz7gnr.js` · offset 196565553 · sha256 `08c2eb79…`
+Source: `chunk-jp1gdfy4.js` · offset 196880870 · sha256 `08c2eb79…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1564,7 +1564,7 @@ Show only background sessions started under <path>
 
 ### claude agents --add-dir <directory>
 
-Source: `chunk-g6yz7gnr.js` · offset 196565638 · sha256 `63c281c8…`
+Source: `chunk-jp1gdfy4.js` · offset 196880955 · sha256 `63c281c8…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1576,7 +1576,7 @@ Additional directory to allow tool access to in dispatched sessions (repeatable)
 
 ### claude agents --plugin-dir <path>
 
-Source: `chunk-g6yz7gnr.js` · offset 196565751 · sha256 `a4da736f…`
+Source: `chunk-jp1gdfy4.js` · offset 196881068 · sha256 `a4da736f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1588,7 +1588,7 @@ Load plugins from specified directory for the agent view and dispatched sessions
 
 ### claude agents --plugin-dir-no-mcp <path>
 
-Source: `chunk-g6yz7gnr.js` · offset 196565932 · sha256 `c7329151…`
+Source: `chunk-jp1gdfy4.js` · offset 196881249 · sha256 `c7329151…`
 
 Status: hidden; undocumented
 
@@ -1600,7 +1600,7 @@ Like --plugin-dir but the engine will not read this plugin's .mcp.json
 
 ### claude agents --settings <file-or-json>
 
-Source: `chunk-g6yz7gnr.js` · offset 196566053 · sha256 `eb20a2ed…`
+Source: `chunk-jp1gdfy4.js` · offset 196881370 · sha256 `eb20a2ed…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1612,17 +1612,17 @@ Settings file or JSON string to apply to the agent view and dispatched sessions
 
 ### claude agents --managed-settings <json>
 
-Source: `chunk-g6yz7gnr.js` · offset 196565334 · sha256 `46c59db1…`
+Source: `chunk-jp1gdfy4.js` · offset 196880651 · sha256 `46c59db1…`
 
 Status: hidden; undocumented
 
 Visibility: hidden (from code)
 
-Undocumented; read at `chunk-g6yz7gnr.js` offset 196565334.
+Undocumented; read at `chunk-jp1gdfy4.js` offset 196880651.
 
 ### claude agents --mcp-config <config>
 
-Source: `chunk-g6yz7gnr.js` · offset 196566225 · sha256 `6070b5bd…`
+Source: `chunk-jp1gdfy4.js` · offset 196881542 · sha256 `6070b5bd…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1634,7 +1634,7 @@ MCP server configuration to apply to dispatched sessions (repeatable)
 
 ### claude agents --strict-mcp-config
 
-Source: `chunk-g6yz7gnr.js` · offset 196566327 · sha256 `4573c5b5…`
+Source: `chunk-jp1gdfy4.js` · offset 196881644 · sha256 `4573c5b5…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1646,7 +1646,7 @@ Only use MCP servers from --mcp-config in dispatched sessions
 
 ### claude agents --restricted
 
-Source: `chunk-g6yz7gnr.js` · offset 196566414 · sha256 `38ae3c21…`
+Source: `chunk-jp1gdfy4.js` · offset 196881731 · sha256 `38ae3c21…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1658,7 +1658,7 @@ Start dispatched sessions in restricted mode
 
 ### claude agents --permission-mode <mode>
 
-Source: `chunk-g6yz7gnr.js` · offset 196566496 · sha256 `e8e2b5c1…`
+Source: `chunk-jp1gdfy4.js` · offset 196881813 · sha256 `e8e2b5c1…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1670,17 +1670,17 @@ Default permission mode for sessions dispatched from agent view
 
 ### claude agents --inherit-permission-mode <mode>
 
-Source: `chunk-g6yz7gnr.js` · offset 196565334 · sha256 `7687a1b5…`
+Source: `chunk-jp1gdfy4.js` · offset 196880651 · sha256 `7687a1b5…`
 
 Status: hidden; undocumented
 
 Visibility: hidden (from code)
 
-Undocumented; read at `chunk-g6yz7gnr.js` offset 196565334.
+Undocumented; read at `chunk-jp1gdfy4.js` offset 196880651.
 
 ### claude agents --dangerously-skip-permissions
 
-Source: `chunk-g6yz7gnr.js` · offset 196566668 · sha256 `3af27660…`
+Source: `chunk-jp1gdfy4.js` · offset 196881985 · sha256 `3af27660…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1692,7 +1692,7 @@ Alias for --permission-mode bypassPermissions
 
 ### claude agents --allow-dangerously-skip-permissions
 
-Source: `chunk-g6yz7gnr.js` · offset 196566763 · sha256 `6df451f1…`
+Source: `chunk-jp1gdfy4.js` · offset 196882080 · sha256 `6df451f1…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1704,7 +1704,7 @@ Make bypass-permissions mode available to dispatched sessions without defaulting
 
 ### claude agents --model <model>
 
-Source: `chunk-g6yz7gnr.js` · offset 196566878 · sha256 `2f2b59ee…`
+Source: `chunk-jp1gdfy4.js` · offset 196882195 · sha256 `2f2b59ee…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1716,7 +1716,7 @@ Default model for sessions dispatched from agent view
 
 ### claude agents --effort <level>
 
-Source: `chunk-g6yz7gnr.js` · offset 196566961 · sha256 `424ba063…`
+Source: `chunk-jp1gdfy4.js` · offset 196882278 · sha256 `424ba063…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1728,7 +1728,7 @@ Default effort level for sessions dispatched from agent view
 
 ### claude agents --agent <agent>
 
-Source: `chunk-g6yz7gnr.js` · offset 196567050 · sha256 `b43c732d…`
+Source: `chunk-jp1gdfy4.js` · offset 196882367 · sha256 `b43c732d…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1740,7 +1740,7 @@ Default agent for sessions dispatched from agent view. Overrides the 'agent' set
 
 ### claude agents --json
 
-Source: `chunk-g6yz7gnr.js` · offset 196567155 · sha256 `1d812a9c…`
+Source: `chunk-jp1gdfy4.js` · offset 196882472 · sha256 `1d812a9c…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1752,7 +1752,7 @@ Print active sessions (interactive and background) as a JSON array and exit (for
 
 ### claude agents --all
 
-Source: `chunk-g6yz7gnr.js` · offset 196567289 · sha256 `260554cd…`
+Source: `chunk-jp1gdfy4.js` · offset 196882606 · sha256 `260554cd…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1766,7 +1766,7 @@ With --json: also include completed background sessions
 
 ### claude apply-project-settings
 
-Source: `chunk-g6yz7gnr.js` · offset 196570898 · sha256 `b76815d7…`
+Source: `chunk-jp1gdfy4.js` · offset 196886215 · sha256 `b76815d7…`
 
 Status: hidden; undocumented
 
@@ -1780,7 +1780,7 @@ Review how this folder's Claude Code settings files (.claude/settings.json, .cla
 
 ### claude attach
 
-Source: `chunk-g6yz7gnr.js` · offset 196494888 · sha256 `2864840b…`
+Source: `chunk-jp1gdfy4.js` · offset 196810204 · sha256 `2864840b…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1796,7 +1796,7 @@ Open a background session in this terminal. <id> is the short id that `claude --
 
 ### claude auth
 
-Source: `chunk-g6yz7gnr.js` · offset 196563653 · sha256 `67d6b15d…`
+Source: `chunk-jp1gdfy4.js` · offset 196878970 · sha256 `67d6b15d…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1808,7 +1808,7 @@ Manage authentication
 
 ### claude auth login
 
-Source: `chunk-g6yz7gnr.js` · offset 196563730 · sha256 `e478dc6d…`
+Source: `chunk-jp1gdfy4.js` · offset 196879047 · sha256 `e478dc6d…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1820,7 +1820,7 @@ Sign in to your Anthropic account
 
 ### claude auth login --email <email>
 
-Source: `chunk-g6yz7gnr.js` · offset 196563792 · sha256 `44c889bf…`
+Source: `chunk-jp1gdfy4.js` · offset 196879109 · sha256 `44c889bf…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1832,7 +1832,7 @@ Pre-populate email address on the login page
 
 ### claude auth login --sso
 
-Source: `chunk-g6yz7gnr.js` · offset 196563855 · sha256 `8ebf2545…`
+Source: `chunk-jp1gdfy4.js` · offset 196879172 · sha256 `8ebf2545…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1844,7 +1844,7 @@ Force SSO login flow
 
 ### claude auth login --console
 
-Source: `chunk-g6yz7gnr.js` · offset 196563898 · sha256 `b712abc1…`
+Source: `chunk-jp1gdfy4.js` · offset 196879215 · sha256 `b712abc1…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1856,7 +1856,7 @@ Use Anthropic Console (API usage billing) instead of Claude subscription
 
 ### claude auth login --claudeai
 
-Source: `chunk-g6yz7gnr.js` · offset 196563994 · sha256 `8a0ebf6b…`
+Source: `chunk-jp1gdfy4.js` · offset 196879311 · sha256 `8a0ebf6b…`
 
 Status: undocumented
 
@@ -1868,7 +1868,7 @@ Use Claude subscription (default)
 
 ### claude auth logout
 
-Source: `chunk-g6yz7gnr.js` · offset 196564662 · sha256 `abeffc8c…`
+Source: `chunk-jp1gdfy4.js` · offset 196879979 · sha256 `abeffc8c…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1880,7 +1880,7 @@ Log out from your Anthropic account
 
 ### claude auth status
 
-Source: `chunk-g6yz7gnr.js` · offset 196564243 · sha256 `44870793…`
+Source: `chunk-jp1gdfy4.js` · offset 196879560 · sha256 `44870793…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1892,7 +1892,7 @@ Show authentication status
 
 ### claude auth status --json
 
-Source: `chunk-g6yz7gnr.js` · offset 196564289 · sha256 `0a1a107a…`
+Source: `chunk-jp1gdfy4.js` · offset 196879606 · sha256 `0a1a107a…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1904,7 +1904,7 @@ Output as JSON (default)
 
 ### claude auth status --text
 
-Source: `chunk-g6yz7gnr.js` · offset 196564333 · sha256 `6854c60f…`
+Source: `chunk-jp1gdfy4.js` · offset 196879650 · sha256 `6854c60f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1918,7 +1918,7 @@ Output as human-readable text
 
 ### claude auto-mode
 
-Source: `chunk-g6yz7gnr.js` · offset 196568284 · sha256 `e080739f…`
+Source: `chunk-jp1gdfy4.js` · offset 196883601 · sha256 `e080739f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1930,7 +1930,7 @@ Inspect or reset auto mode classifier configuration
 
 ### claude auto-mode config
 
-Source: `chunk-g6yz7gnr.js` · offset 196568885 · sha256 `a8007497…`
+Source: `chunk-jp1gdfy4.js` · offset 196884202 · sha256 `a8007497…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1942,7 +1942,7 @@ Print the effective auto mode config as JSON: your settings where set, defaults 
 
 ### claude auto-mode critique
 
-Source: `chunk-g6yz7gnr.js` · offset 196569700 · sha256 `11a28655…`
+Source: `chunk-jp1gdfy4.js` · offset 196885017 · sha256 `11a28655…`
 
 Status: documented at https://code.claude.com/docs/en/auto-mode-config
 
@@ -1954,7 +1954,7 @@ Get AI feedback on your custom auto mode rules
 
 ### claude auto-mode critique --model <model>
 
-Source: `chunk-g6yz7gnr.js` · offset 196569775 · sha256 `1929da30…`
+Source: `chunk-jp1gdfy4.js` · offset 196885092 · sha256 `1929da30…`
 
 Status: undocumented
 
@@ -1966,7 +1966,7 @@ Override which model is used
 
 ### claude auto-mode defaults
 
-Source: `chunk-g6yz7gnr.js` · offset 196568373 · sha256 `d21a4037…`
+Source: `chunk-jp1gdfy4.js` · offset 196883690 · sha256 `d21a4037…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1978,7 +1978,7 @@ Print the default auto mode environment, allow, soft_deny, and hard_deny rules a
 
 ### claude auto-mode defaults --label <prefix>
 
-Source: `chunk-g6yz7gnr.js` · offset 196568489 · sha256 `dc86a4b9…`
+Source: `chunk-jp1gdfy4.js` · offset 196883806 · sha256 `dc86a4b9…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -1990,7 +1990,7 @@ Show only rules whose label starts with this prefix (case-insensitive)
 
 ### claude auto-mode reset
 
-Source: `chunk-g6yz7gnr.js` · offset 196569286 · sha256 `b8a7d9d8…`
+Source: `chunk-jp1gdfy4.js` · offset 196884603 · sha256 `b8a7d9d8…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2002,7 +2002,7 @@ Reset auto mode configuration to the shipped defaults by removing the autoMode s
 
 ### claude auto-mode reset -y, --yes
 
-Source: `chunk-g6yz7gnr.js` · offset 196569424 · sha256 `46dd9116…`
+Source: `chunk-jp1gdfy4.js` · offset 196884741 · sha256 `46dd9116…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2016,7 +2016,7 @@ Skip the confirmation prompt
 
 ### claude design-login
 
-Source: `chunk-fjpvase5.js` · offset 196292035 · sha256 `ad6c03a4…`
+Source: `chunk-fy900bwx.js` · offset 196607272 · sha256 `ad6c03a4…`
 
 Status: hidden; undocumented
 
@@ -2028,7 +2028,7 @@ Run the Claude Design sign-in, or report its state, as JSON lines (used by the V
 
 ### claude design-login --json
 
-Source: `chunk-fjpvase5.js` · offset 196292160 · sha256 `98a8c848…`
+Source: `chunk-fy900bwx.js` · offset 196607397 · sha256 `98a8c848…`
 
 Status: undocumented
 
@@ -2042,7 +2042,7 @@ Write JSON lines to stdout
 
 ### claude design-login --status
 
-Source: `chunk-fjpvase5.js` · offset 196292208 · sha256 `17c76b10…`
+Source: `chunk-fy900bwx.js` · offset 196607445 · sha256 `17c76b10…`
 
 Status: undocumented
 
@@ -2056,7 +2056,7 @@ Report whether design-system access is authorized, and exit
 
 ### claude doctor
 
-Source: `chunk-g6yz7gnr.js` · offset 196570562 · sha256 `bf43d117…`
+Source: `chunk-jp1gdfy4.js` · offset 196885879 · sha256 `bf43d117…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2070,7 +2070,7 @@ Check the health of your Claude Code installation. Reads settings files in the c
 
 ### claude drop-worktree-registrations
 
-Source: `chunk-fjpvase5.js` · offset 196293817 · sha256 `1ae50ce9…`
+Source: `chunk-fy900bwx.js` · offset 196609054 · sha256 `1ae50ce9…`
 
 Status: hidden; undocumented
 
@@ -2082,7 +2082,7 @@ Drop deleted worktrees' git registrations named as JSON on stdin (used by the VS
 
 ### claude drop-worktree-registrations --json
 
-Source: `chunk-fjpvase5.js` · offset 196293941 · sha256 `878a142c…`
+Source: `chunk-fy900bwx.js` · offset 196609178 · sha256 `878a142c…`
 
 Status: undocumented
 
@@ -2098,7 +2098,7 @@ Read the request as JSON from stdin
 
 ### claude edit-chrome-settings
 
-Source: `chunk-fjpvase5.js` · offset 196293057 · sha256 `f1639567…`
+Source: `chunk-fy900bwx.js` · offset 196608294 · sha256 `f1639567…`
 
 Status: hidden; undocumented
 
@@ -2110,7 +2110,7 @@ Apply one Claude in Chrome settings edit read as JSON from stdin (used by the VS
 
 ### claude edit-chrome-settings --json
 
-Source: `chunk-fjpvase5.js` · offset 196293181 · sha256 `d495650b…`
+Source: `chunk-fy900bwx.js` · offset 196608418 · sha256 `d495650b…`
 
 Status: undocumented
 
@@ -2126,7 +2126,7 @@ Read the edit as JSON from stdin
 
 ### claude edit-hook
 
-Source: `chunk-g6yz7gnr.js` · offset 196495757 · sha256 `90a05805…`
+Source: `chunk-jp1gdfy4.js` · offset 196811073 · sha256 `90a05805…`
 
 Status: hidden; undocumented
 
@@ -2138,7 +2138,7 @@ Apply one hook edit read as JSON from stdin (used by the VS Code extension)
 
 ### claude edit-hook --json
 
-Source: `chunk-g6yz7gnr.js` · offset 196495860 · sha256 `d495650b…`
+Source: `chunk-jp1gdfy4.js` · offset 196811176 · sha256 `d495650b…`
 
 Status: undocumented
 
@@ -2154,7 +2154,7 @@ Read the edit as JSON from stdin
 
 ### claude edit-memory-settings
 
-Source: `chunk-fjpvase5.js` · offset 196289795 · sha256 `3e930ec4…`
+Source: `chunk-fy900bwx.js` · offset 196605032 · sha256 `3e930ec4…`
 
 Status: hidden; undocumented
 
@@ -2166,7 +2166,7 @@ Apply one memory-settings edit read as JSON from stdin (used by the VS Code exte
 
 ### claude edit-memory-settings --json
 
-Source: `chunk-fjpvase5.js` · offset 196289909 · sha256 `d495650b…`
+Source: `chunk-fy900bwx.js` · offset 196605146 · sha256 `d495650b…`
 
 Status: undocumented
 
@@ -2182,7 +2182,7 @@ Read the edit as JSON from stdin
 
 ### claude edit-permission-rules
 
-Source: `chunk-fjpvase5.js` · offset 196289029 · sha256 `fc2251e0…`
+Source: `chunk-fy900bwx.js` · offset 196604266 · sha256 `fc2251e0…`
 
 Status: hidden; undocumented
 
@@ -2194,7 +2194,7 @@ Apply one permission-rule edit read as JSON from stdin (used by the VS Code exte
 
 ### claude edit-permission-rules --json
 
-Source: `chunk-fjpvase5.js` · offset 196289143 · sha256 `d495650b…`
+Source: `chunk-fy900bwx.js` · offset 196604380 · sha256 `d495650b…`
 
 Status: undocumented
 
@@ -2210,7 +2210,7 @@ Read the edit as JSON from stdin
 
 ### claude edit-sandbox-settings
 
-Source: `chunk-fjpvase5.js` · offset 196291301 · sha256 `6874e76d…`
+Source: `chunk-fy900bwx.js` · offset 196606538 · sha256 `6874e76d…`
 
 Status: hidden; undocumented
 
@@ -2222,7 +2222,7 @@ Apply one sandbox settings edit read as JSON from stdin (used by the VS Code ext
 
 ### claude edit-sandbox-settings --json
 
-Source: `chunk-fjpvase5.js` · offset 196291416 · sha256 `d495650b…`
+Source: `chunk-fy900bwx.js` · offset 196606653 · sha256 `d495650b…`
 
 Status: undocumented
 
@@ -2238,7 +2238,7 @@ Read the edit as JSON from stdin
 
 ### claude edit-skill-overrides
 
-Source: `chunk-fjpvase5.js` · offset 196290539 · sha256 `3c979847…`
+Source: `chunk-fy900bwx.js` · offset 196605776 · sha256 `3c979847…`
 
 Status: hidden; undocumented
 
@@ -2250,7 +2250,7 @@ Apply one skill state edit read as JSON from stdin (used by the VS Code extensio
 
 ### claude edit-skill-overrides --json
 
-Source: `chunk-fjpvase5.js` · offset 196290649 · sha256 `d495650b…`
+Source: `chunk-fy900bwx.js` · offset 196605886 · sha256 `d495650b…`
 
 Status: undocumented
 
@@ -2266,7 +2266,7 @@ Read the edit as JSON from stdin
 
 ### claude gateway
 
-Source: `chunk-g6yz7gnr.js` · offset 196562980 · sha256 `c68540b9…`
+Source: `chunk-jp1gdfy4.js` · offset 196878297 · sha256 `c68540b9…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2278,7 +2278,7 @@ Run the enterprise auth/telemetry gateway
 
 ### claude gateway --config <path>
 
-Source: `chunk-g6yz7gnr.js` · offset 196563058 · sha256 `18f5bbea…`
+Source: `chunk-jp1gdfy4.js` · offset 196878375 · sha256 `18f5bbea…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2294,7 +2294,7 @@ Path to gateway YAML config
 
 ### claude import
 
-Source: `chunk-g6yz7gnr.js` · offset 196572730 · sha256 `253ed12f…`
+Source: `chunk-jp1gdfy4.js` · offset 196888047 · sha256 `253ed12f…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2308,7 +2308,7 @@ Import config from another AI coding agent into Claude Code
 
 ### claude import --dry-run
 
-Source: `chunk-g6yz7gnr.js` · offset 196572545 · sha256 `61f974d7…`
+Source: `chunk-jp1gdfy4.js` · offset 196887862 · sha256 `61f974d7…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2320,7 +2320,7 @@ Show what would be imported without writing anything
 
 ### claude import --yes
 
-Source: `chunk-g6yz7gnr.js` · offset 196572616 · sha256 `832ced43…`
+Source: `chunk-jp1gdfy4.js` · offset 196887933 · sha256 `832ced43…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2334,17 +2334,17 @@ Skip the interactive picker. On headless surfaces, pass --yes=<digest> from the 
 
 ### claude import-conversations <exportPath>
 
-Source: `chunk-g6yz7gnr.js` · offset 196572961 · sha256 `3b66284e…`
+Source: `chunk-jp1gdfy4.js` · offset 196888278 · sha256 `3b66284e…`
 
 Status: hidden; undocumented
 
 Visibility: hidden (from code)
 
-Undocumented; read at `chunk-g6yz7gnr.js` offset 196572961.
+Undocumented; read at `chunk-jp1gdfy4.js` offset 196888278.
 
 ### claude import-conversations --cwd <dir>
 
-Source: `chunk-g6yz7gnr.js` · offset 196573041 · sha256 `4269eec3…`
+Source: `chunk-jp1gdfy4.js` · offset 196888358 · sha256 `4269eec3…`
 
 Status: undocumented
 
@@ -2356,7 +2356,7 @@ Archive directory the imported sessions anchor to
 
 ### claude import-conversations --dry-run
 
-Source: `chunk-g6yz7gnr.js` · offset 196573113 · sha256 `5649abec…`
+Source: `chunk-jp1gdfy4.js` · offset 196888430 · sha256 `5649abec…`
 
 Status: undocumented
 
@@ -2370,7 +2370,7 @@ Parse and verify manifest without writing files
 
 ### claude install [target]
 
-Source: `chunk-g6yz7gnr.js` · offset 196572149 · sha256 `95ba72ee…`
+Source: `chunk-jp1gdfy4.js` · offset 196887466 · sha256 `95ba72ee…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2382,7 +2382,7 @@ Install Claude Code native build. Use [target] to specify version (stable, lates
 
 ### claude install --force
 
-Source: `chunk-g6yz7gnr.js` · offset 196572273 · sha256 `10dbdacf…`
+Source: `chunk-jp1gdfy4.js` · offset 196887590 · sha256 `10dbdacf…`
 
 Status: undocumented
 
@@ -2396,7 +2396,7 @@ Force installation even if already installed
 
 ### claude logs
 
-Source: `chunk-g6yz7gnr.js` · offset 196495053 · sha256 `70dae2c4…`
+Source: `chunk-jp1gdfy4.js` · offset 196810369 · sha256 `70dae2c4…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2412,7 +2412,7 @@ Print a background session's recent terminal output
 
 ### claude mcp
 
-Source: `chunk-p7vnfmqa.js` · offset 207052523 · sha256 `5a5f1497…`
+Source: `chunk-4sbncqrx.js` · offset 207389218 · sha256 `5a5f1497…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2424,7 +2424,7 @@ Configure and manage MCP servers
 
 ### claude mcp add <name> <commandOrUrl> [args...]
 
-Source: `chunk-p7vnfmqa.js` · offset 207043663 · sha256 `fa8ba8d7…`
+Source: `chunk-4sbncqrx.js` · offset 207380358 · sha256 `fa8ba8d7…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2449,7 +2449,7 @@ Examples:
 
 ### claude mcp add -s, --scope <scope>
 
-Source: `chunk-p7vnfmqa.js` · offset 207044193 · sha256 `ec4e475d…`
+Source: `chunk-4sbncqrx.js` · offset 207380888 · sha256 `ec4e475d…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2463,7 +2463,7 @@ Configuration scope (local, user, or project)
 
 ### claude mcp add -t, --transport <transport>
 
-Source: `chunk-p7vnfmqa.js` · offset 207044287 · sha256 `d63b4e38…`
+Source: `chunk-4sbncqrx.js` · offset 207380982 · sha256 `d63b4e38…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2475,7 +2475,7 @@ Transport type (stdio, sse, http). Defaults to stdio if not specified.
 
 ### claude mcp add -e, --env <env...>
 
-Source: `chunk-p7vnfmqa.js` · offset 207044389 · sha256 `34e54114…`
+Source: `chunk-4sbncqrx.js` · offset 207381084 · sha256 `34e54114…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2487,7 +2487,7 @@ Set environment variables (e.g. -e KEY=value)
 
 ### claude mcp add -H, --header <header...>
 
-Source: `chunk-p7vnfmqa.js` · offset 207044472 · sha256 `52275ae1…`
+Source: `chunk-4sbncqrx.js` · offset 207381167 · sha256 `52275ae1…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2499,7 +2499,7 @@ Set headers for HTTP/SSE servers (e.g. -H "X-Api-Key: abc123" -H "X-Custom: valu
 
 ### claude mcp add --client-id <clientId>
 
-Source: `chunk-p7vnfmqa.js` · offset 207044591 · sha256 `1562eeee…`
+Source: `chunk-4sbncqrx.js` · offset 207381286 · sha256 `1562eeee…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2511,7 +2511,7 @@ OAuth client ID for HTTP/SSE servers
 
 ### claude mcp add --client-secret
 
-Source: `chunk-p7vnfmqa.js` · offset 207044656 · sha256 `6a58da91…`
+Source: `chunk-4sbncqrx.js` · offset 207381351 · sha256 `6a58da91…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2523,7 +2523,7 @@ Prompt for OAuth client secret (or set MCP_CLIENT_SECRET env var)
 
 ### claude mcp add --callback-port <port>
 
-Source: `chunk-p7vnfmqa.js` · offset 207044757 · sha256 `ff8ddc73…`
+Source: `chunk-4sbncqrx.js` · offset 207381452 · sha256 `ff8ddc73…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2535,7 +2535,7 @@ Fixed port for OAuth callback (for servers requiring pre-registered redirect URI
 
 ### claude mcp add -h, --help
 
-Source: `chunk-p7vnfmqa.js` · offset 207044867 · sha256 `7d6f87f1…`
+Source: `chunk-4sbncqrx.js` · offset 207381562 · sha256 `7d6f87f1…`
 
 Status: undocumented
 
@@ -2547,7 +2547,7 @@ Display help for command
 
 ### claude mcp add --xaa
 
-Source: `chunk-p7vnfmqa.js` · offset 207044920 · sha256 `6417ff1f…`
+Source: `chunk-4sbncqrx.js` · offset 207381615 · sha256 `6417ff1f…`
 
 Status: hidden; undocumented
 
@@ -2559,7 +2559,7 @@ Enable XAA (SEP-990) for this server. Requires 'claude mcp xaa setup' first. Als
 
 ### claude mcp add-from-claude-desktop
 
-Source: `chunk-p7vnfmqa.js` · offset 207055702 · sha256 `54f4ec96…`
+Source: `chunk-4sbncqrx.js` · offset 207392397 · sha256 `54f4ec96…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2571,7 +2571,7 @@ Import MCP servers from Claude Desktop (Mac and WSL only)
 
 ### claude mcp add-from-claude-desktop -s, --scope <scope>
 
-Source: `chunk-p7vnfmqa.js` · offset 207055792 · sha256 `ec4e475d…`
+Source: `chunk-4sbncqrx.js` · offset 207392487 · sha256 `ec4e475d…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2585,7 +2585,7 @@ Configuration scope (local, user, or project)
 
 ### claude mcp add-json <name> <json>
 
-Source: `chunk-p7vnfmqa.js` · offset 207055177 · sha256 `47b5f78d…`
+Source: `chunk-4sbncqrx.js` · offset 207391872 · sha256 `47b5f78d…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2597,7 +2597,7 @@ Add an MCP server (stdio, SSE, HTTP, or WebSocket) with a JSON string
 
 ### claude mcp add-json -s, --scope <scope>
 
-Source: `chunk-p7vnfmqa.js` · offset 207055279 · sha256 `ec4e475d…`
+Source: `chunk-4sbncqrx.js` · offset 207391974 · sha256 `ec4e475d…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2611,7 +2611,7 @@ Configuration scope (local, user, or project)
 
 ### claude mcp add-json --client-secret
 
-Source: `chunk-p7vnfmqa.js` · offset 207055361 · sha256 `6a58da91…`
+Source: `chunk-4sbncqrx.js` · offset 207392056 · sha256 `6a58da91…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2623,7 +2623,7 @@ Prompt for OAuth client secret (or set MCP_CLIENT_SECRET env var)
 
 ### claude mcp get <name>
 
-Source: `chunk-p7vnfmqa.js` · offset 207053912 · sha256 `6b7cd3ca…`
+Source: `chunk-4sbncqrx.js` · offset 207390607 · sha256 `6b7cd3ca…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2635,7 +2635,7 @@ Get details about an MCP server. Unapproved .mcp.json servers are shown as ⏸ P
 
 ### claude mcp list
 
-Source: `chunk-p7vnfmqa.js` · offset 207053420 · sha256 `b2650490…`
+Source: `chunk-4sbncqrx.js` · offset 207390115 · sha256 `b2650490…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2647,7 +2647,7 @@ List configured MCP servers. Unapproved .mcp.json servers are shown as ⏸ Pendi
 
 ### claude mcp login <name>
 
-Source: `chunk-p7vnfmqa.js` · offset 207054413 · sha256 `33b4c7e5…`
+Source: `chunk-4sbncqrx.js` · offset 207391108 · sha256 `33b4c7e5…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2659,7 +2659,7 @@ Authenticate with an MCP server (HTTP, SSE, or claude.ai connector)
 
 ### claude mcp login --no-browser
 
-Source: `chunk-p7vnfmqa.js` · offset 207054506 · sha256 `4501c078…`
+Source: `chunk-4sbncqrx.js` · offset 207391201 · sha256 `4501c078…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2671,7 +2671,7 @@ Print the authorization URL instead of opening a browser (for SSH/headless sessi
 
 ### claude mcp logout <name>
 
-Source: `chunk-p7vnfmqa.js` · offset 207054881 · sha256 `a9f46947…`
+Source: `chunk-4sbncqrx.js` · offset 207391576 · sha256 `a9f46947…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2683,7 +2683,7 @@ Clear stored OAuth credentials for an MCP server
 
 ### claude mcp remove <name>
 
-Source: `chunk-p7vnfmqa.js` · offset 207053008 · sha256 `e5e09c59…`
+Source: `chunk-4sbncqrx.js` · offset 207389703 · sha256 `e5e09c59…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2695,7 +2695,7 @@ Remove an MCP server
 
 ### claude mcp remove -s, --scope <scope>
 
-Source: `chunk-p7vnfmqa.js` · offset 207053061 · sha256 `4033df3a…`
+Source: `chunk-4sbncqrx.js` · offset 207389756 · sha256 `4033df3a…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2707,7 +2707,7 @@ Configuration scope (local, user, or project) - if not specified, removes from w
 
 ### claude mcp reset-project-choices
 
-Source: `chunk-p7vnfmqa.js` · offset 207056013 · sha256 `69783a62…`
+Source: `chunk-4sbncqrx.js` · offset 207392708 · sha256 `69783a62…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2719,7 +2719,7 @@ Reset all approved and rejected project-scoped (.mcp.json) servers within this p
 
 ### claude mcp serve
 
-Source: `chunk-p7vnfmqa.js` · offset 207052640 · sha256 `72c29066…`
+Source: `chunk-4sbncqrx.js` · offset 207389335 · sha256 `72c29066…`
 
 Status: documented at https://code.claude.com/docs/en/mcp
 
@@ -2731,7 +2731,7 @@ Start the Claude Code MCP server
 
 ### claude mcp serve -d, --debug
 
-Source: `chunk-p7vnfmqa.js` · offset 207052697 · sha256 `6331d5ae…`
+Source: `chunk-4sbncqrx.js` · offset 207389392 · sha256 `6331d5ae…`
 
 Status: undocumented
 
@@ -2743,7 +2743,7 @@ Enable debug mode
 
 ### claude mcp serve --verbose
 
-Source: `chunk-p7vnfmqa.js` · offset 207052744 · sha256 `3e9ef17a…`
+Source: `chunk-4sbncqrx.js` · offset 207389439 · sha256 `3e9ef17a…`
 
 Status: undocumented
 
@@ -2755,7 +2755,7 @@ Override verbose mode setting from config
 
 ### claude mcp xaa
 
-Source: `chunk-p7vnfmqa.js` · offset 207048140 · sha256 `ac5e3abe…`
+Source: `chunk-4sbncqrx.js` · offset 207384835 · sha256 `ac5e3abe…`
 
 Status: undocumented
 
@@ -2769,7 +2769,7 @@ Manage the XAA (SEP-990) IdP connection
 
 ### claude mcp xaa clear
 
-Source: `chunk-p7vnfmqa.js` · offset 207052152 · sha256 `ec60b2e3…`
+Source: `chunk-4sbncqrx.js` · offset 207388847 · sha256 `ec60b2e3…`
 
 Status: undocumented
 
@@ -2783,7 +2783,7 @@ Clear the IdP connection config and cached id_token
 
 ### claude mcp xaa login
 
-Source: `chunk-p7vnfmqa.js` · offset 207050004 · sha256 `6c9b8097…`
+Source: `chunk-4sbncqrx.js` · offset 207386699 · sha256 `6c9b8097…`
 
 Status: undocumented
 
@@ -2797,7 +2797,7 @@ Cache an IdP id_token so XAA-enabled MCP servers authenticate silently. Default:
 
 ### claude mcp xaa login --force
 
-Source: `chunk-p7vnfmqa.js` · offset 207050262 · sha256 `7660f480…`
+Source: `chunk-4sbncqrx.js` · offset 207386957 · sha256 `7660f480…`
 
 Status: undocumented
 
@@ -2811,7 +2811,7 @@ Ignore any cached id_token and re-login (useful after IdP-side revocation)
 
 ### claude mcp xaa login --id-token <jwt>
 
-Source: `chunk-p7vnfmqa.js` · offset 207050366 · sha256 `58c0afa3…`
+Source: `chunk-4sbncqrx.js` · offset 207387061 · sha256 `58c0afa3…`
 
 Status: undocumented
 
@@ -2825,7 +2825,7 @@ Write this pre-obtained id_token directly to cache, skipping the OIDC browser lo
 
 ### claude mcp xaa setup
 
-Source: `chunk-p7vnfmqa.js` · offset 207048214 · sha256 `505eb20a…`
+Source: `chunk-4sbncqrx.js` · offset 207384909 · sha256 `505eb20a…`
 
 Status: undocumented
 
@@ -2839,7 +2839,7 @@ Configure the IdP connection (one-time setup for all XAA-enabled servers)
 
 ### claude mcp xaa setup --issuer <url>
 
-Source: `chunk-p7vnfmqa.js` · offset 207048323 · sha256 `6aab4c81…`
+Source: `chunk-4sbncqrx.js` · offset 207385018 · sha256 `6aab4c81…`
 
 Status: undocumented
 
@@ -2855,7 +2855,7 @@ IdP issuer URL (OIDC discovery)
 
 ### claude mcp xaa setup --client-id <id>
 
-Source: `chunk-p7vnfmqa.js` · offset 207048392 · sha256 `d4ed8eb6…`
+Source: `chunk-4sbncqrx.js` · offset 207385087 · sha256 `d4ed8eb6…`
 
 Status: undocumented
 
@@ -2871,7 +2871,7 @@ Claude Code's client_id at the IdP
 
 ### claude mcp xaa setup --client-secret
 
-Source: `chunk-p7vnfmqa.js` · offset 207048455 · sha256 `5857fc26…`
+Source: `chunk-4sbncqrx.js` · offset 207385150 · sha256 `5857fc26…`
 
 Status: undocumented
 
@@ -2885,7 +2885,7 @@ Read IdP client secret from MCP_XAA_IDP_CLIENT_SECRET env var
 
 ### claude mcp xaa setup --callback-port <port>
 
-Source: `chunk-p7vnfmqa.js` · offset 207048552 · sha256 `e5eaaffe…`
+Source: `chunk-4sbncqrx.js` · offset 207385247 · sha256 `e5eaaffe…`
 
 Status: undocumented
 
@@ -2899,7 +2899,7 @@ Fixed loopback callback port (only if IdP does not honor RFC 8252 port-any match
 
 ### claude mcp xaa show
 
-Source: `chunk-p7vnfmqa.js` · offset 207051490 · sha256 `0c5e7839…`
+Source: `chunk-4sbncqrx.js` · offset 207388185 · sha256 `0c5e7839…`
 
 Status: undocumented
 
@@ -2915,7 +2915,7 @@ Show the current IdP connection config
 
 ### claude plugin
 
-Source: `chunk-v2vq3yvd.js` · offset 207013390 · sha256 `4ddd75bf…`
+Source: `chunk-0edzhryq.js` · offset 207350007 · sha256 `4ddd75bf…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -2929,7 +2929,7 @@ Manage Claude Code plugins
 
 ### claude plugin configure <plugin>
 
-Source: `chunk-t1332bze.js` · offset 197520398 · sha256 `4f255df9…`
+Source: `chunk-w7fw0yvd.js` · offset 197840539 · sha256 `4f255df9…`
 
 Status: undocumented
 
@@ -2941,7 +2941,7 @@ Show a plugin's options and which are unset, or save values from stdin with --va
 
 ### claude plugin configure --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207030674 · sha256 `d421da75…`
+Source: `chunk-0edzhryq.js` · offset 207367291 · sha256 `d421da75…`
 
 Status: undocumented
 
@@ -2953,7 +2953,7 @@ Output as JSON
 
 ### claude plugin configure --values-stdin
 
-Source: `chunk-v2vq3yvd.js` · offset 207030716 · sha256 `c796f8a7…`
+Source: `chunk-0edzhryq.js` · offset 207367333 · sha256 `c796f8a7…`
 
 Status: undocumented
 
@@ -2965,7 +2965,7 @@ Read option values from stdin as a JSON object of single-line strings; options l
 
 ### claude plugin configure --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -2977,7 +2977,7 @@ Use cowork_plugins directory
 
 ### claude plugin details <name>
 
-Source: `chunk-t1332bze.js` · offset 197519099 · sha256 `30174290…`
+Source: `chunk-w7fw0yvd.js` · offset 197839240 · sha256 `30174290…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -2989,7 +2989,7 @@ Show a plugin's component inventory and projected token cost
 
 ### claude plugin details --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3001,7 +3001,7 @@ Use cowork_plugins directory
 
 ### claude plugin disable [plugin]
 
-Source: `chunk-t1332bze.js` · offset 197520192 · sha256 `f25d25f9…`
+Source: `chunk-w7fw0yvd.js` · offset 197840333 · sha256 `f25d25f9…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3013,7 +3013,7 @@ Disable an enabled plugin
 
 ### claude plugin disable -a, --all
 
-Source: `chunk-v2vq3yvd.js` · offset 207028904 · sha256 `20ec8b94…`
+Source: `chunk-0edzhryq.js` · offset 207365521 · sha256 `20ec8b94…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3025,7 +3025,7 @@ Disable all enabled plugins
 
 ### claude plugin disable -s, --scope <scope>
 
-Source: `chunk-v2vq3yvd.js` · offset 207028964 · sha256 `1d6c5719…`
+Source: `chunk-0edzhryq.js` · offset 207365581 · sha256 `3f1205ac…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3039,7 +3039,7 @@ Installation scope: user, project, local (default: auto-detect)
 
 ### claude plugin disable --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207029043 · sha256 `ab4d48da…`
+Source: `chunk-0edzhryq.js` · offset 207365660 · sha256 `ab4d48da…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3051,7 +3051,7 @@ Print one machine-readable result line on stdout instead of the human message (s
 
 ### claude plugin disable --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3063,7 +3063,7 @@ Use cowork_plugins directory
 
 ### claude plugin enable <plugin>
 
-Source: `chunk-t1332bze.js` · offset 197520111 · sha256 `8ac6a95f…`
+Source: `chunk-w7fw0yvd.js` · offset 197840252 · sha256 `8ac6a95f…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3075,7 +3075,7 @@ Enable a disabled plugin
 
 ### claude plugin enable -s, --scope <scope>
 
-Source: `chunk-v2vq3yvd.js` · offset 207028425 · sha256 `1d6c5719…`
+Source: `chunk-0edzhryq.js` · offset 207365042 · sha256 `3f1205ac…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3089,7 +3089,7 @@ Installation scope: user, project, local (default: auto-detect)
 
 ### claude plugin enable --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207028504 · sha256 `ab4d48da…`
+Source: `chunk-0edzhryq.js` · offset 207365121 · sha256 `ab4d48da…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3101,7 +3101,7 @@ Print one machine-readable result line on stdout instead of the human message (s
 
 ### claude plugin enable --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3113,17 +3113,17 @@ Use cowork_plugins directory
 
 ### claude plugin eval [target]
 
-Source: `chunk-v2vq3yvd.js` · offset 207015986 · sha256 `fd72ef00…`
+Source: `chunk-0edzhryq.js` · offset 207352603 · sha256 `fd72ef00…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
 Visibility: shown in --help
 
-Undocumented; read at `chunk-v2vq3yvd.js` offset 207015986.
+Undocumented; read at `chunk-0edzhryq.js` offset 207352603.
 
 ### claude plugin eval --case <glob>
 
-Source: `chunk-v2vq3yvd.js` · offset 207016069 · sha256 `d40896c6…`
+Source: `chunk-0edzhryq.js` · offset 207352686 · sha256 `d40896c6…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3135,7 +3135,7 @@ Filter cases by name glob
 
 ### claude plugin eval --tag <tag...>
 
-Source: `chunk-v2vq3yvd.js` · offset 207016122 · sha256 `1e88c884…`
+Source: `chunk-0edzhryq.js` · offset 207352739 · sha256 `1e88c884…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3147,7 +3147,7 @@ Filter cases by tag (repeatable)
 
 ### claude plugin eval --runs <n>
 
-Source: `chunk-v2vq3yvd.js` · offset 207016178 · sha256 `bd4249fa…`
+Source: `chunk-0edzhryq.js` · offset 207352795 · sha256 `bd4249fa…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3159,7 +3159,7 @@ Override per-case runs (default: case.runs ?? 3)
 
 ### claude plugin eval -j, --concurrency <n>
 
-Source: `chunk-v2vq3yvd.js` · offset 207016261 · sha256 `9aaae7c4…`
+Source: `chunk-0edzhryq.js` · offset 207352878 · sha256 `9aaae7c4…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3171,7 +3171,7 @@ Run up to <n> agent runs at once (1-8; default 1). Each run is a full claude chi
 
 ### claude plugin eval --model <model>
 
-Source: `chunk-v2vq3yvd.js` · offset 207016465 · sha256 `4fc88791…`
+Source: `chunk-0edzhryq.js` · offset 207353082 · sha256 `4fc88791…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3183,7 +3183,7 @@ Override model for all cases
 
 ### claude plugin eval --judge-model <model>
 
-Source: `chunk-v2vq3yvd.js` · offset 207016528 · sha256 `c8472253…`
+Source: `chunk-0edzhryq.js` · offset 207353145 · sha256 `c8472253…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3195,7 +3195,7 @@ Override LLM-grader model (default: haiku)
 
 ### claude plugin eval --max-cost-usd <usd>
 
-Source: `chunk-v2vq3yvd.js` · offset 207016604 · sha256 `2591ff8a…`
+Source: `chunk-0edzhryq.js` · offset 207353221 · sha256 `2591ff8a…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3207,7 +3207,7 @@ Optional hard cost ceiling; abort and report partial results if hit (exit 2). Th
 
 ### claude plugin eval --output-dir <dir>
 
-Source: `chunk-v2vq3yvd.js` · offset 207017054 · sha256 `a093e8c2…`
+Source: `chunk-0edzhryq.js` · offset 207353671 · sha256 `a093e8c2…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3219,7 +3219,7 @@ Directory for aggregate-result.json (default: ./<eval dir>/results/<timestamp>/)
 
 ### claude plugin eval --eval-dir <dir>
 
-Source: `chunk-v2vq3yvd.js` · offset 207017164 · sha256 `3f925c6a…`
+Source: `chunk-0edzhryq.js` · offset 207353781 · sha256 `3f925c6a…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3231,7 +3231,7 @@ Directory name (below the plugin) that holds the eval cases; results go to <plug
 
 ### claude plugin eval --json [path]
 
-Source: `chunk-v2vq3yvd.js` · offset 207017451 · sha256 `8927ac58…`
+Source: `chunk-0edzhryq.js` · offset 207354068 · sha256 `8927ac58…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3243,7 +3243,7 @@ Print the full run result (prompts, graders, per-run scores) as JSON to stdout, 
 
 ### claude plugin eval --threshold <0..1>
 
-Source: `chunk-v2vq3yvd.js` · offset 207017593 · sha256 `d7f515c7…`
+Source: `chunk-0edzhryq.js` · offset 207354210 · sha256 `d7f515c7…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3255,7 +3255,7 @@ Exit 1 if any case score is below this threshold (default: 1.0)
 
 ### claude plugin eval --allow-tools <tools...>
 
-Source: `chunk-v2vq3yvd.js` · offset 207017694 · sha256 `46593606…`
+Source: `chunk-0edzhryq.js` · offset 207354311 · sha256 `46593606…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3267,7 +3267,7 @@ Operator grant for gated tools (Bash, Write, Edit, WebFetch, mcp__*). Supports T
 
 ### claude plugin eval --scaffold
 
-Source: `chunk-v2vq3yvd.js` · offset 207017819 · sha256 `41795333…`
+Source: `chunk-0edzhryq.js` · offset 207354436 · sha256 `41795333…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3279,7 +3279,7 @@ Run each case's scaffold_script (runs author-supplied bash as you; off by defaul
 
 ### claude plugin eval --no-scaffold
 
-Source: `chunk-v2vq3yvd.js` · offset 207017971 · sha256 `57a7ed1a…`
+Source: `chunk-0edzhryq.js` · offset 207354588 · sha256 `57a7ed1a…`
 
 Status: undocumented
 
@@ -3291,7 +3291,7 @@ Explicitly skip scaffold_script
 
 ### claude plugin eval --trust-plugin
 
-Source: `chunk-v2vq3yvd.js` · offset 207018030 · sha256 `ac07bb5d…`
+Source: `chunk-0edzhryq.js` · offset 207354647 · sha256 `ac07bb5d…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3303,7 +3303,7 @@ Assert that you trust this plugin's code and eval suite, and skip the first-run 
 
 ### claude plugin eval --ablation <mode>
 
-Source: `chunk-v2vq3yvd.js` · offset 207018305 · sha256 `f34b94c4…`
+Source: `chunk-0edzhryq.js` · offset 207354922 · sha256 `f34b94c4…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3315,7 +3315,7 @@ Run a no-plugin baseline arm and report the score delta (none | with-without; de
 
 ### claude plugin eval --mocks <mode>
 
-Source: `chunk-v2vq3yvd.js` · offset 207018666 · sha256 `434fd4d5…`
+Source: `chunk-0edzhryq.js` · offset 207355283 · sha256 `434fd4d5…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3327,7 +3327,7 @@ Mock stand-ins for MCP servers, from <eval dir>/mocks/ (record | off; default: r
 
 ### claude plugin eval --allow-real-servers
 
-Source: `chunk-v2vq3yvd.js` · offset 207018978 · sha256 `e82c7b21…`
+Source: `chunk-0edzhryq.js` · offset 207355595 · sha256 `e82c7b21…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3339,7 +3339,7 @@ With --mocks record: also start the plugin's REAL MCP server processes for serve
 
 ### claude plugin eval --keep-temp
 
-Source: `chunk-v2vq3yvd.js` · offset 207019202 · sha256 `6e8ebbfc…`
+Source: `chunk-0edzhryq.js` · offset 207355819 · sha256 `6e8ebbfc…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3351,7 +3351,7 @@ Preserve scaffold dirs for debugging
 
 ### claude plugin eval --verbose
 
-Source: `chunk-v2vq3yvd.js` · offset 207019261 · sha256 `eab3cfd3…`
+Source: `chunk-0edzhryq.js` · offset 207355878 · sha256 `eab3cfd3…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3363,7 +3363,7 @@ Log per-message trace events to the debug log (use --debug-file to read them)
 
 ### claude plugin eval --report <path>
 
-Source: `chunk-v2vq3yvd.js` · offset 207019367 · sha256 `f86f00ff…`
+Source: `chunk-0edzhryq.js` · offset 207355984 · sha256 `f86f00ff…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3375,7 +3375,7 @@ Write the self-contained HTML report (scores, prompts, grader verdicts) to <path
 
 ### claude plugin eval --publish-report
 
-Source: `chunk-v2vq3yvd.js` · offset 207019505 · sha256 `5bf9141c…`
+Source: `chunk-0edzhryq.js` · offset 207356122 · sha256 `5bf9141c…`
 
 Status: undocumented
 
@@ -3387,7 +3387,7 @@ Also require publishing the report to claude.ai (already the default when your a
 
 ### claude plugin eval --no-publish
 
-Source: `chunk-v2vq3yvd.js` · offset 207019659 · sha256 `9da34483…`
+Source: `chunk-0edzhryq.js` · offset 207356276 · sha256 `9da34483…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3399,7 +3399,7 @@ Keep the HTML report local only; skip publishing it to claude.ai
 
 ### claude plugin eval init [name]
 
-Source: `chunk-t1332bze.js` · offset 197518720 · sha256 `0da81b0a…`
+Source: `chunk-w7fw0yvd.js` · offset 197838861 · sha256 `0da81b0a…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3411,7 +3411,7 @@ Author an eval suite under the eval dir (evals/ unless --eval-dir or the manifes
 
 ### claude plugin eval init --bare
 
-Source: `chunk-v2vq3yvd.js` · offset 207020270 · sha256 `c7b63939…`
+Source: `chunk-0edzhryq.js` · offset 207356887 · sha256 `c7b63939…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3423,7 +3423,7 @@ Write a blank template (prompt.md + graders/criteria.md) instead of running the 
 
 ### claude plugin eval init -i, --interactive
 
-Source: `chunk-v2vq3yvd.js` · offset 207020390 · sha256 `7b8755c6…`
+Source: `chunk-0edzhryq.js` · offset 207357007 · sha256 `7b8755c6…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3435,7 +3435,7 @@ Run the authoring interview (already the default in a terminal); requires an int
 
 ### claude plugin eval init --interview
 
-Source: `chunk-v2vq3yvd.js` · offset 207020522 · sha256 `912dca4a…`
+Source: `chunk-0edzhryq.js` · offset 207357139 · sha256 `912dca4a…`
 
 Status: hidden; undocumented
 
@@ -3447,7 +3447,7 @@ Alias for --interactive
 
 ### claude plugin eval init --eval-dir <dir>
 
-Source: `chunk-v2vq3yvd.js` · offset 207020587 · sha256 `0856f6a5…`
+Source: `chunk-0edzhryq.js` · offset 207357204 · sha256 `0856f6a5…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3459,7 +3459,7 @@ Directory (below the current directory) to write cases into (default: experiment
 
 ### claude plugin init <name>
 
-Source: `chunk-t1332bze.js` · offset 197517333 · sha256 `6b1109de…`
+Source: `chunk-w7fw0yvd.js` · offset 197837474 · sha256 `6b1109de…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3473,7 +3473,7 @@ Scaffold a new plugin at ~/.claude/skills/<name>/ (auto-loads next session as <n
 
 ### claude plugin init --description <text>
 
-Source: `chunk-v2vq3yvd.js` · offset 207013584 · sha256 `dcf9c0fd…`
+Source: `chunk-0edzhryq.js` · offset 207350201 · sha256 `dcf9c0fd…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3485,7 +3485,7 @@ Manifest description
 
 ### claude plugin init --author <name>
 
-Source: `chunk-v2vq3yvd.js` · offset 207013633 · sha256 `26276951…`
+Source: `chunk-0edzhryq.js` · offset 207350250 · sha256 `26276951…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3497,7 +3497,7 @@ Author name (default: git config user.name)
 
 ### claude plugin init --author-email <email>
 
-Source: `chunk-v2vq3yvd.js` · offset 207013712 · sha256 `6f18cd9f…`
+Source: `chunk-0edzhryq.js` · offset 207350329 · sha256 `6f18cd9f…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3509,7 +3509,7 @@ Author email (default: git config user.email)
 
 ### claude plugin init --with <components...>
 
-Source: `chunk-v2vq3yvd.js` · offset 207013793 · sha256 `f1db1476…`
+Source: `chunk-0edzhryq.js` · offset 207350410 · sha256 `53728132…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3523,7 +3523,7 @@ Also scaffold: skills, agents, hooks, mcp, lsp, output-style, channel
 
 ### claude plugin init -f, --force
 
-Source: `chunk-v2vq3yvd.js` · offset 207013850 · sha256 `f1fc5c22…`
+Source: `chunk-0edzhryq.js` · offset 207350467 · sha256 `f1fc5c22…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3535,7 +3535,7 @@ Overwrite an existing .claude-plugin/ at the target
 
 ### claude plugin install <plugin>
 
-Source: `chunk-t1332bze.js` · offset 197519721 · sha256 `c7abda6b…`
+Source: `chunk-w7fw0yvd.js` · offset 197839862 · sha256 `c7abda6b…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -3549,7 +3549,7 @@ Install a plugin from available marketplaces (use plugin@marketplace for specifi
 
 ### claude plugin install -s, --scope <scope>
 
-Source: `chunk-v2vq3yvd.js` · offset 207024887 · sha256 `446c5502…`
+Source: `chunk-0edzhryq.js` · offset 207361504 · sha256 `446c5502…`
 
 Status: undocumented
 
@@ -3563,7 +3563,7 @@ Installation scope: user, project, or local
 
 ### claude plugin install --config <key=value>
 
-Source: `chunk-v2vq3yvd.js` · offset 207024971 · sha256 `716c7c4c…`
+Source: `chunk-0edzhryq.js` · offset 207361588 · sha256 `716c7c4c…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -3575,7 +3575,7 @@ Set a userConfig option declared in the plugin's manifest, or a bundled .mcpb se
 
 ### claude plugin install -y, --yes
 
-Source: `chunk-v2vq3yvd.js` · offset 207025332 · sha256 `beb55917…`
+Source: `chunk-0edzhryq.js` · offset 207361949 · sha256 `beb55917…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -3587,7 +3587,7 @@ Accept the displayed marketplace-declared command without the confirmation promp
 
 ### claude plugin install --accept-command <sha256>
 
-Source: `chunk-v2vq3yvd.js` · offset 207025619 · sha256 `64dea3e8…`
+Source: `chunk-0edzhryq.js` · offset 207362236 · sha256 `64dea3e8…`
 
 Status: undocumented
 
@@ -3599,7 +3599,7 @@ Accept the marketplace-declared command (a command-source install, or the header
 
 ### claude plugin install --replace
 
-Source: `chunk-v2vq3yvd.js` · offset 207026089 · sha256 `73788a26…`
+Source: `chunk-0edzhryq.js` · offset 207362706 · sha256 `73788a26…`
 
 Status: hidden; undocumented
 
@@ -3611,7 +3611,7 @@ If this plugin is already installed from another marketplace, switch to this cop
 
 ### claude plugin install --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207026348 · sha256 `474b0af3…`
+Source: `chunk-0edzhryq.js` · offset 207362965 · sha256 `474b0af3…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -3623,7 +3623,7 @@ Print one machine-readable result line on stdout instead of the human message (s
 
 ### claude plugin install --registry <url>
 
-Source: `chunk-v2vq3yvd.js` · offset 207026578 · sha256 `90e62bdb…`
+Source: `chunk-0edzhryq.js` · offset 207363195 · sha256 `90e62bdb…`
 
 Status: undocumented
 
@@ -3635,7 +3635,7 @@ For a <package>@npm install: resolve and download from this npm registry instead
 
 ### claude plugin install --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3647,7 +3647,7 @@ Use cowork_plugins directory
 
 ### claude plugin list
 
-Source: `chunk-t1332bze.js` · offset 197517795 · sha256 `b82d5a3b…`
+Source: `chunk-w7fw0yvd.js` · offset 197837936 · sha256 `b82d5a3b…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3659,7 +3659,7 @@ List installed plugins
 
 ### claude plugin list --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207015306 · sha256 `d421da75…`
+Source: `chunk-0edzhryq.js` · offset 207351923 · sha256 `d421da75…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3671,7 +3671,7 @@ Output as JSON
 
 ### claude plugin list --available
 
-Source: `chunk-v2vq3yvd.js` · offset 207015345 · sha256 `19c338bd…`
+Source: `chunk-0edzhryq.js` · offset 207351962 · sha256 `19c338bd…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3683,7 +3683,7 @@ Include available plugins from marketplaces (requires --json)
 
 ### claude plugin list --data-size [plugin]
 
-Source: `chunk-v2vq3yvd.js` · offset 207015440 · sha256 `ae4a7353…`
+Source: `chunk-0edzhryq.js` · offset 207352057 · sha256 `ae4a7353…`
 
 Status: undocumented
 
@@ -3695,7 +3695,7 @@ Measure each installed plugin's saved data directory, or only the named plugin's
 
 ### claude plugin list --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3707,7 +3707,7 @@ Use cowork_plugins directory
 
 ### claude plugin marketplace
 
-Source: `chunk-v2vq3yvd.js` · offset 207021941 · sha256 `3ba863f4…`
+Source: `chunk-0edzhryq.js` · offset 207358558 · sha256 `3ba863f4…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3719,7 +3719,7 @@ Manage Claude Code marketplaces
 
 ### claude plugin marketplace add <source>
 
-Source: `chunk-t1332bze.js` · offset 197519231 · sha256 `633ee7b6…`
+Source: `chunk-w7fw0yvd.js` · offset 197839372 · sha256 `633ee7b6…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3731,7 +3731,7 @@ Add a marketplace from a URL, path, or GitHub repo
 
 ### claude plugin marketplace add --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3743,7 +3743,7 @@ Use cowork_plugins directory
 
 ### claude plugin marketplace add --sparse <paths...>
 
-Source: `chunk-v2vq3yvd.js` · offset 207022110 · sha256 `98abda84…`
+Source: `chunk-0edzhryq.js` · offset 207358727 · sha256 `98abda84…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3755,7 +3755,7 @@ Limit checkout to specific directories via git sparse-checkout (for monorepos). 
 
 ### claude plugin marketplace add --scope <scope>
 
-Source: `chunk-v2vq3yvd.js` · offset 207022259 · sha256 `820129d1…`
+Source: `chunk-0edzhryq.js` · offset 207358876 · sha256 `820129d1…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3767,7 +3767,7 @@ Where to declare the marketplace: user (default), project, or local
 
 ### claude plugin marketplace add --claudeai
 
-Source: `chunk-v2vq3yvd.js` · offset 207022350 · sha256 `e1a24c88…`
+Source: `chunk-0edzhryq.js` · offset 207358967 · sha256 `e1a24c88…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3779,7 +3779,7 @@ Add the marketplace of this name that claude.ai hosts for you, by its listed nam
 
 ### claude plugin marketplace add --resolve-only
 
-Source: `chunk-v2vq3yvd.js` · offset 207022826 · sha256 `d190f429…`
+Source: `chunk-0edzhryq.js` · offset 207359443 · sha256 `d190f429…`
 
 Status: hidden; undocumented
 
@@ -3791,7 +3791,7 @@ With --from-link (not with --sparse or --scope): adds nothing and prints one JSO
 
 ### claude plugin marketplace add --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207023092 · sha256 `1fcd00ee…`
+Source: `chunk-0edzhryq.js` · offset 207359709 · sha256 `1fcd00ee…`
 
 Status: undocumented
 
@@ -3803,7 +3803,7 @@ Print one machine-readable result line as the last line on stdout (same exit cod
 
 ### claude plugin marketplace list
 
-Source: `chunk-t1332bze.js` · offset 197519346 · sha256 `da876172…`
+Source: `chunk-w7fw0yvd.js` · offset 197839487 · sha256 `da876172…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3815,7 +3815,7 @@ List all configured marketplaces
 
 ### claude plugin marketplace list --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207023472 · sha256 `d421da75…`
+Source: `chunk-0edzhryq.js` · offset 207360089 · sha256 `d421da75…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3827,7 +3827,7 @@ Output as JSON
 
 ### claude plugin marketplace list --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3839,7 +3839,7 @@ Use cowork_plugins directory
 
 ### claude plugin marketplace remove <name>
 
-Source: `chunk-t1332bze.js` · offset 197519469 · sha256 `f86fc842…`
+Source: `chunk-w7fw0yvd.js` · offset 197839610 · sha256 `f86fc842…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3853,7 +3853,7 @@ Remove a configured marketplace
 
 ### claude plugin marketplace remove --scope <scope>
 
-Source: `chunk-v2vq3yvd.js` · offset 207023853 · sha256 `36cfaef0…`
+Source: `chunk-0edzhryq.js` · offset 207360470 · sha256 `36cfaef0…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3865,7 +3865,7 @@ Remove the marketplace declaration from a specific settings scope: user, project
 
 ### claude plugin marketplace remove --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207024000 · sha256 `1fcd00ee…`
+Source: `chunk-0edzhryq.js` · offset 207360617 · sha256 `1fcd00ee…`
 
 Status: undocumented
 
@@ -3877,7 +3877,7 @@ Print one machine-readable result line as the last line on stdout (same exit cod
 
 ### claude plugin marketplace remove --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3889,7 +3889,7 @@ Use cowork_plugins directory
 
 ### claude plugin marketplace update [name]
 
-Source: `chunk-t1332bze.js` · offset 197519576 · sha256 `96577c4b…`
+Source: `chunk-w7fw0yvd.js` · offset 197839717 · sha256 `96577c4b…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3901,7 +3901,7 @@ Update marketplace(s) from their source - updates all if no name specified
 
 ### claude plugin marketplace update --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207024417 · sha256 `c04523a7…`
+Source: `chunk-0edzhryq.js` · offset 207361034 · sha256 `c04523a7…`
 
 Status: undocumented
 
@@ -3913,7 +3913,7 @@ With a marketplace name: print one machine-readable result line as the last line
 
 ### claude plugin marketplace update --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3925,7 +3925,7 @@ Use cowork_plugins directory
 
 ### claude plugin prune
 
-Source: `chunk-t1332bze.js` · offset 197519996 · sha256 `05066f25…`
+Source: `chunk-w7fw0yvd.js` · offset 197840137 · sha256 `05066f25…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3939,7 +3939,7 @@ Remove auto-installed dependencies that are no longer needed
 
 ### claude plugin prune -s, --scope <scope>
 
-Source: `chunk-v2vq3yvd.js` · offset 207027901 · sha256 `57bf6469…`
+Source: `chunk-0edzhryq.js` · offset 207364518 · sha256 `57bf6469…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3953,7 +3953,7 @@ Prune at scope: user, project, or local
 
 ### claude plugin prune --dry-run
 
-Source: `chunk-v2vq3yvd.js` · offset 207027970 · sha256 `9de81b74…`
+Source: `chunk-0edzhryq.js` · offset 207364587 · sha256 `9de81b74…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3965,7 +3965,7 @@ List what would be removed without removing
 
 ### claude plugin prune -y, --yes
 
-Source: `chunk-v2vq3yvd.js` · offset 207028036 · sha256 `90315987…`
+Source: `chunk-0edzhryq.js` · offset 207364653 · sha256 `90315987…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -3977,7 +3977,7 @@ Skip the confirmation prompt (required when stdin or stdout is not a TTY)
 
 ### claude plugin prune --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -3989,7 +3989,7 @@ Use cowork_plugins directory
 
 ### claude plugin tag [path]
 
-Source: `chunk-t1332bze.js` · offset 197517626 · sha256 `c3dc77a1…`
+Source: `chunk-w7fw0yvd.js` · offset 197837767 · sha256 `c3dc77a1…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4001,7 +4001,7 @@ Create a {name}--v{version} git tag for a plugin release, validating that plugin
 
 ### claude plugin tag --push
 
-Source: `chunk-v2vq3yvd.js` · offset 207014696 · sha256 `418a8ccb…`
+Source: `chunk-0edzhryq.js` · offset 207351313 · sha256 `418a8ccb…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4013,7 +4013,7 @@ Push the tag to --remote after creating it
 
 ### claude plugin tag --dry-run
 
-Source: `chunk-v2vq3yvd.js` · offset 207014761 · sha256 `3e8f8384…`
+Source: `chunk-0edzhryq.js` · offset 207351378 · sha256 `3e8f8384…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4025,7 +4025,7 @@ Print what would be tagged without creating it
 
 ### claude plugin tag -f, --force
 
-Source: `chunk-v2vq3yvd.js` · offset 207014832 · sha256 `13113505…`
+Source: `chunk-0edzhryq.js` · offset 207351449 · sha256 `13113505…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4037,7 +4037,7 @@ Skip the dirty-working-tree and tag-already-exists checks
 
 ### claude plugin tag -m, --message <msg>
 
-Source: `chunk-v2vq3yvd.js` · offset 207014922 · sha256 `e5c3aaf3…`
+Source: `chunk-0edzhryq.js` · offset 207351539 · sha256 `e5c3aaf3…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4049,7 +4049,7 @@ Tag annotation message (use %s for the version)
 
 ### claude plugin tag --remote <name>
 
-Source: `chunk-v2vq3yvd.js` · offset 207014998 · sha256 `327d6cc1…`
+Source: `chunk-0edzhryq.js` · offset 207351615 · sha256 `327d6cc1…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4063,7 +4063,7 @@ Remote to push to with --push
 
 ### claude plugin test [dir]
 
-Source: `chunk-t1332bze.js` · offset 197519000 · sha256 `4c057bdc…`
+Source: `chunk-w7fw0yvd.js` · offset 197839141 · sha256 `4c057bdc…`
 
 Status: hidden; undocumented
 
@@ -4075,7 +4075,7 @@ Run a mod's tests
 
 ### claude plugin uninstall <plugin>
 
-Source: `chunk-t1332bze.js` · offset 197519900 · sha256 `3c84d0a9…`
+Source: `chunk-w7fw0yvd.js` · offset 197840041 · sha256 `3c84d0a9…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4089,7 +4089,7 @@ Uninstall an installed plugin
 
 ### claude plugin uninstall -s, --scope <scope>
 
-Source: `chunk-v2vq3yvd.js` · offset 207027050 · sha256 `c2236974…`
+Source: `chunk-0edzhryq.js` · offset 207363667 · sha256 `c2236974…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4103,7 +4103,7 @@ Uninstall from scope: user, project, or local
 
 ### claude plugin uninstall --keep-data
 
-Source: `chunk-v2vq3yvd.js` · offset 207027127 · sha256 `e044c567…`
+Source: `chunk-0edzhryq.js` · offset 207363744 · sha256 `e044c567…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4115,7 +4115,7 @@ Preserve the plugin's persistent data directory (~/.claude/plugins/data/{id}/)
 
 ### claude plugin uninstall --prune
 
-Source: `chunk-v2vq3yvd.js` · offset 207027226 · sha256 `fd950377…`
+Source: `chunk-0edzhryq.js` · offset 207363843 · sha256 `fd950377…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4127,7 +4127,7 @@ Also remove auto-installed dependencies that are no longer needed (requires -y i
 
 ### claude plugin uninstall -y, --yes
 
-Source: `chunk-v2vq3yvd.js` · offset 207027356 · sha256 `8bfeb217…`
+Source: `chunk-0edzhryq.js` · offset 207363973 · sha256 `8bfeb217…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4139,7 +4139,7 @@ Skip the --prune confirmation prompt (required when stdin or stdout is not a TTY
 
 ### claude plugin uninstall --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207027457 · sha256 `3a9efb8c…`
+Source: `chunk-0edzhryq.js` · offset 207364074 · sha256 `3a9efb8c…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4151,7 +4151,7 @@ Print one machine-readable result line on stdout instead of the human message (s
 
 ### claude plugin uninstall --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -4163,7 +4163,7 @@ Use cowork_plugins directory
 
 ### claude plugin update <plugin>
 
-Source: `chunk-t1332bze.js` · offset 197520272 · sha256 `007d46d9…`
+Source: `chunk-w7fw0yvd.js` · offset 197840413 · sha256 `007d46d9…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4175,7 +4175,7 @@ Update a plugin to the latest version (restart required to apply)
 
 ### claude plugin update -s, --scope <scope>
 
-Source: `chunk-v2vq3yvd.js` · offset 207029452 · sha256 `ec31968f…`
+Source: `chunk-0edzhryq.js` · offset 207366069 · sha256 `40145bd0…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4189,7 +4189,7 @@ Installation scope: user, project, local, managed (default: auto-detect)
 
 ### claude plugin update -y, --yes
 
-Source: `chunk-v2vq3yvd.js` · offset 207029535 · sha256 `7957f517…`
+Source: `chunk-0edzhryq.js` · offset 207366152 · sha256 `7957f517…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4201,7 +4201,7 @@ Accept the displayed marketplace-declared command without the confirmation promp
 
 ### claude plugin update --accept-command <sha256>
 
-Source: `chunk-v2vq3yvd.js` · offset 207029798 · sha256 `64dea3e8…`
+Source: `chunk-0edzhryq.js` · offset 207366415 · sha256 `64dea3e8…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4213,7 +4213,7 @@ Accept the marketplace-declared command (a command-source install, or the header
 
 ### claude plugin update --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207030253 · sha256 `474b0af3…`
+Source: `chunk-0edzhryq.js` · offset 207366870 · sha256 `474b0af3…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4225,7 +4225,7 @@ Print one machine-readable result line on stdout instead of the human message (s
 
 ### claude plugin update --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -4237,7 +4237,7 @@ Use cowork_plugins directory
 
 ### claude plugin validate <path>
 
-Source: `chunk-t1332bze.js` · offset 197517486 · sha256 `c6cdfe99…`
+Source: `chunk-w7fw0yvd.js` · offset 197837627 · sha256 `c6cdfe99…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4249,7 +4249,7 @@ Validate a plugin or marketplace manifest, or the skills, agents, and commands i
 
 ### claude plugin validate --strict
 
-Source: `chunk-v2vq3yvd.js` · offset 207014196 · sha256 `22ba8a72…`
+Source: `chunk-0edzhryq.js` · offset 207350813 · sha256 `22ba8a72…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4261,7 +4261,7 @@ Treat warnings as errors (exit 1). Use in CI to fail on unrecognized fields, mis
 
 ### claude plugin validate --json
 
-Source: `chunk-v2vq3yvd.js` · offset 207014355 · sha256 `fa1a0a97…`
+Source: `chunk-0edzhryq.js` · offset 207350972 · sha256 `fa1a0a97…`
 
 Status: documented at https://code.claude.com/docs/en/plugins/cli-reference
 
@@ -4273,7 +4273,7 @@ Output the validation report as JSON (same exit codes)
 
 ### claude plugin validate --cowork
 
-Source: `chunk-v2vq3yvd.js` · offset 207013296 · sha256 `cdc2f193…`
+Source: `chunk-0edzhryq.js` · offset 207349913 · sha256 `cdc2f193…`
 
 Status: hidden; undocumented
 
@@ -4287,7 +4287,7 @@ Use cowork_plugins directory
 
 ### claude project
 
-Source: `chunk-g6yz7gnr.js` · offset 196496679 · sha256 `b222e071…`
+Source: `chunk-jp1gdfy4.js` · offset 196811995 · sha256 `b222e071…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4299,7 +4299,7 @@ Visibility: hidden (from code)
 
 ### claude project purge [path]
 
-Source: `chunk-g6yz7gnr.js` · offset 196497017 · sha256 `fb245cb3…`
+Source: `chunk-jp1gdfy4.js` · offset 196812333 · sha256 `fb245cb3…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4313,7 +4313,7 @@ Interpolated constants (resolved from code): `dn` = `"`claude project purge` is 
 
 ### claude project purge --dry-run
 
-Source: `chunk-g6yz7gnr.js` · offset 196497079 · sha256 `477376ee…`
+Source: `chunk-jp1gdfy4.js` · offset 196812395 · sha256 `477376ee…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4325,7 +4325,7 @@ List what would be deleted without deleting anything
 
 ### claude project purge -y, --yes
 
-Source: `chunk-g6yz7gnr.js` · offset 196497154 · sha256 `f8e0a986…`
+Source: `chunk-jp1gdfy4.js` · offset 196812470 · sha256 `f8e0a986…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4337,7 +4337,7 @@ Skip confirmation prompt
 
 ### claude project purge -i, --interactive
 
-Source: `chunk-g6yz7gnr.js` · offset 196497209 · sha256 `b814aa9e…`
+Source: `chunk-jp1gdfy4.js` · offset 196812525 · sha256 `b814aa9e…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4349,7 +4349,7 @@ Prompt for each item before deleting
 
 ### claude project purge --all
 
-Source: `chunk-g6yz7gnr.js` · offset 196497264 · sha256 `a227c722…`
+Source: `chunk-jp1gdfy4.js` · offset 196812580 · sha256 `a227c722…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4363,7 +4363,7 @@ Purge state for every project (mutually exclusive with [path])
 
 ### claude purge [path]
 
-Source: `chunk-g6yz7gnr.js` · offset 196496729 · sha256 `54d7e124…`
+Source: `chunk-jp1gdfy4.js` · offset 196812045 · sha256 `54d7e124…`
 
 Status: undocumented
 
@@ -4375,7 +4375,7 @@ Delete all Claude Code state for a project (transcripts, tasks, file history, co
 
 ### claude purge --dry-run
 
-Source: `chunk-g6yz7gnr.js` · offset 196497079 · sha256 `477376ee…`
+Source: `chunk-jp1gdfy4.js` · offset 196812395 · sha256 `477376ee…`
 
 Status: undocumented
 
@@ -4387,7 +4387,7 @@ List what would be deleted without deleting anything
 
 ### claude purge -y, --yes
 
-Source: `chunk-g6yz7gnr.js` · offset 196497154 · sha256 `f8e0a986…`
+Source: `chunk-jp1gdfy4.js` · offset 196812470 · sha256 `f8e0a986…`
 
 Status: undocumented
 
@@ -4399,7 +4399,7 @@ Skip confirmation prompt
 
 ### claude purge -i, --interactive
 
-Source: `chunk-g6yz7gnr.js` · offset 196497209 · sha256 `b814aa9e…`
+Source: `chunk-jp1gdfy4.js` · offset 196812525 · sha256 `b814aa9e…`
 
 Status: undocumented
 
@@ -4411,7 +4411,7 @@ Prompt for each item before deleting
 
 ### claude purge --all
 
-Source: `chunk-g6yz7gnr.js` · offset 196497264 · sha256 `a227c722…`
+Source: `chunk-jp1gdfy4.js` · offset 196812580 · sha256 `a227c722…`
 
 Status: undocumented
 
@@ -4425,7 +4425,7 @@ Purge state for every project (mutually exclusive with [path])
 
 ### claude remote-control
 
-Source: `chunk-g6yz7gnr.js` · offset 196570166 · sha256 `9580dacb…`
+Source: `chunk-jp1gdfy4.js` · offset 196885483 · sha256 `9580dacb…`
 
 Status: hidden; documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4439,13 +4439,13 @@ Control local sessions from claude.ai/code or the Claude mobile app
 
 ### claude remote-control help text
 
-Source: `chunk-5n4nt86c.js` · offset 202823281 · sha256 `2b0e5fcc…`
+Source: `chunk-e8x9ab3j.js` · offset 203153833 · sha256 `41412601…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
 Visibility: not shown in --help on this machine (no hide marker found; reason not determined)
 
-Interpolated constants (resolved from code): `_r` = `32`
+Interpolated constants (resolved from code): `Ar` = `32`
 
 ~~~~~~text
 
@@ -4491,7 +4491,7 @@ DESCRIPTION
   Remote Control allows you to control sessions on your local device from
   claude.ai/code (https://claude.ai/code) or the Claude mobile app. Run
   this command in the directory you want to work in, then connect from
-  your phone or a browser.{{expr:Qmn()?` Your projects on claude.ai can also ask Claude to
+  your phone or a browser.{{expr:Jyn()?` Your projects on claude.ai can also ask Claude to
   work in this directory.`:""}}
 
   Remote Control runs as a persistent server that accepts multiple concurrent
@@ -4513,7 +4513,7 @@ NOTES
 
 ### claude respawn
 
-Source: `chunk-g6yz7gnr.js` · offset 196495410 · sha256 `0c423823…`
+Source: `chunk-jp1gdfy4.js` · offset 196810726 · sha256 `0c423823…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4529,7 +4529,7 @@ Restart a background session, or all of them with --all, so it runs the current 
 
 ### claude rm
 
-Source: `chunk-g6yz7gnr.js` · offset 196495556 · sha256 `552bb6d5…`
+Source: `chunk-jp1gdfy4.js` · offset 196810872 · sha256 `552bb6d5…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4545,17 +4545,17 @@ Delete a background session, and its worktree when that is safe. Works on sessio
 
 ### claude sandbox
 
-Source: `chunk-g6yz7gnr.js` · offset 196571277 · sha256 `cb8d5c2f…`
+Source: `chunk-jp1gdfy4.js` · offset 196886594 · sha256 `cb8d5c2f…`
 
 Status: hidden; undocumented
 
 Visibility: hidden (from code)
 
-Undocumented; read at `chunk-g6yz7gnr.js` offset 196571277.
+Undocumented; read at `chunk-jp1gdfy4.js` offset 196886594.
 
 ### claude sandbox install
 
-Source: `chunk-g6yz7gnr.js` · offset 196571351 · sha256 `8cefc0bd…`
+Source: `chunk-jp1gdfy4.js` · offset 196886668 · sha256 `8cefc0bd…`
 
 Status: undocumented
 
@@ -4567,7 +4567,7 @@ Install the Windows sandbox user and network filters. Self-elevates (one UAC pro
 
 ### claude sandbox status
 
-Source: `chunk-g6yz7gnr.js` · offset 196571655 · sha256 `7d6ff862…`
+Source: `chunk-jp1gdfy4.js` · offset 196886972 · sha256 `7d6ff862…`
 
 Status: undocumented
 
@@ -4581,7 +4581,7 @@ Print the effective sandbox posture (enabled, its source, strict mode, filesyste
 
 ### claude setup-token
 
-Source: `chunk-g6yz7gnr.js` · offset 196565038 · sha256 `8412c4df…`
+Source: `chunk-jp1gdfy4.js` · offset 196880355 · sha256 `8412c4df…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4595,7 +4595,7 @@ Set up a long-lived authentication token (requires Claude subscription)
 
 ### claude stop
 
-Source: `chunk-g6yz7gnr.js` · offset 196495167 · sha256 `bed844cc…`
+Source: `chunk-jp1gdfy4.js` · offset 196810483 · sha256 `bed844cc…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4613,7 +4613,7 @@ Stop a background session. Its conversation is kept: `claude attach <id>` opens 
 
 ### claude ultrareview [target]
 
-Source: `chunk-g6yz7gnr.js` · offset 196567539 · sha256 `353b21b2…`
+Source: `chunk-jp1gdfy4.js` · offset 196882856 · sha256 `353b21b2…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4625,7 +4625,7 @@ Run a cloud-hosted multi-agent code review of the current branch (or a PR number
 
 ### claude ultrareview --json
 
-Source: `chunk-g6yz7gnr.js` · offset 196567677 · sha256 `738277b2…`
+Source: `chunk-jp1gdfy4.js` · offset 196882994 · sha256 `738277b2…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4637,7 +4637,7 @@ Print the raw bugs.json payload instead of formatted findings
 
 ### claude ultrareview --timeout <minutes>
 
-Source: `chunk-g6yz7gnr.js` · offset 196567771 · sha256 `f94bd8b7…`
+Source: `chunk-jp1gdfy4.js` · offset 196883088 · sha256 `f94bd8b7…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4649,7 +4649,7 @@ Maximum minutes to wait for the review to finish (default: 45)
 
 ### claude ultrareview --post
 
-Source: `chunk-g6yz7gnr.js` · offset 196567853 · sha256 `1e71f510…`
+Source: `chunk-jp1gdfy4.js` · offset 196883170 · sha256 `1e71f510…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4661,7 +4661,7 @@ Post the finished review's findings to the PR as you (PR targets only; one plain
 
 ### claude ultrareview --no-post
 
-Source: `chunk-g6yz7gnr.js` · offset 196567979 · sha256 `28e8990c…`
+Source: `chunk-jp1gdfy4.js` · offset 196883296 · sha256 `28e8990c…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 
@@ -4675,7 +4675,7 @@ Do not post the findings to the PR (the default; accepted for parity with the /u
 
 ### claude update
 
-Source: `chunk-g6yz7gnr.js` · offset 196571966 · sha256 `3248acbb…`
+Source: `chunk-jp1gdfy4.js` · offset 196887283 · sha256 `3248acbb…`
 
 Status: documented at https://code.claude.com/docs/en/cli-reference
 

@@ -1,6 +1,6 @@
 {
  "area": "agents",
- "version": "2.1.288",
+ "version": "2.1.289",
  "items": [
   {
    "id": "agent-explore",
@@ -73,56 +73,56 @@
    },
    "provenance": [
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187091092,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187391744,
      "length": 2365,
-     "sha256": "9308c3cbe82aee970d4dd55de662a5d44f3e4307d156a824f6796e821268a8b7",
-     "version": "2.1.288",
+     "sha256": "e978df17e012f37f05d014617f03d96736ad1890cbd3469add80d0646eca57f2",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "function"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187091376,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187392028,
      "length": 2080,
-     "sha256": "3754cb229a0d4c0c6e6993bd9acf7e454681205b88729e8a5265dd0ec6e5ca93",
-     "version": "2.1.288",
+     "sha256": "1b5f29e875624fade7c2046e0df4f7925ac1dc7563192d97eeaf3563e6c200d2",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187091140,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187391792,
      "length": 106,
-     "sha256": "2b8a4cb2c3c6b341ab61bc417c179c04085c5b7e82c6c51a14cf2b61b42b4504",
-     "version": "2.1.288",
+     "sha256": "3861e774b580b819e4b5a21f75c6a0b04d5975532eb4c341b0757183400164d6",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "local"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187091249,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187391901,
      "length": 120,
      "sha256": "2d6d8ce8ab78343a8b2db2e577d90eb993d8324481e977784a8a3268c71fd5b5",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "local"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187091120,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187391772,
      "length": 7,
      "sha256": "23c9a346fdc38ac4c6a7a2c5c6141276212db82f4658b0cf25ff33460ba7f9ad",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "local"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187094497,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187395149,
      "length": 187,
-     "sha256": "c48290939b041d0729fd8f041e7a071bd23ef1b62ba574d7fb51b2c5263b8ce5",
-     "version": "2.1.288",
+     "sha256": "c49b4ed9778785c8c56b5835ed8bd9b71cb37696fc618d81140b6c88648dfb66",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -194,38 +194,38 @@
    },
    "provenance": [
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187095032,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187395684,
      "length": 2582,
-     "sha256": "4ed172cb11fceff65a8159893cd0f71e636b7fd00e569026a11b5b8680a0d68d",
-     "version": "2.1.288",
+     "sha256": "2192cd5a159db9364becd2ccb992afd8b000086f9ddc61a537801aaf3e58d396",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "function"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187095084,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187395736,
      "length": 4975,
-     "sha256": "12e190f6f1e2ac487b388a062bbc37eb2ba554c440338ef95cbc4faa45e4f04e",
-     "version": "2.1.288",
+     "sha256": "2b625720de75cf5bff4dd2a48195c946fc0cc3a6dd566e01775dd79ce20ce473",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187095060,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187395712,
      "length": 7,
      "sha256": "23c9a346fdc38ac4c6a7a2c5c6141276212db82f4658b0cf25ff33460ba7f9ad",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "local"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 187097621,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 187398273,
      "length": 406,
-     "sha256": "3bad5440fe30ee60b4e88756d926ba4fa58438467bd7ac0732f1417720bae97b",
-     "version": "2.1.288",
+     "sha256": "791bb375cd69bda97a46be10c1705cccc94360a75aad6c6539f6dd8b69185e85",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -252,20 +252,20 @@
    },
    "provenance": [
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188392965,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188696251,
      "length": 1461,
      "sha256": "42738df707fb69f0a2c2a1b0768b4465409edb842964ed1a626dfb35867c9fb5",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "text"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188394434,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188697720,
      "length": 390,
-     "sha256": "0c94b34e9e969437419f440c8e74fa79b84303be2115988da13881cf497e26f5",
-     "version": "2.1.288",
+     "sha256": "6eb1677440cd943124961110fa6cca500cbeda913a9aaba0d0f3520ed5dfd6ca",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -303,29 +303,29 @@
    },
    "provenance": [
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188395219,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188698505,
      "length": 13080,
-     "sha256": "76ab097b265f43545f46690218b3aa71f9a1f4cef266f2840f6eeddc7963de25",
-     "version": "2.1.288",
+     "sha256": "dab1986964ffdbd0ef231ab6f647f4c9d5f1925545df4ef55b9c1cbcdbca54a7",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188394840,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188698126,
      "length": 366,
-     "sha256": "2c23fd61482bd427b05f2fcb1f9dc8cc19db4d95352b3f3f258ca5d85567f1de",
-     "version": "2.1.288",
+     "sha256": "cc7ba5e749902b59fc798802eb92eb82185d5da6875a871da261074897117216",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188408304,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188711590,
      "length": 229,
-     "sha256": "e0d425fa0e338439b0ce52bafc45f5d9c9d2bd3291ee82898a392e960928f885",
-     "version": "2.1.288",
+     "sha256": "4fd738dabd51ede467d966e98f2c83cc1ecf03bc4800ce32dfe467e59b237445",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -407,22 +407,22 @@
      {
       "text": "`claude plugin eval` is available in this session (generally available; no enablement setting is needed on any client, including Bedrock/Vertex/Foundry, LLM gateways, telemetry-disabled clients and CI runners).",
       "provenance": {
-       "file": "chunk-q01s00ax.js",
-       "binary_offset": 186845826,
+       "file": "chunk-200fagt2.js",
+       "binary_offset": 187146453,
        "length": 212,
        "sha256": "f8db46640f83e31d50d4bed1d12e926c9d4b5d25da79576c1a757c2021a304ad",
-       "version": "2.1.288",
+       "version": "2.1.289",
        "platform": "darwin-arm64"
       }
      },
      {
       "text": "`claude plugin eval` is generally available but switched OFF for this session by a server-side kill switch: it exists but prints \"currently unavailable\" here. If the user asks about it, say that plainly rather than that it does not exist; there is no setting or variable that turns it back on, and `claude update` plus a fresh session picks the command up again once the switch is lifted.",
       "provenance": {
-       "file": "chunk-q01s00ax.js",
-       "binary_offset": 186846063,
+       "file": "chunk-200fagt2.js",
+       "binary_offset": 187146690,
        "length": 390,
        "sha256": "12b63bc58fd4cc7177d226962123299213be5c5e680ec4b5c434b365ce91f3d0",
-       "version": "2.1.288",
+       "version": "2.1.289",
        "platform": "darwin-arm64"
       }
      }
@@ -436,11 +436,11 @@
        "text": "**Available custom skills in this project:**\n{{LIST_LINES}}",
        "provenance": [
         {
-         "file": "chunk-acxptg39.js",
-         "binary_offset": 188391838,
+         "file": "chunk-x2pwb441.js",
+         "binary_offset": 188695124,
          "length": 51,
          "sha256": "018e0975c3a12db3b85336bf473577f43893861266d2310889bdb55593be0ebc",
-         "version": "2.1.288",
+         "version": "2.1.289",
          "platform": "darwin-arm64",
          "role": "text"
         }
@@ -451,11 +451,11 @@
        "text": "**Available custom agents configured:**\n{{LIST_LINES}}",
        "provenance": [
         {
-         "file": "chunk-acxptg39.js",
-         "binary_offset": 188392057,
+         "file": "chunk-x2pwb441.js",
+         "binary_offset": 188695343,
          "length": 46,
          "sha256": "d0f94e7a56c3ba656cec7e43292ffa51efe189ddf12babf85b6444f5dbc54b8d",
-         "version": "2.1.288",
+         "version": "2.1.289",
          "platform": "darwin-arm64",
          "role": "text"
         }
@@ -466,11 +466,11 @@
        "text": "**Configured MCP servers:**\n{{LIST_LINES}}",
        "provenance": [
         {
-         "file": "chunk-acxptg39.js",
-         "binary_offset": 188392199,
+         "file": "chunk-x2pwb441.js",
+         "binary_offset": 188695485,
          "length": 34,
          "sha256": "266b5a5cc885351a6651b9866be4687df9e85f2677074116b1906411fbcd73c1",
-         "version": "2.1.288",
+         "version": "2.1.289",
          "platform": "darwin-arm64",
          "role": "text"
         }
@@ -481,11 +481,11 @@
        "text": "**Available plugin skills:**\n{{LIST_LINES}}",
        "provenance": [
         {
-         "file": "chunk-acxptg39.js",
-         "binary_offset": 188392378,
+         "file": "chunk-x2pwb441.js",
+         "binary_offset": 188695664,
          "length": 35,
          "sha256": "2dbcbb734b448ae7d6b11f6ad42a4f89340dca05155fc1c390d95375beb08897",
-         "version": "2.1.288",
+         "version": "2.1.289",
          "platform": "darwin-arm64",
          "role": "text"
         }
@@ -496,11 +496,11 @@
        "text": "**Settings keys configured (values omitted):** {{SETTINGS_KEYS}}. To see values, the user can run the in-session `/config` command or open `~/.claude/settings.json`.",
        "provenance": [
         {
-         "file": "chunk-acxptg39.js",
-         "binary_offset": 188392467,
+         "file": "chunk-x2pwb441.js",
+         "binary_offset": 188695753,
          "length": 169,
          "sha256": "7755a5c8d3dedf1533eb0fb353af0bb85384601eb0c733f276fdc0c9df4e48cf",
-         "version": "2.1.288",
+         "version": "2.1.289",
          "platform": "darwin-arm64",
          "role": "text"
         }
@@ -512,92 +512,92 @@
    },
    "provenance": [
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188392652,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188695938,
      "length": 30,
-     "sha256": "547ea34644dd47a531ca0a0f2f55c534ff843f9c36a3cbe3f24fb6df71604785",
-     "version": "2.1.288",
+     "sha256": "8bc021e75879e316cd0f4df7e398f66f9e62cc251e124890cebf51f4c2f502fa",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "text"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188381199,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188684485,
      "length": 7861,
-     "sha256": "8fec0cbaedf68dd6eec56f8bf0097fc86c3e018bdfa06c5bdbbefe38e344c6dd",
-     "version": "2.1.288",
+     "sha256": "3a7dfb8d6005a25fa4e47b65c7ebb540c7e74e9f8a2db2ecd992337dc73bfbbc",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188381124,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188684410,
      "length": 68,
-     "sha256": "4979724fbb05c065ce76d4b205d11194884e79f9785a33cfb3c1d3cabcfc555c",
-     "version": "2.1.288",
+     "sha256": "78ced34770d9dfae1552d7ed076afe3a1fdcf4d0059b666fe4ea43ca7da22458",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "local"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188392644,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188695930,
      "length": 5,
-     "sha256": "f8a444f450ddb92affb68fd2f883ed78e5ee9194daacf354a79cc1a31aca5423",
-     "version": "2.1.288",
+     "sha256": "200b3b492f0c681f772176c90648644204580fec3f492ea7cf56284e2ef8d4ed",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "local"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188389729,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188693015,
      "length": 733,
-     "sha256": "b6767e4fea3ee2ce45ee7d2e95750ef54d6efc9bb89d37821ba3d975975d0cfa",
-     "version": "2.1.288",
+     "sha256": "7321d5c9431b7b9d3ad9d0af994dbbf0221bba21d755db7b99e176f2b55fdd1b",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188389610,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188692896,
      "length": 103,
-     "sha256": "f9a01966313a32e4249a50e7440f02ebd9020efbe332a50b31c6ce136c25c504",
-     "version": "2.1.288",
+     "sha256": "afcedd60c04843198f6f3a204bc1929bbbb8d525e585ff02de0f2e853e74574a",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188389090,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188692376,
      "length": 513,
-     "sha256": "9d3011c8cfb2eb01d28d1bc5bbef87a2efa5d7fe6749490c0e60be70e30811ae",
-     "version": "2.1.288",
+     "sha256": "37f193273c207e5374116cb47fe8e2efd8effd0e946e3fe4ce3d0180f81ae72d",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "local"
     },
     {
-     "file": "chunk-84agexfc.js",
-     "binary_offset": 186684255,
+     "file": "chunk-m3x6tawa.js",
+     "binary_offset": 186994365,
      "length": 25,
      "sha256": "b131324d06888c06da948843e882f55878ab0fe2f10fb0a280d34b5dff65b64a",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188392703,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188695989,
      "length": 229,
      "sha256": "7e78fc6ca50f748344857a8824587c965ef0a3a2a59566bf30043bb6a82a8304",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "text"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188390471,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188693757,
      "length": 2472,
-     "sha256": "cd5829084a088017f31ddcdba8397520241c8d383f04378d57c94cf73e946554",
-     "version": "2.1.288",
+     "sha256": "ee908f69f84970e3436b6315b5e70d726aea891b32c6368553227b65d23ba5c8",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -637,38 +637,38 @@
    },
    "provenance": [
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188408555,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188711841,
      "length": 2623,
-     "sha256": "e1f0b2f873e2ac2b210c2c65294de2240307251556865c1e64273f255b197ca8",
-     "version": "2.1.288",
+     "sha256": "623375f7d23ea64846447b427e3c20b0a4ab6413ccbdfbc79b839b864e0294b7",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "text"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188296859,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188600145,
      "length": 205,
-     "sha256": "64143a46c725d0973b4ee2dfef9fccb13698184afdcaf6f42ac98f055fee98ba",
-     "version": "2.1.288",
+     "sha256": "6099f93ed78d18805f1001f97a28761f87104260ee68f4b8b95844cde2b1c687",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "function"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188412794,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188716080,
      "length": 470,
-     "sha256": "c44f455dd4ace4a22424b1b9d6d7cee6aff6987c45ee09db61c3a5755f76be09",
-     "version": "2.1.288",
+     "sha256": "8ae89ebd7c7072dc69cff9664fb030005142a3f5b6d47393384fed95fa5334c1",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "function"
     },
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188411187,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188714473,
      "length": 1606,
-     "sha256": "36b14d1f8b0634e8848f6426a3dc9e6fabccf97509078e40ba9cecf425eaf034",
-     "version": "2.1.288",
+     "sha256": "1bdc83d03944e8b001ac6a3d5c49dab8e9d8d993ebc922a6b6bd8687fa5f3427",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -698,11 +698,11 @@
    },
    "provenance": [
     {
-     "file": "chunk-acxptg39.js",
-     "binary_offset": 188316581,
+     "file": "chunk-x2pwb441.js",
+     "binary_offset": 188619867,
      "length": 290,
-     "sha256": "eb266b3b0c901169fd21d493d99387f20d9141fcdae044b9a0e673bbe142051f",
-     "version": "2.1.288",
+     "sha256": "1c8094f7ec6ec60282db67fc6c0b81bc5c343915b5ccb3918b03ff3139f85c8d",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -733,20 +733,20 @@
    },
    "provenance": [
     {
-     "file": "chunk-y7cmwh7q.js",
-     "binary_offset": 193198142,
+     "file": "chunk-qvhw7ajn.js",
+     "binary_offset": 193511527,
      "length": 1875,
      "sha256": "f91b1fc95dc5cd0f3cfc390b0f86a8596741d79156ca4df94aa45fa4757d791a",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-y7cmwh7q.js",
-     "binary_offset": 193200022,
+     "file": "chunk-qvhw7ajn.js",
+     "binary_offset": 193513407,
      "length": 237,
      "sha256": "afebf6792883d7f71d199a40732c47722a5f0eca8d2c1d0998fd75c59c2d6d25",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -787,20 +787,20 @@
    },
    "provenance": [
     {
-     "file": "chunk-p55tt0rx.js",
-     "binary_offset": 201793043,
+     "file": "chunk-v5hrmrk2.js",
+     "binary_offset": 202122043,
      "length": 2467,
-     "sha256": "9b8165dc3ae1c7e336fcfeae8b0338f4b538941d2ae660fa64f168656eb8f1db",
-     "version": "2.1.288",
+     "sha256": "664b49b799b63a4fb5a394415f534c9f0a87d343afd86587b5c583fb0be8ed0d",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-p55tt0rx.js",
-     "binary_offset": 201795516,
+     "file": "chunk-v5hrmrk2.js",
+     "binary_offset": 202124516,
      "length": 221,
-     "sha256": "fa47c0eadfe5bfd3802bbab8f1004807837569b653783a129196a6e9e90db450",
-     "version": "2.1.288",
+     "sha256": "9754608d81aabfcf88e7974286525f71468133b1ddb40c183349959260dea467",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -834,11 +834,11 @@
      "text": "You are a subagent spawned by a workflow orchestration script. Use the tools available to complete the task.\n\nCRITICAL: You MUST call the StructuredOutput tool exactly once to return your final answer. The tool's input schema defines the required shape.\n- Do your work (Read files, run commands, etc.), then call StructuredOutput with your answer.\n- Do NOT put your answer in a text response. The script reads ONLY the StructuredOutput tool call.\n- If the schema validation fails, read the error and call StructuredOutput again with a corrected shape.\n- After calling StructuredOutput successfully, end your turn. No acknowledgment needed.",
      "provenance": [
       {
-       "file": "chunk-t65a4tk3.js",
-       "binary_offset": 199716608,
+       "file": "chunk-2jg0m5tp.js",
+       "binary_offset": 200038585,
        "length": 586,
        "sha256": "375cd5d380ea38f30fb34a262fb3b5bd7917e32d1f20b154394619a3a10ce720",
-       "version": "2.1.288",
+       "version": "2.1.289",
        "platform": "darwin-arm64",
        "role": "text"
       }
@@ -849,11 +849,11 @@
       "text": "\n\n---\n\nNOTE: You are running inside a workflow script. Your final text response is returned verbatim as a string to the calling script — it is your return value, not a message to a human. Output the literal result; do not output confirmations like \"Done.\" Be concise — the script will parse your output.",
       "provenance": [
        {
-        "file": "chunk-t65a4tk3.js",
-        "binary_offset": 199715904,
+        "file": "chunk-2jg0m5tp.js",
+        "binary_offset": 200037881,
         "length": 315,
         "sha256": "b2382894f1fa30e605f4ca3998f575cf75057cba6676857b5be7cd516ca15922",
-        "version": "2.1.288",
+        "version": "2.1.289",
         "platform": "darwin-arm64",
         "role": "text"
        }
@@ -864,11 +864,11 @@
       "text": "\n\n---\n\nNOTE: You are running inside a workflow script. You MUST return your final answer by calling the StructuredOutput tool exactly once — the tool's input schema defines the required shape. Do your work, then call StructuredOutput; do NOT put your answer in a text response (the script reads ONLY the tool call). If validation fails, read the error and call StructuredOutput again with a corrected shape.",
       "provenance": [
        {
-        "file": "chunk-t65a4tk3.js",
-        "binary_offset": 199716223,
+        "file": "chunk-2jg0m5tp.js",
+        "binary_offset": 200038200,
         "length": 381,
         "sha256": "0a4df2731d7495cc47b3995a3c27f91f2c4246115b59ce4e0db992d2a01cfbc0",
-        "version": "2.1.288",
+        "version": "2.1.289",
         "platform": "darwin-arm64",
         "role": "text"
        }
@@ -879,20 +879,20 @@
    },
    "provenance": [
     {
-     "file": "chunk-t65a4tk3.js",
-     "binary_offset": 199715298,
+     "file": "chunk-2jg0m5tp.js",
+     "binary_offset": 200037275,
      "length": 602,
      "sha256": "d1127d08aca8d2f1e4b5f0061fa78ea1f6d53b0f2173e2ff1fc5c832fe657089",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-t65a4tk3.js",
-     "binary_offset": 199717198,
+     "file": "chunk-2jg0m5tp.js",
+     "binary_offset": 200039175,
      "length": 195,
-     "sha256": "5b4567070c9a7a30df9d1ce566fe45d83adb7a86263f9273893870b328e143f7",
-     "version": "2.1.288",
+     "sha256": "09f11e3047bbbe613b92b35d3c92fac57765598cecc936b81c26339e56433b39",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }
@@ -942,47 +942,47 @@
    },
    "provenance": [
     {
-     "file": "chunk-1crmj929.js",
-     "binary_offset": 210254551,
+     "file": "chunk-51rd3cje.js",
+     "binary_offset": 210594487,
      "length": 1976,
-     "sha256": "9bb6aa1fab1894740f1547295c1c3e9342701f29865cb1f789184b041759c34d",
-     "version": "2.1.288",
+     "sha256": "b916b48cd28c0f8bc193f623206c6fb321fa3358c96e08d44b41bfdc001ff2fe",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-xktn8sdm.js",
-     "binary_offset": 193709732,
+     "file": "chunk-7w7dh6am.js",
+     "binary_offset": 194023351,
      "length": 10,
-     "sha256": "f3b5606382bae6668f3773ea68db1680d92c731c92909fff1faf739034d1807a",
-     "version": "2.1.288",
+     "sha256": "c6d0b9c5d0df4407fc07b863ede18e98afc5d16a4cb2d68afb9b52a24d74120d",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-xktn8sdm.js",
-     "binary_offset": 193709658,
+     "file": "chunk-7w7dh6am.js",
+     "binary_offset": 194023277,
      "length": 49,
-     "sha256": "023826d8768dfe4d554934ceb29be9c9a7e4f513aeaba7e2899827b9643e9584",
-     "version": "2.1.288",
+     "sha256": "008d1838d504581b4c2be3f7b5e3029734c0cf3e3c8eb67a86023e841ffa7a72",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "inlined"
     },
     {
-     "file": "chunk-xktn8sdm.js",
-     "binary_offset": 193709271,
+     "file": "chunk-7w7dh6am.js",
+     "binary_offset": 194022890,
      "length": 206,
-     "sha256": "6314db3ee9d40ddc8631705b463004bf2b081eb3e5b73ec34a9ec46447500d99",
-     "version": "2.1.288",
+     "sha256": "9911a63c5cb80bc5ea24d445d1b617a9ea932166f02230a758d4df5de80128cc",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "function"
     },
     {
-     "file": "chunk-1crmj929.js",
-     "binary_offset": 210256787,
+     "file": "chunk-51rd3cje.js",
+     "binary_offset": 210596723,
      "length": 163,
      "sha256": "af1f0ddbc19e960ae3604edfc231e196f8ff3337329bda94cc3277ea0e2089f3",
-     "version": "2.1.288",
+     "version": "2.1.289",
      "platform": "darwin-arm64",
      "role": "definition"
     }

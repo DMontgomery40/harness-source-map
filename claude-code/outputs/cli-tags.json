@@ -10,25 +10,25 @@
    "id": "undocumented",
    "label": "Undocumented",
    "kind": "status",
-   "count": 119
+   "count": 124
   },
   {
    "id": "hidden",
    "label": "Hidden",
    "kind": "status",
-   "count": 92
+   "count": 94
   },
   {
    "id": "command",
    "label": "Command",
    "kind": "status",
-   "count": 76
+   "count": 77
   },
   {
    "id": "flag",
    "label": "Flag",
    "kind": "status",
-   "count": 287
+   "count": 291
   }
  ],
  "items": {
@@ -1496,10 +1496,12 @@
   ],
   "cli-cmd-project": [
    "documented",
+   "hidden",
    "command"
   ],
   "cli-cmd-project-purge": [
    "documented",
+   "hidden",
    "command"
   ],
   "cli-flag-project-purge-dry-run": [
@@ -1516,6 +1518,26 @@
   ],
   "cli-flag-project-purge-all": [
    "documented",
+   "flag"
+  ],
+  "cli-cmd-purge": [
+   "undocumented",
+   "command"
+  ],
+  "cli-flag-purge-dry-run": [
+   "undocumented",
+   "flag"
+  ],
+  "cli-flag-purge-yes": [
+   "undocumented",
+   "flag"
+  ],
+  "cli-flag-purge-interactive": [
+   "undocumented",
+   "flag"
+  ],
+  "cli-flag-purge-all": [
+   "undocumented",
    "flag"
   ],
   "cli-cmd-remote-control": [

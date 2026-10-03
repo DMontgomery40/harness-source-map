@@ -1,5 +1,5 @@
 {
- "version": "2.1.288",
+ "version": "2.1.289",
  "cli": {
   "entrypoint": "cli",
   "identity": "You are Claude Code, Anthropic's official CLI for Claude.",
@@ -50,6 +50,7 @@
    "mid-conversation-system-2026-04-07",
    "per-turn-control-2026-07-01",
    "mid-conversation-tool-changes-2026-07-01",
+   "inline-tools-2026-09-15",
    "advisor-tool-2026-03-01",
    "effort-2025-11-24",
    "dangerous-tool-use-2026-09-03",
@@ -140,6 +141,7 @@
   "effort-2025-11-24"
  ],
  "betas_cli_only": [
+  "inline-tools-2026-09-15",
   "dangerous-tool-use-2026-09-03",
   "thinking-display-updates-2026-08-18",
   "afk-mode-2026-01-31"

@@ -15,14 +15,14 @@
    "label": "Security and permissions",
    "kind": "topic",
    "definition": "Environment variables that change what Claude Code is allowed to do, or how exposed the machine and its secrets are. Counts: permission modes, permission rules and auto-mode review; restricted, safe or plan-required modes; sandboxing (bubblewrap, sandboxed or container-sandbox flags); workspace trust; confirmation prompts before dangerous commands; PowerShell execution policy; turning TLS certificate verification off; stripping or allowlisting credentials in the environments of Bash, hooks and MCP servers; upload or egress gates that limit data leaving the machine; and file write protection. Applies whatever group the variable is in. Does NOT include which API key, token or login to use (that is Authentication), telemetry or analytics opt-outs (Privacy), or ordinary proxy and CA-certificate settings that don't weaken verification (Network).",
-   "count": 44
+   "count": 45
   },
   {
    "id": "privacy-telemetry",
    "label": "Privacy, telemetry and nonessential traffic",
    "kind": "topic",
    "definition": "Environment variables that control what Claude Code reports about the user, or sends beyond the model request itself. Counts: telemetry and analytics opt-outs (DISABLE_TELEMETRY, DO_NOT_TRACK); error reporting; the nonessential-traffic switch; feature-flag (GrowthBook) fetching; feedback commands and session-quality surveys; demo mode that hides account details; account or session identifiers attached to metrics; and switches that put prompt text, model responses, tool content or raw API bodies into exported logs and traces. Applies whatever group the variable is in. Does NOT include plain OpenTelemetry plumbing with no privacy effect, such as exporter endpoints, protocols, intervals, timeouts or length limits (that is Observability), or permission and sandbox controls (Security).",
-   "count": 45
+   "count": 44
   },
   {
    "id": "observability",
@@ -36,7 +36,7 @@
    "label": "Authentication and credentials",
    "kind": "topic",
    "definition": "Environment variables that supply or control credentials for reaching Anthropic, cloud providers, gateways or MCP servers. Counts: API keys; bearer, OAuth access and refresh tokens; OAuth scopes, client IDs and client secrets; apiKeyHelper refresh; token file descriptors and token files; session JWTs; workload identity federation IDs; cloud credentials (AWS keys and profiles, Google application credentials, Azure identities); mTLS client certificates and keys; credential caches; and switches that skip a provider's own authentication. Applies whatever group the variable is in. Does NOT include which provider, region or endpoint is used (Providers), or scrubbing credentials out of subprocess environments (Security).",
-   "count": 115
+   "count": 112
   },
   {
    "id": "providers",
@@ -71,42 +71,42 @@
    "label": "Plugins, skills and hooks",
    "kind": "topic",
    "definition": "Environment variables for user- or organization-supplied extensions other than MCP. Counts: plugins and plugin marketplaces (directories, seeds, caches, sync, auto-update, git cloning); skills, including bundled and managed skills; and lifecycle hooks (hook timeouts, Stop-hook block caps, hook forwarding, function hooks, Notification hooks). Applies whatever group the variable is in. Does NOT include MCP server settings (MCP) or tools that ship with Claude Code (Built-in tools).",
-   "count": 56
+   "count": 57
   },
   {
    "id": "agents-background",
    "label": "Subagents, teams and background work",
    "kind": "topic",
    "definition": "Environment variables for work that runs beside or beyond the main conversation. Counts: subagents and their spawn depth, concurrency and stall timeouts; built-in Explore and Plan agents; forked subagents; agent teams and teammates; workflows; coordinator mode; background tasks and background sessions (CLAUDE_BG_*); agent view; scheduled or cron tasks; goals, auto-continue and away summaries. A subagent-specific model setting counts here and also under Models. Applies whatever group the variable is in. Does NOT include cloud-hosted or self-hosted sessions (Cloud, remote and hosted sessions), or hook settings that merely mention subagent events such as SubagentStop (Plugins, skills and hooks).",
-   "count": 89
+   "count": 90
   },
   {
    "id": "built-in-tools",
    "label": "Built-in tools",
    "kind": "topic",
    "definition": "Environment variables that change tools shipped with Claude Code that the model calls. Counts: Bash and PowerShell (shell choice, timeouts, output limits, working directory, prefixes, memory caps); Glob, Grep and ripgrep; file reads and file checkpointing; WebFetch and WebSearch; task and todo tools; AskUserQuestion; the advisor tool; Claude in Chrome browser tools; artifacts (CLAUDE_CODE_ARTIFACT_*); attachments; and push notifications. Applies whatever group the variable is in. Does NOT include MCP tools (MCP), plugin or skill tools (Plugins, skills and hooks), subagent spawning (Subagents), or plain OS shell variables such as SHELL.",
-   "count": 102
+   "count": 101
   },
   {
    "id": "remote-hosted",
    "label": "Cloud, remote and hosted sessions",
    "kind": "topic",
    "definition": "Environment variables for Claude Code running somewhere other than a local terminal, or embedded by a host. Counts: cloud sessions (claude --cloud, CCR_*); Remote Control and bridge reattachment (CLAUDE_BRIDGE_*); self-hosted runners (SELF_HOSTED_RUNNER_*, CLAUDE_RUNNER_*); session ingress tokens and URLs; host platforms, desktop apps and SDKs that embed Claude Code (CLAUDE_CODE_HOST_*, Cowork); and remote environment identifiers. Applies whatever group the variable is in. Does NOT include local background sessions (Subagents) or ordinary provider endpoints (Providers).",
-   "count": 198
+   "count": 197
   },
   {
    "id": "network",
    "label": "Network, proxies and timeouts",
    "kind": "topic",
    "definition": "Environment variables for how Claude Code's network connections behave. Counts: HTTP, HTTPS and SOCKS proxies and NO_PROXY; proxy authentication helpers; CA certificate stores and extra CA files; TLS settings; DNS resolution; API request timeouts; retry counts; streaming idle and first-byte watchdogs; non-streaming fallback; and request compression. Applies whatever group the variable is in. Does NOT include which model provider or base URL is used (Providers), or tool-specific timeouts such as Bash or MCP timeouts (those belong to their tool's topic).",
-   "count": 86
+   "count": 85
   },
   {
    "id": "terminal-ui",
    "label": "Terminal UI, commands and IDE",
    "kind": "topic",
    "definition": "Environment variables that change what the user sees or types in the terminal or IDE. Counts: fullscreen and alternate-screen rendering; mouse, cursor and scrolling; colors and truecolor; syntax highlighting; accessibility and screen-reader mode; terminal titles; startup logo and hints; prompt suggestions; keyboard handling; hiding slash commands; and IDE extension connection. OS variables count only when they force or disable a display feature (FORCE_COLOR, NO_COLOR, FORCE_HYPERLINK). Applies whatever group the variable is in. Does NOT include plain OS, shell or CI variables that Claude Code merely reads (TERM, HOME, PATH, CI), or logging (Observability).",
-   "count": 47
+   "count": 48
   },
   {
    "id": "documented",
@@ -1140,7 +1140,6 @@
    "read"
   ],
   "env-claude-code-bridge-prompt-sha256": [
-   "remote-hosted",
    "undocumented",
    "read"
   ],
@@ -1246,6 +1245,7 @@
    "read"
   ],
   "env-claude-code-coordinator-skill-guidance": [
+   "plugins-skills-hooks",
    "agents-background",
    "undocumented",
    "read"
@@ -1610,7 +1610,6 @@
    "read"
   ],
   "env-claude-code-disable-vitals-emitter": [
-   "privacy-telemetry",
    "undocumented",
    "read"
   ],
@@ -1802,7 +1801,6 @@
    "read"
   ],
   "env-claude-code-flag-fetch-wait-ms": [
-   "privacy-telemetry",
    "built-in-tools",
    "undocumented",
    "read"
@@ -1839,6 +1837,7 @@
    "read"
   ],
   "env-claude-code-force-terminal-images": [
+   "terminal-ui",
    "undocumented",
    "read"
   ],
@@ -2931,7 +2930,6 @@
    "read"
   ],
   "env-claude-code-tmux-prefix-conflicts": [
-   "built-in-tools",
    "terminal-ui",
    "undocumented",
    "read"
@@ -3076,6 +3074,7 @@
    "read"
   ],
   "env-claude-code-workflow-size-warning-agents": [
+   "agents-background",
    "undocumented",
    "read"
   ],
@@ -3216,6 +3215,7 @@
    "read"
   ],
   "env-claude-remote-workflow-args": [
+   "remote-hosted",
    "undocumented",
    "read"
   ],
@@ -3950,6 +3950,7 @@
    "read"
   ],
   "env-aws-role-arn": [
+   "providers",
    "undocumented",
    "read"
   ],
@@ -4262,7 +4263,6 @@
    "read"
   ],
   "env-azure-functions-environment": [
-   "providers",
    "undocumented",
    "read"
   ],
@@ -4420,6 +4420,7 @@
    "read"
   ],
   "env-enable-enhanced-telemetry-beta": [
+   "privacy-telemetry",
    "observability",
    "undocumented",
    "read"
@@ -4637,7 +4638,6 @@
    "read"
   ],
   "env-ccr-agent-proxy-ca-watch-enabled": [
-   "remote-hosted",
    "network",
    "undocumented",
    "read"
@@ -5064,7 +5064,6 @@
    "os-shell"
   ],
   "env-gh-enterprise-token": [
-   "authentication",
    "undocumented",
    "read",
    "os-shell"
@@ -7565,6 +7564,7 @@
    "set"
   ],
   "env-set-git-allow-protocol": [
+   "security-permissions",
    "undocumented",
    "set"
   ],
@@ -8121,7 +8121,6 @@
   ],
   "env-azure-client-send-certificate-chain": [
    "authentication",
-   "network",
    "undocumented",
    "read",
    "third-party"
@@ -8250,7 +8249,6 @@
    "third-party"
   ],
   "env-google-external-account-allow-executables": [
-   "authentication",
    "undocumented",
    "read",
    "fixed-values",
@@ -8338,7 +8336,6 @@
    "third-party"
   ],
   "env-otel-exporter-otlp-certificate": [
-   "authentication",
    "network",
    "undocumented",
    "read",
