@@ -1,0 +1,156 @@
+{
+  "reviews": [
+    {
+      "source": "code-mode-protocol/src/description.rs::WAIT_DESCRIPTION_TEMPLATE",
+      "sha256": "b87a941906aa8bc91bb3d7e4cee211a5d55899192942d26802b2b1814dd8a557",
+      "source_context_sha256": "6ee0194a2945a1f3cb52ce009b9c272833c693c38eaf661b207f09d5b13b06d3",
+      "model_facing": true,
+      "reason": "build_wait_tool_description returns this text as the model-facing wait tool description.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "code-mode-protocol/src/description.rs::MCP_TYPESCRIPT_PREAMBLE",
+      "sha256": "e02beca462bb4b3941298aed6c22cf2d58a0fc8fb3e4ddec1a8c11d55f371f37",
+      "source_context_sha256": "1cf984852b1f2518a875f01d868766ecc0481ded36117fad2978a5068a3789ff",
+      "model_facing": true,
+      "reason": "build_exec_tool_description inserts this code as Shared MCP Types in the model-facing tool description when MCP schemas are present.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "core/src/context/turn_aborted.rs::INTERRUPTED_GUIDANCE",
+      "sha256": "1202140aaa5ec1dde20bb65eff0bb613d34e51e9f27352dfd624871def3d5300",
+      "source_context_sha256": "a1cf5f819e46e3e3a2dab38ee2d1135b7f3e603063f22077750e8090ebde66d6",
+      "model_facing": true,
+      "reason": "tasks/mod.rs constructs TurnAborted with this guidance and records its contextual user fragment in conversation history.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "core/src/context/turn_aborted.rs::INTERRUPTED_DEVELOPER_GUIDANCE",
+      "sha256": "6affeaeb74b0f13b6081fc2fccd2cfe59a644d9634762ff692572235d8b81f75",
+      "source_context_sha256": "677576d573c6e7826dcc05641a7c886596cd822424bd62a18328c1530230c880",
+      "model_facing": true,
+      "reason": "tasks/mod.rs inserts this guidance into a developer-role RenderedFragment when an interrupted turn is recorded.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "core/src/plugins/render.rs::TRUNCATED_PLUGIN_INSTRUCTIONS_SUFFIX",
+      "sha256": "d370204d2a38d20332839a56e89a32a89839a19b7066232a7398d75ae244ead7",
+      "source_context_sha256": "c7c468139271bdfc0476a5c07eec930798e9caeea8adbc88a597ab47701629fe",
+      "model_facing": true,
+      "reason": "render_explicit_plugin_instructions appends this suffix to truncated model-visible plugin instructions.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "core/src/realtime_context.rs::STARTUP_CONTEXT_HEADER",
+      "sha256": "07b33de1029fedd761635c048ce0039aa2789214df4b84fac193e132cfbee6c8",
+      "source_context_sha256": "656ae15027ad7a8e7ccc33483c42e3a0be30d39d0ee077a2fb25db929c3c8378",
+      "model_facing": true,
+      "reason": "Startup context assembly starts the model-facing realtime background context with this header.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "core/src/tools/handlers/multi_agents_spec.rs::MULTI_AGENT_V1_NAMESPACE_DESCRIPTION",
+      "sha256": "c839c56b2b6f5cb73c8848275df7124cec42c27ca110192fb53cfc39b886b8ff",
+      "source_context_sha256": "348660bad6d7f9a993c0df827306bb41facf0a8907e549ca651d936c0062b0d0",
+      "model_facing": true,
+      "reason": "ResponsesApiNamespace descriptions use this string in the exposed model tool schema.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "core/src/tools/handlers/multi_agents_spec.rs::SPAWN_AGENT_TYPE_OVERRIDE_DESCRIPTION_V1",
+      "sha256": "071cfcea212f078e6b18c28b6015d405f64e72dfe2e3b7e2200a98670650a0a3",
+      "source_context_sha256": "e1f9888b719f196d27b084ba8f4340e810073f0a1f2e361e509237a619c6cdf0",
+      "model_facing": true,
+      "reason": "spawn_agent parameter schema inserts this guidance into its agent_type description.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "core/src/tools/handlers/multi_agents_spec.rs::SPAWN_AGENT_MODEL_OVERRIDE_DESCRIPTION",
+      "sha256": "18dda5c69e419a858ccd1dc05160ca90642674d4985b85575aa27c736cd12f45",
+      "source_context_sha256": "db082f619095004dc5c17c39ea829f347cd5e6782e4c6b9eec108bde3e1173d9",
+      "model_facing": true,
+      "reason": "spawn_agent parameter schemas use this string as the model override description.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "core/src/tools/multi_agent_tool.rs::MULTI_AGENT_V2_NAMESPACE_DESCRIPTION",
+      "sha256": "c839c56b2b6f5cb73c8848275df7124cec42c27ca110192fb53cfc39b886b8ff",
+      "source_context_sha256": "68b6bd7283d86458453709c89d4a185c0263c8000e7b2a5914b1f667b9433e71",
+      "model_facing": true,
+      "reason": "The exposed multi-agent ResponsesApiNamespace uses this description.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "guardian-context/src/retained_instructions.rs::LEGACY_START",
+      "sha256": "567c842a52bf4a277bb0d63830fa20928dcb56f217f7f07bddc00c43df4b2253",
+      "source_context_sha256": "604c79e7d0ff795d60efc1d76088e2a0141c904e003728e88e850b902b17a625",
+      "model_facing": true,
+      "reason": "Retained user instructions renderer emits this legacy header in user content when legacy order is detected.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "guardian-context/src/trusted_tool.rs::TRUSTED_TOOL_PREFIX",
+      "sha256": "cd66b9bcf6ddf3a087e4382ad740c79a8743692c267fef5fcdb9191e7177a0c7",
+      "source_context_sha256": "5b4ed6263d039df803fd1b2b47b82c18e3643ce927aecdaffdbf93f2fd6c015e",
+      "model_facing": true,
+      "reason": "TrustedTool renders host-attested configuration context with this prefix for the guardian model.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "memories/write/src/lib.rs::EXTENSIONS_PRIMARY_INPUTS",
+      "sha256": "c09dfe0c976b421ae93f52db1c36023ced6e5bbc2d69bd4b11eb45ea6f2885eb",
+      "source_context_sha256": "05d7ff692d8263f0893dfa2e0bae08bb30f9ee00e0f7b704e87d0ac10bed2aec",
+      "model_facing": true,
+      "reason": "memories/write/src/prompts.rs creates and renders a memory-writing prompt block from these instructions.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "prompts/src/permissions_instructions.rs::GRANULAR_PROMPTED_CATEGORIES",
+      "sha256": "16fbef7ac328d074d33a7dce9d5a1380df1ed5619e3bea8e727556e110f1e32b",
+      "source_context_sha256": "57d6d8d57a524453114a1b83dae6401c5af0c1d417b131a4eef9fad980a07b2c",
+      "model_facing": true,
+      "reason": "PermissionsInstructions rendering inserts this header before the permitted approval-category list.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "protocol/src/protocol.rs::ENVIRONMENTS_INSTRUCTIONS_OPEN_TAG",
+      "sha256": "eb63ed7acd4f9f3723440d0d033675bf849309acd42453e29172dc5ff0cb83c3",
+      "source_context_sha256": "33235616b266637730a50ef7969a6be87aeed78a81ac8373f21f74c2206f60ab",
+      "model_facing": true,
+      "reason": "core/src/context/environments_instructions.rs renders model context with this opening marker.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "protocol/src/protocol.rs::ENVIRONMENTS_INSTRUCTIONS_CLOSE_TAG",
+      "sha256": "66409347e33c4508183656959f49cca78ffd59c46371af4993ba6d9fdeb1158b",
+      "source_context_sha256": "52713fbdc033a7f53a8813d4d2ba4c08705c6f8826a870e95ebdb5e3740acf10",
+      "model_facing": true,
+      "reason": "core/src/context/environments_instructions.rs renders model context with this closing marker.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "protocol/src/protocol.rs::CONTEXT_WINDOW_GUIDANCE_OPEN_TAG",
+      "sha256": "3c555845a87dea709242365c42769f11bf0f2b3a2c06e4b8bbfdcef9c832cf4c",
+      "source_context_sha256": "f6914280fd1768babec3e749a4ed4b2f58d22b0f4bf16d08a21e4f45b5533473",
+      "model_facing": true,
+      "reason": "core/src/context/token_budget_context.rs renders model context with this opening marker.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "protocol/src/protocol.rs::CONTEXT_WINDOW_GUIDANCE_CLOSE_TAG",
+      "sha256": "eb752cc47a6f8f77242442dbe24f569623bd1252cb37325ab586abe3fa9a3ac1",
+      "source_context_sha256": "6355d52ab79eecf485af72e248ea6e738db9cc904124734ff0aece58e04dce50",
+      "model_facing": true,
+      "reason": "core/src/context/token_budget_context.rs renders model context with this closing marker.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    },
+    {
+      "source": "tui/src/ide_context/prompt.rs::PROMPT_REQUEST_BEGIN",
+      "sha256": "d0a7e1134b4b1b3950b60d4dfe4035d165bb8e231e80705d379aa4f338e25c23",
+      "source_context_sha256": "f5e72d34b51d56133f748d4598fc1c9dd898a2147acffdd2a0ea7e62f7d930e8",
+      "model_facing": true,
+      "reason": "IDE context assembly prepends this request boundary to the user message sent to the model.",
+      "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
+    }
+  ]
+}

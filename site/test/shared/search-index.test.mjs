@@ -111,13 +111,13 @@ test("full text: a word past the excerpt finds its section; each text runs to th
   assert.equal(attachText(items, text, "another-build"), false);
   assert.equal(attachText(items, text, indexKey(index)), true);
   const q = parseQuery("orbit");
-  assert.deepEqual(search(items, q).results.map(r => r.item.title), ["Deep section"]);
+  assert.deepEqual(search(items, q).results.map(r => r.item.title), ["Doc", "Deep section"]);
   assert.match(resultSnippet(deep, q), /^….*satellite keeps its orbital period\. Unindexed/);
   assert.equal(resultSnippet(deep, parseQuery("exporter")), deep.excerpt, "a word the excerpt shows keeps the excerpt");
-  // The section's body has both words, so -orbital drops it; the page's summary has only "exporter".
+  // Pages search all their sections too, so the exclusion drops both results.
   assert.deepEqual(search(items, parseQuery("exporter")).results.map(r => r.item.title), ["Doc", "Deep section"]);
-  assert.deepEqual(search(items, parseQuery("exporter -orbital")).results.map(r => r.item.title), ["Doc"]);
-  assert.deepEqual(search(items, parseQuery('"orbital period"')).results.map(r => r.item.title), ["Deep section"]);
+  assert.deepEqual(search(items, parseQuery("exporter -orbital")).results.map(r => r.item.title), []);
+  assert.deepEqual(search(items, parseQuery('"orbital period"')).results.map(r => r.item.title), ["Doc", "Deep section"]);
 });
 
 test("excerpts and clipping", () => {

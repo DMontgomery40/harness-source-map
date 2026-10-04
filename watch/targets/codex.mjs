@@ -169,6 +169,7 @@ export const codex = {
     // Summaries consume the fresh scan, not the previous ledger's candidate set.
     // A failed surface scan leaves no triage file, so stale summaries cannot publish.
     for (const args of [
+      ["extract/codex/collaboration-modes.mjs"],
       ["extract/codex/devday-coverage.mjs", "work/surface-triage.json"],
       ["extract/codex/devday-overview.mjs"],
       ["extract/codex/key-findings.mjs"]

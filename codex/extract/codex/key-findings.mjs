@@ -59,6 +59,8 @@ Team Space UI text separately describes shared agent instructions used by schedu
 
 ## Shipped prompts and tools show what the client can assemble
 
+${link('Plan mode and Default mode', 'collaboration-modes.md')} documents mode selection, developer-message assembly and the exact executable-verified templates. Null catalog mode fields mean no catalog override; selected mode settings can still supply the instructions. Plan mode is distinct from the \`update_plan\` progress tool.
+
 The ${promptPages.length} ChatGPT prompt inventories contain ${count(prompts)} published items and ${count(unavailable)} unavailable anchors. ${link('Work prompts', 'chatgpt-work-prompts.md')} includes the current captured requests and source labels. ${link('Desktop tool manifest', 'desktop-tool-manifest.md')} defines ${count(size(tools.tools))} tools. The ${link('configuration reference', 'codex-config.md')} contains ${count(size(config.items))} entries and the ${link('environment-variable reference', 'codex-env-vars.md')} contains ${count(size(env.items))} entries; each follows its documented source version.
 
 The additional ${link('model-facing text sweep', 'desktop-model-facing-text.md')} publishes ${count(roleLines.length)} reviewed entries: ${count(local)} local source review and ${count(classified)} Jev classifications. Classifier confidence is a triage signal, while local review is a separate source decision. Neither proves UI execution, account access or live model delivery.

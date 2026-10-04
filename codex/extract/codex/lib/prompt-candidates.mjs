@@ -45,6 +45,15 @@ export function looksLikeProse(text) {
   return (text.match(/[.!?:](\s|$)/g) ?? []).length >= 2;
 }
 
+// Discovery must be broader than ordinary English prose: short tool descriptions and
+// XML-wrapped instructions still go to Jev. These hints select candidates, not verdicts.
+function promptHint(text, role) {
+  const words = text.match(/[A-Za-z][A-Za-z'’-]+/g) ?? [];
+  if (text.length < 24 || words.length < 5) return false;
+  if (/^(?:tool-description|description|toolDescription|server_instructions|developerInstructions|systemPrompt|prompt|[a-z]+Prompt)$/.test(role.kind)) return true;
+  return /\b(?:You are|You must|You should|Do not|Respond with|Return only|Treat .{0,50} as|Your (?:task|job|role))\b/.test(text);
+}
+
 // UI translation tables, one chunk per locale (fr-CA-<hash>.js, tl-<hash>.js, ...): the name is
 // a real language code plus optional script/region subtags. app-shared-<hash>.js is not one.
 const languageNames = new Intl.DisplayNames(["en"], { type: "language" });
@@ -79,28 +88,41 @@ export function literalRole(src, outer, index) {
   return { kind: key ?? "literal" };
 }
 
-// Candidates across the asar's app scripts. `known` holds extracted prompt texts; `anchors`
-// holds the inventory's anchor phrases. A literal inside a known prompt, or containing an
-// anchor, is covered.
-export function promptCandidates(asar, { known = [], anchors = [] } = {}) {
+// Candidates across the asar's app scripts. Only complete fixed text already covered
+// by an extracted prompt is excluded; a shared anchor or prefix is insufficient.
+export function promptCandidates(asar, { known = [] } = {}) {
   // Placeholders (<…>) stand for run-time values; compare the fixed text on both sides.
   const fixed = text => squash(text.replace(/<…>/g, " "));
   const knownText = known.map(fixed);
-  const found = new Map();
+  const found = [];
   for (const entry of asar.appScripts.filter(entry => !isLocaleBundle(entry.path))) {
     const src = asar.textOf(entry);
     const { outer } = literalsOf(src);
     for (const [index, literal] of outer.entries()) {
-      if (literal.end - literal.start < 200) continue;
-      const text = literalText(src, literal);
-      if (!text || !looksLikeProse(text)) continue;
+      if (literal.end - literal.start < 24) continue;
       const role = literalRole(src, outer, index);
       if (role.kind === "translator-note") continue;
-      const flat = squash(text);
-      if (anchors.some(anchor => flat.includes(anchor)) || knownText.some(k => k.includes(fixed(text).slice(0, 120)))) continue;
+      // Avoid constructing a VM for the many short identifiers and ordinary UI labels.
+      if (literal.end - literal.start < 200 && !promptHint(src.slice(literal.start + 1, literal.end - 1), role)) continue;
+      const text = literalText(src, literal);
+      if (!text) continue;
+      if (!looksLikeProse(text) && !promptHint(text, role)) continue;
+      if (knownText.some(k => k.includes(fixed(text)))) continue;
       const hash = candidateHash(text);
-      if (!found.has(hash)) found.set(hash, { hash, file: entry.path, offset: literal.start, role, text });
+      found.push({ hash, file: entry.path, offset: literal.start, role, text,
+        source_context: `${src.slice(Math.max(0,literal.start-400),literal.start)}<candidate literal>${src.slice(literal.end,literal.end+400)}` });
     }
   }
-  return [...found.values()];
+  return found;
+}
+
+// Call only after per-occurrence role decisions and privacy checks. Keep every positive
+// source locator while publishing identical text once; a UI occurrence never wins by order.
+export function mergePublishedCandidates(candidates) {
+  const groups = new Map();
+  for (const candidate of candidates) {
+    if (!groups.has(candidate.text)) groups.set(candidate.text,{...candidate,also_at:[]});
+    else groups.get(candidate.text).also_at.push({file:candidate.file,offset:candidate.offset,role:candidate.role,origin:candidate.origin,p:candidate.p});
+  }
+  return [...groups.values()];
 }

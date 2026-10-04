@@ -345,6 +345,19 @@ export function attachText(items, file, key) {
   const texts = file?.t;
   if (!Array.isArray(texts) || texts.length !== items.length || file.k !== key) return false;
   items.forEach((item, i) => { item.body = texts[i] || ""; item.bl = low(item.body); });
+  // The payload stores each section once. Reassemble page bodies here so a Pages-only
+  // search sees the same content as section search without doubling the download.
+  const pageBodies = new Map();
+  for (const item of items) {
+    if (!item.href) continue;
+    const href = item.href.split('#')[0];
+    if (!pageBodies.has(href)) pageBodies.set(href, []);
+    pageBodies.get(href).push(item.kind === "page" ? item.body : `${item.title}\n${item.body}`);
+  }
+  for (const item of items) if (item.kind === "page" && pageBodies.has(item.href)) {
+    item.body = pageBodies.get(item.href).join("\n");
+    item.bl = low(item.body);
+  }
   return true;
 }
 

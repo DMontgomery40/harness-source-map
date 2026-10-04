@@ -20,6 +20,7 @@ const entryGroups = [
     ["gpt-6-1-sol-base-instructions", "GPT-6.1 Sol instructions", "The current model's captured base instructions"]
   ] },
   { title: "Instructions and conditional modules", entries: [
+    ["collaboration-modes", null, "Plan and Default instructions, selection and catalog overrides"],
     ["astra-base-instructions", null, "Captured model instructions"],
     ["sol-base-instructions", null, "Captured model instructions"],
     ["luna-base-instructions", null, "Captured model instructions"],
