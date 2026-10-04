@@ -1,6 +1,6 @@
 # Codex CLI prompts
 
-Source: openai/codex `rust-v0.159.0-alpha.12.1` (commit `180d8caaac22`), matching the bundled `codex-cli 0.159.0-alpha.12.1`.
+Source: openai/codex `rust-v0.160.0` (commit `a956835d0207`), matching the bundled `codex-cli 0.160.0`.
 
 Prompt templates and prompt text compiled into the Codex CLI that ships inside the ChatGPT desktop app. Each one is read from the open-source openai/codex repository at the release tag that matches the bundled CLI, and appears here only when its exact bytes are found in the shipped executable. Placeholders such as `{{ extra_policy }}` are filled in at run time.
 
@@ -3424,6 +3424,14 @@ Source: `codex-rs/prompts/src/model_messages.rs::REQUEST_USER_INPUT_ASYNC_DESCRI
 
 ```text
 Ask the user one or more questions during ongoing work. Use this tool only to request missing information, preferences, constraints, clarification, or approval. The tool returns immediately without ending the turn or waiting for a reply; any reply arrives asynchronously as a new user message. Keep questions concise, self-contained, and easy to understand, using a level of detail appropriate to the user and task. The UI always allows a free-text answer, including when suggested options are provided. A preselected option is not submitted automatically.
+```
+
+### Content filter guidance
+
+Source: `codex-rs/prompts/src/model_messages.rs::CONTENT_FILTER_GUIDANCE`, SHA-256 `e4629166bfd44c36aa4e80e662f91e0d0227225f5c900a716375607b423f2a94`.
+
+```text
+Your previous response was blocked by a content filter. Do not treat this as a transient failure or try to reproduce or work around the blocked content through repeated attempts, altered formatting, splitting, encoding, tools, subagents, or later wakes. Briefly explain the limitation and offer a permitted alternative. Continue unrelated authorized work.
 ```
 
 ## Tool descriptions

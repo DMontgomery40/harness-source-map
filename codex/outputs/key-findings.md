@@ -1,6 +1,6 @@
 # Key findings
 
-Current extraction: ChatGPT desktop 26.930.21537 (build 12776), bundled Codex CLI 0.159.0-alpha.12.1. These findings regenerate from the current published records on every refresh. Each linked source retains its own capture provenance; a failed extractor can leave an earlier record in place.
+Current extraction: ChatGPT desktop 26.930.31730 (build 12947), bundled Codex CLI 0.160.0. These findings regenerate from the current published records on every refresh. Each linked source retains its own capture provenance; a failed extractor can leave an earlier record in place.
 
 ## The authenticated catalog exposes the model instruction stack
 
@@ -18,11 +18,11 @@ Team Space UI text separately describes shared agent instructions used by schedu
 
 ## Shipped prompts and tools show what the client can assemble
 
-The 5 ChatGPT prompt inventories contain 96 published items and 4 unavailable anchors. [Work prompts](https://harness.dtmont.com/codex/chatgpt-work-prompts/) includes the current captured requests and source labels. [Desktop tool manifest](https://harness.dtmont.com/codex/tool-manifest/) defines 71 tools. The [configuration reference](https://harness.dtmont.com/codex/codex-config/) contains 1,148 entries and the [environment-variable reference](https://harness.dtmont.com/codex/codex-env-vars/) contains 340 entries; each follows its documented source version.
+The 5 ChatGPT prompt inventories contain 96 published items and 4 unavailable anchors. [Work prompts](https://harness.dtmont.com/codex/chatgpt-work-prompts/) includes the current captured requests and source labels. [Desktop tool manifest](https://harness.dtmont.com/codex/tool-manifest/) defines 71 tools. The [configuration reference](https://harness.dtmont.com/codex/codex-config/) contains 1,152 entries and the [environment-variable reference](https://harness.dtmont.com/codex/codex-env-vars/) contains 340 entries; each follows its documented source version.
 
 The additional [model-facing text sweep](https://harness.dtmont.com/codex/desktop-model-facing-text/) publishes 141 reviewed entries: 0 local source review and 141 Jev classifications. Classifier confidence is a triage signal, while local review is a separate source decision. Neither proves UI execution, account access or live model delivery.
 
-The structural ledger contains 25 structural candidates; 8 classified positive, including 5 endpoints. A shipped endpoint, label, enum or feature flag does not establish a launched or enabled feature. [Complete coverage and unresolved surfaces](https://harness.dtmont.com/codex/devday-surface-coverage/) preserves these limits.
+The structural ledger contains 0 structural candidates; 0 classified positive, including 0 endpoints. A shipped endpoint, label, enum or feature flag does not establish a launched or enabled feature. [Complete coverage and unresolved surfaces](https://harness.dtmont.com/codex/devday-surface-coverage/) preserves these limits.
 
 ## Historical Work and voice observations — September 24, 2026
 

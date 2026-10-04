@@ -1,6 +1,6 @@
 # Dev Day: what changed in the harness
 
-This capture reads ChatGPT desktop 26.930.21537 (build 12776) and its bundled codex-cli 0.159.0-alpha.12.1. The Dev Day refresh began with build 11645 / CLI 0.158 as its baseline; current extraction pages use the capture above. Dated browser observations and historical binary reports retain their original evidence dates.
+This capture reads ChatGPT desktop 26.930.31730 (build 12947) and its bundled codex-cli 0.160.0. The Dev Day refresh began with build 11645 / CLI 0.158 as its baseline; current extraction pages use the capture above. Dated browser observations and historical binary reports retain their original evidence dates.
 
 ## Start with the changed instructions
 
@@ -18,7 +18,7 @@ The [official Dev Day recap](https://openai.com/index/devday-2026-recap/) provid
 | GPT-6.1 Sol | Select the model; the dedicated catalog record supplies its prompts. [Official model announcement](https://openai.com/index/introducing-gpt-6-1-sol/). |
 | Ultrafast | Speed-tier configuration and catalog settings are distinct from instruction text. Account-specific settings are excluded. [Official speed-tier guidance](https://learn.chatgpt.com/docs/agent-configuration/speed). |
 | Cloud tasks and reusable environments | Environment setup, permissions and cloud-related client surfaces are inventoried. Cloud-side instruction assembly remains unobserved. [Cloud documentation](https://learn.chatgpt.com/docs/cloud). |
-| Refreshed CLI | Compiled prompts, feature gates and configuration follow codex-cli 0.159.0-alpha.12.1, including opt-in steering. [Official changelog](https://learn.chatgpt.com/docs/changelog). |
+| Refreshed CLI | Compiled prompts, feature gates and configuration follow codex-cli 0.160.0, including opt-in steering. [Official changelog](https://learn.chatgpt.com/docs/changelog). |
 | Code review | User-triggered private-review and repair messages are extracted with hashes. Posting and cloud execution are separate actions. [Review documentation](https://learn.chatgpt.com/docs/code-review?surface=app). |
 | Security Cloud | Repository scanning and scheduled runs are announced; client endpoint evidence does not reveal cloud prompts. [Cloud setup](https://learn.chatgpt.com/docs/security/setup). |
 | Decisions API | A finite-answer preview is announced. No Decisions request or server prompt is inferred from the desktop catalog. |
@@ -29,9 +29,9 @@ The [official Dev Day recap](https://openai.com/index/devday-2026-recap/) provid
 
 ## What was refreshed
 
-The configuration reference now contains 1,148 entries; the environment-variable reference contains 340. The desktop manifest contains 71 tools. The five ChatGPT prompt pages publish 96 items. CLI prompt/skill verification is in [the compiled CLI inventory](https://harness.dtmont.com/codex/codex-cli-prompts/). Exact spans, assembled templates, path-only evidence and unavailable anchors retain separate labels.
+The configuration reference now contains 1,152 entries; the environment-variable reference contains 340. The desktop manifest contains 71 tools. The five ChatGPT prompt pages publish 96 items. CLI prompt/skill verification is in [the compiled CLI inventory](https://harness.dtmont.com/codex/codex-cli-prompts/). Exact spans, assembled templates, path-only evidence and unavailable anchors retain separate labels.
 
-The [Dev Day surface coverage ledger](https://harness.dtmont.com/codex/devday-surface-coverage/) accounts for all 25 structural candidates and maps them to existing coverage, added evidence, incidental changes or unresolved implementation details. Jev's 8 positive classifications are review signals; 5 are endpoints. These counts do not establish newly active features. The [package scan](https://harness.dtmont.com/codex/package-scan/) and [binary scan](https://harness.dtmont.com/codex/binwalk-scan/) preserve their own build provenance and experimental-method boundaries.
+The [Dev Day surface coverage ledger](https://harness.dtmont.com/codex/devday-surface-coverage/) accounts for all 0 structural candidates and maps them to existing coverage, added evidence, incidental changes or unresolved implementation details. Jev's 0 positive classifications are review signals; 0 are endpoints. These counts do not establish newly active features. The [package scan](https://harness.dtmont.com/codex/package-scan/) and [binary scan](https://harness.dtmont.com/codex/binwalk-scan/) preserve their own build provenance and experimental-method boundaries.
 
 ## Limits of this capture
 

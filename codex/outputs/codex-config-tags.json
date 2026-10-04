@@ -15,7 +15,7 @@
    "label": "Prompt and instructions",
    "kind": "topic",
    "definition": "Settings that supply, replace or toggle text injected into the model's context: base or developer instructions, instruction files, AGENTS.md / project-doc discovery and size limits, compaction or startup prompts, and switches that include or omit context blocks (environment, permissions, apps, collaboration-mode instructions). It applies in any group, including features.* flags and requirements: variants. It does not cover settings that only change model behavior without adding text, or that store transcripts.",
-   "count": 36
+   "count": 37
   },
   {
    "id": "model-reasoning",
@@ -36,7 +36,7 @@
    "label": "Sandbox and approvals",
    "kind": "topic",
    "definition": "Settings that limit or approve what the agent may execute or touch: sandbox mode and permission profiles, filesystem and network access for commands, approval policy and approvals reviewer (including guardian auto-review), exec-policy / prefix rules, shell environment policy, and variables Codex sets to mark or escalate sandboxed processes. It applies in any group, including features.* flags and requirements: variants. It does not cover keybindings in approval dialogs or generic terminal-detection variables.",
-   "count": 172
+   "count": 173
   },
   {
    "id": "built-in-tools",
@@ -64,7 +64,7 @@
    "label": "Memory, context and compaction",
    "kind": "topic",
    "definition": "Settings that decide what the model remembers across turns and sessions: generated memories, context-window budgets and reminders, automatic compaction and context rollover, and history/notes carried across windows. It applies in any group, including features.* flags and requirements: variants. It does not cover saving transcripts to disk for the user, telemetry, or clock and current-time reminder settings.",
-   "count": 49
+   "count": 50
   },
   {
    "id": "hooks-notifications",
@@ -104,7 +104,7 @@
    "id": "undocumented",
    "label": "Undocumented",
    "kind": "status",
-   "count": 475
+   "count": 479
   },
   {
    "id": "hidden",
@@ -140,7 +140,7 @@
    "id": "stage-under-development",
    "label": "Feature: under development",
    "kind": "status",
-   "count": 58
+   "count": 60
   },
   {
    "id": "stage-experimental",
@@ -528,6 +528,15 @@
   "config:auto_review.circuit_break_action": [
    "undocumented",
    "sandbox-approvals"
+  ],
+  "config:auto_review.conversation_history_max_output_tokens": [
+   "undocumented",
+   "sandbox-approvals"
+  ],
+  "config:auto_review.experimental_conversation_history_prompt": [
+   "undocumented",
+   "prompt-instructions",
+   "memory-context"
   ],
   "config:auto_review.experimental_policy_template": [
    "undocumented",
@@ -1268,6 +1277,10 @@
    "stage-stable",
    "sandbox-approvals"
   ],
+  "config:features.guardian_conversation_history_tools": [
+   "undocumented",
+   "stage-under-development"
+  ],
   "config:features.guardian_enhanced_node_repl_transcripts": [
    "undocumented",
    "stage-under-development"
@@ -1286,6 +1299,10 @@
    "stage-stable",
    "memory-context",
    "telemetry-storage"
+  ],
+  "config:features.guardian_root_handoff_context": [
+   "undocumented",
+   "stage-under-development"
   ],
   "config:features.guardianv2": [
    "undocumented",

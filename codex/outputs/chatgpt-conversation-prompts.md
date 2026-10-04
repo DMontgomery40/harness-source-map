@@ -1,6 +1,6 @@
 # ChatGPT conversation prompts
 
-Source: `app.asar` of the Codex/ChatGPT desktop app 26.930.21537 (build 12776), SHA-256 `c662897ab25e819cd97a7981cf34d10eefcb9243095d527d27adff71bc18af0a`.
+Source: `app.asar` of the Codex/ChatGPT desktop app 26.930.31730 (build 12947), SHA-256 `87a934de9a00a04d2e534693db87756321ca4f3413f6caa55d3a0d32a5543836`.
 
 Text the app adds to ChatGPT conversations: the regenerate-with-feedback instruction, the sponsored-ad system message, the onboarding kickoff, image-edit and flight-search requests, and the tool results of the ChatGPT-to-Codex handoff.
 
@@ -12,7 +12,7 @@ Each entry says whether its text is exact (one literal in the bundle) or assembl
 
 ### Regenerate with feedback
 
-Source: `webview/assets/chatgpt-conversation-turn-content-fca85cbdf657.js`, offset 296134, SHA-256 `d68556b8a8cac27620e6c3fca92aa36debd19bd595957d8b899ebf69130d4a9d`.
+Source: `webview/assets/chatgpt-conversation-turn-content-5d0b191cc345.js`, offset 296073, SHA-256 `d68556b8a8cac27620e6c3fca92aa36debd19bd595957d8b899ebf69130d4a9d`.
 
 Exact text from the bundle.
 
@@ -22,7 +22,7 @@ The user provided feedback on a previous completion. Use it to generate a new co
 
 ### Ask ChatGPT about a sponsored ad
 
-Source: `webview/assets/placement-f394d22c7dcb.js`, offset 148376, SHA-256 `c7e19e498d3e8673989a66249519934b5927e2af1230f7a8e7cb800caf29b37b`.
+Source: `webview/assets/placement-715d7f997424.js`, offset 148323, SHA-256 `c7e19e498d3e8673989a66249519934b5927e2af1230f7a8e7cb800caf29b37b`.
 
 Exact text from the bundle. Default of the `ask_chatgpt_system_message` remote config value; the server can replace it. The app fills `{LABEL}` and `{DATA}` from the ad.
 
@@ -33,7 +33,7 @@ The user is referring to a sponsored ad: {LABEL}
 
 ### Conversational onboarding kickoff
 
-Source: `webview/assets/chatgpt-onboarding-content-f0ffbc03aa31.js`, offset 4035, SHA-256 `478e1a7542e5e0f0e8f37e331c80e7a5dc37898bcaa893f32715f9eb0f6ba8a5`.
+Source: `webview/assets/chatgpt-onboarding-content-ca56df77e4dd.js`, offset 4036, SHA-256 `478e1a7542e5e0f0e8f37e331c80e7a5dc37898bcaa893f32715f9eb0f6ba8a5`.
 
 Exact text from the bundle. Message id `chatgpt.new-onboarding.conversational-onboarding.bootstrap.kickoff-prompt`.
 
@@ -47,7 +47,7 @@ Write the first assistant message for this onboarding conversation.
 
 ### Image edit: remove background
 
-Source: `webview/assets/image-side-panel-87721a8ef749.js`, offset 85793, SHA-256 `17f4b84bda66d7c716c663463a0dc387d84ba141234aea966c78aff5c8c3b4e1`.
+Source: `webview/assets/image-side-panel-53196d0209a2.js`, offset 85773, SHA-256 `17f4b84bda66d7c716c663463a0dc387d84ba141234aea966c78aff5c8c3b4e1`.
 
 Exact text from the bundle. Message id `imageSidePanel.removeBackgroundPrompt`.
 
@@ -59,7 +59,7 @@ Remove the background from this image. Keep all foreground subjects unchanged an
 
 ### Image edit: remove selection
 
-Source: `webview/assets/image-side-panel-87721a8ef749.js`, offset 80679, SHA-256 `22ea809d5b22ec49b853bca396b882fe6032344f0e09409737019ff9eb5cc10f`.
+Source: `webview/assets/image-side-panel-53196d0209a2.js`, offset 80664, SHA-256 `22ea809d5b22ec49b853bca396b882fe6032344f0e09409737019ff9eb5cc10f`.
 
 Exact text from the bundle. Message id `imageSidePanel.removeSelectionPrompt`.
 
@@ -71,7 +71,7 @@ Remove the selected area from this image
 
 ### Image questionnaire: attached image
 
-Source: `webview/assets/app-primary-c9f7ac16cee9.js`, offset 132349, SHA-256 `c53ee0d7026b93f6b79ca8e0a347c30b9327e75d5c93492e0911efe0ba9d46ad`.
+Source: `webview/assets/app-primary-5fc751535eb1.js`, offset 132270, SHA-256 `c53ee0d7026b93f6b79ca8e0a347c30b9327e75d5c93492e0911efe0ba9d46ad`.
 
 Exact text from the bundle. Message id `chatgpt.imagegenInput.uploadedImageAnswer`.
 
@@ -83,7 +83,7 @@ Use the attached image: {fileName}
 
 ### Image questionnaire: attached file
 
-Source: `webview/assets/app-primary-c9f7ac16cee9.js`, offset 132676, SHA-256 `b1cf3aa3d19a0e9bc2a14bb1be3307ce4e9c3f4d9cbebeb3ca02d4afadb4338e`.
+Source: `webview/assets/app-primary-5fc751535eb1.js`, offset 132597, SHA-256 `b1cf3aa3d19a0e9bc2a14bb1be3307ce4e9c3f4d9cbebeb3ca02d4afadb4338e`.
 
 Exact text from the bundle. Message id `chatgpt.imagegenInput.uploadedFileAnswer`.
 
@@ -95,7 +95,7 @@ Use the attached file: {fileName}
 
 ### Image questionnaire: skipped
 
-Source: `webview/assets/app-primary-c9f7ac16cee9.js`, offset 133706, SHA-256 `0aecb48b055f5557b2b3bd925696c2e08cbbd470cc25c36eca6ca92c97599bde`.
+Source: `webview/assets/app-primary-5fc751535eb1.js`, offset 133627, SHA-256 `0aecb48b055f5557b2b3bd925696c2e08cbbd470cc25c36eca6ca92c97599bde`.
 
 Exact text from the bundle. Message id `chatgpt.imagegenInput.questionsSkipped`.
 
@@ -109,7 +109,7 @@ Questions skipped
 
 ### Flight search adjustment
 
-Source: `webview/assets/form-7a8d085cf91d.js`, offset 10154, SHA-256 `304dd9653993e7dbac4e4752eadf721ce072fb1046e352aa110f065522812a65`.
+Source: `webview/assets/form-a3501a7ac9bb.js`, offset 10152, SHA-256 `304dd9653993e7dbac4e4752eadf721ce072fb1046e352aa110f065522812a65`.
 
 Exact text from the bundle. Message id `flightSearch.submission.adjustment`.
 
@@ -125,7 +125,7 @@ Apply these changes in place of any conflicting details, and ask for anything st
 
 ### Handoff accepted: tool result
 
-Source: `webview/assets/app-initial-60d038a052d7.js`, offset 1725623, SHA-256 `aee7f45d27687e0a56d9ca178489bf3fa02a04b3fbafc4a13e22b80454a018e5`.
+Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 1757495, SHA-256 `aee7f45d27687e0a56d9ca178489bf3fa02a04b3fbafc4a13e22b80454a018e5`.
 
 Assembled from literal pieces in the bundle, joined as the app joins them; `<…>` marks a value filled in at run time. Default of the ChatGPT-to-Codex handoff config (dynamic config 2668276729); the server can replace it.
 
@@ -138,7 +138,7 @@ User chose to hand off:
 
 ### Handoff declined: tool result
 
-Source: `webview/assets/app-initial-60d038a052d7.js`, offset 1726016, SHA-256 `c29d1c24d0b5f05634b1da23959a495fc825ec4324c3a5a7c53da5dfd94bd6f3`.
+Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 1757888, SHA-256 `c29d1c24d0b5f05634b1da23959a495fc825ec4324c3a5a7c53da5dfd94bd6f3`.
 
 Exact text from the bundle. Default of the ChatGPT-to-Codex handoff config (dynamic config 2668276729); the server can replace it.
 

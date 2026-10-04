@@ -1,9 +1,9 @@
 {
   "source": {
     "repository": "openai/codex",
-    "tag": "rust-v0.159.0-alpha.12.1",
-    "commit": "180d8caaac22c656bfc6329f2f573ee1430cbe20",
-    "cli_version": "codex-cli 0.159.0-alpha.12.1"
+    "tag": "rust-v0.160.0",
+    "commit": "a956835d020762cb2b570053af06f643a11c0ecc",
+    "cli_version": "codex-cli 0.160.0"
   },
   "items": [
     {
@@ -728,6 +728,18 @@
       "executable": "codex",
       "bytes": 556,
       "sha256": "f7f47603a91513a78276c4091cd758ee99ca47e625bd7b0f4a8b305cebfa575c",
+      "also_at": []
+    },
+    {
+      "id": "prompts-src-model-messages-rs-content-filter-guidance",
+      "document": "codex-cli-prompts.md",
+      "area": "Model messages",
+      "title": "Content filter guidance",
+      "kind": "constant",
+      "source": "prompts/src/model_messages.rs::CONTENT_FILTER_GUIDANCE",
+      "executable": "codex",
+      "bytes": 355,
+      "sha256": "e4629166bfd44c36aa4e80e662f91e0d0227225f5c900a716375607b423f2a94",
       "also_at": []
     },
     {

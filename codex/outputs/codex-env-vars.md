@@ -1,6 +1,6 @@
 # Codex/ChatGPT environment variables
 
-This page lists every environment variable that the Codex CLI bundled in the ChatGPT desktop app (com.openai.codex 26.930.21537; `codex-cli 0.159.0-alpha.12.1`) or the desktop app's own main-process code reads, sets, or compiles in. CLI entries come from `std::env` read sites, clap `env` attributes and indirect name tables in openai/codex at tag `rust-v0.159.0-alpha.12.1`, and each name was checked against the shipped binary's strings. Desktop entries come from `process.env` reads in `app.asar` (`.vite/build/*.js`). There are 340 entries. 105 are runtime variables read by the CLI. 169 names are read in the desktop main-process bundles; 64 of those are Codex/ChatGPT's own, and the rest are platform or bundled-library names. 33 are set or cleared only for commands Codex/ChatGPT spawns. These categories overlap: for example, `CODEX_HOME` is read by both the CLI and the desktop app. The rest are build-time names, and names present only in source for other platforms or tests. 25 appear in the official Codex docs (the environment-variables table or a code span on another docs page), and 315 are undocumented. "Read as" describes what the code does with the value: `presence` means only set versus unset matters. A `(name)` basis means the kind is inferred from the variable's name, not from the code. Descriptions quote the docs or the nearest source comment, and are left out when neither exists.
+This page lists every environment variable that the Codex CLI bundled in the ChatGPT desktop app (com.openai.codex 26.930.31730; `codex-cli 0.160.0`) or the desktop app's own main-process code reads, sets, or compiles in. CLI entries come from `std::env` read sites, clap `env` attributes and indirect name tables in openai/codex at tag `rust-v0.160.0`, and each name was checked against the shipped binary's strings. Desktop entries come from `process.env` reads in `app.asar` (`.vite/build/*.js`). There are 340 entries. 105 are runtime variables read by the CLI. 169 names are read in the desktop main-process bundles; 64 of those are Codex/ChatGPT's own, and the rest are platform or bundled-library names. 33 are set or cleared only for commands Codex/ChatGPT spawns. These categories overlap: for example, `CODEX_HOME` is read by both the CLI and the desktop app. The rest are build-time names, and names present only in source for other platforms or tests. 25 appear in the official Codex docs (the environment-variables table or a code span on another docs page), and 315 are undocumented. "Read as" describes what the code does with the value: `presence` means only set versus unset matters. A `(name)` basis means the kind is inferred from the variable's name, not from the code. Descriptions quote the docs or the nearest source comment, and are left out when neither exists.
 
 ## Contents
 
@@ -68,7 +68,7 @@ Read by: CLI (bundled codex binary) · Read as: presence (set/unset), string · 
 
 Used in: `cli::provider_auth_reachability_mode_from_auth`, `login::read_codex_access_token_from_env`, `tui::should_delay_startup_composer_for_first_login`
 
-Source: `codex-rs/cli/src/doctor.rs:2603`, `codex-rs/login/src/auth/manager.rs:969`, `codex-rs/tui/src/startup_preflight.rs:28` · Docs: [config-file/environment-variables](https://developers.openai.com/codex/config-file/environment-variables), [auth](https://developers.openai.com/codex/auth)
+Source: `codex-rs/cli/src/doctor.rs:2604`, `codex-rs/login/src/auth/manager.rs:969`, `codex-rs/tui/src/startup_preflight.rs:28` · Docs: [config-file/environment-variables](https://developers.openai.com/codex/config-file/environment-variables), [auth](https://developers.openai.com/codex/auth)
 
 ### `CODEX_API_KEY`
 
@@ -80,7 +80,7 @@ Read by: CLI (bundled codex binary) · Read as: presence (set/unset), string · 
 
 Used in: `cli::stored_auth_issues`, `cli::provider_auth_reachability_mode_from_auth`, `login::read_codex_api_key_from_env`, `login::collect_auth_env_telemetry`
 
-Source: `codex-rs/cli/src/doctor.rs:1403`, `codex-rs/cli/src/doctor.rs:2599`, `codex-rs/login/src/auth/manager.rs:965` · Docs: [config-file/environment-variables](https://developers.openai.com/codex/config-file/environment-variables), [non-interactive-mode](https://developers.openai.com/codex/non-interactive-mode)
+Source: `codex-rs/cli/src/doctor.rs:1403`, `codex-rs/cli/src/doctor.rs:2600`, `codex-rs/login/src/auth/manager.rs:965` · Docs: [config-file/environment-variables](https://developers.openai.com/codex/config-file/environment-variables), [non-interactive-mode](https://developers.openai.com/codex/non-interactive-mode)
 
 ### `CODEX_APP_SERVER_CHATGPT_BASE_URL`
 
@@ -208,7 +208,7 @@ Read by: CLI (bundled codex binary) · Read as: string · Undocumented
 
 Used in: `model-provider-info::create_oss_provider`
 
-Source: `codex-rs/model-provider-info/src/lib.rs:738`
+Source: `codex-rs/model-provider-info/src/lib.rs:740`
 
 ### `CODEX_REFRESH_TOKEN_URL_OVERRIDE`
 
@@ -368,7 +368,7 @@ Value Codex/ChatGPT sets: `seatbelt`
 
 Used in: `cli::probe_status`, `login::is_sandboxed`, `cli::run_command_under_sandbox`, `core::from_sandbox_exec_request`
 
-Source: `codex-rs/cli/src/doctor/network.rs:124`, `codex-rs/login/src/auth/default_client.rs:472`, `codex-rs/cli/src/debug_sandbox.rs:428` · Also set for child processes
+Source: `codex-rs/cli/src/doctor/network.rs:124`, `codex-rs/login/src/auth/default_client.rs:472`, `codex-rs/cli/src/debug_sandbox.rs:432` · Also set for child processes
 
 ### `EXEC_WRAPPER`
 
@@ -548,7 +548,7 @@ Read by: CLI (bundled codex binary) · Read as: string · Undocumented
 
 Used in: `app-server::log_format_from_env`
 
-Source: `codex-rs/app-server/src/lib.rs:427`
+Source: `codex-rs/app-server/src/lib.rs:432`
 
 ### `RUST_LOG`
 
@@ -560,7 +560,7 @@ Read by: CLI (bundled codex binary); desktop app (Electron main process) · Read
 
 Used in: `app-server::run_main_with_transport_options`, `cli::stderr_env_filter`, `cli::init_login_file_logging`, `cloud-tasks::run_main`, `exec::exec_stderr_env_filter`
 
-Source: `codex-rs/app-server/src/lib.rs:711`, `codex-rs/app-server/src/lib.rs:716`, `codex-rs/cli/src/exec_server_telemetry.rs:182` · Docs: [config-file/environment-variables](https://developers.openai.com/codex/config-file/environment-variables)
+Source: `codex-rs/app-server/src/lib.rs:719`, `codex-rs/app-server/src/lib.rs:724`, `codex-rs/cli/src/exec_server_telemetry.rs:182` · Docs: [config-file/environment-variables](https://developers.openai.com/codex/config-file/environment-variables)
 
 ### `TRACEPARENT`
 
@@ -642,7 +642,7 @@ Read by: CLI (bundled codex binary) · Read as: number · Undocumented
 
 Used in: `model-provider-info::create_oss_provider`
 
-Source: `codex-rs/model-provider-info/src/lib.rs:731`
+Source: `codex-rs/model-provider-info/src/lib.rs:733`
 
 ### `CODEX_STARTING_DIFF`
 
@@ -686,11 +686,11 @@ Source: `codex-rs/cli/src/doctor.rs:2057`
 
 ### `DISPLAY`
 
-Read by: CLI (bundled codex binary) · Read as: string · Undocumented
+Read by: CLI (bundled codex binary) · Read as: presence (set/unset), string · Undocumented
 
-Used in: `tui::current`
+Used in: `tui::available`, `tui::current`
 
-Source: `codex-rs/tui/src/tooltips.rs:136`
+Source: `codex-rs/tui/src/clipboard_copy/primary.rs:11`, `codex-rs/tui/src/tooltips.rs:94`
 
 ### `EDITOR`
 
@@ -750,7 +750,7 @@ Read by: CLI (bundled codex binary); desktop app (Electron main process) · Read
 
 Used in: `cli::desktop_log_root`, `external-agent-migration::connector_metadata_roots`, `windows-sandbox-rs::local_app_data_root`
 
-Source: `codex-rs/cli/src/doctor/desktop.rs:141`, `codex-rs/external-agent-migration/src/source/cla.rs:55`, `codex-rs/windows-sandbox-rs/src/setup_provisioning/setup_runtime_bin.rs:200`
+Source: `codex-rs/cli/src/doctor/desktop.rs:141`, `codex-rs/external-agent-migration/src/source/cla.rs:55`, `codex-rs/windows-sandbox-rs/src/setup_provisioning/setup_runtime_bin.rs:204`
 
 ### `NO_COLOR`
 
@@ -758,7 +758,7 @@ Read by: CLI (bundled codex binary) · Read as: presence (set/unset) · Undocume
 
 Used in: `cli::color_output_summary`, `cli::human_output_options`
 
-Source: `codex-rs/cli/src/doctor.rs:1953`, `codex-rs/cli/src/doctor.rs:1963`, `codex-rs/cli/src/doctor.rs:3046`
+Source: `codex-rs/cli/src/doctor.rs:1953`, `codex-rs/cli/src/doctor.rs:1963`, `codex-rs/cli/src/doctor.rs:3047`
 
 ### `PATH`
 
@@ -766,7 +766,7 @@ Read by: CLI (bundled codex binary); desktop app (Electron main process) · Read
 
 Used in: `arg0::arg0_dispatch`, `cli::stdio_command_resolves`, `cli::run_update_action`, `sandboxing::find_system_bwrap_in_path`, `utils::search_path`
 
-Source: `codex-rs/arg0/src/lib.rs:168`, `codex-rs/cli/src/doctor.rs:2939`, `codex-rs/cli/src/main.rs:806` · Also set for child processes · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [sandboxing](https://developers.openai.com/codex/sandboxing)
+Source: `codex-rs/arg0/src/lib.rs:168`, `codex-rs/cli/src/doctor.rs:2940`, `codex-rs/cli/src/main.rs:806` · Also set for child processes · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [sandboxing](https://developers.openai.com/codex/sandboxing)
 
 ### `SSH_CONNECTION`
 
@@ -774,7 +774,7 @@ Read by: CLI (bundled codex binary) · Read as: presence (set/unset) · Undocume
 
 Used in: `tui::is_ssh_session`, `tui::startup`
 
-Source: `codex-rs/tui/src/clipboard_copy.rs:226`, `codex-rs/tui/src/terminal_probe.rs:286`
+Source: `codex-rs/tui/src/clipboard_copy.rs:227`, `codex-rs/tui/src/terminal_probe.rs:286`
 
 ### `SSH_TTY`
 
@@ -782,7 +782,7 @@ Read by: CLI (bundled codex binary) · Read as: presence (set/unset) · Undocume
 
 Used in: `tui::is_ssh_session`, `tui::startup`
 
-Source: `codex-rs/tui/src/clipboard_copy.rs:226`, `codex-rs/tui/src/terminal_probe.rs:285`
+Source: `codex-rs/tui/src/clipboard_copy.rs:227`, `codex-rs/tui/src/terminal_probe.rs:285`
 
 ### `STY`
 
@@ -814,7 +814,7 @@ Read by: CLI (bundled codex binary); desktop app (Electron main process) · Read
 
 Used in: `cli::check`, `protocol::local_temporary_directories`, `protocol::resolve_file_system_special_path`, `protocol::get_writable_roots_with_cwd`, `sandboxing::compatibility_workspace_write_policy`
 
-Source: `codex-rs/cli/src/doctor/filesystem_paths.rs:57`, `codex-rs/core/src/config/mod.rs:4194`, `codex-rs/protocol/src/permissions.rs:2138` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference), [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample)
+Source: `codex-rs/cli/src/doctor/filesystem_paths.rs:57`, `codex-rs/core/src/config/mod.rs:4211`, `codex-rs/protocol/src/permissions.rs:2138` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference), [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample)
 
 ### `TMUX`
 
@@ -822,11 +822,11 @@ Read by: CLI (bundled codex binary) · Read as: presence (set/unset), string · 
 
 > Validate the limit before accepting a deferred terminal send.
 >
-> — `codex-rs/tui/src/clipboard_copy/worker.rs:159`
+> — `codex-rs/tui/src/clipboard_copy/worker.rs:236`
 
 Used in: `tui::ensure_started`, `tui::is_tmux_session`, `tui::osc52_copy`, `tui::detect_pet_image_support`, `tui::wrap_for_tmux_if_needed`
 
-Source: `codex-rs/tui/src/clipboard_copy/worker.rs:159`, `codex-rs/tui/src/clipboard_copy.rs:231`, `codex-rs/tui/src/clipboard_copy.rs:328`
+Source: `codex-rs/tui/src/clipboard_copy/worker.rs:236`, `codex-rs/tui/src/clipboard_copy.rs:232`, `codex-rs/tui/src/clipboard_copy.rs:329`
 
 ### `TMUX_PANE`
 
@@ -834,7 +834,7 @@ Read by: CLI (bundled codex binary) · Read as: presence (set/unset), string · 
 
 Used in: `tui::copy`, `tui::is_tmux_session`, `tui::detect_pet_image_support`, `tui::running_in_tmux_session`, `tui::options`
 
-Source: `codex-rs/tui/src/clipboard_copy/tmux.rs:20`, `codex-rs/tui/src/clipboard_copy.rs:231`, `codex-rs/tui/src/pets/image_protocol.rs:113`
+Source: `codex-rs/tui/src/clipboard_copy/tmux.rs:20`, `codex-rs/tui/src/clipboard_copy.rs:232`, `codex-rs/tui/src/pets/image_protocol.rs:113`
 
 ### `USER`
 
@@ -870,11 +870,11 @@ Source: `codex-rs/terminal-detection/src/lib.rs:321`
 
 ### `WAYLAND_DISPLAY`
 
-Read by: CLI (bundled codex binary) · Read as: string · Undocumented
+Read by: CLI (bundled codex binary) · Read as: presence (set/unset), string · Undocumented
 
-Used in: `tui::current`
+Used in: `tui::available`, `tui::current`
 
-Source: `codex-rs/tui/src/tooltips.rs:137`
+Source: `codex-rs/tui/src/clipboard_copy/primary.rs:12`, `codex-rs/tui/src/tooltips.rs:95`
 
 ### `WSL_DISTRO_NAME`
 
@@ -960,13 +960,13 @@ Source: `app.asar:.vite/build/bootstrap-B7ariqxX.js`, `app.asar:.vite/build/boot
 
 Read by: desktop app (Electron main process) · Read as: string · Undocumented
 
-Source: `app.asar:.vite/build/bootstrap-B7ariqxX.js`, `app.asar:.vite/build/bootstrap-ClH9X4Aa.js`, `app.asar:.vite/build/bootstrap-yYZ8rgHq.js`
+Source: `app.asar:.vite/build/bootstrap-B7ariqxX.js`, `app.asar:.vite/build/bootstrap-ClH9X4Aa.js`, `app.asar:.vite/build/bootstrap-D3_zvIvQ.js`
 
 ### `CODEX_API_ENDPOINT`
 
 Read by: desktop app (Electron main process) · Read as: string · Undocumented
 
-Source: `app.asar:.vite/build/bootstrap-B7ariqxX.js`, `app.asar:.vite/build/bootstrap-ClH9X4Aa.js`, `app.asar:.vite/build/bootstrap-yYZ8rgHq.js`
+Source: `app.asar:.vite/build/bootstrap-B7ariqxX.js`, `app.asar:.vite/build/bootstrap-ClH9X4Aa.js`, `app.asar:.vite/build/bootstrap-D3_zvIvQ.js`
 
 ### `CODEX_APP_SERVER_FORCE_CLI`
 
@@ -1020,7 +1020,7 @@ Source: `app.asar:.vite/build/bootstrap-B7ariqxX.js`, `app.asar:.vite/build/boot
 
 Read by: desktop app (Electron main process) · Read as: string · Undocumented
 
-Source: `app.asar:.vite/build/desktop-open-path-queue-BHXvnlW9.js`, `app.asar:.vite/build/desktop-open-path-queue-BTYn4hio.js`, `app.asar:.vite/build/desktop-open-path-queue-QUtlC_Hq.js`
+Source: `app.asar:.vite/build/desktop-open-path-queue-B5f5Fap-.js`, `app.asar:.vite/build/desktop-open-path-queue-BHXvnlW9.js`, `app.asar:.vite/build/desktop-open-path-queue-BTYn4hio.js`
 
 ### `CODEX_ELECTRON_AGENT_RUN_ID`
 
@@ -1128,7 +1128,7 @@ Source: `app.asar:.vite/build/main-BbeJ4AAR.js`, `app.asar:.vite/build/main-BefH
 
 Read by: desktop app (Electron main process) · Read as: string · Undocumented
 
-Source: `app.asar:.vite/build/app-protocol-D7MWcAkM.js`, `app.asar:.vite/build/app-protocol-DaeIspKt.js`, `app.asar:.vite/build/app-protocol-IjFomtpu.js`
+Source: `app.asar:.vite/build/app-protocol-BkND8Qwg.js`, `app.asar:.vite/build/app-protocol-D7MWcAkM.js`, `app.asar:.vite/build/app-protocol-DaeIspKt.js`
 
 ### `NODE_REPL_ENABLE_AUDIO`
 
@@ -1302,7 +1302,7 @@ Value Codex/ChatGPT sets: `1`
 
 Used in: `cli::spawn_debug_sandbox_child`, `core::spawn_child_async`
 
-Source: `codex-rs/cli/src/debug_sandbox.rs:628`, `codex-rs/core/src/spawn.rs:87`
+Source: `codex-rs/cli/src/debug_sandbox.rs:632`, `codex-rs/core/src/spawn.rs:92`
 
 ### `CODEX_SESSION_ID`
 
@@ -1376,7 +1376,7 @@ Read by: CLI (bundled codex binary); desktop app (Electron main process) · Undo
 
 Used in: `core-plugins::configure_trusted_git_repository`, `core-plugins::run_git_output`
 
-Source: `codex-rs/core-plugins/src/git_policy.rs:83`, `codex-rs/core-plugins/src/loader.rs:1898`, `app.asar:.vite/build/worker.js`
+Source: `codex-rs/core-plugins/src/git_policy.rs:83`, `codex-rs/core-plugins/src/loader.rs:1901`, `app.asar:.vite/build/worker.js`
 
 ### `GIT_EXEC_PATH`
 
@@ -1404,7 +1404,7 @@ Value Codex/ChatGPT sets: `0`
 
 Used in: `core-plugins::command`, `core-plugins::git_command`, `git-utils::run_git_command_with_timeout_from`, `tui::run_git_command`
 
-Source: `codex-rs/core-plugins/src/git_policy.rs:43`, `codex-rs/core-plugins/src/marketplace_upgrade/git.rs:156`, `codex-rs/git-utils/src/info.rs:417`
+Source: `codex-rs/core-plugins/src/git_policy.rs:43`, `codex-rs/core-plugins/src/marketplace_upgrade/git.rs:156`, `codex-rs/git-utils/src/info.rs:420`
 
 ### `GIT_TEMPLATE_DIR`
 
@@ -1422,7 +1422,7 @@ Value Codex/ChatGPT sets: `0`
 
 Used in: `core-plugins::run_git_output`, `core-plugins::run_git`, `core-plugins::git_command`, `tui::run_gh_command`, `worktree::base_git_command`
 
-Source: `codex-rs/core-plugins/src/loader.rs:1889`, `codex-rs/core-plugins/src/marketplace_add/install.rs:118`, `codex-rs/core-plugins/src/marketplace_upgrade/git.rs:157`
+Source: `codex-rs/core-plugins/src/loader.rs:1892`, `codex-rs/core-plugins/src/marketplace_add/install.rs:117`, `codex-rs/core-plugins/src/marketplace_upgrade/git.rs:157`
 
 ### `NODE_USE_ENV_PROXY`
 
@@ -1776,7 +1776,7 @@ Source: `app.asar:.vite/build/main-BefHSPFJ.js`, `app.asar:.vite/build/main-C-Mh
 
 Read by: desktop app (Electron main process) · Read as: string · Undocumented
 
-Source: `app.asar:.vite/build/policy-BiKjVXeL.js`, `app.asar:.vite/build/policy-DLF9H4Kq.js`, `app.asar:.vite/build/startup-requirements-BuflV7ux.js`
+Source: `app.asar:.vite/build/policy-BiKjVXeL.js`, `app.asar:.vite/build/policy-DLF9H4Kq.js`, `app.asar:.vite/build/startup-requirements-BXJhIMRW.js`
 
 ### `OSTYPE`
 
@@ -2064,7 +2064,7 @@ Source: `app.asar:.vite/build/main-BbeJ4AAR.js`, `app.asar:.vite/build/main-BefH
 
 Read by: desktop app (Electron main process) · Read as: path (name) · Undocumented
 
-Source: `app.asar:.vite/build/bootstrap-B7ariqxX.js`, `app.asar:.vite/build/bootstrap-ClH9X4Aa.js`, `app.asar:.vite/build/bootstrap-yYZ8rgHq.js`
+Source: `app.asar:.vite/build/bootstrap-B7ariqxX.js`, `app.asar:.vite/build/bootstrap-ClH9X4Aa.js`, `app.asar:.vite/build/bootstrap-D3_zvIvQ.js`
 
 ### `ZEIT_BITBUCKET_COMMIT_SHA`
 
@@ -2214,7 +2214,7 @@ Read by: Rust source only (not compiled into this macOS binary) · Read as: path
 
 Used in: `app-server::test_user_config_file_from_env`
 
-Source: `codex-rs/app-server/src/lib.rs:1484`
+Source: `codex-rs/app-server/src/lib.rs:1492`
 
 ### `CODEX_BWRAP_SOURCE_DIR`
 
@@ -2270,13 +2270,13 @@ Read by: Rust source only (not compiled into this macOS binary) · Read as: pres
 
 > Only managed app-server launches accept the local socket shutdown request.
 >
-> — `codex-rs/app-server/src/lib.rs:800`
+> — `codex-rs/app-server/src/lib.rs:808`
 
 Value Codex/ChatGPT sets: `1`
 
 Used in: `app-server::run_main_with_transport_options`, `app-server-daemon::start_inner`
 
-Source: `codex-rs/app-server/src/lib.rs:800`, `codex-rs/app-server-daemon/src/backend/pid_start.rs:219` · Also set for child processes
+Source: `codex-rs/app-server/src/lib.rs:808`, `codex-rs/app-server-daemon/src/backend/pid_start.rs:219` · Also set for child processes
 
 ### `CODEX_SANDBOX_LAUNCH_`
 
@@ -2544,7 +2544,7 @@ Read by: Rust source only (not compiled into this macOS binary); desktop app (El
 
 Used in: `cli::stdio_command_resolves`, `utils::search_path`, `windows-sandbox-rs::inherit_path_env`, `windows-sandbox-rs::reorder_pathext_for_stubs`
 
-Source: `codex-rs/cli/src/doctor.rs:2951`, `codex-rs/utils/pty/src/win/psuedocon.rs:308`, `codex-rs/windows-sandbox-rs/src/env.rs:42`
+Source: `codex-rs/cli/src/doctor.rs:2952`, `codex-rs/utils/pty/src/win/psuedocon.rs:308`, `codex-rs/windows-sandbox-rs/src/env.rs:42`
 
 ### `RUNFILES_DIR`
 

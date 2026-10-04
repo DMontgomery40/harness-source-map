@@ -1,9 +1,9 @@
 {
  "page": "outputs/chatgpt-gpt-builder-prompts.md",
- "app_version": "26.930.21537",
- "app_build": "12776",
+ "app_version": "26.930.31730",
+ "app_build": "12947",
  "source": {
-  "asar_sha256": "c662897ab25e819cd97a7981cf34d10eefcb9243095d527d27adff71bc18af0a"
+  "asar_sha256": "87a934de9a00a04d2e534693db87756321ca4f3413f6caa55d3a0d32a5543836"
  },
  "items": [
   {
@@ -11,8 +11,8 @@
    "title": "Current fields: no profile picture",
    "label": "assembled",
    "message_id": null,
-   "source_file": "webview/assets/page-5c8a6d596758.js",
-   "byte_offset": 3138,
+   "source_file": "webview/assets/page-98cc5a8f2220.js",
+   "byte_offset": 3137,
    "sha256": "50c9d93a3cdd14049e52e97bb0ccbd5b297352a37d64cebde5e62509e520d561",
    "text": "This is the GPT's current set of fields:\n\n{\n  \"name\": \"<NAME>\",\n  \"description\": \"<DESCRIPTION>\",\n  \"context\": \"<INSTRUCTIONS>\",\n  \"prompt_starters\": [\n    \"<PROMPT_STARTER>\"\n  ],\n  \"abilities\": [\n    \"<ABILITY>\"\n  ],\n  \"file_ids\": [\n    \"<FILE_ID>\"\n  ]\n}\n\nThis GPT does not have a profile picture. You must generate a profile picture when you next update your behavior."
   },
@@ -21,8 +21,8 @@
    "title": "Current fields: with profile picture",
    "label": "assembled",
    "message_id": null,
-   "source_file": "webview/assets/page-5c8a6d596758.js",
-   "byte_offset": 3138,
+   "source_file": "webview/assets/page-98cc5a8f2220.js",
+   "byte_offset": 3137,
    "sha256": "fa04926be840d1670593e01cd2f11d495bf42905ba4b5cba3d1310a0db190043",
    "text": "This is the GPT's current set of fields:\n\n{\n  \"name\": \"<NAME>\",\n  \"description\": \"<DESCRIPTION>\",\n  \"context\": \"<INSTRUCTIONS>\",\n  \"prompt_starters\": [\n    \"<PROMPT_STARTER>\"\n  ],\n  \"abilities\": [\n    \"<ABILITY>\"\n  ],\n  \"file_ids\": [\n    \"<FILE_ID>\"\n  ]\n}\n\nThe GPT has a profile picture."
   },
@@ -31,8 +31,8 @@
    "title": "Settings changed directly",
    "label": "assembled",
    "message_id": null,
-   "source_file": "webview/assets/page-5c8a6d596758.js",
-   "byte_offset": 3806,
+   "source_file": "webview/assets/page-98cc5a8f2220.js",
+   "byte_offset": 3804,
    "sha256": "ea7dce415e54fedafd65dae250ebf5f69c582f95090f34695d878ffe2fd0573c",
    "text": "<…>\n\nThe user changed these settings directly. Treat these fields, abilities, and files as the current GPT configuration. Do not call update_behavior yet; incorporate these changes in your next update_behavior call. Files absent from file_ids are no longer available to the GPT."
   },
@@ -41,8 +41,8 @@
    "title": "Files uploaded to the GPT",
    "label": "assembled",
    "message_id": null,
-   "source_file": "webview/assets/page-5c8a6d596758.js",
-   "byte_offset": 25188,
+   "source_file": "webview/assets/page-98cc5a8f2220.js",
+   "byte_offset": 25180,
    "sha256": "a6a36541e762f65f11901f66a3f39b1475aa412558f9b950ecc2cfa72fe71335",
    "text": "The user uploaded these files to the GPT: <…>. Incorporate them in your next update_behavior call."
   }

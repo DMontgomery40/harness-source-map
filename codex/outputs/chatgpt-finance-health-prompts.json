@@ -1,9 +1,9 @@
 {
  "page": "outputs/chatgpt-finance-health-prompts.md",
- "app_version": "26.930.21537",
- "app_build": "12776",
+ "app_version": "26.930.31730",
+ "app_build": "12947",
  "source": {
-  "asar_sha256": "c662897ab25e819cd97a7981cf34d10eefcb9243095d527d27adff71bc18af0a"
+  "asar_sha256": "87a934de9a00a04d2e534693db87756321ca4f3413f6caa55d3a0d32a5543836"
  },
  "items": [
   {
@@ -11,7 +11,7 @@
    "title": "Manual account: cash",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/CompilerIntrinsics-5cd14ecfce00.js",
+   "source_file": "webview/assets/CompilerIntrinsics-2d35227fcbc5.js",
    "byte_offset": 362224,
    "sha256": "7cb7157a5301cd54123329cb032e188baf09d56ad47975796c707863683faa65",
    "text": "Help me track a cash account manually. Ask one short question at a time for its name, checking or savings type, current balance, and currency if unclear. An institution is optional. After I answer, save it as a financial memory for a separate account."
@@ -21,7 +21,7 @@
    "title": "Manual account: investment",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/CompilerIntrinsics-5cd14ecfce00.js",
+   "source_file": "webview/assets/CompilerIntrinsics-2d35227fcbc5.js",
    "byte_offset": 362989,
    "sha256": "b42809a0fe8a3af18c79f3974c6dc63189ba47b28f6b4cbb36b34b6f979abf08",
    "text": "Help me track an investment account manually. Ask one short question at a time for its name, type, total balance, and currency if unclear. After I answer, save it as a financial memory for a separate investment account, not a holding or generic asset."
@@ -31,7 +31,7 @@
    "title": "Manual account: real estate",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/CompilerIntrinsics-5cd14ecfce00.js",
+   "source_file": "webview/assets/CompilerIntrinsics-2d35227fcbc5.js",
    "byte_offset": 363793,
    "sha256": "e0156866c1361713b955796f64a150829a7a9dd14c665413adb1aa2f7953e58a",
    "text": "Help me track real estate manually. Ask one short question at a time for the property name, type, estimated value, and currency if unclear. After I answer, save it as a financial memory."
@@ -41,7 +41,7 @@
    "title": "Manual account: vehicle",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/CompilerIntrinsics-5cd14ecfce00.js",
+   "source_file": "webview/assets/CompilerIntrinsics-2d35227fcbc5.js",
    "byte_offset": 364431,
    "sha256": "ccfb5eb8226036a30bd7d2a1c67837d295c5e207dc4d3bb91e4d47d3e3bbcff3",
    "text": "Help me track a vehicle manually. Ask one short question at a time for its name, type, estimated value, and currency if unclear. After I answer, save it as a financial memory."
@@ -51,7 +51,7 @@
    "title": "Manual account: asset",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/CompilerIntrinsics-5cd14ecfce00.js",
+   "source_file": "webview/assets/CompilerIntrinsics-2d35227fcbc5.js",
    "byte_offset": 365090,
    "sha256": "152e2eb2657d3453def2f2b98822b07a9280d20a4d7d2843b0069a650e05f662",
    "text": "Help me track an asset manually. Ask one short question at a time for its name, type, estimated value, and currency if unclear. After I answer, save it as a financial memory."
@@ -61,7 +61,7 @@
    "title": "Manual account: loan",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/CompilerIntrinsics-5cd14ecfce00.js",
+   "source_file": "webview/assets/CompilerIntrinsics-2d35227fcbc5.js",
    "byte_offset": 365727,
    "sha256": "14c02b21c767a10bc43dafd4c6139c78244ea261e98331e84a379327c276a2cb",
    "text": "Help me track a loan manually. Ask one short question at a time for its name, type, positive amount owed, and currency if unclear. A lender is optional. After I answer, save it as a financial memory."
@@ -71,7 +71,7 @@
    "title": "Manual account: debt",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/CompilerIntrinsics-5cd14ecfce00.js",
+   "source_file": "webview/assets/CompilerIntrinsics-2d35227fcbc5.js",
    "byte_offset": 366415,
    "sha256": "12aa6a70f14eee9841ebc559cf01b7e597877abb2333c27313a0da06f01ff3a7",
    "text": "Help me track a debt manually. Ask one short question at a time for its name, whether it is a credit card, positive amount owed, and currency if unclear. A creditor is optional. After I answer, save it as a financial memory."
@@ -81,7 +81,7 @@
    "title": "Manual account: insurance",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/CompilerIntrinsics-5cd14ecfce00.js",
+   "source_file": "webview/assets/CompilerIntrinsics-2d35227fcbc5.js",
    "byte_offset": 367263,
    "sha256": "fff9d6741b4b0d706f73c90a9e930686a707c0bcd7862876757191fe70051576",
    "text": "Help me track an insurance policy manually. First ask if it has an actual cash or surrender value, not just a death benefit. Then ask one short question at a time for its name, value, and currency if unclear. Only after I answer, save it as a financial memory."
@@ -91,8 +91,8 @@
    "title": "Newly connected accounts",
    "label": "exact",
    "message_id": "personalFinance.homeBeacon.onboardingPrompt",
-   "source_file": "webview/assets/home-beacon-4abb1014a7bd.js",
-   "byte_offset": 4169,
+   "source_file": "webview/assets/home-beacon-ba0b247f8f79.js",
+   "byte_offset": 4174,
    "sha256": "6a3fd68e58b9b5b9ccb6657e2574659cadf80fec23af48a63d7fe4ed5d39b0f8",
    "text": "What can I do with my newly connected accounts once they finish syncing?"
   },
@@ -101,8 +101,8 @@
    "title": "Selected Health record",
    "label": "assembled",
    "message_id": null,
-   "source_file": "webview/assets/page-144ebb5e60cf.js",
-   "byte_offset": 21697,
+   "source_file": "webview/assets/page-6b9b65f8b5e1.js",
+   "byte_offset": 21691,
    "sha256": "66363e44c91093868d6bde0d5761dfdbaf5c9b75b9d709f682cb832955843179",
    "text": "The user is asking about the currently selected Health record. Call open_medical_resource with this Health-generated link: <…>. Use the returned record and any related historical measurements to answer the user's question."
   }
