@@ -1,9 +1,20 @@
 // Explicit local source review of uncached build 12246 candidates.
-// Decisions are booleans, not Jev confidence. Exact text and source must match.
+// Decisions are booleans, not Jev confidence. Exact text, source and occurrence must match.
 // Static evidence establishes model-facing wording; rollout and live injection remain unverified.
 import crypto from "node:crypto";
 
-export const promptReviews = new Map(
+export const reviewOccurrenceKey = (hash,file,offset) => JSON.stringify([hash,file,offset]);
+export function indexPromptReviews(reviews) {
+  const indexed = new Map();
+  for (const review of reviews) {
+    const key = reviewOccurrenceKey(review.hash,review.source_file,review.source_offset);
+    if (indexed.has(key)) throw new Error("Duplicate local review for the same source occurrence");
+    indexed.set(key,review);
+  }
+  return indexed;
+}
+
+export const promptReviews = indexPromptReviews(
 [
   {
     "hash": "bcff48b93fdb57d6",
@@ -701,11 +712,12 @@ export const promptReviews = new Map(
     "text_sha256": "c530d4b0adb9c75732cfd728c9d7573981e5c03c85f54153bb8d7731756e495b",
     "reason": "Human-facing UI, policy notice, onboarding explanation or editor help."
   }
-].map(review => [review.hash, review]));
+]);
 
 export function localReviewFor(candidate, reviews = promptReviews) {
-  const review = reviews.get(candidate.hash);
+  const review = reviews.get(reviewOccurrenceKey(candidate.hash,candidate.file,candidate.offset));
   if (!review || typeof review.model_facing !== "boolean" || review.source_file !== candidate.file ||
+      !Number.isSafeInteger(candidate.offset) || candidate.offset < 0 || review.source_offset !== candidate.offset ||
       review.text_sha256 !== crypto.createHash("sha256").update(candidate.text).digest("hex")) return null;
   return review;
 }

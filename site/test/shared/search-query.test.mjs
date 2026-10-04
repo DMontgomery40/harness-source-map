@@ -1,9 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { groupResults, hasQuery, indexItems, itemHref, matchRanges, parseQuery, prepare, resultSnippet, search, snippetAround, splitWords, wordStarts } from "../../src/shared/search/query.js";
+import { attachText, groupResults, hasQuery, indexItems, itemHref, indexKey, matchRanges, parseQuery, prepare, resultSnippet, search, snippetAround, splitWords, wordStarts } from "../../src/shared/search/query.js";
 
 const item = (title, kind = "h", extra = {}) => prepare({ kind, title, context: "", ...extra });
 const titles = (items, q, opts) => search(items, parseQuery(q), opts).results.map(r => r.item.title);
+
+test('Pages search includes instructions inside the page sections, not just its introduction', () => {
+  const index={pages:[{s:'cli-prompts',t:'CLI prompt templates',c:'Prompts'},{s:'unrelated',t:'Unrelated page',c:'Overview'}],items:[{p:0,a:'plan',t:'Plan',k:'prompt'}]};
+  const items=indexItems(index);
+  assert.ok(attachText(items,{k:indexKey(index),t:['Templates compiled into the CLI.','Nothing relevant here.','You are in Plan Mode. Do not mutate files.']},indexKey(index)));
+  assert.deepEqual(titles(items,'"plan mode"',{scope:'page'}),['CLI prompt templates']);
+  assert.match(resultSnippet(items[0],parseQuery('"plan mode"')),/Plan Mode/);
+});
 
 test("query language: words, phrases, exclusions, kind and shorthand prefixes, in:, is:", () => {
   const q = parseQuery('cache "prompt caching" -bedrock env:TTL in:codex is:undocumented');

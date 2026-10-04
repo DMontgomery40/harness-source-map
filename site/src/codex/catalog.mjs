@@ -35,6 +35,15 @@ export const categories = [
     label: "Model instructions",
     files: [
       {
+        path: "outputs/collaboration-modes.md",
+        anchor: "collaboration-modes-md",
+        slug: "collaboration-modes",
+        records: "outputs/collaboration-modes.json",
+        format: "markdown",
+        title: "Plan mode and Default mode",
+        defaultOpen: true
+      },
+      {
         path: "outputs/persistent-instructions.md",
         anchor: "aeon-persistent-instructions-2026-09-24-md",
         slug: "persistent-mode-instructions",
