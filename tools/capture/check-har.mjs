@@ -10,6 +10,7 @@ export const SECRET_PATTERNS = [
   ["bearer token", /Bearer\s+(?!<redacted)[A-Za-z0-9._~+/=-]{20,}/],
   ["JWT", /\beyJ(?:hbGci|0eXAi|raWQi)[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\./],
   ["Anthropic API key", /\bsk-ant-[A-Za-z0-9_-]{20,}/],
+  ["OpenRouter API key", /\bsk-or-v1-[A-Za-z0-9_-]{20,}/],
   ["OpenAI API key", /\bsk-(?:proj-)?[A-Za-z0-9]{32,}/],
   ["npm token", /\bnpm_[A-Za-z0-9]{30,}/],
   ["GitHub token", /\bgh[pousr]_[A-Za-z0-9]{30,}/],
