@@ -182,6 +182,20 @@ function stripEditorialTitle(source) {
     : source;
 }
 
+function renderStructuredSource(document, anchor, ids) {
+  const metadata = JSON.parse(document.source);
+  const groups = new Map();
+  for (const record of document.searchRecords) {
+    const group = record.group ?? "Other tools";
+    (groups.get(group) ?? groups.set(group, []).get(group)).push(record);
+  }
+  const scope = metadata.scope ? `<p class="source-scope">${escapeHtml(metadata.scope)}</p>` : "";
+  const redactions = metadata.redactions ? `<p class="source-redactions">${escapeHtml(metadata.redactions)}</p>` : "";
+  const raw = `<p class="source-raw"><a href="${escapeHtml(document.slug ?? anchor)}/raw.json">Raw JSON and capture metadata</a></p>`;
+  const cards = [...groups].map(([group, records]) => `<h3>${escapeHtml(group)}</h3>${records.map(record => `<article class="source-record"><h4>${escapeHtml(record.title)}</h4><pre>${escapeHtml(record.text ?? "Description unavailable")}</pre></article>`).join("")}`).join("");
+  return anchorOutline(`<div class="markdown-body">${scope}${redactions}${raw}${cards}</div>`, { anchor, ids });
+}
+
 function renderDocument(document, ids) {
   const name = fileName(document.path);
   const anchor = document.anchor ?? fileAnchor(document.path);
@@ -194,7 +208,9 @@ function renderDocument(document, ids) {
       ? anchorOutline(`<div class="markdown-body">${document.instructionProfile
         ? renderInstructionMarkdown(source, document.instructionProfile, anchor)
         : renderMarkdown(source, { headingOffset: 1, prompt: document.promptText === true })}</div>`, { anchor, ids })
-      : { html: `<pre class="source-block"><code>${escapeHtml(document.source)}</code></pre>`, outline: [] };
+      : document.searchRecords?.length
+        ? renderStructuredSource(document, anchor, ids)
+        : { html: `<pre class="source-block"><code>${escapeHtml(document.source)}</code></pre>`, outline: [] };
 
   let body = content;
   if (document.filter) {
@@ -217,7 +233,8 @@ function renderDocument(document, ids) {
     records: document.searchRecords,
     content: body,
     filterVocabulary: document.filter?.vocabulary,
-    outline
+    outline,
+    tocOutline: document.format === "source" && document.searchRecords?.length ? outline.filter(item => item.level <= 3) : outline
   };
 }
 
@@ -262,6 +279,7 @@ function statusLine(status) {
 export function searchIndex(rendered, routes) {
   return buildSearchIndex({
     product: "codex",
+    strictRecords: true,
     featured: SEARCH_FEATURED,
     documents: rendered.map(document => ({
       slug: routes.slug(document.anchor),
@@ -295,8 +313,8 @@ export function renderSite({ categories, documents, status = null }) {
 function renderPage({ categories, rendered, routes, current = null, status = null }) {
   const anchors = new Map(rendered.map(document => [document.path, document.anchor]));
   const outlines = current
-    ? new Map([[current.path, current.outline.map(item => ({ ...item, id: routes.localId(item.id, current.anchor) }))]])
-    : new Map(rendered.map(document => [document.path, document.outline]));
+    ? new Map([[current.path, current.tocOutline.map(item => ({ ...item, id: routes.localId(item.id, current.anchor) }))]])
+    : new Map(rendered.map(document => [document.path, document.tocOutline]));
   const href = (path, id) => {
     const anchor = anchors.get(path);
     if (!current) return `#${id ?? anchor}`;
@@ -390,6 +408,9 @@ function renderPage({ categories, rendered, routes, current = null, status = nul
     pre{max-width:100%;overflow-x:hidden;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;margin:1.5em 0;padding:18px 20px;border:1px solid var(--line);border-radius:2px;background:var(--panel);font-size:13px;line-height:1.55}
     pre code{font-size:inherit;white-space:inherit}
     .source-block{max-width:100%;overflow-x:hidden;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;padding:20px;border:1px solid var(--line);background:var(--panel)}
+    .source-raw{margin:0 0 22px}
+    .source-record{margin:0 0 20px;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+    .source-record h4{margin:0 0 8px;overflow-wrap:anywhere}.source-record pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;line-height:1.55}
     table{display:block;width:100%;max-width:100%;margin:1.7em 0;border-collapse:collapse;overflow-x:auto;font-size:14px}
     th,td{padding:10px 12px;border:1px solid var(--line);text-align:left;vertical-align:top}
     th{background:var(--panel-2);font-weight:600}

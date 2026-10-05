@@ -223,7 +223,7 @@ test("production catalog keeps supporting tool evidence accessible", async () =>
       for (const file of category.files) {
         const sourceFile = path.join(root, file.path);
         await mkdir(path.dirname(sourceFile), { recursive: true });
-        await writeFile(sourceFile, `# ${path.basename(file.path)}\n`);
+        await writeFile(sourceFile, file.format === "source" && file.path.endsWith(".json") ? "{}\n" : `# ${path.basename(file.path)}\n`);
         if (file.filters) {
           await writeFile(path.join(root, file.filters.records), JSON.stringify({ items: [] }));
           await writeFile(path.join(root, file.filters.tags), JSON.stringify({ tags: [], items: {} }));
@@ -252,7 +252,7 @@ test("production reference publishes the complete current instruction and tool s
       for (const file of category.files) {
         const sourceFile = path.join(root, file.path);
         await mkdir(path.dirname(sourceFile), { recursive: true });
-        await writeFile(sourceFile, `# ${path.basename(file.path)}\n`);
+        await writeFile(sourceFile, file.format === "source" && file.path.endsWith(".json") ? "{}\n" : `# ${path.basename(file.path)}\n`);
         if (file.filters) {
           await writeFile(path.join(root, file.filters.records), JSON.stringify({ items: [] }));
           await writeFile(path.join(root, file.filters.tags), JSON.stringify({ tags: [], items: {} }));
@@ -652,7 +652,7 @@ test("production pages resolve every contents link to exactly one unique anchor"
     const index = await readFile(outFile, "utf8");
     const indexLinks = [...tableOfContents(index).matchAll(/data-depth="(\d)"/g)].map(match => match[1]);
     assert(indexLinks.includes("1") && indexLinks.includes("2"), "the full reference lists two heading levels");
-    for (const file of documents.filter(file => file.format === "source")) {
+    for (const file of documents.filter(file => file.format === "source" && !file.records)) {
       const anchor = file.anchor ?? file.path.split("/").at(-1).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       assert.match(tableOfContents(index), new RegExp(`<li data-document="${anchor}"><a [^>]+>[^<]+</a></li>`), `${file.path} has no child list`);
     }

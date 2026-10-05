@@ -387,7 +387,7 @@ export function indexItems(index, { product, label } = {}) {
     out.push(prepare({
       kind: it.k, title: it.t, product, productLabel: label, page: page?.t ?? "", category: page?.c ?? "",
       crumbs: it.b ?? [], excerpt: it.x ?? "", when: it.w ?? "", documented: it.u === undefined ? undefined : it.u === 1,
-      prov: it.f != null || it.o != null ? { file: index.files?.[it.f] ?? null, offset: it.o ?? null, line: it.l ?? null, version: it.r ?? index.ver ?? null } : null,
+      prov: it.f != null || it.o != null ? { file: index.files?.[it.f] ?? null, offset: it.o ?? null, line: it.l ?? null, version: it.r === "" ? null : it.r ?? index.ver ?? null } : null,
       tags: tagLabels, level: it.h ?? null, href: itemHref(index, it),
       context: [page?.t, ...(it.b ?? []), it.x, it.w, tagLabels.join(" "), index.files?.[it.f]].filter(Boolean).join(" · ")
     }));

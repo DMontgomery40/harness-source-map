@@ -135,12 +135,23 @@ const words = name => name.replace(/\.[a-z]+$/, "").replace(/[_-]+/g, " ").trim(
 const items = [];
 const notInBuild = [];
 const byText = new Map();
+// Storage kind (file/constant) is not the model-facing role. These source locations build
+// tool or parameter descriptions; keep that semantic kind separate for the site index.
+const TOOL_DESCRIPTION_SOURCES = [
+  /^ext\/(?:image-generation|web-search)\/.*description\.md$/,
+  /^code-mode-protocol\/src\/description\.rs::/,
+  /^core\/src\/tools\/handlers\/(?:multi_agents(?:_spec)?|wait_for_environment)\.rs::/,
+  /^ext\/history-notes\/src\/tools\.rs::/,
+  /^codex-api\/src\/endpoint\/realtime_websocket\/methods_v2\.rs::REALTIME_V2_(?:BACKGROUND_AGENT|SILENCE)_TOOL_DESCRIPTION$/,
+  /^prompts\/src\/model_messages\.rs::REQUEST_USER_INPUT_ASYNC_DESCRIPTION$/
+];
 function add({ source, kind, title, area, document, text, line, model_facing, source_review, classification_state_sha256, classification_question_version, classification_model_version }) {
   const shipped = shippedIn(text);
   if (!shipped) { notInBuild.push(source); return; }
   const same = byText.get(text);
   if (same) { same.also.push(source); return; }
-  const item = { id: source.replace(/[^a-z0-9]+/gi, "-").toLowerCase(), document, area, title, kind, source, also: [], executable: shipped, bytes: Buffer.byteLength(text), sha256: sha256(text), ...(line ? {line} : {}), ...(model_facing != null ? {model_facing} : {}), ...(classification_state_sha256 ? {classification_state_sha256,classification_question_version,classification_model_version} : {}), ...(source_review ? {decision_origin:"local-source-review",source_review} : model_facing != null ? {decision_origin:"jev"} : {}), text };
+  const search_kind = TOOL_DESCRIPTION_SOURCES.some(pattern => pattern.test(source)) ? "tool" : undefined;
+  const item = { id: source.replace(/[^a-z0-9]+/gi, "-").toLowerCase(), document, area, title, kind, ...(search_kind ? {search_kind} : {}), source, also: [], executable: shipped, bytes: Buffer.byteLength(text), sha256: sha256(text), ...(line ? {line} : {}), ...(model_facing != null ? {model_facing} : {}), ...(classification_state_sha256 ? {classification_state_sha256,classification_question_version,classification_model_version} : {}), ...(source_review ? {decision_origin:"local-source-review",source_review} : model_facing != null ? {decision_origin:"jev"} : {}), text };
   byText.set(text, item);
   items.push(item);
 }

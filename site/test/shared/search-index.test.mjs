@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { buildSearchIndex, clip, excerptsById, loadSearchRecords, normalizeRecord, provenanceOf, recordSpec, searchTextOf, writeSearchText } from "../../src/shared/search-index.mjs";
+import { assertStructuredInventoryCoverage, buildSearchIndex, clip, excerptsById, loadSearchRecords, normalizeRecord, provenanceOf, recordSpec, searchTextOf, writeSearchText } from "../../src/shared/search-index.mjs";
 import { attachText, indexItems, indexKey, itemHref, parseQuery, resultSnippet, search } from "../../src/shared/search/query.js";
 import { buildSite } from "../../src/claude-code/build-site.mjs";
 import { categories } from "../../src/claude-code/catalog.mjs";
@@ -163,6 +163,16 @@ test("records: which file, provenance shapes, kinds, tags, per-document filterin
   }
 });
 
+test("structured source inventories must declare every tool list", () => {
+  const source = JSON.stringify({ tools: [{ name: "image_gen__imagegen", description: "Generate an image." }], direct_tools: [{ name: "view_image", description: "View an image." }] });
+  assert.throws(() => assertStructuredInventoryCoverage({ path: "outputs/host.json", format: "source" }, source), /unindexed tool lists: tools, direct_tools/);
+  assert.throws(() => assertStructuredInventoryCoverage({ path: "outputs/host.json", format: "source", records: { file: "outputs/host.json", list: "tools", kind: "tool" } }, source), /unindexed tool lists: direct_tools/);
+  assert.doesNotThrow(() => assertStructuredInventoryCoverage({ path: "outputs/host.json", format: "source", records: { file: "outputs/host.json", lists: ["tools", "direct_tools"], kind: "tool" } }, source));
+  const partial = JSON.stringify({ tools: [{ name: "view_image", description: "View an image." }, { name: "broken" }] });
+  assert.throws(() => assertStructuredInventoryCoverage({ path: "outputs/host.json", format: "source" }, partial), /unindexed tool lists: tools/);
+  assert.throws(() => assertStructuredInventoryCoverage({ path: "outputs/host.json", format: "source", records: { file: "outputs/host.json", list: "tools", kind: "tool" } }, partial), /tools\[1\] has no name or description/);
+});
+
 test("production: every Codex/ChatGPT page with a records file gets its records", async () => {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../codex");
   const outDir = await mkdtemp(path.join(os.tmpdir(), "search-index-codex-"));
@@ -179,6 +189,35 @@ test("production: every Codex/ChatGPT page with a records file gets its records"
     assert(index.pages.find(p => p.s === 'devday-update')?.f);
     assert(index.pages.find(p => p.s === 'gpt-6-1-sol-base-instructions')?.f);
     for (const slug of withRecords) assert(index.pages.find(p => p.s === slug)?.n > 0, slug);
+    const host = JSON.parse(await readFile(path.join(root, "outputs/current-host-tool-manifest-2026-09-24.json"), "utf8"));
+    assert.equal(index.pages.find(p => p.s === "complete-host-tool-manifest")?.n, host.tools.length + host.direct_tools.length);
+    const hostItems = indexItems(index, { product: "codex" }).filter(i => i.href.startsWith("complete-host-tool-manifest/#") && i.kind === "tool");
+    assert.equal(hostItems.length, host.tools.length + host.direct_tools.length);
+    assert(hostItems.some(i => i.title === "image_gen__imagegen"));
+    const liveCapture = JSON.parse(await readFile(path.join(root, "outputs/host-tool-registry-2026-10-04.json"), "utf8"));
+    assert.doesNotMatch(JSON.stringify(liveCapture), /remote-ssh-discovered:[a-z][\w-]+/i, "session-specific host identifiers stay out of the public capture");
+    assert.doesNotMatch(JSON.stringify(liveCapture), /\b[A-Z]{2}\/\d+\s+[A-Z][a-z]+\s+-\s+[A-Z][a-z]+\b/, "user-specific mail labels stay out of the public capture");
+    const currentItems = indexItems(index, { product: "codex" }).filter(i => i.href.startsWith("host-tool-registry-2026-10-04/#") && i.kind === "tool");
+    assert.equal(currentItems.length, liveCapture.tools.length);
+    assert.deepEqual(JSON.parse(await readFile(path.join(outDir, "host-tool-registry-2026-10-04/raw.json"), "utf8")), liveCapture);
+    const capturePage = await readFile(path.join(outDir, "host-tool-registry-2026-10-04/index.html"), "utf8");
+    assert.match(capturePage, /href="\.\.\/host-tool-registry-2026-10-04\/raw\.json"/);
+    assert.doesNotMatch(capturePage, /<pre class="source-block"><code>\{/);
+    assert.equal(currentItems.find(i => i.title === "image_gen__imagegen")?.prov.version, null, "chat tool capture must not inherit the CLI version");
+    for (const name of ["image_gen__imagegen", "view_image", "mcp__messages__read_image"]) assert(currentItems.some(i => i.title === name), name);
+    const imageTools = search(indexItems(index, { product: "codex" }), parseQuery("image kind:tool")).results.map(r => r.item.title);
+    for (const name of ["image_gen__imagegen", "view_image", "mcp__messages__read_image"]) assert(imageTools.includes(name), name);
+    const cliImage = indexItems(index, { product: "codex" }).find(i => i.page === "CLI prompt templates" && i.title === "Imagegen description");
+    assert.equal(cliImage?.kind, "tool", "the extraction kind file must not decide the semantic search kind");
+    const cliItems = indexItems(index, { product: "codex" }).filter(i => i.page === "CLI prompt templates");
+    const cliSource = JSON.parse(await readFile(path.join(root, "outputs/codex-cli-prompts.json"), "utf8"));
+    const cliSourceItems = indexItems(index, { product: "codex" }).filter(i => i.prov?.file && /^(?:codex-cli-prompts|codex-cli-bundled-skills)\/#/.test(i.href));
+    assert(cliSourceItems.length >= 124);
+    for (const item of cliSourceItems) assert.equal(item.prov.version, cliSource.source.tag, item.title);
+    for (const title of ["Realtime v2 background agent tool description", "History description", "Multi agent v1 namespace description", "Request user input async description"]) {
+      assert.equal(cliItems.find(i => i.title === title)?.kind, "tool", title);
+    }
+    assert.equal(cliItems.find(i => i.title === "Request permissions tool")?.kind, "prompt", "a developer instruction about tool availability remains a prompt");
     const top = search(indexItems(index, { product: "codex" }), parseQuery("chatgpt_base_url")).results[0].item;
     assert.deepEqual([top.kind, top.href, top.prov.file], ["setting", "codex-config/#chatgpt-base-url", "codex-rs/config/src/config_toml.rs"]);
     // The display-path rewrite reaches the index as it reaches the pages.
@@ -189,6 +228,7 @@ test("production: every Codex/ChatGPT page with a records file gets its records"
     const text = JSON.parse(await readFile(path.join(outDir, "search-text.json"), "utf8"));
     const items = indexItems(index, { product: "codex" });
     assert.equal(attachText(items, text, indexKey(index)), true);
+    assert(text.t[index.pages.findIndex(p => p.s === "host-tool-registry-2026-10-04")].length < 2000, "page introduction does not duplicate the raw JSON");
     assert(items.filter(i => i.body).length > items.length * 0.9);
     const long = items.filter(i => i.body.length > 2000).sort((a, b) => b.body.length - a.body.length).slice(0, 15);
     assert(long.length >= 10);

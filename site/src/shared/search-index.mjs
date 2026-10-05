@@ -103,6 +103,29 @@ export function recordSpec(file) {
   return null;
 }
 
+// A raw JSON source page can contain a whole callable inventory. Requiring an explicit list
+// mapping keeps new inventories from quietly becoming one searchable Page and zero Tools.
+export function assertStructuredInventoryCoverage(file, source) {
+  if (file.format !== "source" || !file.path.endsWith(".json")) return;
+  const raw = JSON.parse(source);
+  if (!raw || Array.isArray(raw) || typeof raw !== "object") return;
+  const inventories = Object.entries(raw)
+    .filter(([name, value]) => Array.isArray(value) && value.length > 0 && (
+      value.some(r => r && typeof r === "object" && typeof r.name === "string" && typeof r.description === "string") ||
+      (/(?:^|_)(?:tools?|functions?)$/.test(name) && value.some(r => r && typeof r === "object"))
+    ))
+    .map(([name]) => name);
+  if (!inventories.length) return;
+  const spec = recordSpec(file);
+  const declared = spec?.file === file.path ? new Set(spec.lists ?? (spec.list ? [spec.list] : [])) : new Set();
+  const missing = inventories.filter(name => !declared.has(name));
+  if (missing.length) throw new Error(`${file.path}: unindexed tool lists: ${missing.join(", ")}`);
+  for (const name of inventories) {
+    const incomplete = raw[name].findIndex(r => !r || typeof r.name !== "string" || typeof r.description !== "string");
+    if (incomplete !== -1) throw new Error(`${file.path}: ${name}[${incomplete}] has no name or description`);
+  }
+}
+
 const num = v => (typeof v === "number" && Number.isFinite(v) ? v : typeof v === "string" && /^\d+$/.test(v) ? Number(v) : undefined);
 
 // Where the record's text sits in what ships: { f: file, o: byte offset, l: line, r: version }.
@@ -130,8 +153,8 @@ export function normalizeRecord(r, { kind, tags = [] } = {}) {
     id: r.id ?? null,
     title: String(r.title ?? r.name ?? r.id ?? ""),
     group: r.group ?? r.area ?? r.namespace ?? null,
-    kind: RAW_KIND[r.kind] ?? kind ?? null,
-    text: [r.text, r.question, description].find(v => typeof v === "string" && v.trim()) ?? null,
+    kind: r.search_kind ?? RAW_KIND[r.kind] ?? kind ?? null,
+    text: [r.text, r.question, r.description, description].find(v => typeof v === "string" && v.trim()) ?? null,
     when: typeof r.when === "string" ? r.when : null,
     documented: "documented" in r ? Boolean(r.documented) : undefined,
     prov: provenanceOf(r),
@@ -151,14 +174,21 @@ export async function loadSearchRecords({ sourceRoot, file, transform = s => s }
   let raw = null;
   try { raw = text === null ? null : JSON.parse(transform(text)); } catch { raw = null; }
   if (!raw) return [];
-  const list = spec.list ? raw[spec.list] : Array.isArray(raw) ? raw : raw.items;
+  const lists = spec.lists ?? (spec.list ? [spec.list] : null);
+  const list = lists ? lists.flatMap(name => Array.isArray(raw[name]) ? raw[name] : []) : Array.isArray(raw) ? raw : raw.items;
   if (!Array.isArray(list)) return [];
   const tagFile = spec.tags ? JSON.parse(transform(await readFile(path.join(sourceRoot, spec.tags), "utf8"))) : null;
   const labels = new Map((tagFile?.tags ?? []).map(t => [t.id, t.label]));
+  const sourceVersion = typeof raw.source?.tag === "string" ? raw.source.tag : undefined;
   const doc = path.basename(file.path);
   const records = list
     .filter(r => r && typeof r === "object" && (!r.document || r.document === doc))
-    .map(r => normalizeRecord(r, { kind: spec.kind, tags: (tagFile?.items?.[r.id] ?? []).map(t => labels.get(t) ?? t) }));
+    .map(r => {
+      const normalized = normalizeRecord(r, { kind: spec.kind, tags: (tagFile?.items?.[r.id] ?? []).map(t => labels.get(t) ?? t) });
+      if (!normalized.prov && lists) normalized.prov = { f: spec.file, r: sourceVersion ?? "" };
+      if (normalized.prov && normalized.prov.r === undefined && sourceVersion) normalized.prov.r = sourceVersion;
+      return normalized;
+    });
   // A record whose own kind says nothing (kind "other") takes the file's usual kind.
   const counts = new Map();
   for (const r of records) if (r.kind) counts.set(r.kind, (counts.get(r.kind) ?? 0) + 1);
@@ -181,7 +211,7 @@ const flat = s => String(s ?? "").replace(/\s+/g, " ").trim();
 //   [{ level, text, id }] with the standalone page's ids, records?: normalizeRecord[], inline?: fn }]
 // inline(markdown) → HTML renders a record's group/title the way its heading was rendered.
 // Returns { index, stats }.
-export function buildSearchIndex({ product, documents, featured = [] }) {
+export function buildSearchIndex({ product, documents, featured = [], strictRecords = false }) {
   const tagIds = new Map(), tags = [];
   const tagIndex = label => { if (!tagIds.has(label)) tagIds.set(label, tags.push(label) - 1); return tagIds.get(label); };
   // Provenance file names repeat across records: each is stored once, items keep its number.
@@ -224,6 +254,7 @@ export function buildSearchIndex({ product, documents, featured = [] }) {
     for (const row of rows) if (!row.record) row.record = take(byTitle.get(row.text.replace(/`/g, "")));
     const missed = records.length - taken.size;
     if (missed) stats.unmatched[doc.slug] = missed;
+    if (missed && strictRecords) throw new Error(`${doc.slug}: ${missed} search records have no rendered heading`);
 
     pages.push({ s: doc.slug, t: doc.title, c: doc.category, d: clip(doc.summary || firstParagraph(doc.html), LIMITS.summary) || undefined, n: taken.size || undefined, f: featured.includes(doc.slug) ? 1 : undefined });
     for (const row of rows) {
@@ -243,7 +274,9 @@ export function buildSearchIndex({ product, documents, featured = [] }) {
         if (r.prov?.f) it.f = fileIndex(r.prov.f);
         if (r.prov?.o !== undefined) it.o = r.prov.o;
         if (r.prov?.l !== undefined) it.l = r.prov.l;
-        if (r.prov?.r) it.r = r.prov.r;
+        // Empty string means explicitly unversioned; otherwise the compact index's global
+        // default would falsely label a runtime capture with the CLI's source version.
+        if (r.prov?.r !== undefined) it.r = r.prov.r;
         if (r.tags?.length) it.tg = r.tags.map(tagIndex);
         stats.records++;
       } else {

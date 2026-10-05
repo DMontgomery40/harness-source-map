@@ -2,7 +2,7 @@ import { mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises"
 import path from "node:path";
 import { expandFacts } from "../shared/facts.mjs";
 import { renderSite } from "./render.mjs";
-import { loadSearchRecords, logSearchStats } from "../shared/search-index.mjs";
+import { assertStructuredInventoryCoverage, loadSearchRecords, logSearchStats } from "../shared/search-index.mjs";
 
 const displayReplacements = [
   ["token-gremlin-https-x-com-tokengremlin", "aeon-daybreak-binwalk-extraction"]
@@ -31,6 +31,7 @@ export async function buildSite({ sourceRoot, outFile, categories }) {
     for (const file of category.files) {
       try {
         const raw = rewriteDisplayPaths(await readFile(path.join(sourceRoot, file.path), "utf8"));
+        assertStructuredInventoryCoverage(file, raw);
         const source = file.format === "markdown" ? expandFacts(raw, sourceRoot, file.path) : raw;
         let filter;
         if (file.filters) {
@@ -58,5 +59,10 @@ export async function buildSite({ sourceRoot, outFile, categories }) {
     await mkdir(path.dirname(file), { recursive: true });
     await writeFile(file, page.html, "utf8");
     if (page.stats) logSearchStats("codex", page.stats);
+  }
+  for (const document of documents.filter(doc => doc.format === "source" && doc.searchRecords.length)) {
+    const rawFile = path.join(outDir, document.slug ?? document.anchor, "raw.json");
+    await mkdir(path.dirname(rawFile), { recursive: true });
+    await writeFile(rawFile, document.source, "utf8");
   }
 }
