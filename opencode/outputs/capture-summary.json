@@ -14,18 +14,9 @@
       "network-tracing": 28
     },
     "completeLibraries": {
-      "model-instructions": 31,
-      "conversation-prompts": 3,
-      "tools-schemas": 84,
-      "agents": 2,
-      "skills-plugins-mcp": 9,
-      "providers-models-network-reasoning": 1,
-      "sessions-compaction-storage-export": 15,
-      "approvals-sandboxing": 0,
-      "configuration-precedence": 0,
-      "environment-variables": 0,
-      "cli-commands-flags": 17,
-      "other-model-facing-text": 14
+      "instructions": 74,
+      "context-templates": 15,
+      "tools-parameters": 76
     }
   },
   "sourceFiles": 1429,
@@ -70,6 +61,9 @@
     "payloadBytes": 74630845,
     "classified": 10714,
     "classifiedPositives": 176,
+    "sameTextMerged": 11,
+    "alsoInReviewedRecords": 107,
+    "publishedDiscovered": 165,
     "classifiedNegatives": 10538,
     "providerPending": 0,
     "withheld": 110,

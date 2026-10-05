@@ -7,8 +7,9 @@
   "status": "partial",
   "classified": 10714,
   "classifiedPositives": 176,
+  "sameTextMerged": 11,
   "classifiedNegatives": 10538,
-  "publishedRecords": 176,
+  "publishedRecords": 165,
   "exactCovered": 176,
   "providerPending": 0,
   "withheld": 110,
@@ -16,5 +17,5 @@
   "localReview": 110,
   "pending": 110,
   "unverifiedGaps": 0,
-  "method": "Every classified positive is published once with its exact occurrence text. Privacy-withheld, oversized and unanswered occurrences remain explicit unresolved work."
+  "method": "Every classified positive is published once with its exact occurrence text: on a Discovered page (noting any reviewed record that also contains it), or merged into the entry with the same text (publishedIn). Withheld and oversized occurrences are listed with their exact text on the Not classified page. Privacy-withheld, oversized and unanswered occurrences remain explicit unresolved work."
 }

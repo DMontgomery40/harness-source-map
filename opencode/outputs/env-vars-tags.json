@@ -1,0 +1,671 @@
+{
+  "tags": [
+    {
+      "id": "experimental",
+      "label": "Experimental features",
+      "kind": "topic",
+      "definition": "OPENCODE_EXPERIMENTAL switches and the features they turn on.",
+      "count": 15
+    },
+    {
+      "id": "providers",
+      "label": "Model providers and credentials",
+      "kind": "topic",
+      "definition": "Cloud provider projects, regions, gateways and the keys or tokens OpenCode reads for them.",
+      "count": 35
+    },
+    {
+      "id": "config",
+      "label": "Configuration, data and paths",
+      "kind": "topic",
+      "definition": "Which config, models catalog and database OpenCode loads, and where.",
+      "count": 17
+    },
+    {
+      "id": "server",
+      "label": "Server, sharing and GitHub",
+      "kind": "topic",
+      "definition": "The local server's credentials, session sharing and the GitHub Action integration.",
+      "count": 17
+    },
+    {
+      "id": "observability",
+      "label": "Logging, tracing and diagnostics",
+      "kind": "topic",
+      "definition": "Log levels, OpenTelemetry export, heap snapshots and timing output.",
+      "count": 8
+    },
+    {
+      "id": "behavior",
+      "label": "Session and editor behavior",
+      "kind": "topic",
+      "definition": "Compaction, pruning, file search, the terminal UI and editor integration.",
+      "count": 20
+    },
+    {
+      "id": "host",
+      "label": "Host environment",
+      "kind": "topic",
+      "definition": "Shell, terminal, display and editor variables of the machine OpenCode runs on.",
+      "count": 19
+    },
+    {
+      "id": "flag",
+      "label": "OpenCode Flag",
+      "kind": "status",
+      "definition": "Declared in OpenCode's Flag module (core/src/flag/flag.ts).",
+      "count": 35
+    },
+    {
+      "id": "boolean",
+      "label": "Boolean switch",
+      "kind": "status",
+      "definition": "Read as on/off.",
+      "count": 29
+    },
+    {
+      "id": "opencode-prefix",
+      "label": "OPENCODE_ prefix",
+      "kind": "status",
+      "definition": "Named for OpenCode.",
+      "count": 67
+    },
+    {
+      "id": "third-party",
+      "label": "Other software's variable",
+      "kind": "status",
+      "definition": "A variable other tools or the host define, which OpenCode also reads.",
+      "count": 64
+    }
+  ],
+  "items": {
+    "env-opencode-experimental": [
+      "experimental",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-background-subagents": [
+      "experimental",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-code-mode": [
+      "experimental",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-disable-copy-on-select": [
+      "experimental",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-disable-filewatcher": [
+      "experimental",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-event-system": [
+      "experimental",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-exa": [
+      "experimental",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-filewatcher": [
+      "experimental",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-icon-discovery": [
+      "experimental",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-lsp-tool": [
+      "experimental",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-oxfmt": [
+      "experimental",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-parallel": [
+      "experimental",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-plan-mode": [
+      "experimental",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-references": [
+      "experimental",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-experimental-workspaces": [
+      "experimental",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-aicore-deployment-id": [
+      "providers",
+      "third-party"
+    ],
+    "env-aicore-resource-group": [
+      "providers",
+      "third-party"
+    ],
+    "env-aicore-service-key": [
+      "providers",
+      "third-party"
+    ],
+    "env-aws-bearer-token-bedrock": [
+      "providers",
+      "third-party"
+    ],
+    "env-aws-container-credentials-full-uri": [
+      "providers",
+      "third-party"
+    ],
+    "env-aws-container-credentials-relative-uri": [
+      "providers",
+      "third-party"
+    ],
+    "env-aws-profile": [
+      "providers",
+      "third-party"
+    ],
+    "env-aws-region": [
+      "providers",
+      "third-party"
+    ],
+    "env-azure-cognitive-services-resource-name": [
+      "providers",
+      "third-party"
+    ],
+    "env-azure-resource-name": [
+      "providers",
+      "third-party"
+    ],
+    "env-cf-aig-token": [
+      "providers",
+      "third-party"
+    ],
+    "env-cloudflare-account-id": [
+      "providers",
+      "third-party"
+    ],
+    "env-cloudflare-api-key": [
+      "providers",
+      "third-party"
+    ],
+    "env-cloudflare-api-token": [
+      "providers",
+      "third-party"
+    ],
+    "env-cloudflare-gateway-id": [
+      "providers",
+      "third-party"
+    ],
+    "env-exa-api-key": [
+      "providers",
+      "third-party"
+    ],
+    "env-gcloud-project": [
+      "providers",
+      "third-party"
+    ],
+    "env-gcp-project": [
+      "providers",
+      "third-party"
+    ],
+    "env-gitlab-instance-url": [
+      "providers",
+      "third-party"
+    ],
+    "env-gitlab-token": [
+      "providers",
+      "third-party"
+    ],
+    "env-google-cloud-location": [
+      "providers",
+      "third-party"
+    ],
+    "env-google-cloud-project": [
+      "providers",
+      "third-party"
+    ],
+    "env-google-vertex-location": [
+      "providers",
+      "third-party"
+    ],
+    "env-google-vertex-project": [
+      "providers",
+      "third-party"
+    ],
+    "env-modal-proxy-token": [
+      "providers",
+      "third-party"
+    ],
+    "env-opencode-api-key": [
+      "providers",
+      "opencode-prefix"
+    ],
+    "env-opencode-auth-content": [
+      "providers",
+      "opencode-prefix"
+    ],
+    "env-opencode-console-token": [
+      "providers",
+      "opencode-prefix"
+    ],
+    "env-opencode-enable-exa": [
+      "providers",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-enable-parallel": [
+      "providers",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-websearch-provider": [
+      "providers",
+      "opencode-prefix"
+    ],
+    "env-parallel-api-key": [
+      "providers",
+      "third-party"
+    ],
+    "env-snowflake-cortex-pat": [
+      "providers",
+      "third-party"
+    ],
+    "env-snowflake-cortex-token": [
+      "providers",
+      "third-party"
+    ],
+    "env-vertex-location": [
+      "providers",
+      "third-party"
+    ],
+    "env-opencode-config": [
+      "config",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-config-content": [
+      "config",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-config-dir": [
+      "config",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-db": [
+      "config",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-channel-db": [
+      "config",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-models-fetch": [
+      "config",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-project-config": [
+      "config",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-models-path": [
+      "config",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-models-url": [
+      "config",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-permission": [
+      "config",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-plugin-meta-file": [
+      "config",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-pure": [
+      "config",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-test-home": [
+      "config",
+      "opencode-prefix"
+    ],
+    "env-opencode-test-managed-config-dir": [
+      "config",
+      "opencode-prefix"
+    ],
+    "env-opencode-tui-config": [
+      "config",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-zed-db": [
+      "config",
+      "opencode-prefix"
+    ],
+    "env-xdg-config-home": [
+      "config",
+      "third-party"
+    ],
+    "env-agent": [
+      "server",
+      "third-party"
+    ],
+    "env-github-run-id": [
+      "server",
+      "third-party"
+    ],
+    "env-github-token": [
+      "server",
+      "third-party"
+    ],
+    "env-mentions": [
+      "server",
+      "third-party"
+    ],
+    "env-model": [
+      "server",
+      "third-party"
+    ],
+    "env-opencode-caller": [
+      "server",
+      "opencode-prefix"
+    ],
+    "env-opencode-client": [
+      "server",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-share": [
+      "server",
+      "opencode-prefix"
+    ],
+    "env-opencode-repo-clone-github-base-url": [
+      "server",
+      "opencode-prefix"
+    ],
+    "env-opencode-route": [
+      "server",
+      "opencode-prefix"
+    ],
+    "env-opencode-server-password": [
+      "server",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-server-username": [
+      "server",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-workspace-id": [
+      "server",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-prompt": [
+      "server",
+      "third-party"
+    ],
+    "env-share": [
+      "server",
+      "third-party"
+    ],
+    "env-use-github-token": [
+      "server",
+      "third-party"
+    ],
+    "env-variant": [
+      "server",
+      "third-party"
+    ],
+    "env-opencode-auto-heap-snapshot": [
+      "observability",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-direct-trace": [
+      "observability",
+      "opencode-prefix"
+    ],
+    "env-opencode-log-level": [
+      "observability",
+      "opencode-prefix"
+    ],
+    "env-opencode-print-logs": [
+      "observability",
+      "opencode-prefix"
+    ],
+    "env-opencode-show-ttfd": [
+      "observability",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-otel-exporter-otlp-endpoint": [
+      "observability",
+      "flag",
+      "third-party"
+    ],
+    "env-otel-exporter-otlp-headers": [
+      "observability",
+      "flag",
+      "third-party"
+    ],
+    "env-otel-resource-attributes": [
+      "observability",
+      "third-party"
+    ],
+    "env-claude-code-sse-port": [
+      "behavior",
+      "third-party"
+    ],
+    "env-opencode-acp-profile": [
+      "behavior",
+      "opencode-prefix"
+    ],
+    "env-opencode-always-notify-update": [
+      "behavior",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-bump": [
+      "behavior",
+      "opencode-prefix"
+    ],
+    "env-opencode-channel": [
+      "behavior",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-autocompact": [
+      "behavior",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-autoupdate": [
+      "behavior",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-fff": [
+      "behavior",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-mouse": [
+      "behavior",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-prune": [
+      "behavior",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-disable-terminal-title": [
+      "behavior",
+      "flag",
+      "boolean",
+      "opencode-prefix"
+    ],
+    "env-opencode-editor-sse-port": [
+      "behavior",
+      "opencode-prefix"
+    ],
+    "env-opencode-fake-vcs": [
+      "behavior",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-fast-boot": [
+      "behavior",
+      "opencode-prefix"
+    ],
+    "env-opencode-git-bash-path": [
+      "behavior",
+      "flag",
+      "opencode-prefix"
+    ],
+    "env-opencode-pid": [
+      "behavior",
+      "opencode-prefix"
+    ],
+    "env-opencode-release": [
+      "behavior",
+      "opencode-prefix"
+    ],
+    "env-opencode-version": [
+      "behavior",
+      "opencode-prefix"
+    ],
+    "env-vscode-extensions": [
+      "behavior",
+      "third-party"
+    ],
+    "env-zed-term": [
+      "behavior",
+      "third-party"
+    ],
+    "env-comspec": [
+      "host",
+      "third-party"
+    ],
+    "env-display": [
+      "host",
+      "third-party"
+    ],
+    "env-dotnet-cli-home": [
+      "host",
+      "third-party"
+    ],
+    "env-editor": [
+      "host",
+      "third-party"
+    ],
+    "env-git-askpass": [
+      "host",
+      "third-party"
+    ],
+    "env-oidc-base-url": [
+      "host",
+      "third-party"
+    ],
+    "env-opencode": [
+      "host",
+      "third-party"
+    ],
+    "env-path": [
+      "host",
+      "third-party"
+    ],
+    "env-pathext": [
+      "host",
+      "third-party"
+    ],
+    "env-pwd": [
+      "host",
+      "third-party"
+    ],
+    "env-shell": [
+      "host",
+      "third-party"
+    ],
+    "env-sty": [
+      "host",
+      "third-party"
+    ],
+    "env-term": [
+      "host",
+      "third-party"
+    ],
+    "env-term-program": [
+      "host",
+      "third-party"
+    ],
+    "env-term-program-version": [
+      "host",
+      "third-party"
+    ],
+    "env-tmux": [
+      "host",
+      "third-party"
+    ],
+    "env-virtual-env": [
+      "host",
+      "third-party"
+    ],
+    "env-visual": [
+      "host",
+      "third-party"
+    ],
+    "env-wayland-display": [
+      "host",
+      "third-party"
+    ]
+  }
+}

@@ -34,7 +34,7 @@ test("every shipped Cursor record is published on exactly one reference page, wi
     assert.match(home, /3\.23\.12/);
     assert.doesNotMatch(home, /Good takes/);
     const instructions = await readFile(path.join(dir, "dist/cursor/model-instructions/index.html"), "utf8");
-    assert.match(instructions, /Base agent instructions 1/);
+    assert.match(instructions, /Base agent instructions \(variant 1\)/);
     assert.doesNotMatch(instructions, /<h[1-6][^>]*>Agent run request schema</);
     assert.match(renderLanding(), /href="cursor\/"/);
     assert.deepEqual([...parseQuery("in:cursor approval").products], ["cursor"]);
@@ -49,5 +49,5 @@ test("every shipped Cursor record is published on exactly one reference page, wi
 
 test("a partial records page refuses a selection that does not match its sections", async () => {
   const file = { slug: "x", path: "outputs/source-records.md", records: { file: "outputs/search-records.json" }, includeRecord: () => true };
-  await assert.rejects(selectRecordSections({ sourceRoot, file, markdown: "# Title\n\n## Only one\n\ntext\n" }), /records selected from, 1 sections found/);
+  await assert.rejects(selectRecordSections({ sourceRoot, file, markdown: "# Title\n\n## Only one\n\ntext\n" }), /records, 0 entries found/);
 });

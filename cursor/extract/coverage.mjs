@@ -98,7 +98,8 @@ export async function auditCursorCoverage({
   const unresolved = [];
   for (const source of sources) {
     const expectedKind = source.role?.choice === "tool" || source.role?.choice === "parameter" ? "tool" : "prompt";
-    const local = localCoverage(source, exactByKindAndText.get(`${expectedKind}\0${source.text}`) ?? []);
+    // Containment, like exact text, must preserve the classifier's expected record kind.
+    const local = localCoverage(source, exactByKindAndText.get(`${expectedKind}\0${source.text}`) ?? []) ?? localCoverage(source, search.items.filter(record=>record.kind===expectedKind));
     if (local) exactResults.push({ id: source.id, file: source.file, offset: source.offset, source_sha256: source.text_sha256, expected_kind: expectedKind, ...local });
     else unresolved.push(source);
   }

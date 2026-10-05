@@ -25,15 +25,18 @@
     }
   },
   "candidates": 209954,
-  "classified": 9189,
-  "discovered_records": 7,
-  "provider_pending": 200529,
-  "local_review": 236,
+  "classified": 209616,
+  "discovered_records": 1930,
+  "discovered_occurrences": 4611,
+  "covered_by_reviewed_records": 45,
+  "same_text_merged": 2681,
+  "provider_pending": 0,
+  "local_review": 338,
   "skipped_occurrences": {
     "non-prose-or-short": 1323842
   },
   "excluded_files": 412,
   "parse_failed": 0,
   "publication": "partial-unanswered-or-local-review",
-  "inventory_sha256": "9c28a89c8c5b670e2c6fb4ce24be0c5a6bbaa34bcc0b7e1b9b3ffcf7334b2407"
+  "inventory_sha256": "ee9b357ed42ae717a60b0d13e480ab94863ab5a9186056972076db493964c265"
 }

@@ -1,0 +1,5521 @@
+{
+  "schema": 1,
+  "product": "opencode",
+  "source": {
+    "version": "1.18.34",
+    "commit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+    "identity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a"
+  },
+  "verdict_state": {
+    "file": "discovery-inventory.json",
+    "sha256": "dc54b71c0a37f611cc94354d90437bf1b60bc7e0d1d32d03f1657e8f8b7756d6"
+  },
+  "candidates": 10824,
+  "skipped": 0,
+  "total": 10824,
+  "status_counts": {
+    "classified": 10714,
+    "withheld": 110
+  },
+  "privacy_policy": "Third-party personal emails masked; all other public source text preserved.",
+  "files": [
+    {
+      "file": "packages/codemode/package.json",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/codemode/src/codemode.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/codemode/src/interpreter/model.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/codemode/src/interpreter/runtime.ts",
+      "entries": 176,
+      "statuses": {
+        "classified": 176
+      }
+    },
+    {
+      "file": "packages/codemode/src/openapi/index.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/codemode/src/openapi/runtime.ts",
+      "entries": 26,
+      "statuses": {
+        "classified": 26
+      }
+    },
+    {
+      "file": "packages/codemode/src/openapi/spec.ts",
+      "entries": 29,
+      "statuses": {
+        "classified": 29
+      }
+    },
+    {
+      "file": "packages/codemode/src/openapi/TODO.md",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/codemode/src/stdlib/date.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/codemode/src/stdlib/json.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/codemode/src/stdlib/math.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/codemode/src/stdlib/number.ts",
+      "entries": 11,
+      "statuses": {
+        "classified": 11
+      }
+    },
+    {
+      "file": "packages/codemode/src/stdlib/object.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/codemode/src/stdlib/regexp.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/codemode/src/stdlib/string.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/codemode/src/stdlib/url.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/codemode/src/stdlib/value.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/codemode/src/tool-runtime.ts",
+      "entries": 56,
+      "statuses": {
+        "classified": 56
+      }
+    },
+    {
+      "file": "packages/codemode/src/tool-schema.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/core/package.json",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/core/src/account.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/account/sql.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/aisdk.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/catalog.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/config.ts",
+      "entries": 23,
+      "statuses": {
+        "classified": 23
+      }
+    },
+    {
+      "file": "packages/core/src/config/mcp.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/control-plane/move-session.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/cross-spawn-spawner.ts",
+      "entries": 19,
+      "statuses": {
+        "classified": 19
+      }
+    },
+    {
+      "file": "packages/core/src/database/database.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260127222353_familiar_lady_ursula.ts",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260211171708_add_project_commands.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260213144116_wakeful_the_professor.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260225215848_workspace.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260227213759_add_session_workspace_id.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260228203230_blue_harpoon.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260303231226_add_workspace_fields.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260309230000_move_org_to_state.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260312043431_session_message_cursor.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260323234822_events.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260410174513_workspace-name.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260413175956_chief_energizer.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260423070820_add_icon_url_override.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260427172553_slow_nightmare.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260428004200_add_session_path.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260501142318_next_venus.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260504145000_add_sync_owner.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260507164347_add_workspace_time.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260510033149_session_usage.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260511000411_data_migration_state.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260511173437_session-metadata.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260601010001_normalize_storage_paths.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260601202201_amazing_prowler.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260602002951_lowly_union_jack.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260602182828_add_project_directories.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260603001617_session_message_projection_indexes.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260603040000_session_message_projection_order.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260603141458_session_input_inbox.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260603160727_jittery_ezekiel_stane.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260604172448_event_sourced_session_input.ts",
+      "entries": 18,
+      "statuses": {
+        "classified": 18
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260605003541_add_session_context_snapshot.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260605042240_add_context_epoch_agent.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260611035744_credential.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260611192811_lush_chimera.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260612174303_project_dir_strategy.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260622142730_simplify_session_context_epoch.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260622170816_reset_v2_session_state.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/database/migration/20260622202450_simplify_session_input.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/database/path.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/database/schema.gen.ts",
+      "entries": 36,
+      "statuses": {
+        "classified": 36
+      }
+    },
+    {
+      "file": "packages/core/src/database/sqlite.bun.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/core/src/database/sqlite.node.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/effect/layer-node.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/core/src/effect/service-use.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/event.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/core/src/filesystem.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/filesystem/fff.node.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/filesystem/protected.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/filesystem/search.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/filesystem/watcher.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/core/src/flag/flag.ts",
+      "entries": 37,
+      "statuses": {
+        "classified": 37
+      }
+    },
+    {
+      "file": "packages/core/src/fs-util.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/git.ts",
+      "entries": 68,
+      "statuses": {
+        "classified": 68
+      }
+    },
+    {
+      "file": "packages/core/src/github-copilot/chat/convert-to-openai-compatible-chat-messages.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/github-copilot/chat/openai-compatible-chat-language-model.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/github-copilot/chat/openai-compatible-prepare-tools.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/github-copilot/copilot-provider.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/github-copilot/README.md",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/github-copilot/responses/convert-to-openai-responses-input.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/core/src/github-copilot/responses/openai-responses-language-model.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/core/src/github-copilot/responses/openai-responses-prepare-tools.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/id/id.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/image.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/instruction-context.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/integration.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/core/src/location-mutation.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/location-services.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/models-dev.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/oauth/page.ts",
+      "entries": 25,
+      "statuses": {
+        "classified": 25
+      }
+    },
+    {
+      "file": "packages/core/src/observability/otlp.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/open.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/patch.ts",
+      "entries": 23,
+      "statuses": {
+        "classified": 23
+      }
+    },
+    {
+      "file": "packages/core/src/permission.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/agent.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/command.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/command/initialize.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/command/review.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/models-dev.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/azure.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/cloudflare-ai-gateway.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/cloudflare-workers-ai.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/dynamic.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/gitlab.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/google-vertex.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/openai.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/opencode.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/sap-ai-core.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/provider/snowflake-cortex.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/skill.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/skill/customize-opencode.md",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/plugin/variant.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/process.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/core/src/project/copy.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/pty.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/pty/ticket.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/question.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/reference.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/reference/guidance.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/core/src/repository-cache.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/repository.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/ripgrep.ts",
+      "entries": 19,
+      "statuses": {
+        "classified": 19
+      }
+    },
+    {
+      "file": "packages/core/src/ripgrep/binary.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/core/src/session.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/session/compaction.ts",
+      "entries": 19,
+      "statuses": {
+        "classified": 19
+      }
+    },
+    {
+      "file": "packages/core/src/session/context-epoch.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/session/error.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/session/execution/local.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/session/input.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/session/projector.ts",
+      "entries": 11,
+      "statuses": {
+        "classified": 11
+      }
+    },
+    {
+      "file": "packages/core/src/session/runner/llm.ts",
+      "entries": 11,
+      "statuses": {
+        "classified": 11
+      }
+    },
+    {
+      "file": "packages/core/src/session/runner/max-steps.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/session/runner/model.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/session/runner/publish-llm-event.ts",
+      "entries": 24,
+      "statuses": {
+        "classified": 24
+      }
+    },
+    {
+      "file": "packages/core/src/session/runner/to-llm-message.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/shell.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/core/src/skill/discovery.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/skill/guidance.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/snapshot.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/system-context/builtins.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/core/src/system-context/index.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/system-context/registry.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/tool-output-store.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/tool/AGENTS.md",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/tool/apply-patch.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/core/src/tool/bash.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/core/src/tool/edit.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/core/src/tool/glob.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/core/src/tool/grep.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/core/src/tool/question.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/tool/read-filesystem.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/core/src/tool/read.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/tool/registry.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/tool/skill.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/core/src/tool/todowrite.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/core/src/tool/tool.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/core/src/tool/webfetch.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/core/src/tool/websearch.ts",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/core/src/tool/write.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/util/effect-flock.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/util/flock.ts",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/core/src/util/retry.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/v1/config/agent.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/core/src/v1/config/attachment.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/v1/config/config.ts",
+      "entries": 48,
+      "statuses": {
+        "classified": 48
+      }
+    },
+    {
+      "file": "packages/core/src/v1/config/lsp.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/v1/config/mcp.ts",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/core/src/v1/config/provider-options.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/core/src/v1/config/provider.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/core/src/v1/config/server.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/core/src/v1/config/skills.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/core/src/v1/permission.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/package.json",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/effect-sqlite/session.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/internal/drizzle-utils.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/sqlite-core/effect/count.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/sqlite-core/effect/delete.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/sqlite-core/effect/insert.ts",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/sqlite-core/effect/query.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/sqlite-core/effect/select.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/sqlite-core/effect/session.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/sqlite-core/effect/update.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/up-migrations/effect-sqlite.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/effect-drizzle-sqlite/src/up-migrations/sqlite.ts",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/effect-sqlite-node/package.json",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/effect-sqlite-node/src/index.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/llm/package.json",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/llm/src/llm.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/anthropic-messages.ts",
+      "entries": 20,
+      "statuses": {
+        "classified": 20
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/bedrock-converse.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/bedrock-event-stream.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/gemini.ts",
+      "entries": 16,
+      "statuses": {
+        "classified": 16
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/openai-chat.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/openai-responses.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/shared.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/utils/bedrock-auth.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/utils/bedrock-media.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/llm/src/protocols/utils/tool-stream.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/llm/src/providers/anthropic.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/llm/src/providers/azure.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/llm/src/providers/cloudflare.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/llm/src/providers/google.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/llm/src/providers/openai.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/llm/src/providers/openrouter.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/llm/src/providers/xai.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/llm/src/route/auth.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/llm/src/route/client.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/llm/src/route/endpoint.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/llm/src/route/executor.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/llm/src/route/transport/http.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/llm/src/route/transport/websocket.ts",
+      "entries": 11,
+      "statuses": {
+        "classified": 11
+      }
+    },
+    {
+      "file": "packages/llm/src/schema/errors.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/llm/src/tool-runtime.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/package.json",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/opencode/src/account/account.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/opencode/src/account/repo.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/account/schema.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/acp/config-option.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/acp/content.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/acp/error.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/opencode/src/acp/event.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/acp/permission.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/acp/profile.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/acp/service.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/opencode/src/acp/usage.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/agent/agent.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/opencode/src/agent/generate.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/agent/prompt/compaction.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/agent/prompt/explore.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/agent/prompt/summary.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/agent/prompt/title.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/auth/index.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/account.ts",
+      "entries": 35,
+      "statuses": {
+        "classified": 35
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/acp.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/agent.ts",
+      "entries": 27,
+      "statuses": {
+        "classified": 27
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/attach.ts",
+      "entries": 16,
+      "statuses": {
+        "classified": 16
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/db.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/agent.handler.ts",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/agent.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/config.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/file.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/lsp.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/scrap.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/skill.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/snapshot.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/startup.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/debug/v2.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/export.ts",
+      "entries": 11,
+      "statuses": {
+        "classified": 11
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/generate.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+      "entries": 180,
+      "statuses": {
+        "classified": 180
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/github.shared.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/github.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/import.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/mcp.ts",
+      "entries": 120,
+      "statuses": {
+        "classified": 120
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/models.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/plug.ts",
+      "entries": 34,
+      "statuses": {
+        "classified": 34
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/pr.ts",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/providers.ts",
+      "entries": 56,
+      "statuses": {
+        "classified": 56
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run.ts",
+      "entries": 55,
+      "statuses": {
+        "classified": 55
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/demo.ts",
+      "entries": 102,
+      "statuses": {
+        "classified": 102
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/entry.body.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/footer.command.tsx",
+      "entries": 40,
+      "statuses": {
+        "classified": 40
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/footer.menu.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/footer.permission.tsx",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/footer.prompt.tsx",
+      "entries": 26,
+      "statuses": {
+        "classified": 26
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/footer.question.tsx",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/footer.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/footer.view.tsx",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/permission.shared.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/question.shared.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/runtime.lifecycle.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/runtime.queue.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/runtime.stdin.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/runtime.ts",
+      "entries": 16,
+      "statuses": {
+        "classified": 16
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/scrollback.writer.tsx",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/session-data.ts",
+      "entries": 16,
+      "statuses": {
+        "classified": 16
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/session-replay.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/splash.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/stream.transport.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/stream.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/subagent-data.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/theme.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/tool.ts",
+      "entries": 94,
+      "statuses": {
+        "classified": 94
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/turn-summary.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/run/variant.shared.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/serve.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/session.ts",
+      "entries": 11,
+      "statuses": {
+        "classified": 11
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/stats.ts",
+      "entries": 24,
+      "statuses": {
+        "classified": 24
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/tui.ts",
+      "entries": 30,
+      "statuses": {
+        "classified": 30
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/uninstall.ts",
+      "entries": 46,
+      "statuses": {
+        "classified": 46
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/upgrade.ts",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/cmd/web.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/error.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/heap.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/network.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/opencode/src/cli/tui/validate-session.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/command/index.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/command/template/initialize.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/command/template/review.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/config/config.ts",
+      "entries": 22,
+      "statuses": {
+        "classified": 22
+      }
+    },
+    {
+      "file": "packages/opencode/src/config/managed.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/config/markdown.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/config/parse.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/config/tui.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/config/v2-compat.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/config/variable.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/control-plane/adapters/index.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/control-plane/adapters/worktree.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/control-plane/dev/debug-workspace-plugin.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/control-plane/dev/README.md",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/control-plane/util.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/control-plane/workspace.ts",
+      "entries": 21,
+      "statuses": {
+        "classified": 21
+      }
+    },
+    {
+      "file": "packages/opencode/src/effect/instance-state.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/effect/runtime-flags.ts",
+      "entries": 32,
+      "statuses": {
+        "classified": 32
+      }
+    },
+    {
+      "file": "packages/opencode/src/format/formatter.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/opencode/src/format/index.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/git/index.ts",
+      "entries": 30,
+      "statuses": {
+        "classified": 30
+      }
+    },
+    {
+      "file": "packages/opencode/src/id/id.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/ide/index.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/opencode/src/image/image.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/index.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/opencode/src/installation/index.ts",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/opencode/src/lsp/diagnostic.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/lsp/launch.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/lsp/lsp.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/lsp/server.ts",
+      "entries": 36,
+      "statuses": {
+        "classified": 36
+      }
+    },
+    {
+      "file": "packages/opencode/src/mcp/browser.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/mcp/catalog.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/mcp/index.ts",
+      "entries": 29,
+      "statuses": {
+        "classified": 29
+      }
+    },
+    {
+      "file": "packages/opencode/src/mcp/oauth-callback.ts",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/opencode/src/mcp/oauth-provider.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/patch/index.ts",
+      "entries": 26,
+      "statuses": {
+        "classified": 26
+      }
+    },
+    {
+      "file": "packages/opencode/src/permission/arity.ts",
+      "entries": 41,
+      "statuses": {
+        "classified": 41
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/azure.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/cloudflare.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/digitalocean.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/github-copilot/copilot.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/github-copilot/models.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/index.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/install.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/loader.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/meta.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/modal/models.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/openai/codex.ts",
+      "entries": 28,
+      "statuses": {
+        "classified": 28
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/openai/README.md",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/openai/ws-pool.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/openai/ws.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/shared.ts",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/snowflake-cortex.ts",
+      "entries": 30,
+      "statuses": {
+        "classified": 30
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/tui/runtime.ts",
+      "entries": 33,
+      "statuses": {
+        "classified": 33
+      }
+    },
+    {
+      "file": "packages/opencode/src/plugin/xai.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/opencode/src/project/bootstrap.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/project/instance-store.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/project/project.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/opencode/src/project/vcs.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/opencode/src/provider/auth.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/provider/error.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/opencode/src/provider/provider.ts",
+      "entries": 57,
+      "statuses": {
+        "classified": 57
+      }
+    },
+    {
+      "file": "packages/opencode/src/provider/transform.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/question/index.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/auth.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/global-lifecycle.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/AGENTS.md",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/config.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/control-plane.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/control.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/event.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/experimental.ts",
+      "entries": 41,
+      "statuses": {
+        "classified": 41
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/file.ts",
+      "entries": 20,
+      "statuses": {
+        "classified": 20
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/global.ts",
+      "entries": 19,
+      "statuses": {
+        "classified": 19
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/instance.ts",
+      "entries": 39,
+      "statuses": {
+        "classified": 39
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/mcp.ts",
+      "entries": 25,
+      "statuses": {
+        "classified": 25
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/permission.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/project-copy.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/project.ts",
+      "entries": 18,
+      "statuses": {
+        "classified": 18
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/provider.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/pty.ts",
+      "entries": 28,
+      "statuses": {
+        "classified": 28
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/question.ts",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/session.ts",
+      "entries": 81,
+      "statuses": {
+        "classified": 81
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/sync.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/tui.ts",
+      "entries": 42,
+      "statuses": {
+        "classified": 42
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/groups/workspace.ts",
+      "entries": 23,
+      "statuses": {
+        "classified": 23
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/control-plane.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/event.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/file.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/global.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/mcp.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/permission.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/project-copy.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/project.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/pty.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/question.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/session-errors.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/sync.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/workspace.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/lifecycle.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/middleware/authorization.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/middleware/compression.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/middleware/cors-vary.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/middleware/error.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/middleware/fence.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/middleware/proxy.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/middleware/schema-error.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/middleware/workspace-routing.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/public.ts",
+      "entries": 24,
+      "statuses": {
+        "classified": 24
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/server.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/routes/instance/httpapi/websocket-tracker.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/server.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/shared/fence.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/shared/public-ui.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/shared/ui.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/server/shared/workspace-routing.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/compaction.ts",
+      "entries": 18,
+      "statuses": {
+        "classified": 18
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/instruction.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/llm.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/llm/AGENTS.md",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/llm/ai-sdk.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/llm/native-request.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/llm/native-runtime.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/llm/request.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/message-v2.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/processor.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt.ts",
+      "entries": 55,
+      "statuses": {
+        "classified": 55
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/anthropic.txt",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/beast.txt",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/build-switch.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/codex.txt",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/copilot-gpt-5.txt",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/default.txt",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/gemini.txt",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/gpt-astra.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/gpt.txt",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/kimi.txt",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/meta.txt",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/plan-mode.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/plan-reminder-anthropic.txt",
+      "entries": 1,
+      "statuses": {
+        "withheld": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/plan.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/prompt/trinity.txt",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/reminders.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/retry.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/session.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/system.ts",
+      "entries": 16,
+      "statuses": {
+        "classified": 16
+      }
+    },
+    {
+      "file": "packages/opencode/src/session/tools.ts",
+      "entries": 32,
+      "statuses": {
+        "classified": 32
+      }
+    },
+    {
+      "file": "packages/opencode/src/share/session.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/share/share-next.ts",
+      "entries": 11,
+      "statuses": {
+        "classified": 11
+      }
+    },
+    {
+      "file": "packages/opencode/src/skill/discovery.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/skill/index.ts",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/opencode/src/snapshot/index.ts",
+      "entries": 59,
+      "statuses": {
+        "classified": 59
+      }
+    },
+    {
+      "file": "packages/opencode/src/storage/storage.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/opencode/src/sync/README.md",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/temporary.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/apply_patch.ts",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/apply_patch.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/code-mode.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/edit.ts",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/edit.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/glob.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/glob.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/grep.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/grep.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/invalid.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/json-schema.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/lsp.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/lsp.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/mcp-websearch.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/plan-enter.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/plan-exit.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/plan.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/question.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/question.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/read.ts",
+      "entries": 18,
+      "statuses": {
+        "classified": 18
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/read.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/registry.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/shell.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/shell/prompt.ts",
+      "entries": 32,
+      "statuses": {
+        "classified": 31,
+        "withheld": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/shell/shell.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/skill.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/skill.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/task.ts",
+      "entries": 33,
+      "statuses": {
+        "classified": 33
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/task.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/todo.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/todowrite.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/tool.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/truncate.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/webfetch.ts",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/webfetch.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/websearch.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/websearch.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/write.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/opencode/src/tool/write.txt",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/util/archive.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/util/filesystem.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/opencode/src/util/local-context.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/util/process.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/opencode/src/util/repository.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/opencode/src/util/timeout.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/opencode/src/worktree/index.ts",
+      "entries": 49,
+      "statuses": {
+        "classified": 49
+      }
+    },
+    {
+      "file": "packages/plugin/package.json",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/plugin/src/example-workspace.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/plugin/src/example.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/plugin/src/v2/effect/PLAN.md",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/plugin/src/v2/effect/README.md",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/plugin/src/v2/promise/README.md",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/protocol/package.json",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/protocol/src/api.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/agent.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/command.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/credential.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/event.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/fs.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/health.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/integration.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/location.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/message.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/model.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/permission.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/project-copy.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/provider.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/pty.ts",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/question.ts",
+      "entries": 11,
+      "statuses": {
+        "classified": 11
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/reference.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/session.ts",
+      "entries": 37,
+      "statuses": {
+        "classified": 37
+      }
+    },
+    {
+      "file": "packages/protocol/src/groups/skill.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/schema/package.json",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/schema/src/event.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/schema/src/project.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/schema/src/question.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/schema/src/session-todo.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/schema/src/tui-event.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/schema/src/v1/question.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/schema/src/workspace-id.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/script/package.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/script/src/index.ts",
+      "entries": 11,
+      "statuses": {
+        "classified": 11
+      }
+    },
+    {
+      "file": "packages/sdk/js/package.json",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/client.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/error-interceptor.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/gen/client/client.gen.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/gen/core/auth.gen.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/gen/core/pathSerializer.gen.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/gen/core/serverSentEvents.gen.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/gen/core/types.gen.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/gen/core/utils.gen.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/gen/types.gen.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/server.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/v2/client.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/v2/gen/client/client.gen.ts",
+      "entries": 18,
+      "statuses": {
+        "classified": 18
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/v2/gen/core/auth.gen.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/v2/gen/core/pathSerializer.gen.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/v2/gen/core/serverSentEvents.gen.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/v2/gen/core/utils.gen.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/v2/gen/sdk.gen.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/v2/gen/types.gen.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/sdk/js/src/v2/server.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/server/package.json",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/server/src/auth.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/server/src/handlers/event.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/server/src/handlers/integration.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/server/src/handlers/message.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/server/src/handlers/permission.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/server/src/handlers/project-copy.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/server/src/handlers/provider.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/server/src/handlers/pty.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/server/src/handlers/question.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/server/src/handlers/session.ts",
+      "entries": 26,
+      "statuses": {
+        "classified": 26
+      }
+    },
+    {
+      "file": "packages/server/src/middleware/authorization.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/server/src/middleware/schema-error.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/server/src/middleware/session-location.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/package.json",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/tui/src/app.tsx",
+      "entries": 71,
+      "statuses": {
+        "classified": 71
+      }
+    },
+    {
+      "file": "packages/tui/src/attention.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/tui/src/audio.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/tui/src/clipboard.ts",
+      "entries": 12,
+      "statuses": {
+        "classified": 12
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-agent.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-console-org.tsx",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-debug.tsx",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-mcp.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-model.tsx",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-move-session.tsx",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-provider.tsx",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-retry-action.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-session-delete-failed.tsx",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-session-list.tsx",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-session-rename.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-skill.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-stash.tsx",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-variant.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-workspace-create.tsx",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-workspace-file-changes.tsx",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-workspace-list.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/component/dialog-workspace-unavailable.tsx",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/tui/src/component/error-component.tsx",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/tui/src/component/prompt/autocomplete.tsx",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/tui/src/component/prompt/index.tsx",
+      "entries": 42,
+      "statuses": {
+        "classified": 42
+      }
+    },
+    {
+      "file": "packages/tui/src/component/prompt/move.tsx",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/tui/src/component/prompt/workspace.tsx",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/tui/src/component/startup-loading.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/config/index.tsx",
+      "entries": 14,
+      "statuses": {
+        "classified": 14
+      }
+    },
+    {
+      "file": "packages/tui/src/config/keybind.ts",
+      "entries": 186,
+      "statuses": {
+        "classified": 186
+      }
+    },
+    {
+      "file": "packages/tui/src/context/data.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/context/helper.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/context/kv.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/context/local.tsx",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/tui/src/context/location.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/context/runtime.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/context/sdk.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/context/sync.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/context/theme.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/editor-zed.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/tui/src/editor.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "entries": 106,
+      "statuses": {
+        "withheld": 106
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/home/tips.tsx",
+      "entries": 2,
+      "statuses": {
+        "withheld": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/sidebar/context.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/sidebar/lsp.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/sidebar/mcp.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/system/diff-viewer-file-tree.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/system/diff-viewer.tsx",
+      "entries": 81,
+      "statuses": {
+        "classified": 81
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/system/notifications.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/system/plugins.tsx",
+      "entries": 13,
+      "statuses": {
+        "classified": 13
+      }
+    },
+    {
+      "file": "packages/tui/src/feature-plugins/system/which-key.tsx",
+      "entries": 22,
+      "statuses": {
+        "classified": 22
+      }
+    },
+    {
+      "file": "packages/tui/src/keymap.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/plugin/adapters.tsx",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/tui/src/plugin/command-shim.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/plugin/runtime.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/plugin/slots.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/prompt/traits.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/routes/home.tsx",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/tui/src/routes/session/dialog-fork-from-timeline.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/routes/session/dialog-message.tsx",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/tui/src/routes/session/dialog-subagent.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/routes/session/index.tsx",
+      "entries": 101,
+      "statuses": {
+        "classified": 101
+      }
+    },
+    {
+      "file": "packages/tui/src/routes/session/permission.tsx",
+      "entries": 30,
+      "statuses": {
+        "classified": 30
+      }
+    },
+    {
+      "file": "packages/tui/src/routes/session/question.tsx",
+      "entries": 26,
+      "statuses": {
+        "classified": 26
+      }
+    },
+    {
+      "file": "packages/tui/src/routes/session/subagent-footer.tsx",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/tui/src/theme/index.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/ui/dialog-alert.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/ui/dialog-confirm.tsx",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/tui/src/ui/dialog-export-options.tsx",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/tui/src/ui/dialog-help.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/ui/dialog-prompt.tsx",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/tui/src/ui/dialog-select.tsx",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/tui/src/ui/dialog.tsx",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/tui/src/ui/toast.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/tui/src/util/error.ts",
+      "entries": 19,
+      "statuses": {
+        "classified": 19
+      }
+    },
+    {
+      "file": "packages/tui/src/util/format.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/tui/src/util/locale.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/tui/src/util/presentation.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/tui/src/util/selection.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/tui/src/util/system.ts",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/tui/src/util/tool-display.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/tui/src/util/transcript.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/package.json",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/components/animated-number.tsx",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/ui/src/components/avatar.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/components/card.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/components/checkbox.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/components/favicon.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/components/file-icon.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/components/icon.tsx",
+      "entries": 97,
+      "statuses": {
+        "classified": 97
+      }
+    },
+    {
+      "file": "packages/ui/src/components/list.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/components/logo.tsx",
+      "entries": 20,
+      "statuses": {
+        "classified": 20
+      }
+    },
+    {
+      "file": "packages/ui/src/components/progress-circle.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/components/scroll-view.tsx",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/ui/src/components/spinner.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/components/text-reveal.tsx",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/ui/src/components/text-shimmer.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/components/text-strikethrough.tsx",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/ui/src/components/tooltip.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/context/dialog.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/context/helper.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/context/marked-parser.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/context/marked-theme.tsx",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/am.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ar.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/az.ts",
+      "entries": 131,
+      "statuses": {
+        "classified": 131
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/bg.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/bn.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/br.ts",
+      "entries": 131,
+      "statuses": {
+        "classified": 131
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/bs.ts",
+      "entries": 130,
+      "statuses": {
+        "classified": 130
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ca.ts",
+      "entries": 132,
+      "statuses": {
+        "classified": 132
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/cs.ts",
+      "entries": 135,
+      "statuses": {
+        "classified": 135
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/da.ts",
+      "entries": 117,
+      "statuses": {
+        "classified": 117
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/de.ts",
+      "entries": 119,
+      "statuses": {
+        "classified": 119
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/dv.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/dz.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/el.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/en.ts",
+      "entries": 123,
+      "statuses": {
+        "classified": 123
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/es.ts",
+      "entries": 126,
+      "statuses": {
+        "classified": 126
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/et.ts",
+      "entries": 120,
+      "statuses": {
+        "classified": 120
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/fa.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/fi.ts",
+      "entries": 117,
+      "statuses": {
+        "classified": 117
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/fo.ts",
+      "entries": 125,
+      "statuses": {
+        "classified": 125
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/fr.ts",
+      "entries": 130,
+      "statuses": {
+        "classified": 130
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/hi.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/hr.ts",
+      "entries": 127,
+      "statuses": {
+        "classified": 127
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/hu.ts",
+      "entries": 122,
+      "statuses": {
+        "classified": 122
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/hy.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/id.ts",
+      "entries": 124,
+      "statuses": {
+        "classified": 124
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/is.ts",
+      "entries": 129,
+      "statuses": {
+        "classified": 129
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/it.ts",
+      "entries": 131,
+      "statuses": {
+        "classified": 131
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ja.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ka.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/km.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ko.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/lo.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/lt.ts",
+      "entries": 127,
+      "statuses": {
+        "classified": 127
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/lv.ts",
+      "entries": 127,
+      "statuses": {
+        "classified": 127
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/mk.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/mn.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ms.ts",
+      "entries": 128,
+      "statuses": {
+        "classified": 128
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/my.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ne.ts",
+      "entries": 9,
+      "statuses": {
+        "classified": 9
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/nl.ts",
+      "entries": 120,
+      "statuses": {
+        "classified": 120
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/no.ts",
+      "entries": 121,
+      "statuses": {
+        "classified": 121
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/pa.ts",
+      "entries": 10,
+      "statuses": {
+        "classified": 10
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/pl.ts",
+      "entries": 132,
+      "statuses": {
+        "classified": 132
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ro.ts",
+      "entries": 133,
+      "statuses": {
+        "classified": 133
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ru.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/si.ts",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/sk.ts",
+      "entries": 133,
+      "statuses": {
+        "classified": 133
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/sl.ts",
+      "entries": 132,
+      "statuses": {
+        "classified": 132
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/sq.ts",
+      "entries": 136,
+      "statuses": {
+        "classified": 136
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/sr.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/sv.ts",
+      "entries": 117,
+      "statuses": {
+        "classified": 117
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/tg.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/th.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/tk.ts",
+      "entries": 127,
+      "statuses": {
+        "classified": 127
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/tr.ts",
+      "entries": 127,
+      "statuses": {
+        "classified": 127
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/uk.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/ur.ts",
+      "entries": 7,
+      "statuses": {
+        "classified": 7
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/uz.ts",
+      "entries": 129,
+      "statuses": {
+        "classified": 129
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/vi.ts",
+      "entries": 168,
+      "statuses": {
+        "classified": 168
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/zh.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/i18n/zht.ts",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/color.ts",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/context.tsx",
+      "entries": 17,
+      "statuses": {
+        "classified": 17
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/desktop-theme.schema.json",
+      "entries": 36,
+      "statuses": {
+        "classified": 36
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/loader.ts",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/resolve.ts",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/amoled.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/catppuccin-frappe.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/catppuccin-macchiato.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/lucent-orng.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/nightowl.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/oc-2.json",
+      "entries": 16,
+      "statuses": {
+        "classified": 16
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/one-dark.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/onedarkpro.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/osaka-jade.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/rosepine.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/themes/shadesofpurple.json",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/v2/foreground.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/v2/mapping.ts",
+      "entries": 16,
+      "statuses": {
+        "classified": 16
+      }
+    },
+    {
+      "file": "packages/ui/src/theme/v2/resolve.ts",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/accordion-v2.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/avatar-v2.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/checkbox-v2.tsx",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/dialog-v2.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/field-v2.tsx",
+      "entries": 3,
+      "statuses": {
+        "classified": 3
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/icon.tsx",
+      "entries": 38,
+      "statuses": {
+        "classified": 38
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/inline-input-v2.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/line-comment-v2.tsx",
+      "entries": 5,
+      "statuses": {
+        "classified": 5
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/menu-v2.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/progress-circle-v2.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/segmented-control-v2.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/select-v2.tsx",
+      "entries": 2,
+      "statuses": {
+        "classified": 2
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/tab-state-indicator.tsx",
+      "entries": 15,
+      "statuses": {
+        "classified": 15
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/tabs-v2.tsx",
+      "entries": 4,
+      "statuses": {
+        "classified": 4
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/toast-v2.tsx",
+      "entries": 6,
+      "statuses": {
+        "classified": 6
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/tooltip-v2.tsx",
+      "entries": 1,
+      "statuses": {
+        "classified": 1
+      }
+    },
+    {
+      "file": "packages/ui/src/v2/components/wordmark-v2.tsx",
+      "entries": 8,
+      "statuses": {
+        "classified": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "file": "occurrences-0001.jsonl.gz",
+      "entries": 5000,
+      "bytes": 896426,
+      "sha256": "5dd47f0f3cad204c89cbfb52ab96b437d1f2f49e90eb02cfe5af10304e86b243",
+      "uncompressed_sha256": "51be7ad2a231c276fde8dec797f819f766143cd8820b5f7128fc74d6abf67cc4"
+    },
+    {
+      "file": "occurrences-0002.jsonl.gz",
+      "entries": 5000,
+      "bytes": 798901,
+      "sha256": "b3abc10db1d0eb5f0a44d0efea3fcbb3ccdea0c71daf724d170b46fa4b4b84bb",
+      "uncompressed_sha256": "0d48d7d592bee8622a6aefbe961a2e5faa9e1b76be7d486a070558cee7b8706b"
+    },
+    {
+      "file": "occurrences-0003.jsonl.gz",
+      "entries": 824,
+      "bytes": 132232,
+      "sha256": "9dfd678e894885d436cad6d77e88d387326a9df4f98ed64a63d98c6db827dbd8",
+      "uncompressed_sha256": "6c475fd8e935dff2097793d250b9c80178504e87b3e0c2d9d2b258f3ba297bfc"
+    }
+  ]
+}

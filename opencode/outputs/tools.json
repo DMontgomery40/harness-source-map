@@ -48,7 +48,8 @@
         "condition": "Model API ID includes gpt-, excludes oss and gpt-4; registry chooses apply_patch instead of edit/write.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "apply_patch"
     },
     {
       "id": "tool-schema-apply-patch",
@@ -78,7 +79,8 @@
         "kind": "tool-parameter-source",
         "condition": "Model API ID includes gpt-, excludes oss and gpt-4; registry chooses apply_patch instead of edit/write.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "apply_patch"
     },
     {
       "id": "tool-edit",
@@ -124,7 +126,8 @@
         "condition": "Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "edit"
     },
     {
       "id": "tool-schema-edit",
@@ -154,7 +157,8 @@
         "kind": "tool-parameter-source",
         "condition": "Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "edit"
     },
     {
       "id": "tool-glob",
@@ -200,7 +204,8 @@
         "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "glob"
     },
     {
       "id": "tool-schema-glob",
@@ -230,7 +235,8 @@
         "kind": "tool-parameter-source",
         "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "glob"
     },
     {
       "id": "tool-grep",
@@ -276,7 +282,8 @@
         "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "grep"
     },
     {
       "id": "tool-schema-grep",
@@ -306,7 +313,8 @@
         "kind": "tool-parameter-source",
         "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "grep"
     },
     {
       "id": "tool-lsp",
@@ -352,7 +360,8 @@
         "condition": "Registered only with experimentalLspTool enabled; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "lsp"
     },
     {
       "id": "tool-schema-lsp",
@@ -382,7 +391,8 @@
         "kind": "tool-parameter-source",
         "condition": "Registered only with experimentalLspTool enabled; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "lsp"
     },
     {
       "id": "tool-plan-enter",
@@ -421,7 +431,8 @@
         "condition": "Shipped description file, with no import or registry implementation found in pinned packages source; do not assume it is advertised.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": false
-      }
+      },
+      "group": "plan-enter"
     },
     {
       "id": "tool-plan-exit",
@@ -467,7 +478,8 @@
         "condition": "Registered only with experimentalPlanMode enabled and client equal to cli; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "plan-exit"
     },
     {
       "id": "tool-schema-plan-exit",
@@ -497,7 +509,8 @@
         "kind": "tool-parameter-source",
         "condition": "Registered only with experimentalPlanMode enabled and client equal to cli; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "plan-exit"
     },
     {
       "id": "tool-question",
@@ -543,7 +556,8 @@
         "condition": "Registered when client is app, cli or desktop, or enableQuestionTool is set; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "question"
     },
     {
       "id": "tool-schema-question",
@@ -573,7 +587,8 @@
         "kind": "tool-parameter-source",
         "condition": "Registered when client is app, cli or desktop, or enableQuestionTool is set; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "question"
     },
     {
       "id": "tool-read",
@@ -619,7 +634,8 @@
         "condition": "Built-in registry tool; nearby instruction files may be returned with real file contents; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "read"
     },
     {
       "id": "tool-schema-read",
@@ -649,7 +665,8 @@
         "kind": "tool-parameter-source",
         "condition": "Built-in registry tool; nearby instruction files may be returned with real file contents; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "read"
     },
     {
       "id": "tool-skill",
@@ -695,7 +712,8 @@
         "condition": "Built-in registry tool; executing it loads a real available skill; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "skill"
     },
     {
       "id": "tool-schema-skill",
@@ -725,7 +743,8 @@
         "kind": "tool-parameter-source",
         "condition": "Built-in registry tool; executing it loads a real available skill; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "skill"
     },
     {
       "id": "tool-task",
@@ -771,7 +790,8 @@
         "condition": "Registry appends permitted subagent descriptions. experimentalBackgroundSubagents adds background guidance and changes the advertised parameter schema.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "task"
     },
     {
       "id": "tool-schema-task",
@@ -801,7 +821,8 @@
         "kind": "tool-parameter-source",
         "condition": "Registry appends permitted subagent descriptions. experimentalBackgroundSubagents adds background guidance and changes the advertised parameter schema.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "task"
     },
     {
       "id": "tool-todowrite",
@@ -847,7 +868,8 @@
         "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "todowrite"
     },
     {
       "id": "tool-schema-todowrite",
@@ -877,7 +899,8 @@
         "kind": "tool-parameter-source",
         "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "todowrite"
     },
     {
       "id": "tool-webfetch",
@@ -923,7 +946,8 @@
         "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "webfetch"
     },
     {
       "id": "tool-schema-webfetch",
@@ -953,7 +977,8 @@
         "kind": "tool-parameter-source",
         "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "webfetch"
     },
     {
       "id": "tool-websearch",
@@ -999,7 +1024,8 @@
         "condition": "Advertised for opencode/opencode-go providers or enabled Exa/Parallel flags; {{year}} is replaced at tool initialization.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "websearch"
     },
     {
       "id": "tool-schema-websearch",
@@ -1029,7 +1055,8 @@
         "kind": "tool-parameter-source",
         "condition": "Advertised for opencode/opencode-go providers or enabled Exa/Parallel flags; {{year}} is replaced at tool initialization.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "websearch"
     },
     {
       "id": "tool-write",
@@ -1075,7 +1102,8 @@
         "condition": "Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "write"
     },
     {
       "id": "tool-schema-write",
@@ -1105,7 +1133,8 @@
         "kind": "tool-parameter-source",
         "condition": "Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "write"
     },
     {
       "id": "tool-bash",
@@ -1151,7 +1180,8 @@
         "condition": "Shell description is rendered for actual shell, platform, temporary directory, output limits and timeout; final permission and user.tools filtering apply.",
         "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
         "hasImplementation": true
-      }
+      },
+      "group": "bash"
     },
     {
       "id": "tool-schema-bash",
@@ -1181,7 +1211,8 @@
         "kind": "tool-parameter-source",
         "condition": "Shell description is rendered for actual shell, platform, temporary directory, output limits and timeout; final permission and user.tools filtering apply.",
         "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
-      }
+      },
+      "group": "bash"
     },
     {
       "id": "tool-registry",
@@ -1205,7 +1236,8 @@
         "language": "typescript",
         "condition": "ToolRegistry state combines built-ins, config-directory custom tools and plugin tools; model/flags/permissions affect advertised tools.",
         "summary": "tool.definition may alter descriptions or schemas. Task descriptions append permitted subagents; execute appends a visible MCP catalog."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-schema-lowering",
@@ -1229,7 +1261,8 @@
         "language": "typescript",
         "condition": "SessionTools.resolve materializes registry tools for the selected model before LLM request preparation.",
         "summary": "Schemas derive from ToolJsonSchema.fromTool then ProviderTransform.schema; descriptions and input schemas passed here may differ from raw source declarations."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-shell-rendering",
@@ -1253,7 +1286,8 @@
         "language": "typescript",
         "condition": "ShellPrompt.render selects bash, PowerShell or cmd guidance using actual shell and platform, then substitutes output limits, timeout and temporary directory.",
         "summary": "Includes the dynamic sections omitted by the short shell.txt template. No local shell description is fabricated."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-task-background",
@@ -1277,7 +1311,8 @@
         "language": "typescript",
         "condition": "experimentalBackgroundSubagents enables additional description and background parameter; initialization chooses BaseParameters when the flag is disabled.",
         "summary": "The registry also appends the current permitted subagent catalog."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-task-schema-selection",
@@ -1301,7 +1336,8 @@
         "language": "typescript",
         "condition": "TaskTool initializes using experimentalBackgroundSubagents.",
         "summary": "Parameters used internally and JSON Schema advertised to the model have different conditional paths."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-execute",
@@ -1325,7 +1361,8 @@
         "language": "typescript",
         "condition": "experimentalCodeMode enabled and registry finds a visible nonempty MCP catalog; execute replaces directly advertised MCP tools.",
         "summary": "The confined orchestration script receives catalog instructions built from actual MCP tool descriptions and schemas."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-invalid",
@@ -1349,7 +1386,8 @@
         "language": "typescript",
         "condition": "Registered built-in but excluded from activeTools; AI SDK repair path redirects unrecognized calls here.",
         "summary": "Source implementation includes its description and parameters; this does not establish that it was advertised or executed in a session."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-mcp-resources",
@@ -1373,7 +1411,8 @@
         "language": "typescript",
         "condition": "At least one connected MCP server advertises resource capability.",
         "summary": "Adds list_mcp_resources, list_mcp_resource_templates and read_mcp_resource with server/URI schemas. Runtime resources and bodies are private session evidence."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-mcp-direct",
@@ -1397,7 +1436,8 @@
         "language": "typescript",
         "condition": "experimentalCodeMode disabled; connected MCP tools are converted and provider schemas are adapted before request filtering.",
         "summary": "MCP server tool names, descriptions and schemas are runtime additions, not a fixed shipped tool list."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-structured-output",
@@ -1421,7 +1461,8 @@
         "language": "typescript",
         "condition": "Latest user format is json_schema; schema comes from that user request.",
         "summary": "A dynamic final-answer tool is added alongside the resolved tools."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-argument-errors",
@@ -1445,7 +1486,8 @@
         "language": "typescript",
         "condition": "Tool wrapper rejects arguments that do not satisfy the advertised tool parameter decoder.",
         "summary": "InvalidArgumentsError produces model-facing rewrite guidance; tool outputs also have a truncation wrapper."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     },
     {
       "id": "tool-skill-content",
@@ -1469,7 +1511,8 @@
         "language": "typescript",
         "condition": "User/model invokes the skill tool for an available skill and permission succeeds.",
         "summary": "Returns actual skill content with base-directory guidance and sampled files; these runtime values are not expanded into the source map."
-      }
+      },
+      "group": "Registration, schemas and MCP"
     }
   ]
 }

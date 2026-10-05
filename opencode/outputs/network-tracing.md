@@ -1,18 +1,16 @@
 # OpenCode network and reasoning plumbing
 
-Release: v1.18.34. Upstream commit: aec0b9a6d8898f68f923aaf08b7306d931fd9d76.
+How a request is prepared, which runtime and provider SDK sends it, and how reasoning and history are stored and replayed. Release v1.18.34, commit `aec0b9a6d889`. These records derive only from public upstream source. Conditions describe possible harness behavior; they do not establish that any text was sent in a session. Runtime configuration, plugins, MCP servers, provider catalogs and SDK serialization can change a request. Private recordings are not inputs to this extractor. Source excerpts are copyright (c) 2025 opencode, under the [upstream MIT license](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/LICENSE); its notice is preserved in upstream-license.txt.
 
-These records derive only from public upstream source. Conditions describe possible harness behavior; they do not establish that any text was sent in a session. Runtime configuration, plugins, MCP servers, provider catalogs and SDK serialization can change a request. Private recordings are not inputs to this extractor. Source excerpts are copyright (c) 2025 opencode, under the [upstream MIT license](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/LICENSE); its notice is preserved in upstream-license.txt.
+## Request preparation
 
-## Request preparation and plugin transforms
-
-Record: `network-request-preparation`. Kind: source-code.
+### Request preparation and plugin transforms
 
 agent.prompt replaces provider prompt; then input.system and user.system append. Plugins may transform system, params and headers. Options merge base, model, agent and selected user variant in that order. OpenAI OAuth puts system text into instructions instead of system messages; GitLab workflows have a separate systemPrompt path.
 
-Condition: LLMRequestPrep.prepare runs before the selected runtime executes.
+**When:** LLMRequestPrep.prepare runs before the selected runtime executes.
 
-- [packages/opencode/src/session/llm/request.ts:56-146](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L56-L146) — SHA-256 `98f2b612644a9633dbca89d789b592e9c6eed44355f9093a5c2dabac7447604a`
+Source: [`request.ts` lines 56–146](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L56-L146) · SHA-256 `98f2b612644a…`
 
 ```typescript
 export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: PrepareInput) {
@@ -108,15 +106,13 @@ export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: Pre
   )
 ```
 
-## Session identity headers and overrides
-
-Record: `network-session-headers`. Kind: source-code.
+### Session identity headers and overrides
 
 x-opencode-session-id and optional x-opencode-parent-session-id provide explicit identity. Non-opencode providers also get x-session-affinity and X-Session-Id. Header presence in source does not prove the final captured request includes them.
 
-Condition: Prepared request headers go to the selected runtime; model headers then plugin headers can override earlier fields.
+**When:** Prepared request headers go to the selected runtime; model headers then plugin headers can override earlier fields.
 
-- [packages/opencode/src/session/llm/request.ts:177-208](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L177-L208) — SHA-256 `5d22219e991ee4db6c77fa3d14d920055383fdfe374b76660b26e9dcda525bbb`
+Source: [`request.ts` lines 177–208](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L177-L208) · SHA-256 `5d22219e991e…`
 
 ```typescript
   const opencodeProjectID = input.model.providerID.startsWith("opencode")
@@ -153,15 +149,13 @@ Condition: Prepared request headers go to the selected runtime; model headers th
 })
 ```
 
-## Final request tool filtering
-
-Record: `network-tool-filtering`. Kind: source-code.
+### Final request tool filtering
 
 GitHub Copilot may gain a compatibility _noop tool only when no tools remain and replayed history contains tool calls.
 
-Condition: After params/headers hooks, resolveTools applies agent/session permissions and per-user tools disablement; selected Responses-family tools have strict false.
+**When:** After params/headers hooks, resolveTools applies agent/session permissions and per-user tools disablement; selected Responses-family tools have strict false.
 
-- [packages/opencode/src/session/llm/request.ts:152-178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L152-L178) — SHA-256 `143ebda7ce0cfe7869e2b27c2e57a70a9fd17636518d7ad0a1596c37c3861ce1`
+Source: [`request.ts` lines 152–178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L152-L178) · SHA-256 `143ebda7ce0c…`
 
 ```typescript
   if (
@@ -193,15 +187,13 @@ Condition: After params/headers hooks, resolveTools applies agent/session permis
     ? (yield* InstanceState.context).project.id
 ```
 
-## Final permission and user-tools gate
-
-Record: `network-tool-permissions`. Kind: source-code.
+### Final permission and user-tools gate
 
 Tool presence in the registry differs from final request inclusion.
 
-Condition: resolveTools is called during request preparation.
+**When:** resolveTools is called during request preparation.
 
-- [packages/opencode/src/session/llm/request.ts:210-216](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L210-L216) — SHA-256 `61a7ee329dec44dafa12cfd28b85f8ceb20cd38e99740e8980d1e92b63754ff2`
+Source: [`request.ts` lines 210–216](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L210-L216) · SHA-256 `61a7ee329dec…`
 
 ```typescript
 function resolveTools(input: Pick<PrepareInput, "tools" | "agent" | "permission" | "user">) {
@@ -213,15 +205,50 @@ function resolveTools(input: Pick<PrepareInput, "tools" | "agent" | "permission"
 }
 ```
 
-## Default AI SDK and opt-in native runtime
+### Core runner request identity and context
 
-Record: `network-runtime-selection`. Kind: source-code.
+Adds exact session/parent headers, model request, agent system and context baseline. Live runtime evidence is needed to identify which path produced a capture.
+
+**When:** Separate core SessionRunner source path constructs a request.
+
+Source: [`llm.ts` lines 203–226](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/llm.ts#L203-L226) · SHA-256 `8b83021af90e…`
+
+```typescript
+      const toolMaterialization = isLastStep ? undefined : yield* tools.materialize(agent.info?.permissions)
+      const promptCacheKey = /^ses_[0-9a-f]{64}$/.test(session.id) ? session.id.slice(4) : session.id
+      const request = LLM.request({
+        model,
+        http: {
+          headers: {
+            "x-opencode-session-id": session.id,
+            ...(session.parentID ? { "x-opencode-parent-session-id": session.parentID } : {}),
+            "x-session-affinity": session.id,
+            "X-Session-Id": session.id,
+            ...(session.parentID ? { "x-parent-session-id": session.parentID } : {}),
+          },
+        },
+        providerOptions: { openai: { promptCacheKey } },
+        system: [agent.info?.system, system.baseline]
+          .filter((part): part is string => part !== undefined && part.length > 0)
+          .map(SystemPart.make),
+        messages: [...toLLMMessages(context, model), ...(isLastStep ? [Message.assistant(MAX_STEPS_PROMPT)] : [])],
+        tools: toolMaterialization?.definitions ?? [],
+        toolChoice: isLastStep ? "none" : undefined,
+      })
+      if (yield* compaction.compactIfNeeded({ sessionID: session.id, entries, model, request }))
+        return yield* Effect.die(continueAfterCompaction(currentStep))
+      const startSnapshot = yield* snapshots.capture()
+```
+
+## Native runtime
+
+### Default AI SDK and opt-in native runtime
 
 Default path passes prepared headers/messages/tools/options and applies ProviderTransform.message through middleware before SDK serialization.
 
-Condition: experimentalNativeLlm attempts native runtime; unsupported status falls back to AI SDK. Otherwise streamText is the default path.
+**When:** experimentalNativeLlm attempts native runtime; unsupported status falls back to AI SDK. Otherwise streamText is the default path.
 
-- [packages/opencode/src/session/llm.ts:224-380](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm.ts#L224-L380) — SHA-256 `cdb03e317e037bf73f04303236b6788694387e84808ecbe9363c0753f526f7f9`
+Source: [`llm.ts` lines 224–380](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm.ts#L224-L380) · SHA-256 `cdb03e317e03…`
 
 ```typescript
       // Runtime seam: native is an opt-in adapter over @opencode-ai/llm. It
@@ -383,15 +410,13 @@ Condition: experimentalNativeLlm attempts native runtime; unsupported status fal
         ),
 ```
 
-## Native runtime support gate
-
-Record: `network-native-runtime`. Kind: source-code.
+### Native runtime support gate
 
 Accepts provider IDs openai, anthropic or starting opencode, with supported SDK packages and configured API key; OAuth additionally needs the OpenAI fetch override. OpenRouter/Alibaba/DeepSeek/Moonshot do not pass this provider-ID gate.
 
-Condition: Only when experimentalNativeLlm is enabled and this status gate succeeds.
+**When:** Only when experimentalNativeLlm is enabled and this status gate succeeds.
 
-- [packages/opencode/src/session/llm/native-runtime.ts:48-75](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-runtime.ts#L48-L75) — SHA-256 `bdf464f6558bc4a5038390ba978e112ff99bb7fbdc6bd840e3c5fcf05887e839`
+Source: [`native-runtime.ts` lines 48–75](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-runtime.ts#L48-L75) · SHA-256 `bdf464f6558b…`
 
 ```typescript
 }
@@ -424,15 +449,13 @@ export function stream(input: StreamInput): StreamResult {
   const fetch = providerFetch(input)
 ```
 
-## Native request conversion and adapter selection
-
-Record: `network-native-request`. Kind: source-code.
+### Native request conversion and adapter selection
 
 Converts system messages, text, media, reasoning, tools and provider metadata into canonical LLM requests; selects adapters by model.api.npm.
 
-Condition: Native request adapter invoked only by a caller whose runtime support gate admits it; standalone package adapters are not proof of main CLI use.
+**When:** Native request adapter invoked only by a caller whose runtime support gate admits it; standalone package adapters are not proof of main CLI use.
 
-- [packages/opencode/src/session/llm/native-request.ts:1-196](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-request.ts#L1-L196) — SHA-256 `ee47e4430d7bb959f0ef672ca40ad9a45acd5ca4e0df72548e01825da3208432`
+Source: [`native-request.ts` lines 1–196](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-request.ts#L1-L196) · SHA-256 `ee47e4430d7b…`
 
 ```typescript
 import type { JsonSchema, LLMRequest, ProviderMetadata } from "@opencode-ai/llm"
@@ -633,15 +656,434 @@ export const request = (input: RequestInput) => {
 export * as LLMNative from "./native-request"
 ```
 
-## Bundled provider SDK factories
+### Native reasoning summary deltas and opaque metadata
 
-Record: `network-provider-packages`. Kind: source-code.
+Summary deltas become visible reasoning events, while encrypted_content stays in provider metadata. Ordering is handled on a best-effort basis when events are unexpected.
+
+**When:** Native OpenAI Responses stream receives reasoning summary and output-item events.
+
+Source: [`openai-responses.ts` lines 624–671](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L624-L671) · SHA-256 `9c7e9b950c3e…`
+
+```typescript
+const onReasoningDelta = (state: ParserState, event: OpenAIResponsesEvent): StepResult => {
+  if (!event.delta) return [state, NO_EVENTS]
+  const events: LLMEvent[] = []
+  const itemID = event.item_id ?? "reasoning-0"
+  const id =
+    event.summary_index !== undefined || state.reasoningItems[itemID] ? `${itemID}:${event.summary_index ?? 0}` : itemID
+  return [
+    {
+      ...state,
+      lifecycle: Lifecycle.reasoningDelta(state.lifecycle, events, id, event.delta),
+    },
+    events,
+  ]
+}
+
+const onReasoningDone = (state: ParserState, _event: OpenAIResponsesEvent): StepResult => [state, NO_EVENTS]
+
+const reasoningMetadata = (item: OpenAIResponsesStreamItem & { id: string }) =>
+  openaiMetadata({ itemId: item.id, reasoningEncryptedContent: item.encrypted_content ?? null })
+
+// OpenAI Responses streams reasoning items in a stable order:
+//   `output_item.added` (reasoning) →
+//     `reasoning_summary_part.added` (index=0) →
+//     `reasoning_summary_text.delta` →
+//     `reasoning_summary_part.done` (index=0) →
+//     (repeat for index>0) →
+//   `output_item.done` (reasoning).
+// The handlers below rely on this ordering: `onOutputItemAdded` seeds the
+// per-item entry, `onReasoningSummaryPartAdded` for `summary_index === 0`
+// short-circuits when the entry already exists, and higher-index handlers
+// fold against the same entry. Behaviour for out-of-order events is
+// best-effort, not guaranteed.
+const onOutputItemAdded = (state: ParserState, event: OpenAIResponsesEvent): StepResult => {
+  const item = event.item
+  if (item && isReasoningItem(item)) {
+    const events: LLMEvent[] = []
+    return [
+      {
+        ...state,
+        lifecycle: Lifecycle.reasoningStart(state.lifecycle, events, `${item.id}:0`, reasoningMetadata(item)),
+        reasoningItems: {
+          ...state.reasoningItems,
+          [item.id]: { encryptedContent: item.encrypted_content, summaryParts: { 0: "active" } },
+        },
+      },
+      events,
+    ]
+  }
+```
+
+### Native JSON export boundary
+
+Writes {info,messages}, where each message carries info and parts from session storage. This is stored session evidence, not the fully assembled request or exact system prompt.
+
+**When:** User explicitly runs export for a real session; optional sanitize mode redacts transcript/file data.
+
+Source: [`export.ts` lines 222–292](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L222-L292) · SHA-256 `79e3bd1625f3…`
+
+```typescript
+export const ExportCommand = effectCmd({
+  command: "export [sessionID]",
+  describe: "export session data as JSON",
+  builder: (yargs) =>
+    yargs
+      .positional("sessionID", {
+        describe: "session id to export",
+        type: "string",
+      })
+      .option("sanitize", {
+        describe: "redact sensitive transcript and file data",
+        type: "boolean",
+      }),
+  handler: Effect.fn("Cli.export")(function* (args) {
+    return yield* run(args)
+  }),
+})
+
+const run = Effect.fn("Cli.export.body")(function* (args: { sessionID?: string; sanitize?: boolean }) {
+  const svc = yield* Session.Service
+  let sessionID = args.sessionID ? SessionID.make(args.sessionID) : undefined
+  process.stderr.write(`Exporting session: ${sessionID ?? "latest"}\n`)
+
+  if (!sessionID) {
+    UI.empty()
+    prompts.intro("Export session", { output: process.stderr })
+
+    const sessions = yield* svc.list()
+
+    if (sessions.length === 0) {
+      prompts.log.error("No sessions found", { output: process.stderr })
+      prompts.outro("Done", { output: process.stderr })
+      return
+    }
+
+    sessions.sort((a, b) => b.time.updated - a.time.updated)
+
+    const selectedSession = yield* Effect.promise(() =>
+      prompts.autocomplete({
+        message: "Select session to export",
+        maxItems: 10,
+        options: sessions.map((session) => ({
+          label: session.title,
+          value: session.id,
+          hint: `${new Date(session.time.updated).toLocaleString()} • ${session.id.slice(-8)}`,
+        })),
+        output: process.stderr,
+      }),
+    )
+
+    if (prompts.isCancel(selectedSession)) {
+      return yield* Effect.die(new UI.CancelledError())
+    }
+
+    sessionID = selectedSession
+
+    prompts.outro("Exporting session...", { output: process.stderr })
+  }
+
+  // Match legacy try/catch — catches both typed failures and defects
+  // (Session.Service.get throws NotFoundError as a defect, not a typed E).
+  return yield* Effect.gen(function* () {
+    const sessionInfo = yield* svc.get(sessionID!)
+    const messages = yield* svc.messages({ sessionID: sessionInfo.id })
+
+    const exportData = { info: sessionInfo, messages }
+
+    process.stdout.write(JSON.stringify(args.sanitize ? sanitize(exportData) : exportData, null, 2))
+    process.stdout.write(EOL)
+  }).pipe(Effect.catchCause(() => fail(`Session not found: ${sessionID!}`)))
+})
+```
+
+### Native package OpenRouter protocol
+
+Uses OpenAI Chat stream protocol at /chat/completions, adding usage/reasoning/prompt-cache body options. Default host comes from the native profile. It does not establish an observed serving provider or downstream hop.
+
+**When:** Standalone native package OpenRouter route is selected; main CLI native runtime gate restricts provider IDs separately.
+
+Source: [`openrouter.ts` lines 1–98](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openrouter.ts#L1-L98) · SHA-256 `d036cfd496e0…`
+
+```typescript
+import { Effect, Schema } from "effect"
+import { Route, type RouteDefaultsInput } from "../route/client"
+import { Endpoint } from "../route/endpoint"
+import { Framing } from "../route/framing"
+import { Protocol } from "../route/protocol"
+import { AuthOptions, type ProviderAuthOption } from "../route/auth-options"
+import { ProviderID, type ModelID, type ProviderOptions } from "../schema"
+import * as OpenAICompatibleProfiles from "./openai-compatible-profile"
+import * as OpenAIChat from "../protocols/openai-chat"
+import { isRecord } from "../protocols/shared"
+
+export const profile = OpenAICompatibleProfiles.profiles.openrouter
+export const id = ProviderID.make(profile.provider)
+const ADAPTER = "openrouter"
+
+export interface OpenRouterOptions {
+  readonly [key: string]: unknown
+  readonly usage?: boolean | Record<string, unknown>
+  readonly reasoning?: Record<string, unknown>
+  readonly promptCacheKey?: string
+}
+
+export type OpenRouterProviderOptionsInput = ProviderOptions & {
+  readonly openrouter?: OpenRouterOptions
+}
+
+export type ModelOptions = Omit<RouteDefaultsInput, "providerOptions"> &
+  ProviderAuthOption<"optional"> & {
+    readonly baseURL?: string
+    readonly providerOptions?: OpenRouterProviderOptionsInput
+  }
+
+const OpenRouterBody = Schema.StructWithRest(Schema.Struct(OpenAIChat.bodyFields), [
+  Schema.Record(Schema.String, Schema.Any),
+])
+export type OpenRouterBody = Schema.Schema.Type<typeof OpenRouterBody>
+
+export const protocol = Protocol.make({
+  id: "openrouter-chat",
+  body: {
+    schema: OpenRouterBody,
+    from: (request) =>
+      OpenAIChat.protocol.body.from(request).pipe(
+        Effect.map(
+          (body) =>
+            ({
+              ...body,
+              ...bodyOptions(request.providerOptions?.openrouter),
+            }) as OpenRouterBody,
+        ),
+      ),
+  },
+  stream: OpenAIChat.protocol.stream,
+})
+
+const bodyOptions = (input: unknown) => {
+  const openrouter = isRecord(input) ? input : {}
+  return {
+    ...(openrouter.usage === true
+      ? { usage: { include: true } }
+      : isRecord(openrouter.usage)
+        ? { usage: openrouter.usage }
+        : {}),
+    ...(isRecord(openrouter.reasoning) ? { reasoning: openrouter.reasoning } : {}),
+    ...(typeof openrouter.promptCacheKey === "string" ? { prompt_cache_key: openrouter.promptCacheKey } : {}),
+  }
+}
+
+export const route = Route.make({
+  id: ADAPTER,
+  provider: profile.provider,
+  protocol,
+  endpoint: Endpoint.path("/chat/completions", { baseURL: profile.baseURL }),
+  framing: Framing.sse,
+})
+
+export const routes = [route]
+
+const configuredRoute = (input: ModelOptions) => {
+  const { apiKey: _, auth: _auth, baseURL, ...rest } = input
+  return route.with({
+    ...rest,
+    endpoint: { baseURL: baseURL ?? profile.baseURL },
+    auth: AuthOptions.bearer(input, "OPENROUTER_API_KEY"),
+  })
+}
+
+export const configure = (input: ModelOptions = {}) => {
+  const route = configuredRoute(input)
+  return {
+    id,
+    model: (modelID: string | ModelID) => route.model({ id: modelID }),
+    configure,
+  }
+}
+
+export const provider = configure()
+export const model = provider.model
+```
+
+### Native OpenAI-compatible endpoint profiles
+
+Includes openrouter.ai/api/v1 and api.deepseek.com/v1. Main CLI endpoint defaults may instead come from the dynamic catalog or config.
+
+**When:** Native package provider helpers use their default profile unless baseURL is overridden.
+
+Source: [`openai-compatible-profile.ts` lines 1–20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openai-compatible-profile.ts#L1-L20) · SHA-256 `7c4f115fb328…`
+
+```typescript
+export interface OpenAICompatibleProfile {
+  readonly provider: string
+  readonly baseURL: string
+}
+
+export const profiles = {
+  baseten: { provider: "baseten", baseURL: "https://inference.baseten.co/v1" },
+  cerebras: { provider: "cerebras", baseURL: "https://api.cerebras.ai/v1" },
+  deepinfra: { provider: "deepinfra", baseURL: "https://api.deepinfra.com/v1/openai" },
+  deepseek: { provider: "deepseek", baseURL: "https://api.deepseek.com/v1" },
+  fireworks: { provider: "fireworks", baseURL: "https://api.fireworks.ai/inference/v1" },
+  groq: { provider: "groq", baseURL: "https://api.groq.com/openai/v1" },
+  openrouter: { provider: "openrouter", baseURL: "https://openrouter.ai/api/v1" },
+  togetherai: { provider: "togetherai", baseURL: "https://api.together.xyz/v1" },
+  xai: { provider: "xai", baseURL: "https://api.x.ai/v1" },
+} as const satisfies Record<string, OpenAICompatibleProfile>
+
+export const byProvider: Record<string, OpenAICompatibleProfile> = Object.fromEntries(
+  Object.values(profiles).map((profile) => [profile.provider, profile]),
+)
+```
+
+### Native Chat request and response fields
+
+Source schema separates system/user/assistant/tool content, tool function schemas, reasoning_content, usage.reasoning_tokens and finish_reason. This native schema is not proof of the default external SDK wire format.
+
+**When:** Native OpenAI Chat-compatible protocol serializes a canonical request and decodes SSE events.
+
+Source: [`openai-chat.ts` lines 34–160](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-chat.ts#L34-L160) · SHA-256 `e3c220427107…`
+
+```typescript
+// The body schema is the provider-native JSON body. `fromRequest` below builds
+// this shape from the common `LLMRequest`, then `Route.make` validates and
+// JSON-encodes it before transport.
+const OpenAIChatFunction = Schema.Struct({
+  name: Schema.String,
+  description: Schema.String,
+  parameters: JsonObject,
+})
+
+const OpenAIChatTool = Schema.Struct({
+  type: Schema.tag("function"),
+  function: OpenAIChatFunction,
+})
+type OpenAIChatTool = Schema.Schema.Type<typeof OpenAIChatTool>
+
+const OpenAIChatAssistantToolCall = Schema.Struct({
+  id: Schema.String,
+  type: Schema.tag("function"),
+  function: Schema.Struct({
+    name: Schema.String,
+    arguments: Schema.String,
+  }),
+})
+type OpenAIChatAssistantToolCall = Schema.Schema.Type<typeof OpenAIChatAssistantToolCall>
+
+const OpenAIChatUserContent = Schema.Union([
+  Schema.Struct({ type: Schema.Literal("text"), text: Schema.String }),
+  Schema.Struct({
+    type: Schema.Literal("image_url"),
+    image_url: Schema.Struct({ url: Schema.String }),
+  }),
+])
+
+const OpenAIChatMessage = Schema.Union([
+  Schema.Struct({ role: Schema.Literal("system"), content: Schema.String }),
+  Schema.Struct({
+    role: Schema.Literal("user"),
+    content: Schema.Union([Schema.String, Schema.Array(OpenAIChatUserContent)]),
+  }),
+  Schema.Struct({
+    role: Schema.Literal("assistant"),
+    content: Schema.NullOr(Schema.String),
+    tool_calls: optionalArray(OpenAIChatAssistantToolCall),
+    reasoning_content: Schema.optional(Schema.String),
+  }),
+  Schema.Struct({ role: Schema.Literal("tool"), tool_call_id: Schema.String, content: Schema.String }),
+]).pipe(Schema.toTaggedUnion("role"))
+type OpenAIChatMessage = Schema.Schema.Type<typeof OpenAIChatMessage>
+
+const OpenAIChatToolChoice = Schema.Union([
+  Schema.Literals(["auto", "none", "required"]),
+  Schema.Struct({
+    type: Schema.tag("function"),
+    function: Schema.Struct({ name: Schema.String }),
+  }),
+])
+
+export const bodyFields = {
+  model: Schema.String,
+  messages: Schema.Array(OpenAIChatMessage),
+  tools: optionalArray(OpenAIChatTool),
+  tool_choice: Schema.optional(OpenAIChatToolChoice),
+  stream: Schema.Literal(true),
+  stream_options: Schema.optional(Schema.Struct({ include_usage: Schema.Boolean })),
+  store: Schema.optional(Schema.Boolean),
+  reasoning_effort: Schema.optional(OpenAIOptions.OpenAIReasoningEffort),
+  max_tokens: Schema.optional(Schema.Number),
+  temperature: Schema.optional(Schema.Number),
+  top_p: Schema.optional(Schema.Number),
+  frequency_penalty: Schema.optional(Schema.Number),
+  presence_penalty: Schema.optional(Schema.Number),
+  seed: Schema.optional(Schema.Number),
+  stop: optionalArray(Schema.String),
+}
+const OpenAIChatBody = Schema.Struct(bodyFields)
+export type OpenAIChatBody = Schema.Schema.Type<typeof OpenAIChatBody>
+
+// =============================================================================
+// Streaming Event Schema
+// =============================================================================
+// The event schema is one decoded SSE `data:` payload. `Framing.sse` splits the
+// byte stream into strings, then `Protocol.jsonEvent` decodes each string into
+// this provider-native event shape.
+const OpenAIChatUsage = Schema.Struct({
+  prompt_tokens: Schema.optional(Schema.Number),
+  completion_tokens: Schema.optional(Schema.Number),
+  total_tokens: Schema.optional(Schema.Number),
+  prompt_tokens_details: optionalNull(
+    Schema.Struct({
+      cached_tokens: Schema.optional(Schema.Number),
+    }),
+  ),
+  completion_tokens_details: optionalNull(
+    Schema.Struct({
+      reasoning_tokens: Schema.optional(Schema.Number),
+    }),
+  ),
+})
+
+const OpenAIChatToolCallDeltaFunction = Schema.Struct({
+  name: optionalNull(Schema.String),
+  arguments: optionalNull(Schema.String),
+})
+
+const OpenAIChatToolCallDelta = Schema.Struct({
+  index: Schema.Number,
+  id: optionalNull(Schema.String),
+  function: optionalNull(OpenAIChatToolCallDeltaFunction),
+})
+type OpenAIChatToolCallDelta = Schema.Schema.Type<typeof OpenAIChatToolCallDelta>
+
+const OpenAIChatDelta = Schema.Struct({
+  content: optionalNull(Schema.String),
+  reasoning_content: optionalNull(Schema.String),
+  tool_calls: optionalNull(Schema.Array(OpenAIChatToolCallDelta)),
+})
+
+const OpenAIChatChoice = Schema.Struct({
+  delta: optionalNull(OpenAIChatDelta),
+  finish_reason: optionalNull(Schema.String),
+})
+
+const OpenAIChatEvent = Schema.Struct({
+  choices: Schema.Array(OpenAIChatChoice),
+  usage: optionalNull(OpenAIChatUsage),
+})
+type OpenAIChatEvent = Schema.Schema.Type<typeof OpenAIChatEvent>
+```
+
+## Providers, endpoints and catalogs
+
+### Bundled provider SDK factories
 
 Includes OpenRouter, Alibaba and OpenAI-compatible SDK factories. SDK dependency versions are pinned in packages/opencode/package.json, separately from installed CLI identity.
 
-Condition: Provider.resolveSDK selects factory using the configured or catalog-derived model.api.npm.
+**When:** Provider.resolveSDK selects factory using the configured or catalog-derived model.api.npm.
 
-- [packages/opencode/src/provider/provider.ts:144-175](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L144-L175) — SHA-256 `9d924c84e74b53d4beffde43eb5c52db3a52f6139cbd2dbc956f39bb6ab3c38d`
+Source: [`provider.ts` lines 144–175](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L144-L175) · SHA-256 `9d924c84e74b…`
 
 ```typescript
   chat?: (modelId: string) => LanguageModelV3
@@ -678,15 +1120,13 @@ const BUNDLED_PROVIDERS: Record<string, () => Promise<(opts: any) => BundledSDK>
 }
 ```
 
-## OpenRouter attribution headers
-
-Record: `network-openrouter-headers`. Kind: source-code.
+### OpenRouter attribution headers
 
 Sets HTTP-Referer and X-Title for the client. These headers do not identify an upstream serving provider.
 
-Condition: OpenRouter custom provider loader is used and headers are not overridden downstream.
+**When:** OpenRouter custom provider loader is used and headers are not overridden downstream.
 
-- [packages/opencode/src/provider/provider.ts:513-524](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L513-L524) — SHA-256 `bd0dd66aa81dbd528c62dd95d5d1fd1d2a42b1bf52ca23993bccd6fa85ccb02d`
+Source: [`provider.ts` lines 513–524](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L513-L524) · SHA-256 `bd0dd66aa81d…`
 
 ```typescript
     openrouter: () =>
@@ -703,15 +1143,13 @@ Condition: OpenRouter custom provider loader is used and headers are not overrid
       Effect.succeed({
 ```
 
-## Model endpoint, capabilities and options
-
-Record: `network-model-definition`. Kind: source-code.
+### Model endpoint, capabilities and options
 
 api.id, npm package and URL have separate precedence. Interleaved reasoning can be configured; a new OpenAI-compatible DeepSeek model defaults to reasoning_content. Model options and headers are merged, and configured variants can disable defaults.
 
-Condition: Config-defined model is merged with existing/catalog defaults.
+**When:** Config-defined model is merged with existing/catalog defaults.
 
-- [packages/opencode/src/provider/provider.ts:1542-1631](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1542-L1631) — SHA-256 `6e5dc45e13cedbb17d700449af709a4bd89b5e586092f9e674fbb3a8b089174e`
+Source: [`provider.ts` lines 1542–1631](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1542-L1631) · SHA-256 `6e5dc45e13ce…`
 
 ```typescript
           }
@@ -806,15 +1244,13 @@ Condition: Config-defined model is merged with existing/catalog defaults.
         }
 ```
 
-## Resolved SDK endpoint and fetch layer
-
-Record: `network-sdk-endpoint`. Kind: source-code.
+### Resolved SDK endpoint and fetch layer
 
 Nonempty provider.options.baseURL takes precedence over model.api.url, then configured/environment substitutions apply. Provider credentials and model headers are merged before the timeout-aware fetch wrapper. Actual captured host remains the evidence of client destination.
 
-Condition: resolveSDK loads the selected provider package.
+**When:** resolveSDK loads the selected provider package.
 
-- [packages/opencode/src/provider/provider.ts:1783-1864](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1783-L1864) — SHA-256 `25f9ae85b7056ec7e7876db49ef54bd3648c382cad22f72a995c4d26fe01341e`
+Source: [`provider.ts` lines 1783–1864](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1783-L1864) · SHA-256 `25f9ae85b705…`
 
 ```typescript
     const list = Effect.fn("Provider.list")(() => InstanceState.use(state, (s) => s.providers))
@@ -901,15 +1337,13 @@ Condition: resolveSDK loads the selected provider package.
         const installedPath = await (async () => {
 ```
 
-## Runtime model catalog source
-
-Record: `network-model-catalog`. Kind: source-code.
+### Runtime model catalog source
 
 Catalog URL defaults to models.opencode.ai and can be overridden. Provider endpoints/capabilities from a live catalog are not frozen by this source pin and are not copied into this inventory.
 
-Condition: ModelsDev loads cache/OPENCODE_MODELS_PATH, build-injected snapshot, or network fetch when enabled; periodic refresh is conditional.
+**When:** ModelsDev loads cache/OPENCODE_MODELS_PATH, build-injected snapshot, or network fetch when enabled; periodic refresh is conditional.
 
-- [packages/core/src/models-dev.ts:1-266](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/models-dev.ts#L1-L266) — SHA-256 `f6e11d21709b56b56f6c4f5bcc02e46356061d4501998d75b09b40d14baf07be`
+Source: [`models-dev.ts` lines 1–266](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/models-dev.ts#L1-L266) · SHA-256 `f6e11d21709b…`
 
 ```typescript
 import path from "path"
@@ -1180,15 +1614,89 @@ export const node = makeGlobalNode({ service: Service, layer: layer, deps: [FSUt
 export * as ModelsDev from "./models-dev"
 ```
 
-## DeepSeek and interleaved reasoning replay
+### Provider option namespaces
 
-Record: `network-reasoning-replay`. Kind: source-code.
+Maps package to expected namespace; Azure receives openai and azure; gateway options split routing controls from model publisher options. Provider IDs and model publishers are distinct.
+
+**When:** ProviderTransform.providerOptions is called before SDK execution.
+
+Source: [`transform.ts` lines 1421–1483](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1421-L1483) · SHA-256 `f2988163dc58…`
+
+```typescript
+export function providerOptions(model: Provider.Model, options: { [x: string]: any }) {
+  const usesOpenAIReasoningGate =
+    model.api.npm === "@ai-sdk/openai" ||
+    model.api.npm === "@ai-sdk/azure" ||
+    model.api.npm === "@ai-sdk/amazon-bedrock/mantle"
+  const normalized =
+    usesOpenAIReasoningGate &&
+    (model.capabilities.reasoning || options.reasoningEffort !== undefined || options.reasoningSummary !== undefined)
+      ? { ...options, forceReasoning: true }
+      : anthropicBlockBinding(model, options)
+
+  if (model.api.npm === "@ai-sdk/gateway") {
+    // Gateway providerOptions are split across two namespaces:
+    // - `gateway`: gateway-native routing/caching controls (order, only, byok, etc.)
+    // - `<upstream slug>`: provider-specific model options (anthropic/openai/...)
+    // We keep `gateway` as-is and route every other top-level option under the
+    // model-derived upstream slug.
+    const i = model.api.id.indexOf("/")
+    const rawSlug = i > 0 ? model.api.id.slice(0, i) : undefined
+    const slug = rawSlug ? (SLUG_OVERRIDES[rawSlug] ?? rawSlug) : undefined
+    const gateway = normalized.gateway
+    const rest = Object.fromEntries(Object.entries(normalized).filter(([k]) => k !== "gateway"))
+    const has = Object.keys(rest).length > 0
+
+    const result: Record<string, any> = {}
+    if (gateway !== undefined) result.gateway = gateway
+
+    if (has) {
+      if (slug) {
+        // Route model-specific options under the provider slug
+        result[slug] = rest
+      } else if (gateway && typeof gateway === "object" && !Array.isArray(gateway)) {
+        result.gateway = { ...gateway, ...rest }
+      } else {
+        result.gateway = rest
+      }
+    }
+
+    return result
+  }
+
+  // AI SDK packages that resolve providerOptionsName by splitting the
+  // provider name on "." (e.g. "wafer.ai" -> "wafer") need the same
+  // logic here so the key we write matches the key they read.
+  // Other SDKs (xai, mistral, groq, cohere, etc.) use hardcoded keys
+  // like "xai" or "cohere" - applying .split(".")[0] would break those.
+  const usesDotSplitOptions =
+    model.api.npm === "@ai-sdk/openai-compatible" ||
+    model.api.npm === "@ai-sdk/openai" ||
+    model.api.npm === "@ai-sdk/anthropic"
+  const key = sdkKey(model.api.npm) ?? (usesDotSplitOptions ? model.providerID.split(".")[0] : model.providerID)
+  // @ai-sdk/azure delegates to OpenAIChatLanguageModel which reads from
+  // providerOptions["openai"], but OpenAIResponsesLanguageModel checks
+  // "azure" first. Pass both so model options work on either code path.
+  if (model.api.npm === "@ai-sdk/azure") {
+    return { openai: normalized, azure: normalized }
+  }
+  return { [key]: normalized }
+}
+
+export function maxOutputTokens(model: Provider.Model, outputTokenMax = OUTPUT_TOKEN_MAX): number {
+  return Math.min(model.limit.output, outputTokenMax) || outputTokenMax
+}
+```
+
+## Reasoning, streaming and history
+
+### DeepSeek and interleaved reasoning replay
 
 Configured interleaved reasoning fields move assistant reasoning into OpenAI-compatible message options, excluding the OpenRouter SDK path. Empty placeholders are harness compatibility data, not evidence of model reasoning.
 
-Condition: ProviderTransform normalization applies after preceding provider-specific branches; DeepSeek names receive empty reasoning placeholders when missing.
+**When:** ProviderTransform normalization applies after preceding provider-specific branches; DeepSeek names receive empty reasoning placeholders when missing.
 
-- [packages/opencode/src/provider/transform.ts:303-351](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L303-L351) — SHA-256 `b0f39386a3b751d66c5ea9d1de1008a03cb7a111f6667689d065abb7f081969d`
+Source: [`transform.ts` lines 303–351](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L303-L351) · SHA-256 `b0f39386a3b7…`
 
 ```typescript
   // Deepseek requires all assistant messages to have reasoning on them
@@ -1242,15 +1750,13 @@ Condition: ProviderTransform normalization applies after preceding provider-spec
       return msg
 ```
 
-## Provider reasoning and usage defaults
-
-Record: `network-reasoning-defaults`. Kind: source-code.
+### Provider reasoning and usage defaults
 
 OpenRouter requests usage inclusion. Kimi Anthropic-compatible reasoning uses adaptive summarized thinking/high effort. Alibaba-cn OpenAI-compatible reasoning enables thinking except kimi-k2-thinking. Small-model options may disable reasoning. Source settings do not establish visible returned reasoning.
 
-Condition: ProviderTransform.options or smallOptions creates defaults before model/agent/user variant merges.
+**When:** ProviderTransform.options or smallOptions creates defaults before model/agent/user variant merges.
 
-- [packages/opencode/src/provider/transform.ts:1220-1415](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1220-L1415) — SHA-256 `01c9c64618d75dc99b1db6b96306bb62956cd809e65b8f92aeecb6193a853caf`
+Source: [`transform.ts` lines 1220–1415](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1220-L1415) · SHA-256 `01c9c64618d7…`
 
 ```typescript
 export function options(input: {
@@ -1451,15 +1957,13 @@ export function smallOptions(model: Provider.Model) {
 // Maps model ID prefix to provider slug used in providerOptions.
 ```
 
-## Reasoning variant fallback branches
-
-Record: `network-reasoning-variants`. Kind: source-code.
+### Reasoning variant fallback branches
 
 Kimi on Anthropic-compatible transports has adaptive thinking efforts. Earlier DeepSeek/Kimi/Qwen name branches return no generic variants. OpenRouter effort variants only apply if earlier branches did not return.
 
-Condition: Reasoning capability enabled and no authoritative reasoning_options variants supersede these fallback branches.
+**When:** Reasoning capability enabled and no authoritative reasoning_options variants supersede these fallback branches.
 
-- [packages/opencode/src/provider/transform.ts:790-879](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L790-L879) — SHA-256 `d6c5db464ecc9463e685a35272d3bb0a61f98663a165dfd51b629430b39b1728`
+Source: [`transform.ts` lines 790–879](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L790-L879) · SHA-256 `d6c5db464ecc…`
 
 ```typescript
 export function variants(model: Provider.Model): Record<string, Record<string, any>> {
@@ -1554,15 +2058,13 @@ export function variants(model: Provider.Model): Record<string, Record<string, a
     case "ai-gateway-provider": {
 ```
 
-## Catalog-defined reasoning controls
-
-Record: `network-catalog-reasoning`. Kind: source-code.
+### Catalog-defined reasoning controls
 
 OpenRouter maps effort/budget to reasoning; Alibaba maps toggle/budget to enableThinking/thinkingBudget. This is configuration mapping, not provider response evidence.
 
-Condition: Model catalog provides reasoning_options; effort, toggle or token-budget variants are mapped to selected SDK settings.
+**When:** Model catalog provides reasoning_options; effort, toggle or token-budget variants are mapped to selected SDK settings.
 
-- [packages/opencode/src/provider/transform.ts:1717-1922](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1717-L1922) — SHA-256 `992c24b2158ab03fee12faebeadfd2beda498139bebc0218d2d837c0751ccb13`
+Source: [`transform.ts` lines 1717–1922](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1717-L1922) · SHA-256 `992c24b2158a…`
 
 ```typescript
 export function reasoningVariants(model: ModelsDev.Model, target: Provider.Model): Provider.Model["variants"] {
@@ -1773,91 +2275,13 @@ function reasoningBudget(model: Provider.Model, budget: number) {
 export * as ProviderTransform from "./transform"
 ```
 
-## Provider option namespaces
-
-Record: `network-option-namespaces`. Kind: source-code.
-
-Maps package to expected namespace; Azure receives openai and azure; gateway options split routing controls from model publisher options. Provider IDs and model publishers are distinct.
-
-Condition: ProviderTransform.providerOptions is called before SDK execution.
-
-- [packages/opencode/src/provider/transform.ts:1421-1483](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1421-L1483) — SHA-256 `f2988163dc589be9c2e56ad444ef99457edd572c5bcb4d39b70017b2471a5b43`
-
-```typescript
-export function providerOptions(model: Provider.Model, options: { [x: string]: any }) {
-  const usesOpenAIReasoningGate =
-    model.api.npm === "@ai-sdk/openai" ||
-    model.api.npm === "@ai-sdk/azure" ||
-    model.api.npm === "@ai-sdk/amazon-bedrock/mantle"
-  const normalized =
-    usesOpenAIReasoningGate &&
-    (model.capabilities.reasoning || options.reasoningEffort !== undefined || options.reasoningSummary !== undefined)
-      ? { ...options, forceReasoning: true }
-      : anthropicBlockBinding(model, options)
-
-  if (model.api.npm === "@ai-sdk/gateway") {
-    // Gateway providerOptions are split across two namespaces:
-    // - `gateway`: gateway-native routing/caching controls (order, only, byok, etc.)
-    // - `<upstream slug>`: provider-specific model options (anthropic/openai/...)
-    // We keep `gateway` as-is and route every other top-level option under the
-    // model-derived upstream slug.
-    const i = model.api.id.indexOf("/")
-    const rawSlug = i > 0 ? model.api.id.slice(0, i) : undefined
-    const slug = rawSlug ? (SLUG_OVERRIDES[rawSlug] ?? rawSlug) : undefined
-    const gateway = normalized.gateway
-    const rest = Object.fromEntries(Object.entries(normalized).filter(([k]) => k !== "gateway"))
-    const has = Object.keys(rest).length > 0
-
-    const result: Record<string, any> = {}
-    if (gateway !== undefined) result.gateway = gateway
-
-    if (has) {
-      if (slug) {
-        // Route model-specific options under the provider slug
-        result[slug] = rest
-      } else if (gateway && typeof gateway === "object" && !Array.isArray(gateway)) {
-        result.gateway = { ...gateway, ...rest }
-      } else {
-        result.gateway = rest
-      }
-    }
-
-    return result
-  }
-
-  // AI SDK packages that resolve providerOptionsName by splitting the
-  // provider name on "." (e.g. "wafer.ai" -> "wafer") need the same
-  // logic here so the key we write matches the key they read.
-  // Other SDKs (xai, mistral, groq, cohere, etc.) use hardcoded keys
-  // like "xai" or "cohere" - applying .split(".")[0] would break those.
-  const usesDotSplitOptions =
-    model.api.npm === "@ai-sdk/openai-compatible" ||
-    model.api.npm === "@ai-sdk/openai" ||
-    model.api.npm === "@ai-sdk/anthropic"
-  const key = sdkKey(model.api.npm) ?? (usesDotSplitOptions ? model.providerID.split(".")[0] : model.providerID)
-  // @ai-sdk/azure delegates to OpenAIChatLanguageModel which reads from
-  // providerOptions["openai"], but OpenAIResponsesLanguageModel checks
-  // "azure" first. Pass both so model options work on either code path.
-  if (model.api.npm === "@ai-sdk/azure") {
-    return { openai: normalized, azure: normalized }
-  }
-  return { [key]: normalized }
-}
-
-export function maxOutputTokens(model: Provider.Model, outputTokenMax = OUTPUT_TOKEN_MAX): number {
-  return Math.min(model.limit.output, outputTokenMax) || outputTokenMax
-}
-```
-
-## AI SDK stream normalization
-
-Record: `network-ai-sdk-reasoning`. Kind: source-code.
+### AI SDK stream normalization
 
 Reasoning start/delta/end remain separate from text; usage and finish metadata are normalized; errors fail the stream. This code does not reconstruct hidden/encrypted reasoning.
 
-Condition: Default AI SDK runtime fullStream is converted into canonical LLMEvents.
+**When:** Default AI SDK runtime fullStream is converted into canonical LLMEvents.
 
-- [packages/opencode/src/session/llm/ai-sdk.ts:1-291](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/ai-sdk.ts#L1-L291) — SHA-256 `3d2e653811abaf230b3fea9a54049499d1be2c09dabe017ed4eb99918ee7def5`
+Source: [`ai-sdk.ts` lines 1–291](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/ai-sdk.ts#L1-L291) · SHA-256 `3d2e653811ab…`
 
 ```typescript
 import { FinishReason, LLMEvent, ProviderMetadata, ToolResultValue } from "@opencode-ai/llm"
@@ -2153,15 +2577,13 @@ export function toLLMEvents(
 export * as LLMAISDK from "./ai-sdk"
 ```
 
-## Visible reasoning persistence
-
-Record: `network-reasoning-storage`. Kind: source-code.
+### Visible reasoning persistence
 
 Persists distinct reasoning parts and provider metadata. Orphan reasoning deltas are dropped, so stored exports can differ from raw wire streams.
 
-Condition: Reasoning events arrive from the selected runtime with a preceding reasoning-start.
+**When:** Reasoning events arrive from the selected runtime with a preceding reasoning-start.
 
-- [packages/opencode/src/session/processor.ts:278-315](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L278-L315) — SHA-256 `a4f082ea43e0e2c284e277f8e25d8b7847602e01a701e0c6b56d0e2311fa6e2f`
+Source: [`processor.ts` lines 278–315](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L278-L315) · SHA-256 `a4f082ea43e0…`
 
 ```typescript
       const handleEvent = Effect.fnUntraced(function* (value: StreamEvent) {
@@ -2204,15 +2626,13 @@ Condition: Reasoning events arrive from the selected runtime with a preceding re
           case "tool-input-start":
 ```
 
-## Step finish, usage and provider transformations
-
-Record: `network-finish-usage`. Kind: source-code.
+### Step finish, usage and provider transformations
 
 Stores finish reason and normalized tokens/cost; logs provider-reported dropped thinking blocks and closes remaining reasoning parts. Raw capture is needed to inspect metadata that does not survive export.
 
-Condition: Session processor receives step-finish from the selected runtime.
+**When:** Session processor receives step-finish from the selected runtime.
 
-- [packages/opencode/src/session/processor.ts:435-468](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L435-L468) — SHA-256 `59efe7713cec0b053b1af8fb391ce590b7b15bf715aae645219486825e3a3296`
+Source: [`processor.ts` lines 435–468](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L435-L468) · SHA-256 `59efe7713cec…`
 
 ```typescript
           case "step-finish": {
@@ -2251,15 +2671,13 @@ Condition: Session processor receives step-finish from the selected runtime.
               cost: usage.cost,
 ```
 
-## Opaque reasoning replay metadata
-
-Record: `network-encrypted-reasoning`. Kind: source-code.
+### Opaque reasoning replay metadata
 
 Visible part text becomes summary_text; reasoningEncryptedContent is passed separately as opaque encrypted_content or null. Encrypted bytes are not readable reasoning text.
 
-Condition: Native OpenAI Responses lowering sees a reasoning part with valid provider item ID metadata.
+**When:** Native OpenAI Responses lowering sees a reasoning part with valid provider item ID metadata.
 
-- [packages/llm/src/protocols/openai-responses.ts:283-300](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L283-L300) — SHA-256 `b48097c72da0a5b53e196db7e809db6a9638ea4ea5b6f7d13b96aba3c4ff90a7`
+Source: [`openai-responses.ts` lines 283–300](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L283-L300) · SHA-256 `b48097c72da0…`
 
 ```typescript
 const lowerReasoning = (part: ReasoningPart): OpenAIResponsesReasoningInput | undefined => {
@@ -2282,76 +2700,13 @@ const lowerReasoning = (part: ReasoningPart): OpenAIResponsesReasoningInput | un
 
 ```
 
-## Native reasoning summary deltas and opaque metadata
-
-Record: `network-reasoning-summary-stream`. Kind: source-code.
-
-Summary deltas become visible reasoning events, while encrypted_content stays in provider metadata. Ordering is handled on a best-effort basis when events are unexpected.
-
-Condition: Native OpenAI Responses stream receives reasoning summary and output-item events.
-
-- [packages/llm/src/protocols/openai-responses.ts:624-671](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L624-L671) — SHA-256 `9c7e9b950c3ea0eee3f9cfad3f3857b71c241eac3bc07573bf003876899277a4`
-
-```typescript
-const onReasoningDelta = (state: ParserState, event: OpenAIResponsesEvent): StepResult => {
-  if (!event.delta) return [state, NO_EVENTS]
-  const events: LLMEvent[] = []
-  const itemID = event.item_id ?? "reasoning-0"
-  const id =
-    event.summary_index !== undefined || state.reasoningItems[itemID] ? `${itemID}:${event.summary_index ?? 0}` : itemID
-  return [
-    {
-      ...state,
-      lifecycle: Lifecycle.reasoningDelta(state.lifecycle, events, id, event.delta),
-    },
-    events,
-  ]
-}
-
-const onReasoningDone = (state: ParserState, _event: OpenAIResponsesEvent): StepResult => [state, NO_EVENTS]
-
-const reasoningMetadata = (item: OpenAIResponsesStreamItem & { id: string }) =>
-  openaiMetadata({ itemId: item.id, reasoningEncryptedContent: item.encrypted_content ?? null })
-
-// OpenAI Responses streams reasoning items in a stable order:
-//   `output_item.added` (reasoning) →
-//     `reasoning_summary_part.added` (index=0) →
-//     `reasoning_summary_text.delta` →
-//     `reasoning_summary_part.done` (index=0) →
-//     (repeat for index>0) →
-//   `output_item.done` (reasoning).
-// The handlers below rely on this ordering: `onOutputItemAdded` seeds the
-// per-item entry, `onReasoningSummaryPartAdded` for `summary_index === 0`
-// short-circuits when the entry already exists, and higher-index handlers
-// fold against the same entry. Behaviour for out-of-order events is
-// best-effort, not guaranteed.
-const onOutputItemAdded = (state: ParserState, event: OpenAIResponsesEvent): StepResult => {
-  const item = event.item
-  if (item && isReasoningItem(item)) {
-    const events: LLMEvent[] = []
-    return [
-      {
-        ...state,
-        lifecycle: Lifecycle.reasoningStart(state.lifecycle, events, `${item.id}:0`, reasoningMetadata(item)),
-        reasoningItems: {
-          ...state.reasoningItems,
-          [item.id]: { encryptedContent: item.encrypted_content, summaryParts: { 0: "active" } },
-        },
-      },
-      events,
-    ]
-  }
-```
-
-## Stored assistant history replay and model changes
-
-Record: `network-history-replay`. Kind: source-code.
+### Stored assistant history replay and model changes
 
 For the same model, reasoning parts preserve provider metadata. When model changes, nonempty reasoning becomes text and metadata is omitted. Completed, failed and interrupted tools have separate replay paths.
 
-Condition: MessageV2 converts stored session parts for a new selected provider/model.
+**When:** MessageV2 converts stored session parts for a new selected provider/model.
 
-- [packages/opencode/src/session/message-v2.ts:249-386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/message-v2.ts#L249-L386) — SHA-256 `e01ecbdc054a2635d42193f9fba01e83f10d2dcfe62e16007be3a09b9440bdaa`
+Source: [`message-v2.ts` lines 249–386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/message-v2.ts#L249-L386) · SHA-256 `e01ecbdc054a…`
 
 ```typescript
       const differentModel = `${model.providerID}/${model.id}` !== `${msg.info.providerID}/${msg.info.modelID}`
@@ -2492,409 +2847,4 @@ Condition: MessageV2 converts stored session parts for a new selected provider/m
         // Inject pending media as a user message for providers that don't support
         // media (images, PDFs) in tool results
         if (media.length > 0) {
-```
-
-## Native JSON export boundary
-
-Record: `network-export`. Kind: source-code.
-
-Writes {info,messages}, where each message carries info and parts from session storage. This is stored session evidence, not the fully assembled request or exact system prompt.
-
-Condition: User explicitly runs export for a real session; optional sanitize mode redacts transcript/file data.
-
-- [packages/opencode/src/cli/cmd/export.ts:222-292](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L222-L292) — SHA-256 `79e3bd1625f368d88c873397fe2aef8da4ae47d82f5d5a9bd23eb07ba11803cc`
-
-```typescript
-export const ExportCommand = effectCmd({
-  command: "export [sessionID]",
-  describe: "export session data as JSON",
-  builder: (yargs) =>
-    yargs
-      .positional("sessionID", {
-        describe: "session id to export",
-        type: "string",
-      })
-      .option("sanitize", {
-        describe: "redact sensitive transcript and file data",
-        type: "boolean",
-      }),
-  handler: Effect.fn("Cli.export")(function* (args) {
-    return yield* run(args)
-  }),
-})
-
-const run = Effect.fn("Cli.export.body")(function* (args: { sessionID?: string; sanitize?: boolean }) {
-  const svc = yield* Session.Service
-  let sessionID = args.sessionID ? SessionID.make(args.sessionID) : undefined
-  process.stderr.write(`Exporting session: ${sessionID ?? "latest"}\n`)
-
-  if (!sessionID) {
-    UI.empty()
-    prompts.intro("Export session", { output: process.stderr })
-
-    const sessions = yield* svc.list()
-
-    if (sessions.length === 0) {
-      prompts.log.error("No sessions found", { output: process.stderr })
-      prompts.outro("Done", { output: process.stderr })
-      return
-    }
-
-    sessions.sort((a, b) => b.time.updated - a.time.updated)
-
-    const selectedSession = yield* Effect.promise(() =>
-      prompts.autocomplete({
-        message: "Select session to export",
-        maxItems: 10,
-        options: sessions.map((session) => ({
-          label: session.title,
-          value: session.id,
-          hint: `${new Date(session.time.updated).toLocaleString()} • ${session.id.slice(-8)}`,
-        })),
-        output: process.stderr,
-      }),
-    )
-
-    if (prompts.isCancel(selectedSession)) {
-      return yield* Effect.die(new UI.CancelledError())
-    }
-
-    sessionID = selectedSession
-
-    prompts.outro("Exporting session...", { output: process.stderr })
-  }
-
-  // Match legacy try/catch — catches both typed failures and defects
-  // (Session.Service.get throws NotFoundError as a defect, not a typed E).
-  return yield* Effect.gen(function* () {
-    const sessionInfo = yield* svc.get(sessionID!)
-    const messages = yield* svc.messages({ sessionID: sessionInfo.id })
-
-    const exportData = { info: sessionInfo, messages }
-
-    process.stdout.write(JSON.stringify(args.sanitize ? sanitize(exportData) : exportData, null, 2))
-    process.stdout.write(EOL)
-  }).pipe(Effect.catchCause(() => fail(`Session not found: ${sessionID!}`)))
-})
-```
-
-## Native package OpenRouter protocol
-
-Record: `network-openrouter-package`. Kind: source-code.
-
-Uses OpenAI Chat stream protocol at /chat/completions, adding usage/reasoning/prompt-cache body options. Default host comes from the native profile. It does not establish an observed serving provider or downstream hop.
-
-Condition: Standalone native package OpenRouter route is selected; main CLI native runtime gate restricts provider IDs separately.
-
-- [packages/llm/src/providers/openrouter.ts:1-98](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openrouter.ts#L1-L98) — SHA-256 `d036cfd496e0b4bac1beeb082f8ca41fa79ae5c7d6627381f45824039c4b0989`
-
-```typescript
-import { Effect, Schema } from "effect"
-import { Route, type RouteDefaultsInput } from "../route/client"
-import { Endpoint } from "../route/endpoint"
-import { Framing } from "../route/framing"
-import { Protocol } from "../route/protocol"
-import { AuthOptions, type ProviderAuthOption } from "../route/auth-options"
-import { ProviderID, type ModelID, type ProviderOptions } from "../schema"
-import * as OpenAICompatibleProfiles from "./openai-compatible-profile"
-import * as OpenAIChat from "../protocols/openai-chat"
-import { isRecord } from "../protocols/shared"
-
-export const profile = OpenAICompatibleProfiles.profiles.openrouter
-export const id = ProviderID.make(profile.provider)
-const ADAPTER = "openrouter"
-
-export interface OpenRouterOptions {
-  readonly [key: string]: unknown
-  readonly usage?: boolean | Record<string, unknown>
-  readonly reasoning?: Record<string, unknown>
-  readonly promptCacheKey?: string
-}
-
-export type OpenRouterProviderOptionsInput = ProviderOptions & {
-  readonly openrouter?: OpenRouterOptions
-}
-
-export type ModelOptions = Omit<RouteDefaultsInput, "providerOptions"> &
-  ProviderAuthOption<"optional"> & {
-    readonly baseURL?: string
-    readonly providerOptions?: OpenRouterProviderOptionsInput
-  }
-
-const OpenRouterBody = Schema.StructWithRest(Schema.Struct(OpenAIChat.bodyFields), [
-  Schema.Record(Schema.String, Schema.Any),
-])
-export type OpenRouterBody = Schema.Schema.Type<typeof OpenRouterBody>
-
-export const protocol = Protocol.make({
-  id: "openrouter-chat",
-  body: {
-    schema: OpenRouterBody,
-    from: (request) =>
-      OpenAIChat.protocol.body.from(request).pipe(
-        Effect.map(
-          (body) =>
-            ({
-              ...body,
-              ...bodyOptions(request.providerOptions?.openrouter),
-            }) as OpenRouterBody,
-        ),
-      ),
-  },
-  stream: OpenAIChat.protocol.stream,
-})
-
-const bodyOptions = (input: unknown) => {
-  const openrouter = isRecord(input) ? input : {}
-  return {
-    ...(openrouter.usage === true
-      ? { usage: { include: true } }
-      : isRecord(openrouter.usage)
-        ? { usage: openrouter.usage }
-        : {}),
-    ...(isRecord(openrouter.reasoning) ? { reasoning: openrouter.reasoning } : {}),
-    ...(typeof openrouter.promptCacheKey === "string" ? { prompt_cache_key: openrouter.promptCacheKey } : {}),
-  }
-}
-
-export const route = Route.make({
-  id: ADAPTER,
-  provider: profile.provider,
-  protocol,
-  endpoint: Endpoint.path("/chat/completions", { baseURL: profile.baseURL }),
-  framing: Framing.sse,
-})
-
-export const routes = [route]
-
-const configuredRoute = (input: ModelOptions) => {
-  const { apiKey: _, auth: _auth, baseURL, ...rest } = input
-  return route.with({
-    ...rest,
-    endpoint: { baseURL: baseURL ?? profile.baseURL },
-    auth: AuthOptions.bearer(input, "OPENROUTER_API_KEY"),
-  })
-}
-
-export const configure = (input: ModelOptions = {}) => {
-  const route = configuredRoute(input)
-  return {
-    id,
-    model: (modelID: string | ModelID) => route.model({ id: modelID }),
-    configure,
-  }
-}
-
-export const provider = configure()
-export const model = provider.model
-```
-
-## Native OpenAI-compatible endpoint profiles
-
-Record: `network-native-profiles`. Kind: source-code.
-
-Includes openrouter.ai/api/v1 and api.deepseek.com/v1. Main CLI endpoint defaults may instead come from the dynamic catalog or config.
-
-Condition: Native package provider helpers use their default profile unless baseURL is overridden.
-
-- [packages/llm/src/providers/openai-compatible-profile.ts:1-20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openai-compatible-profile.ts#L1-L20) — SHA-256 `7c4f115fb3286d0684e6ed33df34695a36d0c78ee270465bc4743612c7410c1d`
-
-```typescript
-export interface OpenAICompatibleProfile {
-  readonly provider: string
-  readonly baseURL: string
-}
-
-export const profiles = {
-  baseten: { provider: "baseten", baseURL: "https://inference.baseten.co/v1" },
-  cerebras: { provider: "cerebras", baseURL: "https://api.cerebras.ai/v1" },
-  deepinfra: { provider: "deepinfra", baseURL: "https://api.deepinfra.com/v1/openai" },
-  deepseek: { provider: "deepseek", baseURL: "https://api.deepseek.com/v1" },
-  fireworks: { provider: "fireworks", baseURL: "https://api.fireworks.ai/inference/v1" },
-  groq: { provider: "groq", baseURL: "https://api.groq.com/openai/v1" },
-  openrouter: { provider: "openrouter", baseURL: "https://openrouter.ai/api/v1" },
-  togetherai: { provider: "togetherai", baseURL: "https://api.together.xyz/v1" },
-  xai: { provider: "xai", baseURL: "https://api.x.ai/v1" },
-} as const satisfies Record<string, OpenAICompatibleProfile>
-
-export const byProvider: Record<string, OpenAICompatibleProfile> = Object.fromEntries(
-  Object.values(profiles).map((profile) => [profile.provider, profile]),
-)
-```
-
-## Native Chat request and response fields
-
-Record: `network-chat-wire`. Kind: source-code.
-
-Source schema separates system/user/assistant/tool content, tool function schemas, reasoning_content, usage.reasoning_tokens and finish_reason. This native schema is not proof of the default external SDK wire format.
-
-Condition: Native OpenAI Chat-compatible protocol serializes a canonical request and decodes SSE events.
-
-- [packages/llm/src/protocols/openai-chat.ts:34-160](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-chat.ts#L34-L160) — SHA-256 `e3c2204271073a11349146e22e24859f27b80b43960a90e81e365c6582df0457`
-
-```typescript
-// The body schema is the provider-native JSON body. `fromRequest` below builds
-// this shape from the common `LLMRequest`, then `Route.make` validates and
-// JSON-encodes it before transport.
-const OpenAIChatFunction = Schema.Struct({
-  name: Schema.String,
-  description: Schema.String,
-  parameters: JsonObject,
-})
-
-const OpenAIChatTool = Schema.Struct({
-  type: Schema.tag("function"),
-  function: OpenAIChatFunction,
-})
-type OpenAIChatTool = Schema.Schema.Type<typeof OpenAIChatTool>
-
-const OpenAIChatAssistantToolCall = Schema.Struct({
-  id: Schema.String,
-  type: Schema.tag("function"),
-  function: Schema.Struct({
-    name: Schema.String,
-    arguments: Schema.String,
-  }),
-})
-type OpenAIChatAssistantToolCall = Schema.Schema.Type<typeof OpenAIChatAssistantToolCall>
-
-const OpenAIChatUserContent = Schema.Union([
-  Schema.Struct({ type: Schema.Literal("text"), text: Schema.String }),
-  Schema.Struct({
-    type: Schema.Literal("image_url"),
-    image_url: Schema.Struct({ url: Schema.String }),
-  }),
-])
-
-const OpenAIChatMessage = Schema.Union([
-  Schema.Struct({ role: Schema.Literal("system"), content: Schema.String }),
-  Schema.Struct({
-    role: Schema.Literal("user"),
-    content: Schema.Union([Schema.String, Schema.Array(OpenAIChatUserContent)]),
-  }),
-  Schema.Struct({
-    role: Schema.Literal("assistant"),
-    content: Schema.NullOr(Schema.String),
-    tool_calls: optionalArray(OpenAIChatAssistantToolCall),
-    reasoning_content: Schema.optional(Schema.String),
-  }),
-  Schema.Struct({ role: Schema.Literal("tool"), tool_call_id: Schema.String, content: Schema.String }),
-]).pipe(Schema.toTaggedUnion("role"))
-type OpenAIChatMessage = Schema.Schema.Type<typeof OpenAIChatMessage>
-
-const OpenAIChatToolChoice = Schema.Union([
-  Schema.Literals(["auto", "none", "required"]),
-  Schema.Struct({
-    type: Schema.tag("function"),
-    function: Schema.Struct({ name: Schema.String }),
-  }),
-])
-
-export const bodyFields = {
-  model: Schema.String,
-  messages: Schema.Array(OpenAIChatMessage),
-  tools: optionalArray(OpenAIChatTool),
-  tool_choice: Schema.optional(OpenAIChatToolChoice),
-  stream: Schema.Literal(true),
-  stream_options: Schema.optional(Schema.Struct({ include_usage: Schema.Boolean })),
-  store: Schema.optional(Schema.Boolean),
-  reasoning_effort: Schema.optional(OpenAIOptions.OpenAIReasoningEffort),
-  max_tokens: Schema.optional(Schema.Number),
-  temperature: Schema.optional(Schema.Number),
-  top_p: Schema.optional(Schema.Number),
-  frequency_penalty: Schema.optional(Schema.Number),
-  presence_penalty: Schema.optional(Schema.Number),
-  seed: Schema.optional(Schema.Number),
-  stop: optionalArray(Schema.String),
-}
-const OpenAIChatBody = Schema.Struct(bodyFields)
-export type OpenAIChatBody = Schema.Schema.Type<typeof OpenAIChatBody>
-
-// =============================================================================
-// Streaming Event Schema
-// =============================================================================
-// The event schema is one decoded SSE `data:` payload. `Framing.sse` splits the
-// byte stream into strings, then `Protocol.jsonEvent` decodes each string into
-// this provider-native event shape.
-const OpenAIChatUsage = Schema.Struct({
-  prompt_tokens: Schema.optional(Schema.Number),
-  completion_tokens: Schema.optional(Schema.Number),
-  total_tokens: Schema.optional(Schema.Number),
-  prompt_tokens_details: optionalNull(
-    Schema.Struct({
-      cached_tokens: Schema.optional(Schema.Number),
-    }),
-  ),
-  completion_tokens_details: optionalNull(
-    Schema.Struct({
-      reasoning_tokens: Schema.optional(Schema.Number),
-    }),
-  ),
-})
-
-const OpenAIChatToolCallDeltaFunction = Schema.Struct({
-  name: optionalNull(Schema.String),
-  arguments: optionalNull(Schema.String),
-})
-
-const OpenAIChatToolCallDelta = Schema.Struct({
-  index: Schema.Number,
-  id: optionalNull(Schema.String),
-  function: optionalNull(OpenAIChatToolCallDeltaFunction),
-})
-type OpenAIChatToolCallDelta = Schema.Schema.Type<typeof OpenAIChatToolCallDelta>
-
-const OpenAIChatDelta = Schema.Struct({
-  content: optionalNull(Schema.String),
-  reasoning_content: optionalNull(Schema.String),
-  tool_calls: optionalNull(Schema.Array(OpenAIChatToolCallDelta)),
-})
-
-const OpenAIChatChoice = Schema.Struct({
-  delta: optionalNull(OpenAIChatDelta),
-  finish_reason: optionalNull(Schema.String),
-})
-
-const OpenAIChatEvent = Schema.Struct({
-  choices: Schema.Array(OpenAIChatChoice),
-  usage: optionalNull(OpenAIChatUsage),
-})
-type OpenAIChatEvent = Schema.Schema.Type<typeof OpenAIChatEvent>
-```
-
-## Core runner request identity and context
-
-Record: `network-core-runner-headers`. Kind: source-code.
-
-Adds exact session/parent headers, model request, agent system and context baseline. Live runtime evidence is needed to identify which path produced a capture.
-
-Condition: Separate core SessionRunner source path constructs a request.
-
-- [packages/core/src/session/runner/llm.ts:203-226](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/llm.ts#L203-L226) — SHA-256 `8b83021af90ec6906fda736345aebaf4d33236339deccc329453683332117283`
-
-```typescript
-      const toolMaterialization = isLastStep ? undefined : yield* tools.materialize(agent.info?.permissions)
-      const promptCacheKey = /^ses_[0-9a-f]{64}$/.test(session.id) ? session.id.slice(4) : session.id
-      const request = LLM.request({
-        model,
-        http: {
-          headers: {
-            "x-opencode-session-id": session.id,
-            ...(session.parentID ? { "x-opencode-parent-session-id": session.parentID } : {}),
-            "x-session-affinity": session.id,
-            "X-Session-Id": session.id,
-            ...(session.parentID ? { "x-parent-session-id": session.parentID } : {}),
-          },
-        },
-        providerOptions: { openai: { promptCacheKey } },
-        system: [agent.info?.system, system.baseline]
-          .filter((part): part is string => part !== undefined && part.length > 0)
-          .map(SystemPart.make),
-        messages: [...toLLMMessages(context, model), ...(isLastStep ? [Message.assistant(MAX_STEPS_PROMPT)] : [])],
-        tools: toolMaterialization?.definitions ?? [],
-        toolChoice: isLastStep ? "none" : undefined,
-      })
-      if (yield* compaction.compactIfNeeded({ sessionID: session.id, entries, model, request }))
-        return yield* Effect.die(continueAfterCompaction(currentStep))
-      const startSnapshot = yield* snapshots.capture()
 ```

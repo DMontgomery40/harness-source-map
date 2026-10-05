@@ -69,7 +69,8 @@ export function renderLanding({ cardFile = "social-card.png" } = {}) {
     h1{font-size:clamp(34px,6vw,60px);line-height:1.04;letter-spacing:-.02em;margin:14px 0 14px}
     .dek{max-width:680px;color:var(--ink-2);font-size:clamp(16px,2.2vw,19px);margin:0 0 clamp(28px,5vw,44px)}
     h2{font-size:15px;font-weight:600;color:var(--ink-2);margin:0 0 14px}
-    .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    @media(max-width:640px){.choices{grid-template-columns:1fr}}
     .choice{display:flex;flex-direction:column;gap:10px;padding:26px 24px 22px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
     .choice:hover,.choice:focus-visible{border-color:var(--accent);transform:translateY(-2px);outline:none}
     .kicker{font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}

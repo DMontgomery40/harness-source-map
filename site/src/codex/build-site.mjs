@@ -41,9 +41,11 @@ export async function buildSite({ sourceRoot, outFile, categories, profile = COD
         const source = file.format === "markdown" ? expandFacts(raw, sourceRoot, file.path) : raw;
         let filter;
         if (file.filters) {
-          const records = JSON.parse(await readFile(path.join(sourceRoot, file.filters.records), "utf8")).items;
+          const records = JSON.parse(await readFile(path.join(sourceRoot, file.filters.records), "utf8")).items.filter(r => !file.includeRecord || file.includeRecord(r));
           const tags = JSON.parse(await readFile(path.join(sourceRoot, file.filters.tags), "utf8"));
           filter = { vocabulary: tags.tags, records: records.map(r => ({ group: r.group, title: r.title, tags: tags.items[r.id] ?? [] })) };
+          // Chips count this page's entries; a tag no entry here carries is not offered.
+          filter.vocabulary = filter.vocabulary.map(tag => ({ ...tag, count: filter.records.filter(r => r.tags.includes(tag.id)).length })).filter(tag => tag.count);
         }
         // The search index's records say what the pages say: the same display-path rewrite.
         const searchRecords = await loadSearchRecords({ sourceRoot, file, transform: rewriteDisplayPaths });
@@ -71,4 +73,5 @@ export async function buildSite({ sourceRoot, outFile, categories, profile = COD
     await mkdir(path.dirname(rawFile), { recursive: true });
     await writeFile(rawFile, document.source, "utf8");
   }
+  return { categories, documents, status, profile };
 }

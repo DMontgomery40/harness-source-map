@@ -1,0 +1,746 @@
+{
+  "tags": [
+    {
+      "id": "role-instructions",
+      "label": "Instructions",
+      "kind": "topic",
+      "definition": "Text that tells the model how to behave: system and agent prompts, reminders, behavioral rules.",
+      "count": 74
+    },
+    {
+      "id": "role-tool",
+      "label": "Tool descriptions",
+      "kind": "topic",
+      "definition": "Text that describes a tool the model can call: what it does and when to use it.",
+      "count": 49
+    },
+    {
+      "id": "role-parameter",
+      "label": "Parameter descriptions",
+      "kind": "topic",
+      "definition": "Text that describes one argument of a tool call.",
+      "count": 27
+    },
+    {
+      "id": "role-context",
+      "label": "Context",
+      "kind": "topic",
+      "definition": "Text that hands the model information about its situation: environment, files, session state.",
+      "count": 9
+    },
+    {
+      "id": "role-user_template",
+      "label": "User-turn templates",
+      "kind": "topic",
+      "definition": "Text written into the user's turn on the user's behalf: commands, summaries, continuations.",
+      "count": 6
+    },
+    {
+      "id": "pkg-codemode",
+      "label": "codemode",
+      "kind": "package",
+      "definition": "Source in packages/codemode.",
+      "count": 14
+    },
+    {
+      "id": "pkg-core",
+      "label": "core",
+      "kind": "package",
+      "definition": "Source in packages/core.",
+      "count": 35
+    },
+    {
+      "id": "pkg-llm",
+      "label": "llm",
+      "kind": "package",
+      "definition": "Source in packages/llm.",
+      "count": 1
+    },
+    {
+      "id": "pkg-opencode",
+      "label": "opencode",
+      "kind": "package",
+      "definition": "Source in packages/opencode.",
+      "count": 115
+    },
+    {
+      "id": "pkg-plugin",
+      "label": "plugin",
+      "kind": "package",
+      "definition": "Source in packages/plugin.",
+      "count": 1
+    },
+    {
+      "id": "pkg-tui",
+      "label": "tui",
+      "kind": "package",
+      "definition": "Source in packages/tui.",
+      "count": 2
+    }
+  ],
+  "items": {
+    "occ-af5df28a3049240504f4e008": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-5167487bf9785cd52881c35e": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-85e25e05263f45e45c1b1fbb": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-fffa2c532b34b8a025f5cfe4": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-0e462507bd7511228d83e914": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-1806ca1ead9c2a582fd78407": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-464fc25605220a9aa116ca27": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-773488df04dddea70bd91400": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-d359689b7b74873b2291e798": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-3c2cb8c45c22b3ca1ee8fba0": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-26f8cd145f2ef78ed4b46aa3": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-22b1e1108f0cb4e3fde4b842": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-b02dde996dc294388f41cd13": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-a9e27fc42c761553c57e78e2": [
+      "role-instructions",
+      "pkg-codemode"
+    ],
+    "occ-ba4eb032c37d3c12304c261e": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-6ad88b493eabdfd84ed66262": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-7162f7436c2e9cecb84dd243": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-30d9173e3cd3d789ffa4e98c": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-8ae829b9b4e9ec9eb5467ee3": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-9ab6f9a310e9b30bf88d8b11": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-d0e57245e39d9ccc9175e26d": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-b2e2642d2a8fa6adc11b8094": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-da3e6512b6a9742e95c62d1d": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-28adb8736420494fa6f372ae": [
+      "role-instructions",
+      "pkg-core"
+    ],
+    "occ-02d6d08484f6302883ca8ef2": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-e61e9cc7b10def1de32d1d60": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-92f156c01fcf79a31ea5773f": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-22e9dbe48466bf3df30f8bd9": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-43f9f5c7903be44b281922a1": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-f6b6a63ce7dd1c1d35f89e6a": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-a9ba5982bfb420fd0c4db42d": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-a48ea222017db674cd2f8c4a": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-074d28e7538275c588e2003c": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-e8c42757b6cc6b10ad407503": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-8dd48564726a43977555e3d4": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-01d7ca8265e3c11b7eedb7c3": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-8e5ba54b1510b95b927a2679": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-05cd1603378c510669979e77": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-69032b247f5f992e8af39d62": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-e49b77988511cd538c3b4812": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-b8c203384f830602f457bca7": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-202d1592ccfbed6c80f5811d": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-ae3eec4edfa9dd40b6b41f17": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-e35810b7836bba332c262570": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-1b8ebf05856811265e1c639f": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-7036f1cf4c5b316b8e201ece": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-c46417497cf47ea444901862": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-955d1253cccab8a26b06df50": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-785be7b01c3345ab426e3d38": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-0fbb02de9c4242983d900f96": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-ee361fc936d4e9d07877d6ac": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-f761aa71d217795cabd1e997": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-307f4f0df20d377ad059c4a1": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-bd57945e0b0709d56015e044": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-d9614455ce7aa0219d5a5e8b": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-6a2dcdd7797ef21e13900ab1": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-c4fbbc0c243061d5b87c769d": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-ea15ed7a122aa6bcfdcc402e": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-f00635a0df448fdaf5abf6ae": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-24d1afbcf84e51ea8f0bf03b": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-bf75504cc9e71aea6318102f": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-d05e595a4ec30c6d57780e00": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-729bdf7126e79f2c140e1070": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-382ad037b494884761b06fb8": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-a462ee510055f7558f55d10f": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-31d27f27afed600679702710": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-d7a6ac9796426de0ade34fc6": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-0623444f0580a300ff2f4c45": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-0c30292164166c1e97080135": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-300c2d0e2d8542ec1b709952": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-85d0ba50ece7bd12451d467e": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-009740a00da3dbaa7042c93b": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-64923140024d46ac251c64d3": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-e46af415e722e2cf20368e0f": [
+      "role-instructions",
+      "pkg-opencode"
+    ],
+    "occ-e92ec4af421be6dbd74ea1f1": [
+      "role-context",
+      "pkg-core"
+    ],
+    "occ-c27b1b0e699f12ab8a621877": [
+      "role-context",
+      "pkg-core",
+      "pkg-opencode"
+    ],
+    "occ-6772a23bbdd13b5a65e6a446": [
+      "role-context",
+      "pkg-core"
+    ],
+    "occ-b5b3ec79344623377afb5f33": [
+      "role-user_template",
+      "pkg-opencode"
+    ],
+    "occ-f5fac9aa707a1ba38531f939": [
+      "role-user_template",
+      "pkg-opencode"
+    ],
+    "occ-6579780163d0d6cb641578d1": [
+      "role-user_template",
+      "pkg-opencode"
+    ],
+    "occ-11531946c720477cb2498844": [
+      "role-user_template",
+      "pkg-opencode"
+    ],
+    "occ-089cf452b2761d24cc9dfe19": [
+      "role-user_template",
+      "pkg-opencode"
+    ],
+    "occ-364c5dc385f8ba543a0638cb": [
+      "role-user_template",
+      "pkg-opencode"
+    ],
+    "occ-68390c7c5d7a28cefa55f473": [
+      "role-context",
+      "pkg-opencode"
+    ],
+    "occ-b9b926f78dfae954a6b99c80": [
+      "role-context",
+      "pkg-opencode"
+    ],
+    "occ-44bd0f4527da6ea830cc83ff": [
+      "role-context",
+      "pkg-opencode"
+    ],
+    "occ-785d4598fa98ca252ec9f373": [
+      "role-context",
+      "pkg-opencode"
+    ],
+    "occ-f6deaa3129869796d3c6d41e": [
+      "role-context",
+      "pkg-tui"
+    ],
+    "occ-4f0e5dd4807b5ee36f9a11d1": [
+      "role-context",
+      "pkg-tui"
+    ],
+    "occ-e341a4dbac5d10944ec368b8": [
+      "role-tool",
+      "pkg-core",
+      "pkg-opencode"
+    ],
+    "occ-355527c6962dbe9e3d34a341": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-3eb3a61b60c68be687fbb16d": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-d72ac7d85f6d94479d1bcb70": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-a7141a9b9da928569b5307c1": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-bea98ce74c352f94b913881f": [
+      "role-parameter",
+      "pkg-core"
+    ],
+    "occ-759f5600c727265e7baf9bde": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-6a84b29acc5495afb10d8bb3": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-1c9b09f9026e87a97a98e141": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-36025215c6666f28b6b310c9": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-3a2fb12a090a6534d354c4fb": [
+      "role-parameter",
+      "pkg-core"
+    ],
+    "occ-e26ebb873c3836dc687e9521": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-27e00a0d9ba6005cc9a8542e": [
+      "role-parameter",
+      "pkg-core"
+    ],
+    "occ-245638ab2ab865804b6b507c": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-2a7a4d2452fcdbf968e15a6b": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-39699349ab947fed6006c718": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-b528e16b9ddfc9612034d2a8": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-00890a72a23e5c6dab2ae62b": [
+      "role-parameter",
+      "pkg-core"
+    ],
+    "occ-a8f754940a48b272e86da85f": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-930c5e3f8a5ae672645d0b65": [
+      "role-parameter",
+      "pkg-core",
+      "pkg-opencode"
+    ],
+    "occ-7c293bc42ceee7d1a12848ab": [
+      "role-parameter",
+      "pkg-core"
+    ],
+    "occ-3e3fd18a38c9c04e02017bba": [
+      "role-tool",
+      "pkg-core"
+    ],
+    "occ-23a650744996021b98b10b31": [
+      "role-tool",
+      "pkg-llm"
+    ],
+    "occ-6209e0d13a35e76d9f14b6fe": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-294bdfea6843b990cfc2adc2": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-191c5ebd234f8c0dd58fd0fb": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-9a2cd4e25c0135c891d47c98": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-7767c3a301f6f995c3ba8088": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-391b6ef3214b1f342896d1b3": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-9f013708c0b32dbf32eefb9f": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-21a2c09aa96f642a796e5c6b": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-03a6e7700bf8a4392f05b731": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-6aa69f751ef2b930323c15b5": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-f198bed2a4ace52462f6aa45": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-b7242dd415347ac1090ee0c0": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-8817e12c809001b3c82156bc": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-74d6b35c70c3bbf9066f4fda": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-fa8d490102ac2ab40215acbb": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-78c2f8f7982069d933e63647": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-55e990d5611a41b19b5fac25": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-1a7f98f2c83198addddf4fdb": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-0971613371cde96ae2b0f06c": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-93e146ec514128f5d31af650": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-2bcf5ca7018b631660b8f7e6": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-bea91787774446b3dd148d66": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-e7f1d7761ec9b03806355bd6": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-47862975f0a1e3acef01c031": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-d97ba468159644c71fa11fec": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-8d4e4b92b9c343815c725545": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-617664513be75b15044dfd58": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-e137559c14363468fccbc56d": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-5f9c5be0023dc877b5e68bea": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-dee0ace0037f99a191d48497": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-9de1e81c78d0ce2a1776d5c6": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-657fb7cc0027b74b27804bb2": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-7428bf2ac57b5c956e83b2c9": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-de428011d650f70274b73fbc": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-915510d1b0702a92c991af40": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-848ca0801e86c1dd139740f8": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-915151f3d4bfc6bf798b65da": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-5cc1185401d30ea3a311d643": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-9ec305417c1bb5b1bc83201f": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-b0d6c76da75ec5846059d854": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-9c171f982b0760ca795bfb2b": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-ef8e3231c524eb942b9766e1": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-9aafb352034d8c5329cb99a9": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-2e030e7477a573408b7f8775": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-a40312b34e6952b703d5b919": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-800c22a568ad759cd1381240": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-9c98eb5d59b9b1b73793508f": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-fb6b44f2c53727efd70cc75f": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-a7460879ee5ebc7902aaa9b7": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-613c9785ced5015e37e342b0": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-76f67f947db9fba9c8ef89b9": [
+      "role-parameter",
+      "pkg-opencode"
+    ],
+    "occ-618c7057914b63d0b66981f5": [
+      "role-tool",
+      "pkg-opencode"
+    ],
+    "occ-87aeb3126106a9a3395bc3f4": [
+      "role-tool",
+      "pkg-plugin"
+    ]
+  }
+}

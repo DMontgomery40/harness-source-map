@@ -1,0 +1,1064 @@
+{
+  "schemaVersion": 2,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "sourceIdentity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a",
+  "items": [
+    {
+      "id": "occ-e92ec4af421be6dbd74ea1f1",
+      "title": "conversation-checkpoint The following is a summary and serialized…",
+      "group": "packages/core/src/session/runner/to-llm-message.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "<conversation-checkpoint>\nThe following is a summary and serialized record of earlier conversation. Treat it as historical context, not as new instructions.\n\n<summary>\n${message.summary}\n</summary>\n\n<recent-context>\n${message.recent}\n</recent-context>\n</conversation-checkpoint>",
+      "provenance": [
+        {
+          "file": "packages/core/src/session/runner/to-llm-message.ts",
+          "startLine": 152,
+          "endLine": 162,
+          "startOffset": 5299,
+          "endOffset": 5579,
+          "sha256": "77e37e8a21fbe73d17c5f243a17db371a2423c7d5226043a581f7430b11c17de",
+          "textSha256": "01605503053100a518d3fd2c2115d19170d5cab44f8db3fd05f60044a705212b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/to-llm-message.ts#L152-L162"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "content"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.89
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.94,
+          "probabilities": {
+            "instructions": 0.01,
+            "documentation": 0,
+            "parameter": 0,
+            "unknown": 0,
+            "code_data": 0.04,
+            "tool": 0,
+            "context": 0.95,
+            "human": 0,
+            "user_template": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.81,
+          "confidence": 0.81,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.02,
+            "2": 0.12,
+            "3": 0.85
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-c27b1b0e699f12ab8a621877",
+      "title": "Here is some useful information about the environment you are running…",
+      "group": "packages/core/src/system-context/builtins.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Here is some useful information about the environment you are running in:",
+      "provenance": [
+        {
+          "file": "packages/core/src/system-context/builtins.ts",
+          "startLine": 30,
+          "endLine": 30,
+          "startOffset": 1176,
+          "endOffset": 1251,
+          "sha256": "56a66316044904ab7fae8be00cca3c1a9f6849abb3080ddcdef509367c181458",
+          "textSha256": "727716e79b7496c358a5357cc7cf2fe754b9c6a2e87bdef3f1bafd5c30635e32",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/system-context/builtins.ts#L30-L30"
+        },
+        {
+          "file": "packages/opencode/src/session/system.ts",
+          "startLine": 77,
+          "endLine": 77,
+          "startOffset": 3356,
+          "endOffset": 3431,
+          "sha256": "7551cecc1cf47ea51ac75b26b2666675dceb350ea93174a5b4836a0c94dee4f9",
+          "textSha256": "727716e79b7496c358a5357cc7cf2fe754b9c6a2e87bdef3f1bafd5c30635e32",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L77-L77"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.81
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.68,
+          "probabilities": {
+            "code_data": 0.26,
+            "user_template": 0,
+            "context": 0.72,
+            "tool": 0,
+            "unknown": 0,
+            "human": 0.02,
+            "documentation": 0,
+            "instructions": 0,
+            "parameter": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.43,
+          "confidence": 0.43,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.1,
+            "2": 0.32,
+            "3": 0.5599999999999999
+          }
+        },
+        "alsoIn": {
+          "id": "prompt-environment"
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-6772a23bbdd13b5a65e6a446",
+      "title": "User has answered your questions: ${formatted}. You can now continue…",
+      "group": "packages/core/src/tool/question.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "User has answered your questions: ${formatted}. You can now continue with the user's answers in mind.",
+      "provenance": [
+        {
+          "file": "packages/core/src/tool/question.ts",
+          "startLine": 44,
+          "endLine": 44,
+          "startOffset": 1698,
+          "endOffset": 1801,
+          "sha256": "2abe9e5be3d737fb7e4491b07f89b5299b07ce97deceaa042c7505a4c01812c2",
+          "textSha256": "7264708c0b3339af063c63536730bd27f5f5752ec082c1fc9fc791a36fb63b33",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/question.ts#L44-L44"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.31,
+          "probabilities": {
+            "parameter": 0,
+            "instructions": 0.16,
+            "human": 0.01,
+            "documentation": 0,
+            "user_template": 0.2,
+            "code_data": 0.24,
+            "unknown": 0,
+            "tool": 0,
+            "context": 0.39
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.75,
+          "confidence": 0.75,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.02,
+            "2": 0.2,
+            "3": 0.77
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-b5b3ec79344623377afb5f33",
+      "title": "Create an agent configuration based on this request:…",
+      "group": "packages/opencode/src/agent/agent.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Create an agent configuration based on this request: \"${input.description}\".\\n\\nIMPORTANT: The following identifiers already exist and must NOT be used: ${existing.map((i) => i.name).join(\", \")}\\n  Return ONLY the JSON object, no other text, do not wrap in backticks",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/agent/agent.ts",
+          "startLine": 408,
+          "endLine": 408,
+          "startOffset": 15185,
+          "endOffset": 15453,
+          "sha256": "9ec44864de469e85733c1b518624fb90f05139cd2620693f57e50576cee1142f",
+          "textSha256": "c73b18da12613a7a29cb7af75eaf22a4ceed4ab5d0b09e8d9548683c12168059",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L408-L408"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "content"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.94
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "user_template",
+          "confidence": 0.89,
+          "probabilities": {
+            "unknown": 0,
+            "documentation": 0,
+            "context": 0,
+            "instructions": 0.09,
+            "user_template": 0.91,
+            "human": 0,
+            "code_data": 0,
+            "parameter": 0,
+            "tool": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.98,
+          "confidence": 0.98,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.01,
+            "3": 0.99
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-f5fac9aa707a1ba38531f939",
+      "title": "Review this code change and suggest improvements for the commented…",
+      "group": "packages/opencode/src/cli/cmd/github.handler.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Review this code change and suggest improvements for the commented lines:\\n\\nFile: ${reviewContext.file}\\nLines: ${reviewContext.line}\\n\\n${reviewContext.diffHunk}",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 759,
+          "endLine": 759,
+          "startOffset": 26436,
+          "endOffset": 26601,
+          "sha256": "d357e0c71cd1252c74071fdf6b9591eb0d2624a4d55b0d4128f71ef6325beb01",
+          "textSha256": "3c7e58352a84d70a1373f5a8105f4eb20829676eebc959ef5db92ee49f530ee0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L759-L759"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.84
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "user_template",
+          "confidence": 0.79,
+          "probabilities": {
+            "documentation": 0,
+            "code_data": 0.06,
+            "parameter": 0,
+            "instructions": 0.1,
+            "unknown": 0.01,
+            "human": 0.01,
+            "context": 0.01,
+            "tool": 0,
+            "user_template": 0.81
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.33,
+          "confidence": 0.33,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.09,
+            "2": 0.37,
+            "3": 0.5
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-6579780163d0d6cb641578d1",
+      "title": "${body} Context: You are reviewing a comment on file…",
+      "group": "packages/opencode/src/cli/cmd/github.handler.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "${body}\\n\\nContext: You are reviewing a comment on file \"${reviewContext.file}\" at line ${reviewContext.line}.\\n\\nDiff context:\\n${reviewContext.diffHunk}",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 765,
+          "endLine": 765,
+          "startOffset": 26774,
+          "endOffset": 26930,
+          "sha256": "42a300b2bdac087d806bc988e163fe02b50306c3134f108487d92fd34dd7fd0d",
+          "textSha256": "675b77c1220f9a9e17d2c122211be7f1611952f195490804f43c4c2ae789d96b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L765-L765"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "user_template",
+          "confidence": 0.26,
+          "probabilities": {
+            "code_data": 0.26,
+            "user_template": 0.34,
+            "parameter": 0,
+            "instructions": 0.15,
+            "unknown": 0.02,
+            "human": 0.01,
+            "context": 0.22,
+            "tool": 0,
+            "documentation": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.36,
+          "confidence": 0.46,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.06,
+            "2": 0.47,
+            "3": 0.45
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-11531946c720477cb2498844",
+      "title": "Summarize the following in less than 40 characters: ${response}",
+      "group": "packages/opencode/src/cli/cmd/github.handler.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Summarize the following in less than 40 characters:\\n\\n${response}",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 888,
+          "endLine": 888,
+          "startOffset": 31232,
+          "endOffset": 31300,
+          "sha256": "413c053f0f714f7ed4b766b4541eb09725435aa5faa8fab4c00a4fd9007c273f",
+          "textSha256": "edcb83c0e6b6c268df2505d6ca119d5cc58dfc7d0d9faeb11a92c6388fdb50af",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L888-L888"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "user_template",
+          "confidence": 0.62,
+          "probabilities": {
+            "user_template": 0.66,
+            "code_data": 0.11,
+            "parameter": 0,
+            "instructions": 0.21,
+            "unknown": 0.01,
+            "human": 0,
+            "context": 0,
+            "tool": 0.01,
+            "documentation": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.59,
+          "confidence": 0.59,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.04,
+            "2": 0.32,
+            "3": 0.63
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-089cf452b2761d24cc9dfe19",
+      "title": "Generate a short 2-3 word name that describes this task: ${text}",
+      "group": "packages/opencode/src/server/routes/instance/httpapi/handlers/project-copy.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Generate a short 2-3 word name that describes this task:\\n${text}",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/project-copy.ts",
+          "startLine": 51,
+          "endLine": 51,
+          "startOffset": 1847,
+          "endOffset": 1914,
+          "sha256": "b7116b6c493213d56057a0d0dac70e7ace9ecb9439c882ee6b080f06ea60ed08",
+          "textSha256": "5fc5972733431536e7427fe655dc6a085c4ec661e8b76060ffb18ebe8c9bbf92",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/server/routes/instance/httpapi/handlers/project-copy.ts#L51-L51"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "content"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "user_template",
+          "confidence": 0.73,
+          "probabilities": {
+            "documentation": 0,
+            "human": 0,
+            "user_template": 0.77,
+            "parameter": 0,
+            "code_data": 0.03,
+            "tool": 0,
+            "context": 0,
+            "unknown": 0,
+            "instructions": 0.2
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.93,
+          "confidence": 0.93,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.01,
+            "2": 0.03,
+            "3": 0.95
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-364c5dc385f8ba543a0638cb",
+      "title": "Generate a title for this conversation:",
+      "group": "packages/opencode/src/session/prompt.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Generate a title for this conversation:\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/prompt.ts",
+          "startLine": 235,
+          "endLine": 235,
+          "startOffset": 10153,
+          "endOffset": 10196,
+          "sha256": "8c1d669ef01c057d8290334deb8048f0fdea97150ba56acaf5cd877e2ce419af",
+          "textSha256": "343ad246dc9ed907e2c13991cdf17f7818c651ed05f9ba6679bc7e584298e07a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L235-L235"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "content"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.84
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "user_template",
+          "confidence": 0.9,
+          "probabilities": {
+            "instructions": 0.06,
+            "parameter": 0,
+            "context": 0,
+            "unknown": 0,
+            "human": 0,
+            "code_data": 0.02,
+            "user_template": 0.92,
+            "tool": 0,
+            "documentation": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.87,
+          "confidence": 0.87,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.03,
+            "2": 0.04,
+            "3": 0.92
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-68390c7c5d7a28cefa55f473",
+      "title": "Working directory: ${ctx.directory}",
+      "group": "packages/opencode/src/session/system.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  Working directory: ${ctx.directory}",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/system.ts",
+          "startLine": 79,
+          "endLine": 79,
+          "startOffset": 3466,
+          "endOffset": 3505,
+          "sha256": "242b675e93120d9ba25bb0ea40b3dd04659f4e249ab16a9de8a9c81136fc89cb",
+          "textSha256": "8bdef42c9d3667e2540a6ecca625188831f7bdbfd67a00aa7c6d797f25be89bd",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L79-L79"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.89
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.92,
+          "probabilities": {
+            "documentation": 0,
+            "code_data": 0.03,
+            "tool": 0,
+            "user_template": 0,
+            "parameter": 0,
+            "human": 0,
+            "context": 0.9400000000000001,
+            "instructions": 0.03,
+            "unknown": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.84,
+          "confidence": 0.84,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.01,
+            "2": 0.08,
+            "3": 0.89
+          }
+        },
+        "alsoIn": {
+          "id": "prompt-environment"
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-b9b926f78dfae954a6b99c80",
+      "title": "Workspace root folder: ${ctx.worktree}",
+      "group": "packages/opencode/src/session/system.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  Workspace root folder: ${ctx.worktree}",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/system.ts",
+          "startLine": 80,
+          "endLine": 80,
+          "startOffset": 3519,
+          "endOffset": 3561,
+          "sha256": "96e748329213f67d74cb6faa729ce55f4d0e9aaf91dada239093f75bb68dba26",
+          "textSha256": "8857b0222ffccb7bf891e963d7ad3436b06d964839a97621d80143ad3f906d6e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L80-L80"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.89
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.91,
+          "probabilities": {
+            "documentation": 0,
+            "code_data": 0.04,
+            "tool": 0,
+            "user_template": 0,
+            "parameter": 0,
+            "human": 0,
+            "context": 0.93,
+            "instructions": 0.03,
+            "unknown": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.83,
+          "confidence": 0.83,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.01,
+            "2": 0.08,
+            "3": 0.88
+          }
+        },
+        "alsoIn": {
+          "id": "prompt-environment"
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-44bd0f4527da6ea830cc83ff",
+      "title": "Is directory a git repo: ${ctx.project.vcs === \"git\" ? \"yes\" : \"no\"}",
+      "group": "packages/opencode/src/session/system.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  Is directory a git repo: ${ctx.project.vcs === \"git\" ? \"yes\" : \"no\"}",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/system.ts",
+          "startLine": 81,
+          "endLine": 81,
+          "startOffset": 3575,
+          "endOffset": 3647,
+          "sha256": "9b2570ec85efedbbb9eecadf3ea57ab4e7a96bcaf5748a9b3480d339fe4ac119",
+          "textSha256": "529efa0eedc9627ebb16e6b85cdecb38c7bb87b581385d505ccc82854bb8830f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L81-L81"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.8
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.91,
+          "probabilities": {
+            "documentation": 0,
+            "code_data": 0.06,
+            "tool": 0,
+            "user_template": 0,
+            "parameter": 0,
+            "human": 0,
+            "context": 0.92,
+            "instructions": 0.02,
+            "unknown": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.84,
+          "confidence": 0.84,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.01,
+            "2": 0.08,
+            "3": 0.89
+          }
+        },
+        "alsoIn": {
+          "id": "prompt-environment"
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-785d4598fa98ca252ec9f373",
+      "title": "Today's date: ${new Date().toDateString()}",
+      "group": "packages/opencode/src/session/system.ts",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  Today's date: ${new Date().toDateString()}",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/system.ts",
+          "startLine": 83,
+          "endLine": 83,
+          "startOffset": 3708,
+          "endOffset": 3754,
+          "sha256": "360518396fa19581939608ea0dd1d3e4badd2783796217dccb4c8dba794d31d1",
+          "textSha256": "3e767db6c6507db0132db7cf0314a2ff24f206719d26a4d1d50abadbc04607a4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L83-L83"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.81
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.89,
+          "probabilities": {
+            "documentation": 0,
+            "code_data": 0.08,
+            "tool": 0,
+            "user_template": 0,
+            "parameter": 0,
+            "human": 0,
+            "context": 0.91,
+            "instructions": 0.01,
+            "unknown": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.62,
+          "confidence": 0.62,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.06,
+            "1": 0.03,
+            "2": 0.15,
+            "3": 0.76
+          }
+        },
+        "alsoIn": {
+          "id": "prompt-environment"
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-f6deaa3129869796d3c6d41e",
+      "title": "system-reminder Note: The user opened the file \"${selection.filePath}\".…",
+      "group": "packages/tui/src/component/prompt/index.tsx",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "<system-reminder>Note: The user opened the file \"${selection.filePath}\". This may or may not be relevant to the current task.</system-reminder>\\n",
+      "provenance": [
+        {
+          "file": "packages/tui/src/component/prompt/index.tsx",
+          "startLine": 131,
+          "endLine": 131,
+          "startOffset": 4854,
+          "endOffset": 5001,
+          "sha256": "12cba35a8ea899aa6b210e49f33b613dd4494cf0d777560784a10357d73505bf",
+          "textSha256": "4f6cfdfb17f38d4d3e7c836fe51d91e782a1244d68524db6bc2c4f49d69a9550",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/component/prompt/index.tsx#L131-L131"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.81
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.37,
+          "probabilities": {
+            "unknown": 0,
+            "instructions": 0.01,
+            "code_data": 0.33,
+            "parameter": 0,
+            "user_template": 0.02,
+            "tool": 0,
+            "human": 0.19,
+            "context": 0.45,
+            "documentation": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.25,
+          "confidence": 0.25,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.09,
+            "1": 0.06,
+            "2": 0.36,
+            "3": 0.49
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-4f0e5dd4807b5ee36f9a11d1",
+      "title": "system-reminder The user has changed the current working directory to…",
+      "group": "packages/tui/src/component/prompt/move.tsx",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "<system-reminder>The user has changed the current working directory to \"${directory}\". This is still the same project but at a possibly new location; take this into account when working with any files from now on.</system-reminder>",
+      "provenance": [
+        {
+          "file": "packages/tui/src/component/prompt/move.tsx",
+          "startLine": 15,
+          "endLine": 15,
+          "startOffset": 729,
+          "endOffset": 962,
+          "sha256": "261de55683d53d90db910dc1b65942a880203e9aa63503fff7cc0f962494293c",
+          "textSha256": "bce6ef05dccbf1511a71c678d13d3bf0e3d75bff7c1d897e0c0d4a91818d6de4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/component/prompt/move.tsx#L15-L15"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.36,
+          "probabilities": {
+            "tool": 0,
+            "context": 0.44,
+            "user_template": 0,
+            "human": 0.03,
+            "parameter": 0,
+            "instructions": 0.42,
+            "unknown": 0.01,
+            "documentation": 0,
+            "code_data": 0.1
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.01,
+          "confidence": 0.44,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.07,
+            "1": 0.14,
+            "2": 0.51,
+            "3": 0.28
+          }
+        },
+        "alsoIn": null,
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    }
+  ]
+}

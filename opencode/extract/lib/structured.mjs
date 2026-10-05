@@ -18,6 +18,18 @@ const ENV_READS = [
 
 const lineAt = (text, index) => text.slice(0, index).split("\n").length;
 
+// Topics by what a variable controls (first match wins); the page groups and filters by them.
+export const ENV_TOPICS = [
+  ["experimental", "Experimental features", "OPENCODE_EXPERIMENTAL switches and the features they turn on.", name => /^OPENCODE_EXPERIMENTAL/.test(name)],
+  ["providers", "Model providers and credentials", "Cloud provider projects, regions, gateways and the keys or tokens OpenCode reads for them.", name => /^(?:AWS_|AZURE_|AICORE_|GOOGLE_|GCLOUD_|GCP_|VERTEX_|CLOUDFLARE_|CF_AIG|SNOWFLAKE_|MODAL_|EXA_|PARALLEL_|GITLAB_|OPENCODE_(?:API_KEY|AUTH_CONTENT|CONSOLE_TOKEN|ENABLE_EXA|ENABLE_PARALLEL|WEBSEARCH_PROVIDER))/.test(name)],
+  ["config", "Configuration, data and paths", "Which config, models catalog and database OpenCode loads, and where.", name => /^(?:OPENCODE_(?:CONFIG|TUI_CONFIG|DISABLE_PROJECT_CONFIG|DB|ZED_DB|DISABLE_CHANNEL_DB|MODELS_|DISABLE_MODELS_FETCH|PERMISSION|PLUGIN_META_FILE|PURE|TEST_)|XDG_CONFIG_HOME)/.test(name)],
+  ["server", "Server, sharing and GitHub", "The local server's credentials, session sharing and the GitHub Action integration.", name => /^(?:OPENCODE_(?:SERVER_|DISABLE_SHARE|ROUTE|CLIENT|CALLER|WORKSPACE_ID|REPO_CLONE)|GITHUB_|USE_GITHUB_TOKEN|OIDC_|SHARE|MENTIONS|MODEL|PROMPT|AGENT|VARIANT)$|^(?:OPENCODE_(?:SERVER_|REPO_CLONE)|GITHUB_)/.test(name)],
+  ["observability", "Logging, tracing and diagnostics", "Log levels, OpenTelemetry export, heap snapshots and timing output.", name => /^(?:OTEL_|OPENCODE_(?:LOG_LEVEL|PRINT_LOGS|DIRECT_TRACE|AUTO_HEAP_SNAPSHOT|SHOW_TTFD))/.test(name)],
+  ["behavior", "Session and editor behavior", "Compaction, pruning, file search, the terminal UI and editor integration.", name => /^OPENCODE_/.test(name) || /^(?:CLAUDE_CODE_SSE_PORT|ZED_TERM|VSCODE_EXTENSIONS)$/.test(name)],
+  ["host", "Host environment", "Shell, terminal, display and editor variables of the machine OpenCode runs on.", () => true]
+];
+const topicOf = name => ENV_TOPICS.find(([, , , test]) => test(name));
+
 function codeFiles(closure) {
   return closure.included.filter(file => CODE.test(file.file) && !TEST.test(file.file));
 }
@@ -40,22 +52,55 @@ export function environmentVariables(closure, { version, commit, upstream }) {
       }
     }
   }
-  return [...byName].sort(([a], [b]) => a.localeCompare(b)).map(([name, entry]) => {
+  const lines = new Map(codeFiles(closure).map(file => [file.file, file.text.split("\n")]));
+  const records = [...byName].map(([name, entry]) => {
     const sites = entry.sites.sort((a, b) => a.file.localeCompare(b.file) || a.startLine - b.startLine);
     const files = [...new Set(sites.map(s => s.file))];
-    const text = `${name} is read ${sites.length === 1 ? "once" : `${sites.length} times`} through ${[...entry.readers].sort().join(", ")} in ${files.length === 1 ? files[0] : `${files.length} files`}.`;
+    const readers = [...entry.readers].sort();
+    // What the reading code makes of the value: OpenCode's helpers and Effect Config say it.
+    const code = sites.map(s => lines.get(s.file)[s.startLine - 1].trim());
+    const type = readers.includes("flag helper") && code.some(line => /\b(?:truthy|enabledByExperimental)\(/.test(line)) ? "boolean: true when set to \"true\" or \"1\""
+      : code.some(line => /Config\.boolean\(/.test(line)) ? "boolean (Effect Config)"
+      : code.some(line => /Config\.(?:number|integer)\(|\bnumber\(/.test(line)) ? "number"
+      : "string, read as set";
+    const defaultValue = code.map(line => line.match(/withDefault\(([^)]+)\)/)?.[1]).find(Boolean) ?? null;
+    const [topic, topicLabel] = topicOf(name);
+    const text = `Read ${sites.length === 1 ? "once" : `${sites.length} times`}, in ${files.length === 1 ? files[0].replace(/^packages\//, "") : `${files.length} files`}. Value: ${type}${defaultValue ? `; default ${defaultValue}` : ""}.`;
     return {
       id: `env-${name.toLowerCase().replaceAll("_", "-")}`,
       title: name,
       kind: "env-var",
-      group: name.startsWith("OPENCODE_") ? "OpenCode variables" : "Other variables",
+      group: topicLabel,
       version,
       upstreamCommit: commit,
       text,
       provenance: sites,
-      details: { kind: "env-var", readers: [...entry.readers].sort(), files, textSha256: sha256(text), condition: "Read by shipped runtime source; whether it is set depends on the user's environment." }
+      details: { kind: "env-var", topic, readers, type, default: defaultValue, files, code: [...new Set(code)].slice(0, 3), textSha256: sha256(text), condition: "Read by shipped runtime source; whether it is set depends on the user's environment." }
     };
   });
+  const order = ENV_TOPICS.map(([, label]) => label);
+  return records.sort((a, b) => order.indexOf(a.group) - order.indexOf(b.group) || a.title.localeCompare(b.title));
+}
+
+// Filter tags: the topic, and how the variable is read.
+export function envTags(records) {
+  const status = [
+    ["flag", "OpenCode Flag", "Declared in OpenCode's Flag module (core/src/flag/flag.ts).", r => r.provenance.some(p => p.file.endsWith("flag/flag.ts"))],
+    ["boolean", "Boolean switch", "Read as on/off.", r => r.details.type.startsWith("boolean")],
+    ["opencode-prefix", "OPENCODE_ prefix", "Named for OpenCode.", r => r.title.startsWith("OPENCODE_")],
+    ["third-party", "Other software's variable", "A variable other tools or the host define, which OpenCode also reads.", r => !r.title.startsWith("OPENCODE_")]
+  ];
+  const tags = [
+    ...ENV_TOPICS.map(([id, label, definition]) => ({ id, label, kind: "topic", definition, count: records.filter(r => r.details.topic === id).length })),
+    ...status.map(([id, label, definition, test]) => ({ id, label, kind: "status", definition, count: records.filter(test).length }))
+  ].filter(tag => tag.count);
+  return { tags, items: Object.fromEntries(records.map(r => [r.id, [r.details.topic, ...status.filter(([, , , test]) => test(r)).map(([id]) => id)]])) };
+}
+
+export function cliTags(records) {
+  const kinds = [["cli-command", "Commands", "A command or subcommand."], ["cli-flag", "Options", "A --flag of a command."], ["cli-positional", "Positional arguments", "An argument given by position."]];
+  const tags = kinds.map(([id, label, definition]) => ({ id, label, kind: "status", definition, count: records.filter(r => r.details.kind === id).length })).filter(tag => tag.count);
+  return { tags, items: Object.fromEntries(records.map(r => [r.id, [r.details.kind]])) };
 }
 
 // yargs command modules: `command: "run [message..]"` with `describe`, then the builder's
@@ -83,20 +128,30 @@ const unescape = s => s.replace(/\\(["'`\\])/g, "$1").replace(/\\n/g, "\n");
 export function cliCommands(closure, { version, commit, upstream }) {
   const records = [];
   for (const file of codeFiles(closure).filter(f => f.file.includes("/src/cli/"))) {
-    const commands = [...file.text.matchAll(COMMAND)].map(m => ({ index: m.index, usage: m[2] }));
+    // A yargs command module has a handler or builder; other objects with a `command` field (demo
+    // data, tool calls) are not commands.
+    const commands = [...file.text.matchAll(COMMAND)].map(m => ({ index: m.index, usage: m[2] }))
+      .filter((c, i, all) => /\b(?:builder|handler)\s*[:(]/.test(file.text.slice(c.index, Math.min(all[i + 1]?.index ?? file.text.length, c.index + 4000))));
+    // A module's other commands are subcommands of the one named for the module (mcp.ts: `mcp`
+    // and its `add`, `list`…); modules under cli/cmd/<group>/ belong to that group's command.
+    const stemOf = file.file.split("/").at(-1).replace(/\.[^.]+$/, "");
+    const folder = file.file.match(/\/cli\/cmd\/([^/]+)\//)?.[1];
+    const parent = folder ?? (commands.some(c => c.usage.split(/\s+/)[0] === stemOf) && commands.length > 1 ? stemOf : null);
     commands.forEach((command, i) => {
       const end = commands[i + 1]?.index ?? file.text.length;
       const body = file.text.slice(command.index, end);
       const describe = body.slice(0, 600).match(DESCRIBE)?.[2];
-      // `$0` is yargs' default command of its module (the TUI at the root, or a subcommand group's
-      // default): it is named after the module that declares it.
+      // `$0` is yargs' default command of its module: the root TUI (tui.ts), or a command group's
+      // default subcommand (db.ts's query is `opencode db`), so it takes the module's command name.
       const stem = file.file.split("/").at(-1).replace(/\.[^.]+$/, "");
-      const name = command.usage.startsWith("$0") ? `(default: ${stem})` : command.usage.split(/\s+/)[0];
-      const commandTitle = `opencode ${command.usage.replace(/^\$0/, name)}`;
+      let usage = command.usage.startsWith("$0") ? command.usage.replace(/^\$0/, stem === "tui" ? "" : stem).trim() : command.usage;
+      if (parent && usage.split(/\s+/)[0] !== parent) usage = `${parent} ${usage}`;
+      const name = usage.split(/\s+/).filter(word => word && !word.startsWith("[") && !word.startsWith("<")).join(" ");
+      const commandTitle = `opencode${usage ? ` ${usage}` : ""}`;
       const commandText = describe ? unescape(describe) : `CLI command ${command.usage}.`;
       records.push({
         id: `cli-${sha256(`${file.file}:${command.usage}`).slice(0, 12)}`,
-        title: commandTitle, kind: "cli-command", group: `opencode ${name}`, version, upstreamCommit: commit,
+        title: commandTitle, kind: "cli-command", group: `opencode${name ? ` ${name}` : ""}`, version, upstreamCommit: commit,
         text: commandText, provenance: [site(file, command.index, upstream, commit)],
         details: { kind: "cli-command", usage: command.usage, textSha256: sha256(commandText), condition: "Registered yargs command module in the shipped CLI source." }
       });
@@ -106,12 +161,13 @@ export function cliCommands(closure, { version, commit, upstream }) {
         const type = spec.match(FIELD("type"))?.[2]?.trim();
         const alias = spec.match(FIELD("alias"))?.[2]?.trim();
         const flag = option[1] === "positional" ? `<${option[3]}>` : `--${option[3]}`;
+        const publishedText = text || `${option[1] === "positional" ? "Positional argument" : "Option"} ${flag} of opencode ${name}.`;
         records.push({
           id: `cli-${sha256(`${file.file}:${command.usage}:${option[1]}:${option[3]}`).slice(0, 12)}`,
-          title: `opencode ${name} ${flag}`, kind: "cli-flag", group: `opencode ${name}`, version, upstreamCommit: commit,
-          text: text || `${option[1] === "positional" ? "Positional argument" : "Option"} ${flag} of opencode ${name}.`,
+          title: `opencode${name ? ` ${name}` : ""} ${flag}${option[1] === "positional" ? " (argument)" : ""}`, kind: "cli-flag", group: `opencode${name ? ` ${name}` : ""}`, version, upstreamCommit: commit,
+          text: publishedText,
           provenance: [site(file, command.index + option.index, upstream, commit)],
-          details: { kind: option[1] === "positional" ? "cli-positional" : "cli-flag", command: command.usage, type: type ?? null, alias: alias ?? null, textSha256: sha256(text), condition: "Declared by the command's yargs builder in the shipped CLI source." }
+          details: { kind: option[1] === "positional" ? "cli-positional" : "cli-flag", command: command.usage, type: type ?? null, alias: alias ?? null, textSha256: sha256(publishedText), condition: "Declared by the command's yargs builder in the shipped CLI source." }
         });
       }
     });

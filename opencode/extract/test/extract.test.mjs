@@ -62,11 +62,12 @@ test("typed libraries publish each classified positive exactly once and account 
   assert.equal(discovery.items.length, prepared.discovery.records.length);
   assert.equal(new Set(ids).size, ids.length);
   assert.deepEqual(new Set(ids), new Set(discovery.items.filter((item) => item.publication === "typed-positive").map((item) => item.id)));
-  for (const required of ["model-instructions", "conversation-prompts", "tools-schemas", "agents", "skills-plugins-mcp", "providers-models-network-reasoning", "sessions-compaction-storage-export", "approvals-sandboxing", "configuration-precedence", "environment-variables", "cli-commands-flags", "other-model-facing-text"]) {
-    assert.ok(catalog.libraries.some((library) => library.id === required), `missing library ${required}`);
-  }
+  assert.deepEqual(catalog.libraries.map((library) => library.id), ["instructions", "context-templates", "tools-parameters"]);
   const coverage = JSON.parse(prepared.outputs["discovery-coverage.json"]);
-  assert.equal(coverage.classifiedPositives, ids.length);
+  // A positive is on a Discovered page, or published by the record that already holds its text.
+  const elsewhere = discovery.items.filter((item) => item.publication === "same-text-as-published-record");
+  assert.ok(elsewhere.every((item) => item.publishedIn));
+  assert.equal(coverage.classifiedPositives, ids.length + elsewhere.length);
   assert.equal(coverage.classified + coverage.pending, discovery.items.length);
   // Without a saved ledger nothing is classified, so nothing is published as model-facing.
   if (!savedJudgments(prepared.closure.identity)) assert.equal(ids.length, 0);
@@ -100,7 +101,7 @@ test("keeps the reviewed compatibility records source-backed while the full UI m
 });
 
 test("regeneration is deterministic and committed outputs match", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
-  assert.deepEqual(readdirSync(outputs).sort(), Object.keys(generated).sort());
+  assert.deepEqual(readdirSync(outputs).sort(), [...Object.keys(generated), "all-source-text.md", "full-catalog"].sort());
   for (const [file, text] of Object.entries(generated)) assert.equal(readFileSync(path.join(outputs, file), "utf8"), text, file);
   const checked = spawnSync(process.execPath, [extractor, "--source", source, "--check"], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 });
   assert.equal(checked.status, 0, checked.stderr);
@@ -149,5 +150,8 @@ test("env vars and CLI commands are read structurally from the closure with exac
   assert.equal(run.text, "run opencode with a message");
   assert.equal(cli.find((record) => record.title === "opencode run --continue").text, "continue the last session");
   assert.equal(new Set(cli.map((record) => record.title)).size, cli.length);
-  for (const record of cli) assert.ok(files.get(record.provenance[0].file)[record.provenance[0].startLine - 1].includes(record.kind === "cli-command" ? "command:" : record.title.split(" ").at(-1).replace(/^--|^<|>$/g, "")), record.title);
+  for (const record of cli) {
+    const sourceName = record.kind === "cli-command" ? "command:" : record.title.replace(/ \(argument\)$/, "").split(" ").at(-1).replace(/^--|^<|>$/g, "");
+    assert.ok(files.get(record.provenance[0].file)[record.provenance[0].startLine - 1].includes(sourceName), record.title);
+  }
 });

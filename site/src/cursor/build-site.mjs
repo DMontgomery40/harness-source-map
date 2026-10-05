@@ -10,10 +10,9 @@ export async function profile(sourceRoot) {
   const curated = JSON.parse(await readFile(path.join(sourceRoot, "outputs/source-records.json"), "utf8")).items.length;
   const summary = JSON.parse(await readFile(path.join(sourceRoot, "outputs/discovery-summary.json"), "utf8"));
   const n = value => Number(value).toLocaleString("en-US");
-  const pending = summary.provider_pending + summary.local_review;
-  const unresolved = pending ? ` ${n(pending)} remain unresolved (${n(summary.local_review)} for local review${summary.provider_pending ? `, ${n(summary.provider_pending)} awaiting a provider answer` : ""}).` : "";
   return {
     product: "cursor",
+    additionalStyles: "\n    .page-title,.markdown-body :is(h3,h4,p,li){overflow-wrap:anywhere}\n    [data-catalog-search] input{background:var(--panel);color:var(--text);border:1px solid var(--line);font:inherit;border-radius:4px;width:100%;margin:12px 0}\n    [data-catalog-search] button{font:inherit;color:var(--text);background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:8px 12px;margin-right:8px}",
     siteName: "Cursor Source Map",
     indexTitle: "Cursor Source Map · Desktop and Agent CLI",
     shareTitle: "Cursor Source Map: Desktop and Agent CLI",
@@ -26,7 +25,7 @@ export async function profile(sourceRoot) {
     guide: null,
     front: () => `        <div class="markdown-body">
           <p class="date">Desktop ${escapeHtml(release.desktop.version)} · commit <code>${escapeHtml(release.desktop.commit)}</code> · Agent CLI ${escapeHtml(release.agent_cli.version)}</p>
-          <p>${n(curated)} reviewed records and ${n(summary.discovered_records)} Jev-discovered model-facing records, each with exact byte ranges and hashes. Jev classified ${n(summary.classified)} of the ${n(summary.candidates)} eligible text occurrences in the shipped source.${unresolved} Shipped source shows what the client contains and how it builds a request; it does not prove that a server selected a prompt or delivered it to a model.</p>
+          <p>${n(curated)} reviewed records, with protobuf and schema records decoded into tables, and ${n(summary.discovered_records)} more model-facing texts found by a Jev classification of all ${n(summary.candidates)} eligible text occurrences in the shipped source (${n(summary.classified)} classified; ${n(summary.local_review)} not classified because of privacy flags or request size). The <a href="all-source-text/">All shipped source text</a> catalog publishes every candidate and every previously skipped short literal, including negative verdicts and local-review items. Third-party personal emails are masked. Every entry carries its shipped text and location. Shipped source shows what the client contains and how it builds a request; it does not show that a server selected a prompt or delivered it to a model.</p>
           <p>Open a Cursor desktop transcript export or an Agent CLI session in <a href="/trace/">Trace</a> to see a real run.</p>
         </div>
 `
@@ -34,5 +33,5 @@ export async function profile(sourceRoot) {
 }
 
 export async function buildSite({ sourceRoot, outFile, categories }) {
-  await buildReference({ sourceRoot, outFile, categories, profile: await profile(sourceRoot) });
+  return await buildReference({ sourceRoot, outFile, categories: categories.map(category => ({ ...category, files: category.files.map(file => ({ ...file, navKey: file.slug ?? file.path })) })), profile: await profile(sourceRoot) });
 }
