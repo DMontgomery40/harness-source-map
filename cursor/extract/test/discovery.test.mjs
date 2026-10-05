@@ -6,6 +6,7 @@ import test from "node:test";
 import { discoveryQuestions, packQuestions } from "../../../codex/extract/codex/lib/jev-discovery.mjs";
 import { PrivacyError } from "../../../codex/extract/codex/lib/privacy.mjs";
 import { candidatesOf } from "../candidates.mjs";
+import { LEDGER_FILE, readLedgerRecords } from "../classify.mjs";
 import { loadRelease, outputsRoot, readSource, sha256Bytes, sourceSelection, workRoot } from "../lib.mjs";
 
 const current = path.resolve(import.meta.dirname, "../../work/current.json");
@@ -60,4 +61,21 @@ test("published preparation accounts for the complete pinned corpus", { skip: ha
   assert.ok(report.selected > 200_000);
   const ledger = path.join(workRoot, "cursor-candidates.jsonl");
   if (fs.existsSync(ledger)) assert.equal(sha256Bytes(fs.readFileSync(ledger)), report.candidate_ledger_sha256);
+});
+
+test("streamed real-corpus Jev retry ledger retains every unanswered and local-review row", { skip: fs.existsSync(LEDGER_FILE) ? false : "run an authorized or offline broad pass against the real corpus first" }, () => {
+  const ledger = JSON.parse(fs.readFileSync(LEDGER_FILE, "utf8"));
+  assert.match(ledger.records_file, new RegExp(ledger.candidate_stats.candidate_ledger_sha256));
+  assert.match(ledger.pending_file, new RegExp(ledger.candidate_stats.candidate_ledger_sha256));
+  let count = 0;
+  const statuses = {};
+  for (const chunk of readLedgerRecords(ledger)) for (const record of chunk) {
+    count += 1;
+    statuses[record.status] = (statuses[record.status] ?? 0) + 1;
+    assert.equal("source_context" in record, false);
+  }
+  assert.equal(count, ledger.record_count);
+  assert.deepEqual(statuses, ledger.status_counts);
+  const pending = JSON.parse(fs.readFileSync(path.join(workRoot, ledger.pending_file), "utf8"));
+  assert.equal(pending.pending.length, (statuses.unanswered ?? 0) + (statuses.withheld ?? 0) + (statuses.oversized ?? 0));
 });

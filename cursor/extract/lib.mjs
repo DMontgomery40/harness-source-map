@@ -136,6 +136,7 @@ export function byteRange(text, start, end, encoding = "utf8") {
 export function publicRelease(release = loadRelease()) {
   return {
     id: release.current.release,
+    artifact_identity: release.acquisition.artifact_identity,
     desktop: {
       version: release.acquisition.desktop.version,
       commit: release.acquisition.desktop.commit,

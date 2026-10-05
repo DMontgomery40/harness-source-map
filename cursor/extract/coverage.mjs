@@ -4,9 +4,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { auditCoverage } from "../../codex/extract/codex/coverage-audit.mjs";
+import { localCoverage } from "../../codex/extract/codex/lib/jev-discovery.mjs";
 import { decisionConfig, JEV_TEMPFAIL_EXIT, openCache } from "../../codex/extract/codex/lib/jev-provider.mjs";
 import { privacyScan } from "../../codex/extract/codex/lib/privacy.mjs";
-import { LEDGER_FILE } from "./classify.mjs";
+import { LEDGER_FILE, PENDING_FILE, readLedgerRecords } from "./classify.mjs";
 import { loadRelease, outputsRoot, publicRelease, sha256Text, workRoot } from "./lib.mjs";
 
 const COVERED_ROLES = new Set(["tool", "parameter", "instructions", "context", "user_template"]);
@@ -53,20 +54,30 @@ export async function auditCursorCoverage({
   const release = publicRelease(loadRelease());
   if (ledger.source?.id !== release.id || ledger.source?.desktop?.tree_sha256 !== release.desktop.tree_sha256 || ledger.source?.agent_cli?.tree_sha256 !== release.agent_cli.tree_sha256) throw new Error("Cursor Jev ledger is stale for the pinned release");
 
-  const classificationPending = ledger.records.filter(record => record.status !== "classified");
-  if (classificationPending.length && process.env.JEV_PARTIAL_EXPORT !== "1") {
-    const providerPending = classificationPending.filter(record => record.status === "unanswered").length;
+  let statusCounts = ledger.status_counts;
+  if (!statusCounts) {
+    statusCounts = {};
+    for (const chunk of readLedgerRecords(ledger, ledgerFile)) for (const record of chunk) statusCounts[record.status] = (statusCounts[record.status] ?? 0) + 1;
+  }
+  const providerPendingCount = statusCounts.unanswered ?? 0;
+  const localReviewCount = (statusCounts.withheld ?? 0) + (statusCounts.oversized ?? 0);
+  const classificationPending = providerPendingCount + localReviewCount;
+  if (classificationPending && process.env.JEV_PARTIAL_EXPORT !== "1") {
+    const providerPending = providerPendingCount;
     if (providerPending) {
       const error = new Error(`${providerPending} Cursor occurrences still await provider answers`);
       error.exitCode = JEV_TEMPFAIL_EXIT;
       throw error;
     }
-    throw new Error(`${classificationPending.length} Cursor occurrences require local review before coverage`);
+    throw new Error(`${classificationPending} Cursor occurrences require local review before coverage`);
   }
 
-  const sources = ledger.records
-    .filter(record => record.status === "classified" && record.model_facing?.noul >= 0.8 && COVERED_ROLES.has(record.role?.choice))
-    .map(sourceIdentity);
+  const sources = [];
+  const localReview = [];
+  for (const chunk of readLedgerRecords(ledger, ledgerFile)) for (const record of chunk) {
+    if (record.status === "classified" && record.model_facing?.noul >= 0.8 && COVERED_ROLES.has(record.role?.choice)) sources.push(sourceIdentity(record));
+    else if (record.status === "withheld" || record.status === "oversized") localReview.push(pendingIdentity(record));
+  }
   const searchText = fs.readFileSync(path.join(outputsRoot, "search-records.json"), "utf8");
   const search = JSON.parse(searchText);
   if (search.release?.id !== release.id) throw new Error("Cursor search records are stale for the pinned release");
@@ -77,10 +88,30 @@ export async function auditCursorCoverage({
   }
 
   const cache = openCache(path.join(workRoot, "cursor-coverage-cache.json"));
-  const result = await auditCoverage(config, sources, search.items, { cache });
+  const exactByKindAndText = new Map();
+  for (const record of search.items) {
+    const key = `${record.kind}\0${record.text}`;
+    if (!exactByKindAndText.has(key)) exactByKindAndText.set(key, []);
+    exactByKindAndText.get(key).push(record);
+  }
+  const exactResults = [];
+  const unresolved = [];
+  for (const source of sources) {
+    const expectedKind = source.role?.choice === "tool" || source.role?.choice === "parameter" ? "tool" : "prompt";
+    const local = localCoverage(source, exactByKindAndText.get(`${expectedKind}\0${source.text}`) ?? []);
+    if (local) exactResults.push({ id: source.id, file: source.file, offset: source.offset, source_sha256: source.text_sha256, expected_kind: expectedKind, ...local });
+    else unresolved.push(source);
+  }
+  const audited = await auditCoverage(config, unresolved, search.items, { cache });
+  const results = [...exactResults, ...audited.results];
+  const result = {
+    sources: sources.length,
+    covered: exactResults.length + audited.covered,
+    gaps: audited.gaps,
+    unanswered: audited.unanswered,
+    results
+  };
   const unsearched = result.results.reduce((sum, item) => sum + (item.unsearched?.length ?? 0), 0);
-  const localReview = classificationPending.filter(record => record.status === "withheld" || record.status === "oversized").map(pendingIdentity);
-  const providerPending = classificationPending.filter(record => record.status === "unanswered").map(pendingIdentity);
   const coveragePending = result.results.filter(record => record.status !== "covered");
   const summary = {
     sources: result.sources,
@@ -88,9 +119,9 @@ export async function auditCursorCoverage({
     unverified_gaps: result.gaps,
     unanswered: result.unanswered,
     unsearched,
-    provider_pending: providerPending.length,
+    provider_pending: providerPendingCount,
     local_review: localReview.length,
-    publication: result.unanswered || providerPending.length || localReview.length || result.gaps || unsearched ? "partial" : "complete"
+    publication: result.unanswered || providerPendingCount || localReview.length || result.gaps || unsearched ? "partial" : "complete"
   };
   const report = {
     schema: 1,
@@ -103,7 +134,7 @@ export async function auditCursorCoverage({
     summary,
     results: result.results,
     local_review: localReview,
-    provider_pending: providerPending
+    provider_pending: { count: providerPendingCount, ledger: ledger.pending_file ?? path.basename(PENDING_FILE) }
   };
   const summaryDocument = `${JSON.stringify({ schema: 1, product: "Cursor", release, ...summary }, null, 2)}\n`;
   const reportDocument = `${JSON.stringify(report, null, 2)}\n`;
@@ -114,12 +145,12 @@ export async function auditCursorCoverage({
   fs.writeFileSync(path.join(outputsRoot, "coverage.json"), reportDocument);
   fs.writeFileSync(path.join(outputsRoot, "coverage-summary.json"), summaryDocument);
   fs.writeFileSync(path.join(workRoot, "cursor-coverage.json"), reportDocument);
-  fs.writeFileSync(path.join(workRoot, "cursor-coverage-pending.json"), `${JSON.stringify({ schema: 1, release, pending: coveragePending, local_review: localReview, provider_pending: providerPending }, null, 2)}\n`);
+  fs.writeFileSync(path.join(workRoot, "cursor-coverage-pending.json"), `${JSON.stringify({ schema: 1, release, pending: coveragePending, local_review: localReview, provider_pending: { count: providerPendingCount, ledger: ledger.pending_file ?? path.basename(PENDING_FILE) } }, null, 2)}\n`);
   log(JSON.stringify(summary));
 
   let exitCode = 0;
-  const incomplete = result.unanswered || providerPending.length || result.gaps || unsearched || localReview.length;
-  if (incomplete && process.env.JEV_PARTIAL_EXPORT !== "1") exitCode = result.unanswered || providerPending.length ? JEV_TEMPFAIL_EXIT : 2;
+  const incomplete = result.unanswered || providerPendingCount || result.gaps || unsearched || localReview.length;
+  if (incomplete && process.env.JEV_PARTIAL_EXPORT !== "1") exitCode = result.unanswered || providerPendingCount ? JEV_TEMPFAIL_EXIT : 2;
   if (setExitCode && exitCode) process.exitCode = exitCode;
   return { summary, report, exitCode };
 }

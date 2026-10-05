@@ -2,7 +2,15 @@
   "schema": 1,
   "product": "Cursor",
   "release": {
-    "id": "3.23.12-2026.10.01-e373342",
+    "id": "3.23.12-2026.10.01-e373342-aca5010df248da0327c4b823063c3bd0d4edeb31fa984cf862f2c8563c89ff66",
+    "artifact_identity": {
+      "algorithm": "sha256",
+      "sha256": "aca5010df248da0327c4b823063c3bd0d4edeb31fa984cf862f2c8563c89ff66",
+      "components": {
+        "desktop_tree_sha256": "5665959206bc6b07cac353114d68d791075593602fed5a27ac365cdbb780d995",
+        "agent_cli_archive_sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc"
+      }
+    },
     "desktop": {
       "version": "3.23.12",
       "commit": "2d29876d567da1607532b23bbf2cd5ddbca496f0",

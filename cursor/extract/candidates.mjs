@@ -235,8 +235,33 @@ export function publishPreparation(stats) {
 }
 
 export function readCandidates(file = path.join(workRoot, "cursor-candidates.jsonl")) {
-  const text = fs.readFileSync(file, "utf8");
-  return text.split("\n").filter(Boolean).map(line => JSON.parse(line));
+  return [...readJsonLineChunks(file, Number.MAX_SAFE_INTEGER)][0] ?? [];
+}
+
+export function* readJsonLineChunks(file, maxItems = 512) {
+  if (!Number.isSafeInteger(maxItems) || maxItems < 1) throw new Error("JSONL chunk size must be a positive integer");
+  const fd = fs.openSync(file, "r");
+  const buffer = Buffer.allocUnsafe(1024 * 1024);
+  let carry = Buffer.alloc(0);
+  let batch = [];
+  try {
+    for (;;) {
+      const count = fs.readSync(fd, buffer, 0, buffer.length, null);
+      if (!count) break;
+      const bytes = carry.length ? Buffer.concat([carry, buffer.subarray(0, count)]) : Buffer.from(buffer.subarray(0, count));
+      let start = 0;
+      for (;;) {
+        const end = bytes.indexOf(0x0a, start);
+        if (end < 0) break;
+        if (end > start) batch.push(JSON.parse(bytes.subarray(start, end).toString("utf8")));
+        if (batch.length === maxItems) { yield batch; batch = []; }
+        start = end + 1;
+      }
+      carry = Buffer.from(bytes.subarray(start));
+    }
+    if (carry.length) batch.push(JSON.parse(carry.toString("utf8")));
+    if (batch.length) yield batch;
+  } finally { fs.closeSync(fd); }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
