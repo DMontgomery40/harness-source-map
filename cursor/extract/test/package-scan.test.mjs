@@ -15,6 +15,7 @@ test("published package report is rooted in both pinned real distributions", { s
   assert.equal(report.source.desktop.version, "3.23.12");
   assert.equal(report.source.agent_cli.version, "2026.10.01-e373342");
   assert.equal(report.source.agent_cli.archive_sha256, "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc");
+  assert.equal(Object.hasOwn(report.files, "acquisition.json"), false, "local acquisition metadata is not a shipped package file");
   assert.ok(report.summary.files > 1_000);
   assert.ok(Object.keys(report.macho).some(p => p.includes("cursor-agent-sea")));
   assert.ok(Object.keys(report.bundles).some(p => p.includes("Cursor.app")));

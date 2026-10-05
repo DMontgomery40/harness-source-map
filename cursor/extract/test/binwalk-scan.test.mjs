@@ -52,6 +52,7 @@ test("published Binwalk report keeps real host, SEA-relative and ASAR evidence",
   if (!fs.existsSync(output)) return test.skip("run the real pinned Binwalk scan first");
   const raw = fs.readFileSync(output, "utf8");
   assert.doesNotMatch(raw, /\/Users\//);
+  assert.doesNotMatch(raw, /"cached"\s*:/, "cache hits are execution metadata, not public evidence");
   const report = JSON.parse(raw);
   assert.deepEqual(artifactDiff(report, report), []);
   assert.equal(report.source.desktop.version, "3.23.12");

@@ -838,11 +838,6 @@
   }
  },
  "files": {
-  "acquisition.json": {
-   "kind": "config",
-   "sha256": "9815cf04a10508ec2fc2ae68b91e2df145e7f023c40d0358851cf50f7c1da9d8",
-   "size": 1517
-  },
   "agent-cli/agent-cli-package.tar.gz": {
    "kind": "archive",
    "sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc",
@@ -40580,16 +40575,16 @@
   }
  },
  "summary": {
-  "bytes": 1765287849,
-  "files": 15765,
+  "bytes": 1765286332,
+  "files": 15764,
   "kinds": {
    "archive": {
     "bytes": 176796992,
     "count": 1
    },
    "config": {
-    "bytes": 16773041,
-    "count": 1387
+    "bytes": 16771524,
+    "count": 1386
    },
    "document": {
     "bytes": 2451702,

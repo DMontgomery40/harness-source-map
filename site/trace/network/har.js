@@ -64,7 +64,11 @@ export function jsonOr(text, fallback = null) {
 // Normalised facts about one entry (no bodies). i is the entry's index in the HAR.
 export function entryInfo(entry, i) {
   let u;
-  try { u = new URL(entry.request.url); } catch { u = { host: "", pathname: String(entry.request.url || ""), search: "" }; }
+  const rawUrl = String(entry.request.url || "");
+  // Cursor's first process-observer build could prefix an authority that
+  // already included its scheme. Read that real capture without rewriting it.
+  const normalizedUrl = rawUrl.replace(/^https:\/\/(?=https:\/\/)/, "").replace(/^http:\/\/(?=http:\/\/)/, "");
+  try { u = new URL(normalizedUrl); } catch { u = { host: "", pathname: rawUrl, search: "" }; }
   const t = Date.parse(entry.startedDateTime);
   const tm = entry.timings || {};
   const num = (v) => (Number.isFinite(v) && v >= 0 ? v : null);
