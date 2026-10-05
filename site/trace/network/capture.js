@@ -38,7 +38,9 @@ function sessionsOf(product, entry, info, reqJson) {
   const h = lowerHeaders(entry.request.headers);
   const out = new Set();
   const add = (v) => { if (typeof v === "string" && v) out.add(v.toLowerCase()); };
-  if (product === 'opencode') {
+  if (product === 'cursor') {
+    for (const name of ['x-cursor-session-id', 'x-session-id', 'cursor-session-id', 'session-id']) add(h[name]);
+  } else if (product === 'opencode') {
     // llm/request.ts writes this exact session ID for all provider requests.
     // The parent header names ancestry, not ownership of the current request.
     add(h['x-opencode-session-id']);
@@ -178,7 +180,7 @@ export function captureSessions(text) {
   const infos = raw.map((e, i) => entryInfo(e, i));
   const product = captureProduct(raw,infos);
   const counts = new Map();
-  if (product === "claude-code" || product === "codex" || product === 'opencode') {
+  if (product === "claude-code" || product === "codex" || product === 'opencode' || product === 'cursor') {
     for (const x of infos) {
       const reqJson = () => { const t = bodyText(raw[x.i], "request"); return t && t.length < 5_000_000 ? jsonOr(t, null) : null; };
       for (const id of sessionsOf(product, raw[x.i], x, reqJson)) counts.set(id, (counts.get(id) || 0) + 1);
@@ -208,13 +210,14 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   if (!raw.length) throw new Error("That capture has no requests in it.");
   const infos = raw.map((e, i) => entryInfo(e, i));
   const observedProduct = captureProduct(raw,infos);
-  const product = observedProduct || (trace.product === 'opencode' ? 'opencode' : null);
+  const product = observedProduct || (trace.product === 'opencode' || trace.product === 'cursor' ? trace.product : null);
   if (product === "browser") throw new Error("This looks like a browser capture of chatgpt.com or claude.ai (a web chat). Those have no session log, so Trace can't attach them; this layer reads captures of Claude Code and Codex/ChatGPT CLI or app sessions.");
-  if (!product) throw new Error("No Claude Code, Codex/ChatGPT or OpenCode traffic in this capture.");
+  if (!product) throw new Error("No Claude Code, Codex/ChatGPT, OpenCode or Cursor traffic in this capture.");
   if (product !== trace.product) throw new Error(`This capture is ${productLabel(product)} traffic, but the loaded session is ${productLabel(trace.product)}. Load the ${productLabel(product)} session it belongs to.`);
 
   // ---- which entries belong to the loaded session
   const mine = new Set(sessionIdsOf(trace));
+  const requestIds = new Set(trace.agents.flatMap(agent => agent.requests.map(request => request.requestId)).filter(Boolean).map(String));
   const parsedReq = new Map();
   const reqJson = (i) => { if (!parsedReq.has(i)) { const t = bodyText(raw[i], "request"); parsedReq.set(i, t && t.length < 5_000_000 ? jsonOr(t, null) : null); } return parsedReq.get(i); };
   const owner = infos.map((x) => {
@@ -223,6 +226,11 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
     if ([...ids].some((id) => mine.has(id))) return "mine";
     return [...ids][0];
   });
+  if (product === 'cursor') for (const x of infos) if (!owner[x.i]) {
+    const h = lowerHeaders(raw[x.i].request.headers);
+    const id = h['x-request-id'] || h['x-original-request-id'] || h['request-id'];
+    if (id && requestIds.has(String(id))) owner[x.i] = 'mine';
+  }
   const others = new Set(owner.filter((o) => o && o !== "mine"));
   const markedMine = owner.filter((o) => o === "mine").length;
   if (!markedMine && others.size) {
@@ -233,7 +241,7 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   const marked = infos.filter((x) => owner[x.i]);
   const keep = infos.map((x) => {
     if (owner[x.i]) return owner[x.i] === "mine";
-    if (product === "codex" || product === 'opencode' || !others.size || x.t == null) return true;
+    if (product === "codex" || product === 'opencode' || product === 'cursor' || !others.size || x.t == null) return true;
     let best = null, gap = Infinity;
     for (const y of marked) { if (y.t == null) continue; const d = Math.abs(y.t - x.t); if (d < gap) { gap = d; best = y; } }
     return !best || owner[best.i] === "mine";
@@ -252,6 +260,10 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   }
   if (product === 'opencode') for (const x of infos) if (keep[x.i]) {
     x.association = raw[x.i]._traceAssociation === 'explicit' ? 'explicit' : owner[x.i] === 'mine' ? 'session-id' : 'unattributed';
+  }
+  if (product === 'cursor') for (const x of infos) if (keep[x.i]) {
+    x.association = raw[x.i]._traceAssociation === 'explicit' ? 'explicit' : owner[x.i] === 'mine'
+      ? (sessionsOf(product, raw[x.i], x, () => reqJson(x.i)).size ? 'session-id' : 'request-id') : 'unattributed';
   }
   const kept = infos.filter((x) => keep[x.i]);
   const elsewhere = infos.length - kept.length;
@@ -281,7 +293,7 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
 
   // ---- findings
   const calls = [], flags = [], telemetry = [], rateSeries = [], catalog = [], metricNames = {}, notes = [];
-  if (!observedProduct) notes.push('No harness client identifiers were captured. Loading this capture beside an OpenCode export does not establish its origin; every unidentified request remains unattributed.');
+  if (!observedProduct) notes.push('No harness client identifiers were captured. Loading a capture beside a session artifact does not establish its origin; every unidentified request remains unattributed.');
   let bootstrap = null, attributes = null, handshake = null, shadow = [];
   const facts = [], identityFields = new Set();
   let droppedEvents = 0;
@@ -296,6 +308,8 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
     try {
       if (x.protocol === 'chat-completions' && x.role === 'model') {
         calls.push(chatCompletionsCall(e, x, R, product));
+      } else if (product === 'cursor' && x.role === 'model') {
+        calls.push(cursorProtoCall(e, x, R));
       } else if (product === "codex" && x.association === "unattributed" && x.role === "model") continue;
       else if (product === "claude-code") {
         if (x.role === "model" || (x.role === "side" && x.method === "POST" && /\/v1\/messages/.test(x.path))) {
@@ -370,7 +384,8 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   }
 
   // ---- join to the session log
-  const join = product === "claude-code" ? joinClaude(calls, trace) : product === 'opencode' ? joinOpenCode(calls, trace) : joinCodex(calls, trace);
+  const join = product === "claude-code" ? joinClaude(calls, trace) : product === 'opencode' ? joinOpenCode(calls, trace)
+    : product === 'cursor' ? joinCursor(calls, trace) : joinCodex(calls, trace);
   const byRequest = {};
   calls.forEach((c, k) => { c.index = k; for (const m of c.matched) byRequest[`${m.agentId}\u0000${m.reqIdx}`] = k; });
 
@@ -443,11 +458,11 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   if (unattributed) notes.push(`${unattributed} entries have no exact session correlation and are shown as unattributed capture traffic; timestamps do not establish ownership.`);
   if (elsewhere) notes.push(`${elsewhere} of ${infos.length} entries belonged to ${others.size ? `${others.size} other session${others.size === 1 ? "" : "s"}` : "other sessions"} and were left out.`);
   if (droppedEvents) notes.push(`${droppedEvents} telemetry events named another session and were left out.`);
-  const partial = calls.filter((c) => c.response && (c.product === "claude-code" ? !c.response.complete : c.protocol === 'chat-completions' && c.response.partial)).length;
+  const partial = calls.filter((c) => c.response && (c.product === "claude-code" ? !c.response.complete : c.response.partial)).length;
   if (partial) notes.push(`${partial} model call${partial === 1 ? "" : "s"} ended before the stream finished; what arrived is shown.`);
   const checkpoints = entries.filter(entry => entry.partial).length;
   if (checkpoints) notes.push(`${checkpoints} captured request${checkpoints === 1 ? ' was' : 's were'} incomplete at the recorder checkpoint.`);
-  const failures = calls.filter(c => c.protocol === 'chat-completions' && (c.status >= 400 || c.response.error)).length;
+  const failures = calls.filter(c => (c.protocol === 'chat-completions' || c.protocol === 'connect-proto') && (c.status >= 400 || c.response.error)).length;
   if (failures) notes.push(`${failures} model call${failures === 1 ? '' : 's'} returned an HTTP/provider error. Read the captured response for details.`);
 
   const capture = {
@@ -470,6 +485,11 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
       const text = bodyText(e, part);
       if (text == null || text === "") return { text: "", mode: "no body", cut: false };
       const mime = part === "response" ? infos[i].mime : String(header(e.request.headers, "content-type") || "");
+      if (product === 'cursor' && /application\/connect\+proto/i.test(mime)) {
+        const encoded = part === 'response' ? e.response?.content : e.request?.postData;
+        if (encoded?.encoding === 'base64') return cut(`Exact captured protobuf bytes (${encoded.size ?? 'unknown'} bytes), base64 encoded:\n\n${R.str(encoded.text || '')}`, 'application/connect+proto, opaque base64');
+        return cut(`Captured application/connect+proto body (${String(text).length} decoded characters). No shipped-schema decoder was applied:\n\n${R.str(text)}`, 'application/connect+proto, opaque');
+      }
       if (/event-stream/.test(mime) || /^\s*(event|data):/m.test(text.slice(0, 200))) {
         const ev = parseSSE(text).map((s) => `event: ${s.event}\ndata: ${s.json ? JSON.stringify(R.json(harvested(R, s.json)), null, 2) : R.str(s.data)}`);
         return cut(ev.join("\n\n"), "server-sent events, redacted");
@@ -515,6 +535,23 @@ function clampJson(v, max = 4000) {
   return s.length <= max ? v : { truncated: `${s.slice(0, max)}…` };
 }
 
+// Cursor AgentService/Run is ConnectRPC protobuf. This summary records only
+// transport facts and exact observed IDs; request/response bytes stay in the
+// local body reader until a shipped descriptor provides an exact decoder.
+function cursorProtoCall(entry, info, R) {
+  const requestId = header(entry.request?.headers, 'x-request-id') || header(entry.request?.headers, 'x-original-request-id') ||
+    header(entry.response?.headers, 'x-request-id') || null;
+  const sessionId = ['x-cursor-session-id', 'x-session-id', 'cursor-session-id', 'session-id']
+    .map(name => header(entry.request?.headers, name)).find(Boolean) || null;
+  const complete = !info.partial && info.status >= 200 && info.status < 300;
+  return { product: 'cursor', protocol: 'connect-proto', transport: 'http', entry: info.i, t: info.t, status: info.status,
+    kind: 'main', requestClass: 'AgentService/Run (opaque ConnectRPC)', model: null,
+    requestId: requestId ? R.str(String(requestId)) : null, sessionId: sessionId ? R.str(String(sessionId)) : null,
+    association: info.association || 'unattributed', routing: { destination: info.host },
+    response: { complete, partial: info.partial || !complete, error: info.status >= 400 ? { status: info.status } : null, reasoning: [] },
+    usage: null, betas: [], timings: info.timings, reqBytes: info.reqBytes, resBytes: info.resBytes, matched: [] };
+}
+
 // Claude Code: transcript requestId == response header request-id; message.id == message_start id.
 function joinClaude(calls, trace) {
   const byReq = new Map(), byMsg = new Map();
@@ -554,6 +591,24 @@ function joinOpenCode(calls, trace) {
     if (call.matched.length) matched++;
   }
   return { matched, unmatched: calls.length - matched, keys: 'received tool-call ID ↔ native part.callID; session headers scope traffic only' };
+}
+
+// Cursor's final stream result and AgentService request share an exact request
+// id when the service exposes it. Session IDs scope traffic only when observed
+// in request headers; a timestamp is never a join key.
+function joinCursor(calls, trace) {
+  const byRequest = new Map();
+  for (const agent of trace.agents) agent.requests.forEach((request, index) => {
+    if (!request.requestId) return;
+    (byRequest.get(request.requestId) || byRequest.set(request.requestId, []).get(request.requestId)).push({ agentId: agent.id, reqIdx: index, side: false });
+  });
+  let matched = 0;
+  for (const call of calls) {
+    call.matched = call.requestId && call.association !== 'unattributed' ? (byRequest.get(call.requestId) || []) : [];
+    call.joinedBy = call.matched.length ? 'request-id' : null;
+    if (call.matched.length) matched++;
+  }
+  return { matched, unmatched: calls.length - matched, keys: 'observed x-request-id ↔ native stream result.request_id; timestamps are never used' };
 }
 
 // Codex/ChatGPT: rollout token_usage_record.response_id == response.created id; attribution item ids ==

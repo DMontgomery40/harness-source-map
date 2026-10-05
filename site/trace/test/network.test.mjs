@@ -359,10 +359,12 @@ test("provenance: each header, event and frame the catalog explains is in what s
   const cx = cxSrc.length ? textOf(cxSrc.at(-1), /\.rs$/) : null;
   const ocRoot = process.env.TRACE_OPENCODE_SOURCE || join(repo, 'opencode/work/source');
   const oc = existsSync(join(ocRoot, 'packages/opencode/src/session/llm/request.ts')) ? textOf(join(ocRoot, 'packages/opencode/src'), /\.ts$/) : null;
+  const cursorRoot = process.env.TRACE_CURSOR_SOURCE || join(repo, 'cursor/work/releases');
+  const cursor = existsSync(cursorRoot) ? textOf(cursorRoot, /\.(?:js|cjs|mjs)$/) : null;
   const missing = [];
   for (const p of PROVENANCE) {
     if (p.serverSent) continue;
-    const hay = p.product === "claude-code" ? cc : p.product === 'opencode' ? oc : cx;
+    const hay = p.product === "claude-code" ? cc : p.product === 'opencode' ? oc : p.product === 'cursor' ? cursor : cx;
     if (!hay) continue;
     if (!hay.some((t) => t.includes(p.literal))) missing.push(`${p.product} ${p.kind} ${p.name}`);
   }
