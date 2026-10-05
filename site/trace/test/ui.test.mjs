@@ -920,6 +920,46 @@ test("while the transport is hidden, playback keys decline and the page keeps th
 });
 
 // ---------- the network layer: the lens and the On-the-wire card render, and no planted value reaches the DOM ----------
+test("a real OpenCode export renders its title, optional context rows and bounded wire association", {
+  skip: (!process.env.TRACE_OPENCODE_EXPORT || !process.env.TRACE_OPENCODE_HAR) && "set private real OpenCode export and HAR paths",
+}, async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { analyzeCapture } = await import("../network/capture.js");
+  const { networkLens } = await import("../network/panel.js");
+  const { enterView, setFold } = await import("../panel-memory.js");
+  const bytes = await readFile(process.env.TRACE_OPENCODE_EXPORT);
+  const native = JSON.parse(bytes);
+  const source = { name: "session.json", size: bytes.length, slice: async (a, b) => bytes.subarray(a, b) };
+  const { trace } = await loadTrace([{ path: "session.json", source }]);
+  const { capture } = await analyzeCapture([{ name: "capture.har", text: await readFile(process.env.TRACE_OPENCODE_HAR, "utf8") }], trace);
+  const joined = capture.calls.filter(c => c.matched.length);
+  const unjoined = capture.calls.filter(c => !c.matched.length);
+  const unattributed = capture.entries.filter(e => e.association === "unattributed").length;
+  assert.ok(joined.length && unjoined.length && unattributed, "acceptance requires real joined calls, an unjoined final call and unattributed catalogue traffic");
+  const A = { focusAgent() {}, focusRequest() {}, focusStratum() {}, focusAction() {}, openBlockAt() {}, addCapture() {} };
+  A.networkLens = view => networkLens({ ...view, network: capture }, A);
+  const context = new Element("aside");
+  renderPanel(context, { trace, level: 0, lens: "context", mode: "3d" }, A);
+  enterView("real-opencode-render-acceptance");
+  setFold("call-detail", String(unjoined[0].index));
+  const wire = new Element("aside");
+  try { renderPanel(wire, { trace, level: 0, lens: "network", mode: "3d" }, A); }
+  finally { setFold("call-detail", false); }
+  const nullText = node => node.childNodes.some(child => child instanceof Text ? child.data === "null" : nullText(child));
+  const problems = [];
+  if (trace.title !== native.info.title) problems.push("native title lost");
+  if (nullText(context)) problems.push("optional context row renders null");
+  if (nullText(wire)) problems.push("optional wire reader renders null");
+  const sourceLine = wire.all(n => /\bnet-source\b/.test(n.className))[0]?.textContent || "";
+  if (!sourceLine.includes(`${capture.kept} of ${capture.total} requests displayed`) || !sourceLine.includes(`${capture.kept - unattributed} associated`) || !sourceLine.includes(`${unattributed} unattributed`)) problems.push("displayed traffic claimed as owned");
+  const headers = wire.all(n => n.tagName === "TH").map(n => n.textContent);
+  if (!headers.includes("Joined") || !headers.includes("Unjoined")) problems.push("model table overclaims log absence");
+  if (!wire.textContent.includes("Calls without an exact step match")) problems.push("unjoined heading overclaims log absence");
+  if (/not in your log|Requests not in your log|native step unattributed|1 call lack\b/.test(wire.textContent)) problems.push("unjoined copy overclaims log absence or has bad grammar");
+  if (capture.calls.some(c => !c.routing.preferences) && !wire.textContent.includes("No provider routing preferences sent")) problems.push("absent routing preferences render JSON null");
+  assert.deepEqual(problems, []);
+});
+
 test("network lens and On-the-wire card render for both products with nothing planted in the text", async () => {
   const { renderPanel } = await import("../panels.js");
   const { networkLens, wireCard } = await import("../network/panel.js");

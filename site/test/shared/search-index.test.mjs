@@ -141,6 +141,8 @@ test("records: which file, provenance shapes, kinds, tags, per-document filterin
   assert.deepEqual(provenanceOf({ source_file: "webview/cards.js", byte_offset: 8207 }), { f: "webview/cards.js", o: 8207 });
   assert.deepEqual(provenanceOf({ source: ["SkyComputerUseService@0x10", "Other@0x20"] }), { f: "SkyComputerUseService", o: 16 });
   assert.deepEqual(provenanceOf({ source: "templates/default.md" }), { f: "templates/default.md" });
+  assert.deepEqual(provenanceOf({ provenance: [{ file: "agent-cli/package/index.js", byte_start: 5731084, line_start: 414 }] }), { f: "agent-cli/package/index.js", o: 5731084, l: 414, r: undefined });
+  assert.deepEqual(provenanceOf({ version: "1.18.34", provenance: [{ file: "packages/opencode/src/tool/read.txt", startLine: 1 }] }), { f: "packages/opencode/src/tool/read.txt", o: undefined, l: 1, r: "1.18.34" });
   assert.equal(provenanceOf({}), null);
 
   const root = await mkdtemp(path.join(os.tmpdir(), "search-records-"));
@@ -158,6 +160,8 @@ test("records: which file, provenance shapes, kinds, tags, per-document filterin
     assert.equal(got[0].text, "shown-name here");
     const tools = await loadSearchRecords({ sourceRoot: root, file: { path: "outputs/m.md", records: { file: "outputs/tools.json", list: "tools", kind: "tool" } } });
     assert.deepEqual(tools.map(r => [r.title, r.group, r.kind, r.text]), [["archive", "ns", "tool", "Archive it."]]);
+    const picked = await loadSearchRecords({ sourceRoot: root, file: { path: "outputs/a.md", records: { file: "outputs/r.json" }, includeRecord: r => r.kind === "setting" } });
+    assert.deepEqual(picked.map(r => r.title), ["B"]);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

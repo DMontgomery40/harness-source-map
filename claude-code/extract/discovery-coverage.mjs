@@ -15,8 +15,9 @@ if(ledger.source?.binary_sha256!==BINARY_SHA256) throw new Error('Claude Code di
 const modelRoles=new Set(['tool','parameter','instructions','context','user_template']);
 const sources=ledger.records.filter(r=>r.status==='classified'&&r.model_facing.noul>=.8&&modelRoles.has(r.role?.choice));
 const records=await publishedCoverageRecords(root,categories);
-const cache=openCache(path.join(root,'work/jev-discovery-cc-coverage-cache.json'));
-const result=await auditCoverage(decisionConfig(),sources,records,{cache});
+const config=decisionConfig();
+const cache=openCache(path.join(root,'work/jev-discovery-cc-coverage-cache.json'),{config});
+const result=await auditCoverage(config,sources,records,{cache});
 const summaryFile=path.join(root,'work/jev-discovery-cc-coverage-pending.json');
 let previous={pending:[]};try{previous=JSON.parse(readFileSync(summaryFile,'utf8'));}catch{}
 const key=r=>`${r.source_sha256}:${r.expected_kind}`;

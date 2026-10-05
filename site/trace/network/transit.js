@@ -23,7 +23,7 @@ export const RULES = [
   { id: 10, title: "Client key shipped in the binary, sent to a third party", why: "A public client key from the binary lets anyone who extracts it write to that third party's intake." },
 ];
 
-const FIRST_PARTY = { "claude-code": ["anthropic.com", "claude.ai", "claude.com"], codex: ["chatgpt.com", "openai.com"] };
+const FIRST_PARTY = { "claude-code": ["anthropic.com", "claude.ai", "claude.com"], codex: ["chatgpt.com", "openai.com"], opencode: ['opencode.ai'], cursor: ['cursor.sh', 'cursor.com'] };
 export function partyOf(product, host) {
   const h = String(host || "").replace(/:\d+$/, "").toLowerCase();
   if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(h)) return "local";

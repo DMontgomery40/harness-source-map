@@ -8,15 +8,15 @@ import { foldOpen, setFold, valueOf, setValue } from "../panel-memory.js";
 import { modelBreakdown, findings, runs, entryGroups, hostTable, callSignature, callDelta, callTokens, wireTokenRows, latestLimits } from "./digest.js";
 
 export const NETWORK_LENS = { key: "network", q: "What went over the wire", icon: "⇄" };
-const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT" };
-const DOCS = { "claude-code": "../claude-code/", codex: "../codex/" };
+import { productLabel } from '../products.js';
+const DOCS = { "claude-code": "../claude-code/", codex: "../codex/", opencode: '../opencode/', cursor: '../cursor/' };
 
 // The reference docs' search for a flag, beta, header or env name: /claude-code/?q=<name> opens the
 // section's ⌘K palette with it.
 export function docsHref(product, name) {
   return `${DOCS[product] || DOCS["claude-code"]}?q=${encodeURIComponent(String(name))}`;
 }
-const docLink = (product, name, text = name) => el("a", { class: "net-doc", href: docsHref(product, name), title: `Search the ${PRODUCT[product]} reference for ${name}`, text });
+const docLink = (product, name, text = name) => el("a", { class: "net-doc", href: docsHref(product, name), title: `Search the ${productLabel(product)} reference for ${name}`, text });
 
 const fmtBytes = (n) => (n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${fmtInt(n)} B`);
 const fmtMs = (n) => (n == null ? "–" : n >= 1000 ? `${(n / 1000).toFixed(1)} s` : `${Math.round(n)} ms`);
@@ -176,9 +176,10 @@ export function networkLens(S, A) {
   const out = [];
   if(cap.voice?.observed)out.push(section('WebRTC voice evidence',el('p',{text:`${fmtInt(cap.voice.messages)} data-channel messages · ${cap.voice.calls.length} observed call(s). Audio was not recorded.`})));
   out.push(el("h2", { text: NETWORK_LENS.q }),
-    el("p", { class: "lede", text: `A network capture of this ${PRODUCT[product]} session, joined to its log: what the harness sent that the log doesn't show. Credentials and identity were redacted in your browser as the capture was read; nothing is saved.` }));
+    el("p", { class: "lede", text: `A network capture loaded with this ${productLabel(product)} session. Exact identifiers join traffic to the log; other requests remain unattributed. Credentials and identity were redacted in your browser as the capture was read; nothing is saved.` }));
   const readerSlot = el("div", { class: "net-reader-slot" });
-  out.push(el("p", { class: "meta net-source" }, `${cap.files.join(", ")} · ${fmtInt(cap.kept)} of ${fmtInt(cap.total)} requests belong to this session`,
+  const unattributed = cap.entries.filter(e => e.association === 'unattributed').length;
+  out.push(el("p", { class: "meta net-source" }, `${cap.files.join(", ")} · ${fmtInt(cap.kept)} of ${fmtInt(cap.total)} requests displayed · ${fmtInt(cap.entries.length - unattributed)} associated · ${fmtInt(unattributed)} unattributed`,
     cap.elsewhere ? ` · ${fmtInt(cap.elsewhere)} belonged to ${cap.otherSessions.length ? `other sessions (${cap.otherSessions.join(", ")})` : "other sessions"} and are left out` : "",
     " · ", el("button", { class: "linkbtn", type: "button", text: "Replace the capture", onclick: () => A.addCapture && A.addCapture() })), readerSlot);
   if (cap.notes.length) out.push(fold([plural(cap.notes.length, "note about this capture", "notes about this capture")], false, "net:notes", el("ul", { class: "net-notes" }, cap.notes.map((n) => el("li", { class: "note", text: n })))));
@@ -222,23 +223,25 @@ function findingsSection(cap, trace, A) {
 // Calls by model: the main model first, every other model the harness called (side calls, prewarms) after it.
 function modelsTable(cap) {
   const rows = modelBreakdown(cap);
+  const native = cap.product === 'opencode' || cap.product === 'cursor';
   if (!rows.length) return el("p", { class: "note", text: "No model calls in this capture." });
   const num = (n) => el("td", { class: "num", text: fmtTok(n) });
   return el("div", { class: "net-models-box", "data-anchor": "finding:models" },
     el("table", { class: "atable net-table net-models" },
       el("caption", { text: "Calls by model" }),
-      el("thead", {}, el("tr", {}, ...["Model", "Calls", "In log", "Not", "Input", "Output", "Cache read", "Cache write"].map((h, i) => el("th", { class: i ? "num" : null, text: h })))),
+      el("thead", {}, el("tr", {}, ...["Model", "Calls", native ? "Joined" : "In log", native ? "Unjoined" : "Not", "Input", "Output", "Cache read", "Cache write"].map((h, i) => el("th", { class: i ? "num" : null, text: h })))),
       el("tbody", {}, rows.map((r) => el("tr", { class: r.main ? "net-main" : "net-side" },
         el("td", { class: "model", title: `${r.model} · ${Object.entries(r.kinds).map(([k, n]) => `${k} ×${n}`).join(", ")}` }, el("span", { class: "name", text: r.model }),
-          el("span", { class: "meta", text: r.main ? " main" : r.notIn === r.calls ? " side · not in your log" : " side" })),
+          el("span", { class: "meta", text: r.main ? " main" : r.notIn === r.calls ? native ? " side · no exact step match" : " side · not in your log" : " side" })),
         el("td", { class: "num", text: fmtInt(r.calls) }), el("td", { class: "num", text: fmtInt(r.inLog) }), el("td", { class: "num", text: fmtInt(r.notIn) }),
         num(r.input), num(r.output), num(r.cacheRead), num(r.cacheWrite))))),
-    el("p", { class: "note", text: cap.product === "codex" ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part." }));
+    el("p", { class: "note", text: cap.product === 'cursor' ? 'This AgentService call summary does not extract token counts; open the decoded response when a shipped descriptor sidecar is loaded.' : cap.product === "codex" || cap.product === 'opencode' ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part." }));
 }
 
 // ---------------------------------------------------------------- model calls
 function callsSection(cap, trace, A) {
   const product = cap.product;
+  const native = product === 'opencode' || product === 'cursor';
   const inLog = cap.calls.filter((c) => c.matched.length), notIn = cap.calls.filter((c) => !c.matched.length);
   const openCall = foldOpen("call-detail", false);
   const toggle = (c) => { setFold("call-detail", openCall === String(c.index) ? false : String(c.index)); rerender(A); };
@@ -247,7 +250,7 @@ function callsSection(cap, trace, A) {
     return el("li", { "data-net-key": `call:${c.index}` },
       el("button", { class: "item", type: "button", onclick: () => (m ? A.focusRequest(m.agentId, m.reqIdx) : toggle(c)) },
         el("span", { class: "tool", text: `${c.t ? fmtClock(c.t) : ""} ${callLabel(c)}` }),
-        el("span", { class: "meta", text: [c.model, m ? whereIn(trace, m) : "not in your log", u.input ? `${fmtTok(u.input)} input` : null].filter(Boolean).join(" · ") })),
+        el("span", { class: "meta", text: [c.model, m ? whereIn(trace, m) : native ? "no exact step match" : "not in your log", u.input ? `${fmtTok(u.input)} input` : null].filter(Boolean).join(" · ") })),
       delta ? el("div", { class: "meta net-delta", text: delta }) : null,
       !m && openCall === String(c.index) ? callCard(cap, c, trace, A, null) : null);
   };
@@ -257,10 +260,10 @@ function callsSection(cap, trace, A) {
   const rank = new Map(modelBreakdown(cap).map((r, i) => [r.model, i]));
   const byModel = (list) => Object.entries(list.reduce((m, c) => ((m[c.model || "model not named"] = (m[c.model || "model not named"] || 0) + 1), m), {}))
     .sort((a, b) => (rank.get(a[0]) ?? 99) - (rank.get(b[0]) ?? 99)).map(([k, n]) => `${k} ×${fmtInt(n)}`).join(", ");
-  return topFold("sec:calls", "Model calls", `${fmtInt(inLog.length)} in your log, ${fmtInt(notIn.length)} not · ${byModel(cap.calls)}`,
+  return topFold("sec:calls", "Model calls", `${fmtInt(inLog.length)} ${native ? 'joined' : 'in your log'}, ${fmtInt(notIn.length)} ${native ? 'unjoined' : 'not'} · ${byModel(cap.calls)}`,
     el("p", { class: "note", text: `Joined by ${cap.join.keys}.${product === "codex" && cap.join.items ? ` ${fmtInt(cap.join.itemsMatched)} of ${fmtInt(cap.join.items)} attributed input items match blocks in the log.` : ""}` }),
-    notIn.length ? fold([`Requests not in your log (${fmtInt(notIn.length)})`, byModel(notIn)], true, "calls:notlog",
-      el("p", { class: "note", text: product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent." }),
+    notIn.length ? fold([`${native ? 'Calls without an exact step match' : 'Requests not in your log'} (${fmtInt(notIn.length)})`, byModel(notIn)], true, "calls:notlog",
+      el("p", { class: "note", text: product === 'cursor' ? 'These AgentService calls carried no exact request ID matching a native step. Their captured payloads remain visible, but ownership stays unattributed.' : product === 'opencode' ? 'These captured calls have no exact native step join. A session header may identify their session; it does not identify a specific native step. Open a call to inspect the request as sent.' : product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent." }),
       el("ul", { class: "items" }, notIn.map((c) => item(c)))) : null,
     ...[...groups].map(([sig, list]) => {
       const c0 = list[0];
@@ -333,7 +336,7 @@ function endpointItem(cap, e, byI, A) {
 function entryList(cap, e, g, A) {
   const row = (x) => el("li", { "data-anchor": `entry:${x.i}` },
     el("code", { text: `${x.method} ${x.host}${x.path}${x.query && x.query.length ? `?${x.query.join("&")}` : ""}` }),
-    el("span", { class: "meta", text: ` ${x.status || "–"} · ${x.t ? `${fmtClock(x.t)} · ` : ""}${fmtBytes(x.reqBytes)} → ${fmtBytes(x.resBytes)}${x.ws ? ` · ${fmtInt(x.ws)} frames` : ""}${x.eager ? "" : " · read on demand"} ` }),
+    el("span", { class: "meta", text: ` ${x.status || "no HTTP response"} · ${x.t ? `${fmtClock(x.t)} · ` : ""}${fmtBytes(x.reqBytes)} → ${fmtBytes(x.resBytes)}${x.ws ? ` · ${fmtInt(x.ws)} frames` : ""}${x.partial ? ' · incomplete at recorder checkpoint' : ''}${x.association === 'unattributed' ? ' · unattributed' : ''}${x.withheldBodies ? ` · ${x.withheldBodies} bodies withheld by recorder` : ''}${x.eager ? "" : " · read on demand"} ` }),
     bodyButtons(A, x.i, [["headers", "Headers"], ...(x.reqBytes ? [["request", "Request"]] : []), ...(x.ws ? [["frames", "Frames"]] : x.resBytes ? [["response", "Response"]] : [])], `${x.method} ${x.host}${x.path}`, `entry:${x.i}`),
     readerAt(A, `entry:${x.i}`));
   const head = g.items.slice(0, 25), rest = g.items.slice(25);
@@ -577,12 +580,13 @@ function callCard(cap, c, trace, A, at) {
     c.timings ? `${fmtMs(c.timings.wait)} to first byte · ${fmtMs(c.timings.total)} total` : null].filter((v) => v != null && v !== "").join(" · ") }));
   if (at && at.same) kids.push(el("p", { class: "note", text: `The same HTTP call as ${at.agent.kind === "side" ? "the main thread's" : ""} request ${at.same.reqIdx + 1}: this row is one iteration of it.` }));
   kids.push(kv([
-    [product === "codex" ? "Response id" : "Request id", el("code", { text: c.requestId || "–" }), c.joinedBy ? `joined by ${c.joinedBy}` : "not in your log"],
+    [product === "codex" ? "Response id" : "Request id", el("code", { text: c.requestId || "–" }), c.joinedBy ? `joined by ${c.joinedBy}` : product === 'opencode' || product === 'cursor' ? 'no exact native step match' : "not in your log"],
     product === "codex" ? ["Request kind", c.requestKind || (c.generate === false ? "prewarm" : "turn"), c.generate === false ? "generate: false" : null] : ["Request class", c.requestClass || "–", c.kind === "side" ? "a side call" : null],
     ["Model", c.model || "–"],
   ]));
-  const parts = product === "claude-code" ? [["headers", "Headers"], ["request", "Request as sent"], ["response", "Response"]] : [["headers", "Handshake headers"], ["frames", "Frames"]];
-  kids.push(el("div", { class: "net-actions" }, bodyButtons(A, c.entry, parts, product === "claude-code" ? `Call ${n + 1}` : "Responses websocket", `card:${n}`)), readerAt(A, `card:${n}`, c.entry));
+  const http = product === 'claude-code' || c.transport === 'http';
+  const parts = http ? [["headers", "Headers"], ["request", "Request as sent"], ["response", "Response"], ...(c.protocol === 'chat-completions' ? [['reasoning', 'Received reasoning']] : [])] : [["headers", "Handshake headers"], ["frames", "Frames"]];
+  kids.push(el("div", { class: "net-actions" }, bodyButtons(A, c.entry, parts, http ? `Call ${n + 1}` : "Responses websocket", `card:${n}`)), readerAt(A, `card:${n}`, c.entry));
   // Sensitive data sent with this call: open when something on it is flagged.
   const { rows, socket } = sensitiveRows(cap, c);
   const multi = new Map((cap.transit?.credentials || []).filter((y) => y.hosts.length > 1).map((y) => [y.kind, y]));
@@ -598,7 +602,40 @@ function callCard(cap, c, trace, A, at) {
     socket.length ? el("p", { class: "note", text: "On the websocket handshake (every call on this socket):" }) : null,
     socket.length ? el("ul", { class: "net-list" }, socket.map(line)) : null));
   const logged = at && at.req && at.req.tokens ? at.req : null;
-  if (product === "claude-code") {
+  if (c.protocol === 'chat-completions') {
+    const route = c.routing, response = c.response;
+    kids.push(fold(['Destination and routing', route.reportedProvider || 'serving provider not reported'], false, key('route'), kv([
+      ['Observed client destination', route.destination, route.gateway ? 'gateway' : 'direct API host'],
+      ['Requested model', c.model || '–'],
+      route.modelNamespace ? ['Model identifier namespace', route.modelNamespace, 'from the requested identifier; separate from the destination'] : null,
+      ['Reported serving provider', route.reportedProviders.join(', ') || 'not reported', 'response metadata; further downstream traffic was not observed'],
+      ['Routing preferences as sent', route.preferences == null ? 'No provider routing preferences sent' : shortJson(route.preferences, Infinity)],
+      route.requestedModels ? ['Requested fallback models', shortJson(route.requestedModels, Infinity)] : null,
+      ['Session association', c.association === 'session-id' ? 'exact session header' : c.association || 'unattributed', c.joinedBy ? `native step joined by ${c.joinedBy}` : 'no exact native step match'],
+    ]), el('p', { class: 'note', text: 'A model publisher or reported provider does not establish geography, retention or an unobserved downstream hop.' })));
+    kids.push(fold(['Request as sent', `${plural(c.messages.count, 'message')} · ${plural(c.tools.length, 'tool schema')}`], false, key('sent'), kv([
+      ['Message roles', Object.entries(c.messages.roles).map(([role, count]) => `${role} ${count}`).join(', ')],
+      ['System/developer content', `${c.system.length} messages · ${fmtInt(c.system.reduce((n, b) => n + b.chars, 0))} characters`, 'read the exact content with Request as sent'],
+      ['Parameters', shortJson(c.params, Infinity)],
+    ]), toolsTable(c), el('p', { class: 'note', text: 'Complete message content and tool schemas remain in the local request body reader.' })));
+    kids.push(fold(['Received reasoning', `${plural(response.reasoning.length, 'field')} · ${fmtInt(response.reasoning.filter(r => !r.encrypted).reduce((n, r) => n + r.chars, 0))} readable characters`], false, key('reasoning'),
+      el('ul', { class: 'net-list' }, response.reasoning.map(r => el('li', { text: `${r.field} · ${r.type} · choice ${r.choice} · ${fmtInt(r.chars)} characters${r.encrypted ? ' · opaque/encrypted; no readable reasoning' : ''}` }))),
+      el('p', { class: 'note', text: 'Received reasoning opens the observed fields separately from final text. Multiple fields may repeat the same received content.' })));
+    kids.push(fold(['The response', response.error || c.status >= 400 ? 'HTTP/provider error' : response.complete ? 'complete' : 'partial / stream ended early'], false, key('response'), kv([
+      ['Reported model', response.model || '–'], ['Finish reasons', response.finish.map(f => `choice ${f.choice}: ${f.reason}`).join(', ') || 'not received'],
+      ['Final text', `${fmtInt(response.content.reduce((n, p) => n + p.chars, 0))} characters`, 'read the exact content with Response'],
+      ['Tool calls', response.toolCalls.map(t => t.name || 'unnamed').join(', ') || 'none'],
+      ['Usage as received', shortJson(response.usage, Infinity)],
+      response.error ? ['Provider error', shortJson(response.error, Infinity), 'read Response for the captured error body'] : null,
+    ])));
+  } else if (product === 'cursor') {
+    kids.push(fold(['Cursor AgentService payload', c.response.partial ? 'partial' : c.response.complete ? 'complete' : 'status unavailable'], false, key('cursor-proto'), kv([
+      ['Observed client destination', c.routing.destination, 'traffic to Cursor; downstream model routing was not observed'],
+      ['Protocol', 'application/connect+proto', c.decoded ? 'decoded with exact classes from the pinned shipped Agent CLI' : 'exact captured bytes; no matching shipped descriptor sidecar loaded'],
+      ['Association', c.association === 'request-id' ? 'exact request ID' : c.association === 'session-id' ? 'exact session ID' : 'unattributed'],
+      ['Request bytes', fmtBytes(c.reqBytes || 0)], ['Response bytes', fmtBytes(c.resBytes || 0)],
+    ]), el('p', { class: 'note', text: `Open Request as sent or Response to inspect the credential-checked ${c.decoded ? 'decoded protobuf fields' : 'captured bytes'}. A Cursor endpoint does not reveal an unobserved downstream provider, geography or retention policy.` })));
+  } else if (product === "claude-code") {
     const m = c.messages;
     const deferred = c.tools.filter((t) => t.defer).length;
     const notLog = [
@@ -663,7 +700,7 @@ function callCard(cap, c, trace, A, at) {
     if (c.attribution.length) kids.push(attributionTable(c, at, A, key));
     if (c.rateLimits) kids.push(fold(["Rate limits at this call"], false, key("rate"), el("p", { class: "meta net-meta", text: shortJson(c.rateLimits, Infinity) })));
   }
-  card.append(...kids);
+  card.append(...kids.filter(Boolean));
   return card;
 }
 

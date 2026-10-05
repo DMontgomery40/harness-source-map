@@ -8,12 +8,18 @@ export function looksLikeHar(head) {
   return /^﻿?\s*\{\s*"log"\s*:/.test(String(head || ""));
 }
 
+// A private decoder derivative accompanies its HAR. It is capture input rather
+// than a session export, so folder drops keep it with the network evidence.
+export function looksLikeCursorDecoded(head) {
+  return /^﻿?\s*\{[\s\S]{0,200}"format"\s*:\s*"trace-cursor-agent-service-decoded"/.test(String(head || ""));
+}
+
 // Which of the captures loaded with a session belong to it. A capture filed beside a session log
 // (tools/capture/file-capture.mjs) has that session's id in its path; one picked or dropped by hand usually
 // names no session at all. Keep the ones that name the open session, and the ones that name none; a capture
 // filed beside another session (a whole projects folder was dropped) stays out.
 // files: [{ path }]. sessionIds: the open session's ids (Claude Code's session, every Codex/ChatGPT thread).
-const UUIDS = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+const UUIDS = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|ses_[a-z0-9]+/gi;
 export function capturesFor(files, sessionIds) {
   const mine = new Set([...sessionIds].map((id) => String(id).toLowerCase()));
   return files.filter((f) => {
@@ -64,7 +70,11 @@ export function jsonOr(text, fallback = null) {
 // Normalised facts about one entry (no bodies). i is the entry's index in the HAR.
 export function entryInfo(entry, i) {
   let u;
-  try { u = new URL(entry.request.url); } catch { u = { host: "", pathname: String(entry.request.url || ""), search: "" }; }
+  const rawUrl = String(entry.request.url || "");
+  // Cursor's first process-observer build could prefix an authority that
+  // already included its scheme. Read that real capture without rewriting it.
+  const normalizedUrl = rawUrl.replace(/^https:\/\/(?=https:\/\/)/, "").replace(/^http:\/\/(?=http:\/\/)/, "");
+  try { u = new URL(normalizedUrl); } catch { u = { host: "", pathname: rawUrl, search: "" }; }
   const t = Date.parse(entry.startedDateTime);
   const tm = entry.timings || {};
   const num = (v) => (Number.isFinite(v) && v >= 0 ? v : null);
@@ -83,6 +93,8 @@ export function entryInfo(entry, i) {
     resBytes: resC && resC.text ? resC.text.length : Math.max(0, Number(resC && resC.size) || 0),
     timings: { wait: num(tm.wait), receive: num(tm.receive), send: num(tm.send), total: num(entry.time) },
     ws: Array.isArray(entry._webSocketMessages) ? entry._webSocketMessages.length : 0,
+    partial: entry._traceCapture?.partial === true,
+    withheldBodies: Array.isArray(entry._traceCapture?.withheldBodies) ? entry._traceCapture.withheldBodies.length : 0,
   };
 }
 

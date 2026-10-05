@@ -65,8 +65,8 @@ const templateFiles = walk(src, file => /\.(?:md|xml|txt)$/.test(file) && !NOT_P
 // Every production Rust crate, including newly split crates. Templates are source-identified;
 // newly discovered constants also need a role decision, separately from executable verification.
 const constants = discoverRustPrompts(src);
-const cache = openCache(path.join(work, "cli-prompt-verdicts.json"));
 const config = decisionConfig();
+const cache = openCache(path.join(work, "cli-prompt-verdicts.json"),{config});
 const pendingConstants = [];
 const withheldConstants = [];
 const negativeConstants = [];

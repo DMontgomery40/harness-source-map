@@ -14,11 +14,12 @@ import { createPlayback } from "./playback.js";
 import { createTransport, playheadForRequest } from "./transport.js";
 import { nextShot, agentPAt, createFollowZoom } from "./director.js";
 import { createHarnessMode } from "./harness/mode.js";
-import { looksLikeHar, capturesFor } from "./network/har.js";
+import { looksLikeHar, looksLikeCursorDecoded, capturesFor } from "./network/har.js";
 import { networkLens, wireCard, wireSummary, wireTokens, NETWORK_LENS, closeWireReader } from "./network/panel.js";
 import { sourcesLens, SOURCES_LENS } from "./sources/panel.js";
 import { EXAMPLE_ID, loadPublicExample, createLoadOwnership } from "./example-loader.js";
 import { createHelp } from "./help/help.js";
+import { productLabel } from './products.js';
 
 const params = new URLSearchParams(location.search);
 const $ = s => document.querySelector(s);
@@ -213,7 +214,7 @@ function getWorker() {
         if (data.final && f) {
           const kids = [f.subagents ? `${fmtInt(f.subagents)} subagent${f.subagents === 1 ? "" : "s"}` : null,
             f.guardians ? `${fmtInt(f.guardians)} guardian review${f.guardians === 1 ? "" : "s"}` : null].filter(Boolean);
-          setProgress(0.08, `Found the ${f.product === "codex" ? "Codex/ChatGPT" : "Claude Code"} session${kids.length ? ` + ${kids.join(" and ")}` : ""}. Reading…`);
+          setProgress(0.08, `Found the ${productLabel(f.product)} session${kids.length ? ` + ${kids.join(" and ")}` : ""}. Reading…`);
         } else setProgress(data.total ? 0.08 * data.done / data.total : null, `Finding the session: ${fmtInt(data.done)} of ${fmtInt(data.total)} files checked`);
         return;
       }
@@ -319,15 +320,18 @@ async function parseInWorker(files, root, current=()=>true) {
 let pendingNetwork = null;
 const pendingBody = new Map();
 let bodySeq = 0;
-const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl (for Claude Code, with its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
+const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode or Cursor desktop .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
 
-// Captures among picked files: .har files, and .json files whose first bytes are a HAR's (a Claude Code
-// subagent's .meta.json is not one).
+// Captures among picked files: .har files, HAR-shaped .json files, and Cursor's
+// private decoded AgentService sidecar (a session .json remains separate).
 async function splitCaptures(files) {
   const hars = [], rest = [];
   for (const f of files) {
     let har = /\.har$/i.test(f.path);
-    if (!har && /\.json$/i.test(f.path) && f.file?.slice) { try { har = looksLikeHar(await f.file.slice(0, 256).text()); } catch { har = false; } }
+    if (!har && /\.json$/i.test(f.path) && f.file?.slice) { try {
+      const head = await f.file.slice(0, 256).text();
+      har = looksLikeHar(head) || looksLikeCursorDecoded(head);
+    } catch { har = false; } }
     (har ? hars : rest).push(f);
   }
   return { hars, logs: rest };
@@ -358,7 +362,7 @@ async function attachCapture(files) {
     });
     S.network = capture;
     const n = capture.calls.length, matched = capture.join.matched;
-    netStatus(`Network capture attached: ${fmtInt(capture.kept)} requests, ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${fmtInt(matched)} in your log). Open “What went over the wire” (5).`, "ok");
+    netStatus(`Network capture attached: ${fmtInt(capture.kept)} requests, ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${networkMatchCount(matched)}). Open “What went over the wire” (5).`, "ok");
     palette?.setNetwork?.(capture);
     buildLenses();
     render(false);
@@ -373,13 +377,19 @@ function netButton() {
   btn.dataset.state = S.network ? "on" : "none";
   btn.textContent = S.network ? "Network capture ✓" : "+ Network capture";
 }
+const networkMatchCount = count => `${fmtInt(count)} ${S.trace?.product === 'opencode' ? `exact step match${count === 1 ? '' : 'es'}` : S.trace?.product === 'cursor' ? `exact identifier match${count === 1 ? '' : 'es'}` : 'in your log'}`;
 function netHelp(open = $("#net-help").hidden) {
   const box = $("#net-help");
   $("#add-capture").setAttribute("aria-expanded", String(open));
   box.hidden = !open;
   if (!open) return;
   const n = S.network;
-  const cmd = `tools/capture/capture.sh -- ${S.trace?.product === "codex" ? "codex" : "claude"}`;
+  const isBundle = S.trace?.product === 'opencode' || S.trace?.product === 'cursor';
+  const cmd = S.trace?.product === 'cursor'
+    ? 'node tools/capture/cursor-agent-capture.mjs --open -- --mode ask --sandbox enabled "YOUR REAL TASK"'
+    : S.trace?.product === 'opencode'
+      ? 'npm run trace:opencode -- --open -- --model openrouter/deepseek/deepseek-v3.2 "YOUR REAL TASK"'
+      : `tools/capture/capture.sh -- ${S.trace?.product === "codex" ? "codex" : "claude"}`;
   const copy = el("button", { class: "btn small", type: "button", text: "Copy" });
   copy.addEventListener("click", () => navigator.clipboard?.writeText(cmd).then(() => { copy.textContent = "Copied"; }, () => { copy.textContent = "Select and copy"; }));
   const choose = el("button", { class: "btn small", type: "button", text: n ? "Choose another .har…" : "Choose a .har file…" });
@@ -390,17 +400,19 @@ function netHelp(open = $("#net-help").hidden) {
   close.addEventListener("click", () => netHelp(false));
   const more = el("button", { class: "text-control", type: "button", text: S.trace?.product === "codex" ? "Desktop recorder and help" : "Recording help" });
   more.addEventListener("click", () => { netHelp(false); openHelp("capture"); });
-  box.replaceChildren(
+  box.replaceChildren(...[
     el("p", { class: "net-help-head", text: n
-      ? `Attached: ${fmtInt(n.kept)} requests, ${fmtInt(n.calls.length)} model call${n.calls.length === 1 ? "" : "s"} (${fmtInt(n.join.matched)} in your log).`
+      ? `Attached: ${fmtInt(n.kept)} requests, ${fmtInt(n.calls.length)} model call${n.calls.length === 1 ? "" : "s"} (${networkMatchCount(n.join.matched)}).`
       : "No network capture for this session." }),
     el("p", { text: "A capture keeps future traffic while the session runs: prompts, tools and flags the log can omit. Earlier traffic cannot be recovered." }),
     S.trace?.product === "codex" ? el("p", { text: "For the desktop app, open Desktop recorder and help below. It records a future app run through the local helper. The recorder never quits an already-running app." }) : null,
+    S.trace?.product === "cursor" ? el("p", { text: "For Cursor desktop, quit the app first, then use the process-scoped desktop command in Recording help. The recorder launches one future app run and never quits it for you." }) : null,
     el("p", { text: "For a CLI session, run this from the harness-source-map repo:" }),
     el("div", { class: "path" }, el("code", { text: cmd }), copy),
-    el("p", { text: "When the command exits, the capture is saved beside that session's log, and Trace attaches it on its own every time the session opens (pasted id, folder or drop)." }),
-    el("p", { class: "net-help-note" }, "A .har you already have: ", el("code", { text: "node tools/capture/file-capture.mjs capture.har" }), " files it beside its session, or choose it here for this visit."),
-    el("div", { class: "net-help-actions" }, open5, choose, more, close));
+    el("p", { text: isBundle ? 'When the command exits, drop its private recording folder into Trace. The native session or export and capture.har open together.' : "When the command exits, the capture is saved beside that session's log, and Trace attaches it on its own every time the session opens (pasted id, folder or drop)." }),
+    isBundle ? el('p', { class: 'net-help-note', text: 'Already have a native session or export and HAR? Drop them together, or choose the HAR here for this visit.' }) : el("p", { class: "net-help-note" }, "A .har you already have: ", el("code", { text: "node tools/capture/file-capture.mjs capture.har" }), " files it beside its session, or choose it here for this visit."),
+    el("div", { class: "net-help-actions" }, open5, choose, more, close)
+  ].filter(child => child != null && child !== false));
 }
 function clearCapture() {
   S.network = null;
@@ -433,8 +445,8 @@ async function loadFiles(files, root) {
   if(!claim.current())return;
   files = rest;
   const logs = files.filter(f => /\.(jsonl|json)$/i.test(f.path));
-  if (hars.length && !logs.some(f => /\.jsonl$/i.test(f.path))) return showError(HAR_ALONE);
-  if (!logs.length) return showError("No .jsonl session logs in what was dropped.");
+  if (hars.length && !logs.length) return showError(HAR_ALONE);
+  if (!logs.length) return showError("No .jsonl session logs or native OpenCode or Cursor desktop .json exports in what was dropped.");
   if (root === undefined) {
     if (pasteRoot && !holdsPaste(files, pasteRoot)) return missingPaste(files);
     root = pasteRoot;
@@ -1031,14 +1043,14 @@ function setupResizer() {
 // The header's eyebrow names the product and the view: the landscape, or the harness layer over it.
 function setSessionKind() {
   if (!S.trace) return;
-  $("#session-kind").textContent = `${S.trace.product === "codex" ? "Codex/ChatGPT" : "Claude Code"} / ${S.mode === "harness" ? "Harness layer" : "Session landscape"}`;
+  $("#session-kind").textContent = `${productLabel(S.trace.product)} / ${S.mode === "harness" ? "Harness layer" : "Session landscape"}`;
 }
 
 function buildHud() {
   const t = S.trace;
   const st = sessionStats(t);
   setSessionKind();
-  $("#title").textContent = t.title || (t.product === "codex" ? "Codex/ChatGPT session" : "Claude Code session");
+  $("#title").textContent = t.title || `${productLabel(t.product)} session`;
   // More than one session among the dropped files: offer the others.
   const cands = (t.candidates || []).filter(c => c && c.id);
   const old = $("#session-pick");
@@ -1046,7 +1058,7 @@ function buildHud() {
   if (cands.length > 1 && lastFiles) {
     const cur = cands.find(c => (t.agents[0]?.id || "") === c.id || (t.agents[0]?.id || "").includes(c.id) || c.id.includes(t.agents[0]?.id || "@")) || null;
     const sel = el("select", { id: "session-pick", class: "session-pick", "aria-label": `${cands.length} sessions in what you dropped` },
-      cands.map(c => el("option", { value: c.id, selected: cur === c ? true : null, text: `${c.product === "codex" ? "Codex/ChatGPT" : "Claude Code"} · ${clipName(c.name || c.id)} · ${fmtInt(c.files)} files, ${(c.bytes / 1048576).toFixed(1)} MB` })));
+      cands.map(c => el("option", { value: c.id, selected: cur === c ? true : null, text: `${productLabel(c.product)} · ${clipName(c.name || c.id)} · ${fmtInt(c.files)} files, ${(c.bytes / 1048576).toFixed(1)} MB` })));
     sel.addEventListener("change", () => switchSession(sel.value));
     $(".hud-title").append(sel);
   }

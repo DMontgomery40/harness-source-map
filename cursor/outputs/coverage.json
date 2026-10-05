@@ -1,0 +1,2536 @@
+{
+  "schema": 1,
+  "product": "Cursor",
+  "area": "typed-record-coverage",
+  "release": {
+    "id": "3.23.12-2026.10.01-e373342-aca5010df248da0327c4b823063c3bd0d4edeb31fa984cf862f2c8563c89ff66",
+    "artifact_identity": {
+      "algorithm": "sha256",
+      "sha256": "aca5010df248da0327c4b823063c3bd0d4edeb31fa984cf862f2c8563c89ff66",
+      "components": {
+        "desktop_tree_sha256": "5665959206bc6b07cac353114d68d791075593602fed5a27ac365cdbb780d995",
+        "agent_cli_archive_sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc"
+      }
+    },
+    "desktop": {
+      "version": "3.23.12",
+      "commit": "2d29876d567da1607532b23bbf2cd5ddbca496f0",
+      "distro": "d5c0e77a0214208f36b56d42e8e787de88d02ea4",
+      "architecture": "arm64",
+      "tree_sha256": "5665959206bc6b07cac353114d68d791075593602fed5a27ac365cdbb780d995"
+    },
+    "agent_cli": {
+      "version": "2026.10.01-e373342",
+      "architecture": "arm64",
+      "archive_sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc",
+      "tree_sha256": "e7220f127d51f5a2f80f4e31d9df07271db52920cd35bee8d3d8e7214cb4547c"
+    }
+  },
+  "source_question_version": "discovery-v1",
+  "requested_model": "typesafe/jev-1.13",
+  "search_records_sha256": "391540a7bd792480e9af38b420a400d0c6a74671226247ad199f653c4af3c156",
+  "summary": {
+    "sources": 7,
+    "covered": 7,
+    "unverified_gaps": 0,
+    "unanswered": 0,
+    "unsearched": 0,
+    "provider_pending": 200529,
+    "local_review": 236,
+    "publication": "partial"
+  },
+  "results": [
+    {
+      "id": "agent-cli:agent-cli/package/9577.index.js:111684:cca7967661b0e430ace50ef9a9a0d20524178b020b25965d0b1ca3fbed52c057",
+      "file": "agent-cli/package/9577.index.js",
+      "offset": 111684,
+      "source_sha256": "44f1a0b6ec4731b0b65c80f14e322dae6a8bf09fcb159fa17b1db918ec906596",
+      "expected_kind": "prompt",
+      "status": "covered",
+      "method": "exact-text",
+      "matches": [
+        {
+          "id": "jev-000001-cca7967661b0",
+          "text_sha256": "44f1a0b6ec4731b0b65c80f14e322dae6a8bf09fcb159fa17b1db918ec906596"
+        }
+      ],
+      "checked": [],
+      "routes": [],
+      "usage": {}
+    },
+    {
+      "id": "agent-cli:agent-cli/package/9577.index.js:111907:9f358213145fdf28ff68a80078e547a248aa20ee9171e9c56c2dd6d2d099130e",
+      "file": "agent-cli/package/9577.index.js",
+      "offset": 111907,
+      "source_sha256": "b11137f61d09ad258e9d88f86aa83a9ef5125aed270a30bfa0bc23d14818f3b6",
+      "expected_kind": "prompt",
+      "status": "covered",
+      "method": "exact-text",
+      "matches": [
+        {
+          "id": "jev-000002-9f358213145f",
+          "text_sha256": "b11137f61d09ad258e9d88f86aa83a9ef5125aed270a30bfa0bc23d14818f3b6"
+        }
+      ],
+      "checked": [],
+      "routes": [],
+      "usage": {}
+    },
+    {
+      "id": "agent-cli:agent-cli/package/9577.index.js:111935:57fa34802fcef08123b7429ecef8913269889017637f78dd3b560a77ac163a03",
+      "file": "agent-cli/package/9577.index.js",
+      "offset": 111935,
+      "source_sha256": "ba89f4335b84cecb0a6ec1bdafe145b78f5461b722d4744e6d9221854c0a733c",
+      "expected_kind": "prompt",
+      "status": "covered",
+      "method": "exact-text",
+      "matches": [
+        {
+          "id": "jev-000003-57fa34802fce",
+          "text_sha256": "ba89f4335b84cecb0a6ec1bdafe145b78f5461b722d4744e6d9221854c0a733c"
+        }
+      ],
+      "checked": [],
+      "routes": [],
+      "usage": {}
+    },
+    {
+      "id": "agent-cli:agent-cli/package/9577.index.js:111997:905558afe7ec2d07519bb4f65d31452c2ce69f25d31457b244f7da72e9dfce26",
+      "file": "agent-cli/package/9577.index.js",
+      "offset": 111997,
+      "source_sha256": "988f4fbc3c6e98e8ab4d2dd14ab96239b9b27433edc2043988a3cf06d99c748a",
+      "expected_kind": "prompt",
+      "status": "covered",
+      "method": "exact-text",
+      "matches": [
+        {
+          "id": "jev-000004-905558afe7ec",
+          "text_sha256": "988f4fbc3c6e98e8ab4d2dd14ab96239b9b27433edc2043988a3cf06d99c748a"
+        }
+      ],
+      "checked": [],
+      "routes": [],
+      "usage": {}
+    },
+    {
+      "id": "agent-cli:agent-cli/package/9577.index.js:112234:446697298b20c57374419aa515f1cb654bc7639d05c351db1c37c41b5e961040",
+      "file": "agent-cli/package/9577.index.js",
+      "offset": 112234,
+      "source_sha256": "8d6dc2d6b592ff7c5231bfe4951bc111237db9456cbe3f408e19b8c332e1212a",
+      "expected_kind": "prompt",
+      "status": "covered",
+      "method": "exact-text",
+      "matches": [
+        {
+          "id": "jev-000005-446697298b20",
+          "text_sha256": "8d6dc2d6b592ff7c5231bfe4951bc111237db9456cbe3f408e19b8c332e1212a"
+        }
+      ],
+      "checked": [],
+      "routes": [],
+      "usage": {}
+    },
+    {
+      "id": "agent-cli:agent-cli/package/9969.index.js:765533:4b0c61a6283a693880cb0c11031a45c1a0087fe07fb7bdb9251bbc98503d3e89",
+      "file": "agent-cli/package/9969.index.js",
+      "offset": 765533,
+      "source_sha256": "f44ba8a68acd3e4811b0b6a2e2fb42d334b1109d2a777a3d57867a744c183361",
+      "expected_kind": "prompt",
+      "status": "covered",
+      "method": "exact-text",
+      "matches": [
+        {
+          "id": "jev-000006-4b0c61a6283a",
+          "text_sha256": "f44ba8a68acd3e4811b0b6a2e2fb42d334b1109d2a777a3d57867a744c183361"
+        }
+      ],
+      "checked": [],
+      "routes": [],
+      "usage": {}
+    },
+    {
+      "id": "agent-cli:agent-cli/package/9969.index.js:765834:2d4e90e7b521fa6e6d1c8cef9ab18dee853f391f9015a0908da453b2f09a80e1",
+      "file": "agent-cli/package/9969.index.js",
+      "offset": 765834,
+      "source_sha256": "b1b329b5f0916464021852efffd95b30dc9b9e754d742a179289a33a9f4385e4",
+      "expected_kind": "prompt",
+      "status": "covered",
+      "method": "exact-text",
+      "matches": [
+        {
+          "id": "jev-000007-2d4e90e7b521",
+          "text_sha256": "b1b329b5f0916464021852efffd95b30dc9b9e754d742a179289a33a9f4385e4"
+        }
+      ],
+      "checked": [],
+      "routes": [],
+      "usage": {}
+    }
+  ],
+  "local_review": [
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:26594:b411c07bc4bff2c07a1a8f5af29d5ccfc8088ce77a23afd718460837e9acb549",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 26594,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "201258d55162d9df1ba96254f77bfe69729ed78257aabf7ef854668eb4d6591d",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:111069:f05181da975560e97ed6d0a20c8e665613778cb31d2ed6f219c2b9c1f06be145",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 111069,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "473900c314f4615da831b1e97a2af4d4ddb8197d85d8e9184336412b1bcc2045",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:335326:4f99dacfcfce1df1ccf1ec1e2b8d12a20f60f559d3a2a835482c55d0bcefc2bf",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 335326,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "d7223bfd8fb71d77b485010ab48bcd12f86c253bef27e8177d70ae07204e63ee",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:827833:ee5d57e3995e804508dbee3a633bd1641c090c2881db224323220a79dc5b9f88",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 827833,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "1fc05256b7851097ec5389fe4241b8c870fe41def4b1fa320c69f80dd875dda6",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:892562:179dca68850faad883e95d122356985623067092bd4197122bcb7780c3092e16",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 892562,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "4f5d671acb3e3a85795ca1e808ca6f49faa65addedc71b6a7abee9e93775a762",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:940158:d79308a1f55bea75fdd6614c2177a417844cf08ca1547537effb1575a4ba1143",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 940158,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "2d1c727fefade4b057b2ce0f00b13206fc413800b15964393b69c2abc42d84e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:999512:fed1c6f6d6e7ce024a01b8bd8156bd57ac08c8251c7440aa3d14f8f599a2488e",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 999512,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "e80b07bc37436b92c451766b708fc30b7fb2e631511dc0837a093b5a90798fcd",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:1027000:6d96b2f7d280d728634a93ab173e2d946f57dd0fb89e7be70e8f0c8a4158831b",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 1027000,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "61b3cc25da815da1f8625bffdb3282f48a561f6c2fca3457e477765bffb24eef",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:1212062:cfb6ecd79725509717e2754d406238703cf9ca1d915fd378370002fe24b42e23",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 1212062,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "08dc208c4b63a1976fb3820fc24df4edad273b48973403a53d0cb1031481f1b8",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:1399164:c2da71e35af42f28f6479a87fc9edd48be06f7787f313b9c2818301c684496b6",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 1399164,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "1352728043f6c8906ec76468bfc3a897f81e7f8d2829436ab4af4eed186fe4eb",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:1522334:eb2413615b480c57d1d63568d5bf38bb80a889522b3bffa17618c75ba1e31a15",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 1522334,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "25ab9696f0b1cd4dee3d24373a3c561db567f2cf2a641590f422d473777a4734",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:1583465:5c025c2fc6d04016be250e6929d00622237f32bda02f24e6ee0144e59b0ac7b1",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 1583465,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "2ba729d8cc9d3d8f589ea230730910716186082998ac3e6a912bf180ad22aa0f",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:1735394:a772fce0c3d5a43fe1766ee7657b18432ba0587e60102b5416fc30c173805566",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 1735394,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "c5ee757de40010f44f5f1f88872baafa3b91f696ed3d61d88572a22c8feb7141",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:1841941:48210e339299066830b1e9fc84cfd9c46a45d909d91086316cbc88994416a744",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 1841941,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "31545bd26625206c875bb68a3c602fd6b751472942200ce261bbda3496223071",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:1913562:111ec6b4a6723a911fdfe27d7c36b8a38a9b5ab72ff1b26bba6625e2ef110005",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 1913562,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "c59595d6e2966a47fd6e9c6076b717b19dec310d83ac485e4c1ed409b817fb4b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:1941563:b0c72cb8191242a3f57aabeceba1fc679a80519f92030f408b5efedf88a99b84",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 1941563,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "9261d28a7a40077bd4af281c9e1cdaca5861eda3b70584436551e05b72a995e4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:2026415:0a7d917bcbf838ba3deb8110658ddea370fef865c341e468f453856479717e65",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 2026415,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "2dcd66ae7cf86cb571cc609af73fbef53d537662dbae099d0e06a34a75c06e91",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:2120065:a02a958f35264f95f8be4dbb4bce1f8914d06c5230db6d35d9f90fbd87be0263",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 2120065,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "1fc9566ecdf9c6f079896d18d633fcfb1062fd4e194772b671fc840cf790e991",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/8891.index.js:2295869:ac17bff5aa9bbf9bf9a7cf2cd406698dbbc890a91e0b661c11ef3aad5febe4dd",
+      "file": "agent-cli/package/8891.index.js",
+      "surface": "agent-cli",
+      "byte_start": 2295869,
+      "source_sha256": "87dd33340c61d9be1b43a82daa160aaeaed459b2f5b4b9c4e7aab3a6b1545c82",
+      "text_sha256": "e4fac5af22dfc3b05cda262151f3d163f4eb0cd6c4c2d599be686e9c617b564b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/index.js:7984895:83841eff0fa4958fd3e6746baecd134a8f0128cda99c4204e78372b6311220ee",
+      "file": "agent-cli/package/index.js",
+      "surface": "agent-cli",
+      "byte_start": 7984895,
+      "source_sha256": "f6bd8dece34b56431ee74f1ac827e032d054381085e7da7088e85abdd1008330",
+      "text_sha256": "69b652e88d7fe30d85d24e8c5d8817ae1ac976fd23333d5d045f7be3b1b1fd77",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/index.js:8032249:5afd8dbd589190eaa704e3978080a2a01d4d0771d7e997588a1df9338457ca59",
+      "file": "agent-cli/package/index.js",
+      "surface": "agent-cli",
+      "byte_start": 8032249,
+      "source_sha256": "f6bd8dece34b56431ee74f1ac827e032d054381085e7da7088e85abdd1008330",
+      "text_sha256": "e3a9f96712b6f4e2d543ea71e9b70e32c2d87d1bbc92d12ac1403be8134b5bb2",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/index.js:8070396:4f9c2ab7874538e1a1c18a86e920368ae1e50a0a22d5397bfee8ecffe397a1ea",
+      "file": "agent-cli/package/index.js",
+      "surface": "agent-cli",
+      "byte_start": 8070396,
+      "source_sha256": "f6bd8dece34b56431ee74f1ac827e032d054381085e7da7088e85abdd1008330",
+      "text_sha256": "16414717bc2c4a42ea96bf4005b3190f5a1c1650034d4f7c7cabb8f542a3f73f",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/index.js:8112873:565ff540ccf1eed75c20b387f68c97e5275fb10281c13af7f4c02e4be2d2d4b4",
+      "file": "agent-cli/package/index.js",
+      "surface": "agent-cli",
+      "byte_start": 8112873,
+      "source_sha256": "f6bd8dece34b56431ee74f1ac827e032d054381085e7da7088e85abdd1008330",
+      "text_sha256": "2088fe5710efb05a2d446d28aa6f18ea194cf58aa8305aa584a966116242af2c",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "agent-cli:agent-cli/package/index.js:8193717:57c51ab61845a4caaf5350656ef37e8474311d76a75850512d490b949ac63348",
+      "file": "agent-cli/package/index.js",
+      "surface": "agent-cli",
+      "byte_start": 8193717,
+      "source_sha256": "f6bd8dece34b56431ee74f1ac827e032d054381085e7da7088e85abdd1008330",
+      "text_sha256": "087412438a94ad1f944958250f7d6337e3a38782ebaedde13986abd064290309",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:228149:b0c72cb8191242a3f57aabeceba1fc679a80519f92030f408b5efedf88a99b84",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 228149,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "9261d28a7a40077bd4af281c9e1cdaca5861eda3b70584436551e05b72a995e4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:269626:ee5d57e3995e804508dbee3a633bd1641c090c2881db224323220a79dc5b9f88",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 269626,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "1fc05256b7851097ec5389fe4241b8c870fe41def4b1fa320c69f80dd875dda6",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:318674:179dca68850faad883e95d122356985623067092bd4197122bcb7780c3092e16",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 318674,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "4f5d671acb3e3a85795ca1e808ca6f49faa65addedc71b6a7abee9e93775a762",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:365482:6d96b2f7d280d728634a93ab173e2d946f57dd0fb89e7be70e8f0c8a4158831b",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 365482,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "61b3cc25da815da1f8625bffdb3282f48a561f6c2fca3457e477765bffb24eef",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:540307:d79308a1f55bea75fdd6614c2177a417844cf08ca1547537effb1575a4ba1143",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 540307,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "2d1c727fefade4b057b2ce0f00b13206fc413800b15964393b69c2abc42d84e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:603526:cfb6ecd79725509717e2754d406238703cf9ca1d915fd378370002fe24b42e23",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 603526,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "08dc208c4b63a1976fb3820fc24df4edad273b48973403a53d0cb1031481f1b8",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:781309:eb2413615b480c57d1d63568d5bf38bb80a889522b3bffa17618c75ba1e31a15",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 781309,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "25ab9696f0b1cd4dee3d24373a3c561db567f2cf2a641590f422d473777a4734",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:840646:a772fce0c3d5a43fe1766ee7657b18432ba0587e60102b5416fc30c173805566",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 840646,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "c5ee757de40010f44f5f1f88872baafa3b91f696ed3d61d88572a22c8feb7141",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:949214:a02a958f35264f95f8be4dbb4bce1f8914d06c5230db6d35d9f90fbd87be0263",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 949214,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "1fc9566ecdf9c6f079896d18d633fcfb1062fd4e194772b671fc840cf790e991",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js:1124743:ac17bff5aa9bbf9bf9a7cf2cd406698dbbc890a91e0b661c11ef3aad5febe4dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 1124743,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "e4fac5af22dfc3b05cda262151f3d163f4eb0cd6c4c2d599be686e9c617b564b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:254600:b0c72cb8191242a3f57aabeceba1fc679a80519f92030f408b5efedf88a99b84",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 254600,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "9261d28a7a40077bd4af281c9e1cdaca5861eda3b70584436551e05b72a995e4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:296077:ee5d57e3995e804508dbee3a633bd1641c090c2881db224323220a79dc5b9f88",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 296077,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "1fc05256b7851097ec5389fe4241b8c870fe41def4b1fa320c69f80dd875dda6",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:345125:179dca68850faad883e95d122356985623067092bd4197122bcb7780c3092e16",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 345125,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "4f5d671acb3e3a85795ca1e808ca6f49faa65addedc71b6a7abee9e93775a762",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:391933:6d96b2f7d280d728634a93ab173e2d946f57dd0fb89e7be70e8f0c8a4158831b",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 391933,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "61b3cc25da815da1f8625bffdb3282f48a561f6c2fca3457e477765bffb24eef",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:566758:d79308a1f55bea75fdd6614c2177a417844cf08ca1547537effb1575a4ba1143",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 566758,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "2d1c727fefade4b057b2ce0f00b13206fc413800b15964393b69c2abc42d84e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:629977:cfb6ecd79725509717e2754d406238703cf9ca1d915fd378370002fe24b42e23",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 629977,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "08dc208c4b63a1976fb3820fc24df4edad273b48973403a53d0cb1031481f1b8",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:807760:eb2413615b480c57d1d63568d5bf38bb80a889522b3bffa17618c75ba1e31a15",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 807760,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "25ab9696f0b1cd4dee3d24373a3c561db567f2cf2a641590f422d473777a4734",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:867097:a772fce0c3d5a43fe1766ee7657b18432ba0587e60102b5416fc30c173805566",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 867097,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "c5ee757de40010f44f5f1f88872baafa3b91f696ed3d61d88572a22c8feb7141",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:975665:a02a958f35264f95f8be4dbb4bce1f8914d06c5230db6d35d9f90fbd87be0263",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 975665,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "1fc9566ecdf9c6f079896d18d633fcfb1062fd4e194772b671fc840cf790e991",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js:1151194:ac17bff5aa9bbf9bf9a7cf2cd406698dbbc890a91e0b661c11ef3aad5febe4dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 1151194,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "e4fac5af22dfc3b05cda262151f3d163f4eb0cd6c4c2d599be686e9c617b564b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:219922:4f9c2ab7874538e1a1c18a86e920368ae1e50a0a22d5397bfee8ecffe397a1ea",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 219922,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "16414717bc2c4a42ea96bf4005b3190f5a1c1650034d4f7c7cabb8f542a3f73f",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:411740:565ff540ccf1eed75c20b387f68c97e5275fb10281c13af7f4c02e4be2d2d4b4",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 411740,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "2088fe5710efb05a2d446d28aa6f18ea194cf58aa8305aa584a966116242af2c",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:919957:5afd8dbd589190eaa704e3978080a2a01d4d0771d7e997588a1df9338457ca59",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 919957,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "e3a9f96712b6f4e2d543ea71e9b70e32c2d87d1bbc92d12ac1403be8134b5bb2",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:3729227:83841eff0fa4958fd3e6746baecd134a8f0128cda99c4204e78372b6311220ee",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 3729227,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "69b652e88d7fe30d85d24e8c5d8817ae1ac976fd23333d5d045f7be3b1b1fd77",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:6293856:8ef1e664ad7006426b344f7b23ef35ea9e5155c1b9a3c544004973f9f8d8cf35",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 6293856,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "6ff7f7342d0aa0396b49f09b3007a4d61c5dc09289d2a2e144a931b29cf5ebde",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:6401828:a3582ff36b9e348e775fe8c50386aee4254dca735d9edd4b5b9195d56489d91d",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 6401828,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "4ec9b215859de05b51b00a581968f8425be0768a3ff1ac006c11ec10588025ca",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:6557432:51cb14329d55d0884562ba365c800933dd6e135d58e2c0708110c35d4f325e10",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 6557432,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "95b842412b748b33610da9d19469d5aab6bdf6d8067bf63d8ea4a9bc51197347",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:7400670:74ab1066f47f3647be31233e5ae06ebb280d65f5539765120e4a03b2b310086a",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7400670,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "148325b68357ae7f9f23c8b3b35fedaa6b0fb102ae0f4b6f9e601dae5dfe5d05",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:7653025:161a022d150eb4e5f2600ba61cdb4f0a9b0a74bb2a6cc88828a1ee42286ca966",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7653025,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "882bcbbf67c82f57dcbc2b178809c6a0286b1271f559d07c7726f5bbad3f20ca",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:7653087:e537ddb34d6d8204ba8fd92af6d0db971531c3e52be32145f79255166945b2e6",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7653087,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "6e9e8c463881c00a29a7d19d90f733b8b13e344ee956fa2df106d8427a6baee5",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:7665797:ae5a0f2455270284e159aa35b9f121e394611cc9aea9ffe5ddf7bd02e465e207",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7665797,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "f1f3f33cc36848418f7da525576af75a2f740912767b74db3777cc3fdf4b42cf",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:7673994:5d514b525242010f28302ef6b657e574bbcd6b6f8712db3bf814a2654931acc7",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7673994,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "45b6bb35dee3859a820cbba1e7eaf96a1aa700e25d3844d1f13f9c4dbc663bf0",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:7919876:e10d99f1416cab3e9254daff47ec32c05f763a462ff29879ee0921983333a8b8",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7919876,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "7331e5b5b7ddda1a53a024c85adb0df2f856b35d72157d822269592be1e8cd6b",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:7923602:a0db042312897e1109ec5cb20addd7e9baa2c0738bf04f97996d294c97354688",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7923602,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "4abb4eb25458169f69c8bf120cdda39aa76d56974a645992352ecb3fe3fa59df",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:7927753:75637114e2bcc82e26aa19278cd32cbc52ff31e706a504e022654fbc200f3121",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7927753,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "c4fce829d5f265bca63aa81759a044922875b4b3f51368793997b2227612b53e",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js:7949518:ff7c9c43e32d320de6b0a2bf772a050eb1a9ba489ae7d0e7bbb142070a313a0c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7949518,
+      "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+      "text_sha256": "3270152269c3c05b5f41d7f62414366dbe88b4942f73c664861e41de2a2e9a92",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:20740892:ca971df32743a8dd1a9097cf9b7baa38809a59d727185211413ebcf13f1907bc",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 20740892,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "6ff7f7342d0aa0396b49f09b3007a4d61c5dc09289d2a2e144a931b29cf5ebde",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:20876528:690b3ee760dcaacab49d5024ac21b007fe9f3c3b8413f894926b9fa8ba0c11ea",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 20876528,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "4ec9b215859de05b51b00a581968f8425be0768a3ff1ac006c11ec10588025ca",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:21075878:3e03afa70996cba0c92fda23357ce7ed2341df00c2d1a8394240a575f54c9bbe",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 21075878,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "95b842412b748b33610da9d19469d5aab6bdf6d8067bf63d8ea4a9bc51197347",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:22719860:3c87337f002d67059df925d49c79f0d915a8b1c03f4201b5fd09f30cdd3ca4e9",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 22719860,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "148325b68357ae7f9f23c8b3b35fedaa6b0fb102ae0f4b6f9e601dae5dfe5d05",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:22735413:c6df4f59dbf4ea66d1feff096222ea536b1b7827f11e482fecd0f54e0ab0a39f",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 22735413,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "cf400f7a08dc2d4adfc03b8b7dcaed6c37440ddf4b099bc055653d595ab8a429",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:22735480:cd227d951b52c70d44030e40253bf888ae788265f39d35baaf7741fbc39d181d",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 22735480,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "0bc9402aeb83fb2187f23ba8853d9d63bea22d709ef85aa5eaad8700b0b0ba91",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:22735527:33544ee31b5cc8b8054f021d1132ad2d00f5e24d2c30655ace0b9cf57e7ddd6e",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 22735527,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "98b9e1bc48346e6d4d94ac0c40dfdd4d46631868c351e5b99cc307e811bfa7fb",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:24459402:161a022d150eb4e5f2600ba61cdb4f0a9b0a74bb2a6cc88828a1ee42286ca966",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 24459402,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "882bcbbf67c82f57dcbc2b178809c6a0286b1271f559d07c7726f5bbad3f20ca",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:24459470:e537ddb34d6d8204ba8fd92af6d0db971531c3e52be32145f79255166945b2e6",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 24459470,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "6e9e8c463881c00a29a7d19d90f733b8b13e344ee956fa2df106d8427a6baee5",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:24480349:a4fb7ffa62c4622e60d5dcf684105974f3e31d1fa04251f7ef6d2673ad5e0979",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 24480349,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "534ae59e932b8fadf81324dce388f532b3f1b778f0dc04849f619122939fb453",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:24487515:66054aaed9246d9615ee582c335f340e5649d2060ecfcd19e1b98c2b91dcd73c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 24487515,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "f1f3f33cc36848418f7da525576af75a2f740912767b74db3777cc3fdf4b42cf",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:24914573:fee9426b3a133ac69a883287e4f7f607d89162fae3255ef92d433ac0aec8603c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 24914573,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "9e3eee7d37e740fa0ea0bf5fbd0d69aba1067fa73c1cd53f28890d0e62f8715a",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:24924070:839534d08ed8073216ffd3baf42c83da06492cc9d41047157cddc9a78128bcda",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 24924070,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "d4a20eaec034cbb316b0a7f9ea2b80dd4c1b92d76c7ad055498682bc0cc37fd4",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:24928229:5720c62c7806ad7ce760ce5501a0e1fee9d37224ae1ace1fc0602a204da58ff3",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 24928229,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "c4fce829d5f265bca63aa81759a044922875b4b3f51368793997b2227612b53e",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs:25023588:53ece3204bfe62399a56cbe58b946973b94610b795aeed5c9def800936d5bfb3",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "surface": "desktop",
+      "byte_start": 25023588,
+      "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+      "text_sha256": "d0a32b4e9397d4eb5be0d50625980e741062497bf3931dc6485fe782b8b99256",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:228149:b0c72cb8191242a3f57aabeceba1fc679a80519f92030f408b5efedf88a99b84",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 228149,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "9261d28a7a40077bd4af281c9e1cdaca5861eda3b70584436551e05b72a995e4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:269626:ee5d57e3995e804508dbee3a633bd1641c090c2881db224323220a79dc5b9f88",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 269626,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "1fc05256b7851097ec5389fe4241b8c870fe41def4b1fa320c69f80dd875dda6",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:318674:179dca68850faad883e95d122356985623067092bd4197122bcb7780c3092e16",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 318674,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "4f5d671acb3e3a85795ca1e808ca6f49faa65addedc71b6a7abee9e93775a762",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:365482:6d96b2f7d280d728634a93ab173e2d946f57dd0fb89e7be70e8f0c8a4158831b",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 365482,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "61b3cc25da815da1f8625bffdb3282f48a561f6c2fca3457e477765bffb24eef",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:540307:d79308a1f55bea75fdd6614c2177a417844cf08ca1547537effb1575a4ba1143",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 540307,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "2d1c727fefade4b057b2ce0f00b13206fc413800b15964393b69c2abc42d84e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:603526:cfb6ecd79725509717e2754d406238703cf9ca1d915fd378370002fe24b42e23",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 603526,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "08dc208c4b63a1976fb3820fc24df4edad273b48973403a53d0cb1031481f1b8",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:781309:eb2413615b480c57d1d63568d5bf38bb80a889522b3bffa17618c75ba1e31a15",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 781309,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "25ab9696f0b1cd4dee3d24373a3c561db567f2cf2a641590f422d473777a4734",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:840646:a772fce0c3d5a43fe1766ee7657b18432ba0587e60102b5416fc30c173805566",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 840646,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "c5ee757de40010f44f5f1f88872baafa3b91f696ed3d61d88572a22c8feb7141",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:949214:a02a958f35264f95f8be4dbb4bce1f8914d06c5230db6d35d9f90fbd87be0263",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 949214,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "1fc9566ecdf9c6f079896d18d633fcfb1062fd4e194772b671fc840cf790e991",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js:1124743:ac17bff5aa9bbf9bf9a7cf2cd406698dbbc890a91e0b661c11ef3aad5febe4dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 1124743,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "e4fac5af22dfc3b05cda262151f3d163f4eb0cd6c4c2d599be686e9c617b564b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:254600:b0c72cb8191242a3f57aabeceba1fc679a80519f92030f408b5efedf88a99b84",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 254600,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "9261d28a7a40077bd4af281c9e1cdaca5861eda3b70584436551e05b72a995e4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:296077:ee5d57e3995e804508dbee3a633bd1641c090c2881db224323220a79dc5b9f88",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 296077,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "1fc05256b7851097ec5389fe4241b8c870fe41def4b1fa320c69f80dd875dda6",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:345125:179dca68850faad883e95d122356985623067092bd4197122bcb7780c3092e16",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 345125,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "4f5d671acb3e3a85795ca1e808ca6f49faa65addedc71b6a7abee9e93775a762",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:391933:6d96b2f7d280d728634a93ab173e2d946f57dd0fb89e7be70e8f0c8a4158831b",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 391933,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "61b3cc25da815da1f8625bffdb3282f48a561f6c2fca3457e477765bffb24eef",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:566758:d79308a1f55bea75fdd6614c2177a417844cf08ca1547537effb1575a4ba1143",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 566758,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "2d1c727fefade4b057b2ce0f00b13206fc413800b15964393b69c2abc42d84e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:629977:cfb6ecd79725509717e2754d406238703cf9ca1d915fd378370002fe24b42e23",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 629977,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "08dc208c4b63a1976fb3820fc24df4edad273b48973403a53d0cb1031481f1b8",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:807760:eb2413615b480c57d1d63568d5bf38bb80a889522b3bffa17618c75ba1e31a15",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 807760,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "25ab9696f0b1cd4dee3d24373a3c561db567f2cf2a641590f422d473777a4734",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:867097:a772fce0c3d5a43fe1766ee7657b18432ba0587e60102b5416fc30c173805566",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 867097,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "c5ee757de40010f44f5f1f88872baafa3b91f696ed3d61d88572a22c8feb7141",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:975665:a02a958f35264f95f8be4dbb4bce1f8914d06c5230db6d35d9f90fbd87be0263",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 975665,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "1fc9566ecdf9c6f079896d18d633fcfb1062fd4e194772b671fc840cf790e991",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js:1151194:ac17bff5aa9bbf9bf9a7cf2cd406698dbbc890a91e0b661c11ef3aad5febe4dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 1151194,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "e4fac5af22dfc3b05cda262151f3d163f4eb0cd6c4c2d599be686e9c617b564b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:527665:4f9c2ab7874538e1a1c18a86e920368ae1e50a0a22d5397bfee8ecffe397a1ea",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 527665,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "16414717bc2c4a42ea96bf4005b3190f5a1c1650034d4f7c7cabb8f542a3f73f",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:840844:565ff540ccf1eed75c20b387f68c97e5275fb10281c13af7f4c02e4be2d2d4b4",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 840844,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "2088fe5710efb05a2d446d28aa6f18ea194cf58aa8305aa584a966116242af2c",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:1081537:5afd8dbd589190eaa704e3978080a2a01d4d0771d7e997588a1df9338457ca59",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 1081537,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "e3a9f96712b6f4e2d543ea71e9b70e32c2d87d1bbc92d12ac1403be8134b5bb2",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:6353755:8ef1e664ad7006426b344f7b23ef35ea9e5155c1b9a3c544004973f9f8d8cf35",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 6353755,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "6ff7f7342d0aa0396b49f09b3007a4d61c5dc09289d2a2e144a931b29cf5ebde",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:6461722:a3582ff36b9e348e775fe8c50386aee4254dca735d9edd4b5b9195d56489d91d",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 6461722,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "4ec9b215859de05b51b00a581968f8425be0768a3ff1ac006c11ec10588025ca",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:6618077:51cb14329d55d0884562ba365c800933dd6e135d58e2c0708110c35d4f325e10",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 6618077,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "95b842412b748b33610da9d19469d5aab6bdf6d8067bf63d8ea4a9bc51197347",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:7471561:74ab1066f47f3647be31233e5ae06ebb280d65f5539765120e4a03b2b310086a",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7471561,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "148325b68357ae7f9f23c8b3b35fedaa6b0fb102ae0f4b6f9e601dae5dfe5d05",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:7718674:161a022d150eb4e5f2600ba61cdb4f0a9b0a74bb2a6cc88828a1ee42286ca966",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7718674,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "882bcbbf67c82f57dcbc2b178809c6a0286b1271f559d07c7726f5bbad3f20ca",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:7718736:e537ddb34d6d8204ba8fd92af6d0db971531c3e52be32145f79255166945b2e6",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7718736,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "6e9e8c463881c00a29a7d19d90f733b8b13e344ee956fa2df106d8427a6baee5",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:7731424:ae5a0f2455270284e159aa35b9f121e394611cc9aea9ffe5ddf7bd02e465e207",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7731424,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "f1f3f33cc36848418f7da525576af75a2f740912767b74db3777cc3fdf4b42cf",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:7739616:5d514b525242010f28302ef6b657e574bbcd6b6f8712db3bf814a2654931acc7",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7739616,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "45b6bb35dee3859a820cbba1e7eaf96a1aa700e25d3844d1f13f9c4dbc663bf0",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:7987555:7d1139abcc8dd6f1adfb3fd9cab5aad7e838a93f28a2080011041f37ea9bd414",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7987555,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "96bf9470a5145955b7458f49f572efcb34e747e34dd4c0fcfe87f383e26b3cc2",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:7991279:e2f60e6d206099ef6a5d98a59abea3c12535e9ac77f16e59b01b0663811d8bbc",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7991279,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "af4fca871e30a7d6a8449d0680ec71f2899516637607ad1e2e4e4894b2c08f4a",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:7995430:75637114e2bcc82e26aa19278cd32cbc52ff31e706a504e022654fbc200f3121",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 7995430,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "c4fce829d5f265bca63aa81759a044922875b4b3f51368793997b2227612b53e",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js:8562406:83841eff0fa4958fd3e6746baecd134a8f0128cda99c4204e78372b6311220ee",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 8562406,
+      "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+      "text_sha256": "69b652e88d7fe30d85d24e8c5d8817ae1ac976fd23333d5d045f7be3b1b1fd77",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-browser-automation/dist/extension.js:2400:81bb0a693c7bffce5d90cb31af0e8a29e9c8dc507e936170ee17f08d27280570",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-browser-automation/dist/extension.js",
+      "surface": "desktop",
+      "byte_start": 2400,
+      "source_sha256": "bdfa9b4e291d58631ebcb04e2bc53cf2be107d1ae5494ef8a4789d78c622828b",
+      "text_sha256": "1f09a60262a14a5c4c4ebb490f5f7e63229f879e1ec1f27896aa9b42ea7b13c5",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-browser-automation/dist/extension.js:158651:2c58b69c1e210c42a1454390e56ae4f4c9a7c08e1ae19bec00137d4d9a96d711",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-browser-automation/dist/extension.js",
+      "surface": "desktop",
+      "byte_start": 158651,
+      "source_sha256": "bdfa9b4e291d58631ebcb04e2bc53cf2be107d1ae5494ef8a4789d78c622828b",
+      "text_sha256": "fc77169292112ab290922da619fd6cf252a12121fd42c71e50baab79d32b59c5",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:228149:b0c72cb8191242a3f57aabeceba1fc679a80519f92030f408b5efedf88a99b84",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 228149,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "9261d28a7a40077bd4af281c9e1cdaca5861eda3b70584436551e05b72a995e4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:269626:ee5d57e3995e804508dbee3a633bd1641c090c2881db224323220a79dc5b9f88",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 269626,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "1fc05256b7851097ec5389fe4241b8c870fe41def4b1fa320c69f80dd875dda6",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:318674:179dca68850faad883e95d122356985623067092bd4197122bcb7780c3092e16",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 318674,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "4f5d671acb3e3a85795ca1e808ca6f49faa65addedc71b6a7abee9e93775a762",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:365482:6d96b2f7d280d728634a93ab173e2d946f57dd0fb89e7be70e8f0c8a4158831b",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 365482,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "61b3cc25da815da1f8625bffdb3282f48a561f6c2fca3457e477765bffb24eef",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:540307:d79308a1f55bea75fdd6614c2177a417844cf08ca1547537effb1575a4ba1143",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 540307,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "2d1c727fefade4b057b2ce0f00b13206fc413800b15964393b69c2abc42d84e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:603526:cfb6ecd79725509717e2754d406238703cf9ca1d915fd378370002fe24b42e23",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 603526,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "08dc208c4b63a1976fb3820fc24df4edad273b48973403a53d0cb1031481f1b8",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:781309:eb2413615b480c57d1d63568d5bf38bb80a889522b3bffa17618c75ba1e31a15",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 781309,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "25ab9696f0b1cd4dee3d24373a3c561db567f2cf2a641590f422d473777a4734",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:840646:a772fce0c3d5a43fe1766ee7657b18432ba0587e60102b5416fc30c173805566",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 840646,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "c5ee757de40010f44f5f1f88872baafa3b91f696ed3d61d88572a22c8feb7141",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:949214:a02a958f35264f95f8be4dbb4bce1f8914d06c5230db6d35d9f90fbd87be0263",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 949214,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "1fc9566ecdf9c6f079896d18d633fcfb1062fd4e194772b671fc840cf790e991",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js:1124743:ac17bff5aa9bbf9bf9a7cf2cd406698dbbc890a91e0b661c11ef3aad5febe4dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js",
+      "surface": "desktop",
+      "byte_start": 1124743,
+      "source_sha256": "26cbb630b93ffcca63f2e86dc7e745cc9b55fa280d51ba95aa7961993c8a7f64",
+      "text_sha256": "e4fac5af22dfc3b05cda262151f3d163f4eb0cd6c4c2d599be686e9c617b564b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:254600:b0c72cb8191242a3f57aabeceba1fc679a80519f92030f408b5efedf88a99b84",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 254600,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "9261d28a7a40077bd4af281c9e1cdaca5861eda3b70584436551e05b72a995e4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:296077:ee5d57e3995e804508dbee3a633bd1641c090c2881db224323220a79dc5b9f88",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 296077,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "1fc05256b7851097ec5389fe4241b8c870fe41def4b1fa320c69f80dd875dda6",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:345125:179dca68850faad883e95d122356985623067092bd4197122bcb7780c3092e16",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 345125,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "4f5d671acb3e3a85795ca1e808ca6f49faa65addedc71b6a7abee9e93775a762",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:391933:6d96b2f7d280d728634a93ab173e2d946f57dd0fb89e7be70e8f0c8a4158831b",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 391933,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "61b3cc25da815da1f8625bffdb3282f48a561f6c2fca3457e477765bffb24eef",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:566758:d79308a1f55bea75fdd6614c2177a417844cf08ca1547537effb1575a4ba1143",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 566758,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "2d1c727fefade4b057b2ce0f00b13206fc413800b15964393b69c2abc42d84e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:629977:cfb6ecd79725509717e2754d406238703cf9ca1d915fd378370002fe24b42e23",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 629977,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "08dc208c4b63a1976fb3820fc24df4edad273b48973403a53d0cb1031481f1b8",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:807760:eb2413615b480c57d1d63568d5bf38bb80a889522b3bffa17618c75ba1e31a15",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 807760,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "25ab9696f0b1cd4dee3d24373a3c561db567f2cf2a641590f422d473777a4734",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:867097:a772fce0c3d5a43fe1766ee7657b18432ba0587e60102b5416fc30c173805566",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 867097,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "c5ee757de40010f44f5f1f88872baafa3b91f696ed3d61d88572a22c8feb7141",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:975665:a02a958f35264f95f8be4dbb4bce1f8914d06c5230db6d35d9f90fbd87be0263",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 975665,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "1fc9566ecdf9c6f079896d18d633fcfb1062fd4e194772b671fc840cf790e991",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js:1151194:ac17bff5aa9bbf9bf9a7cf2cd406698dbbc890a91e0b661c11ef3aad5febe4dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js",
+      "surface": "desktop",
+      "byte_start": 1151194,
+      "source_sha256": "0ecd900acfc63e4853f642008d9b538f2288bab9283dff25cf8bc1432a03fcf2",
+      "text_sha256": "e4fac5af22dfc3b05cda262151f3d163f4eb0cd6c4c2d599be686e9c617b564b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:206072:4f9c2ab7874538e1a1c18a86e920368ae1e50a0a22d5397bfee8ecffe397a1ea",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 206072,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "16414717bc2c4a42ea96bf4005b3190f5a1c1650034d4f7c7cabb8f542a3f73f",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:383381:565ff540ccf1eed75c20b387f68c97e5275fb10281c13af7f4c02e4be2d2d4b4",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 383381,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "2088fe5710efb05a2d446d28aa6f18ea194cf58aa8305aa584a966116242af2c",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:476488:5afd8dbd589190eaa704e3978080a2a01d4d0771d7e997588a1df9338457ca59",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 476488,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "e3a9f96712b6f4e2d543ea71e9b70e32c2d87d1bbc92d12ac1403be8134b5bb2",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:3056882:8ef1e664ad7006426b344f7b23ef35ea9e5155c1b9a3c544004973f9f8d8cf35",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 3056882,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "6ff7f7342d0aa0396b49f09b3007a4d61c5dc09289d2a2e144a931b29cf5ebde",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:3164889:a3582ff36b9e348e775fe8c50386aee4254dca735d9edd4b5b9195d56489d91d",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 3164889,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "4ec9b215859de05b51b00a581968f8425be0768a3ff1ac006c11ec10588025ca",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:3320774:51cb14329d55d0884562ba365c800933dd6e135d58e2c0708110c35d4f325e10",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 3320774,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "95b842412b748b33610da9d19469d5aab6bdf6d8067bf63d8ea4a9bc51197347",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:4165296:74ab1066f47f3647be31233e5ae06ebb280d65f5539765120e4a03b2b310086a",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 4165296,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "148325b68357ae7f9f23c8b3b35fedaa6b0fb102ae0f4b6f9e601dae5dfe5d05",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:4417729:161a022d150eb4e5f2600ba61cdb4f0a9b0a74bb2a6cc88828a1ee42286ca966",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 4417729,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "882bcbbf67c82f57dcbc2b178809c6a0286b1271f559d07c7726f5bbad3f20ca",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:4417791:e537ddb34d6d8204ba8fd92af6d0db971531c3e52be32145f79255166945b2e6",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 4417791,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "6e9e8c463881c00a29a7d19d90f733b8b13e344ee956fa2df106d8427a6baee5",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:4430503:ae5a0f2455270284e159aa35b9f121e394611cc9aea9ffe5ddf7bd02e465e207",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 4430503,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "f1f3f33cc36848418f7da525576af75a2f740912767b74db3777cc3fdf4b42cf",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:4439462:db385839162fa78fe3e0f31ab08348ca011fdc4de09369ca01b14675b368d970",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 4439462,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "318c4e264f495424ff286a0b1e08c616717f8b9fcf02c46ef0e071435a7d9f51",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:4684590:86eac75dea4996b36cbeae036dc3250203372f75d19475b9a1211747cdf924de",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 4684590,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "6a47cf0e1301009b61a8925e09e6118e5da05b5c6231755d1e9535fc99143bd1",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:4688318:383610c15df6e2a2a6872ea0234a7e55ccd4da991788779fce3a39c592611d0e",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 4688318,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "f7c6ff04710353d7fee0392c79d2f6b5ca2a4450625aa1fc424ca6a3c809b757",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:4692470:75637114e2bcc82e26aa19278cd32cbc52ff31e706a504e022654fbc200f3121",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 4692470,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "c4fce829d5f265bca63aa81759a044922875b4b3f51368793997b2227612b53e",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:4714242:ff7c9c43e32d320de6b0a2bf772a050eb1a9ba489ae7d0e7bbb142070a313a0c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 4714242,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "3270152269c3c05b5f41d7f62414366dbe88b4942f73c664861e41de2a2e9a92",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js:5393084:83841eff0fa4958fd3e6746baecd134a8f0128cda99c4204e78372b6311220ee",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 5393084,
+      "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+      "text_sha256": "69b652e88d7fe30d85d24e8c5d8817ae1ac976fd23333d5d045f7be3b1b1fd77",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-retrieval/dist/main.js:2409438:a2445bf8220a197205b1208b61e6d9581314f083296e8b84748ed3e60f909f96",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-retrieval/dist/main.js",
+      "surface": "desktop",
+      "byte_start": 2409438,
+      "source_sha256": "d0602935c0c6709c85d741a80ad1c54b75a16d599bb862d2eb6faab152a96b5e",
+      "text_sha256": "6f56582947ad4839a062ac0f8f648c7fffde2cb80d5726500119cbb2d57df3e1",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/extensions/cursor-retrieval/node_modules/@anysphere/file-service/package.json:948:401b86789afddcd4660c0f8485465d8834687c54eb56777bc1d2960b211cd0f2",
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-retrieval/node_modules/@anysphere/file-service/package.json",
+      "surface": "desktop",
+      "byte_start": 948,
+      "source_sha256": "d932955f9953748b2428f957a7080f790d5d83c8cd6a9c91038f96a7371aa2c0",
+      "text_sha256": "cd4b83d8d324617f099d58aa8ea13580fc6d0994141cb3b5c782c1c728dcbc4b",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:4349420:d4b478c559b7fea79a10b3c3aa00d065bb1ceb9b3ca304734e45af0ee3fee3f0",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 4349420,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "d92bba9026e51dde8dbb8b9f6332703cc51a3b24bb83d350c0e82420738b89e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:4393054:3c746dc144c8b0dc3ec280f5ae9e37c9ae9b2d3932c71fbafabbdcd482594f09",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 4393054,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "61b3cc25da815da1f8625bffdb3282f48a561f6c2fca3457e477765bffb24eef",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:4567931:ac17bff5aa9bbf9bf9a7cf2cd406698dbbc890a91e0b661c11ef3aad5febe4dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 4567931,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "e4fac5af22dfc3b05cda262151f3d163f4eb0cd6c4c2d599be686e9c617b564b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:4749055:f2c5120f420b4d2a5588b0a6f9d141959e5f74e6f65f56d57ad6102ccbc95c0c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 4749055,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "1fc05256b7851097ec5389fe4241b8c870fe41def4b1fa320c69f80dd875dda6",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:4804605:32ad6ed7dbcc4511050a112ff5615067b8dce05a77308b0e17f6a5714b4c59a8",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 4804605,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "1fc9566ecdf9c6f079896d18d633fcfb1062fd4e194772b671fc840cf790e991",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:5004066:c0d2fd69dd1b715c230610da514b4e3b335a884b4b28f33d3f33a2ed13dcfcec",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 5004066,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "201258d55162d9df1ba96254f77bfe69729ed78257aabf7ef854668eb4d6591d",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:5127714:315418641fff9bb1ca92f4ef15bf05a7fbe66edb7dc2a62a1db19530ba05ba1c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 5127714,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "473900c314f4615da831b1e97a2af4d4ddb8197d85d8e9184336412b1bcc2045",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:5351914:34e3795e6666969504f1d50e65141036cd81a5cedb6e23f88e351712fb79c1fb",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 5351914,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "d7223bfd8fb71d77b485010ab48bcd12f86c253bef27e8177d70ae07204e63ee",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:5753834:f6cf2a1cb7404ecf05deeec256aab338ac46b86afabbc02d0162ab414189493f",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 5753834,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "2d1c727fefade4b057b2ce0f00b13206fc413800b15964393b69c2abc42d84e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:5811467:483ce9fff89aa4e9a86978abc57739d387d03bbea81975d470061bdda88e60dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 5811467,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "9261d28a7a40077bd4af281c9e1cdaca5861eda3b70584436551e05b72a995e4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:5853029:82664524dbe8103d1fd9691ef17c982f0bfae6b09d39d7af2538a522b0ef9a5b",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 5853029,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "5e00fb7d4712e2be6911a2d7b2d2dfbada452a40a8e6669db66e69984d0d6014",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6022062:92508fe5e87992c1e2402f3b59f40541baa7e9fbfd718af39f79035de6aea674",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6022062,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "e80b07bc37436b92c451766b708fc30b7fb2e631511dc0837a093b5a90798fcd",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6054727:9b271e1137d0502171b1845380ac886987f07b45527cedf21a1a10eb0c97037d",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6054727,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "08dc208c4b63a1976fb3820fc24df4edad273b48973403a53d0cb1031481f1b8",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6276676:48210e339299066830b1e9fc84cfd9c46a45d909d91086316cbc88994416a744",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6276676,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "31545bd26625206c875bb68a3c602fd6b751472942200ce261bbda3496223071",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6325009:ff5f7cee4b13e746753f83a7a6693b85333eff43a0731fab77cade010fb59faa",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6325009,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "25ab9696f0b1cd4dee3d24373a3c561db567f2cf2a641590f422d473777a4734",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6384397:152b0aa20337c3c5e01566a62abb91939a697bcfb4021ef3a001f818c7c11a7d",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6384397,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "d71cb918ed96994d35c4a0fa9f1b0d457ad2369bf1dd0e22cb8dab0d49727de0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6460289:1422eea60f5babea8b71ba7e3945205ba7d70ede0242d1a00e144f6fc23ebe55",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6460289,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "4f5d671acb3e3a85795ca1e808ca6f49faa65addedc71b6a7abee9e93775a762",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6526381:5e3c35bdcc3f5838e211281a1d67cf8d98cbfa7a90e568a36e2c4457ddfbf270",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6526381,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "2aeaad0b701be7cc5fbbe9620010edf77c84e812c1a69f1b9eb3c23a9cadfb16",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6593440:1e9705586827d2b5e49d196dd4cde0bd15b1db4c8f2fee469205c7dd81473e3e",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6593440,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "c5ee757de40010f44f5f1f88872baafa3b91f696ed3d61d88572a22c8feb7141",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6670050:2f79ee7b0b370e4e4084776000e66594ecc359494e517f0762f1693a502c6dc3",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6670050,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "dc1a9ea2d168005c74fc71b2d9ce33080fe4af1a5038f7d8611639fec299158f",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6728034:c5ccf2b3e61aa9312f2dab6051d5a018c328a2ad74beb7206fb0df825b9fdb8c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6728034,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "e558903a10e27380d3b8d5213d20e53544e944e510841fd9b7328ec8e62a564c",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6800668:a3385616832756987072706d2ce429fa54905aefd77b00adab592995e9f0a8ef",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6800668,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "1352728043f6c8906ec76468bfc3a897f81e7f8d2829436ab4af4eed186fe4eb",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:6931024:0ff0e5e02965be4c74f49fb4c0e8c88705a85aeb379fc4b2b10cd948e0020976",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 6931024,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "836974c4ffb91235d3f84fd73780f3cbb84ed6597669179dfc0623d69edae298",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:7067190:3f7b944b1cd26598998b81f25941dd449edfbafa62fd4b6b3b3b2a77442b88b6",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 7067190,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "f7f238abd05a97efec2b7d3bd73d478a8a24539e93726bb1277436dbea78ea56",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:7124849:3a5287709c5e962af75380dc094901fca45dfb03013775370abafd45c5a6db52",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 7124849,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "07b1d7abfaf1010906fbe60f04a8f17c7ddc807c29bfcb70e8ef748d0f500262",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:7230316:96795c4415c1d7799c4c006c7d80ae09159d1ee71bc34ac19504096e22a732e2",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 7230316,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "531b974f87857ae0fad3e5fd94da6d6ebb23785dfc49ebe6703ce68b69b7508e",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:7402334:8cb11e5116177b51afdcd1be8a20e1da11a8bbe769c9c22115c856aa99484c49",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 7402334,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "7750216955f532f8e7ccc12e7b88da36019857f243483ca1165124500698dc4b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:7464857:70d0c1350f499a64c6290ec4a9c783c423075f62598d7703fb99783df569bfe2",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 7464857,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "7663d022dba8fb03597fb5a61ce780fe1dbf7d57fcad4749ee57a001a14e2bf4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:7507901:73af53964607829746f572c4d298bf96f2a029751442d80c0c8b0bb5194736bb",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 7507901,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "2ba729d8cc9d3d8f589ea230730910716186082998ac3e6a912bf180ad22aa0f",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:7687680:22b44884dc396ceb3ee109b305800fe7e84def6648a4214e9bee9850a50849f1",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 7687680,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "afb86401c429948924c207718cf879aa320dc033a96abcbb9fa4eb01cc98c078",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:7716615:1313cb27e45d190c6b73da91698f3aa126602c5dbff1d5a6c121a179f983d4f4",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 7716615,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "c59595d6e2966a47fd6e9c6076b717b19dec310d83ac485e4c1ed409b817fb4b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:7762003:5b2c8eb4e6b8fc3c1c5983af630b32eff60a5389fbcafb147141ff02418cd61f",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 7762003,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "2dcd66ae7cf86cb571cc609af73fbef53d537662dbae099d0e06a34a75c06e91",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:8059766:d48c36778d24be59cb9b3a463a554ffdceac97d099bfbe278c95d9fdfb251d9a",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 8059766,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "b3c4c1d67805325456b6c61ab14a9f45a0a0d2ce69fb8b5280e5bec083bcdc55",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:12618240:82e2bd5dbae1c48cf6cca1c4b2c87e204b8091c3c2cf19986cfb5f2b62b79365",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 12618240,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "fc5032444c932ad5b0cb5667f87b6f2058fdeb749816b928f4cd680475a68017",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:17271651:6b82c57392698f696378d8274abf0db94fc2187ef4888101bd8184b45db77333",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 17271651,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "612ec070c7a076223de515faf9ecfdf358565eac4a64dfc6aee97693523b65f4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:19288370:a08c2cd48eade097dc73f7bf3ed893fea98d14357602976b0e3c2256927ce620",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 19288370,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "926c1ef287d40e52ed17c7a1f59cae8ceea6425606ea38de6b5b86bfcbfe271e",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:20063227:9030e63436db689e8f029a277bf476d6f46c24051b05fa4a264b7d3fad1ae0b8",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 20063227,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "aea0e6bf117e3ce3a449b8a9b60265120928771252a87b81731bcbf03956233e",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:20808971:5340d42000947b4f85cf4ddb30546cc46fe7cf39b11cb1544ea8a2f9c5400d79",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 20808971,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "6b14b8fd9b23f929a428d1640326adbcfc87e7ce44d5750c5d0ad14c8248cacc",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:20980445:16ec1cd1411128d12b57a8c8b69574c3ba6e4a90eeb41369fda6b0341a98b7f8",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 20980445,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "bfbc206f4d1a5ae84aa95ce34bba44c75d23ea5ebabcf3cc8b404437f9aaabe3",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:27544397:b4a22ddbfb14faa9713f82dda2846ccd80657d4db93a47c34a6bb36da81f6301",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 27544397,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "de50efe6309d1b542b89b4d1c284724cf0ad504037d3e39c9ae8bc136f0f353c",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:32596642:28cf3c43bd966ac917368578404a1483bbd1efc6ac1d2c1e77ac42e2aa6b0a69",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 32596642,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "d07596f8a42ef70bc3e5d2d1bdc030b189c286874bce07acd9cc17ff5acfa6f9",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js:32600404:cbf2e30314c4bd7a2b5bf729145f758e228431770f9397e711fe794120c4e367",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
+      "surface": "desktop",
+      "byte_start": 32600404,
+      "source_sha256": "87cd7ca0b620138599c195d477a728e05910e28dc02082b325d78f13588acced",
+      "text_sha256": "dc4c282c843f79a2811a735dd5faec9b095187d6542470609ed7a48667475bb5",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:5753258:d4b478c559b7fea79a10b3c3aa00d065bb1ceb9b3ca304734e45af0ee3fee3f0",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 5753258,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "d92bba9026e51dde8dbb8b9f6332703cc51a3b24bb83d350c0e82420738b89e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:5796895:3c746dc144c8b0dc3ec280f5ae9e37c9ae9b2d3932c71fbafabbdcd482594f09",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 5796895,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "61b3cc25da815da1f8625bffdb3282f48a561f6c2fca3457e477765bffb24eef",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:5971773:ac17bff5aa9bbf9bf9a7cf2cd406698dbbc890a91e0b661c11ef3aad5febe4dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 5971773,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "e4fac5af22dfc3b05cda262151f3d163f4eb0cd6c4c2d599be686e9c617b564b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:6152897:f2c5120f420b4d2a5588b0a6f9d141959e5f74e6f65f56d57ad6102ccbc95c0c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 6152897,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "1fc05256b7851097ec5389fe4241b8c870fe41def4b1fa320c69f80dd875dda6",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:6208447:32ad6ed7dbcc4511050a112ff5615067b8dce05a77308b0e17f6a5714b4c59a8",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 6208447,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "1fc9566ecdf9c6f079896d18d633fcfb1062fd4e194772b671fc840cf790e991",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:6407910:c0d2fd69dd1b715c230610da514b4e3b335a884b4b28f33d3f33a2ed13dcfcec",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 6407910,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "201258d55162d9df1ba96254f77bfe69729ed78257aabf7ef854668eb4d6591d",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:6531558:315418641fff9bb1ca92f4ef15bf05a7fbe66edb7dc2a62a1db19530ba05ba1c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 6531558,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "473900c314f4615da831b1e97a2af4d4ddb8197d85d8e9184336412b1bcc2045",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:6755758:34e3795e6666969504f1d50e65141036cd81a5cedb6e23f88e351712fb79c1fb",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 6755758,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "d7223bfd8fb71d77b485010ab48bcd12f86c253bef27e8177d70ae07204e63ee",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7157679:f6cf2a1cb7404ecf05deeec256aab338ac46b86afabbc02d0162ab414189493f",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7157679,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "2d1c727fefade4b057b2ce0f00b13206fc413800b15964393b69c2abc42d84e0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7215313:483ce9fff89aa4e9a86978abc57739d387d03bbea81975d470061bdda88e60dd",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7215313,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "9261d28a7a40077bd4af281c9e1cdaca5861eda3b70584436551e05b72a995e4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7256876:82664524dbe8103d1fd9691ef17c982f0bfae6b09d39d7af2538a522b0ef9a5b",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7256876,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "5e00fb7d4712e2be6911a2d7b2d2dfbada452a40a8e6669db66e69984d0d6014",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7425912:92508fe5e87992c1e2402f3b59f40541baa7e9fbfd718af39f79035de6aea674",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7425912,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "e80b07bc37436b92c451766b708fc30b7fb2e631511dc0837a093b5a90798fcd",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7458577:9b271e1137d0502171b1845380ac886987f07b45527cedf21a1a10eb0c97037d",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7458577,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "08dc208c4b63a1976fb3820fc24df4edad273b48973403a53d0cb1031481f1b8",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7680529:48210e339299066830b1e9fc84cfd9c46a45d909d91086316cbc88994416a744",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7680529,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "31545bd26625206c875bb68a3c602fd6b751472942200ce261bbda3496223071",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7728863:ff5f7cee4b13e746753f83a7a6693b85333eff43a0731fab77cade010fb59faa",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7728863,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "25ab9696f0b1cd4dee3d24373a3c561db567f2cf2a641590f422d473777a4734",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7788251:152b0aa20337c3c5e01566a62abb91939a697bcfb4021ef3a001f818c7c11a7d",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7788251,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "d71cb918ed96994d35c4a0fa9f1b0d457ad2369bf1dd0e22cb8dab0d49727de0",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7864143:1422eea60f5babea8b71ba7e3945205ba7d70ede0242d1a00e144f6fc23ebe55",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7864143,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "4f5d671acb3e3a85795ca1e808ca6f49faa65addedc71b6a7abee9e93775a762",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7930235:5e3c35bdcc3f5838e211281a1d67cf8d98cbfa7a90e568a36e2c4457ddfbf270",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7930235,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "2aeaad0b701be7cc5fbbe9620010edf77c84e812c1a69f1b9eb3c23a9cadfb16",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:7997294:1e9705586827d2b5e49d196dd4cde0bd15b1db4c8f2fee469205c7dd81473e3e",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 7997294,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "c5ee757de40010f44f5f1f88872baafa3b91f696ed3d61d88572a22c8feb7141",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8073905:2f79ee7b0b370e4e4084776000e66594ecc359494e517f0762f1693a502c6dc3",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8073905,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "dc1a9ea2d168005c74fc71b2d9ce33080fe4af1a5038f7d8611639fec299158f",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8131890:c5ccf2b3e61aa9312f2dab6051d5a018c328a2ad74beb7206fb0df825b9fdb8c",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8131890,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "e558903a10e27380d3b8d5213d20e53544e944e510841fd9b7328ec8e62a564c",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8204524:a3385616832756987072706d2ce429fa54905aefd77b00adab592995e9f0a8ef",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8204524,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "1352728043f6c8906ec76468bfc3a897f81e7f8d2829436ab4af4eed186fe4eb",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8334880:0ff0e5e02965be4c74f49fb4c0e8c88705a85aeb379fc4b2b10cd948e0020976",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8334880,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "836974c4ffb91235d3f84fd73780f3cbb84ed6597669179dfc0623d69edae298",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8471046:3f7b944b1cd26598998b81f25941dd449edfbafa62fd4b6b3b3b2a77442b88b6",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8471046,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "f7f238abd05a97efec2b7d3bd73d478a8a24539e93726bb1277436dbea78ea56",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8528707:3a5287709c5e962af75380dc094901fca45dfb03013775370abafd45c5a6db52",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8528707,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "07b1d7abfaf1010906fbe60f04a8f17c7ddc807c29bfcb70e8ef748d0f500262",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8634174:96795c4415c1d7799c4c006c7d80ae09159d1ee71bc34ac19504096e22a732e2",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8634174,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "531b974f87857ae0fad3e5fd94da6d6ebb23785dfc49ebe6703ce68b69b7508e",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8806192:8cb11e5116177b51afdcd1be8a20e1da11a8bbe769c9c22115c856aa99484c49",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8806192,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "7750216955f532f8e7ccc12e7b88da36019857f243483ca1165124500698dc4b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8868716:70d0c1350f499a64c6290ec4a9c783c423075f62598d7703fb99783df569bfe2",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8868716,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "7663d022dba8fb03597fb5a61ce780fe1dbf7d57fcad4749ee57a001a14e2bf4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:8911762:73af53964607829746f572c4d298bf96f2a029751442d80c0c8b0bb5194736bb",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 8911762,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "2ba729d8cc9d3d8f589ea230730910716186082998ac3e6a912bf180ad22aa0f",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:9091544:22b44884dc396ceb3ee109b305800fe7e84def6648a4214e9bee9850a50849f1",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 9091544,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "afb86401c429948924c207718cf879aa320dc033a96abcbb9fa4eb01cc98c078",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:9120479:1313cb27e45d190c6b73da91698f3aa126602c5dbff1d5a6c121a179f983d4f4",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 9120479,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "c59595d6e2966a47fd6e9c6076b717b19dec310d83ac485e4c1ed409b817fb4b",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:9165869:5b2c8eb4e6b8fc3c1c5983af630b32eff60a5389fbcafb147141ff02418cd61f",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 9165869,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "2dcd66ae7cf86cb571cc609af73fbef53d537662dbae099d0e06a34a75c06e91",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:9463720:d48c36778d24be59cb9b3a463a554ffdceac97d099bfbe278c95d9fdfb251d9a",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 9463720,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "b3c4c1d67805325456b6c61ab14a9f45a0a0d2ce69fb8b5280e5bec083bcdc55",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:15008613:82e2bd5dbae1c48cf6cca1c4b2c87e204b8091c3c2cf19986cfb5f2b62b79365",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 15008613,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "fc5032444c932ad5b0cb5667f87b6f2058fdeb749816b928f4cd680475a68017",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:18597178:6b82c57392698f696378d8274abf0db94fc2187ef4888101bd8184b45db77333",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 18597178,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "612ec070c7a076223de515faf9ecfdf358565eac4a64dfc6aee97693523b65f4",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:20691258:a08c2cd48eade097dc73f7bf3ed893fea98d14357602976b0e3c2256927ce620",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 20691258,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "926c1ef287d40e52ed17c7a1f59cae8ceea6425606ea38de6b5b86bfcbfe271e",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:21457239:9030e63436db689e8f029a277bf476d6f46c24051b05fa4a264b7d3fad1ae0b8",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 21457239,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "aea0e6bf117e3ce3a449b8a9b60265120928771252a87b81731bcbf03956233e",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:23561280:d380e821757cfc081dedf65c0f7d814a6514ed1fcf43040de45fa66c343b81d5",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 23561280,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "2a85d8152c9d2d5c7cebf477224f366bfa4f6049a09fc309e40dfa5b0fdc4539",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:25257321:b4a22ddbfb14faa9713f82dda2846ccd80657d4db93a47c34a6bb36da81f6301",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 25257321,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "de50efe6309d1b542b89b4d1c284724cf0ad504037d3e39c9ae8bc136f0f353c",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:25670011:16ec1cd1411128d12b57a8c8b69574c3ba6e4a90eeb41369fda6b0341a98b7f8",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 25670011,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "bfbc206f4d1a5ae84aa95ce34bba44c75d23ea5ebabcf3cc8b404437f9aaabe3",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:28796407:57e751445e1cf4b72e5e892427783b70773149c1fe32cd1184ba2f4ac15c93d7",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 28796407,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "cef2d780364d2b422c48340c6b3f497324839aa3c67fd5739ef97340626b8d78",
+      "status": "oversized",
+      "reason": "Complete source exceeds the request budget; needs a larger budget or local review"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:30664994:3b8259fbda8af418e94e7e0f3d37b7e40bbc68f3a8ce4d5951d163622a97c059",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 30664994,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "f27d0ddc9ba3347b4dcb34e5266894541e07b5d73bf84b0c0fb893c301407445",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:39659656:28cf3c43bd966ac917368578404a1483bbd1efc6ac1d2c1e77ac42e2aa6b0a69",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 39659656,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "d07596f8a42ef70bc3e5d2d1bdc030b189c286874bce07acd9cc17ff5acfa6f9",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    },
+    {
+      "id": "desktop:desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js:39663418:cbf2e30314c4bd7a2b5bf729145f758e228431770f9397e711fe794120c4e367",
+      "file": "desktop/Cursor.app/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
+      "surface": "desktop",
+      "byte_start": 39663418,
+      "source_sha256": "b00e55478f16df05e10c6c5f18ab96c6a6563a28a1c9fa871758b04b2e06a29a",
+      "text_sha256": "dc4c282c843f79a2811a735dd5faec9b095187d6542470609ed7a48667475bb5",
+      "status": "withheld",
+      "reason": "Source failed the privacy boundary"
+    }
+  ],
+  "provider_pending": {
+    "count": 200529,
+    "ledger": "cursor-jev-pending-488157975fd8ed5d239078b6c184575e90fa533a06cd4b6e4b5a04ca35d613b1.json"
+  }
+}

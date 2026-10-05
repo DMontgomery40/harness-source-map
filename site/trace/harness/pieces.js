@@ -9,6 +9,7 @@
 //   recordsFromMarkdown(pages) -> the record-level fields the site build adds to a reference index
 //   literalKeys(line) -> the hashes a literal index stores for one line (used by the build)
 import { fnv1a64, normalizeLine } from "../model.js";
+import { productLabel } from '../products.js';
 
 const utf8 = new TextEncoder();
 const h64 = (s) => fnv1a64(utf8.encode(s));
@@ -571,7 +572,7 @@ export async function buildHarnessModel({ trace, readText, index, literals = nul
   for (const s of shelves) s.n = new Set(pieces.filter((p) => p.where && p.where.shelf === s.name).map((p) => p.where.key)).size;
 
   return {
-    product: product === "codex" ? "Codex/ChatGPT" : product === "claude-code" ? "Claude Code" : product,
+    product: productLabel(product),
     libName: (ix && (ix.libName || ix.site)) || null,
     shelves,
     session: {

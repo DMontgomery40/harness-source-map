@@ -3,6 +3,7 @@ work/
 # A work folder linked in from the main checkout (a worktree's symlink) is ignored too.
 /claude-code/work
 /codex/work
+/opencode/work
 node_modules
 site/node_modules
 site/dist/
@@ -24,3 +25,7 @@ __pycache__/
 .claude/worktrees/
 # capture.sh keeps an unfiled recording in the folder it ran from; never commit one
 /capture-*.har
+
+# Cursor's per-occurrence Jev inventory (every eligible occurrence and verdict) is ~200 MB, over
+# GitHub's and the host's file limits; it stays local until a compact download format exists.
+cursor/outputs/inventory.json

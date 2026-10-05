@@ -1,0 +1,4448 @@
+{
+  "schemaVersion": 1,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "items": [
+    {
+      "id": "env-agent",
+      "title": "AGENT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AGENT is read once through process.env in packages/opencode/src/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/index.ts",
+          "startLine": 75,
+          "endLine": 75,
+          "sha256": "bddea4eb640adb6fe72193f292c1ae75526ff1bf5bc507ff7c539e4e93825dbc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/index.ts#L75"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/index.ts"
+        ],
+        "textSha256": "b338822ea1c1486607f452e69cf391687d6a228e797d5913762c701def24f243",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-aicore-deployment-id",
+      "title": "AICORE_DEPLOYMENT_ID",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AICORE_DEPLOYMENT_ID is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/sap-ai-core.ts",
+          "startLine": 34,
+          "endLine": 34,
+          "sha256": "689f2e022d094ae8bee83fe5e68e70a9c670f31a6cfb6821bde37a85d2f4590a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/sap-ai-core.ts#L34"
+        },
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 628,
+          "endLine": 628,
+          "sha256": "9fb8958a521bbc5a70e5e6d4ecb130149115fe891fb78bca0ae73a966b9f547a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L628"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/sap-ai-core.ts",
+          "packages/opencode/src/provider/provider.ts"
+        ],
+        "textSha256": "50fdc23c454688c56962ddeccd7558f4e2f1ffc8fe4496206f2abe616ad772cb",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-aicore-resource-group",
+      "title": "AICORE_RESOURCE_GROUP",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AICORE_RESOURCE_GROUP is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/sap-ai-core.ts",
+          "startLine": 34,
+          "endLine": 34,
+          "sha256": "689f2e022d094ae8bee83fe5e68e70a9c670f31a6cfb6821bde37a85d2f4590a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/sap-ai-core.ts#L34"
+        },
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 629,
+          "endLine": 629,
+          "sha256": "9fb8958a521bbc5a70e5e6d4ecb130149115fe891fb78bca0ae73a966b9f547a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L629"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/sap-ai-core.ts",
+          "packages/opencode/src/provider/provider.ts"
+        ],
+        "textSha256": "e48eeb7c65b1fa797a1fff7f1cbc2991baa4963333b1675fdc3c7ee575335623",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-aicore-service-key",
+      "title": "AICORE_SERVICE_KEY",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AICORE_SERVICE_KEY is read 5 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/sap-ai-core.ts",
+          "startLine": 15,
+          "endLine": 15,
+          "sha256": "689f2e022d094ae8bee83fe5e68e70a9c670f31a6cfb6821bde37a85d2f4590a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/sap-ai-core.ts#L15"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/sap-ai-core.ts",
+          "startLine": 17,
+          "endLine": 17,
+          "sha256": "689f2e022d094ae8bee83fe5e68e70a9c670f31a6cfb6821bde37a85d2f4590a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/sap-ai-core.ts#L17"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/sap-ai-core.ts",
+          "startLine": 17,
+          "endLine": 17,
+          "sha256": "689f2e022d094ae8bee83fe5e68e70a9c670f31a6cfb6821bde37a85d2f4590a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/sap-ai-core.ts#L17"
+        },
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 620,
+          "endLine": 620,
+          "sha256": "9fb8958a521bbc5a70e5e6d4ecb130149115fe891fb78bca0ae73a966b9f547a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L620"
+        },
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 623,
+          "endLine": 623,
+          "sha256": "9fb8958a521bbc5a70e5e6d4ecb130149115fe891fb78bca0ae73a966b9f547a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L623"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/sap-ai-core.ts",
+          "packages/opencode/src/provider/provider.ts"
+        ],
+        "textSha256": "340fb92ab8fad91bc88781ae1b751d3babf7593f2e4fe590b8914bb77231bc41",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-aws-bearer-token-bedrock",
+      "title": "AWS_BEARER_TOKEN_BEDROCK",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AWS_BEARER_TOKEN_BEDROCK is read 5 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "startLine": 96,
+          "endLine": 96,
+          "sha256": "5874a3b9bf89202c63e6e35ec1d7b7be0f72870c2077300e5504d62fea31c2f1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/amazon-bedrock.ts#L96"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "startLine": 98,
+          "endLine": 98,
+          "sha256": "5874a3b9bf89202c63e6e35ec1d7b7be0f72870c2077300e5504d62fea31c2f1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/amazon-bedrock.ts#L98"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "startLine": 98,
+          "endLine": 98,
+          "sha256": "5874a3b9bf89202c63e6e35ec1d7b7be0f72870c2077300e5504d62fea31c2f1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/amazon-bedrock.ts#L98"
+        },
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 357,
+          "endLine": 357,
+          "sha256": "9fb8958a521bbc5a70e5e6d4ecb130149115fe891fb78bca0ae73a966b9f547a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L357"
+        },
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 360,
+          "endLine": 360,
+          "sha256": "9fb8958a521bbc5a70e5e6d4ecb130149115fe891fb78bca0ae73a966b9f547a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L360"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "packages/opencode/src/provider/provider.ts"
+        ],
+        "textSha256": "5ff4d42230a97a9534eea4b9021fab77054f011e8c629c720d3b3831dd6a7f7b",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-aws-container-credentials-full-uri",
+      "title": "AWS_CONTAINER_CREDENTIALS_FULL_URI",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AWS_CONTAINER_CREDENTIALS_FULL_URI is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "startLine": 100,
+          "endLine": 100,
+          "sha256": "5874a3b9bf89202c63e6e35ec1d7b7be0f72870c2077300e5504d62fea31c2f1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/amazon-bedrock.ts#L100"
+        },
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 369,
+          "endLine": 369,
+          "sha256": "9fb8958a521bbc5a70e5e6d4ecb130149115fe891fb78bca0ae73a966b9f547a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L369"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "packages/opencode/src/provider/provider.ts"
+        ],
+        "textSha256": "12647a4c8bba96a3f22cd266bef0043b3f661875d2cf089fe9659a8a0680e662",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-aws-container-credentials-relative-uri",
+      "title": "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "startLine": 100,
+          "endLine": 100,
+          "sha256": "5874a3b9bf89202c63e6e35ec1d7b7be0f72870c2077300e5504d62fea31c2f1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/amazon-bedrock.ts#L100"
+        },
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 369,
+          "endLine": 369,
+          "sha256": "9fb8958a521bbc5a70e5e6d4ecb130149115fe891fb78bca0ae73a966b9f547a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L369"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "packages/opencode/src/provider/provider.ts"
+        ],
+        "textSha256": "84715185f8e2059349331eaf4d23b45d2decb910c3ac79fcfbd6d8d5c3f99abd",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-aws-profile",
+      "title": "AWS_PROFILE",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AWS_PROFILE is read once through process.env in packages/core/src/plugin/provider/amazon-bedrock.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "startLine": 93,
+          "endLine": 93,
+          "sha256": "5874a3b9bf89202c63e6e35ec1d7b7be0f72870c2077300e5504d62fea31c2f1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/amazon-bedrock.ts#L93"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/amazon-bedrock.ts"
+        ],
+        "textSha256": "d92ab443a2615e3c82a5972da2774ad593f8c34ee580e6bdeea3dd8345a0d981",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-aws-region",
+      "title": "AWS_REGION",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AWS_REGION is read 2 times through process.env in packages/core/src/plugin/provider/amazon-bedrock.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "startLine": 94,
+          "endLine": 94,
+          "sha256": "5874a3b9bf89202c63e6e35ec1d7b7be0f72870c2077300e5504d62fea31c2f1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/amazon-bedrock.ts#L94"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/amazon-bedrock.ts",
+          "startLine": 129,
+          "endLine": 129,
+          "sha256": "5874a3b9bf89202c63e6e35ec1d7b7be0f72870c2077300e5504d62fea31c2f1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/amazon-bedrock.ts#L129"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/amazon-bedrock.ts"
+        ],
+        "textSha256": "334f6528b95ed30db1137ed6bac4afe0f4f484a85837ebc840801482fdab5edd",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-azure-cognitive-services-resource-name",
+      "title": "AZURE_COGNITIVE_SERVICES_RESOURCE_NAME",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AZURE_COGNITIVE_SERVICES_RESOURCE_NAME is read once through process.env in packages/core/src/plugin/provider/azure.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/azure.ts",
+          "startLine": 63,
+          "endLine": 63,
+          "sha256": "d3a184d99fe0ad63455518d600ca5b8333d59fc10e811c8a253451471f12fbb8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/azure.ts#L63"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/azure.ts"
+        ],
+        "textSha256": "636ed56600a29273d6cf32d74307efacb0578256f64009a774c6cf254c2e2051",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-azure-resource-name",
+      "title": "AZURE_RESOURCE_NAME",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "AZURE_RESOURCE_NAME is read 3 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/azure.ts",
+          "startLine": 23,
+          "endLine": 23,
+          "sha256": "d3a184d99fe0ad63455518d600ca5b8333d59fc10e811c8a253451471f12fbb8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/azure.ts#L23"
+        },
+        {
+          "file": "packages/opencode/src/plugin/azure.ts",
+          "startLine": 46,
+          "endLine": 46,
+          "sha256": "4dd87a5a0af2614f1c3fc9d8ec0dde486d2cdc5ad2d7cb0acd4954b0508575e6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/plugin/azure.ts#L46"
+        },
+        {
+          "file": "packages/opencode/src/plugin/azure.ts",
+          "startLine": 89,
+          "endLine": 89,
+          "sha256": "4dd87a5a0af2614f1c3fc9d8ec0dde486d2cdc5ad2d7cb0acd4954b0508575e6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/plugin/azure.ts#L89"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/azure.ts",
+          "packages/opencode/src/plugin/azure.ts"
+        ],
+        "textSha256": "2edeaa22e774213d4aee3bf1459717b61ac4a6c69185dfd781e549e47ee58a61",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-cf-aig-token",
+      "title": "CF_AIG_TOKEN",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CF_AIG_TOKEN is read once through process.env in packages/core/src/plugin/provider/cloudflare-ai-gateway.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/cloudflare-ai-gateway.ts",
+          "startLine": 58,
+          "endLine": 58,
+          "sha256": "621b8a6ff7a2634931abf06793f9cc32ea54e60aaf1e51dac77680c99bc17c4c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/cloudflare-ai-gateway.ts#L58"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/cloudflare-ai-gateway.ts"
+        ],
+        "textSha256": "66d86f0c15bc9ea2221d945711bc6e4d8f563700fce5a46931748f0077802fb2",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-claude-code-sse-port",
+      "title": "CLAUDE_CODE_SSE_PORT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CLAUDE_CODE_SSE_PORT is read once through process.env in packages/tui/src/context/editor.ts.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/context/editor.ts",
+          "startLine": 117,
+          "endLine": 117,
+          "sha256": "80305e05875ff65d27743c9f8afb743fc01de5fa2798fbfea24cdad3afcd27fa",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/context/editor.ts#L117"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/context/editor.ts"
+        ],
+        "textSha256": "031791bc878bbb5fb6d71ec9db52741474ac5b80d2b2db08fe9bff64c2f399bb",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-cloudflare-account-id",
+      "title": "CLOUDFLARE_ACCOUNT_ID",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CLOUDFLARE_ACCOUNT_ID is read 5 times through process.env in 3 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/cloudflare-ai-gateway.ts",
+          "startLine": 53,
+          "endLine": 53,
+          "sha256": "621b8a6ff7a2634931abf06793f9cc32ea54e60aaf1e51dac77680c99bc17c4c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/cloudflare-ai-gateway.ts#L53"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/cloudflare-workers-ai.ts",
+          "startLine": 50,
+          "endLine": 50,
+          "sha256": "1109e7d3c2efb26b71d75b3bf02b7ecf32d92e52c858e4efc1fd2e11065d9710",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/cloudflare-workers-ai.ts#L50"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/cloudflare-workers-ai.ts",
+          "startLine": 76,
+          "endLine": 76,
+          "sha256": "1109e7d3c2efb26b71d75b3bf02b7ecf32d92e52c858e4efc1fd2e11065d9710",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/cloudflare-workers-ai.ts#L76"
+        },
+        {
+          "file": "packages/opencode/src/plugin/cloudflare.ts",
+          "startLine": 4,
+          "endLine": 4,
+          "sha256": "b5cb2fc29695f4f8cd4c3e93b81f7c099110b270f114d4e6a50a2478e9a7c047",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/plugin/cloudflare.ts#L4"
+        },
+        {
+          "file": "packages/opencode/src/plugin/cloudflare.ts",
+          "startLine": 31,
+          "endLine": 31,
+          "sha256": "b5cb2fc29695f4f8cd4c3e93b81f7c099110b270f114d4e6a50a2478e9a7c047",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/plugin/cloudflare.ts#L31"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/cloudflare-ai-gateway.ts",
+          "packages/core/src/plugin/provider/cloudflare-workers-ai.ts",
+          "packages/opencode/src/plugin/cloudflare.ts"
+        ],
+        "textSha256": "2185cfa0df85c3846f4babed63eec9a689505e31af05745e4fc0a77c7e3ef13b",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-cloudflare-api-key",
+      "title": "CLOUDFLARE_API_KEY",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CLOUDFLARE_API_KEY is read once through process.env in packages/core/src/plugin/provider/cloudflare-workers-ai.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/cloudflare-workers-ai.ts",
+          "startLine": 65,
+          "endLine": 65,
+          "sha256": "1109e7d3c2efb26b71d75b3bf02b7ecf32d92e52c858e4efc1fd2e11065d9710",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/cloudflare-workers-ai.ts#L65"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/cloudflare-workers-ai.ts"
+        ],
+        "textSha256": "729ea35fce295cf21c578f83408d10919db1486bf702381e7c1addadfc398280",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-cloudflare-api-token",
+      "title": "CLOUDFLARE_API_TOKEN",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CLOUDFLARE_API_TOKEN is read once through process.env in packages/core/src/plugin/provider/cloudflare-ai-gateway.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/cloudflare-ai-gateway.ts",
+          "startLine": 58,
+          "endLine": 58,
+          "sha256": "621b8a6ff7a2634931abf06793f9cc32ea54e60aaf1e51dac77680c99bc17c4c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/cloudflare-ai-gateway.ts#L58"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/cloudflare-ai-gateway.ts"
+        ],
+        "textSha256": "69945a5522382240ef7f992a8f066d101f218264fe0f4b1460401bef32df5122",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-cloudflare-gateway-id",
+      "title": "CLOUDFLARE_GATEWAY_ID",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CLOUDFLARE_GATEWAY_ID is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/cloudflare-ai-gateway.ts",
+          "startLine": 57,
+          "endLine": 57,
+          "sha256": "621b8a6ff7a2634931abf06793f9cc32ea54e60aaf1e51dac77680c99bc17c4c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/cloudflare-ai-gateway.ts#L57"
+        },
+        {
+          "file": "packages/opencode/src/plugin/cloudflare.ts",
+          "startLine": 41,
+          "endLine": 41,
+          "sha256": "b5cb2fc29695f4f8cd4c3e93b81f7c099110b270f114d4e6a50a2478e9a7c047",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/plugin/cloudflare.ts#L41"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/cloudflare-ai-gateway.ts",
+          "packages/opencode/src/plugin/cloudflare.ts"
+        ],
+        "textSha256": "abce1ce480016f821085d72b2d904e1182bd105cbed749fc2ee253544f7fdbd8",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-comspec",
+      "title": "COMSPEC",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "COMSPEC is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/shell.ts",
+          "startLine": 101,
+          "endLine": 101,
+          "sha256": "5c35344f1a66e4d6c6094e4b1ba0f4f0d72ce58682d174574b7c9d917cfd2fc8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/shell.ts#L101"
+        },
+        {
+          "file": "packages/core/src/tool/bash.ts",
+          "startLine": 49,
+          "endLine": 49,
+          "sha256": "a79fabfe48f831bdff6b3140beccecdc44796d43071ee68356b1052f394c4303",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/bash.ts#L49"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/shell.ts",
+          "packages/core/src/tool/bash.ts"
+        ],
+        "textSha256": "d97d68e802fc8037deedb88bf0217d67d3e9e2b19961791202dc24b71e2399df",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-display",
+      "title": "DISPLAY",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "DISPLAY is read once through process.env in packages/tui/src/app.tsx.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/app.tsx",
+          "startLine": 270,
+          "endLine": 270,
+          "sha256": "06fb0ff4dcaf71e7aba23116f2dec067693d0619da1abf532866f155a1de01ef",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/app.tsx#L270"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/app.tsx"
+        ],
+        "textSha256": "95868ee74e3d67a7255ec376f0e64d988983633a90cba25f2d83736425461697",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-dotnet-cli-home",
+      "title": "DOTNET_CLI_HOME",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "DOTNET_CLI_HOME is read once through process.env in packages/opencode/src/lsp/server.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/lsp/server.ts",
+          "startLine": 779,
+          "endLine": 779,
+          "sha256": "907617f9c83c4677a0a0911618eb562744ea00c5b36c48a515af293e7a139e5e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/lsp/server.ts#L779"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/lsp/server.ts"
+        ],
+        "textSha256": "f756cf475d4590934a2e2678993a318d68ca2b4d675b2c208355a77114d59833",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-editor",
+      "title": "EDITOR",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "EDITOR is read once through process.env in packages/tui/src/editor.ts.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/editor.ts",
+          "startLine": 27,
+          "endLine": 27,
+          "sha256": "1f5300489534f59c1e59fa387de3b8ad48199ca891e23991de9d5469840299fc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/editor.ts#L27"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/editor.ts"
+        ],
+        "textSha256": "86f5b86fe05ae8f26700d1f6e88be6aa38de4e09db02121318dd8fccaed53b17",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-exa-api-key",
+      "title": "EXA_API_KEY",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "EXA_API_KEY is read 3 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 81,
+          "endLine": 81,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L81"
+        },
+        {
+          "file": "packages/opencode/src/tool/mcp-websearch.ts",
+          "startLine": 4,
+          "endLine": 4,
+          "sha256": "44cec72f6a8995ff172bc774e4a2e689fd1aa77fb9cfb9575d66a0e4bab24a88",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/mcp-websearch.ts#L4"
+        },
+        {
+          "file": "packages/opencode/src/tool/mcp-websearch.ts",
+          "startLine": 5,
+          "endLine": 5,
+          "sha256": "44cec72f6a8995ff172bc774e4a2e689fd1aa77fb9cfb9575d66a0e4bab24a88",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/mcp-websearch.ts#L5"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/tool/websearch.ts",
+          "packages/opencode/src/tool/mcp-websearch.ts"
+        ],
+        "textSha256": "431c8be1d3fea9f9e781744fd381392a78592e6d0651d5e7db5d73ce330cc0e1",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-gcloud-project",
+      "title": "GCLOUD_PROJECT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GCLOUD_PROJECT is read 3 times through process.env in packages/core/src/plugin/provider/google-vertex.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 13,
+          "endLine": 13,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L13"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 127,
+          "endLine": 127,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L127"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 147,
+          "endLine": 147,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L147"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/google-vertex.ts"
+        ],
+        "textSha256": "7dd51174eaba3ba6e758588e78cd0b753b5cdcdf5979fcba5703d7b0e20462ab",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-gcp-project",
+      "title": "GCP_PROJECT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GCP_PROJECT is read 3 times through process.env in packages/core/src/plugin/provider/google-vertex.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 12,
+          "endLine": 12,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L12"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 126,
+          "endLine": 126,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L126"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 147,
+          "endLine": 147,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L147"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/google-vertex.ts"
+        ],
+        "textSha256": "4bb7d8b5596b22cdc80a6b5cfba04031ee2a0e9b959ae431e1e72d180ac94aef",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-git-askpass",
+      "title": "GIT_ASKPASS",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GIT_ASKPASS is read once through process.env in packages/opencode/src/ide/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/ide/index.ts",
+          "startLine": 24,
+          "endLine": 24,
+          "sha256": "00d9582cdbc2803bbc7a863c45ff46b7d57263a93b4b1c7713e56e333ae61fd4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/ide/index.ts#L24"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/ide/index.ts"
+        ],
+        "textSha256": "3a71a8144b4bfe996f7443fa97d1dd7af9442c6dda6a42f19c8fd9ef81919f36",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-github-run-id",
+      "title": "GITHUB_RUN_ID",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GITHUB_RUN_ID is read once through process.env in packages/opencode/src/cli/cmd/github.handler.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 675,
+          "endLine": 675,
+          "sha256": "724687d1e7ed0ad0f1c197499192c163fd5fb94a973be488bd0792728533d11b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L675"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/github.handler.ts"
+        ],
+        "textSha256": "a8ca78a1bca3eae3e0f0775b9816682c55bbedc52f007b429dae115f01162345",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-github-token",
+      "title": "GITHUB_TOKEN",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GITHUB_TOKEN is read once through process.env in packages/opencode/src/cli/cmd/github.handler.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 474,
+          "endLine": 474,
+          "sha256": "724687d1e7ed0ad0f1c197499192c163fd5fb94a973be488bd0792728533d11b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L474"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/github.handler.ts"
+        ],
+        "textSha256": "652a80c3da1f595d1f6ebc403fe8273e7259547579c30b62cc074e3ae2045251",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-gitlab-instance-url",
+      "title": "GITLAB_INSTANCE_URL",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GITLAB_INSTANCE_URL is read once through process.env in packages/core/src/plugin/provider/gitlab.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/gitlab.ts",
+          "startLine": 19,
+          "endLine": 19,
+          "sha256": "d914ac478608b950c5e19c62d53773bc90693e78ba43726ab125e3721af579f8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/gitlab.ts#L19"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/gitlab.ts"
+        ],
+        "textSha256": "ce1ca16580c1fd8495f66624e5c51926a384b04e1a70135a358a8b5438e540f8",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-gitlab-token",
+      "title": "GITLAB_TOKEN",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GITLAB_TOKEN is read once through process.env in packages/core/src/plugin/provider/gitlab.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/gitlab.ts",
+          "startLine": 20,
+          "endLine": 20,
+          "sha256": "d914ac478608b950c5e19c62d53773bc90693e78ba43726ab125e3721af579f8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/gitlab.ts#L20"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/gitlab.ts"
+        ],
+        "textSha256": "145e76bf8e62a63ae7ea8f57ae738a42454d5d79802be59ed059c45b0f6a932a",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-google-cloud-location",
+      "title": "GOOGLE_CLOUD_LOCATION",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GOOGLE_CLOUD_LOCATION is read 3 times through process.env in packages/core/src/plugin/provider/google-vertex.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 21,
+          "endLine": 21,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L21"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 130,
+          "endLine": 130,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L130"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 151,
+          "endLine": 151,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L151"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/google-vertex.ts"
+        ],
+        "textSha256": "7f6d2dff0fddda23422bf1b12d6c426b25e540f9375b437e602a5225b8bcf878",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-google-cloud-project",
+      "title": "GOOGLE_CLOUD_PROJECT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GOOGLE_CLOUD_PROJECT is read 3 times through process.env in packages/core/src/plugin/provider/google-vertex.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 11,
+          "endLine": 11,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L11"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 125,
+          "endLine": 125,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L125"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 147,
+          "endLine": 147,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L147"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/google-vertex.ts"
+        ],
+        "textSha256": "1b6dfcbe0444cb66cb901d8c15830dac001e113cf6aa35aff713469eda4d0544",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-google-vertex-location",
+      "title": "GOOGLE_VERTEX_LOCATION",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GOOGLE_VERTEX_LOCATION is read once through process.env in packages/core/src/plugin/provider/google-vertex.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 20,
+          "endLine": 20,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L20"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/google-vertex.ts"
+        ],
+        "textSha256": "2d24fda638a2fae7cdb5569343d91b93487369e16655eb99fc370496245095e0",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-google-vertex-project",
+      "title": "GOOGLE_VERTEX_PROJECT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GOOGLE_VERTEX_PROJECT is read once through process.env in packages/core/src/plugin/provider/google-vertex.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 10,
+          "endLine": 10,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L10"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/google-vertex.ts"
+        ],
+        "textSha256": "26313b242db01d3b51d135d78a00e94bb337ca362aee1a3d9bce663595d5071b",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-mentions",
+      "title": "MENTIONS",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "MENTIONS is read once through process.env in packages/opencode/src/cli/cmd/github.handler.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 747,
+          "endLine": 747,
+          "sha256": "724687d1e7ed0ad0f1c197499192c163fd5fb94a973be488bd0792728533d11b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L747"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/github.handler.ts"
+        ],
+        "textSha256": "506bd976527e4baf3f2e7ea3cb29aa7634541fc3b11d2139aac05facc1c8e583",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-modal-proxy-token",
+      "title": "MODAL_PROXY_TOKEN",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "MODAL_PROXY_TOKEN is read once through process.env in packages/opencode/src/plugin/modal/modal.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/plugin/modal/modal.ts",
+          "startLine": 9,
+          "endLine": 9,
+          "sha256": "bc7f1cb3bcf36708dd997c4e9a9ac264465fb3e6eb35fea8542c23196937f634",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/plugin/modal/modal.ts#L9"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/plugin/modal/modal.ts"
+        ],
+        "textSha256": "e9ba372a4024ea8fe2225643d8115ec5ebae31db2bba39bb359fbbf2c5f50160",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-model",
+      "title": "MODEL",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "MODEL is read once through process.env in packages/opencode/src/cli/cmd/github.handler.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 664,
+          "endLine": 664,
+          "sha256": "724687d1e7ed0ad0f1c197499192c163fd5fb94a973be488bd0792728533d11b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L664"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/github.handler.ts"
+        ],
+        "textSha256": "40cabcff4da0117d5f3ee663157c019ed02e8c1407136e20aed6e34be3d3e1c6",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-oidc-base-url",
+      "title": "OIDC_BASE_URL",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OIDC_BASE_URL is read once through process.env in packages/opencode/src/cli/cmd/github.handler.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 697,
+          "endLine": 697,
+          "sha256": "724687d1e7ed0ad0f1c197499192c163fd5fb94a973be488bd0792728533d11b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L697"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/github.handler.ts"
+        ],
+        "textSha256": "80093240c7cbca785ce2b509ecb7bfd24410ff5f371a9816fed27dc41d30be83",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode",
+      "title": "OPENCODE",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE is read once through process.env in packages/opencode/src/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/index.ts",
+          "startLine": 76,
+          "endLine": 76,
+          "sha256": "bddea4eb640adb6fe72193f292c1ae75526ff1bf5bc507ff7c539e4e93825dbc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/index.ts#L76"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/index.ts"
+        ],
+        "textSha256": "185e45ecdbd946d2697830a382eefd48141d7792e85589010441573deafdf51c",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-acp-profile",
+      "title": "OPENCODE_ACP_PROFILE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_ACP_PROFILE is read once through process.env in packages/opencode/src/acp/profile.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/acp/profile.ts",
+          "startLine": 1,
+          "endLine": 1,
+          "sha256": "e18bc3b08f5a26506394434436333fddc88ac15dcc9fbfbc0eb09944486e3c3a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/acp/profile.ts#L1"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/acp/profile.ts"
+        ],
+        "textSha256": "52a6e33e3517ccaf0237f4f421be6a5c5128695e0eab1a745a7e077abeb2006c",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-always-notify-update",
+      "title": "OPENCODE_ALWAYS_NOTIFY_UPDATE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_ALWAYS_NOTIFY_UPDATE is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 24,
+          "endLine": 24,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L24"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "8bb0dd11676860dc28788701e59481cefc6e81677a6e6008e666ead26794752b",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-api-key",
+      "title": "OPENCODE_API_KEY",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_API_KEY is read once through process.env in packages/core/src/plugin/provider/opencode.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/opencode.ts",
+          "startLine": 176,
+          "endLine": 176,
+          "sha256": "dd7df380d492dce8a44599d4befdfe895d1d93547cd63ceae96b23ce0e615ff5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/opencode.ts#L176"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/opencode.ts"
+        ],
+        "textSha256": "0c677b2de4aecd368e95e1d57e185bfc161b3668642f5e95e4ac257ec350ba90",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-auth-content",
+      "title": "OPENCODE_AUTH_CONTENT",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_AUTH_CONTENT is read 2 times through process.env in packages/opencode/src/auth/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/auth/index.ts",
+          "startLine": 59,
+          "endLine": 59,
+          "sha256": "dc897ff4b04dba1ed81f3fe24cdce7289ae32acc6bac60bc430a884bb60ad5b0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/auth/index.ts#L59"
+        },
+        {
+          "file": "packages/opencode/src/auth/index.ts",
+          "startLine": 61,
+          "endLine": 61,
+          "sha256": "dc897ff4b04dba1ed81f3fe24cdce7289ae32acc6bac60bc430a884bb60ad5b0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/auth/index.ts#L61"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/auth/index.ts"
+        ],
+        "textSha256": "8b15e9d9d3b4c4118e43e2cfd8be3420494a13fd37a9bb483f32740b8c2efaa5",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-auto-heap-snapshot",
+      "title": "OPENCODE_AUTO_HEAP_SNAPSHOT",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_AUTO_HEAP_SNAPSHOT is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 19,
+          "endLine": 19,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L19"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "bd55979f7510e2e18753e1e819e686b72c009a07e7771cb34c7d82a5c370fba5",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-bump",
+      "title": "OPENCODE_BUMP",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_BUMP is read once through process.env in packages/script/src/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/script/src/index.ts",
+          "startLine": 22,
+          "endLine": 22,
+          "sha256": "6f6235de4226d93d55276b7caeee846ccd15ea00eca75a8308680f13dc1ef38a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/script/src/index.ts#L22"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/script/src/index.ts"
+        ],
+        "textSha256": "82631a33a8f172fa199272f7de27c2e917c896f4ec137c48297ed34bdaa77c55",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-caller",
+      "title": "OPENCODE_CALLER",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_CALLER is read 2 times through process.env in packages/opencode/src/ide/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/ide/index.ts",
+          "startLine": 33,
+          "endLine": 33,
+          "sha256": "00d9582cdbc2803bbc7a863c45ff46b7d57263a93b4b1c7713e56e333ae61fd4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/ide/index.ts#L33"
+        },
+        {
+          "file": "packages/opencode/src/ide/index.ts",
+          "startLine": 33,
+          "endLine": 33,
+          "sha256": "00d9582cdbc2803bbc7a863c45ff46b7d57263a93b4b1c7713e56e333ae61fd4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/ide/index.ts#L33"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/ide/index.ts"
+        ],
+        "textSha256": "a47f4c2d613aa4ef3642316b3d8ba6d2e2859ff8c1583f90f88c5a3000850735",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-channel",
+      "title": "OPENCODE_CHANNEL",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_CHANNEL is read once through process.env in packages/script/src/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/script/src/index.ts",
+          "startLine": 21,
+          "endLine": 21,
+          "sha256": "6f6235de4226d93d55276b7caeee846ccd15ea00eca75a8308680f13dc1ef38a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/script/src/index.ts#L21"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/script/src/index.ts"
+        ],
+        "textSha256": "9420ce044310cf7d9f96f44ce382168f727e36f7559a5b10622fa4dbd3eb5260",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-client",
+      "title": "OPENCODE_CLIENT",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_CLIENT is read 3 times through Effect Config, process.env in 3 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 76,
+          "endLine": 76,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L76"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/acp.ts",
+          "startLine": 23,
+          "endLine": 23,
+          "sha256": "104d1dfe498154fca38c5971deec8330be4793cedf122e36c5a38589089e1b23",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/acp.ts#L23"
+        },
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 56,
+          "endLine": 56,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L56"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "Effect Config",
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/opencode/src/cli/cmd/acp.ts",
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "c3b5d9d6a17d688732b6a0e69d46cc81dee0ad03c4b5417c727d224a09de1a4a",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-config",
+      "title": "OPENCODE_CONFIG",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_CONFIG is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 21,
+          "endLine": 21,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L21"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "dbb762580712ad2e039c4fd142ce2d977f7ad2277aba604f03196c18fa983925",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-config-content",
+      "title": "OPENCODE_CONFIG_CONTENT",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_CONFIG_CONTENT is read 3 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 22,
+          "endLine": 22,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L22"
+        },
+        {
+          "file": "packages/opencode/src/config/config.ts",
+          "startLine": 482,
+          "endLine": 482,
+          "sha256": "87a9071af1ddb04d65947dba49be3fb4c94ecf63e120f17ce46ee81ff25dd45a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L482"
+        },
+        {
+          "file": "packages/opencode/src/config/config.ts",
+          "startLine": 484,
+          "endLine": 484,
+          "sha256": "87a9071af1ddb04d65947dba49be3fb4c94ecf63e120f17ce46ee81ff25dd45a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L484"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/opencode/src/config/config.ts"
+        ],
+        "textSha256": "1d60c29fc06a651dd004e4ed966eb4e5426196e8c159814e3c0d6455deb47263",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-config-dir",
+      "title": "OPENCODE_CONFIG_DIR",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_CONFIG_DIR is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 64,
+          "endLine": 64,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L64"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "6aabbdd72e7bed8f346fbfbbfbd2d3cf7d82d1968fd038a228b48c824eee9a8f",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-console-token",
+      "title": "OPENCODE_CONSOLE_TOKEN",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_CONSOLE_TOKEN is read once through process.env in packages/opencode/src/config/config.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/config/config.ts",
+          "startLine": 505,
+          "endLine": 505,
+          "sha256": "87a9071af1ddb04d65947dba49be3fb4c94ecf63e120f17ce46ee81ff25dd45a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L505"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/config/config.ts"
+        ],
+        "textSha256": "2b7f171e2b6c5f604ffcf69e6e0ddf6249d9228feaedd3b61fb42959d6a63ddb",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-db",
+      "title": "OPENCODE_DB",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DB is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 47,
+          "endLine": 47,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L47"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "3f1ba77dfb7e2390ef81374c5ef7f0c25c73e049187ed1344d0b66b165887701",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-direct-trace",
+      "title": "OPENCODE_DIRECT_TRACE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DIRECT_TRACE is read once through process.env in packages/opencode/src/cli/cmd/run/trace.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run/trace.ts",
+          "startLine": 58,
+          "endLine": 58,
+          "sha256": "e7a105a7861817dce95977f3fc96e54bb9e51b774cee6e4946749fab5a878fcf",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run/trace.ts#L58"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/run/trace.ts"
+        ],
+        "textSha256": "1f2cd4cc6fb7cfc63bd99f903bdb58eeaf8b0337b6d49850cbab2e6ca0412a5b",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-autocompact",
+      "title": "OPENCODE_DISABLE_AUTOCOMPACT",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_AUTOCOMPACT is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 28,
+          "endLine": 28,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L28"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "1e355ad25de300d976ebad160aff8d7ee24aa92e5ae6c80c27ed9cbc547fc51e",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-autoupdate",
+      "title": "OPENCODE_DISABLE_AUTOUPDATE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_AUTOUPDATE is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 23,
+          "endLine": 23,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L23"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "c81a11e503d7efc597d3c6fdf37ac5cfe5f74518514562959ffa77279cb25957",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-channel-db",
+      "title": "OPENCODE_DISABLE_CHANNEL_DB",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_CHANNEL_DB is read 2 times through process.env in packages/core/src/database/database.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/database/database.ts",
+          "startLine": 50,
+          "endLine": 50,
+          "sha256": "47abea8f7ae0a5c5d8c1f179f03eedddc69941b44e9920f208a9773b9f41a9c3",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/database/database.ts#L50"
+        },
+        {
+          "file": "packages/core/src/database/database.ts",
+          "startLine": 51,
+          "endLine": 51,
+          "sha256": "47abea8f7ae0a5c5d8c1f179f03eedddc69941b44e9920f208a9773b9f41a9c3",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/database/database.ts#L51"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/database/database.ts"
+        ],
+        "textSha256": "6ddcda8330990c97d7649b701fa5c0894d7bf8bea891604123e22eff6d84670e",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-fff",
+      "title": "OPENCODE_DISABLE_FFF",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_FFF is read 2 times through flag helper, process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 9,
+          "endLine": 9,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L9"
+        },
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 34,
+          "endLine": 34,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L34"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper",
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "30c32c4eb55e198a7a5388faf8a7029d372c767c48bb736b8e12b28bbc29dfce",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-models-fetch",
+      "title": "OPENCODE_DISABLE_MODELS_FETCH",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_MODELS_FETCH is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 29,
+          "endLine": 29,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L29"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "2912fee7262bd87dd378f9ea5bacbecdfbf9c3cbe1a1a5436f811bd716bcf730",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-mouse",
+      "title": "OPENCODE_DISABLE_MOUSE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_MOUSE is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 30,
+          "endLine": 30,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L30"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "ee15c40e90285a97e75b80952e1268730e01b6b55a1e08ee3c102ad21357f189",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-project-config",
+      "title": "OPENCODE_DISABLE_PROJECT_CONFIG",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_PROJECT_CONFIG is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 55,
+          "endLine": 55,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L55"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "7d3cf804276ba775cbf7ebbbdceda25c474741513228acdfdd96d0f64018e8d7",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-prune",
+      "title": "OPENCODE_DISABLE_PRUNE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_PRUNE is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 25,
+          "endLine": 25,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L25"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "470cbee9cb6765986914b47716ed98e2736d5978786d3eca8b8df1105e6a8e11",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-share",
+      "title": "OPENCODE_DISABLE_SHARE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_SHARE is read 2 times through process.env in packages/opencode/src/share/share-next.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/share/share-next.ts",
+          "startLine": 23,
+          "endLine": 23,
+          "sha256": "d4cc90fcf80aa0adfd100eecf41676d095aeff5d8006ad540d46058aaa830710",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/share/share-next.ts#L23"
+        },
+        {
+          "file": "packages/opencode/src/share/share-next.ts",
+          "startLine": 23,
+          "endLine": 23,
+          "sha256": "d4cc90fcf80aa0adfd100eecf41676d095aeff5d8006ad540d46058aaa830710",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/share/share-next.ts#L23"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/share/share-next.ts"
+        ],
+        "textSha256": "3080f078e5cc87de4e7ca957a86d272e24266a31a52149b785f206ceaa179012",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-disable-terminal-title",
+      "title": "OPENCODE_DISABLE_TERMINAL_TITLE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_DISABLE_TERMINAL_TITLE is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 26,
+          "endLine": 26,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L26"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "53ac15f894eba88bafe04d1347311ca9325b2b1989e8b03f7411862ad3452797",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-editor-sse-port",
+      "title": "OPENCODE_EDITOR_SSE_PORT",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EDITOR_SSE_PORT is read once through process.env in packages/tui/src/context/editor.ts.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/context/editor.ts",
+          "startLine": 117,
+          "endLine": 117,
+          "sha256": "80305e05875ff65d27743c9f8afb743fc01de5fa2798fbfea24cdad3afcd27fa",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/context/editor.ts#L117"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/context/editor.ts"
+        ],
+        "textSha256": "62fa197553fe07f1b888fd7a18b9cb783172df55d9949a6e7a7f666cafbed959",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-enable-exa",
+      "title": "OPENCODE_ENABLE_EXA",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_ENABLE_EXA is read once through flag helper in packages/core/src/tool/websearch.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 79,
+          "endLine": 79,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L79"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/tool/websearch.ts"
+        ],
+        "textSha256": "c1ed593bde58fbe53cdebf98cf06ae1ab24082bed1a472c91ea02c34780cd6fc",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-enable-parallel",
+      "title": "OPENCODE_ENABLE_PARALLEL",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_ENABLE_PARALLEL is read once through flag helper in packages/core/src/tool/websearch.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 80,
+          "endLine": 80,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L80"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/tool/websearch.ts"
+        ],
+        "textSha256": "dcb16cb40aa956da8b8fd97b11f750e1f39c5d558192605365e2b9da67022724",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental",
+      "title": "OPENCODE_EXPERIMENTAL",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL is read 2 times through flag helper in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 12,
+          "endLine": 12,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L12"
+        },
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 79,
+          "endLine": 79,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L79"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/core/src/tool/websearch.ts"
+        ],
+        "textSha256": "b662cf825edaf3f3d3a36fde6cb55a83fdae74964d29088f24d65c508b848da1",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-background-subagents",
+      "title": "OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS is read once through flag helper in packages/opencode/src/effect/runtime-flags.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 43,
+          "endLine": 43,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L43"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "9bb1d883dc569d72c8b5ecccf8a4fc419604c00fb329618a987be085fec5051a",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-code-mode",
+      "title": "OPENCODE_EXPERIMENTAL_CODE_MODE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_CODE_MODE is read once through flag helper in packages/opencode/src/effect/runtime-flags.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 48,
+          "endLine": 48,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L48"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "cee1cb7c40ac8650e3cd87ab42e4954045400cd8c96da212dbd791ecfcaaddcb",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-disable-copy-on-select",
+      "title": "OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT is read 2 times through flag helper, process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 8,
+          "endLine": 8,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L8"
+        },
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 44,
+          "endLine": 44,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L44"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper",
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "9f3614e344c7710b8ff31e838acd99d6582b1906c5bd773fbce6a32627995e06",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-disable-filewatcher",
+      "title": "OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER is read once through Effect Config in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 40,
+          "endLine": 40,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L40"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "Effect Config"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "b968dc051e794acd4822b0c20493341e0799b51d2a598569daaa01c8465776d1",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-event-system",
+      "title": "OPENCODE_EXPERIMENTAL_EVENT_SYSTEM",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_EVENT_SYSTEM is read once through flag helper in packages/opencode/src/effect/runtime-flags.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 49,
+          "endLine": 49,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L49"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "cb33adcfbcd543293f5854e5e3057583364be4d41787e819d20c5f0debdabf37",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-exa",
+      "title": "OPENCODE_EXPERIMENTAL_EXA",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_EXA is read once through flag helper in packages/core/src/tool/websearch.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 79,
+          "endLine": 79,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L79"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/tool/websearch.ts"
+        ],
+        "textSha256": "b6a0588364ea359cbeac1fa9cc93e032c260321e9ac18e0e90461e7c7a13c409",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-filewatcher",
+      "title": "OPENCODE_EXPERIMENTAL_FILEWATCHER",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_FILEWATCHER is read once through Effect Config in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 37,
+          "endLine": 37,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L37"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "Effect Config"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "a5469a784b0a6a1f4e47b421cd3fa23ecfdae75d3030d938f186e53d982a67bf",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-icon-discovery",
+      "title": "OPENCODE_EXPERIMENTAL_ICON_DISCOVERY",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_ICON_DISCOVERY is read once through flag helper in packages/opencode/src/effect/runtime-flags.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 51,
+          "endLine": 51,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L51"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "7b4d9554b80599877b66ab863269d3390e593550c8b5636eaf17ef388a10c703",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-lsp-tool",
+      "title": "OPENCODE_EXPERIMENTAL_LSP_TOOL",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_LSP_TOOL is read once through flag helper in packages/opencode/src/effect/runtime-flags.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 45,
+          "endLine": 45,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L45"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "ac210bdb87dad888d3a4d866317160eeeedf556fef7d403fbc44a4aa2710c382",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-oxfmt",
+      "title": "OPENCODE_EXPERIMENTAL_OXFMT",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_OXFMT is read once through flag helper in packages/opencode/src/effect/runtime-flags.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 46,
+          "endLine": 46,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L46"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "83a707c9918c584a32b9773d6465774663d25e73e3882f26b18c85e7ef44a608",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-parallel",
+      "title": "OPENCODE_EXPERIMENTAL_PARALLEL",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_PARALLEL is read once through flag helper in packages/core/src/tool/websearch.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 80,
+          "endLine": 80,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L80"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/tool/websearch.ts"
+        ],
+        "textSha256": "27efe14652d9dae9f42ca424b1cc7c70136917e81e460f9d7d0c32693d364afa",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-plan-mode",
+      "title": "OPENCODE_EXPERIMENTAL_PLAN_MODE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_PLAN_MODE is read once through flag helper in packages/opencode/src/effect/runtime-flags.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 47,
+          "endLine": 47,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L47"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "b32de84cc682656e8a1b076808760af5770b6640d1d4a4290d1b76147066c227",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-references",
+      "title": "OPENCODE_EXPERIMENTAL_REFERENCES",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_REFERENCES is read 2 times through flag helper in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 58,
+          "endLine": 58,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L58"
+        },
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 42,
+          "endLine": 42,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L42"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "2d9ba206e8f31f0894d161c007371c5c430a5012a4f5116d2cd753863cb9f93a",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-experimental-workspaces",
+      "title": "OPENCODE_EXPERIMENTAL_WORKSPACES",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_EXPERIMENTAL_WORKSPACES is read 2 times through flag helper in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 50,
+          "endLine": 50,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L50"
+        },
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 50,
+          "endLine": 50,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L50"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/opencode/src/effect/runtime-flags.ts"
+        ],
+        "textSha256": "c0013dbea7863abb15b390034c2565e75d06af14f5a3f3ce75b7c3e70cb14027",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-fake-vcs",
+      "title": "OPENCODE_FAKE_VCS",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_FAKE_VCS is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 31,
+          "endLine": 31,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L31"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "66828a919bef4dd2b5fbbe5ac75a1caa1402eef6b9f8d9615971af2c0abd3e9a",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-fast-boot",
+      "title": "OPENCODE_FAST_BOOT",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_FAST_BOOT is read once through process.env in packages/tui/src/app.tsx.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/app.tsx",
+          "startLine": 278,
+          "endLine": 278,
+          "sha256": "06fb0ff4dcaf71e7aba23116f2dec067693d0619da1abf532866f155a1de01ef",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/app.tsx#L278"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/app.tsx"
+        ],
+        "textSha256": "d8b64dfaabf953ffe538ef2b3b80a59b51df6954d96f2ca7005ef13023de9d9a",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-git-bash-path",
+      "title": "OPENCODE_GIT_BASH_PATH",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_GIT_BASH_PATH is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 20,
+          "endLine": 20,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L20"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "ca7802de48479c5045ec6d54534abff9dfdb869a77cf223097727706bcd8d952",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-log-level",
+      "title": "OPENCODE_LOG_LEVEL",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_LOG_LEVEL is read 3 times through process.env in 3 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/observability/logging.ts",
+          "startLine": 57,
+          "endLine": 57,
+          "sha256": "b49f4dba7f894223ef9f191b102e083afa037adc6b39e12b4e51cab8d80a0d26",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/observability/logging.ts#L57"
+        },
+        {
+          "file": "packages/opencode/src/index.ts",
+          "startLine": 68,
+          "endLine": 68,
+          "sha256": "bddea4eb640adb6fe72193f292c1ae75526ff1bf5bc507ff7c539e4e93825dbc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/index.ts#L68"
+        },
+        {
+          "file": "packages/opencode/src/temporary.ts",
+          "startLine": 28,
+          "endLine": 28,
+          "sha256": "311d22c908cc13c12b9eeb23f782e703a54ddf8cd5c8b1adf5dffc708ab08f96",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/temporary.ts#L28"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/observability/logging.ts",
+          "packages/opencode/src/index.ts",
+          "packages/opencode/src/temporary.ts"
+        ],
+        "textSha256": "47a3eca08092b12ae59c9439035fd73c33ef43531f68741298189835bdf98bc2",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-models-path",
+      "title": "OPENCODE_MODELS_PATH",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_MODELS_PATH is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 46,
+          "endLine": 46,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L46"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "3c68ef53e7b05900d5ce839eb7a9234c6a57c1744285886d86a66d42f0d92818",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-models-url",
+      "title": "OPENCODE_MODELS_URL",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_MODELS_URL is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 45,
+          "endLine": 45,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L45"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "3f7ceb5d8fac3074681bbf78bb01eba2fa605b9170f4b13996f216cfbcce4d88",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-permission",
+      "title": "OPENCODE_PERMISSION",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_PERMISSION is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 70,
+          "endLine": 70,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L70"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "beaf3792487491e6adfe02023a374a5e566182f6582d07bb72d14abcad1c37ea",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-pid",
+      "title": "OPENCODE_PID",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_PID is read once through process.env in packages/opencode/src/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/index.ts",
+          "startLine": 77,
+          "endLine": 77,
+          "sha256": "bddea4eb640adb6fe72193f292c1ae75526ff1bf5bc507ff7c539e4e93825dbc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/index.ts#L77"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/index.ts"
+        ],
+        "textSha256": "aa6987dc2354bab69c0aaedc1450d9c1a71013da7ba96df611dc0f84cb532a55",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-plugin-meta-file",
+      "title": "OPENCODE_PLUGIN_META_FILE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_PLUGIN_META_FILE is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 73,
+          "endLine": 73,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L73"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "69905f56ebaa123a0489163c2b06f4079bde0099b3c32529868b817b21b00913",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-print-logs",
+      "title": "OPENCODE_PRINT_LOGS",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_PRINT_LOGS is read 3 times through process.env in 3 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/observability/logging.ts",
+          "startLine": 68,
+          "endLine": 68,
+          "sha256": "b49f4dba7f894223ef9f191b102e083afa037adc6b39e12b4e51cab8d80a0d26",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/observability/logging.ts#L68"
+        },
+        {
+          "file": "packages/opencode/src/index.ts",
+          "startLine": 67,
+          "endLine": 67,
+          "sha256": "bddea4eb640adb6fe72193f292c1ae75526ff1bf5bc507ff7c539e4e93825dbc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/index.ts#L67"
+        },
+        {
+          "file": "packages/opencode/src/temporary.ts",
+          "startLine": 27,
+          "endLine": 27,
+          "sha256": "311d22c908cc13c12b9eeb23f782e703a54ddf8cd5c8b1adf5dffc708ab08f96",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/temporary.ts#L27"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/observability/logging.ts",
+          "packages/opencode/src/index.ts",
+          "packages/opencode/src/temporary.ts"
+        ],
+        "textSha256": "9fb46e5b41bab74184218a6d8bfc9cd5c0f2dd838d316b6ca1739d472d0de232",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-pure",
+      "title": "OPENCODE_PURE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_PURE is read 2 times through flag helper, process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 67,
+          "endLine": 67,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L67"
+        },
+        {
+          "file": "packages/opencode/src/index.ts",
+          "startLine": 70,
+          "endLine": 70,
+          "sha256": "bddea4eb640adb6fe72193f292c1ae75526ff1bf5bc507ff7c539e4e93825dbc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/index.ts#L70"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper",
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/opencode/src/index.ts"
+        ],
+        "textSha256": "b5f599edbc57609697270c50cc9f95fcee7dbef4d7d453e61d5eb24988e31563",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-release",
+      "title": "OPENCODE_RELEASE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_RELEASE is read once through process.env in packages/script/src/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/script/src/index.ts",
+          "startLine": 24,
+          "endLine": 24,
+          "sha256": "6f6235de4226d93d55276b7caeee846ccd15ea00eca75a8308680f13dc1ef38a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/script/src/index.ts#L24"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/script/src/index.ts"
+        ],
+        "textSha256": "e9b335715c0e9293cfb3d205d81608460fb00d7448c71763bb665de034cee1b3",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-repo-clone-github-base-url",
+      "title": "OPENCODE_REPO_CLONE_GITHUB_BASE_URL",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_REPO_CLONE_GITHUB_BASE_URL is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/repository.ts",
+          "startLine": 175,
+          "endLine": 175,
+          "sha256": "3c9e695f173d34b803a61e50827cae4dc9d8f484eb3dee4704bb11634d827eeb",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/repository.ts#L175"
+        },
+        {
+          "file": "packages/opencode/src/util/repository.ts",
+          "startLine": 100,
+          "endLine": 100,
+          "sha256": "07e27e908df80ef30f108a404003617c71a941102aae62cf8a92112cc5ac5e70",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/util/repository.ts#L100"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/repository.ts",
+          "packages/opencode/src/util/repository.ts"
+        ],
+        "textSha256": "7d41012edf5a8b475da40ac3e0c24cb49b6bcf108723df3b375ec68be814783a",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-route",
+      "title": "OPENCODE_ROUTE",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_ROUTE is read 2 times through process.env in packages/tui/src/app.tsx.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/app.tsx",
+          "startLine": 277,
+          "endLine": 277,
+          "sha256": "06fb0ff4dcaf71e7aba23116f2dec067693d0619da1abf532866f155a1de01ef",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/app.tsx#L277"
+        },
+        {
+          "file": "packages/tui/src/app.tsx",
+          "startLine": 277,
+          "endLine": 277,
+          "sha256": "06fb0ff4dcaf71e7aba23116f2dec067693d0619da1abf532866f155a1de01ef",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/app.tsx#L277"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/app.tsx"
+        ],
+        "textSha256": "f9ac6db6712682ec40c50448882c6f7dc8d5282678b4a80fa2e02d566a69ae73",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-server-password",
+      "title": "OPENCODE_SERVER_PASSWORD",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_SERVER_PASSWORD is read 3 times through Effect Config, process.env in 3 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 32,
+          "endLine": 32,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L32"
+        },
+        {
+          "file": "packages/opencode/src/effect/config-service.ts",
+          "startLine": 33,
+          "endLine": 33,
+          "sha256": "54126265df28ceec6108e949749214092bd0f67b915af6e40a53e04bfad56cfb",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/config-service.ts#L33"
+        },
+        {
+          "file": "packages/server/src/auth.ts",
+          "startLine": 53,
+          "endLine": 53,
+          "sha256": "fe0848d6709d6a50c624987253c2f9c6fc39cc8bc3c00ae39ec49f1cfa71ed50",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/server/src/auth.ts#L53"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "Effect Config",
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/opencode/src/effect/config-service.ts",
+          "packages/server/src/auth.ts"
+        ],
+        "textSha256": "9001c840ec44695243df36cd647e0b241e4bfb2163e64324b60cb25bf0bd3807",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-server-username",
+      "title": "OPENCODE_SERVER_USERNAME",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_SERVER_USERNAME is read 3 times through Effect Config, process.env in 3 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 33,
+          "endLine": 33,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L33"
+        },
+        {
+          "file": "packages/opencode/src/effect/config-service.ts",
+          "startLine": 34,
+          "endLine": 34,
+          "sha256": "54126265df28ceec6108e949749214092bd0f67b915af6e40a53e04bfad56cfb",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/config-service.ts#L34"
+        },
+        {
+          "file": "packages/server/src/auth.ts",
+          "startLine": 56,
+          "endLine": 56,
+          "sha256": "fe0848d6709d6a50c624987253c2f9c6fc39cc8bc3c00ae39ec49f1cfa71ed50",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/server/src/auth.ts#L56"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "Effect Config",
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/opencode/src/effect/config-service.ts",
+          "packages/server/src/auth.ts"
+        ],
+        "textSha256": "4621354ea1f6677fe480cfe154092b22934d1e18a8d8e9a52067bb4a56a1cf0e",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-show-ttfd",
+      "title": "OPENCODE_SHOW_TTFD",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_SHOW_TTFD is read once through flag helper in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 27,
+          "endLine": 27,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L27"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "flag helper"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "d4cab439ee467a756997b78a69e4818e5f0039296c9d83918f56f209a9aae241",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-test-home",
+      "title": "OPENCODE_TEST_HOME",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_TEST_HOME is read once through process.env in packages/core/src/global.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/global.ts",
+          "startLine": 19,
+          "endLine": 19,
+          "sha256": "37c9aae045e01cd246cd4d8c489e84ea4849b6297d3a6f9ff9b1bca57f85c013",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/global.ts#L19"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/global.ts"
+        ],
+        "textSha256": "4d9a113f9b357724bc1265c727b037f35bcd88f32dfce4be95a351c70a9cb210",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-test-managed-config-dir",
+      "title": "OPENCODE_TEST_MANAGED_CONFIG_DIR",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_TEST_MANAGED_CONFIG_DIR is read once through process.env in packages/opencode/src/config/managed.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/config/managed.ts",
+          "startLine": 32,
+          "endLine": 32,
+          "sha256": "680c1f5371c223cecf6d902561b8bbc91bdd68c05350fe17b441d2a5901e2843",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/managed.ts#L32"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/config/managed.ts"
+        ],
+        "textSha256": "2b5b6126c5800e1a10a2ba3d15a681ee1b37ff872d690e1a8306f7260f24da1a",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-tui-config",
+      "title": "OPENCODE_TUI_CONFIG",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_TUI_CONFIG is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 61,
+          "endLine": 61,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L61"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "c86254d34be08734ac53c299229634e22f917d05e5aeaa8978f61b4915e174fc",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-version",
+      "title": "OPENCODE_VERSION",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_VERSION is read once through process.env in packages/script/src/index.ts.",
+      "provenance": [
+        {
+          "file": "packages/script/src/index.ts",
+          "startLine": 23,
+          "endLine": 23,
+          "sha256": "6f6235de4226d93d55276b7caeee846ccd15ea00eca75a8308680f13dc1ef38a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/script/src/index.ts#L23"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/script/src/index.ts"
+        ],
+        "textSha256": "b8e7aa251fca9c097c1667c89a0c9f474aa4fd3af27757d2992aca9926025a23",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-websearch-provider",
+      "title": "OPENCODE_WEBSEARCH_PROVIDER",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_WEBSEARCH_PROVIDER is read 4 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 76,
+          "endLine": 76,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L76"
+        },
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 76,
+          "endLine": 76,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L76"
+        },
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 77,
+          "endLine": 77,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L77"
+        },
+        {
+          "file": "packages/opencode/src/tool/websearch.ts",
+          "startLine": 31,
+          "endLine": 31,
+          "sha256": "edb175726b7830d242f59417ce6961f44d39e500bccc068bf2dddbf61d5ca92a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L31"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/tool/websearch.ts",
+          "packages/opencode/src/tool/websearch.ts"
+        ],
+        "textSha256": "2cd7f9b686fb94df3cb3fba57e1fb2e99b318c3330b30e1d5ff461e331ee4c21",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-workspace-id",
+      "title": "OPENCODE_WORKSPACE_ID",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_WORKSPACE_ID is read once through process.env in packages/core/src/flag/flag.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 49,
+          "endLine": 49,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L49"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts"
+        ],
+        "textSha256": "f304dcfa60498f297db3ab128ccd8a7b43764a5675e03a3481633ac6ed960bc9",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-opencode-zed-db",
+      "title": "OPENCODE_ZED_DB",
+      "kind": "env-var",
+      "group": "OpenCode variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OPENCODE_ZED_DB is read once through process.env in packages/tui/src/editor-zed.ts.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/editor-zed.ts",
+          "startLine": 189,
+          "endLine": 189,
+          "sha256": "117e63198f96c9627805bf2344956bd97ac0cacf1e45f441bfb5da7115139ead",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/editor-zed.ts#L189"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/editor-zed.ts"
+        ],
+        "textSha256": "752d2a99da443a4e09fb579b1b5b28059544036c25def534e09987d724c198df",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-otel-exporter-otlp-endpoint",
+      "title": "OTEL_EXPORTER_OTLP_ENDPOINT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OTEL_EXPORTER_OTLP_ENDPOINT is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 16,
+          "endLine": 16,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L16"
+        },
+        {
+          "file": "packages/opencode/src/control-plane/workspace.ts",
+          "startLine": 534,
+          "endLine": 534,
+          "sha256": "087058224b0833b7df8382dd9f5ff0800303090fb4b7df8b07dacb12d63e243c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/control-plane/workspace.ts#L534"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/opencode/src/control-plane/workspace.ts"
+        ],
+        "textSha256": "2f50b2e6e816e89f7308db63ddefc57f78f60acab59cd42325163dba60de9837",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-otel-exporter-otlp-headers",
+      "title": "OTEL_EXPORTER_OTLP_HEADERS",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OTEL_EXPORTER_OTLP_HEADERS is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 17,
+          "endLine": 17,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L17"
+        },
+        {
+          "file": "packages/opencode/src/control-plane/workspace.ts",
+          "startLine": 533,
+          "endLine": 533,
+          "sha256": "087058224b0833b7df8382dd9f5ff0800303090fb4b7df8b07dacb12d63e243c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/control-plane/workspace.ts#L533"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/flag/flag.ts",
+          "packages/opencode/src/control-plane/workspace.ts"
+        ],
+        "textSha256": "6e22bfbfbdde6c20878853b98dc7db2907ef53b5dac3554f987a07f6b00fba68",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-otel-resource-attributes",
+      "title": "OTEL_RESOURCE_ATTRIBUTES",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "OTEL_RESOURCE_ATTRIBUTES is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/observability/otlp.ts",
+          "startLine": 21,
+          "endLine": 21,
+          "sha256": "b111c070ea46538d019de983ce211a1c6868671c05ced47bfaa49eb3d712fc80",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/observability/otlp.ts#L21"
+        },
+        {
+          "file": "packages/opencode/src/control-plane/workspace.ts",
+          "startLine": 535,
+          "endLine": 535,
+          "sha256": "087058224b0833b7df8382dd9f5ff0800303090fb4b7df8b07dacb12d63e243c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/control-plane/workspace.ts#L535"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/observability/otlp.ts",
+          "packages/opencode/src/control-plane/workspace.ts"
+        ],
+        "textSha256": "cb156ec154d55319722786824bc014afbba9bd616acdb4403c8e94d6f7a0c93d",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-parallel-api-key",
+      "title": "PARALLEL_API_KEY",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "PARALLEL_API_KEY is read 3 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/tool/websearch.ts",
+          "startLine": 82,
+          "endLine": 82,
+          "sha256": "ba8cd7ec891f8f6bd51dce609dbdce5616a1981d8b9975250e0b8b582a134768",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L82"
+        },
+        {
+          "file": "packages/opencode/src/tool/websearch.ts",
+          "startLine": 56,
+          "endLine": 56,
+          "sha256": "edb175726b7830d242f59417ce6961f44d39e500bccc068bf2dddbf61d5ca92a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L56"
+        },
+        {
+          "file": "packages/opencode/src/tool/websearch.ts",
+          "startLine": 57,
+          "endLine": 57,
+          "sha256": "edb175726b7830d242f59417ce6961f44d39e500bccc068bf2dddbf61d5ca92a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L57"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/tool/websearch.ts",
+          "packages/opencode/src/tool/websearch.ts"
+        ],
+        "textSha256": "5b0fe6967745f56181f7f1de6296bea35da371d38f5904998a6458cf5879ca4e",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-path",
+      "title": "PATH",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "PATH is read once through process.env in packages/core/src/util/which.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/util/which.ts",
+          "startLine": 6,
+          "endLine": 6,
+          "sha256": "c68b6c2c815576d655437a00ad3aad9691a808ea2d98ec5252ca76aa614f2437",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/util/which.ts#L6"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/util/which.ts"
+        ],
+        "textSha256": "b86ebc9d07a1fa497441ee935886c78c0ff7bcf7d29a00cf6d99f775e49daf21",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-pathext",
+      "title": "PATHEXT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "PATHEXT is read once through process.env in packages/core/src/util/which.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/util/which.ts",
+          "startLine": 11,
+          "endLine": 11,
+          "sha256": "c68b6c2c815576d655437a00ad3aad9691a808ea2d98ec5252ca76aa614f2437",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/util/which.ts#L11"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/util/which.ts"
+        ],
+        "textSha256": "8f9341e8611d75c901a512f91cbc71b4b1755b14562fb9c6d3191889bbb8c4ed",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-prompt",
+      "title": "PROMPT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "PROMPT is read once through process.env in packages/opencode/src/cli/cmd/github.handler.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 732,
+          "endLine": 732,
+          "sha256": "724687d1e7ed0ad0f1c197499192c163fd5fb94a973be488bd0792728533d11b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L732"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/github.handler.ts"
+        ],
+        "textSha256": "029320d7585e9062ec5f402fa51deb2283cf75e28f85c7e7f4071ab5d5302257",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-pwd",
+      "title": "PWD",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "PWD is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 333,
+          "endLine": 333,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L333"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 66,
+          "endLine": 66,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L66"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/run.ts",
+          "packages/opencode/src/cli/cmd/tui.ts"
+        ],
+        "textSha256": "6d49c54a4f6fe133e93d4473f6156e28f4fa63348061d217ed8765842e386c32",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-share",
+      "title": "SHARE",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "SHARE is read once through process.env in packages/opencode/src/cli/cmd/github.handler.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 681,
+          "endLine": 681,
+          "sha256": "724687d1e7ed0ad0f1c197499192c163fd5fb94a973be488bd0792728533d11b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L681"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/github.handler.ts"
+        ],
+        "textSha256": "d9a6900b26cc817600af51d30a485e0863fd1b2e1264a9eac778eb007c6ca901",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-shell",
+      "title": "SHELL",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "SHELL is read 3 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/core/src/shell.ts",
+          "startLine": 207,
+          "endLine": 207,
+          "sha256": "5c35344f1a66e4d6c6094e4b1ba0f4f0d72ce58682d174574b7c9d917cfd2fc8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/shell.ts#L207"
+        },
+        {
+          "file": "packages/core/src/shell.ts",
+          "startLine": 216,
+          "endLine": 216,
+          "sha256": "5c35344f1a66e4d6c6094e4b1ba0f4f0d72ce58682d174574b7c9d917cfd2fc8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/shell.ts#L216"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/uninstall.ts",
+          "startLine": 236,
+          "endLine": 236,
+          "sha256": "459e970cdb388248358a531c9b9c28ad3a95ef9b3498db5e3f8d9d1cf68350ac",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/uninstall.ts#L236"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/shell.ts",
+          "packages/opencode/src/cli/cmd/uninstall.ts"
+        ],
+        "textSha256": "f0ae62fa3368630385c01fb931c933b061ce5c0d203a0dd5740a690a0a9efbb9",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-snowflake-cortex-pat",
+      "title": "SNOWFLAKE_CORTEX_PAT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "SNOWFLAKE_CORTEX_PAT is read once through process.env in packages/core/src/plugin/provider/snowflake-cortex.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/snowflake-cortex.ts",
+          "startLine": 75,
+          "endLine": 75,
+          "sha256": "6d098714050bc9208313932e8dc3c633ef8c1cb414355dbea1173d6340379487",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/snowflake-cortex.ts#L75"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/snowflake-cortex.ts"
+        ],
+        "textSha256": "9413fb16445b863ee01d570703ecc4e16ea65a8b27e7ad1048a7ccf4314f489e",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-snowflake-cortex-token",
+      "title": "SNOWFLAKE_CORTEX_TOKEN",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "SNOWFLAKE_CORTEX_TOKEN is read once through process.env in packages/core/src/plugin/provider/snowflake-cortex.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/snowflake-cortex.ts",
+          "startLine": 74,
+          "endLine": 74,
+          "sha256": "6d098714050bc9208313932e8dc3c633ef8c1cb414355dbea1173d6340379487",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/snowflake-cortex.ts#L74"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/snowflake-cortex.ts"
+        ],
+        "textSha256": "597c10f092cb004926d4ce242ebd5a25fccad35c155b0424834334c8a8938ef7",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-sty",
+      "title": "STY",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "STY is read 3 times through process.env in 3 files.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/app.tsx",
+          "startLine": 267,
+          "endLine": 267,
+          "sha256": "06fb0ff4dcaf71e7aba23116f2dec067693d0619da1abf532866f155a1de01ef",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/app.tsx#L267"
+        },
+        {
+          "file": "packages/tui/src/clipboard.ts",
+          "startLine": 27,
+          "endLine": 27,
+          "sha256": "9c9f0630a18e9e4701a62e9279b8f4c768ef28bde8cbc96f361299d4eafe1e7b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/clipboard.ts#L27"
+        },
+        {
+          "file": "packages/tui/src/util/system.ts",
+          "startLine": 18,
+          "endLine": 18,
+          "sha256": "c9db9da7aeb2f40deb325f6494485389a58339771a6094c8a74506220a0d8dab",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/util/system.ts#L18"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/app.tsx",
+          "packages/tui/src/clipboard.ts",
+          "packages/tui/src/util/system.ts"
+        ],
+        "textSha256": "92691a3485c278baa8e851472a64f9f86e4a9646d4df54571be59656e978e8c2",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-term",
+      "title": "TERM",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "TERM is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+          "startLine": 59,
+          "endLine": 59,
+          "sha256": "0c44f063daf6779616b3473d9942cb700291c554ac9f7c5f5bd73e0458695b05",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L59"
+        },
+        {
+          "file": "packages/tui/src/util/system.ts",
+          "startLine": 16,
+          "endLine": 16,
+          "sha256": "c9db9da7aeb2f40deb325f6494485389a58339771a6094c8a74506220a0d8dab",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/util/system.ts#L16"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/debug/index.ts",
+          "packages/tui/src/util/system.ts"
+        ],
+        "textSha256": "1e1c99510d15411a1881820aa1eaeeb22f2225bd1ac5065a0873a9e8483b80be",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-term-program",
+      "title": "TERM_PROGRAM",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "TERM_PROGRAM is read 6 times through process.env in 5 files.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+          "startLine": 56,
+          "endLine": 56,
+          "sha256": "0c44f063daf6779616b3473d9942cb700291c554ac9f7c5f5bd73e0458695b05",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L56"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+          "startLine": 57,
+          "endLine": 57,
+          "sha256": "0c44f063daf6779616b3473d9942cb700291c554ac9f7c5f5bd73e0458695b05",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L57"
+        },
+        {
+          "file": "packages/opencode/src/ide/index.ts",
+          "startLine": 23,
+          "endLine": 23,
+          "sha256": "00d9582cdbc2803bbc7a863c45ff46b7d57263a93b4b1c7713e56e333ae61fd4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/ide/index.ts#L23"
+        },
+        {
+          "file": "packages/tui/src/context/editor.ts",
+          "startLine": 121,
+          "endLine": 121,
+          "sha256": "80305e05875ff65d27743c9f8afb743fc01de5fa2798fbfea24cdad3afcd27fa",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/context/editor.ts#L121"
+        },
+        {
+          "file": "packages/tui/src/editor-zed.ts",
+          "startLine": 198,
+          "endLine": 198,
+          "sha256": "117e63198f96c9627805bf2344956bd97ac0cacf1e45f441bfb5da7115139ead",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/editor-zed.ts#L198"
+        },
+        {
+          "file": "packages/tui/src/util/system.ts",
+          "startLine": 16,
+          "endLine": 16,
+          "sha256": "c9db9da7aeb2f40deb325f6494485389a58339771a6094c8a74506220a0d8dab",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/util/system.ts#L16"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/debug/index.ts",
+          "packages/opencode/src/ide/index.ts",
+          "packages/tui/src/context/editor.ts",
+          "packages/tui/src/editor-zed.ts",
+          "packages/tui/src/util/system.ts"
+        ],
+        "textSha256": "166d87c8312ab00a49eea47ede884c5652c4194a6ff7918dab523ea06ae06adf",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-term-program-version",
+      "title": "TERM_PROGRAM_VERSION",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "TERM_PROGRAM_VERSION is read 4 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+          "startLine": 57,
+          "endLine": 57,
+          "sha256": "0c44f063daf6779616b3473d9942cb700291c554ac9f7c5f5bd73e0458695b05",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L57"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+          "startLine": 57,
+          "endLine": 57,
+          "sha256": "0c44f063daf6779616b3473d9942cb700291c554ac9f7c5f5bd73e0458695b05",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L57"
+        },
+        {
+          "file": "packages/tui/src/util/system.ts",
+          "startLine": 17,
+          "endLine": 17,
+          "sha256": "c9db9da7aeb2f40deb325f6494485389a58339771a6094c8a74506220a0d8dab",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/util/system.ts#L17"
+        },
+        {
+          "file": "packages/tui/src/util/system.ts",
+          "startLine": 17,
+          "endLine": 17,
+          "sha256": "c9db9da7aeb2f40deb325f6494485389a58339771a6094c8a74506220a0d8dab",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/util/system.ts#L17"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/debug/index.ts",
+          "packages/tui/src/util/system.ts"
+        ],
+        "textSha256": "02f9ae7c56cefd22b2319738586c958d0ffe035e8822e85633fa041e1050b28a",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-tmux",
+      "title": "TMUX",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "TMUX is read 3 times through process.env in 3 files.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/app.tsx",
+          "startLine": 267,
+          "endLine": 267,
+          "sha256": "06fb0ff4dcaf71e7aba23116f2dec067693d0619da1abf532866f155a1de01ef",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/app.tsx#L267"
+        },
+        {
+          "file": "packages/tui/src/clipboard.ts",
+          "startLine": 27,
+          "endLine": 27,
+          "sha256": "9c9f0630a18e9e4701a62e9279b8f4c768ef28bde8cbc96f361299d4eafe1e7b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/clipboard.ts#L27"
+        },
+        {
+          "file": "packages/tui/src/util/system.ts",
+          "startLine": 18,
+          "endLine": 18,
+          "sha256": "c9db9da7aeb2f40deb325f6494485389a58339771a6094c8a74506220a0d8dab",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/util/system.ts#L18"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/app.tsx",
+          "packages/tui/src/clipboard.ts",
+          "packages/tui/src/util/system.ts"
+        ],
+        "textSha256": "95cb60d940f47e17af96da3dd49d0fce9b2e3400f3b695045e241674316624fe",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-use-github-token",
+      "title": "USE_GITHUB_TOKEN",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "USE_GITHUB_TOKEN is read once through process.env in packages/opencode/src/cli/cmd/github.handler.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 689,
+          "endLine": 689,
+          "sha256": "724687d1e7ed0ad0f1c197499192c163fd5fb94a973be488bd0792728533d11b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L689"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/github.handler.ts"
+        ],
+        "textSha256": "991970406c533546c38b80fbdfa99d96492c0a7d874ba3811db20bcd76ea3bdf",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-variant",
+      "title": "VARIANT",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "VARIANT is read once through process.env in packages/opencode/src/cli/cmd/github.handler.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.handler.ts",
+          "startLine": 408,
+          "endLine": 408,
+          "sha256": "724687d1e7ed0ad0f1c197499192c163fd5fb94a973be488bd0792728533d11b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.handler.ts#L408"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/github.handler.ts"
+        ],
+        "textSha256": "213b3d862bcf9b2a842113a029011ce541bf32109919c2502125dd8610c85749",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-vertex-location",
+      "title": "VERTEX_LOCATION",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "VERTEX_LOCATION is read 3 times through process.env in packages/core/src/plugin/provider/google-vertex.ts.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 22,
+          "endLine": 22,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L22"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 131,
+          "endLine": 131,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L131"
+        },
+        {
+          "file": "packages/core/src/plugin/provider/google-vertex.ts",
+          "startLine": 151,
+          "endLine": 151,
+          "sha256": "370be990026851a7614c9b0266d195f5fe48fa936701dd06c7abd68dac3bf744",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/provider/google-vertex.ts#L151"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/core/src/plugin/provider/google-vertex.ts"
+        ],
+        "textSha256": "4f9e48cde1cd34b9321ee0befdc632dd307e53220e45d1b50edf19ff4a99a813",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-virtual-env",
+      "title": "VIRTUAL_ENV",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "VIRTUAL_ENV is read 2 times through process.env in packages/opencode/src/lsp/server.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/lsp/server.ts",
+          "startLine": 445,
+          "endLine": 445,
+          "sha256": "907617f9c83c4677a0a0911618eb562744ea00c5b36c48a515af293e7a139e5e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/lsp/server.ts#L445"
+        },
+        {
+          "file": "packages/opencode/src/lsp/server.ts",
+          "startLine": 502,
+          "endLine": 502,
+          "sha256": "907617f9c83c4677a0a0911618eb562744ea00c5b36c48a515af293e7a139e5e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/lsp/server.ts#L502"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/lsp/server.ts"
+        ],
+        "textSha256": "aec4f46dc10980e0b1fae8f28b985892efdc9ca66e50397620728c649e6e1254",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-visual",
+      "title": "VISUAL",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "VISUAL is read once through process.env in packages/tui/src/editor.ts.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/editor.ts",
+          "startLine": 27,
+          "endLine": 27,
+          "sha256": "1f5300489534f59c1e59fa387de3b8ad48199ca891e23991de9d5469840299fc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/editor.ts#L27"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/editor.ts"
+        ],
+        "textSha256": "1998b0b43b8287a8cae2a3b706bac540a9953942e14b7da0592941a9d38d3d29",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-vscode-extensions",
+      "title": "VSCODE_EXTENSIONS",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "VSCODE_EXTENSIONS is read once through process.env in packages/opencode/src/lsp/server.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/lsp/server.ts",
+          "startLine": 789,
+          "endLine": 789,
+          "sha256": "907617f9c83c4677a0a0911618eb562744ea00c5b36c48a515af293e7a139e5e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/lsp/server.ts#L789"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/lsp/server.ts"
+        ],
+        "textSha256": "29e94458848185788a0d74ac25ff7c4b56390a6ea9ffae8d678b7b2fd5231807",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-wayland-display",
+      "title": "WAYLAND_DISPLAY",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "WAYLAND_DISPLAY is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/app.tsx",
+          "startLine": 268,
+          "endLine": 268,
+          "sha256": "06fb0ff4dcaf71e7aba23116f2dec067693d0619da1abf532866f155a1de01ef",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/app.tsx#L268"
+        },
+        {
+          "file": "packages/tui/src/clipboard.ts",
+          "startLine": 102,
+          "endLine": 102,
+          "sha256": "9c9f0630a18e9e4701a62e9279b8f4c768ef28bde8cbc96f361299d4eafe1e7b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/clipboard.ts#L102"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/app.tsx",
+          "packages/tui/src/clipboard.ts"
+        ],
+        "textSha256": "11c5dcb296c4e9c9b61b2d5df7d152b120eabf7c68abeefb9e30edc21d002804",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-xdg-config-home",
+      "title": "XDG_CONFIG_HOME",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "XDG_CONFIG_HOME is read once through process.env in packages/opencode/src/cli/cmd/uninstall.ts.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/uninstall.ts",
+          "startLine": 238,
+          "endLine": 238,
+          "sha256": "459e970cdb388248358a531c9b9c28ad3a95ef9b3498db5e3f8d9d1cf68350ac",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/uninstall.ts#L238"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/opencode/src/cli/cmd/uninstall.ts"
+        ],
+        "textSha256": "6f2d61a559b99343b018361c9d3cd53a4bf3240ffb2127789e7bd573fbf60e56",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    },
+    {
+      "id": "env-zed-term",
+      "title": "ZED_TERM",
+      "kind": "env-var",
+      "group": "Other variables",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "ZED_TERM is read 2 times through process.env in 2 files.",
+      "provenance": [
+        {
+          "file": "packages/tui/src/context/editor.ts",
+          "startLine": 121,
+          "endLine": 121,
+          "sha256": "80305e05875ff65d27743c9f8afb743fc01de5fa2798fbfea24cdad3afcd27fa",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/context/editor.ts#L121"
+        },
+        {
+          "file": "packages/tui/src/editor-zed.ts",
+          "startLine": 198,
+          "endLine": 198,
+          "sha256": "117e63198f96c9627805bf2344956bd97ac0cacf1e45f441bfb5da7115139ead",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/editor-zed.ts#L198"
+        }
+      ],
+      "details": {
+        "kind": "env-var",
+        "readers": [
+          "process.env"
+        ],
+        "files": [
+          "packages/tui/src/context/editor.ts",
+          "packages/tui/src/editor-zed.ts"
+        ],
+        "textSha256": "baccbdc886bafe0197a67c5763dbcfe8b13cb804fb60807721c9b222a17dab9b",
+        "condition": "Read by shipped runtime source; whether it is set depends on the user's environment."
+      }
+    }
+  ]
+}

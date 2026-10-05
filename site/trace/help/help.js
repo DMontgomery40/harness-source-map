@@ -6,7 +6,7 @@ import { el, fmtInt } from "../panels.js";
 import { createRecordingPanel } from "./recording.js";
 import { resolverHealth } from "../local-session.js";
 
-const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT" };
+import { productLabel } from '../products.js';
 const LOCAL = "http://127.0.0.1:8766";
 const TOPICS = [
   { key: "open", title: "Open a session" },
@@ -129,15 +129,23 @@ export function createHelp(ctx) {
 
   function renderBody() {
     const s = S();
-    const product = s?.trace ? PRODUCT[s.trace.product] : null;
+    const product = s?.trace ? productLabel(s.trace.product) : null;
+    const cursor = s?.trace?.product === "cursor";
+    const opencode = s?.trace?.product === "opencode";
+    const bundle = cursor || opencode;
+    const captureCommand = cursor
+      ? 'node tools/capture/cursor-agent-capture.mjs --open -- --mode ask --sandbox enabled "YOUR REAL TASK"'
+      : opencode
+        ? 'node tools/capture/opencode-capture.mjs --open -- --model PROVIDER/MODEL "YOUR REAL TASK"'
+        : `tools/capture/capture.sh -- ${s?.trace?.product === "codex" ? "codex" : "claude"}`;
     const parts = {
       open: () => [
         h("Open a session"),
-        p("Trace reads the session logs Claude Code and Codex/ChatGPT keep on your computer. Nothing is uploaded; the files are read in this tab."),
+        p("Trace reads Claude Code, Codex/ChatGPT and Cursor session logs and native OpenCode exports from your computer. Nothing is uploaded; the files are read in this tab."),
         steps([
           ["Paste an id or a link", "A Claude Code session id (from the log's file name, or /status), or a Codex/ChatGPT link or thread id. Trace works out which folder the log is in."],
           ["Pick the folder once", "The first time, choose ~/.claude/projects (Claude Code) or ~/.codex/sessions (Codex/ChatGPT). Chrome remembers it, so the next paste opens straight away."],
-          ["Or drop the files", "A Codex/ChatGPT rollout, or a Claude Code session's .jsonl with its same-named folder so its subagents come too."],
+          ["Or drop the files", "A native OpenCode or Cursor desktop .json export, a Cursor Agent or Codex/ChatGPT .jsonl, or a Claude Code session's .jsonl with its same-named folder so its subagents come too. Drop a recorded Cursor or OpenCode folder to open its session and HAR together."],
         ]),
         cmd("In the folder picker, press ⌘⇧G and paste:", "~/.claude/projects"),
         p("With the local resolver running (see “See everything on this machine”), a pasted id opens with no picker, and so do Claude desktop agent-mode sessions, which live in the Claude app's own folder."),
@@ -162,13 +170,16 @@ export function createHelp(ctx) {
       capture: () => [
         h("Network captures"),
         p("A capture records traffic while a session runs, including request data the log can omit, such as prompts, tool definitions and flags. It cannot recover earlier traffic."),
-        recording.element,
+        cursor ? null : recording.element,
+        cursor ? el("h4", { class: "help-h4", text: "Cursor desktop capture route" }) : null,
+        cursor ? p("Quit Cursor first, then run the desktop recorder. It launches one observed app process and waits while you complete a real task. Quit that launched app yourself to finalize the private session export and capture.") : null,
+        cursor ? cmd(null, "node tools/capture/cursor-desktop-capture.mjs --open") : null,
         el("h4", { class: "help-h4", text: "CLI capture route" }),
-        steps([["Start the session through the capture tool", "From the harness-source-map repo, instead of plain claude or codex:"]]),
-        cmd(null, `tools/capture/capture.sh -- ${s?.trace?.product === "codex" ? "codex" : "claude"}`),
-        steps([["That's all", "When the command exits, the capture is saved beside the session's log. Trace attaches it every time you open that session, and “What went over the wire” (key 5) appears."]], 2),
-        p("Already have a .har? File it beside its session so it attaches from now on:"),
-        cmd(null, "node tools/capture/file-capture.mjs capture.har"),
+        steps([["Start the session through the capture tool", "From the harness-source-map repo, run your real task with recording enabled:"]]),
+        cmd(null, captureCommand),
+        steps([["Open the result", bundle ? 'Drop the private recording folder into Trace: it holds the native session or export and capture.har. “What went over the wire” (key 5) appears.' : 'When the command exits, the capture is saved beside the session’s log. Trace attaches it every time you open that session, and “What went over the wire” (key 5) appears.']], 2),
+        p(bundle ? 'Already have a native session or export and HAR? Drop them together into Trace.' : "Already have a .har? File it beside its session so it attaches from now on:"),
+        bundle ? null : cmd(null, "node tools/capture/file-capture.mjs capture.har"),
         s?.trace ? el("p", { class: "help-p" }, btn("Or choose a .har for this visit", () => { close(); ctx.A.pickHar?.(); })) : null,
         p("Credentials never reach the file: each one is replaced by a description of what was sent. Trace also hides identity when it shows a capture."),
       ],
@@ -183,7 +194,7 @@ export function createHelp(ctx) {
         p("Claude Code's own prompt dump is compiled out of the public build, so a capture (see “Network captures”) is the way to keep its requests."),
       ],
     };
-    recording.refresh();
+    if (!cursor) recording.refresh();
     body.replaceChildren(...(parts[topic] || parts.open)().filter(Boolean));
   }
 

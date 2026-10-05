@@ -104,7 +104,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const shingles = text => { const w = text.toLowerCase().match(/[a-z0-9_]+/g) ?? []; const s = new Set(); for (let i = 0; i + 2 < w.length; i += 1) s.add(`${w[i]} ${w[i + 1]} ${w[i + 2]}`); return s; };
   const freshShingles = fresh.map(f => shingles(f.norm));
 
-  const cache = openCache(cacheFile);
+  const cache = openCache(cacheFile,{config});
   const pairs = [];
   await keepVerdicts(cache, async () => {
     for (const c of changed) {

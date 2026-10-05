@@ -1,0 +1,680 @@
+{
+  "schemaVersion": 1,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "items": [
+    {
+      "id": "network-request-preparation",
+      "title": "Request preparation and plugin transforms",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const prepare = Effect.fn(\"LLMRequestPrep.prepare\")(function* (input: PrepareInput) {\n  const isOpenaiOauth = input.provider.id === \"openai\" && input.auth?.type === \"oauth\"\n  const system = [\n    [\n      ...(input.agent.prompt ? [input.agent.prompt] : SystemPrompt.provider(input.model)),\n      ...input.system,\n      ...(input.user.system ? [input.user.system] : []),\n    ]\n      .filter((x) => x)\n      .join(\"\\n\"),\n  ]\n\n  const header = system[0]\n  yield* input.plugin.trigger(\n    \"experimental.chat.system.transform\",\n    { sessionID: input.sessionID, model: input.model },\n    { system },\n  )\n  if (system.length > 2 && system[0] === header) {\n    const rest = system.slice(1)\n    system.length = 0\n    system.push(header, rest.join(\"\\n\"))\n  }\n\n  const variant =\n    !input.small && input.model.variants && input.user.model.variant\n      ? input.model.variants[input.user.model.variant]\n      : {}\n  const base = input.small\n    ? ProviderTransform.smallOptions(input.model)\n    : ProviderTransform.options({\n        model: input.model,\n        sessionID: input.sessionID,\n        providerOptions: input.provider.options,\n      })\n  const options = mergeOptions(mergeOptions(mergeOptions(base, input.model.options), input.agent.options), variant)\n  if (\n    input.model.api.npm === \"@ai-sdk/azure\" &&\n    (input.provider.options.useCompletionUrls || input.model.options.useCompletionUrls || options.useCompletionUrls)\n  ) {\n    delete options.reasoningSummary\n    delete options.include\n  }\n  if (isOpenaiOauth) options.instructions = system.join(\"\\n\")\n\n  const messages =\n    isOpenaiOauth || input.isWorkflow\n      ? input.messages\n      : [\n          ...system.map(\n            (x): ModelMessage => ({\n              role: \"system\",\n              content: x,\n            }),\n          ),\n          ...input.messages,\n        ]\n\n  const params = yield* input.plugin.trigger(\n    \"chat.params\",\n    {\n      sessionID: input.sessionID,\n      agent: input.agent.name,\n      model: input.model,\n      provider: input.provider,\n      message: input.user,\n    },\n    {\n      temperature: input.model.capabilities.temperature\n        ? (input.agent.temperature ?? ProviderTransform.temperature(input.model))\n        : undefined,\n      topP: input.agent.topP ?? ProviderTransform.topP(input.model),\n      topK: ProviderTransform.topK(input.model),\n      maxOutputTokens: ProviderTransform.maxOutputTokens(input.model, input.flags.outputTokenMax),\n      options,\n    },\n  )\n\n  const { headers } = yield* input.plugin.trigger(\n    \"chat.headers\",\n    {\n      sessionID: input.sessionID,\n      agent: input.agent.name,\n      model: input.model,\n      provider: input.provider,\n      message: input.user,\n    },\n    {\n      headers: {},\n    },\n  )\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 56,
+          "endLine": 146,
+          "sha256": "98f2b612644a9633dbca89d789b592e9c6eed44355f9093a5c2dabac7447604a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L56-L146"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "LLMRequestPrep.prepare runs before the selected runtime executes.",
+        "summary": "agent.prompt replaces provider prompt; then input.system and user.system append. Plugins may transform system, params and headers. Options merge base, model, agent and selected user variant in that order. OpenAI OAuth puts system text into instructions instead of system messages; GitLab workflows have a separate systemPrompt path."
+      }
+    },
+    {
+      "id": "network-session-headers",
+      "title": "Session identity headers and overrides",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  const opencodeProjectID = input.model.providerID.startsWith(\"opencode\")\n    ? (yield* InstanceState.context).project.id\n    : undefined\n\n  return {\n    system,\n    messages,\n    tools: Object.fromEntries(Object.entries(tools).toSorted(([a], [b]) => a.localeCompare(b))),\n    params,\n    messageTransformOptions: options,\n    headers: {\n      \"x-opencode-session-id\": input.sessionID,\n      ...(input.parentSessionID ? { \"x-opencode-parent-session-id\": input.parentSessionID } : {}),\n      ...(input.model.providerID.startsWith(\"opencode\")\n        ? {\n            ...(opencodeProjectID ? { \"x-opencode-project\": opencodeProjectID } : {}),\n            \"x-opencode-session\": input.sessionID,\n            \"x-opencode-request\": input.user.id,\n            \"x-opencode-client\": input.flags.client,\n            \"User-Agent\": USER_AGENT,\n          }\n        : {\n            \"x-session-affinity\": input.sessionID,\n            \"X-Session-Id\": input.sessionID,\n            \"User-Agent\": USER_AGENT,\n          }),\n      ...(input.parentSessionID ? { \"x-parent-session-id\": input.parentSessionID } : {}),\n      ...input.model.headers,\n      ...headers,\n    },\n  }\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 177,
+          "endLine": 208,
+          "sha256": "5d22219e991ee4db6c77fa3d14d920055383fdfe374b76660b26e9dcda525bbb",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L177-L208"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Prepared request headers go to the selected runtime; model headers then plugin headers can override earlier fields.",
+        "summary": "x-opencode-session-id and optional x-opencode-parent-session-id provide explicit identity. Non-opencode providers also get x-session-affinity and X-Session-Id. Header presence in source does not prove the final captured request includes them."
+      }
+    },
+    {
+      "id": "network-tool-filtering",
+      "title": "Final request tool filtering",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  if (\n    input.model.api.npm === \"@ai-sdk/openai\" ||\n    input.model.api.npm === \"@ai-sdk/azure\" ||\n    input.model.api.npm === \"@ai-sdk/amazon-bedrock/mantle\"\n  ) {\n    for (const key of Object.keys(tools)) tools[key] = { ...tools[key], strict: false }\n  }\n  if (\n    input.model.providerID.includes(\"github-copilot\") &&\n    Object.keys(tools).length === 0 &&\n    hasToolCalls(input.messages)\n  ) {\n    // Copilot needs a tools field when replaying prior tool calls, even if no tools are currently enabled.\n    tools[\"_noop\"] = aiTool({\n      description: \"Do not call this tool. It exists only for API compatibility and must never be invoked.\",\n      inputSchema: jsonSchema({\n        type: \"object\",\n        properties: {\n          reason: { type: \"string\", description: \"Unused\" },\n        },\n      }),\n      execute: async () => ({ output: \"\", title: \"\", metadata: {} }),\n    })\n  }\n\n  const opencodeProjectID = input.model.providerID.startsWith(\"opencode\")\n    ? (yield* InstanceState.context).project.id\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 152,
+          "endLine": 178,
+          "sha256": "143ebda7ce0cfe7869e2b27c2e57a70a9fd17636518d7ad0a1596c37c3861ce1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L152-L178"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "After params/headers hooks, resolveTools applies agent/session permissions and per-user tools disablement; selected Responses-family tools have strict false.",
+        "summary": "GitHub Copilot may gain a compatibility _noop tool only when no tools remain and replayed history contains tool calls."
+      }
+    },
+    {
+      "id": "network-tool-permissions",
+      "title": "Final permission and user-tools gate",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "function resolveTools(input: Pick<PrepareInput, \"tools\" | \"agent\" | \"permission\" | \"user\">) {\n  const disabled = Permission.disabled(\n    Object.keys(input.tools),\n    Permission.merge(input.agent.permission, input.permission ?? []),\n  )\n  return Record.filter(input.tools, (_, k) => input.user.tools?.[k] !== false && !disabled.has(k))\n}\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 210,
+          "endLine": 216,
+          "sha256": "61a7ee329dec44dafa12cfd28b85f8ceb20cd38e99740e8980d1e92b63754ff2",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L210-L216"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "resolveTools is called during request preparation.",
+        "summary": "Tool presence in the registry differs from final request inclusion."
+      }
+    },
+    {
+      "id": "network-runtime-selection",
+      "title": "Default AI SDK and opt-in native runtime",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "      // Runtime seam: native is an opt-in adapter over @opencode-ai/llm. It\n      // either returns a ready LLMEvent stream or a concrete fallback reason.\n      if (flags.experimentalNativeLlm) {\n        const native = LLMNativeRuntime.stream({\n          model: input.model,\n          provider: item,\n          auth: info,\n          llmClient,\n          messages: prepared.messages,\n          tools: prepared.tools,\n          toolChoice: input.toolChoice,\n          temperature: prepared.params.temperature,\n          topP: prepared.params.topP,\n          topK: prepared.params.topK,\n          maxOutputTokens: prepared.params.maxOutputTokens,\n          providerOptions: prepared.params.options,\n          headers: prepared.headers,\n          abort: input.abort,\n        })\n        if (native.type === \"supported\") {\n          yield* Effect.logInfo(\"llm runtime selected\", {\n            \"llm.runtime\": \"native\",\n            \"llm.provider\": input.model.providerID,\n            \"llm.model\": input.model.id,\n          })\n          return {\n            type: \"native\" as const,\n            stream: native.stream,\n          }\n        }\n        yield* Effect.logInfo(\"llm runtime selected\", {\n          \"llm.runtime\": \"ai-sdk\",\n          \"llm.provider\": input.model.providerID,\n          \"llm.model\": input.model.id,\n          \"llm.native_unsupported_reason\": native.reason,\n        })\n        yield* Effect.logInfo(\"native runtime unavailable; falling back to ai-sdk\", {\n          providerID: input.model.providerID,\n          modelID: input.model.id,\n          \"session.id\": input.sessionID,\n          small: (input.small ?? false).toString(),\n          agent: input.agent.name,\n          mode: input.agent.mode,\n          reason: native.reason,\n        })\n      }\n\n      yield* Effect.logInfo(\"llm runtime selected\", {\n        \"llm.runtime\": \"ai-sdk\",\n        \"llm.provider\": input.model.providerID,\n        \"llm.model\": input.model.id,\n      })\n      // Default runtime path: AI SDK owns provider execution and tool dispatch;\n      // LLMAISDK.toLLMEvents below normalizes fullStream parts for the processor.\n      return {\n        type: \"ai-sdk\" as const,\n        result: streamText({\n          onError(error) {\n            bridge.fork(\n              Effect.logError(\"stream error\", {\n                providerID: input.model.providerID,\n                modelID: input.model.id,\n                \"session.id\": input.sessionID,\n                small: (input.small ?? false).toString(),\n                agent: input.agent.name,\n                mode: input.agent.mode,\n                error,\n              }),\n            )\n          },\n          // Copilot returns the authoritative billed amount only in provider-specific response fields.\n          includeRawChunks: input.model.providerID.includes(\"github-copilot\"),\n          async experimental_repairToolCall(failed) {\n            const lower = failed.toolCall.toolName.toLowerCase()\n            if (lower !== failed.toolCall.toolName && prepared.tools[lower]) {\n              return {\n                ...failed.toolCall,\n                toolName: lower,\n              }\n            }\n            return {\n              ...failed.toolCall,\n              input: JSON.stringify({\n                tool: failed.toolCall.toolName,\n                error: failed.error.message,\n              }),\n              toolName: \"invalid\",\n            }\n          },\n          temperature: prepared.params.temperature,\n          topP: prepared.params.topP,\n          topK: prepared.params.topK,\n          providerOptions: ProviderTransform.providerOptions(input.model, prepared.params.options),\n          activeTools: Object.keys(prepared.tools).filter((x) => x !== \"invalid\"),\n          tools: prepared.tools,\n          toolChoice: input.toolChoice,\n          maxOutputTokens: prepared.params.maxOutputTokens,\n          abortSignal: input.abort,\n          headers: prepared.headers,\n          maxRetries: input.retries ?? 0,\n          messages: prepared.messages,\n          model: wrapLanguageModel({\n            model: language,\n            middleware: [\n              {\n                specificationVersion: \"v3\" as const,\n                async transformParams(args) {\n                  if (args.type === \"stream\") {\n                    // @ts-expect-error\n                    args.params.prompt = ProviderTransform.message(\n                      args.params.prompt,\n                      input.model,\n                      prepared.messageTransformOptions,\n                    )\n                  }\n                  return args.params\n                },\n              },\n            ],\n          }),\n          experimental_telemetry: {\n            isEnabled: cfg.experimental?.openTelemetry,\n            functionId: \"session.llm\",\n            tracer: telemetryTracer,\n            metadata: {\n              userId: cfg.username ?? \"unknown\",\n              sessionId: input.sessionID,\n            },\n          },\n        }),\n      }\n    })\n\n    const stream: Interface[\"stream\"] = (input) =>\n      Stream.scoped(\n        Stream.unwrap(\n          Effect.gen(function* () {\n            const ctrl = yield* Effect.acquireRelease(\n              Effect.sync(() => new AbortController()),\n              (ctrl) => Effect.sync(() => ctrl.abort()),\n            )\n\n            const result = yield* run({ ...input, abort: ctrl.signal })\n\n            if (result.type === \"native\") return result.stream\n\n            // Adapter seam: both runtimes expose the same LLMEvent stream. Native\n            // already returns one; AI SDK streams are converted here.\n            const state = LLMAISDK.adapterState()\n            return Stream.fromAsyncIterable(result.result.fullStream, (e) =>\n              e instanceof Error ? e : new Error(String(e)),\n            ).pipe(\n              Stream.mapEffect((event) => LLMAISDK.toLLMEvents(state, event)),\n              Stream.flatMap((events) => Stream.fromIterable(events)),\n            )\n          }),\n        ),\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/llm.ts",
+          "startLine": 224,
+          "endLine": 380,
+          "sha256": "cdb03e317e037bf73f04303236b6788694387e84808ecbe9363c0753f526f7f9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm.ts#L224-L380"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "experimentalNativeLlm attempts native runtime; unsupported status falls back to AI SDK. Otherwise streamText is the default path.",
+        "summary": "Default path passes prepared headers/messages/tools/options and applies ProviderTransform.message through middleware before SDK serialization."
+      }
+    },
+    {
+      "id": "network-native-runtime",
+      "title": "Native runtime support gate",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "}\n\nfunction statusWithFetch(\n  input: Pick<StreamInput, \"model\" | \"provider\" | \"auth\">,\n  fetch: typeof globalThis.fetch | undefined,\n): RuntimeStatus {\n  const providerID = input.model.providerID\n  if (providerID !== \"openai\" && providerID !== \"anthropic\" && !providerID.startsWith(\"opencode\"))\n    return { type: \"unsupported\", reason: \"provider is not openai, opencode, or anthropic\" }\n  const npm = input.model.api.npm\n  if (npm !== \"@ai-sdk/openai\" && npm !== \"@ai-sdk/openai-compatible\" && npm !== \"@ai-sdk/anthropic\")\n    return { type: \"unsupported\", reason: \"provider package is not OpenAI, OpenAI-compatible, or Anthropic\" }\n  if (input.auth?.type === \"oauth\" && !(input.provider.id === \"openai\" && fetch)) {\n    return { type: \"unsupported\", reason: \"OAuth auth requires a provider fetch override\" }\n  }\n\n  const apiKey = typeof input.provider.options.apiKey === \"string\" ? input.provider.options.apiKey : input.provider.key\n  if (!apiKey) return { type: \"unsupported\", reason: \"API key is not configured\" }\n\n  return {\n    type: \"supported\",\n    apiKey,\n    baseURL: typeof input.provider.options.baseURL === \"string\" ? input.provider.options.baseURL : undefined,\n  }\n}\n\nexport function stream(input: StreamInput): StreamResult {\n  const fetch = providerFetch(input)\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/llm/native-runtime.ts",
+          "startLine": 48,
+          "endLine": 75,
+          "sha256": "bdf464f6558bc4a5038390ba978e112ff99bb7fbdc6bd840e3c5fcf05887e839",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-runtime.ts#L48-L75"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Only when experimentalNativeLlm is enabled and this status gate succeeds.",
+        "summary": "Accepts provider IDs openai, anthropic or starting opencode, with supported SDK packages and configured API key; OAuth additionally needs the OpenAI fetch override. OpenRouter/Alibaba/DeepSeek/Moonshot do not pass this provider-ID gate."
+      }
+    },
+    {
+      "id": "network-native-request",
+      "title": "Native request conversion and adapter selection",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "import type { JsonSchema, LLMRequest, ProviderMetadata } from \"@opencode-ai/llm\"\nimport { LLM, Message, SystemPart, ToolCallPart, ToolDefinition, ToolResultPart } from \"@opencode-ai/llm\"\nimport {\n  AmazonBedrock,\n  Anthropic,\n  Azure,\n  Google,\n  OpenAI,\n  OpenAICompatible,\n  OpenRouter,\n} from \"@opencode-ai/llm/providers\"\nimport type { ModelMessage } from \"ai\"\nimport type { Provider } from \"@/provider/provider\"\nimport { isRecord } from \"@/util/record\"\n\ntype ToolInput = {\n  readonly description?: string\n  readonly inputSchema?: unknown\n}\n\nexport type RequestInput = {\n  readonly model: Provider.Model\n  readonly apiKey?: string\n  readonly baseURL?: string\n  readonly system?: readonly string[]\n  readonly messages: readonly ModelMessage[]\n  readonly tools?: Record<string, ToolInput>\n  readonly toolChoice?: \"auto\" | \"required\" | \"none\"\n  readonly temperature?: number\n  readonly topP?: number\n  readonly topK?: number\n  readonly maxOutputTokens?: number\n  readonly providerOptions?: LLMRequest[\"providerOptions\"]\n  readonly headers?: Record<string, string>\n}\n\nconst providerMetadata = (value: unknown): ProviderMetadata | undefined => {\n  if (!isRecord(value)) return undefined\n  const result = Object.fromEntries(\n    Object.entries(value).filter((entry): entry is [string, Record<string, unknown>] => isRecord(entry[1])),\n  )\n  return Object.keys(result).length === 0 ? undefined : result\n}\n\n// Stored AI SDK parts historically kept provider-owned continuation metadata in\n// `providerOptions`; native parts now use `providerMetadata` directly.\nconst partProviderMetadata = (part: Record<string, unknown>) =>\n  providerMetadata(part.providerMetadata) ?? providerMetadata(part.providerOptions)\n\nconst textPart = (part: Record<string, unknown>) => ({\n  type: \"text\" as const,\n  text: typeof part.text === \"string\" ? part.text : \"\",\n  providerMetadata: partProviderMetadata(part),\n})\n\nconst mediaPart = (part: Record<string, unknown>) => {\n  if (typeof part.data !== \"string\" && !(part.data instanceof Uint8Array))\n    throw new Error(\"Native LLM request adapter only supports file parts with string or Uint8Array data\")\n  return {\n    type: \"media\" as const,\n    mediaType: typeof part.mediaType === \"string\" ? part.mediaType : \"application/octet-stream\",\n    data: part.data,\n    filename: typeof part.filename === \"string\" ? part.filename : undefined,\n  }\n}\n\nconst toolResult = (part: Record<string, unknown>) => {\n  const output = isRecord(part.output) ? part.output : { type: \"json\", value: part.output }\n  const type = output.type === \"text\" ? \"text\" : output.type === \"error-text\" ? \"error\" : \"json\"\n  return ToolResultPart.make({\n    id: typeof part.toolCallId === \"string\" ? part.toolCallId : \"\",\n    name: typeof part.toolName === \"string\" ? part.toolName : \"\",\n    result: \"value\" in output ? output.value : output,\n    resultType: type,\n    providerExecuted: typeof part.providerExecuted === \"boolean\" ? part.providerExecuted : undefined,\n    providerMetadata: partProviderMetadata(part),\n  })\n}\n\nconst contentPart = (part: unknown) => {\n  if (!isRecord(part)) throw new Error(\"Native LLM request adapter only supports object content parts\")\n  if (part.type === \"text\") return textPart(part)\n  if (part.type === \"file\") return mediaPart(part)\n  if (part.type === \"reasoning\")\n    return {\n      type: \"reasoning\" as const,\n      text: typeof part.text === \"string\" ? part.text : \"\",\n      providerMetadata: partProviderMetadata(part),\n    }\n  if (part.type === \"tool-call\")\n    return ToolCallPart.make({\n      id: typeof part.toolCallId === \"string\" ? part.toolCallId : \"\",\n      name: typeof part.toolName === \"string\" ? part.toolName : \"\",\n      input: part.input,\n      providerExecuted: typeof part.providerExecuted === \"boolean\" ? part.providerExecuted : undefined,\n      providerMetadata: partProviderMetadata(part),\n    })\n  if (part.type === \"tool-result\") return toolResult(part)\n  throw new Error(`Native LLM request adapter does not support ${String(part.type)} content parts`)\n}\n\nconst content = (value: ModelMessage[\"content\"]) =>\n  typeof value === \"string\" ? [{ type: \"text\" as const, text: value }] : value.map(contentPart)\n\nconst messages = (input: readonly ModelMessage[]) => {\n  const system = input.flatMap((message) => (message.role === \"system\" ? [SystemPart.make(message.content)] : []))\n  const messages = input.flatMap((message) => {\n    if (message.role === \"system\") return []\n    return [\n      Message.make({\n        role: message.role,\n        content: content(message.content),\n        native: isRecord(message.providerOptions) ? { providerOptions: message.providerOptions } : undefined,\n      }),\n    ]\n  })\n  return { system, messages }\n}\n\nconst schema = (value: unknown): JsonSchema => {\n  if (!isRecord(value)) return { type: \"object\", properties: {} }\n  if (isRecord(value.jsonSchema)) return value.jsonSchema\n  return value\n}\n\nconst tools = (input: Record<string, ToolInput> | undefined): ToolDefinition[] =>\n  Object.entries(input ?? {}).map(([name, item]) =>\n    ToolDefinition.make({\n      name,\n      description: item.description ?? \"\",\n      inputSchema: schema(item.inputSchema),\n    }),\n  )\n\nconst generation = (input: RequestInput) => {\n  const result = {\n    temperature: input.temperature,\n    topP: input.topP,\n    topK: input.topK,\n    maxTokens: input.maxOutputTokens,\n  }\n  return Object.values(result).some((value) => value !== undefined) ? result : undefined\n}\n\nconst baseURL = (input: Provider.Model | RequestInput) =>\n  \"model\" in input ? (input.baseURL ?? (input.model.api.url || undefined)) : input.api.url || undefined\n\nconst requireBaseURL = (model: Provider.Model, url: string | undefined) => {\n  if (url) return url\n  throw new Error(`Native LLM request adapter requires a base URL for ${model.providerID}/${model.id}`)\n}\n\nexport const model = (input: Provider.Model | RequestInput, headers?: Record<string, string>) => {\n  const model = \"model\" in input ? input.model : input\n  const url = baseURL(input)\n  const options = {\n    ...(\"model\" in input && input.apiKey ? { apiKey: input.apiKey } : {}),\n    ...(url ? { baseURL: url } : {}),\n    headers: Object.keys({ ...model.headers, ...headers }).length === 0 ? undefined : { ...model.headers, ...headers },\n    limits: {\n      context: model.limit.context,\n      output: model.limit.output,\n    },\n  }\n  if (model.api.npm === \"@ai-sdk/openai\") return OpenAI.configure(options).responses(model.api.id)\n  if (model.api.npm === \"@ai-sdk/azure\")\n    return Azure.configure({ ...options, baseURL: requireBaseURL(model, url) }).responses(model.api.id)\n  if (model.api.npm === \"@ai-sdk/anthropic\") return Anthropic.configure(options).model(model.api.id)\n  if (model.api.npm === \"@ai-sdk/google\") return Google.configure(options).model(model.api.id)\n  if (model.api.npm === \"@ai-sdk/amazon-bedrock\") return AmazonBedrock.configure(options).model(model.api.id)\n  if (model.api.npm === \"@ai-sdk/openai-compatible\")\n    return OpenAICompatible.configure({\n      ...options,\n      provider: String(model.providerID),\n      baseURL: requireBaseURL(model, url),\n    }).model(model.api.id)\n  if (model.api.npm === \"@openrouter/ai-sdk-provider\") return OpenRouter.configure(options).model(model.api.id)\n  throw new Error(`Native LLM request adapter does not support provider package ${model.api.npm}`)\n}\n\nexport const request = (input: RequestInput) => {\n  const converted = messages(input.messages)\n  // This is the only native adapter boundary that should construct canonical\n  // @opencode-ai/llm request objects from opencode's session/AI SDK-shaped data.\n  return LLM.request({\n    model: model(input, input.headers),\n    system: [...(input.system ?? []).map(SystemPart.make), ...converted.system],\n    messages: converted.messages,\n    tools: tools(input.tools),\n    toolChoice: input.toolChoice,\n    generation: generation(input),\n    providerOptions: input.providerOptions,\n  })\n}\n\nexport * as LLMNative from \"./native-request\"\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/llm/native-request.ts",
+          "startLine": 1,
+          "endLine": 196,
+          "sha256": "ee47e4430d7bb959f0ef672ca40ad9a45acd5ca4e0df72548e01825da3208432",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-request.ts#L1-L196"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Native request adapter invoked only by a caller whose runtime support gate admits it; standalone package adapters are not proof of main CLI use.",
+        "summary": "Converts system messages, text, media, reasoning, tools and provider metadata into canonical LLM requests; selects adapters by model.api.npm."
+      }
+    },
+    {
+      "id": "network-provider-packages",
+      "title": "Bundled provider SDK factories",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  chat?: (modelId: string) => LanguageModelV3\n  responses?: (modelId: string) => LanguageModelV3\n}\n\nconst BUNDLED_PROVIDERS: Record<string, () => Promise<(opts: any) => BundledSDK>> = {\n  \"@ai-sdk/amazon-bedrock\": () => import(\"@ai-sdk/amazon-bedrock\").then((m) => m.createAmazonBedrock),\n  \"@ai-sdk/amazon-bedrock/mantle\": () => import(\"@ai-sdk/amazon-bedrock/mantle\").then((m) => m.createBedrockMantle),\n  \"@ai-sdk/anthropic\": () => import(\"@ai-sdk/anthropic\").then((m) => m.createAnthropic),\n  \"@ai-sdk/azure\": () => import(\"@ai-sdk/azure\").then((m) => m.createAzure),\n  \"@ai-sdk/google\": () => import(\"@ai-sdk/google\").then((m) => m.createGoogleGenerativeAI),\n  \"@ai-sdk/google-vertex\": () => import(\"@ai-sdk/google-vertex\").then((m) => m.createVertex),\n  \"@ai-sdk/google-vertex/anthropic\": () =>\n    import(\"@ai-sdk/google-vertex/anthropic\").then((m) => m.createVertexAnthropic),\n  \"@ai-sdk/openai\": () => import(\"@ai-sdk/openai\").then((m) => m.createOpenAI),\n  \"@ai-sdk/openai-compatible\": () => import(\"@ai-sdk/openai-compatible\").then((m) => m.createOpenAICompatible),\n  \"@openrouter/ai-sdk-provider\": () => import(\"@openrouter/ai-sdk-provider\").then((m) => m.createOpenRouter),\n  \"@ai-sdk/xai\": () => import(\"@ai-sdk/xai\").then((m) => m.createXai),\n  \"@ai-sdk/mistral\": () => import(\"@ai-sdk/mistral\").then((m) => m.createMistral),\n  \"@ai-sdk/groq\": () => import(\"@ai-sdk/groq\").then((m) => m.createGroq),\n  \"@ai-sdk/deepinfra\": () => import(\"@ai-sdk/deepinfra\").then((m) => m.createDeepInfra),\n  \"@ai-sdk/cerebras\": () => import(\"@ai-sdk/cerebras\").then((m) => m.createCerebras),\n  \"@ai-sdk/cohere\": () => import(\"@ai-sdk/cohere\").then((m) => m.createCohere),\n  \"@ai-sdk/gateway\": () => import(\"@ai-sdk/gateway\").then((m) => m.createGateway),\n  \"@ai-sdk/togetherai\": () => import(\"@ai-sdk/togetherai\").then((m) => m.createTogetherAI),\n  \"@ai-sdk/perplexity\": () => import(\"@ai-sdk/perplexity\").then((m) => m.createPerplexity),\n  \"@ai-sdk/vercel\": () => import(\"@ai-sdk/vercel\").then((m) => m.createVercel),\n  \"@ai-sdk/alibaba\": () => import(\"@ai-sdk/alibaba\").then((m) => m.createAlibaba),\n  \"gitlab-ai-provider\": () => import(\"gitlab-ai-provider\").then((m) => m.createGitLab),\n  \"@ai-sdk/github-copilot\": () =>\n    import(\"@opencode-ai/core/github-copilot/copilot-provider\").then((m) => m.createOpenaiCompatible),\n  \"venice-ai-sdk-provider\": () => import(\"venice-ai-sdk-provider\").then((m) => m.createVenice),\n}\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 144,
+          "endLine": 175,
+          "sha256": "9d924c84e74b53d4beffde43eb5c52db3a52f6139cbd2dbc956f39bb6ab3c38d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L144-L175"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Provider.resolveSDK selects factory using the configured or catalog-derived model.api.npm.",
+        "summary": "Includes OpenRouter, Alibaba and OpenAI-compatible SDK factories. SDK dependency versions are pinned in packages/opencode/package.json, separately from installed CLI identity."
+      }
+    },
+    {
+      "id": "network-openrouter-headers",
+      "title": "OpenRouter attribution headers",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "    openrouter: () =>\n      Effect.succeed({\n        autoload: false,\n        options: {\n          headers: {\n            \"HTTP-Referer\": \"https://opencode.ai/\",\n            \"X-Title\": \"opencode\",\n          },\n        },\n      }),\n    nvidia: (provider) =>\n      Effect.succeed({\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 513,
+          "endLine": 524,
+          "sha256": "bd0dd66aa81dbd528c62dd95d5d1fd1d2a42b1bf52ca23993bccd6fa85ccb02d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L513-L524"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "OpenRouter custom provider loader is used and headers are not overridden downstream.",
+        "summary": "Sets HTTP-Referer and X-Title for the client. These headers do not identify an upstream serving provider."
+      }
+    },
+    {
+      "id": "network-model-definition",
+      "title": "Model endpoint, capabilities and options",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "          }\n\n          for (const [modelID, model] of Object.entries(provider.models ?? {})) {\n            const existingModel = parsed.models[model.id ?? modelID]\n            const apiID = model.id ?? existingModel?.api.id ?? modelID\n            const apiNpm =\n              model.provider?.npm ??\n              provider.npm ??\n              existingModel?.api.npm ??\n              // Config-defined gateway models bypass fromModelsDevModel, so resolve the\n              // native passthrough npm here before falling back to the catalog default.\n              cloudflareGatewayNpm(providerID, apiID) ??\n              modelsDev[providerID]?.npm ??\n              \"@ai-sdk/openai-compatible\"\n            const name = iife(() => {\n              if (model.name) return model.name\n              if (model.id && model.id !== modelID) return modelID\n              return existingModel?.name ?? modelID\n            })\n            const parsedModel: Model = {\n              id: ModelV2.ID.make(modelID),\n              api: {\n                id: apiID,\n                npm: apiNpm,\n                url: model.provider?.api ?? provider?.api ?? existingModel?.api.url ?? modelsDev[providerID]?.api ?? \"\",\n              },\n              status: model.status ?? existingModel?.status ?? \"active\",\n              name,\n              providerID: ProviderV2.ID.make(providerID),\n              capabilities: {\n                temperature: model.temperature ?? existingModel?.capabilities.temperature ?? false,\n                reasoning: model.reasoning ?? existingModel?.capabilities.reasoning ?? false,\n                attachment: model.attachment ?? existingModel?.capabilities.attachment ?? false,\n                toolcall: model.tool_call ?? existingModel?.capabilities.toolcall ?? true,\n                input: {\n                  text: model.modalities?.input?.includes(\"text\") ?? existingModel?.capabilities.input.text ?? true,\n                  audio: model.modalities?.input?.includes(\"audio\") ?? existingModel?.capabilities.input.audio ?? false,\n                  image: model.modalities?.input?.includes(\"image\") ?? existingModel?.capabilities.input.image ?? false,\n                  video: model.modalities?.input?.includes(\"video\") ?? existingModel?.capabilities.input.video ?? false,\n                  pdf: model.modalities?.input?.includes(\"pdf\") ?? existingModel?.capabilities.input.pdf ?? false,\n                },\n                output: {\n                  text: model.modalities?.output?.includes(\"text\") ?? existingModel?.capabilities.output.text ?? true,\n                  audio:\n                    model.modalities?.output?.includes(\"audio\") ?? existingModel?.capabilities.output.audio ?? false,\n                  image:\n                    model.modalities?.output?.includes(\"image\") ?? existingModel?.capabilities.output.image ?? false,\n                  video:\n                    model.modalities?.output?.includes(\"video\") ?? existingModel?.capabilities.output.video ?? false,\n                  pdf: model.modalities?.output?.includes(\"pdf\") ?? existingModel?.capabilities.output.pdf ?? false,\n                },\n                interleaved:\n                  (typeof model.interleaved === \"string\" ? { field: model.interleaved } : model.interleaved) ??\n                  existingModel?.capabilities.interleaved ??\n                  (!existingModel && apiNpm === \"@ai-sdk/openai-compatible\" && apiID.includes(\"deepseek\")\n                    ? { field: \"reasoning_content\" }\n                    : false),\n              },\n              cost: {\n                input: model?.cost?.input ?? existingModel?.cost?.input ?? 0,\n                output: model?.cost?.output ?? existingModel?.cost?.output ?? 0,\n                cache: {\n                  read: model?.cost?.cache_read ?? existingModel?.cost?.cache.read ?? 0,\n                  write: model?.cost?.cache_write ?? existingModel?.cost?.cache.write ?? 0,\n                },\n              },\n              options: mergeDeep(existingModel?.options ?? {}, model.options ?? {}),\n              limit: {\n                context: model.limit?.context ?? existingModel?.limit?.context ?? 0,\n                input: model.limit?.input ?? existingModel?.limit?.input,\n                output: model.limit?.output ?? existingModel?.limit?.output ?? 0,\n              },\n              headers: mergeDeep(existingModel?.headers ?? {}, model.headers ?? {}),\n              family: model.family ?? existingModel?.family ?? \"\",\n              release_date: model.release_date ?? existingModel?.release_date ?? \"\",\n              variants: {},\n            }\n            const variants =\n              existingModel?.api.npm === parsedModel.api.npm\n                ? (existingModel.variants ?? ProviderTransform.variants(parsedModel))\n                : ProviderTransform.variants(parsedModel)\n            const merged = mergeDeep(variants, model.variants ?? {})\n            parsedModel.variants = mapValues(\n              pickBy(merged, (v) => !v.disabled),\n              (v) => omit(v, [\"disabled\"]),\n            )\n            parsed.models[modelID] = parsedModel\n          }\n          database[providerID] = parsed\n        }\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 1542,
+          "endLine": 1631,
+          "sha256": "6e5dc45e13cedbb17d700449af709a4bd89b5e586092f9e674fbb3a8b089174e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1542-L1631"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Config-defined model is merged with existing/catalog defaults.",
+        "summary": "api.id, npm package and URL have separate precedence. Interleaved reasoning can be configured; a new OpenAI-compatible DeepSeek model defaults to reasoning_content. Model options and headers are merged, and configured variants can disable defaults."
+      }
+    },
+    {
+      "id": "network-sdk-endpoint",
+      "title": "Resolved SDK endpoint and fetch layer",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "    const list = Effect.fn(\"Provider.list\")(() => InstanceState.use(state, (s) => s.providers))\n\n    async function resolveSDK(model: Model, s: State, envs: Record<string, string | undefined>) {\n      try {\n        const provider = s.providers[model.providerID]\n        const options = { ...provider.options }\n\n        if (\n          model.providerID === \"google-vertex\" &&\n          model.api.npm === \"@ai-sdk/google-vertex/anthropic\" &&\n          !options.baseURL\n        ) {\n          const baseURL = googleVertexAnthropicBaseURL(\n            typeof options.project === \"string\" ? options.project : undefined,\n            typeof options.location === \"string\" ? options.location : undefined,\n          )\n          if (baseURL) options.baseURL = baseURL\n        }\n\n        if (model.providerID === \"google-vertex\" && !model.api.npm.includes(\"@ai-sdk/openai-compatible\")) {\n          delete options.fetch\n        }\n\n        if (model.api.npm.includes(\"@ai-sdk/openai-compatible\") && options[\"includeUsage\"] !== false) {\n          options[\"includeUsage\"] = true\n        }\n\n        const baseURL = iife(() => {\n          let url =\n            typeof options[\"baseURL\"] === \"string\" && options[\"baseURL\"] !== \"\" ? options[\"baseURL\"] : model.api.url\n          if (!url) return\n\n          const loader = s.varsLoaders[model.providerID]\n          if (loader) {\n            const vars = loader(options)\n            for (const [key, value] of Object.entries(vars)) {\n              const field = \"${\" + key + \"}\"\n              url = url.replaceAll(field, value)\n            }\n          }\n\n          url = url.replace(/\\$\\{([^}]+)\\}/g, (item, key) => {\n            const val = envs[String(key)]\n            return val ?? item\n          })\n          return url\n        })\n\n        if (baseURL !== undefined) options[\"baseURL\"] = baseURL\n        if (options[\"apiKey\"] === undefined && provider.key) options[\"apiKey\"] = provider.key\n        if (model.headers)\n          options[\"headers\"] = {\n            ...options[\"headers\"],\n            ...model.headers,\n          }\n\n        const key = Hash.fast(\n          JSON.stringify({\n            providerID: model.providerID,\n            npm: model.api.npm,\n            options,\n          }),\n        )\n        const existing = s.sdk.get(key)\n        if (existing) return existing\n\n        options[\"fetch\"] = timeoutFetch(options)\n        delete options[\"chunkTimeout\"]\n        delete options[\"headerTimeout\"]\n\n        const bundledLoader = BUNDLED_PROVIDERS[model.api.npm]\n        if (bundledLoader) {\n          const factory = await bundledLoader()\n          const loaded = factory({\n            name: model.providerID,\n            ...options,\n          })\n          s.sdk.set(key, loaded)\n          return loaded as SDK\n        }\n\n        const installedPath = await (async () => {\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/provider/provider.ts",
+          "startLine": 1783,
+          "endLine": 1864,
+          "sha256": "25f9ae85b7056ec7e7876db49ef54bd3648c382cad22f72a995c4d26fe01341e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1783-L1864"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "resolveSDK loads the selected provider package.",
+        "summary": "Nonempty provider.options.baseURL takes precedence over model.api.url, then configured/environment substitutions apply. Provider credentials and model headers are merged before the timeout-aware fetch wrapper. Actual captured host remains the evidence of client destination."
+      }
+    },
+    {
+      "id": "network-model-catalog",
+      "title": "Runtime model catalog source",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "import path from \"path\"\nimport { Context, Duration, Effect, Layer, Option, Schedule, Schema } from \"effect\"\nimport { FetchHttpClient, HttpClient, HttpClientRequest } from \"effect/unstable/http\"\nimport { ModelsDev } from \"@opencode-ai/schema/models-dev\"\nimport { Global } from \"./global\"\nimport { Flag } from \"./flag/flag\"\nimport { Flock } from \"./util/flock\"\nimport { Hash } from \"./util/hash\"\nimport { FSUtil } from \"./fs-util\"\nimport { InstallationChannel, InstallationVersion } from \"./installation/version\"\nimport { EventV2 } from \"./event\"\nimport { makeGlobalNode } from \"./effect/app-node\"\nimport { httpClient } from \"./effect/app-node-platform\"\n\nexport const CatalogModelStatus = Schema.Literals([\"alpha\", \"beta\", \"deprecated\"])\nexport type CatalogModelStatus = typeof CatalogModelStatus.Type\n\nconst InterleavedField = Schema.Union([\n  Schema.Literals([\"reasoning\", \"reasoning_content\", \"reasoning_text\"]),\n  Schema.String,\n])\n\nconst USER_AGENT = `opencode/${InstallationChannel}/${InstallationVersion}/${Flag.OPENCODE_CLIENT}`\n\nconst CostTier = Schema.Struct({\n  input: Schema.Finite,\n  output: Schema.Finite,\n  cache_read: Schema.optional(Schema.Finite),\n  cache_write: Schema.optional(Schema.Finite),\n  tier: Schema.Struct({\n    type: Schema.Literal(\"context\"),\n    size: Schema.Finite,\n  }),\n})\n\nconst Cost = Schema.Struct({\n  input: Schema.Finite,\n  output: Schema.Finite,\n  cache_read: Schema.optional(Schema.Finite),\n  cache_write: Schema.optional(Schema.Finite),\n  tiers: Schema.optional(Schema.Array(CostTier)),\n  context_over_200k: Schema.optional(\n    Schema.Struct({\n      input: Schema.Finite,\n      output: Schema.Finite,\n      cache_read: Schema.optional(Schema.Finite),\n      cache_write: Schema.optional(Schema.Finite),\n    }),\n  ),\n})\n\nconst ReasoningOption = Schema.Union([\n  Schema.Struct({\n    type: Schema.Literal(\"effort\"),\n    values: Schema.Array(Schema.NullOr(Schema.String)),\n  }),\n  Schema.Struct({\n    type: Schema.Literal(\"toggle\"),\n  }),\n  Schema.Struct({\n    type: Schema.Literal(\"budget_tokens\"),\n    min: Schema.optional(Schema.Finite),\n    max: Schema.optional(Schema.Finite),\n  }),\n])\n\nexport const Model = Schema.Struct({\n  id: Schema.String,\n  name: Schema.String,\n  family: Schema.optional(Schema.String),\n  release_date: Schema.String,\n  attachment: Schema.Boolean,\n  reasoning: Schema.Boolean,\n  temperature: Schema.Boolean,\n  tool_call: Schema.Boolean,\n  reasoning_options: Schema.optional(Schema.Array(ReasoningOption)),\n  interleaved: Schema.optional(\n    Schema.Union([\n      Schema.Boolean,\n      InterleavedField,\n      Schema.Struct({\n        field: InterleavedField,\n      }),\n    ]),\n  ),\n  cost: Schema.optional(Cost),\n  limit: Schema.Struct({\n    context: Schema.Finite,\n    input: Schema.optional(Schema.Finite),\n    output: Schema.Finite,\n  }),\n  modalities: Schema.optional(\n    Schema.Struct({\n      input: Schema.Array(Schema.Literals([\"text\", \"audio\", \"image\", \"video\", \"pdf\"])),\n      output: Schema.Array(Schema.Literals([\"text\", \"audio\", \"image\", \"video\", \"pdf\"])),\n    }),\n  ),\n  experimental: Schema.optional(\n    Schema.Struct({\n      modes: Schema.optional(\n        Schema.Record(\n          Schema.String,\n          Schema.Struct({\n            cost: Schema.optional(Cost),\n            provider: Schema.optional(\n              Schema.Struct({\n                body: Schema.optional(Schema.Record(Schema.String, Schema.MutableJson)),\n                headers: Schema.optional(Schema.Record(Schema.String, Schema.String)),\n              }),\n            ),\n          }),\n        ),\n      ),\n    }),\n  ),\n  status: Schema.optional(CatalogModelStatus),\n  provider: Schema.optional(\n    Schema.Struct({ npm: Schema.optional(Schema.String), api: Schema.optional(Schema.String) }),\n  ),\n})\nexport type Model = Schema.Schema.Type<typeof Model>\n\nexport const Provider = Schema.Struct({\n  api: Schema.optional(Schema.String),\n  name: Schema.String,\n  env: Schema.Array(Schema.String),\n  id: Schema.String,\n  npm: Schema.optional(Schema.String),\n  models: Schema.Record(Schema.String, Model),\n})\n\nexport type Provider = Schema.Schema.Type<typeof Provider>\n\nexport const Event = ModelsDev.Event\n\ndeclare const OPENCODE_MODELS_DEV: Record<string, Provider> | undefined\n\nexport interface Interface {\n  readonly get: () => Effect.Effect<Record<string, Provider>>\n  readonly refresh: (force?: boolean) => Effect.Effect<void>\n}\n\nexport class Service extends Context.Service<Service, Interface>()(\"@opencode/ModelsDev\") {}\n\nconst layer = Layer.effect(\n  Service,\n  Effect.gen(function* () {\n    const fs = yield* FSUtil.Service\n    const events = yield* EventV2.Service\n    const http = HttpClient.filterStatusOk(\n      (yield* HttpClient.HttpClient).pipe(\n        HttpClient.retryTransient({\n          retryOn: \"errors-and-responses\",\n          times: 2,\n          schedule: Schedule.exponential(200).pipe(Schedule.jittered),\n        }),\n      ),\n    )\n\n    const source = Flag.OPENCODE_MODELS_URL || \"https://models.opencode.ai\"\n    const filepath = path.join(\n      Global.Path.cache,\n      source === \"https://models.opencode.ai\" ? \"models.json\" : `models-${Hash.fast(source)}.json`,\n    )\n    const ttl = Duration.minutes(5)\n    const lockKey = `models-dev:${filepath}`\n\n    const fresh = Effect.fnUntraced(function* () {\n      const stat = yield* fs.stat(filepath).pipe(Effect.catch(() => Effect.succeed(undefined)))\n      if (!stat) return false\n      const mtime = Option.getOrElse(stat.mtime, () => new Date(0)).getTime()\n      return Date.now() - mtime < Duration.toMillis(ttl)\n    })\n\n    const fetchApi = Effect.fn(\"ModelsDev.fetchApi\")(function* () {\n      return yield* HttpClientRequest.get(`${source}/api.json`).pipe(\n        HttpClientRequest.setHeader(\"User-Agent\", USER_AGENT),\n        http.execute,\n        Effect.flatMap((res) => res.text),\n        Effect.timeout(\"10 seconds\"),\n      )\n    })\n\n    const loadFromDisk = fs.readJson(Flag.OPENCODE_MODELS_PATH ?? filepath).pipe(\n      Effect.catch((error) => {\n        if (\n          Flag.OPENCODE_MODELS_PATH === undefined &&\n          error._tag === \"FileSystemError\" &&\n          error.method === \"readJson\"\n        ) {\n          return fs.remove(filepath, { force: true }).pipe(Effect.ignore, Effect.as(undefined))\n        }\n        return Effect.succeed(undefined)\n      }),\n      Effect.map((v) => v as Record<string, Provider> | undefined),\n    )\n\n    const loadSnapshot = Effect.sync(() =>\n      typeof OPENCODE_MODELS_DEV === \"undefined\" ? undefined : OPENCODE_MODELS_DEV,\n    )\n\n    const fetchAndWrite = Effect.fn(\"ModelsDev.fetchAndWrite\")(function* () {\n      const text = yield* fetchApi()\n      const tempfile = `${filepath}.${process.pid}.${Date.now()}.tmp`\n      yield* fs.writeWithDirs(tempfile, text).pipe(\n        Effect.andThen(fs.rename(tempfile, filepath)),\n        Effect.catch((error) =>\n          Effect.gen(function* () {\n            yield* fs.remove(tempfile, { force: true }).pipe(Effect.ignore)\n            return yield* Effect.fail(error)\n          }),\n        ),\n      )\n      return text\n    })\n\n    const populate = Effect.gen(function* () {\n      const fromDisk = yield* loadFromDisk\n      if (fromDisk) return fromDisk\n      const snapshot = yield* loadSnapshot\n      if (snapshot) return snapshot\n      if (Flag.OPENCODE_DISABLE_MODELS_FETCH) return {}\n      // Flock is cross-process: concurrent opencode CLIs can race on this cache file.\n      const text = yield* Effect.scoped(\n        Effect.gen(function* () {\n          yield* Flock.effect(lockKey)\n          return yield* fetchAndWrite()\n        }),\n      )\n      return JSON.parse(text) as Record<string, Provider>\n    }).pipe(Effect.withSpan(\"ModelsDev.populate\"), Effect.orDie)\n\n    const [cachedGet, invalidate] = yield* Effect.cachedInvalidateWithTTL(populate, Duration.infinity)\n\n    const get = (): Effect.Effect<Record<string, Provider>> => cachedGet\n\n    const refresh = Effect.fn(\"ModelsDev.refresh\")(function* (force = false) {\n      if (!force && (yield* fresh())) return\n      yield* Effect.scoped(\n        Effect.gen(function* () {\n          yield* Flock.effect(lockKey)\n          // Re-check under the lock: another process may have refreshed between\n          // our outer check and lock acquisition.\n          if (!force && (yield* fresh())) return\n          yield* fetchAndWrite()\n          yield* invalidate\n          yield* events.publish(Event.Refreshed, {})\n        }),\n      ).pipe(\n        Effect.tapCause((cause) => Effect.logError(\"Failed to fetch models.dev\", { cause: cause })),\n        Effect.ignore,\n      )\n    })\n\n    if (!Flag.OPENCODE_DISABLE_MODELS_FETCH && !process.argv.includes(\"--get-yargs-completions\")) {\n      // Schedule.spaced runs the effect once, then waits between completions.\n      yield* Effect.forkScoped(refresh().pipe(Effect.repeat(Schedule.spaced(\"60 minutes\")), Effect.ignore))\n    }\n\n    return Service.of({ get, refresh })\n  }),\n)\n\nexport const node = makeGlobalNode({ service: Service, layer: layer, deps: [FSUtil.node, EventV2.node, httpClient] })\n\nexport * as ModelsDev from \"./models-dev\"\n",
+      "provenance": [
+        {
+          "file": "packages/core/src/models-dev.ts",
+          "startLine": 1,
+          "endLine": 266,
+          "sha256": "f6e11d21709b56b56f6c4f5bcc02e46356061d4501998d75b09b40d14baf07be",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/models-dev.ts#L1-L266"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "ModelsDev loads cache/OPENCODE_MODELS_PATH, build-injected snapshot, or network fetch when enabled; periodic refresh is conditional.",
+        "summary": "Catalog URL defaults to models.opencode.ai and can be overridden. Provider endpoints/capabilities from a live catalog are not frozen by this source pin and are not copied into this inventory."
+      }
+    },
+    {
+      "id": "network-reasoning-replay",
+      "title": "DeepSeek and interleaved reasoning replay",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  // Deepseek requires all assistant messages to have reasoning on them\n  if (model.api.id.toLowerCase().includes(\"deepseek\")) {\n    msgs = msgs.map((msg) => {\n      if (msg.role !== \"assistant\") return msg\n      if (Array.isArray(msg.content)) {\n        if (msg.content.some((part) => part.type === \"reasoning\")) return msg\n        return { ...msg, content: [...msg.content, { type: \"reasoning\", text: \"\" }] }\n      }\n      return {\n        ...msg,\n        content: [\n          ...(msg.content ? [{ type: \"text\" as const, text: msg.content }] : []),\n          { type: \"reasoning\" as const, text: \"\" },\n        ],\n      }\n    })\n  }\n\n  if (\n    typeof model.capabilities.interleaved === \"object\" &&\n    model.capabilities.interleaved.field &&\n    model.api.npm !== \"@openrouter/ai-sdk-provider\"\n  ) {\n    const field = model.capabilities.interleaved.field\n    return msgs.map((msg) => {\n      if (msg.role === \"assistant\" && Array.isArray(msg.content)) {\n        const reasoningParts = msg.content.filter((part: any) => part.type === \"reasoning\")\n        const reasoningText = reasoningParts.map((part: any) => part.text).join(\"\")\n\n        // Filter out reasoning parts from content\n        const filteredContent = msg.content.filter((part: any) => part.type !== \"reasoning\")\n\n        // Include reasoning_content | reasoning_details directly on the message for all assistant messages.\n        // Always set the field even when empty — some providers (e.g. DeepSeek) may return empty\n        // reasoning_content which still needs to be sent back in subsequent requests.\n        return {\n          ...msg,\n          content: filteredContent,\n          providerOptions: {\n            ...msg.providerOptions,\n            openaiCompatible: {\n              ...msg.providerOptions?.openaiCompatible,\n              [field]: reasoningText,\n            },\n          },\n        }\n      }\n\n      return msg\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/provider/transform.ts",
+          "startLine": 303,
+          "endLine": 351,
+          "sha256": "b0f39386a3b751d66c5ea9d1de1008a03cb7a111f6667689d065abb7f081969d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L303-L351"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "ProviderTransform normalization applies after preceding provider-specific branches; DeepSeek names receive empty reasoning placeholders when missing.",
+        "summary": "Configured interleaved reasoning fields move assistant reasoning into OpenAI-compatible message options, excluding the OpenRouter SDK path. Empty placeholders are harness compatibility data, not evidence of model reasoning."
+      }
+    },
+    {
+      "id": "network-reasoning-defaults",
+      "title": "Provider reasoning and usage defaults",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export function options(input: {\n  model: Provider.Model\n  sessionID: string\n  providerOptions?: Record<string, any>\n}): Record<string, any> {\n  const result: Record<string, any> = {}\n\n  if (\n    input.model.api.npm === \"@ai-sdk/google-vertex/anthropic\" ||\n    (!input.model.api.id.includes(\"claude\") && input.model.api.npm === \"@ai-sdk/anthropic\")\n  ) {\n    result[\"toolStreaming\"] = false\n  }\n\n  // openai and providers using openai package should set store to false by default.\n  if (\n    input.model.providerID === \"openai\" ||\n    input.model.api.npm === \"@ai-sdk/openai\" ||\n    input.model.api.npm === \"@ai-sdk/github-copilot\" ||\n    input.model.api.npm === \"@ai-sdk/amazon-bedrock/mantle\" ||\n    input.model.api.npm === \"@ai-sdk/xai\"\n  ) {\n    result[\"store\"] = false\n  }\n\n  if (input.model.api.npm === \"@ai-sdk/azure\") {\n    result[\"store\"] = false\n  }\n\n  if (input.model.api.npm === \"@openrouter/ai-sdk-provider\" || input.model.api.npm === \"@llmgateway/ai-sdk-provider\") {\n    result[\"usage\"] = {\n      include: true,\n    }\n    if (input.model.api.id.toLowerCase().includes(\"gemini\") && !isLegacyGemini(input.model.api.id)) {\n      result[\"reasoning\"] = { effort: \"high\" }\n    }\n  }\n\n  if (\n    input.model.providerID === \"baseten\" ||\n    (input.model.providerID === \"opencode\" && [\"kimi-k2-thinking\", \"glm-4.6\"].includes(input.model.api.id))\n  ) {\n    result[\"chat_template_args\"] = { enable_thinking: true }\n  }\n\n  if (\n    [\"zai\", \"zhipuai\"].some((id) => input.model.providerID.includes(id)) &&\n    input.model.api.npm === \"@ai-sdk/openai-compatible\"\n  ) {\n    result[\"thinking\"] = {\n      type: \"enabled\",\n      clear_thinking: false,\n    }\n  }\n\n  if (input.model.providerID === \"meta\" && input.model.api.npm === \"@ai-sdk/openai\") {\n    result[\"reasoningSummary\"] = \"auto\"\n    result[\"include\"] = INCLUDE_ENCRYPTED_REASONING\n  }\n\n  if (input.model.api.npm === \"@ai-sdk/google\" || input.model.api.npm === \"@ai-sdk/google-vertex\") {\n    if (input.model.capabilities.reasoning) {\n      result[\"thinkingConfig\"] = {\n        includeThoughts: true,\n      }\n      if (!isLegacyGemini(input.model.api.id)) {\n        result[\"thinkingConfig\"][\"thinkingLevel\"] = \"high\"\n      }\n    }\n  }\n\n  const modelId = input.model.api.id.toLowerCase()\n\n  // MiniMax's Anthropic interface defaults thinking off, unlike Chat Completions.\n  if (modelId.includes(\"minimax-m3\") && input.model.api.npm === \"@ai-sdk/anthropic\") {\n    result[\"thinking\"] = { type: \"adaptive\" }\n  }\n\n  // Moonshot's Anthropic-compatible API uses adaptive effort rather than token budgets.\n  // Request summaries so thinking content survives replay on subsequent turns.\n  if (\n    [\"@ai-sdk/anthropic\", \"@ai-sdk/google-vertex/anthropic\"].includes(input.model.api.npm) &&\n    isKimiFamily(input.model) &&\n    input.model.capabilities.reasoning\n  ) {\n    result[\"thinking\"] = { type: \"adaptive\", display: \"summarized\" }\n    result[\"effort\"] = \"high\"\n  }\n\n  // Enable thinking for reasoning models on alibaba-cn (DashScope).\n  // DashScope's OpenAI-compatible API requires `enable_thinking: true` in the request body\n  // to return reasoning_content. Without it, models like kimi-k2.5, qwen-plus, qwen3, qwq,\n  // deepseek-r1, etc. never output thinking/reasoning tokens.\n  // Note: kimi-k2-thinking is excluded as it returns reasoning_content by default.\n  if (\n    input.model.providerID === \"alibaba-cn\" &&\n    input.model.capabilities.reasoning &&\n    input.model.api.npm === \"@ai-sdk/openai-compatible\" &&\n    !modelId.includes(\"kimi-k2-thinking\")\n  ) {\n    result[\"enable_thinking\"] = true\n  }\n\n  if (input.providerOptions?.setCacheKey !== false) {\n    if (input.model.api.npm === \"@ai-sdk/deepinfra\" || input.model.api.npm === \"@ai-sdk/cerebras\") {\n      result[\"prompt_cache_key\"] = input.sessionID\n    } else if (\n      input.model.api.npm === \"@ai-sdk/openai\" ||\n      input.model.api.npm === \"@ai-sdk/azure\" ||\n      input.model.api.npm === \"@ai-sdk/xai\" ||\n      input.model.api.npm === \"@ai-sdk/mistral\" ||\n      input.model.api.npm === \"venice-ai-sdk-provider\" ||\n      input.providerOptions?.setCacheKey === true\n    ) {\n      result[\"promptCacheKey\"] = input.sessionID\n    }\n  }\n\n  if (input.model.api.npm === \"@ai-sdk/gateway\") {\n    result[\"gateway\"] = { caching: \"auto\" }\n  }\n\n  // Any gpt version above 5.4 in combination with azure does not support reasoningEffort\n  // so we should return early here.\n  const [, gptMajorVersion, gptMinorVersion] = input.model.api.id.match(/gpt-(\\d+)\\.(\\d+)/) ?? []\n  const isGpt55OrNewer = Number(gptMajorVersion) > 5 || (Number(gptMajorVersion) === 5 && Number(gptMinorVersion) >= 5)\n  if (input.model.api.npm === \"@ai-sdk/azure\" && input.providerOptions?.useCompletionUrls) {\n    if (!isGpt55OrNewer) {\n      result[\"reasoningEffort\"] = \"medium\"\n    }\n    return result\n  }\n\n  if (input.model.api.id.includes(\"gpt-5\") && !input.model.api.id.includes(\"gpt-5-chat\")) {\n    if (!input.model.api.id.includes(\"gpt-5-pro\")) {\n      result[\"reasoningEffort\"] = \"medium\"\n      if (\n        input.model.api.npm === \"@ai-sdk/openai\" ||\n        input.model.api.npm === \"@ai-sdk/azure\" ||\n        input.model.api.npm === \"@ai-sdk/github-copilot\" ||\n        input.model.api.npm === \"@ai-sdk/amazon-bedrock/mantle\"\n      ) {\n        result[\"reasoningSummary\"] = \"auto\"\n      }\n      if (input.model.api.npm === \"@ai-sdk/openai\" || input.model.api.npm === \"@ai-sdk/amazon-bedrock/mantle\") {\n        result[\"include\"] = INCLUDE_ENCRYPTED_REASONING\n      }\n    }\n\n    // Generic OpenAI-compatible APIs do not necessarily support OpenAI's verbosity parameter.\n    // Only enable the default for integrations known to implement it.\n    if (\n      input.model.api.id.includes(\"gpt-5.\") &&\n      !input.model.api.id.includes(\"codex\") &&\n      !input.model.api.id.includes(\"-chat\") &&\n      (input.model.api.npm === \"@ai-sdk/openai\" || input.model.api.npm === \"@ai-sdk/amazon-bedrock/mantle\")\n    ) {\n      result[\"textVerbosity\"] = \"low\"\n    }\n\n    if (input.model.providerID.startsWith(\"opencode\") && input.providerOptions?.setCacheKey !== false) {\n      result[\"promptCacheKey\"] = input.sessionID\n      result[\"include\"] = INCLUDE_ENCRYPTED_REASONING\n      result[\"reasoningSummary\"] = \"auto\"\n    }\n  }\n\n  return result\n}\n\nexport function smallOptions(model: Provider.Model) {\n  const small = Object.values(model.variants ?? {})[0] ?? {}\n  if (\n    model.providerID === \"openai\" ||\n    model.api.npm === \"@ai-sdk/openai\" ||\n    model.api.npm === \"@ai-sdk/github-copilot\" ||\n    model.api.npm === \"@ai-sdk/xai\"\n  ) {\n    const base = { store: false }\n    return mergeDeep(base, small)\n  }\n  if (model.providerID === \"openrouter\" || model.providerID === \"llmgateway\") {\n    if (Object.keys(small).length === 0 && model.api.id.includes(\"google\")) {\n      return { reasoning: { enabled: false } }\n    }\n  }\n\n  if (model.providerID === \"venice\") {\n    if (Object.keys(small).length > 0) return small\n    return { veniceParameters: { disableThinking: true } }\n  }\n\n  return small\n}\n\n// Maps model ID prefix to provider slug used in providerOptions.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/provider/transform.ts",
+          "startLine": 1220,
+          "endLine": 1415,
+          "sha256": "01c9c64618d75dc99b1db6b96306bb62956cd809e65b8f92aeecb6193a853caf",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1220-L1415"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "ProviderTransform.options or smallOptions creates defaults before model/agent/user variant merges.",
+        "summary": "OpenRouter requests usage inclusion. Kimi Anthropic-compatible reasoning uses adaptive summarized thinking/high effort. Alibaba-cn OpenAI-compatible reasoning enables thinking except kimi-k2-thinking. Small-model options may disable reasoning. Source settings do not establish visible returned reasoning."
+      }
+    },
+    {
+      "id": "network-reasoning-variants",
+      "title": "Reasoning variant fallback branches",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export function variants(model: Provider.Model): Record<string, Record<string, any>> {\n  if (!model.capabilities.reasoning) return {}\n\n  const id = model.id.toLowerCase()\n  const glm52 = [\"glm-5.2\", \"glm-5-2\", \"glm-5p2\"].some(\n    (name) => id.includes(name) || model.api.id.toLowerCase().includes(name),\n  )\n  if (\n    model.api.id.toLowerCase().includes(\"minimax-m3\") &&\n    [\"@ai-sdk/anthropic\", \"@ai-sdk/openai-compatible\"].includes(model.api.npm)\n  ) {\n    if ([\"nvidia\", \"lilac\"].includes(model.providerID)) {\n      return {\n        none: { chat_template_kwargs: { thinking_mode: \"disabled\" } },\n        thinking: { chat_template_kwargs: { thinking_mode: \"enabled\" } },\n      }\n    }\n    return {\n      none: { thinking: { type: \"disabled\" } },\n      thinking: { thinking: { type: \"adaptive\" } },\n    }\n  }\n  const adaptiveThinkingOmitted = anthropicOmitsThinking(model.api.id)\n  const adaptiveEfforts = anthropicAdaptiveEfforts(model.api.id)\n  if (glm52 && model.api.npm === \"@openrouter/ai-sdk-provider\") {\n    // OpenRouter maps xhigh to GLM-5.2's native max effort.\n    return {\n      high: { reasoning: { effort: \"high\" } },\n      xhigh: { reasoning: { effort: \"xhigh\" } },\n    }\n  }\n  if (glm52 && model.api.npm === \"@ai-sdk/openai-compatible\") {\n    return {\n      high: { reasoningEffort: \"high\" },\n      max: { reasoningEffort: \"max\" },\n    }\n  }\n  if (glm52 && model.api.npm === \"@ai-sdk/anthropic\") {\n    return {\n      high: { effort: \"high\" },\n      max: { effort: \"max\" },\n    }\n  }\n  // Kimi's Anthropic-compatible transports implement adaptive thinking effort.\n  if (isKimiFamily(model) && [\"@ai-sdk/anthropic\", \"@ai-sdk/google-vertex/anthropic\"].includes(model.api.npm)) {\n    return Object.fromEntries(\n      [\"low\", \"medium\", \"high\", \"xhigh\", \"max\"].map((effort) => [\n        effort,\n        { thinking: { type: \"adaptive\", display: \"summarized\" }, effort },\n      ]),\n    )\n  }\n  if (\n    id.includes(\"deepseek-chat\") ||\n    id.includes(\"deepseek-reasoner\") ||\n    id.includes(\"deepseek-r1\") ||\n    id.includes(\"deepseek-v3\") ||\n    id.includes(\"minimax\") ||\n    (id.includes(\"glm\") && !glm52) ||\n    id.includes(\"kimi\") ||\n    id.includes(\"k2p\") ||\n    id.includes(\"qwen\") ||\n    id.includes(\"big-pickle\")\n  )\n    return {}\n\n  // see: https://docs.x.ai/docs/guides/reasoning#control-how-hard-the-model-thinks\n  if (id.includes(\"grok\") && id.includes(\"grok-3-mini\")) {\n    if (model.api.npm === \"@openrouter/ai-sdk-provider\") {\n      return {\n        low: { reasoning: { effort: \"low\" } },\n        high: { reasoning: { effort: \"high\" } },\n      }\n    }\n    return {\n      low: { reasoningEffort: \"low\" },\n      high: { reasoningEffort: \"high\" },\n    }\n  }\n\n  switch (model.api.npm) {\n    case \"@openrouter/ai-sdk-provider\":\n      return Object.fromEntries(\n        (model.api.id.startsWith(\"openai/\") || id.includes(\"gpt\")\n          ? openaiCompatibleReasoningEfforts(model.api.id)\n          : WIDELY_SUPPORTED_EFFORTS\n        ).map((effort) => [effort, { reasoning: { effort } }]),\n      )\n\n    case \"ai-gateway-provider\": {\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/provider/transform.ts",
+          "startLine": 790,
+          "endLine": 879,
+          "sha256": "d6c5db464ecc9463e685a35272d3bb0a61f98663a165dfd51b629430b39b1728",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L790-L879"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Reasoning capability enabled and no authoritative reasoning_options variants supersede these fallback branches.",
+        "summary": "Kimi on Anthropic-compatible transports has adaptive thinking efforts. Earlier DeepSeek/Kimi/Qwen name branches return no generic variants. OpenRouter effort variants only apply if earlier branches did not return."
+      }
+    },
+    {
+      "id": "network-catalog-reasoning",
+      "title": "Catalog-defined reasoning controls",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export function reasoningVariants(model: ModelsDev.Model, target: Provider.Model): Provider.Model[\"variants\"] {\n  const options = model.reasoning_options\n  if (options === undefined) return\n  if (options.length === 0) return {}\n\n  const effort = options.find((option) => option.type === \"effort\")\n  if (effort) return effortVariants(target, effort.values)\n\n  const toggle = options.some((option) => option.type === \"toggle\")\n  const budget = options.find((option) => option.type === \"budget_tokens\")\n  if (!budget) return toggle ? nonEmptyVariants(reasoningToggle(target)) : undefined\n\n  return nonEmptyVariants({\n    ...(toggle ? reasoningToggle(target) : {}),\n    ...budgetVariants(target, budget.min, budget.max),\n  })\n}\n\nfunction effortVariants(model: Provider.Model, values: readonly unknown[]) {\n  return Object.fromEntries(\n    values.flatMap((value) => {\n      const id = (() => {\n        if (value === null) return \"none\"\n        if (typeof value === \"string\") return value\n      })()\n      if (id === undefined) return []\n      const settings = reasoningEffort(model, id)\n      return settings ? [[id, settings]] : []\n    }),\n  )\n}\n\nfunction budgetVariants(model: Provider.Model, min?: number, max?: number) {\n  const maximum = Math.min(max ?? OUTPUT_TOKEN_MAX - 1, model.limit.output - 1, OUTPUT_TOKEN_MAX - 1)\n  if (maximum <= 0) return {}\n  const high = Math.min(Math.max(min ?? 0, Math.floor((maximum + 1) / 2)), maximum)\n  return Object.fromEntries(\n    [\n      { id: \"high\", budget: high },\n      { id: \"max\", budget: maximum },\n    ].flatMap((item) => {\n      const settings = reasoningBudget(model, item.budget)\n      return settings ? [[item.id, settings]] : []\n    }),\n  )\n}\n\nfunction nonEmptyVariants(variants: NonNullable<Provider.Model[\"variants\"]>): Provider.Model[\"variants\"] {\n  return Object.keys(variants).length > 0 ? variants : undefined\n}\n\nfunction reasoningToggle(model: Provider.Model): NonNullable<Provider.Model[\"variants\"]> {\n  if (model.api.npm === \"@ai-sdk/alibaba\")\n    return {\n      none: { enableThinking: false },\n      high: { enableThinking: true },\n    }\n  if (model.api.npm === \"@ai-sdk/cohere\")\n    return {\n      none: { thinking: { type: \"disabled\" } },\n      high: { thinking: { type: \"enabled\" } },\n    }\n  return {}\n}\n\nfunction reasoningEffort(model: Provider.Model, effort: string) {\n  switch (model.api.npm) {\n    case \"@openrouter/ai-sdk-provider\":\n      return { reasoning: { effort } }\n    case \"@ai-sdk/anthropic\":\n    case \"@ai-sdk/google-vertex/anthropic\":\n      return anthropicEffort(model, effort) ?? { effort }\n    case \"@ai-sdk/google\":\n    case \"@ai-sdk/google-vertex\":\n      return { thinkingConfig: { includeThoughts: true, thinkingLevel: effort } }\n    case \"@ai-sdk/amazon-bedrock\":\n      if (anthropicAdaptiveEfforts(model.api.id))\n        return {\n          reasoningConfig: {\n            type: \"adaptive\",\n            maxReasoningEffort: effort,\n            ...(anthropicOmitsThinking(model.api.id) ? { display: \"summarized\" } : {}),\n          },\n        }\n      if (anthropicOpus45(model.api.id))\n        return {\n          reasoningConfig: {\n            type: \"enabled\",\n            budgetTokens: Math.min(16_000, Math.floor(model.limit.output / 2 - 1)),\n            maxReasoningEffort: effort,\n          },\n        }\n      if (model.api.id.includes(\"anthropic\")) return\n      return { reasoningConfig: { type: \"enabled\", maxReasoningEffort: effort } }\n    case \"@ai-sdk/gateway\":\n      if (model.id.includes(\"anthropic\")) return { thinking: { type: \"adaptive\", display: \"summarized\" }, effort }\n      if (model.id.includes(\"google\")) return { thinkingConfig: { includeThoughts: true, thinkingLevel: effort } }\n      return { reasoningEffort: effort }\n    case \"@ai-sdk/github-copilot\":\n      // OAuth discovery replaces these with variants from Copilot's /models capabilities.\n      if (model.id.includes(\"gemini\")) return\n      if (model.id.includes(\"claude\")) return { reasoningEffort: effort }\n      return { reasoningEffort: effort, reasoningSummary: \"auto\", include: INCLUDE_ENCRYPTED_REASONING }\n    case \"@ai-sdk/openai\":\n    case \"@ai-sdk/amazon-bedrock/mantle\":\n      return { reasoningEffort: effort, reasoningSummary: \"auto\", include: INCLUDE_ENCRYPTED_REASONING }\n    case \"@ai-sdk/azure\":\n      return { reasoningEffort: effort, reasoningSummary: \"auto\", include: INCLUDE_ENCRYPTED_REASONING }\n    case \"@jerome-benoit/sap-ai-provider-v2\":\n      if (model.id.includes(\"anthropic\"))\n        return { modelParams: { thinking: { type: \"adaptive\", display: \"summarized\" }, output_config: { effort } } }\n      return { modelParams: { reasoning_effort: effort } }\n    case \"@ai-sdk/openai-compatible\":\n    case \"@ai-sdk/xai\":\n    case \"@ai-sdk/mistral\":\n    case \"@ai-sdk/groq\":\n    case \"@ai-sdk/cerebras\":\n    case \"@ai-sdk/deepinfra\":\n    case \"@ai-sdk/togetherai\":\n    case \"venice-ai-sdk-provider\":\n    case \"ai-gateway-provider\":\n    case \"merge-gateway-ai-sdk-provider\":\n      return { reasoningEffort: effort }\n    case \"gitlab-ai-provider\":\n      if (model.family?.startsWith(\"gpt\")) return { reasoningEffort: effort }\n      if (model.family?.startsWith(\"claude\")) return { thinking: { type: \"adaptive\", effort } }\n      return\n    case \"@ai-sdk/cohere\":\n    case \"@ai-sdk/perplexity\":\n    case \"@ai-sdk/vercel\":\n    case \"@ai-sdk/alibaba\":\n      return\n  }\n}\n\nfunction anthropicEffort(model: Provider.Model, effort: string) {\n  if (anthropicOpus45(model.api.id)) return anthropicOpus45Effort(model, effort)\n  // Kimi defaults to omitting adaptive thinking text unless summarized display is requested.\n  if (isKimiFamily(model)) return { thinking: { type: \"adaptive\", display: \"summarized\" }, effort }\n  if (!anthropicAdaptiveEfforts(model.api.id)) return\n  return {\n    thinking: {\n      type: \"adaptive\",\n      ...(anthropicOmitsThinking(model.api.id) ? { display: \"summarized\" } : {}),\n    },\n    effort,\n  }\n}\n\nfunction anthropicOpus45Effort(model: Provider.Model, effort: string) {\n  return {\n    thinking: {\n      type: \"enabled\",\n      budgetTokens: Math.min(16_000, Math.floor(model.limit.output / 2 - 1)),\n    },\n    effort,\n  }\n}\n\nfunction reasoningBudget(model: Provider.Model, budget: number) {\n  switch (model.api.npm) {\n    case \"@openrouter/ai-sdk-provider\":\n      return { reasoning: { max_tokens: budget } }\n    case \"@ai-sdk/anthropic\":\n    case \"@ai-sdk/google-vertex/anthropic\":\n      return { thinking: { type: \"enabled\", budgetTokens: budget } }\n    case \"@ai-sdk/google\":\n    case \"@ai-sdk/google-vertex\":\n      return { thinkingConfig: { includeThoughts: true, thinkingBudget: budget } }\n    case \"@ai-sdk/amazon-bedrock\":\n      return { reasoningConfig: { type: \"enabled\", budgetTokens: budget } }\n    case \"@ai-sdk/gateway\":\n      if (model.id.includes(\"anthropic\")) return { thinking: { type: \"enabled\", budgetTokens: budget } }\n      if (model.id.includes(\"google\")) return { thinkingConfig: { includeThoughts: true, thinkingBudget: budget } }\n      return\n    case \"@ai-sdk/cohere\":\n      return { thinking: { type: \"enabled\", tokenBudget: budget } }\n    case \"@ai-sdk/alibaba\":\n      return { enableThinking: true, thinkingBudget: budget }\n    case \"@jerome-benoit/sap-ai-provider-v2\":\n      if (model.id.includes(\"anthropic\"))\n        return { modelParams: { thinking: { type: \"enabled\", budget_tokens: budget } } }\n      if (model.id.includes(\"gemini\"))\n        return { modelParams: { thinkingConfig: { includeThoughts: true, thinkingBudget: budget } } }\n      return\n    case \"@ai-sdk/amazon-bedrock/mantle\":\n    case \"@ai-sdk/azure\":\n    case \"@ai-sdk/cerebras\":\n    case \"@ai-sdk/deepinfra\":\n    case \"@ai-sdk/github-copilot\":\n    case \"@ai-sdk/groq\":\n    case \"@ai-sdk/mistral\":\n    case \"@ai-sdk/openai\":\n    case \"@ai-sdk/openai-compatible\":\n    case \"@ai-sdk/perplexity\":\n    case \"@ai-sdk/togetherai\":\n    case \"@ai-sdk/vercel\":\n    case \"@ai-sdk/xai\":\n    case \"ai-gateway-provider\":\n    case \"gitlab-ai-provider\":\n    case \"venice-ai-sdk-provider\":\n      return\n  }\n}\n\nexport * as ProviderTransform from \"./transform\"\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/provider/transform.ts",
+          "startLine": 1717,
+          "endLine": 1922,
+          "sha256": "992c24b2158ab03fee12faebeadfd2beda498139bebc0218d2d837c0751ccb13",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1717-L1922"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Model catalog provides reasoning_options; effort, toggle or token-budget variants are mapped to selected SDK settings.",
+        "summary": "OpenRouter maps effort/budget to reasoning; Alibaba maps toggle/budget to enableThinking/thinkingBudget. This is configuration mapping, not provider response evidence."
+      }
+    },
+    {
+      "id": "network-option-namespaces",
+      "title": "Provider option namespaces",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export function providerOptions(model: Provider.Model, options: { [x: string]: any }) {\n  const usesOpenAIReasoningGate =\n    model.api.npm === \"@ai-sdk/openai\" ||\n    model.api.npm === \"@ai-sdk/azure\" ||\n    model.api.npm === \"@ai-sdk/amazon-bedrock/mantle\"\n  const normalized =\n    usesOpenAIReasoningGate &&\n    (model.capabilities.reasoning || options.reasoningEffort !== undefined || options.reasoningSummary !== undefined)\n      ? { ...options, forceReasoning: true }\n      : anthropicBlockBinding(model, options)\n\n  if (model.api.npm === \"@ai-sdk/gateway\") {\n    // Gateway providerOptions are split across two namespaces:\n    // - `gateway`: gateway-native routing/caching controls (order, only, byok, etc.)\n    // - `<upstream slug>`: provider-specific model options (anthropic/openai/...)\n    // We keep `gateway` as-is and route every other top-level option under the\n    // model-derived upstream slug.\n    const i = model.api.id.indexOf(\"/\")\n    const rawSlug = i > 0 ? model.api.id.slice(0, i) : undefined\n    const slug = rawSlug ? (SLUG_OVERRIDES[rawSlug] ?? rawSlug) : undefined\n    const gateway = normalized.gateway\n    const rest = Object.fromEntries(Object.entries(normalized).filter(([k]) => k !== \"gateway\"))\n    const has = Object.keys(rest).length > 0\n\n    const result: Record<string, any> = {}\n    if (gateway !== undefined) result.gateway = gateway\n\n    if (has) {\n      if (slug) {\n        // Route model-specific options under the provider slug\n        result[slug] = rest\n      } else if (gateway && typeof gateway === \"object\" && !Array.isArray(gateway)) {\n        result.gateway = { ...gateway, ...rest }\n      } else {\n        result.gateway = rest\n      }\n    }\n\n    return result\n  }\n\n  // AI SDK packages that resolve providerOptionsName by splitting the\n  // provider name on \".\" (e.g. \"wafer.ai\" -> \"wafer\") need the same\n  // logic here so the key we write matches the key they read.\n  // Other SDKs (xai, mistral, groq, cohere, etc.) use hardcoded keys\n  // like \"xai\" or \"cohere\" - applying .split(\".\")[0] would break those.\n  const usesDotSplitOptions =\n    model.api.npm === \"@ai-sdk/openai-compatible\" ||\n    model.api.npm === \"@ai-sdk/openai\" ||\n    model.api.npm === \"@ai-sdk/anthropic\"\n  const key = sdkKey(model.api.npm) ?? (usesDotSplitOptions ? model.providerID.split(\".\")[0] : model.providerID)\n  // @ai-sdk/azure delegates to OpenAIChatLanguageModel which reads from\n  // providerOptions[\"openai\"], but OpenAIResponsesLanguageModel checks\n  // \"azure\" first. Pass both so model options work on either code path.\n  if (model.api.npm === \"@ai-sdk/azure\") {\n    return { openai: normalized, azure: normalized }\n  }\n  return { [key]: normalized }\n}\n\nexport function maxOutputTokens(model: Provider.Model, outputTokenMax = OUTPUT_TOKEN_MAX): number {\n  return Math.min(model.limit.output, outputTokenMax) || outputTokenMax\n}\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/provider/transform.ts",
+          "startLine": 1421,
+          "endLine": 1483,
+          "sha256": "f2988163dc589be9c2e56ad444ef99457edd572c5bcb4d39b70017b2471a5b43",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1421-L1483"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "ProviderTransform.providerOptions is called before SDK execution.",
+        "summary": "Maps package to expected namespace; Azure receives openai and azure; gateway options split routing controls from model publisher options. Provider IDs and model publishers are distinct."
+      }
+    },
+    {
+      "id": "network-ai-sdk-reasoning",
+      "title": "AI SDK stream normalization",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "import { FinishReason, LLMEvent, ProviderMetadata, ToolResultValue } from \"@opencode-ai/llm\"\nimport { Effect, Schema } from \"effect\"\nimport { type streamText } from \"ai\"\nimport { errorMessage } from \"@/util/error\"\nimport { ProviderError } from \"@/provider/error\"\n\ntype Result = Awaited<ReturnType<typeof streamText>>\ntype AISDKEvent = Result[\"fullStream\"] extends AsyncIterable<infer T> ? T : never\n\nexport function adapterState() {\n  return {\n    step: 0,\n    text: 0,\n    reasoning: 0,\n    currentTextID: undefined as string | undefined,\n    currentReasoningID: undefined as string | undefined,\n    toolNames: {} as Record<string, string>,\n    copilotTotalNanoAiu: undefined as number | undefined,\n  }\n}\n\nfunction finishReason(value: string | undefined): FinishReason {\n  return Schema.is(FinishReason)(value) ? value : \"unknown\"\n}\n\nfunction providerMetadata(value: unknown): ProviderMetadata | undefined {\n  if (value == null) return undefined\n  return Schema.is(ProviderMetadata)(value) ? value : undefined\n}\n\n// Temporary AI SDK bridge: Copilot billing survives only in raw provider chunks here.\n// Move this extraction into @opencode-ai/llm when Copilot is handled by the native runtime.\nfunction copilotTotalNanoAiu(value: unknown) {\n  if (!value || typeof value !== \"object\") return\n  const raw = value as Record<string, unknown>\n  const response =\n    raw.response && typeof raw.response === \"object\" ? (raw.response as Record<string, unknown>) : undefined\n  const usage = raw.copilot_usage ?? response?.copilot_usage\n  if (!usage || typeof usage !== \"object\") return\n  const total = (usage as Record<string, unknown>).total_nano_aiu\n  if (typeof total !== \"number\" || !Number.isFinite(total) || total < 0) return\n  return total\n}\n\nfunction usage(value: unknown) {\n  if (!value || typeof value !== \"object\") return undefined\n  const item = value as {\n    inputTokens?: number\n    outputTokens?: number\n    totalTokens?: number\n    reasoningTokens?: number\n    cachedInputTokens?: number\n    inputTokenDetails?: { cacheReadTokens?: number; cacheWriteTokens?: number }\n    outputTokenDetails?: { reasoningTokens?: number }\n  }\n  const entries = Object.entries({\n    inputTokens: item.inputTokens,\n    outputTokens: item.outputTokens,\n    totalTokens: item.totalTokens,\n    reasoningTokens: item.outputTokenDetails?.reasoningTokens ?? item.reasoningTokens,\n    cacheReadInputTokens: item.inputTokenDetails?.cacheReadTokens ?? item.cachedInputTokens,\n    cacheWriteInputTokens: item.inputTokenDetails?.cacheWriteTokens,\n  }).filter((entry) => entry[1] !== undefined)\n  return entries.length === 0 ? undefined : Object.fromEntries(entries)\n}\n\nfunction currentTextID(state: ReturnType<typeof adapterState>, id: string | undefined) {\n  state.currentTextID = id ?? state.currentTextID ?? `text-${state.text++}`\n  return state.currentTextID\n}\n\nfunction currentReasoningID(state: ReturnType<typeof adapterState>, id: string | undefined) {\n  state.currentReasoningID = id ?? state.currentReasoningID ?? `reasoning-${state.reasoning++}`\n  return state.currentReasoningID\n}\n\nexport function toLLMEvents(\n  state: ReturnType<typeof adapterState>,\n  event: AISDKEvent,\n): Effect.Effect<ReadonlyArray<LLMEvent>, unknown> {\n  switch (event.type) {\n    case \"start\":\n      return Effect.succeed([])\n\n    case \"start-step\":\n      return Effect.succeed([LLMEvent.stepStart({ index: state.step })])\n\n    case \"finish-step\":\n      if (event.rawFinishReason === \"network_error\")\n        return Effect.fail(new ProviderError.ResponseStreamError(\"Provider finish_reason: network_error\"))\n      return Effect.sync(() => {\n        const original = providerMetadata(event.providerMetadata)\n        const metadata =\n          state.copilotTotalNanoAiu === undefined\n            ? original\n            : {\n                ...original,\n                copilot: {\n                  ...original?.copilot,\n                  totalNanoAiu: state.copilotTotalNanoAiu,\n                },\n              }\n        state.copilotTotalNanoAiu = undefined\n        return [\n          LLMEvent.stepFinish({\n            index: state.step++,\n            reason: finishReason(event.finishReason),\n            usage: usage(event.usage),\n            providerMetadata: metadata,\n          }),\n        ]\n      })\n\n    case \"finish\":\n      return Effect.sync(() => {\n        const events = [\n          LLMEvent.finish({\n            reason: finishReason(event.finishReason),\n            usage: usage(event.totalUsage),\n            providerMetadata: \"providerMetadata\" in event ? providerMetadata(event.providerMetadata) : undefined,\n          }),\n        ]\n        // Reset so the adapter can be reused for a follow-up stream without leaking\n        // counters or block IDs. adapterState() is the single source of truth for shape.\n        Object.assign(state, adapterState())\n        return events\n      })\n\n    case \"text-start\":\n      return Effect.sync(() => {\n        state.currentTextID = currentTextID(state, event.id)\n        return [\n          LLMEvent.textStart({\n            id: state.currentTextID,\n            providerMetadata: providerMetadata(event.providerMetadata),\n          }),\n        ]\n      })\n\n    case \"text-delta\":\n      return Effect.succeed([\n        LLMEvent.textDelta({\n          id: currentTextID(state, event.id),\n          text: event.text,\n          providerMetadata: providerMetadata(event.providerMetadata),\n        }),\n      ])\n\n    case \"text-end\":\n      return Effect.sync(() => {\n        const id = currentTextID(state, event.id)\n        state.currentTextID = undefined\n        return [\n          LLMEvent.textEnd({\n            id,\n            providerMetadata: providerMetadata(event.providerMetadata),\n          }),\n        ]\n      })\n\n    case \"reasoning-start\":\n      return Effect.sync(() => {\n        state.currentReasoningID = currentReasoningID(state, event.id)\n        return [\n          LLMEvent.reasoningStart({\n            id: state.currentReasoningID,\n            providerMetadata: providerMetadata(event.providerMetadata),\n          }),\n        ]\n      })\n\n    case \"reasoning-delta\":\n      return Effect.succeed([\n        LLMEvent.reasoningDelta({\n          id: currentReasoningID(state, event.id),\n          text: event.text,\n          providerMetadata: providerMetadata(event.providerMetadata),\n        }),\n      ])\n\n    case \"reasoning-end\":\n      return Effect.sync(() => {\n        const id = currentReasoningID(state, event.id)\n        state.currentReasoningID = undefined\n        return [\n          LLMEvent.reasoningEnd({\n            id,\n            providerMetadata: providerMetadata(event.providerMetadata),\n          }),\n        ]\n      })\n\n    case \"tool-input-start\":\n      return Effect.sync(() => {\n        state.toolNames[event.id] = event.toolName\n        return [\n          LLMEvent.toolInputStart({\n            id: event.id,\n            name: event.toolName,\n            providerMetadata: providerMetadata(event.providerMetadata),\n          }),\n        ]\n      })\n\n    case \"tool-input-delta\":\n      return Effect.succeed([\n        LLMEvent.toolInputDelta({\n          id: event.id,\n          name: state.toolNames[event.id] ?? \"unknown\",\n          text: event.delta ?? \"\",\n        }),\n      ])\n\n    case \"tool-input-end\":\n      return Effect.succeed([\n        LLMEvent.toolInputEnd({\n          id: event.id,\n          name: state.toolNames[event.id] ?? \"unknown\",\n          providerMetadata: providerMetadata(event.providerMetadata),\n        }),\n      ])\n\n    case \"tool-call\":\n      return Effect.sync(() => {\n        state.toolNames[event.toolCallId] = event.toolName\n        return [\n          LLMEvent.toolCall({\n            id: event.toolCallId,\n            name: event.toolName,\n            input: event.input,\n            providerExecuted: \"providerExecuted\" in event ? event.providerExecuted : undefined,\n            providerMetadata: providerMetadata(event.providerMetadata),\n          }),\n        ]\n      })\n\n    case \"tool-result\":\n      return Effect.sync(() => {\n        const name = state.toolNames[event.toolCallId] ?? \"unknown\"\n        delete state.toolNames[event.toolCallId]\n        return [\n          LLMEvent.toolResult({\n            id: event.toolCallId,\n            name,\n            result: ToolResultValue.make(event.output),\n            providerExecuted: \"providerExecuted\" in event ? event.providerExecuted : undefined,\n            providerMetadata: providerMetadata(event.providerMetadata),\n          }),\n        ]\n      })\n\n    case \"tool-error\":\n      return Effect.sync(() => {\n        const name = state.toolNames[event.toolCallId] ?? (\"toolName\" in event ? event.toolName : \"unknown\")\n        delete state.toolNames[event.toolCallId]\n        return [\n          LLMEvent.toolError({\n            id: event.toolCallId,\n            name,\n            message: errorMessage(event.error),\n            error: event.error,\n            providerMetadata: providerMetadata(event.providerMetadata),\n          }),\n        ]\n      })\n\n    case \"error\":\n      return Effect.fail(event.error)\n\n    case \"abort\":\n    case \"source\":\n    case \"file\":\n    case \"tool-output-denied\":\n    case \"tool-approval-request\":\n      return Effect.succeed([])\n\n    case \"raw\":\n      return Effect.sync(() => {\n        state.copilotTotalNanoAiu = copilotTotalNanoAiu(event.rawValue) ?? state.copilotTotalNanoAiu\n        return []\n      })\n\n    default: {\n      const _exhaustive: never = event\n      void _exhaustive\n      return Effect.succeed([])\n    }\n  }\n}\n\nexport * as LLMAISDK from \"./ai-sdk\"\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/llm/ai-sdk.ts",
+          "startLine": 1,
+          "endLine": 291,
+          "sha256": "3d2e653811abaf230b3fea9a54049499d1be2c09dabe017ed4eb99918ee7def5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/ai-sdk.ts#L1-L291"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Default AI SDK runtime fullStream is converted into canonical LLMEvents.",
+        "summary": "Reasoning start/delta/end remain separate from text; usage and finish metadata are normalized; errors fail the stream. This code does not reconstruct hidden/encrypted reasoning."
+      }
+    },
+    {
+      "id": "network-reasoning-storage",
+      "title": "Visible reasoning persistence",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "      const handleEvent = Effect.fnUntraced(function* (value: StreamEvent) {\n        switch (value.type) {\n          case \"reasoning-start\":\n            if (value.id in ctx.reasoningMap) return\n            ctx.reasoningMap[value.id] = {\n              id: PartID.ascending(),\n              messageID: ctx.assistantMessage.id,\n              sessionID: ctx.assistantMessage.sessionID,\n              type: \"reasoning\",\n              text: \"\",\n              time: { start: Date.now() },\n              metadata: value.providerMetadata,\n            }\n            yield* session.updatePart(ctx.reasoningMap[value.id])\n            return\n\n          case \"reasoning-delta\":\n            // Match dev: silently drop orphan deltas (no preceding reasoning-start).\n            if (!(value.id in ctx.reasoningMap)) return\n            ctx.reasoningMap[value.id].text += value.text\n            if (value.providerMetadata) ctx.reasoningMap[value.id].metadata = value.providerMetadata\n            yield* session.updatePartDelta({\n              sessionID: ctx.reasoningMap[value.id].sessionID,\n              messageID: ctx.reasoningMap[value.id].messageID,\n              partID: ctx.reasoningMap[value.id].id,\n              field: \"text\",\n              delta: value.text,\n            })\n            return\n\n          case \"reasoning-end\":\n            if (value.providerMetadata && value.id in ctx.reasoningMap) {\n              ctx.reasoningMap[value.id].metadata = value.providerMetadata\n            }\n            yield* finishReasoning(value.id)\n            return\n\n          case \"tool-input-start\":\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/processor.ts",
+          "startLine": 278,
+          "endLine": 315,
+          "sha256": "a4f082ea43e0e2c284e277f8e25d8b7847602e01a701e0c6b56d0e2311fa6e2f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L278-L315"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Reasoning events arrive from the selected runtime with a preceding reasoning-start.",
+        "summary": "Persists distinct reasoning parts and provider metadata. Orphan reasoning deltas are dropped, so stored exports can differ from raw wire streams."
+      }
+    },
+    {
+      "id": "network-finish-usage",
+      "title": "Step finish, usage and provider transformations",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "          case \"step-finish\": {\n            const completedSnapshot = yield* snapshot.track()\n            yield* Effect.forEach(Object.keys(ctx.reasoningMap), finishReasoning)\n            // Anthropic reports thinking blocks it removed before the model saw the\n            // prompt. Prefix mismatches mean opencode changed history behind a signed\n            // block; log them so the churn can be tracked down.\n            const dropped = isRecord(value.providerMetadata?.anthropic)\n              ? value.providerMetadata.anthropic.inputTransformations\n              : undefined\n            if (Array.isArray(dropped) && dropped.length > 0) {\n              yield* Effect.logWarning(\"thinking blocks dropped by provider\", {\n                sessionID: ctx.sessionID,\n                messageID: ctx.assistantMessage.id,\n                model: ctx.model.id,\n                transformations: JSON.stringify(dropped),\n              })\n            }\n            const usage = Session.getUsage({\n              model: ctx.model,\n              usage: value.usage ?? new Usage({}),\n              metadata: value.providerMetadata,\n            })\n            ctx.assistantMessage.finish = value.reason\n            ctx.assistantMessage.cost += usage.cost\n            ctx.assistantMessage.tokens = usage.tokens\n            yield* session.updatePart({\n              id: PartID.ascending(),\n              reason: value.reason,\n              snapshot: completedSnapshot,\n              messageID: ctx.assistantMessage.id,\n              sessionID: ctx.assistantMessage.sessionID,\n              type: \"step-finish\",\n              tokens: usage.tokens,\n              cost: usage.cost,\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/processor.ts",
+          "startLine": 435,
+          "endLine": 468,
+          "sha256": "59efe7713cec0b053b1af8fb391ce590b7b15bf715aae645219486825e3a3296",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L435-L468"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Session processor receives step-finish from the selected runtime.",
+        "summary": "Stores finish reason and normalized tokens/cost; logs provider-reported dropped thinking blocks and closes remaining reasoning parts. Raw capture is needed to inspect metadata that does not survive export."
+      }
+    },
+    {
+      "id": "network-encrypted-reasoning",
+      "title": "Opaque reasoning replay metadata",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "const lowerReasoning = (part: ReasoningPart): OpenAIResponsesReasoningInput | undefined => {\n  const openai = part.providerMetadata?.openai\n  if (!ProviderShared.isRecord(openai) || typeof openai.itemId !== \"string\" || openai.itemId.length === 0)\n    return undefined\n  const encryptedContent =\n    typeof openai.reasoningEncryptedContent === \"string\"\n      ? openai.reasoningEncryptedContent\n      : openai.reasoningEncryptedContent === null\n        ? null\n        : undefined\n  return {\n    type: \"reasoning\",\n    id: openai.itemId,\n    summary: part.text.length > 0 ? [{ type: \"summary_text\", text: part.text }] : [],\n    encrypted_content: encryptedContent,\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/llm/src/protocols/openai-responses.ts",
+          "startLine": 283,
+          "endLine": 300,
+          "sha256": "b48097c72da0a5b53e196db7e809db6a9638ea4ea5b6f7d13b96aba3c4ff90a7",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L283-L300"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Native OpenAI Responses lowering sees a reasoning part with valid provider item ID metadata.",
+        "summary": "Visible part text becomes summary_text; reasoningEncryptedContent is passed separately as opaque encrypted_content or null. Encrypted bytes are not readable reasoning text."
+      }
+    },
+    {
+      "id": "network-reasoning-summary-stream",
+      "title": "Native reasoning summary deltas and opaque metadata",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "const onReasoningDelta = (state: ParserState, event: OpenAIResponsesEvent): StepResult => {\n  if (!event.delta) return [state, NO_EVENTS]\n  const events: LLMEvent[] = []\n  const itemID = event.item_id ?? \"reasoning-0\"\n  const id =\n    event.summary_index !== undefined || state.reasoningItems[itemID] ? `${itemID}:${event.summary_index ?? 0}` : itemID\n  return [\n    {\n      ...state,\n      lifecycle: Lifecycle.reasoningDelta(state.lifecycle, events, id, event.delta),\n    },\n    events,\n  ]\n}\n\nconst onReasoningDone = (state: ParserState, _event: OpenAIResponsesEvent): StepResult => [state, NO_EVENTS]\n\nconst reasoningMetadata = (item: OpenAIResponsesStreamItem & { id: string }) =>\n  openaiMetadata({ itemId: item.id, reasoningEncryptedContent: item.encrypted_content ?? null })\n\n// OpenAI Responses streams reasoning items in a stable order:\n//   `output_item.added` (reasoning) →\n//     `reasoning_summary_part.added` (index=0) →\n//     `reasoning_summary_text.delta` →\n//     `reasoning_summary_part.done` (index=0) →\n//     (repeat for index>0) →\n//   `output_item.done` (reasoning).\n// The handlers below rely on this ordering: `onOutputItemAdded` seeds the\n// per-item entry, `onReasoningSummaryPartAdded` for `summary_index === 0`\n// short-circuits when the entry already exists, and higher-index handlers\n// fold against the same entry. Behaviour for out-of-order events is\n// best-effort, not guaranteed.\nconst onOutputItemAdded = (state: ParserState, event: OpenAIResponsesEvent): StepResult => {\n  const item = event.item\n  if (item && isReasoningItem(item)) {\n    const events: LLMEvent[] = []\n    return [\n      {\n        ...state,\n        lifecycle: Lifecycle.reasoningStart(state.lifecycle, events, `${item.id}:0`, reasoningMetadata(item)),\n        reasoningItems: {\n          ...state.reasoningItems,\n          [item.id]: { encryptedContent: item.encrypted_content, summaryParts: { 0: \"active\" } },\n        },\n      },\n      events,\n    ]\n  }\n",
+      "provenance": [
+        {
+          "file": "packages/llm/src/protocols/openai-responses.ts",
+          "startLine": 624,
+          "endLine": 671,
+          "sha256": "9c7e9b950c3ea0eee3f9cfad3f3857b71c241eac3bc07573bf003876899277a4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L624-L671"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Native OpenAI Responses stream receives reasoning summary and output-item events.",
+        "summary": "Summary deltas become visible reasoning events, while encrypted_content stays in provider metadata. Ordering is handled on a best-effort basis when events are unexpected."
+      }
+    },
+    {
+      "id": "network-history-replay",
+      "title": "Stored assistant history replay and model changes",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "      const differentModel = `${model.providerID}/${model.id}` !== `${msg.info.providerID}/${msg.info.modelID}`\n      const media: Array<{ mime: string; url: string; filename?: string }> = []\n\n      if (\n        msg.info.error &&\n        !(\n          AbortedError.isInstance(msg.info.error) &&\n          msg.parts.some((part) => part.type !== \"step-start\" && part.type !== \"reasoning\")\n        )\n      ) {\n        continue\n      }\n      const assistantMessage: UIMessage = {\n        id: msg.info.id,\n        role: \"assistant\",\n        parts: [],\n      }\n      // Anthropic adaptive thinking can persist assistant turns like:\n      // step-start, reasoning(signature), text(\"\"), step-start,\n      // reasoning(signature). The empty text part is a structural separator,\n      // but it does not carry the signature metadata itself. Dropping it shifts\n      // signed thinking positions after step-start splitting/provider regrouping;\n      // keeping it as \"\" is filtered by the AI SDK and rejected by Anthropic.\n      // It is unclear whether this shape originates in our stream processing,\n      // a proxy, or a lower-level library, but preserving a non-empty separator\n      // here is the only safe replay point we have.\n      // Use a single space so the separator survives replay without changing\n      // the neighboring signed reasoning blocks.\n      const hasSignedReasoning = msg.parts.some((part) => {\n        if (part.type !== \"reasoning\") return false\n        return part.metadata?.anthropic?.signature != null\n      })\n      for (const part of msg.parts) {\n        if (part.type === \"text\") {\n          const text = part.text === \"\" && hasSignedReasoning ? \" \" : part.text\n          assistantMessage.parts.push({\n            type: \"text\",\n            text,\n            ...(differentModel ? {} : { providerMetadata: part.metadata }),\n          })\n        }\n        if (part.type === \"step-start\")\n          assistantMessage.parts.push({\n            type: \"step-start\",\n          })\n        if (part.type === \"tool\") {\n          toolNames.add(part.tool)\n          if (part.state.status === \"completed\") {\n            const outputText = part.state.time.compacted\n              ? \"[Old tool result content cleared]\"\n              : truncateToolOutput(part.state.output, options?.toolOutputMaxChars)\n            const attachments = part.state.time.compacted || options?.stripMedia ? [] : (part.state.attachments ?? [])\n\n            // For providers that don't support media in tool results, extract media files\n            // (images, PDFs) to be sent as a separate user message\n            const mediaAttachments = attachments.filter((a) => isMedia(a.mime))\n            const extractedMedia = mediaAttachments.filter((a) => !supportsMediaInToolResult(a))\n            if (extractedMedia.length > 0) {\n              media.push(...extractedMedia)\n            }\n            const finalAttachments = attachments.filter((a) => !isMedia(a.mime) || supportsMediaInToolResult(a))\n\n            const output =\n              finalAttachments.length > 0\n                ? {\n                    text: outputText,\n                    attachments: finalAttachments,\n                  }\n                : outputText\n\n            assistantMessage.parts.push({\n              type: (\"tool-\" + part.tool) as `tool-${string}`,\n              state: \"output-available\",\n              toolCallId: part.callID,\n              input: part.state.input,\n              output,\n              ...(part.metadata?.providerExecuted ? { providerExecuted: true } : {}),\n              ...(differentModel ? {} : { callProviderMetadata: providerMeta(part.metadata) }),\n            })\n          }\n          if (part.state.status === \"error\") {\n            const output = part.state.metadata?.interrupted === true ? part.state.metadata.output : undefined\n            if (typeof output === \"string\") {\n              assistantMessage.parts.push({\n                type: (\"tool-\" + part.tool) as `tool-${string}`,\n                state: \"output-available\",\n                toolCallId: part.callID,\n                input: part.state.input,\n                output,\n                ...(part.metadata?.providerExecuted ? { providerExecuted: true } : {}),\n                ...(differentModel ? {} : { callProviderMetadata: providerMeta(part.metadata) }),\n              })\n            } else {\n              assistantMessage.parts.push({\n                type: (\"tool-\" + part.tool) as `tool-${string}`,\n                state: \"output-error\",\n                toolCallId: part.callID,\n                input: part.state.input,\n                errorText: part.state.error,\n                ...(part.metadata?.providerExecuted ? { providerExecuted: true } : {}),\n                ...(differentModel ? {} : { callProviderMetadata: providerMeta(part.metadata) }),\n              })\n            }\n          }\n          // Handle pending/running tool calls to prevent dangling tool_use blocks\n          // Anthropic/Claude APIs require every tool_use to have a corresponding tool_result\n          if (part.state.status === \"pending\" || part.state.status === \"running\")\n            assistantMessage.parts.push({\n              type: (\"tool-\" + part.tool) as `tool-${string}`,\n              state: \"output-error\",\n              toolCallId: part.callID,\n              input: part.state.input,\n              errorText: \"[Tool execution was interrupted]\",\n              ...(part.metadata?.providerExecuted ? { providerExecuted: true } : {}),\n              ...(differentModel ? {} : { callProviderMetadata: providerMeta(part.metadata) }),\n            })\n        }\n        if (part.type === \"reasoning\") {\n          if (differentModel) {\n            if (part.text.trim().length > 0)\n              assistantMessage.parts.push({\n                type: \"text\",\n                text: part.text,\n              })\n            continue\n          }\n          assistantMessage.parts.push({\n            type: \"reasoning\",\n            text: part.text,\n            providerMetadata: part.metadata,\n          })\n        }\n      }\n      if (assistantMessage.parts.length > 0) {\n        result.push(assistantMessage)\n        // Inject pending media as a user message for providers that don't support\n        // media (images, PDFs) in tool results\n        if (media.length > 0) {\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/message-v2.ts",
+          "startLine": 249,
+          "endLine": 386,
+          "sha256": "e01ecbdc054a2635d42193f9fba01e83f10d2dcfe62e16007be3a09b9440bdaa",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/message-v2.ts#L249-L386"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "MessageV2 converts stored session parts for a new selected provider/model.",
+        "summary": "For the same model, reasoning parts preserve provider metadata. When model changes, nonempty reasoning becomes text and metadata is omitted. Completed, failed and interrupted tools have separate replay paths."
+      }
+    },
+    {
+      "id": "network-export",
+      "title": "Native JSON export boundary",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const ExportCommand = effectCmd({\n  command: \"export [sessionID]\",\n  describe: \"export session data as JSON\",\n  builder: (yargs) =>\n    yargs\n      .positional(\"sessionID\", {\n        describe: \"session id to export\",\n        type: \"string\",\n      })\n      .option(\"sanitize\", {\n        describe: \"redact sensitive transcript and file data\",\n        type: \"boolean\",\n      }),\n  handler: Effect.fn(\"Cli.export\")(function* (args) {\n    return yield* run(args)\n  }),\n})\n\nconst run = Effect.fn(\"Cli.export.body\")(function* (args: { sessionID?: string; sanitize?: boolean }) {\n  const svc = yield* Session.Service\n  let sessionID = args.sessionID ? SessionID.make(args.sessionID) : undefined\n  process.stderr.write(`Exporting session: ${sessionID ?? \"latest\"}\\n`)\n\n  if (!sessionID) {\n    UI.empty()\n    prompts.intro(\"Export session\", { output: process.stderr })\n\n    const sessions = yield* svc.list()\n\n    if (sessions.length === 0) {\n      prompts.log.error(\"No sessions found\", { output: process.stderr })\n      prompts.outro(\"Done\", { output: process.stderr })\n      return\n    }\n\n    sessions.sort((a, b) => b.time.updated - a.time.updated)\n\n    const selectedSession = yield* Effect.promise(() =>\n      prompts.autocomplete({\n        message: \"Select session to export\",\n        maxItems: 10,\n        options: sessions.map((session) => ({\n          label: session.title,\n          value: session.id,\n          hint: `${new Date(session.time.updated).toLocaleString()} • ${session.id.slice(-8)}`,\n        })),\n        output: process.stderr,\n      }),\n    )\n\n    if (prompts.isCancel(selectedSession)) {\n      return yield* Effect.die(new UI.CancelledError())\n    }\n\n    sessionID = selectedSession\n\n    prompts.outro(\"Exporting session...\", { output: process.stderr })\n  }\n\n  // Match legacy try/catch — catches both typed failures and defects\n  // (Session.Service.get throws NotFoundError as a defect, not a typed E).\n  return yield* Effect.gen(function* () {\n    const sessionInfo = yield* svc.get(sessionID!)\n    const messages = yield* svc.messages({ sessionID: sessionInfo.id })\n\n    const exportData = { info: sessionInfo, messages }\n\n    process.stdout.write(JSON.stringify(args.sanitize ? sanitize(exportData) : exportData, null, 2))\n    process.stdout.write(EOL)\n  }).pipe(Effect.catchCause(() => fail(`Session not found: ${sessionID!}`)))\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/export.ts",
+          "startLine": 222,
+          "endLine": 292,
+          "sha256": "79e3bd1625f368d88c873397fe2aef8da4ae47d82f5d5a9bd23eb07ba11803cc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L222-L292"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "User explicitly runs export for a real session; optional sanitize mode redacts transcript/file data.",
+        "summary": "Writes {info,messages}, where each message carries info and parts from session storage. This is stored session evidence, not the fully assembled request or exact system prompt."
+      }
+    },
+    {
+      "id": "network-openrouter-package",
+      "title": "Native package OpenRouter protocol",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "import { Effect, Schema } from \"effect\"\nimport { Route, type RouteDefaultsInput } from \"../route/client\"\nimport { Endpoint } from \"../route/endpoint\"\nimport { Framing } from \"../route/framing\"\nimport { Protocol } from \"../route/protocol\"\nimport { AuthOptions, type ProviderAuthOption } from \"../route/auth-options\"\nimport { ProviderID, type ModelID, type ProviderOptions } from \"../schema\"\nimport * as OpenAICompatibleProfiles from \"./openai-compatible-profile\"\nimport * as OpenAIChat from \"../protocols/openai-chat\"\nimport { isRecord } from \"../protocols/shared\"\n\nexport const profile = OpenAICompatibleProfiles.profiles.openrouter\nexport const id = ProviderID.make(profile.provider)\nconst ADAPTER = \"openrouter\"\n\nexport interface OpenRouterOptions {\n  readonly [key: string]: unknown\n  readonly usage?: boolean | Record<string, unknown>\n  readonly reasoning?: Record<string, unknown>\n  readonly promptCacheKey?: string\n}\n\nexport type OpenRouterProviderOptionsInput = ProviderOptions & {\n  readonly openrouter?: OpenRouterOptions\n}\n\nexport type ModelOptions = Omit<RouteDefaultsInput, \"providerOptions\"> &\n  ProviderAuthOption<\"optional\"> & {\n    readonly baseURL?: string\n    readonly providerOptions?: OpenRouterProviderOptionsInput\n  }\n\nconst OpenRouterBody = Schema.StructWithRest(Schema.Struct(OpenAIChat.bodyFields), [\n  Schema.Record(Schema.String, Schema.Any),\n])\nexport type OpenRouterBody = Schema.Schema.Type<typeof OpenRouterBody>\n\nexport const protocol = Protocol.make({\n  id: \"openrouter-chat\",\n  body: {\n    schema: OpenRouterBody,\n    from: (request) =>\n      OpenAIChat.protocol.body.from(request).pipe(\n        Effect.map(\n          (body) =>\n            ({\n              ...body,\n              ...bodyOptions(request.providerOptions?.openrouter),\n            }) as OpenRouterBody,\n        ),\n      ),\n  },\n  stream: OpenAIChat.protocol.stream,\n})\n\nconst bodyOptions = (input: unknown) => {\n  const openrouter = isRecord(input) ? input : {}\n  return {\n    ...(openrouter.usage === true\n      ? { usage: { include: true } }\n      : isRecord(openrouter.usage)\n        ? { usage: openrouter.usage }\n        : {}),\n    ...(isRecord(openrouter.reasoning) ? { reasoning: openrouter.reasoning } : {}),\n    ...(typeof openrouter.promptCacheKey === \"string\" ? { prompt_cache_key: openrouter.promptCacheKey } : {}),\n  }\n}\n\nexport const route = Route.make({\n  id: ADAPTER,\n  provider: profile.provider,\n  protocol,\n  endpoint: Endpoint.path(\"/chat/completions\", { baseURL: profile.baseURL }),\n  framing: Framing.sse,\n})\n\nexport const routes = [route]\n\nconst configuredRoute = (input: ModelOptions) => {\n  const { apiKey: _, auth: _auth, baseURL, ...rest } = input\n  return route.with({\n    ...rest,\n    endpoint: { baseURL: baseURL ?? profile.baseURL },\n    auth: AuthOptions.bearer(input, \"OPENROUTER_API_KEY\"),\n  })\n}\n\nexport const configure = (input: ModelOptions = {}) => {\n  const route = configuredRoute(input)\n  return {\n    id,\n    model: (modelID: string | ModelID) => route.model({ id: modelID }),\n    configure,\n  }\n}\n\nexport const provider = configure()\nexport const model = provider.model\n",
+      "provenance": [
+        {
+          "file": "packages/llm/src/providers/openrouter.ts",
+          "startLine": 1,
+          "endLine": 98,
+          "sha256": "d036cfd496e0b4bac1beeb082f8ca41fa79ae5c7d6627381f45824039c4b0989",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openrouter.ts#L1-L98"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Standalone native package OpenRouter route is selected; main CLI native runtime gate restricts provider IDs separately.",
+        "summary": "Uses OpenAI Chat stream protocol at /chat/completions, adding usage/reasoning/prompt-cache body options. Default host comes from the native profile. It does not establish an observed serving provider or downstream hop."
+      }
+    },
+    {
+      "id": "network-native-profiles",
+      "title": "Native OpenAI-compatible endpoint profiles",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export interface OpenAICompatibleProfile {\n  readonly provider: string\n  readonly baseURL: string\n}\n\nexport const profiles = {\n  baseten: { provider: \"baseten\", baseURL: \"https://inference.baseten.co/v1\" },\n  cerebras: { provider: \"cerebras\", baseURL: \"https://api.cerebras.ai/v1\" },\n  deepinfra: { provider: \"deepinfra\", baseURL: \"https://api.deepinfra.com/v1/openai\" },\n  deepseek: { provider: \"deepseek\", baseURL: \"https://api.deepseek.com/v1\" },\n  fireworks: { provider: \"fireworks\", baseURL: \"https://api.fireworks.ai/inference/v1\" },\n  groq: { provider: \"groq\", baseURL: \"https://api.groq.com/openai/v1\" },\n  openrouter: { provider: \"openrouter\", baseURL: \"https://openrouter.ai/api/v1\" },\n  togetherai: { provider: \"togetherai\", baseURL: \"https://api.together.xyz/v1\" },\n  xai: { provider: \"xai\", baseURL: \"https://api.x.ai/v1\" },\n} as const satisfies Record<string, OpenAICompatibleProfile>\n\nexport const byProvider: Record<string, OpenAICompatibleProfile> = Object.fromEntries(\n  Object.values(profiles).map((profile) => [profile.provider, profile]),\n)\n",
+      "provenance": [
+        {
+          "file": "packages/llm/src/providers/openai-compatible-profile.ts",
+          "startLine": 1,
+          "endLine": 20,
+          "sha256": "7c4f115fb3286d0684e6ed33df34695a36d0c78ee270465bc4743612c7410c1d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openai-compatible-profile.ts#L1-L20"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Native package provider helpers use their default profile unless baseURL is overridden.",
+        "summary": "Includes openrouter.ai/api/v1 and api.deepseek.com/v1. Main CLI endpoint defaults may instead come from the dynamic catalog or config."
+      }
+    },
+    {
+      "id": "network-chat-wire",
+      "title": "Native Chat request and response fields",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "// The body schema is the provider-native JSON body. `fromRequest` below builds\n// this shape from the common `LLMRequest`, then `Route.make` validates and\n// JSON-encodes it before transport.\nconst OpenAIChatFunction = Schema.Struct({\n  name: Schema.String,\n  description: Schema.String,\n  parameters: JsonObject,\n})\n\nconst OpenAIChatTool = Schema.Struct({\n  type: Schema.tag(\"function\"),\n  function: OpenAIChatFunction,\n})\ntype OpenAIChatTool = Schema.Schema.Type<typeof OpenAIChatTool>\n\nconst OpenAIChatAssistantToolCall = Schema.Struct({\n  id: Schema.String,\n  type: Schema.tag(\"function\"),\n  function: Schema.Struct({\n    name: Schema.String,\n    arguments: Schema.String,\n  }),\n})\ntype OpenAIChatAssistantToolCall = Schema.Schema.Type<typeof OpenAIChatAssistantToolCall>\n\nconst OpenAIChatUserContent = Schema.Union([\n  Schema.Struct({ type: Schema.Literal(\"text\"), text: Schema.String }),\n  Schema.Struct({\n    type: Schema.Literal(\"image_url\"),\n    image_url: Schema.Struct({ url: Schema.String }),\n  }),\n])\n\nconst OpenAIChatMessage = Schema.Union([\n  Schema.Struct({ role: Schema.Literal(\"system\"), content: Schema.String }),\n  Schema.Struct({\n    role: Schema.Literal(\"user\"),\n    content: Schema.Union([Schema.String, Schema.Array(OpenAIChatUserContent)]),\n  }),\n  Schema.Struct({\n    role: Schema.Literal(\"assistant\"),\n    content: Schema.NullOr(Schema.String),\n    tool_calls: optionalArray(OpenAIChatAssistantToolCall),\n    reasoning_content: Schema.optional(Schema.String),\n  }),\n  Schema.Struct({ role: Schema.Literal(\"tool\"), tool_call_id: Schema.String, content: Schema.String }),\n]).pipe(Schema.toTaggedUnion(\"role\"))\ntype OpenAIChatMessage = Schema.Schema.Type<typeof OpenAIChatMessage>\n\nconst OpenAIChatToolChoice = Schema.Union([\n  Schema.Literals([\"auto\", \"none\", \"required\"]),\n  Schema.Struct({\n    type: Schema.tag(\"function\"),\n    function: Schema.Struct({ name: Schema.String }),\n  }),\n])\n\nexport const bodyFields = {\n  model: Schema.String,\n  messages: Schema.Array(OpenAIChatMessage),\n  tools: optionalArray(OpenAIChatTool),\n  tool_choice: Schema.optional(OpenAIChatToolChoice),\n  stream: Schema.Literal(true),\n  stream_options: Schema.optional(Schema.Struct({ include_usage: Schema.Boolean })),\n  store: Schema.optional(Schema.Boolean),\n  reasoning_effort: Schema.optional(OpenAIOptions.OpenAIReasoningEffort),\n  max_tokens: Schema.optional(Schema.Number),\n  temperature: Schema.optional(Schema.Number),\n  top_p: Schema.optional(Schema.Number),\n  frequency_penalty: Schema.optional(Schema.Number),\n  presence_penalty: Schema.optional(Schema.Number),\n  seed: Schema.optional(Schema.Number),\n  stop: optionalArray(Schema.String),\n}\nconst OpenAIChatBody = Schema.Struct(bodyFields)\nexport type OpenAIChatBody = Schema.Schema.Type<typeof OpenAIChatBody>\n\n// =============================================================================\n// Streaming Event Schema\n// =============================================================================\n// The event schema is one decoded SSE `data:` payload. `Framing.sse` splits the\n// byte stream into strings, then `Protocol.jsonEvent` decodes each string into\n// this provider-native event shape.\nconst OpenAIChatUsage = Schema.Struct({\n  prompt_tokens: Schema.optional(Schema.Number),\n  completion_tokens: Schema.optional(Schema.Number),\n  total_tokens: Schema.optional(Schema.Number),\n  prompt_tokens_details: optionalNull(\n    Schema.Struct({\n      cached_tokens: Schema.optional(Schema.Number),\n    }),\n  ),\n  completion_tokens_details: optionalNull(\n    Schema.Struct({\n      reasoning_tokens: Schema.optional(Schema.Number),\n    }),\n  ),\n})\n\nconst OpenAIChatToolCallDeltaFunction = Schema.Struct({\n  name: optionalNull(Schema.String),\n  arguments: optionalNull(Schema.String),\n})\n\nconst OpenAIChatToolCallDelta = Schema.Struct({\n  index: Schema.Number,\n  id: optionalNull(Schema.String),\n  function: optionalNull(OpenAIChatToolCallDeltaFunction),\n})\ntype OpenAIChatToolCallDelta = Schema.Schema.Type<typeof OpenAIChatToolCallDelta>\n\nconst OpenAIChatDelta = Schema.Struct({\n  content: optionalNull(Schema.String),\n  reasoning_content: optionalNull(Schema.String),\n  tool_calls: optionalNull(Schema.Array(OpenAIChatToolCallDelta)),\n})\n\nconst OpenAIChatChoice = Schema.Struct({\n  delta: optionalNull(OpenAIChatDelta),\n  finish_reason: optionalNull(Schema.String),\n})\n\nconst OpenAIChatEvent = Schema.Struct({\n  choices: Schema.Array(OpenAIChatChoice),\n  usage: optionalNull(OpenAIChatUsage),\n})\ntype OpenAIChatEvent = Schema.Schema.Type<typeof OpenAIChatEvent>\n",
+      "provenance": [
+        {
+          "file": "packages/llm/src/protocols/openai-chat.ts",
+          "startLine": 34,
+          "endLine": 160,
+          "sha256": "e3c2204271073a11349146e22e24859f27b80b43960a90e81e365c6582df0457",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-chat.ts#L34-L160"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Native OpenAI Chat-compatible protocol serializes a canonical request and decodes SSE events.",
+        "summary": "Source schema separates system/user/assistant/tool content, tool function schemas, reasoning_content, usage.reasoning_tokens and finish_reason. This native schema is not proof of the default external SDK wire format."
+      }
+    },
+    {
+      "id": "network-core-runner-headers",
+      "title": "Core runner request identity and context",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "      const toolMaterialization = isLastStep ? undefined : yield* tools.materialize(agent.info?.permissions)\n      const promptCacheKey = /^ses_[0-9a-f]{64}$/.test(session.id) ? session.id.slice(4) : session.id\n      const request = LLM.request({\n        model,\n        http: {\n          headers: {\n            \"x-opencode-session-id\": session.id,\n            ...(session.parentID ? { \"x-opencode-parent-session-id\": session.parentID } : {}),\n            \"x-session-affinity\": session.id,\n            \"X-Session-Id\": session.id,\n            ...(session.parentID ? { \"x-parent-session-id\": session.parentID } : {}),\n          },\n        },\n        providerOptions: { openai: { promptCacheKey } },\n        system: [agent.info?.system, system.baseline]\n          .filter((part): part is string => part !== undefined && part.length > 0)\n          .map(SystemPart.make),\n        messages: [...toLLMMessages(context, model), ...(isLastStep ? [Message.assistant(MAX_STEPS_PROMPT)] : [])],\n        tools: toolMaterialization?.definitions ?? [],\n        toolChoice: isLastStep ? \"none\" : undefined,\n      })\n      if (yield* compaction.compactIfNeeded({ sessionID: session.id, entries, model, request }))\n        return yield* Effect.die(continueAfterCompaction(currentStep))\n      const startSnapshot = yield* snapshots.capture()\n",
+      "provenance": [
+        {
+          "file": "packages/core/src/session/runner/llm.ts",
+          "startLine": 203,
+          "endLine": 226,
+          "sha256": "8b83021af90ec6906fda736345aebaf4d33236339deccc329453683332117283",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/llm.ts#L203-L226"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Separate core SessionRunner source path constructs a request.",
+        "summary": "Adds exact session/parent headers, model request, agent system and context baseline. Live runtime evidence is needed to identify which path produced a capture."
+      }
+    }
+  ]
+}

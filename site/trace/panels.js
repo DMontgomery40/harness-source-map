@@ -176,7 +176,7 @@ export function toolSite(tools, name) {
 }
 
 export function siteHref(site) {
-  if (!site || typeof site.slug !== "string" || !/^(?:(?:claude-code|codex)\/)?[a-z0-9-]+$/.test(site.slug)) return null;
+  if (!site || typeof site.slug !== "string" || !/^(?:(?:claude-code|codex|opencode|cursor)\/)?[a-z0-9-]+$/.test(site.slug)) return null;
   const anchor = typeof site.anchor === "string" && /^[A-Za-z0-9_-]+$/.test(site.anchor) ? `#${site.anchor}` : "";
   return `../${site.slug}/${anchor}`;
 }
@@ -276,11 +276,11 @@ export function renderPanel(root, S, A) {
     el("p", { class: "meta", text: `${fmtWhen(req.t)} · ${fmtTok(req.tokens.context)} context tokens` }),
     req.action?.kind === 'tool' ? btn(`Open ${req.action.tool} call ↗`, () => A.focusAction(agent.id, req.i), 'btn small') : null));
   if (S.inspector === 'action' && req) { root.append(...actionPanel(agent, req, S, A).filter(Boolean)); return; }
-  if (level === 0) root.append(...lensPanel(S, A));
-  else if (level === 1) root.append(...agentPanel(trace, agent, S, A));
+  if (level === 0) root.append(...lensPanel(S, A).filter(Boolean));
+  else if (level === 1) root.append(...agentPanel(trace, agent, S, A).filter(Boolean));
   // The map card above already offers this request's call; the request panel does not repeat it.
   else if (level === 2) root.append(...requestPanel(trace, agent, req, S, A, located).filter(Boolean));
-  else root.append(...stratumPanel(trace, agent, req, S, A));
+  else root.append(...stratumPanel(trace, agent, req, S, A).filter(Boolean));
 }
 
 function lensPanel(S, A) {

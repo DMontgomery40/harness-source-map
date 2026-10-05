@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "release": {
+    "id": "3.23.12-2026.10.01-e373342-aca5010df248da0327c4b823063c3bd0d4edeb31fa984cf862f2c8563c89ff66",
+    "artifact_identity": {
+      "algorithm": "sha256",
+      "sha256": "aca5010df248da0327c4b823063c3bd0d4edeb31fa984cf862f2c8563c89ff66",
+      "components": {
+        "desktop_tree_sha256": "5665959206bc6b07cac353114d68d791075593602fed5a27ac365cdbb780d995",
+        "agent_cli_archive_sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc"
+      }
+    },
+    "desktop": {
+      "version": "3.23.12",
+      "commit": "2d29876d567da1607532b23bbf2cd5ddbca496f0",
+      "distro": "d5c0e77a0214208f36b56d42e8e787de88d02ea4",
+      "architecture": "arm64",
+      "tree_sha256": "5665959206bc6b07cac353114d68d791075593602fed5a27ac365cdbb780d995"
+    },
+    "agent_cli": {
+      "version": "2026.10.01-e373342",
+      "architecture": "arm64",
+      "archive_sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc",
+      "tree_sha256": "e7220f127d51f5a2f80f4e31d9df07271db52920cd35bee8d3d8e7214cb4547c"
+    }
+  },
+  "candidates": 209954,
+  "classified": 9189,
+  "discovered_records": 7,
+  "provider_pending": 200529,
+  "local_review": 236,
+  "skipped_occurrences": {
+    "non-prose-or-short": 1323842
+  },
+  "excluded_files": 412,
+  "parse_failed": 0,
+  "publication": "partial-unanswered-or-local-review",
+  "inventory_sha256": "9c28a89c8c5b670e2c6fb4ce24be0c5a6bbaa34bcc0b7e1b9b3ffcf7334b2407"
+}

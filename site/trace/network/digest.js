@@ -11,6 +11,13 @@ const listOf = (xs, max = 4) => (xs.length > max ? `${xs.slice(0, max).join(", "
 // ---------------------------------------------------------------- tokens per call
 // Claude Code: input excludes the cache; Codex/ChatGPT counts cached tokens inside input (input_tokens_details).
 export function callTokens(c) {
+  if (c.protocol === 'chat-completions') {
+    const u = c.response?.usage || {}, d = u.prompt_tokens_details || {};
+    const input = u.prompt_tokens || 0, read = d.cached_tokens ?? u.prompt_cache_hit_tokens ?? 0;
+    const write = d.cache_write_tokens || 0;
+    return { input, cacheRead: read, cacheWrite: write, uncached: Math.max(0, input - read - write),
+      output: u.completion_tokens || 0, reasoning: u.completion_tokens_details?.reasoning_tokens ?? null, context: input };
+  }
   if (c.product === "codex") {
     const u = c.usage || {}, d = u.input_tokens_details || {}, o = u.output_tokens_details || {};
     const input = u.input_tokens || 0, cacheRead = d.cached_tokens || 0, cacheWrite = d.cache_write_tokens || 0;
@@ -54,7 +61,13 @@ export function findings(cap, trace) {
   // 1. Not in your log.
   const notIn = calls.filter((c) => !c.matched.length), inLog = calls.filter((c) => c.matched.length);
   const notInModels = countBy(notIn, (c) => c.model || "model not named");
-  if (product === "codex") {
+  if (product === 'cursor') {
+    out.push({ id: 'notlog', label: 'Exact request evidence', warn: notIn.length > 0, open: ['sec:calls', 'calls:notlog'],
+      text: `${plural(calls.length, 'captured AgentService call')} ${calls.length === 1 ? 'retains' : 'retain'} the observed protobuf bytes${cap.decodedAgentService ? `; ${plural(cap.decodedAgentService, 'call')} ${cap.decodedAgentService === 1 ? 'is' : 'are'} decoded with the pinned shipped descriptor` : ''}. ${plural(inLog.length, 'call')} ${inLog.length === 1 ? 'joins' : 'join'} a native step by exact request ID; ${plural(notIn.length, 'call')} remain unattributed. Timestamps are never used.` });
+  } else if (product === 'opencode') {
+    out.push({ id: 'notlog', label: 'Exact request evidence', warn: false, open: ['sec:calls', 'calls:notlog'],
+      text: `${plural(calls.length, 'captured model call')} ${calls.length === 1 ? 'shows' : 'show'} the actual request bodies. Native exports do not establish the complete system prompt, tool schemas or request transformations. ${plural(notIn.length, 'call')} ${notIn.length === 1 ? 'lacks' : 'lack'} an exact native step match; session headers establish session ownership only.` });
+  } else if (product === "codex") {
     const tools = [...new Set(calls.flatMap((c) => c.additionalTools || []))];
     const items = cap.join?.items || 0, matchedItems = cap.join?.itemsMatched || 0;
     out.push({ id: "notlog", label: "Not in your log", warn: notIn.length > 0, open: ["sec:calls", "calls:notlog"],
@@ -98,7 +111,14 @@ export function findings(cap, trace) {
     text: [`${plural(hosts.length, "host")}: ${fmt(parties.first || 0)} first party, ${fmt(parties.third || 0)} third party${third.length ? ` (${listOf(third, 3)})` : ""}${parties.local ? `, ${fmt(parties.local)} on this machine` : ""}`,
       telemetry.length ? `${plural(telemetry.length, "telemetry request")} carrying ${plural((cap.events || []).length, "event")}${every != null ? `, about one every ${every < 120 ? `${every} s` : `${Math.round(every / 60)} min`}` : ""}` : "no telemetry requests"].join(" · ") });
   // 5. Switched on.
-  if (product === "codex") {
+  if (product === 'cursor') {
+    out.push({ id: 'on', label: 'Cursor routing boundary', warn: false, open: ['sec:calls'],
+      text: `The observed client destination is Cursor AgentService. ${cap.decodedAgentService ? 'Decoded client payloads' : 'Opaque ConnectRPC bytes'} do not establish an unobserved downstream model provider, geography or retention policy.` });
+  } else if (product === 'opencode') {
+    const providers = [...new Set(calls.flatMap(c => c.routing?.reportedProviders || []))];
+    out.push({ id: 'on', label: 'Provider routing', warn: false, open: ['sec:calls'],
+      text: `${providers.length ? `Response-reported serving providers: ${listOf(providers)}` : 'No serving provider reported'}. Requested models and routing preferences are separate from the observed client destination. Geography, retention and further downstream hops are unavailable from this capture.` });
+  } else if (product === "codex") {
     const on = (cap.flags || []).filter((f) => f.valueText === "true").length;
     out.push({ id: "on", label: "Switched on", warn: false, open: ["sec:on"],
       text: [`${fmt(on)} of ${plural((cap.flags || []).length, "feature state")} on`,
@@ -115,12 +135,13 @@ export function findings(cap, trace) {
   // 6. Against the log.
   let equal = 0, compared = 0;
   for (const c of inLog) {
+    if (c.protocol === 'connect-proto') continue;
     const m = c.matched[0], req = trace?.agents?.find((a) => a.id === m.agentId)?.requests?.[m.reqIdx];
     if (!req || !req.tokens) continue;
     compared++;
     if (callTokens(c).context === req.tokens.context) equal++;
   }
-  const partial = calls.filter((c) => c.response && c.product === "claude-code" && c.response.complete === false).length;
+  const partial = calls.filter((c) => c.response && (c.product === "claude-code" ? c.response.complete === false : c.response.partial)).length;
   const latest = latestLimits(cap.rateLimits || []);
   out.push({ id: "log", label: "Against the log", warn: compared > equal, open: ["sec:calls"],
     text: [`${fmt(inLog.length)} of ${plural(calls.length, "call")} joined${cap.join?.keys ? ` by ${cap.join.keys}` : ""}`,

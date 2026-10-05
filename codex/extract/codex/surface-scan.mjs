@@ -402,8 +402,9 @@ async function main() {
   const current = { source: { app_version: app.version, app_build: app.build, asar_sha256: asar.sha256 }, ...surfaces };
   const baseline = readBaseline(repo);
 
-  const cache = openCache(path.join(repo, "work", "surface-verdicts.json"));
-  const labeller = process.env.SURFACE_JEV === "off" ? null : jevLabeller(decisionConfig(), { cache, batched:true });
+  const config=decisionConfig();
+  const cache = openCache(path.join(repo, "work", "surface-verdicts.json"),{config});
+  const labeller = process.env.SURFACE_JEV === "off" ? null : jevLabeller(config, { cache, batched:true });
   const requestedLimit = process.env.SURFACE_JEV_LIMIT;
   const limit = requestedLimit === "all" ? Number.MAX_SAFE_INTEGER : requestedLimit == null ? JEV_LIMIT : Number(requestedLimit);
   if (!Number.isSafeInteger(limit) || limit < 0) throw new Error("SURFACE_JEV_LIMIT must be all or a nonnegative integer");

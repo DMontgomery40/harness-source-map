@@ -6,13 +6,25 @@ import { SITE, productOrigin, ICON_LINKS } from "../shared/site.mjs";
 import { buildSearchIndex } from "../shared/search-index.mjs";
 import { searchScript, searchTrigger, searchTriggerStyles } from "../shared/search-ui.mjs";
 
-// The search palette's suggested pages (slugs), shown before anything is typed.
-const SEARCH_FEATURED = ["key-findings", "devday-update", "gpt-6-1-sol-base-instructions", "persistent-mode-instructions", "codex-config", "codex-env-vars", "codex-cli-prompts", "tool-manifest"];
-
-const ORIGIN = productOrigin("codex");
 import { anchorOutline, renderToc, tocNoscriptStyles, tocScript, tocStyles } from "./toc.mjs";
 
-const SITE_NAME = "GPT-6 Prompt Source Map";
+// What differs between the products this reference renderer publishes. The Codex/ChatGPT section
+// is the original; OpenCode and Cursor use the same pages with their own names and front matter.
+// `featured` is the search palette's suggested pages (slugs), shown before anything is typed.
+export const CODEX_PROFILE = {
+  product: "codex",
+  siteName: "GPT-6 Prompt Source Map",
+  indexTitle: "GPT-6 Prompt Source Map · Work, Codex/ChatGPT, Voice",
+  shareTitle: "GPT-6 Prompt Source Map: Work, Codex/ChatGPT, Voice 😎",
+  description: "ChatGPT Work evidence, Codex/ChatGPT GPT-6 instructions, desktop helper prompts, and voice tool evidence.",
+  shareDescription: "ChatGPT Work evidence, Codex/ChatGPT GPT-6 instruction texts, desktop helper prompts, and voice tool evidence.",
+  dek: "ChatGPT Work, Codex/ChatGPT GPT-6 instructions, desktop helpers, and voice evidence in one reference.",
+  socialCard: { file: "prompt-map-social-card.png", alt: "Dark GPT-6 prompt source map card with a lime green winking face and Good takes detected stamp." },
+  featured: ["key-findings", "devday-update", "gpt-6-1-sol-base-instructions", "persistent-mode-instructions", "codex-config", "codex-env-vars", "codex-cli-prompts", "tool-manifest"],
+  intro: true,
+  guide: renderGuide,
+  front: () => ""
+};
 
 export { escapeHtml } from "../shared/html.mjs";
 import { escapeHtml } from "../shared/html.mjs";
@@ -276,11 +288,11 @@ function statusLine(status) {
 
 // The section's search index (site/src/shared/search-index.mjs), from each document's standalone
 // page: its content and heading ids exactly as <slug>/index.html has them.
-export function searchIndex(rendered, routes) {
+export function searchIndex(rendered, routes, profile = CODEX_PROFILE) {
   return buildSearchIndex({
-    product: "codex",
+    product: profile.product,
     strictRecords: true,
-    featured: SEARCH_FEATURED,
+    featured: profile.featured,
     documents: rendered.map(document => ({
       slug: routes.slug(document.anchor),
       title: document.title,
@@ -295,22 +307,22 @@ export function searchIndex(rendered, routes) {
 
 // Renders the single-page reference at index.html plus one page per document at
 // <slug>/index.html, and the search index at search-index.json.
-export function renderSite({ categories, documents, status = null }) {
+export function renderSite({ categories, documents, status = null, profile = CODEX_PROFILE }) {
   const ids = new Set();
   const rendered = documents.map(document => renderDocument(document, ids));
   const routes = createRoutes(rendered);
-  const { index, stats } = searchIndex(rendered, routes);
+  const { index, stats } = searchIndex(rendered, routes, profile);
   return [
-    { path: "index.html", html: renderPage({ categories, rendered, routes, status }) },
+    { path: "index.html", html: renderPage({ categories, rendered, routes, status, profile }) },
     ...rendered.map(current => ({
       path: `${routes.slug(current.anchor)}/index.html`,
-      html: renderPage({ categories, rendered, routes, current, status })
+      html: renderPage({ categories, rendered, routes, current, status, profile })
     })),
     { path: "search-index.json", html: JSON.stringify(index), stats }
   ];
 }
 
-function renderPage({ categories, rendered, routes, current = null, status = null }) {
+function renderPage({ categories, rendered, routes, current = null, status = null, profile }) {
   const anchors = new Map(rendered.map(document => [document.path, document.anchor]));
   const outlines = current
     ? new Map([[current.path, current.tocOutline.map(item => ({ ...item, id: routes.localId(item.id, current.anchor) }))]])
@@ -320,37 +332,39 @@ function renderPage({ categories, rendered, routes, current = null, status = nul
     if (!current) return `#${id ?? anchor}`;
     return path === current.path ? `#${id ?? anchor}` : `../${routes.slug(anchor)}/`;
   };
-  const siteTitle = "GPT-6 Prompt Source Map";
-  const pageTitle = current ? `${current.title} · ${siteTitle}` : `${siteTitle} · Work, Codex/ChatGPT, Voice`;
-  const shareTitle = current ? `${current.title} · ${siteTitle}` : `${siteTitle}: Work, Codex/ChatGPT, Voice 😎`;
-  const pageUrl = `${ORIGIN}/${current ? `${routes.slug(current.anchor)}/` : ""}`;
+  const siteTitle = profile.siteName;
+  const pageTitle = current ? `${current.title} · ${siteTitle}` : profile.indexTitle;
+  const shareTitle = current ? `${current.title} · ${siteTitle}` : profile.shareTitle;
+  const origin = productOrigin(profile.product);
+  const pageUrl = `${origin}/${current ? `${routes.slug(current.anchor)}/` : ""}`;
+  const card = profile.socialCard;
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(pageTitle)}</title>
-  <meta name="description" content="ChatGPT Work evidence, Codex/ChatGPT GPT-6 instructions, desktop helper prompts, and voice tool evidence.">
+  <meta name="description" content="${escapeHtml(profile.description)}">
   <link rel="canonical" href="${pageUrl}">
   <meta name="theme-color" content="#101710">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="GPT-6 Prompt Source Map">
+  <meta property="og:site_name" content="${escapeHtml(siteTitle)}">
   <meta property="og:url" content="${pageUrl}">
   <meta property="og:title" content="${escapeHtml(shareTitle)}">
-  <meta property="og:description" content="ChatGPT Work evidence, Codex/ChatGPT GPT-6 instruction texts, desktop helper prompts, and voice tool evidence.">
-  <meta property="og:image" content="${ORIGIN}/prompt-map-social-card.png">
-  <meta property="og:image:secure_url" content="${ORIGIN}/prompt-map-social-card.png">
+  <meta property="og:description" content="${escapeHtml(profile.shareDescription)}">
+${card ? `  <meta property="og:image" content="${origin}/${card.file}">
+  <meta property="og:image:secure_url" content="${origin}/${card.file}">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Dark GPT-6 prompt source map card with a lime green winking face and Good takes detected stamp.">
-  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:image:alt" content="${escapeHtml(card.alt)}">
+` : ""}  <meta name="twitter:card" content="${card ? "summary_large_image" : "summary"}">
   <meta name="twitter:creator" content="@_DMontgomery40">
   <meta name="twitter:title" content="${escapeHtml(shareTitle)}">
-  <meta name="twitter:description" content="ChatGPT Work evidence, Codex/ChatGPT GPT-6 instruction texts, desktop helper prompts, and voice tool evidence.">
-  <meta name="twitter:image" content="${ORIGIN}/prompt-map-social-card.png">
-  <meta name="twitter:image:alt" content="Dark GPT-6 prompt source map card with a lime green winking face and Good takes detected stamp.">
-  ${ICON_LINKS}
+  <meta name="twitter:description" content="${escapeHtml(profile.shareDescription)}">
+${card ? `  <meta name="twitter:image" content="${origin}/${card.file}">
+  <meta name="twitter:image:alt" content="${escapeHtml(card.alt)}">
+` : ""}  ${ICON_LINKS}
   <noscript><style>.intro{display:none}${tocNoscriptStyles}</style></noscript>
   <script>document.documentElement.classList.add("js")</script>
   <style>
@@ -451,7 +465,7 @@ ${searchTriggerStyles}
   </style>
 </head>
 <body>
-${current ? "" : `  <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="Intro animation">
+${current || !profile.intro ? "" : `  <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="Intro animation">
     <div class="intro-shell">
       <div class="intro-top"><span class="intro-live">Take detector online</span><span>WORK / CODEX / VOICE / FIELD REPORT</span></div>
       <div class="intro-main">
@@ -471,16 +485,16 @@ ${current ? "" : `  <div class="intro" id="intro" role="dialog" aria-modal="true
     <a class="follow-link" href="https://x.com/_DMontgomery40" target="_blank" rel="noopener noreferrer" aria-label="Follow @_DMontgomery40 on X"><span class="follow-link-mark" aria-hidden="true">X</span><span>Follow <strong>@_DMontgomery40</strong></span></a>
     <a class="github-link" href="${SITE.repo}" target="_blank" rel="noopener noreferrer" aria-label="Source code on GitHub"><span class="github-link-mark" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" focusable="false"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></span><span class="github-link-label">GitHub</span></a>
     <a class="trace-link" href="/trace/" aria-label="Trace a session: explore your own agent session log, in your browser"><span class="trace-link-mark" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" focusable="false"><rect x="2" y="3" width="12" height="2.2" rx="1.1"/><rect x="3.5" y="6.9" width="9" height="2.2" rx="1.1"/><rect x="2" y="10.8" width="12" height="2.2" rx="1.1"/></svg></span><span class="trace-link-label">Trace a session</span></a>
-    ${searchTrigger("codex")}
+    ${searchTrigger(profile.product)}
   </div>
-  ${renderToc(categories, outlines, href, SITE_NAME)}
+  ${renderToc(categories, outlines, href, siteTitle)}
   <main id="content" class="main">
     <div class="content">
 ${current ? documentArticle(current, routes) : `      <header>
         <div class="date">${escapeHtml(statusLine(status))}</div>
-        <h1 class="page-title">${escapeHtml(SITE_NAME)}</h1>
-        <p class="dek">ChatGPT Work, Codex/ChatGPT GPT-6 instructions, desktop helpers, and voice evidence in one reference.</p>
-${renderGuide(rendered)}
+        <h1 class="page-title">${escapeHtml(siteTitle)}</h1>
+        <p class="dek">${escapeHtml(profile.dek)}</p>
+${profile.front(rendered)}${profile.guide ? profile.guide(rendered) : ""}
       </header>
 ${rendered.map(documentPanel).join("\n")}`}
     </div>

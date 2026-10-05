@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 2,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "sourceIdentity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a",
+  "items": [
+    {
+      "id": "occ-089cf452b2761d24cc9dfe19",
+      "title": "packages/opencode/src/server/routes/instance/httpapi/handlers/project-copy.ts:51 — Generate a short 2-3 word name that describes this task: n${text}",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Generate a short 2-3 word name that describes this task:\\n${text}",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/server/routes/instance/httpapi/handlers/project-copy.ts",
+          "startLine": 51,
+          "endLine": 51,
+          "startOffset": 1847,
+          "endOffset": 1914,
+          "sha256": "b7116b6c493213d56057a0d0dac70e7ace9ecb9439c882ee6b080f06ea60ed08",
+          "textSha256": "5fc5972733431536e7427fe655dc6a085c4ec661e8b76060ffb18ebe8c9bbf92",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/server/routes/instance/httpapi/handlers/project-copy.ts#L51-L51"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "content"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "user_template",
+          "confidence": 0.73,
+          "probabilities": {
+            "documentation": 0,
+            "human": 0,
+            "user_template": 0.77,
+            "parameter": 0,
+            "code_data": 0.03,
+            "tool": 0,
+            "context": 0,
+            "unknown": 0,
+            "instructions": 0.2
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.93,
+          "confidence": 0.93,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.01,
+            "2": 0.03,
+            "3": 0.95
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-f6deaa3129869796d3c6d41e",
+      "title": "packages/tui/src/component/prompt/index.tsx:131 — system-reminder Note: The user opened the file \"${selection.filePath}\". …",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "<system-reminder>Note: The user opened the file \"${selection.filePath}\". This may or may not be relevant to the current task.</system-reminder>\\n",
+      "provenance": [
+        {
+          "file": "packages/tui/src/component/prompt/index.tsx",
+          "startLine": 131,
+          "endLine": 131,
+          "startOffset": 4854,
+          "endOffset": 5001,
+          "sha256": "12cba35a8ea899aa6b210e49f33b613dd4494cf0d777560784a10357d73505bf",
+          "textSha256": "4f6cfdfb17f38d4d3e7c836fe51d91e782a1244d68524db6bc2c4f49d69a9550",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/component/prompt/index.tsx#L131-L131"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.81
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.37,
+          "probabilities": {
+            "unknown": 0,
+            "instructions": 0.01,
+            "code_data": 0.33,
+            "parameter": 0,
+            "user_template": 0.02,
+            "tool": 0,
+            "human": 0.19,
+            "context": 0.45,
+            "documentation": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.25,
+          "confidence": 0.25,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.09,
+            "1": 0.06,
+            "2": 0.36,
+            "3": 0.49
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-4f0e5dd4807b5ee36f9a11d1",
+      "title": "packages/tui/src/component/prompt/move.tsx:15 — system-reminder The user has changed the current working directory to \"$…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "<system-reminder>The user has changed the current working directory to \"${directory}\". This is still the same project but at a possibly new location; take this into account when working with any files from now on.</system-reminder>",
+      "provenance": [
+        {
+          "file": "packages/tui/src/component/prompt/move.tsx",
+          "startLine": 15,
+          "endLine": 15,
+          "startOffset": 729,
+          "endOffset": 962,
+          "sha256": "261de55683d53d90db910dc1b65942a880203e9aa63503fff7cc0f962494293c",
+          "textSha256": "bce6ef05dccbf1511a71c678d13d3bf0e3d75bff7c1d897e0c0d4a91818d6de4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/component/prompt/move.tsx#L15-L15"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.36,
+          "probabilities": {
+            "tool": 0,
+            "context": 0.44,
+            "user_template": 0,
+            "human": 0.03,
+            "parameter": 0,
+            "instructions": 0.42,
+            "unknown": 0.01,
+            "documentation": 0,
+            "code_data": 0.1
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.01,
+          "confidence": 0.44,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.07,
+            "1": 0.14,
+            "2": 0.51,
+            "3": 0.28
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    }
+  ]
+}

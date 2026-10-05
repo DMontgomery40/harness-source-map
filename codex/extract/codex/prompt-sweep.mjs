@@ -74,7 +74,7 @@ if(prepared) {
 
 const config = decisionConfig();
 const cacheFile = path.join(work, broadExport ? "prompt-discovery-verdicts.json" : "prompt-candidate-verdicts.json");
-const cache = openCache(cacheFile);
+const cache = openCache(cacheFile,{config});
 const options={cache,batchSize:16,concurrency:6,offline:process.env.JEV_OFFLINE==='1'};
 // Wide Noul screening, then mixed role/directness judgments for every non-negative. This
 // spends the richer questions on plausible payloads without a fixed maximum candidate count.

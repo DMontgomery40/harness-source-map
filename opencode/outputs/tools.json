@@ -1,0 +1,1475 @@
+{
+  "schemaVersion": 1,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "items": [
+    {
+      "id": "tool-apply-patch",
+      "title": "Tool description: apply_patch",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Use the `apply_patch` tool to edit files. Your patch language is a stripped‑down, file‑oriented diff format designed to be easy to parse and safe to apply. You can think of it as a high‑level envelope:\n\n*** Begin Patch\n[ one or more file sections ]\n*** End Patch\n\nWithin that envelope, you get a sequence of file operations.\nYou MUST include a header to specify the action you are taking.\nEach operation starts with one of three headers:\n\n*** Add File: <path> - create a new file. Every following line is a + line (the initial contents).\n*** Delete File: <path> - remove an existing file. Nothing follows.\n*** Update File: <path> - patch an existing file in place (optionally with a rename).\n\nExample patch:\n\n```\n*** Begin Patch\n*** Add File: hello.txt\n+Hello world\n*** Update File: src/app.py\n*** Move to: src/main.py\n@@ def greet():\n-print(\"Hi\")\n+print(\"Hello, world!\")\n*** Delete File: obsolete.txt\n*** End Patch\n```\n\nIt is important to remember:\n\n- You must include a header with your intended action (Add/Delete/Update)\n- You must prefix new lines with `+` even when creating a new file\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/apply_patch.txt",
+          "startLine": 1,
+          "endLine": 33,
+          "sha256": "2e88f3a8fb30723c4fd6a084ef20716dec6b6ea66aa943dde675e81c5cb1cc4e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.txt#L1-L33"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/apply_patch.ts",
+          "startLine": 1,
+          "endLine": 313,
+          "sha256": "9bc5a1384a5e1b1cdd21943cb529dcde6e5e596706dee2111ccdb999d6b0ba22",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.ts#L1-L313"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Model API ID includes gpt-, excludes oss and gpt-4; registry chooses apply_patch instead of edit/write.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-apply-patch",
+      "title": "Tool parameter source: apply_patch",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  patchText: Schema.String.annotate({ description: \"The full patch text that describes all changes to be made\" }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/apply_patch.ts",
+          "startLine": 18,
+          "endLine": 20,
+          "sha256": "56727432bec54da6e554f88f585a428cbcb55066cd7158cbe185b02cc7e624bf",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.ts#L18-L20"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Model API ID includes gpt-, excludes oss and gpt-4; registry chooses apply_patch instead of edit/write.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-edit",
+      "title": "Tool description: edit",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Performs exact string replacements in files. \n\nUsage:\n- You must use your `Read` tool at least once in the conversation before editing. This tool will error if you attempt an edit without reading the file. \n- When editing text from Read tool output, ensure you preserve the exact indentation (tabs/spaces) as it appears AFTER the line number prefix. The line number prefix format is: line number + colon + space (e.g., `1: `). Everything after that space is the actual file content to match. Never include any part of the line number prefix in the oldString or newString.\n- ALWAYS prefer editing existing files in the codebase. NEVER write new files unless explicitly required.\n- Only use emojis if the user explicitly requests it. Avoid adding emojis to files unless asked.\n- The edit will FAIL if `oldString` is not found in the file with an error \"oldString not found in content\".\n- The edit will FAIL if `oldString` is found multiple times in the file with an error \"Found multiple matches for oldString. Provide more surrounding lines in oldString to identify the correct match.\" Either provide a larger string with more surrounding context to make it unique or use `replaceAll` to change every instance of `oldString`. \n- Use `replaceAll` for replacing and renaming strings across the file. This parameter is useful if you want to rename a variable for instance.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/edit.txt",
+          "startLine": 1,
+          "endLine": 10,
+          "sha256": "4426ccf60241fe41d01bbafc1e7450ea6538003f9fca863ab0210492a74647f8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.txt#L1-L10"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/edit.ts",
+          "startLine": 1,
+          "endLine": 737,
+          "sha256": "f84d9d242137e1f18ce912188efb7a97b71bf4f255e0a69f16a1fe9d1ff236d4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L1-L737"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-edit",
+      "title": "Tool parameter source: edit",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  filePath: Schema.String.annotate({ description: \"The absolute path to the file to modify\" }),\n  oldString: Schema.String.annotate({ description: \"The text to replace\" }),\n  newString: Schema.String.annotate({\n    description: \"The text to replace it with (must be different from oldString)\",\n  }),\n  replaceAll: Schema.optional(Schema.Boolean).annotate({\n    description: \"Replace all occurrences of oldString (default false)\",\n  }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/edit.ts",
+          "startLine": 47,
+          "endLine": 56,
+          "sha256": "a3ffe0066b445cc6c73c566c482946feb5d10a70193a88c7c4bda68da55d4b2d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L47-L56"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-glob",
+      "title": "Tool description: glob",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "- Fast file pattern matching tool that works with any codebase size\n- Supports glob patterns like \"**/*.js\" or \"src/**/*.ts\"\n- Returns matching file paths\n- Use this tool when you need to find files by name patterns\n- When you are doing an open-ended search that may require multiple rounds of globbing and grepping, use the Task tool instead\n- You have the capability to call multiple tools in a single response. It is always better to speculatively perform multiple searches as a batch that are potentially useful.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/glob.txt",
+          "startLine": 1,
+          "endLine": 6,
+          "sha256": "50b2d2c41d4b8d0286ab4542c6ec882421ac4ae5c0567ad213c3668ed973ed9a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.txt#L1-L6"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/glob.ts",
+          "startLine": 1,
+          "endLine": 76,
+          "sha256": "a5069377ae916495a72be319d218878136fc13f18551f3e16981d8c692c68a4a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.ts#L1-L76"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-glob",
+      "title": "Tool parameter source: glob",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  pattern: Schema.String.annotate({ description: \"The glob pattern to match files against\" }),\n  path: Schema.optional(Schema.String).annotate({\n    description: `The directory to search in. If not specified, the current working directory will be used. IMPORTANT: Omit this field to use the default directory. DO NOT enter \"undefined\" or \"null\" - simply omit it for the default behavior. Must be a valid directory path if provided.`,\n  }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/glob.ts",
+          "startLine": 10,
+          "endLine": 15,
+          "sha256": "6aa289507f2e5be2480f3c21370757a72f6083eaa2ebf651b6d20aa7f7e7effa",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.ts#L10-L15"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-grep",
+      "title": "Tool description: grep",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "- Fast content search tool that works with any codebase size\n- Searches file contents using regular expressions\n- Supports full regex syntax (eg. \"log.*Error\", \"function\\s+\\w+\", etc.)\n- Filter files by pattern with the include parameter (eg. \"*.js\", \"*.{ts,tsx}\")\n- Returns file paths and line numbers with matching lines\n- Use this tool when you need to find files containing specific patterns\n- If you need to identify/count the number of matches within files, use the Bash tool with `rg` (ripgrep) directly. Do NOT use `grep`.\n- When you are doing an open-ended search that may require multiple rounds of globbing and grepping, use the Task tool instead\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/grep.txt",
+          "startLine": 1,
+          "endLine": 8,
+          "sha256": "97fa2a9929353d20d3418041aae53ffea3aaf63e9a6e2fdc8cff6db61c3f4c5e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.txt#L1-L8"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/grep.ts",
+          "startLine": 1,
+          "endLine": 115,
+          "sha256": "f7bbab8ae3fabfe3dd78b5728a283a56bff318d5b1f278d15d1c637227ff660f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L1-L115"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-grep",
+      "title": "Tool parameter source: grep",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  pattern: Schema.String.annotate({ description: \"The regex pattern to search for in file contents\" }),\n  path: Schema.optional(Schema.String).annotate({\n    description: \"The directory to search in. Defaults to the current working directory.\",\n  }),\n  include: Schema.optional(Schema.String).annotate({\n    description: 'File pattern to include in the search (e.g. \"*.js\", \"*.{ts,tsx}\")',\n  }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/grep.ts",
+          "startLine": 10,
+          "endLine": 18,
+          "sha256": "26776eebb17ebf246fd194ab4aa572311a0eabcf1ac8eb09a076c8f6e1467c80",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L10-L18"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-lsp",
+      "title": "Tool description: lsp",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Interact with Language Server Protocol (LSP) servers to get code intelligence features.\n\nSupported operations:\n- goToDefinition: Find where a symbol is defined\n- findReferences: Find all references to a symbol\n- hover: Get hover information (documentation, type info) for a symbol\n- documentSymbol: Get all symbols (functions, classes, variables) in a document\n- workspaceSymbol: List project-wide symbols matching a query string\n- goToImplementation: Find implementations of an interface or abstract method\n- prepareCallHierarchy: Get call hierarchy item at a position (functions/methods)\n- incomingCalls: Find all functions/methods that call the function at a position\n- outgoingCalls: Find all functions/methods called by the function at a position\n\nAll operations require:\n- filePath: The file to operate on\n- line: The line number (1-based, as shown in editors)\n- character: The character offset (1-based, as shown in editors)\n\nworkspaceSymbol also accepts:\n- query: A query string to filter symbols by. Empty string requests all symbols.\n\nFor workspaceSymbol, filePath is not sent in the LSP workspace/symbol request. It is used by opencode to select and start the matching LSP server.\n\nNote: LSP servers must be configured for the file type. If no server is available, an error will be returned.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/lsp.txt",
+          "startLine": 1,
+          "endLine": 24,
+          "sha256": "8f25f3ea038c4fc7b5c37072eb2ccfe9c7abc8fc812bde6688bccb4d04ab454a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.txt#L1-L24"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/lsp.ts",
+          "startLine": 1,
+          "endLine": 113,
+          "sha256": "993e1316f12a44cde46eb8af34868a1ea2077a6e4ec749c25ec8b913a2e46da5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L1-L113"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Registered only with experimentalLspTool enabled; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-lsp",
+      "title": "Tool parameter source: lsp",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  operation: Schema.Literals(operations).annotate({ description: \"The LSP operation to perform\" }),\n  filePath: Schema.String.annotate({ description: \"The absolute or relative path to the file\" }),\n  line: Schema.Int.check(Schema.isGreaterThanOrEqualTo(1)).annotate({\n    description: \"The line number (1-based, as shown in editors)\",\n  }),\n  character: Schema.Int.check(Schema.isGreaterThanOrEqualTo(1)).annotate({\n    description: \"The character offset (1-based, as shown in editors)\",\n  }),\n  query: Schema.optional(Schema.String).annotate({\n    description: \"Search query for workspaceSymbol. Empty string requests all symbols.\",\n  }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/lsp.ts",
+          "startLine": 23,
+          "endLine": 35,
+          "sha256": "541d0324c62120dcc70f1ae0c9d51bf45c3a6354f779c10f9814fdedd15ccc3c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L23-L35"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Registered only with experimentalLspTool enabled; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-plan-enter",
+      "title": "Tool description: plan-enter",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Use this tool to suggest switching to plan agent when the user's request would benefit from planning before implementation.\n\nIf they explicitly mention wanting to create a plan ALWAYS call this tool first.\n\nThis tool will ask the user if they want to switch to plan agent.\n\nCall this tool when:\n- The user's request is complex and would benefit from planning first\n- You want to research and design before making changes\n- The task involves multiple files or significant architectural decisions\n\nDo NOT call this tool:\n- For simple, straightforward tasks\n- When the user explicitly wants immediate implementation\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/plan-enter.txt",
+          "startLine": 1,
+          "endLine": 14,
+          "sha256": "c03e1829d0e049c3c02ea4a04b9cad414194d75953dce9dc2167e3f2afc1abcb",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-enter.txt#L1-L14"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Shipped description file, with no import or registry implementation found in pinned packages source; do not assume it is advertised.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": false
+      }
+    },
+    {
+      "id": "tool-plan-exit",
+      "title": "Tool description: plan-exit",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Use this tool when you have completed the planning phase and are ready to exit plan agent.\n\nThis tool will ask the user if they want to switch to build agent to start implementing the plan.\n\nCall this tool:\n- After you have written a complete plan to the plan file\n- After you have clarified any questions with the user\n- When you are confident the plan is ready for implementation\n\nDo NOT call this tool:\n- Before you have created or finalized the plan\n- If you still have unanswered questions about the implementation\n- If the user has indicated they want to continue planning\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/plan-exit.txt",
+          "startLine": 1,
+          "endLine": 13,
+          "sha256": "00dba1a429590e46c1975bade1963eac331b5edd3610b680edd15ef124ff2c43",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-exit.txt#L1-L13"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/plan.ts",
+          "startLine": 1,
+          "endLine": 79,
+          "sha256": "cbe103563700b770bf77ef9fd6ea3b1e97eed6aa996a8ce28342ff0ce6ee3719",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan.ts#L1-L79"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Registered only with experimentalPlanMode enabled and client equal to cli; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-plan-exit",
+      "title": "Tool parameter source: plan-exit",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/plan.ts",
+          "startLine": 13,
+          "endLine": 13,
+          "sha256": "b9baf0584f304f197457845d43913fe6a688aee5b08855ce12e5eb9e6ac0e3de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan.ts#L13-L13"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Registered only with experimentalPlanMode enabled and client equal to cli; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-question",
+      "title": "Tool description: question",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Use this tool when you need to ask the user questions during execution. This allows you to:\n1. Gather user preferences or requirements\n2. Clarify ambiguous instructions\n3. Get decisions on implementation choices as you work\n4. Offer choices to the user about what direction to take.\n\nUsage notes:\n- When `custom` is enabled (default), a \"Type your own answer\" option is added automatically; don't include \"Other\" or catch-all options\n- Answers are returned as arrays of labels; set `multiple: true` to allow selecting more than one\n- If you recommend a specific option, make that the first option in the list and add \"(Recommended)\" at the end of the label\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/question.txt",
+          "startLine": 1,
+          "endLine": 10,
+          "sha256": "c0a5776acd585b62292c16839a5486b8b69e176b2d7da0cf206c82fcbd929584",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.txt#L1-L10"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/question.ts",
+          "startLine": 1,
+          "endLine": 44,
+          "sha256": "15a90d87b9b928d91c1558ba12b229a919c575e79f6af6b6a5809e439f36121e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.ts#L1-L44"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Registered when client is app, cli or desktop, or enableQuestionTool is set; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-question",
+      "title": "Tool parameter source: question",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  questions: Schema.mutable(Schema.Array(Question.Prompt)).annotate({ description: \"Questions to ask\" }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/question.ts",
+          "startLine": 6,
+          "endLine": 8,
+          "sha256": "dd1adf29943fb289e1154761fbe70476158b6268a7b648ca649b1437c66de6bc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.ts#L6-L8"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Registered when client is app, cli or desktop, or enableQuestionTool is set; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-read",
+      "title": "Tool description: read",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Read a file or directory from the local filesystem. If the path does not exist, an error is returned.\n\nUsage:\n- The filePath parameter should be an absolute path.\n- By default, this tool returns up to 2000 lines from the start of the file.\n- The offset parameter is the line number to start from (1-indexed).\n- To read later sections, call this tool again with a larger offset.\n- Use the grep tool to find specific content in large files or files with long lines.\n- If you are unsure of the correct file path, use the glob tool to look up filenames by glob pattern.\n- Contents are returned with each line prefixed by its line number as `<line>: <content>`. For example, if a file has contents \"foo\\n\", you will receive \"1: foo\\n\". For directories, entries are returned one per line (without line numbers) with a trailing `/` for subdirectories.\n- Any line longer than 2000 characters is truncated.\n- Call this tool in parallel when you know there are multiple files you want to read.\n- Avoid tiny repeated slices (30 line chunks). If you need more context, read a larger window.\n- This tool can read image files and PDFs and return them as file attachments.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/read.txt",
+          "startLine": 1,
+          "endLine": 14,
+          "sha256": "98ee843341c2dab2227add0019e48d4b2f0f00f9b042b853d1ee52bb34e6363d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.txt#L1-L14"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/read.ts",
+          "startLine": 1,
+          "endLine": 386,
+          "sha256": "afec8294965cbd9b9e29d3453b682164f0ecdba26574ebc048e9ba21af209c68",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.ts#L1-L386"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Built-in registry tool; nearby instruction files may be returned with real file contents; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-read",
+      "title": "Tool parameter source: read",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  filePath: Schema.String.annotate({ description: \"The absolute path to the file or directory to read\" }),\n  offset: Schema.optional(NonNegativeInt).annotate({\n    description: \"The line number to start reading from (1-indexed)\",\n  }),\n  limit: Schema.optional(NonNegativeInt).annotate({\n    description: \"The maximum number of lines to read (defaults to 2000)\",\n  }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/read.ts",
+          "startLine": 28,
+          "endLine": 36,
+          "sha256": "54fe62542b50cd48b99d05ca17f552eb51cece27911e9d3fe70c5204ad0ffd4a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.ts#L28-L36"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Built-in registry tool; nearby instruction files may be returned with real file contents; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-skill",
+      "title": "Tool description: skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Load a specialized skill when the task at hand matches one of the skills listed in the system prompt.\n\nUse this tool to inject the skill's instructions and resources into current conversation. The output may contain detailed workflow guidance as well as references to scripts, files, etc in the same directory as the skill.\n\nThe skill name must match one of the skills listed in your system prompt.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/skill.txt",
+          "startLine": 1,
+          "endLine": 5,
+          "sha256": "226f63ce9fd51e51431205c90ef98e53a20ba5af690fdad241eba416db49c339",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.txt#L1-L5"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/skill.ts",
+          "startLine": 1,
+          "endLine": 70,
+          "sha256": "629ada0c0a0135cb003429aec233aeb165f0b98a2bd5171986bc319c11af3c07",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L1-L70"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Built-in registry tool; executing it loads a real available skill; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-skill",
+      "title": "Tool parameter source: skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  name: Schema.String.annotate({ description: \"The name of the skill from available_skills\" }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/skill.ts",
+          "startLine": 8,
+          "endLine": 10,
+          "sha256": "b6537330c034f09899508c9d5acd33dd302e9ae60ae35975c785da62a58dd644",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L8-L10"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Built-in registry tool; executing it loads a real available skill; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-task",
+      "title": "Tool description: task",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Launch a new agent to handle complex, multistep tasks autonomously.\n\nWhen using the Task tool, you must specify a subagent_type parameter to select which agent type to use.\n\nWhen NOT to use the Task tool:\n- If you want to read a specific file path, use the Read or Glob tool instead of the Task tool, to find the match more quickly\n- If you are searching for a specific class definition like \"class Foo\", use the Grep tool instead, to find the match more quickly\n- If you are searching for code within a specific file or set of 2-3 files, use the Read tool instead of the Task tool, to find the match more quickly\n- If no available agent is a good fit for the task, use other tools directly\n\n\nUsage notes:\n1. Launch multiple agents concurrently whenever possible, to maximize performance; to do that, use a single message with multiple tool uses\n2. Once you have delegated work to an agent, do not duplicate that work yourself. Continue with non-overlapping tasks, or wait for the result. For background tasks, you will be notified automatically when the result is ready.\n3. When the agent is done, it will return a single message back to you. The result returned by the agent is not visible to the user. To show the user the result, you should send a text message back to the user with a concise summary of the result. The output includes a task_id you can reuse later to continue the same subagent session.\n4. Each agent invocation starts with a fresh context unless you provide task_id to resume the same subagent session (which continues with its previous messages and tool outputs). When starting fresh, your prompt should contain a highly detailed task description for the agent to perform autonomously and you should specify exactly what information the agent should return back to you in its final and only message to you.\n5. The agent's outputs should generally be trusted\n6. Clearly tell the agent whether you expect it to write code or just to do research (search, file reads, web fetches, etc.), since it is not aware of the user's intent. Tell it how to verify its work if possible (e.g., relevant test commands).\n7. If the agent description mentions that it should be used proactively, then you should try your best to use it without the user having to ask for it first. Use your judgement.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/task.txt",
+          "startLine": 1,
+          "endLine": 19,
+          "sha256": "220dcf4ad2582dbdaf2b0bbc8b7f5fa78172b1337539ac1c8912f45f2b9e5d46",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.txt#L1-L19"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/task.ts",
+          "startLine": 1,
+          "endLine": 371,
+          "sha256": "db09fa5868ad3ecfdd83aa2bb7243f85e9e2cd13d0b19fd6f307f7a337b2b36e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L1-L371"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Registry appends permitted subagent descriptions. experimentalBackgroundSubagents adds background guidance and changes the advertised parameter schema.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-task",
+      "title": "Tool parameter source: task",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "const BaseParameterFields = {\n  description: Schema.String.annotate({ description: \"A short (3-5 words) description of the task\" }),\n  prompt: Schema.String.annotate({ description: \"The task for the agent to perform\" }),\n  subagent_type: Schema.String.annotate({ description: \"The type of specialized agent to use for this task\" }),\n  task_id: Schema.optional(Schema.String).annotate({\n    description:\n      \"This should only be set if you mean to resume a previous task (you can pass a prior task_id and the task will continue the same subagent session as before instead of creating a fresh one)\",\n  }),\n  command: Schema.optional(Schema.String).annotate({ description: \"The command that triggered this task\" }),\n}\n\nconst BaseParameters = Schema.Struct(BaseParameterFields)\n\nexport const Parameters = Schema.Struct({\n  ...BaseParameterFields,\n  background: Schema.optional(Schema.Boolean).annotate({\n    description:\n      \"Run the agent in the background. You will be notified when it completes. DO NOT sleep, poll, or proactively check on its progress\",\n  }),\n})\n\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/task.ts",
+          "startLine": 43,
+          "endLine": 63,
+          "sha256": "854631995f4cff24264cb2320db1d1cfc1dcde932b6796f0ea4ded32531391dc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L43-L63"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Registry appends permitted subagent descriptions. experimentalBackgroundSubagents adds background guidance and changes the advertised parameter schema.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-todowrite",
+      "title": "Tool description: todowrite",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Create and maintain a structured task list for the current coding session. Tracks progress, organizes multi-step work, and surfaces status to the user.\n\n## When to use\nUse proactively when:\n- The task requires 3+ distinct steps or actions (not just 3 tool calls for a single conceptual step)\n- The work is non-trivial and benefits from planning\n- The user provides multiple tasks (numbered or comma-separated) or explicitly asks for a todo list\n- New instructions arrive - capture them as todos\n- You start a task - mark it `in_progress` (only one at a time) before working\n- You finish a task - mark it `completed` and add any follow-ups discovered during the work\n\n## When NOT to use\nSkip when:\n- The work is a single, straightforward task (or <3 trivial steps)\n- The request is purely informational or conversational\n- Tracking adds no organizational value\n\n## States\n- `pending` - not started\n- `in_progress` - actively working (exactly ONE at a time)\n- `completed` - finished successfully\n- `cancelled` - no longer needed\n\n## Rules\n- Update status in real time; don't batch completions\n- Mark `completed` only after the required work is actually done, including any required verification. Never based on intent.\n- Keep exactly one `in_progress` while work remains\n- If blocked or partial, keep it `in_progress` and add a follow-up todo describing the blocker\n- Preserve user-provided commands verbatim (flags, args, order)\n- Items should be specific and actionable; break large work into smaller steps\n\n## Examples\n\nUse it:\n- \"Add a dark mode toggle and run the tests\" -> multi-step feature + explicit verification\n- \"Rename getCwd -> getCurrentWorkingDirectory across the repo\" -> grep reveals 15 occurrences in 8 files\n- \"Implement registration, catalog, cart, checkout\" -> multiple complex features\n\nSkip it:\n- \"How do I print Hello World in Python?\" -> informational\n- \"Add a comment to calculateTotal\" -> single edit\n- \"Run npm install and tell me what happened\" -> one command\n\nWhen in doubt, use it.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/todowrite.txt",
+          "startLine": 1,
+          "endLine": 44,
+          "sha256": "f214ea20cd870a9837cb30dd993aefbe5abe6d9e3319b47672c529961ba0c3ad",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todowrite.txt#L1-L44"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/todo.ts",
+          "startLine": 1,
+          "endLine": 46,
+          "sha256": "f18fdedc754e0842660a968fa225ed961fb516a544eb04209d8b44c7673df270",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todo.ts#L1-L46"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-todowrite",
+      "title": "Tool parameter source: todowrite",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  todos: Schema.mutable(Schema.Array(Todo.Info)).annotate({ description: \"The updated todo list\" }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/todo.ts",
+          "startLine": 6,
+          "endLine": 8,
+          "sha256": "b91fe2b5ce397b5e8ec6b41615219a398744769ef1550fd41bb11d3735169a6d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todo.ts#L6-L8"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-webfetch",
+      "title": "Tool description: webfetch",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "- Fetches content from a specified URL\n- Takes a URL and optional format as input\n- Fetches the URL content, converts to requested format (markdown by default)\n- Returns the content in the specified format\n- Use this tool when you need to retrieve and analyze web content\n\nUsage notes:\n  - IMPORTANT: if another tool is present that offers better web fetching capabilities, is more targeted to the task, or has fewer restrictions, prefer using that tool instead of this one.\n  - The URL must be a fully-formed valid URL\n  - HTTP URLs will be automatically upgraded to HTTPS\n  - Format options: \"markdown\" (default), \"text\", or \"html\"\n  - This tool is read-only and does not modify any files\n  - Results may be summarized if the content is very large\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/webfetch.txt",
+          "startLine": 1,
+          "endLine": 13,
+          "sha256": "0da3ec7c3f6bc47706553c1c522dacb2042d66a4c2bf09368e43ce4a72f3b7dc",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.txt#L1-L13"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/webfetch.ts",
+          "startLine": 1,
+          "endLine": 192,
+          "sha256": "8d9efbad1ffdf8dc29dbac80eb5372ba66a8c80fccaa1606d4e41a9c929a5b6b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L1-L192"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-webfetch",
+      "title": "Tool parameter source: webfetch",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  url: Schema.String.annotate({ description: \"The URL to fetch content from\" }),\n  format: Schema.Literals([\"text\", \"markdown\", \"html\"])\n    .annotate({\n      description: \"The format to return the content in (text, markdown, or html). Defaults to markdown.\",\n      default: \"markdown\",\n    })\n    .pipe(Schema.withDecodingDefault(Effect.succeed(\"markdown\" as const))),\n  timeout: Schema.optional(Schema.Number).annotate({ description: \"Optional timeout in seconds (max 120)\" }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/webfetch.ts",
+          "startLine": 13,
+          "endLine": 22,
+          "sha256": "33b92c7e578cf481ca81635069923e27d450251649fa23201e753a8080f3e58e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L13-L22"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Built-in registry tool; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-websearch",
+      "title": "Tool description: websearch",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "- Search the web using the session's web search provider - performs real-time web searches and can scrape content from specific URLs\n- Provides up-to-date information for current events and recent data\n- Supports configurable result counts and returns the content from the most relevant websites\n- Use this tool for accessing information beyond knowledge cutoff\n- Searches are performed automatically within a single API call\n\nUsage notes:\n  - Supports live crawling modes when available: 'fallback' (backup if cached unavailable) or 'preferred' (prioritize live crawling)\n  - Search types when available: 'auto' (balanced), 'fast' (quick results), 'deep' (comprehensive search)\n  - Configurable context length for optimal LLM integration\n  - Domain filtering and advanced search options available\n\nThe current year is {{year}}. You MUST use this year when searching for recent information or current events\n- Example: If the current year is 2026 and the user asks for \"latest AI news\", search for \"AI news 2026\", NOT \"AI news 2025\"\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/websearch.txt",
+          "startLine": 1,
+          "endLine": 14,
+          "sha256": "f31c862691e3bb9a90e81766f376b24d69ae7f408eaa9f3bb5507dc75a00e692",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.txt#L1-L14"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/websearch.ts",
+          "startLine": 1,
+          "endLine": 143,
+          "sha256": "edb175726b7830d242f59417ce6961f44d39e500bccc068bf2dddbf61d5ca92a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L1-L143"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Advertised for opencode/opencode-go providers or enabled Exa/Parallel flags; {{year}} is replaced at tool initialization.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-websearch",
+      "title": "Tool parameter source: websearch",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  query: Schema.String.annotate({ description: \"Websearch query\" }),\n  numResults: Schema.optional(Schema.Number).annotate({\n    description: \"Number of search results to return (default: 8)\",\n  }),\n  livecrawl: Schema.optional(Schema.Literals([\"fallback\", \"preferred\"])).annotate({\n    description:\n      \"Live crawl mode - 'fallback': use live crawling as backup if cached content unavailable, 'preferred': prioritize live crawling (default: 'fallback')\",\n  }),\n  type: Schema.optional(Schema.Literals([\"auto\", \"fast\", \"deep\"])).annotate({\n    description: \"Search type - 'auto': balanced search (default), 'fast': quick results, 'deep': comprehensive search\",\n  }),\n  contextMaxCharacters: Schema.optional(Schema.Number).annotate({\n    description: \"Maximum characters for context string optimized for LLMs (default: 10000)\",\n  }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/websearch.ts",
+          "startLine": 10,
+          "endLine": 25,
+          "sha256": "ff32dcd54afe66ac522884e96650a826474946b6509b10f144d2b40f83c3b790",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L10-L25"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Advertised for opencode/opencode-go providers or enabled Exa/Parallel flags; {{year}} is replaced at tool initialization.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-write",
+      "title": "Tool description: write",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Writes a file to the local filesystem.\n\nUsage:\n- This tool will overwrite the existing file if there is one at the provided path.\n- If this is an existing file, you MUST use the Read tool first to read the file's contents. This tool will fail if you did not read the file first.\n- ALWAYS prefer editing existing files in the codebase. NEVER write new files unless explicitly required.\n- NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.\n- Only use emojis if the user explicitly requests it. Avoid writing emojis to files unless asked.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/write.txt",
+          "startLine": 1,
+          "endLine": 8,
+          "sha256": "8b7197b6e3a8ec1d129eeb6b82608e4cab759bfcc60ba890ecf36322a6e45180",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.txt#L1-L8"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/write.ts",
+          "startLine": 1,
+          "endLine": 104,
+          "sha256": "861de91cc67849e138c32a697c8eb1abab8e4912bfd97811ea1866b8e9af4096",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L1-L104"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-write",
+      "title": "Tool parameter source: write",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const Parameters = Schema.Struct({\n  content: Schema.String.annotate({ description: \"The content to write to the file\" }),\n  filePath: Schema.String.annotate({\n    description: \"The absolute path to the file to write (must be absolute, not relative)\",\n  }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/write.ts",
+          "startLine": 20,
+          "endLine": 25,
+          "sha256": "2bf9d3875bea5deee3d76d0110daf98585b4cbf2b7419644bd2d7b11ffc5a187",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L20-L25"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-bash",
+      "title": "Tool description: bash",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "${intro}\n\nBe aware: OS: ${os}, Shell: ${shell}\n\n${workdirSection}\n\nUse `${tmp}` for temporary work outside the workspace. This directory has already been created, already exists, and is pre-approved for external directory access.\n\nIMPORTANT: This tool is for terminal operations like git, npm, docker, etc. DO NOT use it for file operations (reading, writing, editing, searching, finding files) - use the specialized tools for this instead.\n\n${commandSection}\n\n# Git and GitHub\n- Only commit, amend, push, or create PRs when explicitly requested.\n- Before committing, inspect `git status`, `git diff`, and `git log --oneline -10`; stage only intended files and never commit secrets.\n- Write a concise commit message that matches the repo style.\n- Do not update git config, skip hooks, use interactive `-i`, force-push, or create empty commits unless explicitly requested.\n- If a commit fails or hooks reject it, fix the issue and create a new commit; do not amend the failed commit.\n- Before creating a PR, inspect status, diff, remote tracking, recent commits, and the diff from the base branch.\n- Review all commits included in the PR, not just the latest commit.\n- Use `gh` for GitHub tasks, including PRs, issues, checks, and releases; return the PR URL when done.\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/shell/shell.txt",
+          "startLine": 1,
+          "endLine": 21,
+          "sha256": "0db1a899b3c43a700a5d334ad2c5707a3ac63237a8e16115da16ff91ad68723c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/shell.txt#L1-L21"
+        },
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 1,
+          "endLine": 455,
+          "sha256": "a8b24a6d58a80c42307e251905dbaa4f25ca0724569b1e531e412da934ab00fe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455"
+        },
+        {
+          "file": "packages/opencode/src/session/llm/request.ts",
+          "startLine": 1,
+          "endLine": 228,
+          "sha256": "90077551a9a46e11a37f44279c584832918d722c0ba0407ff8cad8d3437dd0de",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228"
+        },
+        {
+          "file": "packages/opencode/src/tool/shell.ts",
+          "startLine": 1,
+          "endLine": 645,
+          "sha256": "342d742ae324782d222465c202dcdfcb7cc35a4cecf04e87f9881f1794d921ac",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell.ts#L1-L645"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-description-template",
+        "language": "text",
+        "condition": "Shell description is rendered for actual shell, platform, temporary directory, output limits and timeout; final permission and user.tools filtering apply.",
+        "summary": "Exact shipped description template. Runtime initialization and tool.definition hooks may change the advertised text.",
+        "hasImplementation": true
+      }
+    },
+    {
+      "id": "tool-schema-bash",
+      "title": "Tool parameter source: bash",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export function parameterSchema() {\n  return Schema.Struct({\n    command: Schema.String.annotate({ description: \"The command to execute\" }),\n    timeout: Schema.optional(PositiveInt).annotate({ description: \"Optional timeout in milliseconds\" }),\n    workdir: Schema.optional(Schema.String).annotate({\n      description: `The working directory to run the command in. Defaults to the current directory. Use this instead of 'cd' commands.`,\n    }),\n  })\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/shell/prompt.ts",
+          "startLine": 15,
+          "endLine": 24,
+          "sha256": "e83af0a28b6bded96539a0f678bc7c249a9f51bce1eced5b43a1a4934085a30c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L15-L24"
+        },
+        {
+          "file": "packages/opencode/src/tool/json-schema.ts",
+          "startLine": 1,
+          "endLine": 164,
+          "sha256": "123ae7e75b54161e54645d14f614700674acb6eb293d8a1249a9de57d84f4dba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "tool-parameter-source",
+        "condition": "Shell description is rendered for actual shell, platform, temporary directory, output limits and timeout; final permission and user.tools filtering apply.",
+        "summary": "Upstream TypeScript parameter declaration. This is source schema evidence, not a fabricated JSON Schema or a captured tools field. See tool schema conversion and provider adaptation for materialization."
+      }
+    },
+    {
+      "id": "tool-registry",
+      "title": "Tool registration, model selection and definition hooks",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "\n    const state = yield* InstanceState.make<State>(\n      Effect.fn(\"ToolRegistry.state\")(function* (ctx) {\n        const custom: Tool.Def[] = []\n\n        function fromPlugin(id: string, def: ToolDefinition): Tool.Def {\n          // Plugin tools still expose Zod args publicly; keep that compatibility\n          // boxed at the registry boundary and give the LLM the original JSON Schema.\n          // Normalize missing args to `{}` once — pre-1.14.49 the code was\n          // `z.object(def.args)` and Zod silently tolerated undefined (#27451, #27630).\n          const args = def.args ?? {}\n          const entries = Object.entries(args)\n          const allZod = entries.every((entry) => isZodType(entry[1]))\n          const zodParams = allZod ? z.object(args) : undefined\n          const jsonSchema = zodParams ? zodJsonSchema(zodParams) : legacyJsonSchema(entries)\n          const parameters = zodParams\n            ? Schema.declare<unknown>((u): u is unknown => zodParams.safeParse(u).success)\n            : Schema.Unknown\n          return {\n            id,\n            parameters,\n            jsonSchema,\n            description: def.description,\n            execute: (args, toolCtx) =>\n              Effect.gen(function* () {\n                // Bridge the host's Effect-based `ask` into a Promise-returning\n                // function for the plugin to make sure context persists\n                const bridge = yield* EffectBridge.make()\n                const pluginCtx: PluginToolContext = {\n                  ...toolCtx,\n                  ask: (req) => bridge.promise(toolCtx.ask(req)),\n                  directory: ctx.directory,\n                  worktree: ctx.worktree,\n                }\n                const result = yield* Effect.promise(() => def.execute(args as any, pluginCtx))\n                const output = typeof result === \"string\" ? result : result.output\n                const metadata = typeof result === \"string\" ? {} : (result.metadata ?? {})\n                const attachments = typeof result === \"string\" ? undefined : result.attachments\n                const info = yield* agent.get(toolCtx.agent)\n                const out = yield* truncate.output(output, {}, info)\n                return {\n                  title: typeof result === \"string\" ? \"\" : (result.title ?? \"\"),\n                  output: out.truncated ? out.content : output,\n                  attachments,\n                  metadata: {\n                    ...metadata,\n                    truncated: out.truncated,\n                    ...(out.truncated && { outputPath: out.outputPath }),\n                  },\n                }\n              }).pipe(\n                Effect.withSpan(\"Tool.execute\", {\n                  attributes: {\n                    \"tool.name\": id,\n                    \"session.id\": toolCtx.sessionID,\n                    \"message.id\": toolCtx.messageID,\n                    ...(toolCtx.callID ? { \"tool.call_id\": toolCtx.callID } : {}),\n                  },\n                }),\n              ),\n          }\n        }\n\n        const dirs = yield* config.directories()\n        const matches = dirs.flatMap((dir) =>\n          Glob.scanSync(\"{tool,tools}/*.{js,ts}\", { cwd: dir, absolute: true, dot: true, symlink: true }),\n        )\n        if (matches.length) yield* config.waitForDependencies()\n        for (const match of matches) {\n          const namespace = path.basename(match, path.extname(match))\n          // `match` is an absolute filesystem path from `Glob.scanSync(..., { absolute: true })`.\n          // Import it as `file://` so Node on Windows accepts the dynamic import.\n          const mod = yield* Effect.promise(() => import(pathToFileURL(match).href))\n          for (const [id, def] of Object.entries(mod)) {\n            if (!isPluginTool(def)) continue\n            custom.push(fromPlugin(id === \"default\" ? namespace : `${namespace}_${id}`, def))\n          }\n        }\n\n        const plugins = yield* plugin.list()\n        for (const p of plugins) {\n          for (const [id, def] of Object.entries(p.tool ?? {})) {\n            custom.push(fromPlugin(id, def))\n          }\n        }\n\n        yield* config.get()\n        const questionEnabled = [\"app\", \"cli\", \"desktop\"].includes(flags.client) || flags.enableQuestionTool\n\n        const tool = yield* Effect.all({\n          invalid: Tool.init(invalid),\n          shell: Tool.init(shell),\n          read: Tool.init(read),\n          glob: Tool.init(globtool),\n          grep: Tool.init(greptool),\n          edit: Tool.init(edit),\n          write: Tool.init(writetool),\n          task: Tool.init(task),\n          fetch: Tool.init(webfetch),\n          todo: Tool.init(todo),\n          search: Tool.init(websearch),\n          skill: Tool.init(skilltool),\n          patch: Tool.init(patchtool),\n          question: Tool.init(question),\n          lsp: Tool.init(lsptool),\n          plan: Tool.init(plan),\n          ...(codeModeTool ? { execute: Tool.init(codeModeTool) } : {}),\n        })\n\n        return {\n          custom,\n          builtin: [\n            tool.invalid,\n            ...(questionEnabled ? [tool.question] : []),\n            tool.shell,\n            tool.read,\n            tool.glob,\n            tool.grep,\n            tool.edit,\n            tool.write,\n            tool.task,\n            tool.fetch,\n            tool.todo,\n            tool.search,\n            tool.skill,\n            tool.patch,\n            ...(tool.execute ? [tool.execute] : []),\n            ...(flags.experimentalLspTool ? [tool.lsp] : []),\n            ...(flags.experimentalPlanMode && flags.client === \"cli\" ? [tool.plan] : []),\n          ],\n          task: tool.task,\n          read: tool.read,\n        }\n      }),\n    )\n\n    const all: Interface[\"all\"] = Effect.fn(\"ToolRegistry.all\")(function* () {\n      const s = yield* InstanceState.get(state)\n      return [...s.builtin, ...s.custom] as Tool.Def[]\n    })\n\n    const ids: Interface[\"ids\"] = Effect.fn(\"ToolRegistry.ids\")(function* () {\n      return (yield* all()).map((tool) => tool.id)\n    })\n\n    const describeTask = Effect.fn(\"ToolRegistry.describeTask\")(function* (agent: Agent.Info) {\n      const items = (yield* agents.list()).filter((item) => item.mode !== \"primary\")\n      const filtered = items.filter(\n        (item) => Permission.evaluate(\"task\", item.name, agent.permission).action !== \"deny\",\n      )\n      const list = filtered.toSorted((a, b) => a.name.localeCompare(b.name))\n      const description = list\n        .map(\n          (item) =>\n            `- ${item.name}: ${item.description ?? \"This subagent should only be called manually by the user.\"}`,\n        )\n        .join(\"\\n\")\n      return [\"Available agent types and the tools they have access to:\", description].join(\"\\n\")\n    })\n\n    const describeCodeMode = Effect.fn(\"ToolRegistry.describeCodeMode\")(function* (input: {\n      agent: Agent.Info\n      permission?: PermissionV1.Ruleset\n    }) {\n      if (!codeMode) return\n      const ruleset = Permission.merge(input.agent.permission, input.permission ?? [])\n      const tools = Permission.visibleTools(yield* mcp.tools(), ruleset)\n      if (Object.keys(tools).length === 0) return\n      return codeMode.describeCatalog(tools, Object.keys(yield* mcp.clients()).map(McpCatalog.sanitize))\n    })\n\n    const tools: Interface[\"tools\"] = Effect.fn(\"ToolRegistry.tools\")(function* (input) {\n      const filtered = (yield* all()).filter((tool) => {\n        if (tool.id === WebSearchTool.id) {\n          return webSearchEnabled(input.providerID, { exa: flags.enableExa, parallel: flags.enableParallel })\n        }\n\n        const usePatch =\n          input.modelID.includes(\"gpt-\") && !input.modelID.includes(\"oss\") && !input.modelID.includes(\"gpt-4\")\n        if (tool.id === ApplyPatchTool.id) return usePatch\n        if (tool.id === EditTool.id || tool.id === WriteTool.id) return !usePatch\n\n        return true\n      })\n\n      const codeModeDescription = filtered.some((tool) => tool.id === \"execute\")\n        ? yield* describeCodeMode(input)\n        : undefined\n      const visible = filtered.filter((tool) => tool.id !== \"execute\" || codeModeDescription)\n\n      return yield* Effect.forEach(\n        visible,\n        Effect.fnUntraced(function* (tool: Tool.Def) {\n          const output = {\n            description: tool.description,\n            parameters: tool.parameters,\n            jsonSchema: tool.jsonSchema,\n          }\n          yield* plugin.trigger(\"tool.definition\", { toolID: tool.id }, output)\n          const jsonSchema =\n            output.parameters === tool.parameters || output.jsonSchema !== tool.jsonSchema\n              ? output.jsonSchema\n              : undefined\n          return {\n            id: tool.id,\n            description: [\n              output.description,\n              tool.id === TaskTool.id ? yield* describeTask(input.agent) : undefined,\n              tool.id === \"execute\" ? codeModeDescription : undefined,\n            ]\n              .filter(Boolean)\n              .join(\"\\n\"),\n            parameters: output.parameters,\n            jsonSchema,\n            execute: tool.execute,\n            formatValidationError: tool.formatValidationError,\n          }\n        }),\n        { concurrency: \"unbounded\" },\n      )\n    })\n\n    const named: Interface[\"named\"] = Effect.fn(\"ToolRegistry.named\")(function* () {\n      const s = yield* InstanceState.get(state)\n      return { task: s.task, read: s.read }\n    })\n\n    return Service.of({ ids, all, named, tools })\n  }),\n)\n\nfunction isZodType(value: unknown): value is z.ZodType {\n  return typeof value === \"object\" && value !== null && \"_zod\" in value\n}\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/registry.ts",
+          "startLine": 120,
+          "endLine": 353,
+          "sha256": "81af6d956205eb39cbda54e965dd36e0d44ba74a4fe9883c6c05ec48c1a85e25",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L120-L353"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "ToolRegistry state combines built-ins, config-directory custom tools and plugin tools; model/flags/permissions affect advertised tools.",
+        "summary": "tool.definition may alter descriptions or schemas. Task descriptions append permitted subagents; execute appends a visible MCP catalog."
+      }
+    },
+    {
+      "id": "tool-schema-lowering",
+      "title": "Tool schema conversion and provider adaptation",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "\n  for (const item of yield* registry.tools({\n    modelID: ModelV2.ID.make(input.model.api.id),\n    providerID: input.model.providerID,\n    agent: input.agent,\n    permission: input.session.permission,\n  })) {\n    const schema = ProviderTransform.schema(input.model, ToolJsonSchema.fromTool(item))\n    tools[item.id] = tool({\n      description: item.description,\n      inputSchema: jsonSchema(schema),\n      execute(args, options) {\n        return run.promise(\n          Effect.gen(function* () {\n            const ctx = context(args, options)\n            yield* plugin.trigger(\n              \"tool.execute.before\",\n              { tool: item.id, sessionID: ctx.sessionID, callID: ctx.callID },\n              { args },\n            )\n            const result = yield* item.execute(args, ctx)\n            const output = {\n              ...result,\n              attachments: result.attachments?.map((attachment) => ({\n                ...attachment,\n                id: PartID.ascending(),\n                sessionID: ctx.sessionID,\n                messageID: input.processor.message.id,\n              })),\n            }\n            yield* plugin.trigger(\n              \"tool.execute.after\",\n              { tool: item.id, sessionID: ctx.sessionID, callID: ctx.callID, args },\n              output,\n            )\n            if (options.abortSignal?.aborted) {\n              yield* input.processor.completeToolCall(options.toolCallId, output)\n            }\n            return output\n          }),\n        )\n      },\n    })\n  }\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/tools.ts",
+          "startLine": 91,
+          "endLine": 134,
+          "sha256": "3d182c7294185bfb778e592f9a333317616b6f0227b5b0cf21b88503dcd6cc44",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L91-L134"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "SessionTools.resolve materializes registry tools for the selected model before LLM request preparation.",
+        "summary": "Schemas derive from ToolJsonSchema.fromTool then ProviderTransform.schema; descriptions and input schemas passed here may differ from raw source declarations."
+      }
+    },
+    {
+      "id": "tool-shell-rendering",
+      "title": "Shell description rendering",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "import { Schema } from \"effect\"\nimport DESCRIPTION from \"./shell.txt\"\nimport { PositiveInt } from \"@opencode-ai/core/schema\"\nimport { Global } from \"@opencode-ai/core/global\"\nimport { ShellID } from \"./id\"\n\nconst PS = new Set([\"powershell\", \"pwsh\"])\nconst CMD = new Set([\"cmd\"])\n\nexport type Limits = {\n  maxLines: number\n  maxBytes: number\n}\n\nexport function parameterSchema() {\n  return Schema.Struct({\n    command: Schema.String.annotate({ description: \"The command to execute\" }),\n    timeout: Schema.optional(PositiveInt).annotate({ description: \"Optional timeout in milliseconds\" }),\n    workdir: Schema.optional(Schema.String).annotate({\n      description: `The working directory to run the command in. Defaults to the current directory. Use this instead of 'cd' commands.`,\n    }),\n  })\n}\n\nexport const Parameters = parameterSchema()\nexport type Parameters = Schema.Schema.Type<typeof Parameters>\n\nfunction renderPrompt(template: string, values: Record<string, string>) {\n  return template.replace(/\\$\\{(\\w+)\\}/g, (_, key: string) => {\n    const value = values[key]\n    if (value === undefined) throw new Error(`Missing shell prompt value: ${key}`)\n    return value\n  })\n}\n\nfunction shellDisplayName(name: string) {\n  if (name === \"pwsh\") return \"PowerShell (7+)\"\n  if (name === \"powershell\") return \"Windows PowerShell (5.1)\"\n  if (name === \"cmd\") return \"cmd.exe\"\n  return name\n}\n\nfunction powershellNotes(name: string) {\n  if (name === \"pwsh\") {\n    return `# PowerShell (7+) shell notes\n- This cross-platform shell supports pipeline chain operators (\\`&&\\` and \\`||\\`).\n- Use double quotes for interpolated strings (\\`\"Hello $name\"\\`), single quotes for verbatim strings.\n- Prefer full cmdlet names like \\`Get-ChildItem\\`, \\`Set-Content\\`, \\`Remove-Item\\`, and \\`New-Item\\` over aliases.\n- Use \\`$(...)\\` for subexpressions. Use \\`@(...)\\` for array expressions.\n- To call a native executable whose path contains spaces, use the call operator: \\`& \"path/to/exe\" args\\`.\n- Escape special characters with the PowerShell backtick character.`\n  }\n  if (name === \"powershell\") {\n    return `# Windows PowerShell (5.1) shell notes\n- Use \\`cmd1; if ($?) { cmd2 }\\` to chain dependent commands.\n- Use double quotes for interpolated strings (\\`\"Hello $name\"\\`), single quotes for verbatim strings.\n- Prefer full cmdlet names like \\`Get-ChildItem\\`, \\`Set-Content\\`, \\`Remove-Item\\`, and \\`New-Item\\` over aliases.\n- Use \\`$(...)\\` for subexpressions. Use \\`@(...)\\` for array expressions.\n- To call a native executable whose path contains spaces, use the call operator: \\`& \"path/to/exe\" args\\`.\n- Escape special characters with the PowerShell backtick character.`\n  }\n  return \"\"\n}\n\nfunction chainGuidance(name: string) {\n  if (name === \"powershell\") {\n    return \"If the commands depend on each other and must run sequentially, avoid '&&' in this shell because Windows PowerShell (5.1) does not support it. Use PowerShell conditionals such as `cmd1; if ($?) { cmd2 }` when later commands must depend on earlier success.\"\n  }\n  if (PS.has(name)) {\n    return \"If the commands depend on each other and must run sequentially, use a single bash tool call with '&&' to chain them together (e.g., `git add . && git commit -m \\\"message\\\" && git push`). For instance, if one operation must complete before another starts (like New-Item before Copy-Item, Write before bash for git operations, or git add before git commit), run these operations sequentially instead.\"\n  }\n  if (CMD.has(name)) {\n    return \"If the commands depend on each other and must run sequentially, use a single bash tool call with `&&` to chain them together (e.g., `mkdir out && dir out`). For instance, if one operation must complete before another starts, run these operations sequentially instead.\"\n  }\n  return \"If the commands depend on each other and must run sequentially, use a single Bash call with '&&' to chain them together (e.g., `git add . && git commit -m \\\"message\\\" && git push`). For instance, if one operation must complete before another starts (like mkdir before cp, Write before Bash for git operations, or git add before git commit), run these operations sequentially instead.\"\n}\n\nfunction bashCommandSection(chain: string, limits: Limits, defaultTimeoutMs: number) {\n  return `Before executing the command, please follow these steps:\n\n1. Directory Verification:\n   - If the command will create new directories or files, first use \\`ls\\` to verify the parent directory exists and is the correct location\n   - For example, before running \"mkdir foo/bar\", first use \\`ls foo\\` to check that \"foo\" exists and is the intended parent directory\n\n2. Command Execution:\n   - Always quote file paths that contain spaces with double quotes (e.g., rm \"path with spaces/file.txt\")\n   - Examples of proper quoting:\n     - mkdir \"/Users/name/My Documents\" (correct)\n     - mkdir /Users/name/My Documents (incorrect - will fail)\n     - python \"/path/with spaces/script.py\" (correct)\n     - python /path/with spaces/script.py (incorrect - will fail)\n   - After ensuring proper quoting, execute the command.\n   - Capture the output of the command.\n\nUsage notes:\n  - The command argument is required.\n  - You can specify an optional timeout in milliseconds. If not specified, commands will time out after ${defaultTimeoutMs}ms.\n  - If the output exceeds ${limits.maxLines} lines or ${limits.maxBytes} bytes, it will be truncated and the full output will be written to a file. You can use Read with offset/limit to read specific sections or Grep to search the full content. Do NOT use \\`head\\`, \\`tail\\`, or other truncation commands to limit output; the full output will already be captured to a file for more precise searching.\n\n  - Avoid using Bash with the \\`find\\`, \\`grep\\`, \\`cat\\`, \\`head\\`, \\`tail\\`, \\`sed\\`, \\`awk\\`, or \\`echo\\` commands, unless explicitly instructed or when these commands are truly necessary for the task. Instead, always prefer using the dedicated tools for these commands:\n    - File search: Use Glob (NOT find or ls)\n    - Content search: Use Grep (NOT grep or rg)\n    - Read files: Use Read (NOT cat/head/tail)\n    - Edit files: Use Edit (NOT sed/awk)\n    - Write files: Use Write (NOT echo >/cat <<EOF)\n    - Communication: Output text directly (NOT echo/printf)\n  - When issuing multiple commands:\n    - If the commands are independent and can run in parallel, make multiple bash tool calls in a single message. For example, if you need to run \"git status\" and \"git diff\", send a single message with two bash tool calls in parallel.\n    - ${chain}\n    - Use ';' only when you need to run commands sequentially but don't care if earlier commands fail\n    - DO NOT use newlines to separate commands (newlines are ok in quoted strings)\n  - AVOID using \\`cd <directory> && <command>\\`. Use the \\`workdir\\` parameter to change directories instead.\n    <good-example>\n    Use workdir=\"/foo/bar\" with command: pytest tests\n    </good-example>\n    <bad-example>\n    cd /foo/bar && pytest tests\n    </bad-example>`\n}\n\nfunction powershellCommandSection(\n  name: string,\n  chain: string,\n  pathSep: string,\n  limits: Limits,\n  defaultTimeoutMs: number,\n) {\n  return `${powershellNotes(name)}\n\nBefore executing the command, please follow these steps:\n\n1. Directory Verification:\n   - If the command will create new directories or files, first use \\`Test-Path -LiteralPath <parent>\\` to verify the parent directory exists and is the correct location\n   - For example, before creating \\`foo${pathSep}bar\\`, first use \\`Test-Path -LiteralPath \"foo\"\\` to check that \\`foo\\` exists and is the intended parent directory\n\n2. Command Execution:\n   - Always quote file paths that contain spaces with double quotes (e.g., Remove-Item -LiteralPath \"path with spaces${pathSep}file.txt\")\n   - Examples of proper quoting:\n     - New-Item -ItemType Directory -Path \"My Documents\" (correct)\n     - New-Item -ItemType Directory -Path My Documents (incorrect - path is split)\n     - & \"path with spaces${pathSep}script.ps1\" (correct)\n     - path with spaces${pathSep}script.ps1 (incorrect - path is split and not invoked)\n   - After ensuring proper quoting, execute the command.\n   - Capture the output of the command.\n\nUsage notes:\n  - The command argument is required.\n  - You can specify an optional timeout in milliseconds. If not specified, commands will time out after ${defaultTimeoutMs}ms.\n  - If the output exceeds ${limits.maxLines} lines or ${limits.maxBytes} bytes, it will be truncated and the full output will be written to a file. You can use Read with offset/limit to read specific sections or Grep to search the full content. Do NOT use \\`Select-Object -First\\`, \\`Select-Object -Last\\`, or other truncation commands to limit output; the full output will already be captured to a file for more precise searching.\n\n  - Avoid using Shell with PowerShell file/content cmdlets unless explicitly instructed or when these cmdlets are truly necessary for the task. Instead, always prefer using the dedicated tools for these commands:\n    - File search: Use Glob (NOT Get-ChildItem)\n    - Content search: Use Grep (NOT Select-String)\n    - Read files: Use Read (NOT Get-Content)\n    - Edit files: Use Edit (NOT Set-Content)\n    - Write files: Use Write (NOT Set-Content/Out-File or here-strings)\n    - Communication: Output text directly (NOT Write-Output/Write-Host)\n  - When issuing multiple commands:\n    - If the commands are independent and can run in parallel, make multiple bash tool calls in a single message. For example, if you need to run \"git status\" and \"git diff\", send a single message with two bash tool calls in parallel.\n    - ${chain}\n    - Use \\`;\\` only when you need to run commands sequentially but don't care if earlier commands fail\n    - DO NOT use newlines to separate commands (newlines are ok in quoted strings)\n  - AVOID changing directories inside the command. Use the \\`workdir\\` parameter to change directories instead.\n    <good-example>\n    Use workdir=\"project${pathSep}subdir\" with command: pytest tests\n    </good-example>\n    <bad-example>\n    ${name === \"powershell\" ? `Set-Location -LiteralPath \"project${pathSep}subdir\"; if ($?) { pytest tests }` : `Set-Location -LiteralPath \"project${pathSep}subdir\" && pytest tests`}\n    </bad-example>`\n}\n\nfunction cmdCommandSection(chain: string, limits: Limits, defaultTimeoutMs: number) {\n  return `# cmd.exe shell notes\n- Use double quotes for paths with spaces.\n- Use %VAR% for environment variables.\n- Use \\`if exist\\` for existence checks.\n- Use \\`call\\` when invoking batch files from another batch-style command.\n\nBefore executing the command, please follow these steps:\n\n1. Directory Verification:\n   - If the command will create new directories or files, first use \\`if exist\\` to verify the parent directory exists and is the correct location\n   - For example, before creating \\`foo\\\\bar\\`, first use \\`if exist \"foo\\\\\" dir \"foo\"\\` to check that \\`foo\\` exists and is the intended parent directory\n\n2. Command Execution:\n   - Always quote file paths that contain spaces with double quotes (e.g., del \"path with spaces\\\\file.txt\")\n   - Examples of proper quoting:\n     - mkdir \"My Documents\" (correct)\n     - mkdir My Documents (incorrect - path is split)\n     - call \"path with spaces\\\\script.bat\" (correct)\n     - path with spaces\\\\script.bat (incorrect - path is split and not invoked correctly)\n   - After ensuring proper quoting, execute the command.\n   - Capture the output of the command.\n\nUsage notes:\n  - The command argument is required.\n  - You can specify an optional timeout in milliseconds. If not specified, commands will time out after ${defaultTimeoutMs}ms.\n  - If the output exceeds ${limits.maxLines} lines or ${limits.maxBytes} bytes, it will be truncated and the full output will be written to a file. You can use Read with offset/limit to read specific sections or Grep to search the full content. Do NOT use \\`more\\` or other pagination commands to limit output; the full output will already be captured to a file for more precise searching.\n\n  - Avoid using Shell with cmd.exe file/content commands unless explicitly instructed or when these commands are truly necessary for the task. Instead, always prefer using the dedicated tools for these commands:\n    - File search: Use Glob (NOT dir /s)\n    - Content search: Use Grep (NOT findstr)\n    - Read files: Use Read (NOT type)\n    - Edit files: Use Edit (NOT copy)\n    - Write files: Use Write (NOT echo > file)\n    - Communication: Output text directly (NOT echo)\n  - When issuing multiple commands:\n    - If the commands are independent and can run in parallel, make multiple bash tool calls in a single message. For example, if you need to run \"dir\" and \"where cmd\", send a single message with two bash tool calls in parallel.\n    - ${chain}\n    - Use \\`&\\` only when you need to run commands sequentially but don't care if earlier commands fail\n    - DO NOT use newlines to separate commands (newlines are ok in quoted strings)\n  - AVOID changing directories inside the command. Use the \\`workdir\\` parameter to change directories instead.\n    <good-example>\n    Use workdir=\"project\\\\subdir\" with command: dir\n    </good-example>\n    <bad-example>\n    cd /d \"project\\\\subdir\" && dir\n    </bad-example>`\n}\n\nfunction profile(name: string, platform: NodeJS.Platform, limits: Limits, defaultTimeoutMs: number) {\n  const isPowerShell = PS.has(name)\n  const chain = chainGuidance(name)\n  if (CMD.has(name)) {\n    return {\n      intro: `Executes a given ${shellDisplayName(name)} command with optional timeout, ensuring proper handling and security measures.`,\n      workdirSection:\n        \"All commands run in the current working directory by default. Use the `workdir` parameter if you need to run a command in a different directory. AVOID changing directories inside the command - use `workdir` instead.\",\n      commandSection: cmdCommandSection(chain, limits, defaultTimeoutMs),\n      gitCommands: \"git commands\",\n      gitCommandRestriction: \"git commands\",\n      createPrInstruction: \"Create PR using a temporary body file so cmd.exe quoting stays simple.\",\n      createPrExample: `(\\n  echo ## Summary\\n  echo - ^<1-3 bullet points^>\\n) > pr-body.txt\\ngh pr create --title \"the pr title\" --body-file pr-body.txt`,\n    }\n  }\n  if (isPowerShell) {\n    return {\n      intro: `Executes a given ${shellDisplayName(name)} command with optional timeout, ensuring proper handling and security measures.`,\n      workdirSection:\n        \"All commands run in the current working directory by default. Use the `workdir` parameter if you need to run a command in a different directory. AVOID changing directories inside the command - use `workdir` instead.\",\n      commandSection: powershellCommandSection(\n        name,\n        chain,\n        platform === \"win32\" ? \"\\\\\" : \"/\",\n        limits,\n        defaultTimeoutMs,\n      ),\n      gitCommands: \"git commands\",\n      gitCommandRestriction: \"git commands\",\n      createPrInstruction: \"Create PR using gh pr create with a PowerShell here-string to pass the body correctly.\",\n      createPrExample: `gh pr create --title \"the pr title\" --body @'\n## Summary\n- <1-3 bullet points>\n'@`,\n    }\n  }\n  return {\n    intro:\n      \"Executes a given bash command in a persistent shell session with optional timeout, ensuring proper handling and security measures.\",\n    workdirSection:\n      \"All commands run in the current working directory by default. Use the `workdir` parameter if you need to run a command in a different directory. AVOID using `cd <directory> && <command>` patterns - use `workdir` instead.\",\n    commandSection: bashCommandSection(chain, limits, defaultTimeoutMs),\n    gitCommands: \"bash commands\",\n    gitCommandRestriction: \"git bash commands\",\n    createPrInstruction:\n      \"Create PR using gh pr create with the format below. Use a HEREDOC to pass the body to ensure correct formatting.\",\n    createPrExample: `gh pr create --title \"the pr title\" --body \"$(cat <<'EOF'\n## Summary\n<1-3 bullet points>`,\n  }\n}\n\nexport function render(name: string, platform: NodeJS.Platform, limits: Limits, defaultTimeoutMs: number) {\n  const selected = profile(name, platform, limits, defaultTimeoutMs)\n  return {\n    description: renderPrompt(DESCRIPTION, {\n      intro: selected.intro,\n      os: platform,\n      shell: name,\n      tmp: Global.Path.tmp,\n      workdirSection: selected.workdirSection,\n      commandSection: selected.commandSection,\n      gitCommands: selected.gitCommands,\n      toolName: ShellID.ToolID,\n      gitCommandRestriction: selected.gitCommandRestriction,\n      createPrInstruction: selected.createPrInstruction,\n      createPrExample: selected.createPrExample,\n    }),\n    parameters: parameterSchema(),\n  }\n}\n\nexport * as ShellPrompt from \"./prompt\"\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/shell/prompt.ts",
+          "startLine": 1,
+          "endLine": 293,
+          "sha256": "f3c6bdb216a9df2dd871d3a786b2abe3a20ea3e44b9121ce0610c648256fb2b6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L1-L293"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "ShellPrompt.render selects bash, PowerShell or cmd guidance using actual shell and platform, then substitutes output limits, timeout and temporary directory.",
+        "summary": "Includes the dynamic sections omitted by the short shell.txt template. No local shell description is fabricated."
+      }
+    },
+    {
+      "id": "tool-task-background",
+      "title": "Task background guidance and schema selection",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "const BACKGROUND_DESCRIPTION = [\n  \"Background mode: background=true launches the subagent asynchronously and returns immediately.\",\n  \"Foreground is the default; use it when you need the result before continuing.\",\n  \"Use background only for independent work that can run while you continue elsewhere.\",\n  \"You will be notified automatically when it finishes.\",\n].join(\" \")\nconst BACKGROUND_STARTED = [\n  \"The task is working in the background. You will be notified automatically when it finishes.\",\n  \"DO NOT sleep, poll for progress, ask the task for status, or duplicate this task's work — avoid working with the same files or topics it is using.\",\n  \"Work on non-overlapping tasks, or briefly tell the user what you launched and end your response.\",\n].join(\"\\n\")\nconst BACKGROUND_UPDATED = [\n  \"Additional context sent to the running background task.\",\n  \"The task is still working in the background. You will be notified automatically when it finishes.\",\n  \"DO NOT sleep, poll for progress, ask the task for status, or duplicate this task's work — avoid working with the same files or topics it is using.\",\n  \"Work on non-overlapping tasks, or briefly tell the user what you sent and end your response.\",\n].join(\"\\n\")\n\nconst BaseParameterFields = {\n  description: Schema.String.annotate({ description: \"A short (3-5 words) description of the task\" }),\n  prompt: Schema.String.annotate({ description: \"The task for the agent to perform\" }),\n  subagent_type: Schema.String.annotate({ description: \"The type of specialized agent to use for this task\" }),\n  task_id: Schema.optional(Schema.String).annotate({\n    description:\n      \"This should only be set if you mean to resume a previous task (you can pass a prior task_id and the task will continue the same subagent session as before instead of creating a fresh one)\",\n  }),\n  command: Schema.optional(Schema.String).annotate({ description: \"The command that triggered this task\" }),\n}\n\nconst BaseParameters = Schema.Struct(BaseParameterFields)\n\nexport const Parameters = Schema.Struct({\n  ...BaseParameterFields,\n  background: Schema.optional(Schema.Boolean).annotate({\n    description:\n      \"Run the agent in the background. You will be notified when it completes. DO NOT sleep, poll, or proactively check on its progress\",\n  }),\n})\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/task.ts",
+          "startLine": 25,
+          "endLine": 62,
+          "sha256": "4015d6915af9ccab5b14c294c4d332ccd307384121def55e725705a90f47deaf",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L25-L62"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "experimentalBackgroundSubagents enables additional description and background parameter; initialization chooses BaseParameters when the flag is disabled.",
+        "summary": "The registry also appends the current permitted subagent catalog."
+      }
+    },
+    {
+      "id": "tool-task-schema-selection",
+      "title": "Task advertised schema switch",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "\n    return {\n      description: flags.experimentalBackgroundSubagents\n        ? [DESCRIPTION, BACKGROUND_DESCRIPTION].join(\"\\n\\n\")\n        : DESCRIPTION,\n      parameters: Parameters,\n      jsonSchema: flags.experimentalBackgroundSubagents ? undefined : ToolJsonSchema.fromSchema(BaseParameters),\n      execute: (params: Schema.Schema.Type<typeof Parameters>, ctx: Tool.Context) =>\n        run(params, ctx).pipe(Effect.orDie),\n    }\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/task.ts",
+          "startLine": 360,
+          "endLine": 369,
+          "sha256": "357493a2730207dbea3ec009060717579cb77a8afbe97888c303b582f9ecfb09",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L360-L369"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "TaskTool initializes using experimentalBackgroundSubagents.",
+        "summary": "Parameters used internally and JSON Schema advertised to the model have different conditional paths."
+      }
+    },
+    {
+      "id": "tool-execute",
+      "title": "MCP orchestration execute tool",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export const CODE_MODE_TOOL = \"execute\"\n\nconst DESCRIPTION = \"Run a confined orchestration script with access to connected MCP tools.\"\n\nexport const Parameters = Schema.Struct({\n  code: Schema.String.annotate({\n    description: \"Script body executed by the confined interpreter.\",\n  }),\n})\n\ntype CallEntry = { tool: string; status: \"running\" | \"completed\" | \"error\"; input?: Record<string, unknown> }\n\ntype Metadata = {\n  toolCalls: CallEntry[]\n  error?: boolean\n}\n\ntype Attachment = NonNullable<Tool.ExecuteResult[\"attachments\"]>[number]\n\ntype CatalogEntry = {\n  path: string\n  key: string\n  server: string\n  local: string\n  tool: MCP.McpTool\n}\n\nfunction groupByServer(mcpTools: Record<string, MCP.McpTool>, servers: readonly string[]): Map<string, CatalogEntry[]> {\n  const byLongest = [...servers].sort((a, b) => b.length - a.length)\n  const groups = new Map<string, CatalogEntry[]>()\n  for (const key of Object.keys(mcpTools).sort((a, b) => a.localeCompare(b))) {\n    const server =\n      byLongest.find((name) => key.startsWith(name + \"_\")) ?? (key.includes(\"_\") ? key.slice(0, key.indexOf(\"_\")) : key)\n    const local = server && key.startsWith(server + \"_\") ? key.slice(server.length + 1) : key\n    const entry: CatalogEntry = {\n      path: `${server}.${local}`,\n      key,\n      server,\n      local,\n      tool: mcpTools[key]!,\n    }\n    groups.set(server, [...(groups.get(server) ?? []), entry])\n  }\n  return groups\n}\n\nexport function describeCatalog(mcpTools: Record<string, MCP.McpTool>, servers: readonly string[]): string {\n  return CodeMode.make({\n    tools: toolTree(\n      [...groupByServer(mcpTools, servers).values()].flat(),\n      () => () => Effect.fail(toolError(\"Tool preview is not executable.\")),\n    ),\n  }).instructions()\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/code-mode.ts",
+          "startLine": 12,
+          "endLine": 64,
+          "sha256": "4f5f1619f4010c946f0471c0d7f6d764191c13c79515818cb16aa2aa285875e3",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/code-mode.ts#L12-L64"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "experimentalCodeMode enabled and registry finds a visible nonempty MCP catalog; execute replaces directly advertised MCP tools.",
+        "summary": "The confined orchestration script receives catalog instructions built from actual MCP tool descriptions and schemas."
+      }
+    },
+    {
+      "id": "tool-invalid",
+      "title": "Invalid tool-call recovery",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "import { Effect, Schema } from \"effect\"\nimport * as Tool from \"./tool\"\n\nexport const Parameters = Schema.Struct({\n  tool: Schema.String,\n  error: Schema.String,\n})\n\nexport const InvalidTool = Tool.define(\n  \"invalid\",\n  Effect.succeed({\n    description: \"Do not use\",\n    parameters: Parameters,\n    execute: (params: { tool: string; error: string }) =>\n      Effect.succeed({\n        title: \"Invalid Tool\",\n        output: `The arguments provided to the tool are invalid: ${params.error}`,\n        metadata: {},\n      }),\n  }),\n)\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/invalid.ts",
+          "startLine": 1,
+          "endLine": 21,
+          "sha256": "2cc8ba3e9e2422a12eaeec33433ff143fdd27876b98268b9217d0245fed5c0f8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/invalid.ts#L1-L21"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Registered built-in but excluded from activeTools; AI SDK repair path redirects unrecognized calls here.",
+        "summary": "Source implementation includes its description and parameters; this does not establish that it was advertised or executed in a session."
+      }
+    },
+    {
+      "id": "tool-mcp-resources",
+      "title": "MCP resource tools and schemas",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  const hasMcpResourceServer = Object.values(yield* mcp.clients()).some(\n    (client) => !!client.getServerCapabilities()?.resources,\n  )\n  if (hasMcpResourceServer) {\n    tools[MCP_RESOURCE_TOOLS.list] = tool({\n      description:\n        \"Lists resources provided by connected MCP servers. Resources provide context such as files, database schemas, or application-specific information.\",\n      inputSchema: jsonSchema(\n        ProviderTransform.schema(input.model, {\n          type: \"object\",\n          properties: {\n            server: {\n              type: \"string\",\n              description: \"Optional MCP server name. When omitted, lists resources from every connected server.\",\n            },\n          },\n          additionalProperties: false,\n        }),\n      ),\n      execute(args, opts) {\n        return run.promise(\n          Effect.gen(function* () {\n            const parsed = parseListMcpResourcesArgs(args)\n            const ctx = context(toRecord(args), opts)\n            const clients = yield* mcp.clients()\n            const resourceServers = Object.entries(clients)\n              .filter((entry) => !!entry[1].getServerCapabilities()?.resources)\n              .map((entry) => entry[0])\n              .sort((a, b) => a.localeCompare(b))\n            if (parsed.server && !resourceServers.includes(parsed.server)) {\n              throw new Error(\n                resourceServers.length === 0\n                  ? `MCP server \"${parsed.server}\" does not support resources`\n                  : `MCP server \"${parsed.server}\" does not support resources. Available resource servers: ${resourceServers.join(\", \")}`,\n              )\n            }\n            const permissionPatterns = parsed.server\n              ? [`mcp:${parsed.server}:*`]\n              : resourceServers.map((server) => `mcp:${server}:*`)\n            yield* plugin.trigger(\n              \"tool.execute.before\",\n              { tool: MCP_RESOURCE_TOOLS.list, sessionID: ctx.sessionID, callID: opts.toolCallId },\n              { args },\n            )\n            yield* ctx.ask({\n              permission: \"read\",\n              metadata: parsed.server ? { server: parsed.server } : {},\n              patterns: permissionPatterns,\n              always: permissionPatterns,\n            })\n\n            const resources = Object.values(yield* mcp.resources(parsed.server))\n            const filtered = resources\n              .filter((resource) => !parsed.server || resource.client === parsed.server)\n              .toSorted((a, b) =>\n                (a.client + \"\\u0000\" + a.name + \"\\u0000\" + a.uri).localeCompare(\n                  b.client + \"\\u0000\" + b.name + \"\\u0000\" + b.uri,\n                ),\n              )\n            const content = JSON.stringify({ resources: filtered.map(formatMcpResource) }, null, 2)\n            const truncated = yield* truncate.output(content, {}, input.agent)\n            const output = {\n              title: parsed.server ? `MCP resources: ${parsed.server}` : \"MCP resources\",\n              metadata: {\n                count: filtered.length,\n                servers: resourceServers,\n                ...(parsed.server ? { server: parsed.server } : {}),\n                truncated: truncated.truncated,\n                ...(truncated.truncated && { outputPath: truncated.outputPath }),\n              },\n              output: truncated.content,\n            }\n            yield* plugin.trigger(\n              \"tool.execute.after\",\n              { tool: MCP_RESOURCE_TOOLS.list, sessionID: ctx.sessionID, callID: opts.toolCallId, args },\n              output,\n            )\n            if (opts.abortSignal?.aborted) {\n              yield* input.processor.completeToolCall(opts.toolCallId, output)\n            }\n            return output\n          }),\n        )\n      },\n    })\n\n    tools[MCP_RESOURCE_TOOLS.listTemplates] = tool({\n      description:\n        \"Lists resource templates provided by connected MCP servers. Resource templates are parameterized resources that can be read after filling in their URI template.\",\n      inputSchema: jsonSchema(\n        ProviderTransform.schema(input.model, {\n          type: \"object\",\n          properties: {\n            server: {\n              type: \"string\",\n              description:\n                \"Optional MCP server name. When omitted, lists resource templates from every connected server.\",\n            },\n          },\n          additionalProperties: false,\n        }),\n      ),\n      execute(args, opts) {\n        return run.promise(\n          Effect.gen(function* () {\n            const parsed = parseListMcpResourcesArgs(args)\n            const ctx = context(toRecord(args), opts)\n            const clients = yield* mcp.clients()\n            const resourceServers = Object.entries(clients)\n              .filter((entry) => !!entry[1].getServerCapabilities()?.resources)\n              .map((entry) => entry[0])\n              .sort((a, b) => a.localeCompare(b))\n            if (parsed.server && !resourceServers.includes(parsed.server)) {\n              throw new Error(\n                resourceServers.length === 0\n                  ? `MCP server \"${parsed.server}\" does not support resources`\n                  : `MCP server \"${parsed.server}\" does not support resources. Available resource servers: ${resourceServers.join(\", \")}`,\n              )\n            }\n            const permissionPatterns = parsed.server\n              ? [`mcp:${parsed.server}:*`]\n              : resourceServers.map((server) => `mcp:${server}:*`)\n            yield* plugin.trigger(\n              \"tool.execute.before\",\n              { tool: MCP_RESOURCE_TOOLS.listTemplates, sessionID: ctx.sessionID, callID: opts.toolCallId },\n              { args },\n            )\n            yield* ctx.ask({\n              permission: \"read\",\n              metadata: parsed.server ? { server: parsed.server } : {},\n              patterns: permissionPatterns,\n              always: permissionPatterns,\n            })\n\n            const templates = Object.values(yield* mcp.resourceTemplates(parsed.server))\n            const filtered = templates\n              .filter((template) => !parsed.server || template.client === parsed.server)\n              .toSorted((a, b) =>\n                (a.client + \"\\u0000\" + a.name + \"\\u0000\" + a.uriTemplate).localeCompare(\n                  b.client + \"\\u0000\" + b.name + \"\\u0000\" + b.uriTemplate,\n                ),\n              )\n            const content = JSON.stringify({ resourceTemplates: filtered.map(formatMcpResourceTemplate) }, null, 2)\n            const truncated = yield* truncate.output(content, {}, input.agent)\n            const output = {\n              title: parsed.server ? `MCP resource templates: ${parsed.server}` : \"MCP resource templates\",\n              metadata: {\n                count: filtered.length,\n                servers: resourceServers,\n                ...(parsed.server ? { server: parsed.server } : {}),\n                truncated: truncated.truncated,\n                ...(truncated.truncated && { outputPath: truncated.outputPath }),\n              },\n              output: truncated.content,\n            }\n            yield* plugin.trigger(\n              \"tool.execute.after\",\n              { tool: MCP_RESOURCE_TOOLS.listTemplates, sessionID: ctx.sessionID, callID: opts.toolCallId, args },\n              output,\n            )\n            if (opts.abortSignal?.aborted) {\n              yield* input.processor.completeToolCall(opts.toolCallId, output)\n            }\n            return output\n          }),\n        )\n      },\n    })\n\n    tools[MCP_RESOURCE_TOOLS.read] = tool({\n      description:\n        \"Read a specific resource from an MCP server using the server name and resource URI. The URI is an MCP identifier and does not need to be a file URL.\",\n      inputSchema: jsonSchema(\n        ProviderTransform.schema(input.model, {\n          type: \"object\",\n          properties: {\n            server: {\n              type: \"string\",\n              description: \"MCP server name exactly as returned by list_mcp_resources.\",\n            },\n            uri: {\n              type: \"string\",\n              description: \"Resource URI to read. Use the exact URI string returned by list_mcp_resources.\",\n            },\n          },\n          required: [\"server\", \"uri\"],\n          additionalProperties: false,\n        }),\n      ),\n      execute(args, opts) {\n        return run.promise(\n          Effect.gen(function* () {\n            const parsed = parseReadMcpResourceArgs(args)\n            const ctx = context(toRecord(args), opts)\n            const clients = yield* mcp.clients()\n            const client = clients[parsed.server]\n            if (!client) {\n              throw new Error(`MCP server \"${parsed.server}\" is not connected`)\n            }\n            if (!client.getServerCapabilities()?.resources) {\n              throw new Error(`MCP server \"${parsed.server}\" does not support resources`)\n            }\n            yield* plugin.trigger(\n              \"tool.execute.before\",\n              { tool: MCP_RESOURCE_TOOLS.read, sessionID: ctx.sessionID, callID: opts.toolCallId },\n              { args },\n            )\n            yield* ctx.ask({\n              permission: \"read\",\n              metadata: { server: parsed.server, uri: parsed.uri },\n              patterns: [`mcp:${parsed.server}:${parsed.uri}`],\n              always: [`mcp:${parsed.server}:*`],\n            })\n\n            const content = yield* mcp.readResource(parsed.server, parsed.uri)\n            if (!content) throw new Error(`Failed to read MCP resource: ${parsed.server}/${parsed.uri}`)\n\n            const formatted = formatMcpResourceContent(parsed.server, parsed.uri, content)\n            const truncated = yield* truncate.output(formatted.text, {}, input.agent)\n            const output = {\n              title: `MCP resource: ${parsed.uri}`,\n              metadata: {\n                server: parsed.server,\n                uri: parsed.uri,\n                contents: formatted.contents,\n                attachments: formatted.attachments.length,\n                truncated: truncated.truncated,\n                ...(truncated.truncated && { outputPath: truncated.outputPath }),\n              },\n              output: truncated.content,\n              attachments: formatted.attachments.map((attachment) => ({\n                ...attachment,\n                id: PartID.ascending(),\n                sessionID: ctx.sessionID,\n                messageID: input.processor.message.id,\n              })),\n            }\n            yield* plugin.trigger(\n              \"tool.execute.after\",\n              { tool: MCP_RESOURCE_TOOLS.read, sessionID: ctx.sessionID, callID: opts.toolCallId, args },\n              output,\n            )\n            if (opts.abortSignal?.aborted) {\n              yield* input.processor.completeToolCall(opts.toolCallId, output)\n            }\n            return output\n          }),\n        )\n      },\n    })\n  }\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/tools.ts",
+          "startLine": 136,
+          "endLine": 386,
+          "sha256": "71f485cd95cdab28abcc5ffc97ed7e3093fa13d0d31d27efa74e5bc2b3587cf8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L136-L386"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "At least one connected MCP server advertises resource capability.",
+        "summary": "Adds list_mcp_resources, list_mcp_resource_templates and read_mcp_resource with server/URI schemas. Runtime resources and bodies are private session evidence."
+      }
+    },
+    {
+      "id": "tool-mcp-direct",
+      "title": "Direct MCP tool materialization",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "  if (flags.experimentalCodeMode) return tools\n\n  for (const [key, entry] of Object.entries(yield* mcp.tools())) {\n    const item = McpCatalog.convertTool(entry.def, entry.client, entry.timeout)\n    const execute = item.execute\n    if (!execute) continue\n\n    const schema = yield* Effect.promise(() => Promise.resolve(asSchema(item.inputSchema).jsonSchema))\n    const transformed = ProviderTransform.schema(input.model, { ...schema, properties: schema.properties ?? {} })\n    item.inputSchema = jsonSchema(transformed)\n    item.execute = (args, opts) =>\n      run.promise(\n        Effect.gen(function* () {\n          const ctx = context(args, opts)\n          yield* plugin.trigger(\n            \"tool.execute.before\",\n            { tool: key, sessionID: ctx.sessionID, callID: opts.toolCallId },\n            { args },\n          )\n          const result: Awaited<ReturnType<NonNullable<typeof execute>>> = yield* Effect.gen(function* () {\n            yield* ctx.ask({ permission: key, metadata: {}, patterns: [\"*\"], always: [\"*\"] })\n            return yield* Effect.promise(() => execute(args, opts))\n          }).pipe(\n            Effect.withSpan(\"Tool.execute\", {\n              attributes: {\n                \"tool.name\": key,\n                \"tool.call_id\": opts.toolCallId,\n                \"session.id\": ctx.sessionID,\n                \"message.id\": input.processor.message.id,\n              },\n            }),\n          )\n          yield* plugin.trigger(\n            \"tool.execute.after\",\n            { tool: key, sessionID: ctx.sessionID, callID: opts.toolCallId, args },\n            result,\n          )\n\n          const textParts: string[] = []\n          const attachments: Omit<SessionV1.FilePart, \"id\" | \"sessionID\" | \"messageID\">[] = []\n          for (const contentItem of result.content) {\n            if (contentItem.type === \"text\") textParts.push(contentItem.text)\n            else if (contentItem.type === \"image\") {\n              attachments.push({\n                type: \"file\",\n                mime: contentItem.mimeType,\n                url: `data:${contentItem.mimeType};base64,${contentItem.data}`,\n              })\n            } else if (contentItem.type === \"resource\") {\n              const { resource } = contentItem\n              if (resource.text) textParts.push(resource.text)\n              if (resource.blob) {\n                const mime = resource.mimeType ?? \"application/octet-stream\"\n                const size = base64Size(resource.blob)\n                if (!SUPPORTED_MCP_RESOURCE_ATTACHMENT_MIMES.has(mime)) {\n                  textParts.push(\n                    `[Binary MCP resource omitted: ${resource.uri} (${mime}, ${formatBytes(size)}) is not a supported attachment type]`,\n                  )\n                  continue\n                }\n                if (size > MAX_MCP_RESOURCE_BLOB_BYTES) {\n                  textParts.push(\n                    `[Binary MCP resource omitted: ${resource.uri} (${mime}, ${formatBytes(size)}) exceeds ${formatBytes(MAX_MCP_RESOURCE_BLOB_BYTES)}]`,\n                  )\n                  continue\n                }\n                attachments.push({\n                  type: \"file\",\n                  mime,\n                  url: `data:${mime};base64,${resource.blob}`,\n                  filename: resource.uri,\n                })\n              }\n            }\n          }\n\n          const truncated = yield* truncate.output(textParts.join(\"\\n\\n\"), {}, input.agent)\n          const metadata = {\n            ...result.metadata,\n            truncated: truncated.truncated,\n            ...(truncated.truncated && { outputPath: truncated.outputPath }),\n          }\n\n          const output = {\n            title: \"\",\n            metadata,\n            output: truncated.content,\n            attachments: attachments.map((attachment) => ({\n              ...attachment,\n              id: PartID.ascending(),\n              sessionID: ctx.sessionID,\n              messageID: input.processor.message.id,\n            })),\n            content: result.content,\n          }\n          if (opts.abortSignal?.aborted) {\n            yield* input.processor.completeToolCall(opts.toolCallId, output)\n          }\n          return output\n        }),\n      )\n    tools[key] = item\n  }\n\n  return tools\n})\n\nfunction toRecord(value: unknown) {\n  if (isRecord(value)) return value\n  return {}\n}\n\nfunction parseListMcpResourcesArgs(value: unknown) {\n  const args = toRecord(value)\n  return { server: optionalString(args, \"server\") }\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/tools.ts",
+          "startLine": 388,
+          "endLine": 502,
+          "sha256": "d6f2c497d0f4f80c0a69d584e2163e4f31d40c23b26a925bffc5d84caf14b443",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L388-L502"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "experimentalCodeMode disabled; connected MCP tools are converted and provider schemas are adapted before request filtering.",
+        "summary": "MCP server tool names, descriptions and schemas are runtime additions, not a fixed shipped tool list."
+      }
+    },
+    {
+      "id": "tool-structured-output",
+      "title": "StructuredOutput description",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "const STRUCTURED_OUTPUT_DESCRIPTION = `Use this tool to return your final response in the requested structured format.\n\nIMPORTANT:\n- You MUST call this tool exactly once at the end of your response\n- The input must be valid JSON matching the required schema\n- Complete all necessary research and tool calls BEFORE calling this tool\n- This tool provides your final answer - no further actions are taken after calling it`\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/prompt.ts",
+          "startLine": 74,
+          "endLine": 80,
+          "sha256": "5c15ede404e2b1d47a29823254113ae90ad5ef30e1bf6e119efe4a94c4228658",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L74-L80"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Latest user format is json_schema; schema comes from that user request.",
+        "summary": "A dynamic final-answer tool is added alongside the resolved tools."
+      }
+    },
+    {
+      "id": "tool-argument-errors",
+      "title": "Tool validation feedback and output truncation",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "\n/**\n * Raised when the LLM calls a tool with arguments that fail the parameter\n * schema. This is the canonical \"rewrite the input\" tool error: the typed\n * error class makes it matchable upstream, and its `message` getter produces\n * the model-facing prose that the AI SDK feeds back as the tool result.\n */\nexport class InvalidArgumentsError extends Schema.TaggedErrorClass<InvalidArgumentsError>()(\n  \"ToolInvalidArgumentsError\",\n  {\n    tool: Schema.String,\n    detail: Schema.String,\n  },\n) {\n  override get message() {\n    return `The ${this.tool} tool was called with invalid arguments: ${this.detail}.\\nPlease rewrite the input so it satisfies the expected schema.`\n  }\n}\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/tool.ts",
+          "startLine": 17,
+          "endLine": 34,
+          "sha256": "e0a29316830ac9001abcd89b6275f866b52b2234b722f94f078307e7c54e0567",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/tool.ts#L17-L34"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Tool wrapper rejects arguments that do not satisfy the advertised tool parameter decoder.",
+        "summary": "InvalidArgumentsError produces model-facing rewrite guidance; tool outputs also have a truncation wrapper."
+      }
+    },
+    {
+      "id": "tool-skill-content",
+      "title": "Skill tool loaded-content wrapper",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "      execute: (params: Schema.Schema.Type<typeof Parameters>, ctx: Tool.Context) =>\n        Effect.gen(function* () {\n          const info = yield* skill\n            .require(params.name)\n            .pipe(Effect.catchTag(\"Skill.NotFoundError\", (error) => Effect.die(new Error(error.message))))\n\n          yield* ctx.ask({\n            permission: \"skill\",\n            patterns: [params.name],\n            always: [params.name],\n            metadata: {},\n          })\n\n          const dir = path.dirname(info.location)\n          const base = dir\n          const files = yield* ripgrep.find({\n            cwd: dir,\n            pattern: \"!**/SKILL.md\",\n            hidden: true,\n            follow: false,\n            signal: ctx.abort,\n            limit: 10,\n          })\n\n          return {\n            title: `Loaded skill: ${info.name}`,\n            output: [\n              `<skill_content name=\"${info.name}\">`,\n              `# Skill: ${info.name}`,\n              \"\",\n              info.content.trim(),\n              \"\",\n              `Base directory for this skill: ${base}`,\n              \"Relative paths in this skill (e.g., scripts/, reference/) are relative to this base directory.\",\n              \"Note: file list is sampled.\",\n              \"\",\n              \"<skill_files>\",\n              files.map((file) => `<file>${path.resolve(dir, file.path)}</file>`).join(\"\\n\"),\n              \"</skill_files>\",\n              \"</skill_content>\",\n            ].join(\"\\n\"),\n            metadata: {\n              name: info.name,\n              dir,\n            },\n          }\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/skill.ts",
+          "startLine": 21,
+          "endLine": 66,
+          "sha256": "151634f4deb46a55ffa97043ccac0799fa317e8ec1f26086891b29499560f40b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L21-L66"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "User/model invokes the skill tool for an available skill and permission succeeds.",
+        "summary": "Returns actual skill content with base-directory guidance and sampled files; these runtime values are not expanded into the source map."
+      }
+    }
+  ]
+}

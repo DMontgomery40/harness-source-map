@@ -1,0 +1,4270 @@
+{
+  "schemaVersion": 1,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "items": [
+    {
+      "id": "cli-bd360261e6ee",
+      "title": "opencode (default: db) [query]",
+      "kind": "cli-command",
+      "group": "opencode (default: db)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "open an interactive sqlite3 shell or run a query",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/db.ts",
+          "startLine": 9,
+          "endLine": 9,
+          "sha256": "8986c88f08fe37b253b9000a192931c1c3ba903b3f9e1989cdb03dc68173ca8d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/db.ts#L9"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "$0 [query]",
+        "textSha256": "26d4871b600cef9eda780075a16748e859868c266887f1b9c7d3e1ef55ca831c",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-08bac3f441a9",
+      "title": "opencode (default: db) --format",
+      "kind": "cli-flag",
+      "group": "opencode (default: db)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Output format",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/db.ts",
+          "startLine": 18,
+          "endLine": 18,
+          "sha256": "8986c88f08fe37b253b9000a192931c1c3ba903b3f9e1989cdb03dc68173ca8d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/db.ts#L18"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [query]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "93c53d3745136c4e4e142811cdff560c8dfb4b9c4c875b7a8687dda559f688e1",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-db800e2e2647",
+      "title": "opencode (default: db) <query>",
+      "kind": "cli-flag",
+      "group": "opencode (default: db)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "SQL query to execute",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/db.ts",
+          "startLine": 14,
+          "endLine": 14,
+          "sha256": "8986c88f08fe37b253b9000a192931c1c3ba903b3f9e1989cdb03dc68173ca8d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/db.ts#L14"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "$0 [query]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "2379f46218df7d5f4d5f954b8a8d09ff2023a459de2263057f702b311f00a7a7",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-fa3759b17c3b",
+      "title": "opencode (default: tui) [project]",
+      "kind": "cli-command",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "start opencode tui",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 73,
+          "endLine": 73,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L73"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "$0 [project]",
+        "textSha256": "ec6a9fb089ef043b1aff5b73cc1c2fe874a13f2b7032e01698283517ed970b4f",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-145c85ae1bdc",
+      "title": "opencode (default: tui) --agent",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "agent to use",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 104,
+          "endLine": 104,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L104"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "f4a8508ce962a8cd978b602965747701e53e2fde3ec307ea55523d9c99c84cd8",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-2a8f7611387c",
+      "title": "opencode (default: tui) --auto",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "auto-approve permissions that are not explicitly denied (dangerous!)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 108,
+          "endLine": 108,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L108"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "8bfc246adf70cdf4194ac9bad78bfbe03728d47d4938967c5c96ab1bcbca3403",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e913b7b0216d",
+      "title": "opencode (default: tui) --continue",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "continue the last session",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 86,
+          "endLine": 86,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L86"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "boolean",
+        "alias": "[",
+        "textSha256": "4673a152381f5ef469b0c5a8d197372696ef7621a958d2a2c1a47be78807704f",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-3ea23846bff9",
+      "title": "opencode (default: tui) --dangerously-skip-permissions",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Option --dangerously-skip-permissions of opencode (default: tui).",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 118,
+          "endLine": 118,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L118"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-160e52989526",
+      "title": "opencode (default: tui) --demo",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Option --demo of opencode (default: tui).",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 140,
+          "endLine": 140,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L140"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-328bfeb1e03e",
+      "title": "opencode (default: tui) --fork",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "fork the session when continuing (use with --continue or --session)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 96,
+          "endLine": 96,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L96"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "f07c8ac3c605abeefa8f7910252933543cb854d2380acc12a4691fd0d7dee04c",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-d765b102aa94",
+      "title": "opencode (default: tui) --mini",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "start the minimal interactive interface",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 123,
+          "endLine": 123,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L123"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "2f6f8c87eddf6f26a79ddec02824d61abbeeb30d9817a77ed3be54ab883bd450",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-cfcbd7a87148",
+      "title": "opencode (default: tui) --model",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "model to use in the format of provider/model",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 81,
+          "endLine": 81,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L81"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "957f400ae72a91e41688b9156f35fec90496c8884ee2006491e42db992926bf0",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e84ce5687120",
+      "title": "opencode (default: tui) --no-replay",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "disable mini session history replay on resume and after resize",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 132,
+          "endLine": 132,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L132"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "228b1b6bdbed2c199b0cbed51a169d1356566f02efa6812b50aebb82464c851a",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-5eca46178d67",
+      "title": "opencode (default: tui) --prompt",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "prompt to use",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 100,
+          "endLine": 100,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L100"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "ef4caad246f8d01d60a0a63282095332f97f4fb9d211fbc99a6636078d02deeb",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-78a99521781c",
+      "title": "opencode (default: tui) --replay",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Option --replay of opencode (default: tui).",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 128,
+          "endLine": 128,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L128"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-f853fa1521b9",
+      "title": "opencode (default: tui) --replay-limit",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "cap visible mini replay to the newest N messages",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 136,
+          "endLine": 136,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L136"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "number",
+        "alias": null,
+        "textSha256": "dab09a2c22b5346bdbb11c140764f417bee1368b2b2758a9c3ae48f1d69e250d",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-5b4c9785fdce",
+      "title": "opencode (default: tui) --session",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "session id to continue",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 91,
+          "endLine": 91,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L91"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "afd97af0b9b1af475ab7b59a36b6ec917e5b24bbc395fded8b1e7859820082f1",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-74f6f0a0f685",
+      "title": "opencode (default: tui) --yolo",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Option --yolo of opencode (default: tui).",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 113,
+          "endLine": 113,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L113"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "$0 [project]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-d6a376162eb5",
+      "title": "opencode (default: tui) <project>",
+      "kind": "cli-flag",
+      "group": "opencode (default: tui)",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "path to start opencode in",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/tui.ts",
+          "startLine": 77,
+          "endLine": 77,
+          "sha256": "09c6591126d56aa7faf3f5607c4a8e9e847de556a7eb52892dd222d1b99d2a34",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/tui.ts#L77"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "$0 [project]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "133aef7d6429778b71a0018765c1971d58cb7e17db7e8211fb69c368ff96ed26",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-dd451f7efc4c",
+      "title": "opencode acp",
+      "kind": "cli-command",
+      "group": "opencode acp",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "start ACP (Agent Client Protocol) server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/acp.ts",
+          "startLine": 10,
+          "endLine": 10,
+          "sha256": "104d1dfe498154fca38c5971deec8330be4793cedf122e36c5a38589089e1b23",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/acp.ts#L10"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "acp",
+        "textSha256": "203ea90e4a3b3576f443ed3df7edc5d5491c2f34a802d5ffe9c43a99288415df",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-a47d75665d0a",
+      "title": "opencode acp --cwd",
+      "kind": "cli-flag",
+      "group": "opencode acp",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "working directory",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/acp.ts",
+          "startLine": 13,
+          "endLine": 13,
+          "sha256": "104d1dfe498154fca38c5971deec8330be4793cedf122e36c5a38589089e1b23",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/acp.ts#L13"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "acp",
+        "type": "string",
+        "alias": null,
+        "textSha256": "72ff2ea85d820420221e685803eead0701620db4e8576b2687d766837975acc5",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-c3df2d27da68",
+      "title": "opencode add [name]",
+      "kind": "cli-command",
+      "group": "opencode add",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "add an MCP server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 430,
+          "endLine": 430,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L430"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "add [name]",
+        "textSha256": "a226610208551451e408ed42252f05c9d8d7ca07c4a6db8e6604f73d7cf31e47",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e974cfe6256d",
+      "title": "opencode add --env",
+      "kind": "cli-flag",
+      "group": "opencode add",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "environment variable for a local MCP server (KEY=VALUE)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 442,
+          "endLine": 442,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L442"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "add [name]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "1af9373bf360ddf3f39cd16a7570ffb7c8908404ddb7de7a8e78dc93be4896a1",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-db5f4d04be39",
+      "title": "opencode add --header",
+      "kind": "cli-flag",
+      "group": "opencode add",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "HTTP header for a remote MCP server (KEY=VALUE)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 447,
+          "endLine": 447,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L447"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "add [name]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "7e3fa3ed45ccb58d1ef91fee01dd5c1b055025c62c0441718858d18f990417b5",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-f4a7383cb1f8",
+      "title": "opencode add --url",
+      "kind": "cli-flag",
+      "group": "opencode add",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "URL for a remote MCP server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 438,
+          "endLine": 438,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L438"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "add [name]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "de38cee582aad01549589c42a8e2f68d2625a32d1af7ca23fc7e989093fa20bf",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-dc28d9b2a92a",
+      "title": "opencode add <name>",
+      "kind": "cli-flag",
+      "group": "opencode add",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "name of the MCP server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 434,
+          "endLine": 434,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L434"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "add [name]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "eb7458261a75913aa74004c74a0290ed786f24a8b3979dc515793e80d2285b5e",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-22f29a0aecea",
+      "title": "opencode agent <name>",
+      "kind": "cli-command",
+      "group": "opencode agent",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show agent configuration details",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/agent.ts",
+          "startLine": 5,
+          "endLine": 5,
+          "sha256": "a5f5d7d10ecc22935132d96f81dbcd4290f7f68eec63a1aa5e97a435a7a6df69",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L5"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/agent.ts",
+          "startLine": 9,
+          "endLine": 9,
+          "sha256": "a5f5d7d10ecc22935132d96f81dbcd4290f7f68eec63a1aa5e97a435a7a6df69",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L9"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "agent <name>",
+        "textSha256": "054d496fe5e1c4d86faaf11d41c05b8e9624c8296805be06cbcc8ee4661ad59a",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-d9fa3f18ff7f",
+      "title": "opencode agent",
+      "kind": "cli-command",
+      "group": "opencode agent",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "manage agents",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/agent.ts",
+          "startLine": 255,
+          "endLine": 255,
+          "sha256": "e4195dbc5ce1ea0fc20330cf65a08f752d3dcf045baa6003e8436f0994a94dca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L255"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "agent",
+        "textSha256": "0603b2f36319215b874a9b36b445d51edaf283cc3057a5083821154916a04fd9",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-7c83f8821335",
+      "title": "opencode agent --params",
+      "kind": "cli-flag",
+      "group": "opencode agent",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Tool params as JSON or a JS object literal",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/agent.ts",
+          "startLine": 18,
+          "endLine": 18,
+          "sha256": "a5f5d7d10ecc22935132d96f81dbcd4290f7f68eec63a1aa5e97a435a7a6df69",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L18"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "agent <name>",
+        "type": "string",
+        "alias": null,
+        "textSha256": "2a2306cd84d9419460fa7e16aed6c1c332144377418554e7dba53d3e559f6e32",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-63dec36f648a",
+      "title": "opencode agent --tool",
+      "kind": "cli-flag",
+      "group": "opencode agent",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Tool id to execute",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/agent.ts",
+          "startLine": 14,
+          "endLine": 14,
+          "sha256": "a5f5d7d10ecc22935132d96f81dbcd4290f7f68eec63a1aa5e97a435a7a6df69",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L14"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "agent <name>",
+        "type": "string",
+        "alias": null,
+        "textSha256": "4b8eda16c0e3760452d42f8b040a18b6b76c9d5b191505537129a3ecae55395b",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e1b5dcd789ef",
+      "title": "opencode attach <url>",
+      "kind": "cli-command",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "attach to a running opencode server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 8,
+          "endLine": 8,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L8"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 12,
+          "endLine": 12,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L12"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "attach <url>",
+        "textSha256": "35789559b55e27bca603720b9fbefd8b89907cbf30021bf53e49ad35b8af22b8",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-ec6f8f063c75",
+      "title": "opencode attach --continue",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "continue the last session",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 21,
+          "endLine": 21,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L21"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "boolean",
+        "alias": "[",
+        "textSha256": "4673a152381f5ef469b0c5a8d197372696ef7621a958d2a2c1a47be78807704f",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-f61d4cfb5e25",
+      "title": "opencode attach --dir",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "directory to run in",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 17,
+          "endLine": 17,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L17"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "string",
+        "alias": null,
+        "textSha256": "0bec67cf8d1f6937f6a080fd2a517ecdde5bed2d2bfa21d1ad471657f895e0c0",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-d5c612748f3a",
+      "title": "opencode attach --fork",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "fork the session when continuing (use with --continue or --session)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 31,
+          "endLine": 31,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L31"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "f07c8ac3c605abeefa8f7910252933543cb854d2380acc12a4691fd0d7dee04c",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-83bbea4abdc2",
+      "title": "opencode attach --mini",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "start the minimal interactive interface",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 45,
+          "endLine": 45,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L45"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "2f6f8c87eddf6f26a79ddec02824d61abbeeb30d9817a77ed3be54ab883bd450",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-337bd90eacfc",
+      "title": "opencode attach --no-replay",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "disable mini session history replay on resume and after resize",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 54,
+          "endLine": 54,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L54"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "228b1b6bdbed2c199b0cbed51a169d1356566f02efa6812b50aebb82464c851a",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-8b323dd4171a",
+      "title": "opencode attach --password",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "basic auth password (defaults to OPENCODE_SERVER_PASSWORD)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 35,
+          "endLine": 35,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L35"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "d854c5175fa9002ca0016bae5a7bd400eaa6f1beaa754990bbf770996d4d5733",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-b748d8de1b2f",
+      "title": "opencode attach --replay",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Option --replay of opencode attach.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 50,
+          "endLine": 50,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L50"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-7f696b1e21a7",
+      "title": "opencode attach --replay-limit",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "cap visible mini replay to the newest N messages",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 58,
+          "endLine": 58,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L58"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "number",
+        "alias": null,
+        "textSha256": "dab09a2c22b5346bdbb11c140764f417bee1368b2b2758a9c3ae48f1d69e250d",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-f80301eb45d1",
+      "title": "opencode attach --session",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "session id to continue",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 26,
+          "endLine": 26,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L26"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "afd97af0b9b1af475ab7b59a36b6ec917e5b24bbc395fded8b1e7859820082f1",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-60fe98f53e5a",
+      "title": "opencode attach --username",
+      "kind": "cli-flag",
+      "group": "opencode attach",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "basic auth username (defaults to OPENCODE_SERVER_USERNAME or 'opencode')",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/attach.ts",
+          "startLine": 40,
+          "endLine": 40,
+          "sha256": "63d5400909231141c1393373886a37eb3d08f65020b0325bdf11ad20a6c90e5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/attach.ts#L40"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "attach <url>",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "e69c8cfad35a6778ea80fbf8114f7d4868dca85fa66a00ddd5b7691364943929",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-218b2d0a07f3",
+      "title": "opencode auth [name]",
+      "kind": "cli-command",
+      "group": "opencode auth",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "authenticate with an OAuth-enabled MCP server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 171,
+          "endLine": 171,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L171"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "auth [name]",
+        "textSha256": "1b6b13f64efb53ea5ac93bd2ed82f789c1c694f4c1d98ae08948534ad3fe0f5b",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-3308b345632e",
+      "title": "opencode auth <name>",
+      "kind": "cli-flag",
+      "group": "opencode auth",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "name of the MCP server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 175,
+          "endLine": 175,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L175"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "auth [name]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "eb7458261a75913aa74004c74a0290ed786f24a8b3979dc515793e80d2285b5e",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-51654e6c01e6",
+      "title": "opencode config",
+      "kind": "cli-command",
+      "group": "opencode config",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show resolved configuration",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/config.ts",
+          "startLine": 7,
+          "endLine": 7,
+          "sha256": "5bd3c345d3b4037ff6c081223d5e349b96844d16afb7cbaf144f71131fea9659",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/config.ts#L7"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "config",
+        "textSha256": "4aa318b031a4ba1bbb26e369733a765663ad397b02846bc7bdce9769851bc6d3",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-8fcabfd94cd8",
+      "title": "opencode console",
+      "kind": "cli-command",
+      "group": "opencode console",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "log in to console",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/account.ts",
+          "startLine": 238,
+          "endLine": 238,
+          "sha256": "3e5ae1d8e47c5ef7291ee91ac736c77cefd6aa5e57301fbc200add1a3df7cfd6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/account.ts#L238"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "console",
+        "textSha256": "db6f86505ca7cb6deb2382ab4001f02b685b9c0ea57e03d42e8db06ac1ac7cde",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-3aec7182cd0c",
+      "title": "opencode create",
+      "kind": "cli-command",
+      "group": "opencode create",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "create a new agent",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/agent.ts",
+          "startLine": 34,
+          "endLine": 34,
+          "sha256": "e4195dbc5ce1ea0fc20330cf65a08f752d3dcf045baa6003e8436f0994a94dca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L34"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "create",
+        "textSha256": "e388d5d1b6bc19cc2f807f1be4e7a8f9106e073599f1bbafab948a1947563621",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-484658090f43",
+      "title": "opencode create --description",
+      "kind": "cli-flag",
+      "group": "opencode create",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "what the agent should do",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/agent.ts",
+          "startLine": 42,
+          "endLine": 42,
+          "sha256": "e4195dbc5ce1ea0fc20330cf65a08f752d3dcf045baa6003e8436f0994a94dca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L42"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "create",
+        "type": "string",
+        "alias": null,
+        "textSha256": "57dccbff74a92719cc01e8319e8a0d6c2e3de624a5fc4e112dc202249ef8885c",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-d9bd20262a31",
+      "title": "opencode create --mode",
+      "kind": "cli-flag",
+      "group": "opencode create",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "agent mode",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/agent.ts",
+          "startLine": 46,
+          "endLine": 46,
+          "sha256": "e4195dbc5ce1ea0fc20330cf65a08f752d3dcf045baa6003e8436f0994a94dca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L46"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "create",
+        "type": "string",
+        "alias": null,
+        "textSha256": "dc977367e8bed28d77918080271e3d45044d91fc14135e54e7282cdcd4eb7042",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-c165c6f56068",
+      "title": "opencode create --model",
+      "kind": "cli-flag",
+      "group": "opencode create",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "model to use in the format of provider/model",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/agent.ts",
+          "startLine": 56,
+          "endLine": 56,
+          "sha256": "e4195dbc5ce1ea0fc20330cf65a08f752d3dcf045baa6003e8436f0994a94dca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L56"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "create",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "957f400ae72a91e41688b9156f35fec90496c8884ee2006491e42db992926bf0",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-a89261aeeecd",
+      "title": "opencode create --path",
+      "kind": "cli-flag",
+      "group": "opencode create",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "directory path to generate the agent file",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/agent.ts",
+          "startLine": 38,
+          "endLine": 38,
+          "sha256": "e4195dbc5ce1ea0fc20330cf65a08f752d3dcf045baa6003e8436f0994a94dca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L38"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "create",
+        "type": "string",
+        "alias": null,
+        "textSha256": "81a08a6d76c8269e9a7813699bc17a0feded4c98be44b17991ff493c9a496f5b",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-586d41f81d92",
+      "title": "opencode create --permissions",
+      "kind": "cli-flag",
+      "group": "opencode create",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "comma-separated list of permissions to allow (default: all). Available: \"${AVAILABLE_PERMISSIONS.join(\", \")}\"",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/agent.ts",
+          "startLine": 51,
+          "endLine": 51,
+          "sha256": "e4195dbc5ce1ea0fc20330cf65a08f752d3dcf045baa6003e8436f0994a94dca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L51"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "create",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "410b3d7432a3c3c79ca827d1f1e500db7e73f2aa442ec9d8d513fb4dd62052ca",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-f6041693ecec",
+      "title": "opencode db",
+      "kind": "cli-command",
+      "group": "opencode db",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "database tools",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/db.ts",
+          "startLine": 55,
+          "endLine": 55,
+          "sha256": "8986c88f08fe37b253b9000a192931c1c3ba903b3f9e1989cdb03dc68173ca8d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/db.ts#L55"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "db",
+        "textSha256": "7292fc35d8f5f5aeb863a141665d1c49ba46f67b0a271f664d2bdd6fe5184768",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-36405043a6be",
+      "title": "opencode debug <name>",
+      "kind": "cli-command",
+      "group": "opencode debug",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "debug OAuth connection for an MCP server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 660,
+          "endLine": 660,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L660"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 663,
+          "endLine": 663,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L663"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "debug <name>",
+        "textSha256": "c1876b11edebd8a03c07dce30f2a10891f44623c5a1deb7cc85454c15d3c121d",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-c0ec7d585a4a",
+      "title": "opencode debug",
+      "kind": "cli-command",
+      "group": "opencode debug",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "debugging and troubleshooting tools",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+          "startLine": 20,
+          "endLine": 20,
+          "sha256": "0c44f063daf6779616b3473d9942cb700291c554ac9f7c5f5bd73e0458695b05",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L20"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "debug",
+        "textSha256": "d9f69f1c360251ad5a0dce2cd9705a092451d26c27bc8e8e06322b7573716a4a",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-ad147b131a0f",
+      "title": "opencode delete <sessionID>",
+      "kind": "cli-command",
+      "group": "opencode delete",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "delete a session",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/session.ts",
+          "startLine": 52,
+          "endLine": 52,
+          "sha256": "9de1d42ed0ffd67c22d2d3d52ce3fe9a77650da8fd4a18550212792cb265d984",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L52"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/session.ts",
+          "startLine": 55,
+          "endLine": 55,
+          "sha256": "9de1d42ed0ffd67c22d2d3d52ce3fe9a77650da8fd4a18550212792cb265d984",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L55"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "delete <sessionID>",
+        "textSha256": "164c420f07b9e89658d3adf2acce06d927f97fe5ee41e9ef69ca3a06f257f037",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-77a3e3764794",
+      "title": "opencode diagnostics <file>",
+      "kind": "cli-command",
+      "group": "opencode diagnostics",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "get diagnostics for a file",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/lsp.ts",
+          "startLine": 16,
+          "endLine": 16,
+          "sha256": "721cc8acdf6aef4b9c990ec6ab70bf40d0aa8968150fe1b00c1ca7b2dac81467",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L16"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/lsp.ts",
+          "startLine": 18,
+          "endLine": 18,
+          "sha256": "721cc8acdf6aef4b9c990ec6ab70bf40d0aa8968150fe1b00c1ca7b2dac81467",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L18"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "diagnostics <file>",
+        "textSha256": "5d23eaaf3254721bbc1731571e73bec136592201a5993c8bda2cdca9dbdf6cb8",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-df3a45156ad2",
+      "title": "opencode diff <hash>",
+      "kind": "cli-command",
+      "group": "opencode diff",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show diff for a snapshot hash",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/snapshot.ts",
+          "startLine": 38,
+          "endLine": 38,
+          "sha256": "815f13589f27309cc9a47a00ed71c0f1c809f0f6eee5d1893c61e48812b01163",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L38"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/snapshot.ts",
+          "startLine": 41,
+          "endLine": 41,
+          "sha256": "815f13589f27309cc9a47a00ed71c0f1c809f0f6eee5d1893c61e48812b01163",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L41"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "diff <hash>",
+        "textSha256": "a62fbebbf629f42569182e2bf48c66bfde3218814119ee8b915d240dab53f45d",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-343754acbbf0",
+      "title": "opencode document-symbols <uri>",
+      "kind": "cli-command",
+      "group": "opencode document-symbols",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "get symbols from a document",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/lsp.ts",
+          "startLine": 42,
+          "endLine": 42,
+          "sha256": "721cc8acdf6aef4b9c990ec6ab70bf40d0aa8968150fe1b00c1ca7b2dac81467",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L42"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/lsp.ts",
+          "startLine": 44,
+          "endLine": 44,
+          "sha256": "721cc8acdf6aef4b9c990ec6ab70bf40d0aa8968150fe1b00c1ca7b2dac81467",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L44"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "document-symbols <uri>",
+        "textSha256": "9e9baec93bcdf24923168385ca7a599b28b887bb47968b0b6f03c42bf8a08ab7",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-0c7a398dcd7d",
+      "title": "opencode export [sessionID]",
+      "kind": "cli-command",
+      "group": "opencode export",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export session data as JSON",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/export.ts",
+          "startLine": 223,
+          "endLine": 223,
+          "sha256": "ce20051b0ee3241459eb5566ac6ea83fbc6d701b13db866b8c9e7f5acc1bd328",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L223"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "export [sessionID]",
+        "textSha256": "be67a5aaef734deee09302142988e06808792520a2cef0f3aa77c4a95d3ece51",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-3b72193ad4a0",
+      "title": "opencode export --sanitize",
+      "kind": "cli-flag",
+      "group": "opencode export",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "redact sensitive transcript and file data",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/export.ts",
+          "startLine": 231,
+          "endLine": 231,
+          "sha256": "ce20051b0ee3241459eb5566ac6ea83fbc6d701b13db866b8c9e7f5acc1bd328",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L231"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "export [sessionID]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "c2edc547603c066d0b9c4c9eaf582e8ba5b7b05a14220eb0a27931cec1e1fa40",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-f850aaf0b873",
+      "title": "opencode export <sessionID>",
+      "kind": "cli-flag",
+      "group": "opencode export",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "session id to export",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/export.ts",
+          "startLine": 227,
+          "endLine": 227,
+          "sha256": "ce20051b0ee3241459eb5566ac6ea83fbc6d701b13db866b8c9e7f5acc1bd328",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L227"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "export [sessionID]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "a2a2cac5a9159de27a7fe4ad7e4fc4fdcb8d1e9d75e9fc4b12199b3ddcdd8c70",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-1191f8d8a7e0",
+      "title": "opencode file",
+      "kind": "cli-command",
+      "group": "opencode file",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "file system debugging utilities",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/file.ts",
+          "startLine": 68,
+          "endLine": 68,
+          "sha256": "1ba6134685309407755dc0677e24054c95a5a4e1735465697b91348c9ee9831c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L68"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "file",
+        "textSha256": "876f5a163adb9cedecf10fbbca7e7fd716b41675a3b5c318b5cfed8ca86f2294",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-23b2f40b2212",
+      "title": "opencode files",
+      "kind": "cli-command",
+      "group": "opencode files",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "list files using ripgrep",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+          "startLine": 16,
+          "endLine": 16,
+          "sha256": "8383d04b17d0b1626fb03957c30b812efc3e1a8a89490ac47bcce306950bfd4f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L16"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "files",
+        "textSha256": "73419db2fb6dfeceb8b15314d213f69f6f95355b526755f68f56fb45fd2a3144",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-01feb496a015",
+      "title": "opencode files --glob",
+      "kind": "cli-flag",
+      "group": "opencode files",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Glob pattern to match files",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+          "startLine": 24,
+          "endLine": 24,
+          "sha256": "8383d04b17d0b1626fb03957c30b812efc3e1a8a89490ac47bcce306950bfd4f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L24"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "files",
+        "type": "string",
+        "alias": null,
+        "textSha256": "ba5c7e0ccd476cd63b9c8122801097607aeec95f930487ebe148b0410637fc4b",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-b2fa99e2e3e8",
+      "title": "opencode files --limit",
+      "kind": "cli-flag",
+      "group": "opencode files",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Limit number of results",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+          "startLine": 28,
+          "endLine": 28,
+          "sha256": "8383d04b17d0b1626fb03957c30b812efc3e1a8a89490ac47bcce306950bfd4f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L28"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "files",
+        "type": "number",
+        "alias": null,
+        "textSha256": "1b4d8f0bfc6af20a1e71c5efc61eaa9b006dd5f98021425934e306d8c5018e9b",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-74d85b253ae1",
+      "title": "opencode files --query",
+      "kind": "cli-flag",
+      "group": "opencode files",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Filter files by query",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+          "startLine": 20,
+          "endLine": 20,
+          "sha256": "8383d04b17d0b1626fb03957c30b812efc3e1a8a89490ac47bcce306950bfd4f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L20"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "files",
+        "type": "string",
+        "alias": null,
+        "textSha256": "2d2dd77e21b36c149b730ee4f5e040b1daaf1d3b5957083868aae5a06eee880b",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-3e558c466cd4",
+      "title": "opencode generate",
+      "kind": "cli-command",
+      "group": "opencode generate",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CLI command generate.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/generate.ts",
+          "startLine": 6,
+          "endLine": 6,
+          "sha256": "618da8d75b5578b56c0e25c8345bfce8eb60802f48662a5b5149ee80ee3a49f3",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/generate.ts#L6"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "generate",
+        "textSha256": "70d1af9393f58b95e734b454d5c05b47dd05e2557eb1482850b45bdc3591bbc1",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-6d17f307a2a6",
+      "title": "opencode git status",
+      "kind": "cli-command",
+      "group": "opencode git",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Show git status",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run/demo.ts",
+          "startLine": 587,
+          "endLine": 587,
+          "sha256": "d05d2e684261c73205d2d81a7f7f8b50ba1132f341722e7c521f3fd060034578",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run/demo.ts#L587"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "git status",
+        "textSha256": "9be81ba68ffe14d724ca12f2f0677ae7afc4e26f944ca29e5e265f562dab6f7d",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-c8bc76dd9392",
+      "title": "opencode github",
+      "kind": "cli-command",
+      "group": "opencode github",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "manage GitHub agent",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.ts",
+          "startLine": 38,
+          "endLine": 38,
+          "sha256": "d5f4f679adf7bae51ac830606323fe2cc96149da6135c53f6ea3a379062c67d4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L38"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "github",
+        "textSha256": "aeb9e44bbc0a759269182aa015a63a0fc015c04c24ca774655f46aa2f67324d1",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-20e31aa13081",
+      "title": "opencode import <file>",
+      "kind": "cli-command",
+      "group": "opencode import",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "import session data from JSON file or URL",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/import.ts",
+          "startLine": 95,
+          "endLine": 95,
+          "sha256": "79037908c195ab95e423dfc9a66f2102702b73d583fc9c2b0fd844d548b8220d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/import.ts#L95"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/import.ts",
+          "startLine": 98,
+          "endLine": 98,
+          "sha256": "79037908c195ab95e423dfc9a66f2102702b73d583fc9c2b0fd844d548b8220d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/import.ts#L98"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "import <file>",
+        "textSha256": "1cb248daecc307d13f7c1da3a3457c0bf0da02c21fe38b95bd346a0d90b73dfa",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-272bcaf62b83",
+      "title": "opencode info",
+      "kind": "cli-command",
+      "group": "opencode info",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show debug information",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+          "startLine": 50,
+          "endLine": 50,
+          "sha256": "0c44f063daf6779616b3473d9942cb700291c554ac9f7c5f5bd73e0458695b05",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L50"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "info",
+        "textSha256": "dd5b660f1289f318a7e1ab4d704c3df055d82d2c0f4cca3aa644f803c31db5b8",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-9034387d6fab",
+      "title": "opencode install",
+      "kind": "cli-command",
+      "group": "opencode install",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "install the GitHub agent",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.ts",
+          "startLine": 8,
+          "endLine": 8,
+          "sha256": "d5f4f679adf7bae51ac830606323fe2cc96149da6135c53f6ea3a379062c67d4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L8"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "install",
+        "textSha256": "93563bd0db83176b1007ec00ef4cebc542b2f7df065e8bc503c49db2814e662c",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-810d1b7c3251",
+      "title": "opencode list <path>",
+      "kind": "cli-command",
+      "group": "opencode list",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "list files in a directory",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/file.ts",
+          "startLine": 53,
+          "endLine": 53,
+          "sha256": "1ba6134685309407755dc0677e24054c95a5a4e1735465697b91348c9ee9831c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L53"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/file.ts",
+          "startLine": 56,
+          "endLine": 56,
+          "sha256": "1ba6134685309407755dc0677e24054c95a5a4e1735465697b91348c9ee9831c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L56"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "list <path>",
+        "textSha256": "ee8f0f4992d1fe100daefedc9973209b87a688cf3831b2abb024058bfe061f1f",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-4108e800eefa",
+      "title": "opencode list",
+      "kind": "cli-command",
+      "group": "opencode list",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "list all available agents",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/agent.ts",
+          "startLine": 235,
+          "endLine": 235,
+          "sha256": "e4195dbc5ce1ea0fc20330cf65a08f752d3dcf045baa6003e8436f0994a94dca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L235"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 110,
+          "endLine": 110,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L110"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 307,
+          "endLine": 307,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L307"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/providers.ts",
+          "startLine": 249,
+          "endLine": 249,
+          "sha256": "e04e76a3411301b8587cb410e0eec54ec77786baa5726256d2e640ce8bee702e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L249"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/session.ts",
+          "startLine": 71,
+          "endLine": 71,
+          "sha256": "9de1d42ed0ffd67c22d2d3d52ce3fe9a77650da8fd4a18550212792cb265d984",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L71"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "list",
+        "textSha256": "a6373a37e75734d3066f944cbcea22005fb763e58f025c2ab833a88023d1c306",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-5cd47edf7afc",
+      "title": "opencode list --format",
+      "kind": "cli-flag",
+      "group": "opencode list",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "output format",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/session.ts",
+          "startLine": 80,
+          "endLine": 80,
+          "sha256": "9de1d42ed0ffd67c22d2d3d52ce3fe9a77650da8fd4a18550212792cb265d984",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L80"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "list",
+        "type": "string",
+        "alias": null,
+        "textSha256": "c9982c68197f020fd4ce3990df8ee265a4d402836643640140d9383eced32115",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-03e33350a976",
+      "title": "opencode list --max-count",
+      "kind": "cli-flag",
+      "group": "opencode list",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "limit to N most recent sessions",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/session.ts",
+          "startLine": 75,
+          "endLine": 75,
+          "sha256": "9de1d42ed0ffd67c22d2d3d52ce3fe9a77650da8fd4a18550212792cb265d984",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L75"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "list",
+        "type": "number",
+        "alias": "n",
+        "textSha256": "a2bb972d30292c85e990b04e9c27d39e1338fe9720adcbffa4d7d41453a3d3ae",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-a136b20f2de3",
+      "title": "opencode login [url]",
+      "kind": "cli-command",
+      "group": "opencode login",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "server URL",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/account.ts",
+          "startLine": 178,
+          "endLine": 178,
+          "sha256": "3e5ae1d8e47c5ef7291ee91ac736c77cefd6aa5e57301fbc200add1a3df7cfd6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/account.ts#L178"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/providers.ts",
+          "startLine": 300,
+          "endLine": 300,
+          "sha256": "e04e76a3411301b8587cb410e0eec54ec77786baa5726256d2e640ce8bee702e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L300"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "login [url]",
+        "textSha256": "ac63effb8fc2677858aca3a79149a50f241c63bd0c557b7ed8f0000f9c83df58",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-ba2b5fca4c0d",
+      "title": "opencode login --method",
+      "kind": "cli-flag",
+      "group": "opencode login",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "login method label (skips method selection)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/providers.ts",
+          "startLine": 315,
+          "endLine": 315,
+          "sha256": "e04e76a3411301b8587cb410e0eec54ec77786baa5726256d2e640ce8bee702e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L315"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "login [url]",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "afe5452256c3c6e98b46ac64c12837b53bd62fda156bda5685680da93e582b59",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-50649b656f49",
+      "title": "opencode login --provider",
+      "kind": "cli-flag",
+      "group": "opencode login",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "provider id or name to log in to (skips provider selection)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/providers.ts",
+          "startLine": 310,
+          "endLine": 310,
+          "sha256": "e04e76a3411301b8587cb410e0eec54ec77786baa5726256d2e640ce8bee702e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L310"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "login [url]",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "0bf18ef971f45126b400137969a56ccb9b9bec6e996070370c6630c8862dfada",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-2732b216cc59",
+      "title": "opencode login <url>",
+      "kind": "cli-flag",
+      "group": "opencode login",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "server URL",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/account.ts",
+          "startLine": 182,
+          "endLine": 182,
+          "sha256": "3e5ae1d8e47c5ef7291ee91ac736c77cefd6aa5e57301fbc200add1a3df7cfd6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/account.ts#L182"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/providers.ts",
+          "startLine": 306,
+          "endLine": 306,
+          "sha256": "e04e76a3411301b8587cb410e0eec54ec77786baa5726256d2e640ce8bee702e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L306"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "login [url]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "ac63effb8fc2677858aca3a79149a50f241c63bd0c557b7ed8f0000f9c83df58",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-273f0060c7d2",
+      "title": "opencode logout [provider]",
+      "kind": "cli-command",
+      "group": "opencode logout",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "log out from a configured provider",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/providers.ts",
+          "startLine": 492,
+          "endLine": 492,
+          "sha256": "e04e76a3411301b8587cb410e0eec54ec77786baa5726256d2e640ce8bee702e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L492"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "logout [provider]",
+        "textSha256": "55f525f8491062247320ccd84b4fd068f1a559075d3c65354426cc60de93a099",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-188f716e716b",
+      "title": "opencode logout [name]",
+      "kind": "cli-command",
+      "group": "opencode logout",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "remove OAuth credentials for an MCP server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 337,
+          "endLine": 337,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L337"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "logout [name]",
+        "textSha256": "e7a1a4e4eaa2e61c4289a9c46ada5ecae2bf3c43888531cd9529103bb357478b",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-986c5f56c03d",
+      "title": "opencode logout [email]",
+      "kind": "cli-command",
+      "group": "opencode logout",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "account email to log out from",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/account.ts",
+          "startLine": 193,
+          "endLine": 193,
+          "sha256": "3e5ae1d8e47c5ef7291ee91ac736c77cefd6aa5e57301fbc200add1a3df7cfd6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/account.ts#L193"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "logout [email]",
+        "textSha256": "bfc2493f808b1cb6b342dbffc0988c4f47ba7116b12a89cbad70d8086165125b",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-ab2b5e876b05",
+      "title": "opencode logout <email>",
+      "kind": "cli-flag",
+      "group": "opencode logout",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "account email to log out from",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/account.ts",
+          "startLine": 197,
+          "endLine": 197,
+          "sha256": "3e5ae1d8e47c5ef7291ee91ac736c77cefd6aa5e57301fbc200add1a3df7cfd6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/account.ts#L197"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "logout [email]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "bfc2493f808b1cb6b342dbffc0988c4f47ba7116b12a89cbad70d8086165125b",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-b77903227499",
+      "title": "opencode logout <name>",
+      "kind": "cli-flag",
+      "group": "opencode logout",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "name of the MCP server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 340,
+          "endLine": 340,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L340"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "logout [name]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "eb7458261a75913aa74004c74a0290ed786f24a8b3979dc515793e80d2285b5e",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-60e8c300aa66",
+      "title": "opencode logout <provider>",
+      "kind": "cli-flag",
+      "group": "opencode logout",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "provider id or name to log out from",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/providers.ts",
+          "startLine": 495,
+          "endLine": 495,
+          "sha256": "e04e76a3411301b8587cb410e0eec54ec77786baa5726256d2e640ce8bee702e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L495"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "logout [provider]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "b952d1ff591339e3d2d7d124f1576a46bda6f0ba3d6b83a0e710fffbdd18844d",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-db05e2a8366d",
+      "title": "opencode lsp",
+      "kind": "cli-command",
+      "group": "opencode lsp",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "LSP debugging utilities",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/lsp.ts",
+          "startLine": 8,
+          "endLine": 8,
+          "sha256": "721cc8acdf6aef4b9c990ec6ab70bf40d0aa8968150fe1b00c1ca7b2dac81467",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L8"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "lsp",
+        "textSha256": "d058816be0f8669a71603063ba534b46a2e826c9c96bf9ffbefde97815949f53",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-4bfba993a213",
+      "title": "opencode mcp",
+      "kind": "cli-command",
+      "group": "opencode mcp",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "manage MCP (Model Context Protocol) servers",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/mcp.ts",
+          "startLine": 96,
+          "endLine": 96,
+          "sha256": "3943ce7532c616bf45b0fb1aa984239b9f77cce8df90ffc1f5264f5338a34fa0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L96"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "mcp",
+        "textSha256": "237f2e32a718b4eec1b0222e7c7d4b74eb2ece731c9b63e020adff35ed2df4dd",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-8ac6890824bb",
+      "title": "opencode models [provider]",
+      "kind": "cli-command",
+      "group": "opencode models",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "list all available models",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/models.ts",
+          "startLine": 9,
+          "endLine": 9,
+          "sha256": "c565b27efb437c50ed23d6a9d8498b3f5ab49f323b061a759da2ca03f28862ba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/models.ts#L9"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "models [provider]",
+        "textSha256": "e008cddab8c9616affe457508cc19c71ad559d381cfcd7adebf042a89de3bb51",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-88ab2081e973",
+      "title": "opencode models --refresh",
+      "kind": "cli-flag",
+      "group": "opencode models",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "refresh the models cache from models.dev",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/models.ts",
+          "startLine": 22,
+          "endLine": 22,
+          "sha256": "c565b27efb437c50ed23d6a9d8498b3f5ab49f323b061a759da2ca03f28862ba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/models.ts#L22"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "models [provider]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "082d1280141f6a7aeac36c09f180488661eebff1497bba6b009fabba3e4cce15",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-472371791277",
+      "title": "opencode models --verbose",
+      "kind": "cli-flag",
+      "group": "opencode models",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "use more verbose model output (includes metadata like costs)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/models.ts",
+          "startLine": 18,
+          "endLine": 18,
+          "sha256": "c565b27efb437c50ed23d6a9d8498b3f5ab49f323b061a759da2ca03f28862ba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/models.ts#L18"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "models [provider]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "7c6104cc9adff9ba12de1810b8a17703f6565e8654fdf612dc2968dc2c5b3056",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e8781026aea3",
+      "title": "opencode models <provider>",
+      "kind": "cli-flag",
+      "group": "opencode models",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "provider ID to filter models by",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/models.ts",
+          "startLine": 13,
+          "endLine": 13,
+          "sha256": "c565b27efb437c50ed23d6a9d8498b3f5ab49f323b061a759da2ca03f28862ba",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/models.ts#L13"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "models [provider]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "e2733693f6255d5db189b9c68ab0593cf4604415e7293c8f90ac5a4ff7eb3b6a",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-8bfa636d8c9f",
+      "title": "opencode open",
+      "kind": "cli-command",
+      "group": "opencode open",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CLI command open.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/account.ts",
+          "startLine": 228,
+          "endLine": 228,
+          "sha256": "3e5ae1d8e47c5ef7291ee91ac736c77cefd6aa5e57301fbc200add1a3df7cfd6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/account.ts#L228"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "open",
+        "textSha256": "0a574337665556d47de843a5835f70a664a8abaf09adf5621dcc97eb192cb18a",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e60d59212093",
+      "title": "opencode orgs",
+      "kind": "cli-command",
+      "group": "opencode orgs",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CLI command orgs.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/account.ts",
+          "startLine": 218,
+          "endLine": 218,
+          "sha256": "3e5ae1d8e47c5ef7291ee91ac736c77cefd6aa5e57301fbc200add1a3df7cfd6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/account.ts#L218"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "orgs",
+        "textSha256": "a63903cfd2145986ec05e8c040fa9005569a302db724c84697f4da05f3d126e6",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-f9d9c19995b9",
+      "title": "opencode patch <hash>",
+      "kind": "cli-command",
+      "group": "opencode patch",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show patch for a snapshot hash",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/snapshot.ts",
+          "startLine": 23,
+          "endLine": 23,
+          "sha256": "815f13589f27309cc9a47a00ed71c0f1c809f0f6eee5d1893c61e48812b01163",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L23"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/snapshot.ts",
+          "startLine": 26,
+          "endLine": 26,
+          "sha256": "815f13589f27309cc9a47a00ed71c0f1c809f0f6eee5d1893c61e48812b01163",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L26"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "patch <hash>",
+        "textSha256": "1b13b24df14a4b08cdafed7be3d01bf8d34761da5a6e01c0887b2631995c8d05",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-0307d649cbc1",
+      "title": "opencode path",
+      "kind": "cli-command",
+      "group": "opencode path",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "print the database path",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/db.ts",
+          "startLine": 46,
+          "endLine": 46,
+          "sha256": "8986c88f08fe37b253b9000a192931c1c3ba903b3f9e1989cdb03dc68173ca8d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/db.ts#L46"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "path",
+        "textSha256": "f3c5fc7cbb6c5a5e03d20e57819cd0878496a4f8de4e2cbe5c30e84264df24e2",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-a0a07a19a3a2",
+      "title": "opencode paths",
+      "kind": "cli-command",
+      "group": "opencode paths",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show global paths (data, config, cache, state)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+          "startLine": 80,
+          "endLine": 80,
+          "sha256": "0c44f063daf6779616b3473d9942cb700291c554ac9f7c5f5bd73e0458695b05",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L80"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "paths",
+        "textSha256": "548d0f245873702e6e39974e7ca855c2001171baa05826eab6125c7c96ae2c3d",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-25810d8e91cd",
+      "title": "opencode plugin <module>",
+      "kind": "cli-command",
+      "group": "opencode plugin",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "install plugin and update config",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/plug.ts",
+          "startLine": 179,
+          "endLine": 179,
+          "sha256": "81c630facb51d373cee6dd13b29f53e6cc867355db7129996a8e9e4a7f21f414",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/plug.ts#L179"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/plug.ts",
+          "startLine": 184,
+          "endLine": 184,
+          "sha256": "81c630facb51d373cee6dd13b29f53e6cc867355db7129996a8e9e4a7f21f414",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/plug.ts#L184"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "plugin <module>",
+        "textSha256": "4c56e7c9b3e1f0a9e6b6ad2bb834027f587f5a164a97c6607228612cd960c9f9",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-82ff7d8068da",
+      "title": "opencode plugin --force",
+      "kind": "cli-flag",
+      "group": "opencode plugin",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "replace existing plugin version",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/plug.ts",
+          "startLine": 194,
+          "endLine": 194,
+          "sha256": "81c630facb51d373cee6dd13b29f53e6cc867355db7129996a8e9e4a7f21f414",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/plug.ts#L194"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "plugin <module>",
+        "type": "boolean",
+        "alias": "[",
+        "textSha256": "03769e8824e6d8724c7e07fdc0a329da70273a9a19e760d7ef4caba6acc639c1",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-c8a2f0c3f0d1",
+      "title": "opencode plugin --global",
+      "kind": "cli-flag",
+      "group": "opencode plugin",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "install in global config",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/plug.ts",
+          "startLine": 188,
+          "endLine": 188,
+          "sha256": "81c630facb51d373cee6dd13b29f53e6cc867355db7129996a8e9e4a7f21f414",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/plug.ts#L188"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "plugin <module>",
+        "type": "boolean",
+        "alias": "[",
+        "textSha256": "c32d89343cb4d7fad457bc3cd37b2fd2681697dbb3fd1e63434efe8476db1404",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-d9b7cb2eb604",
+      "title": "opencode pr <number>",
+      "kind": "cli-command",
+      "group": "opencode pr",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "fetch and checkout a GitHub PR branch, then run opencode",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/pr.ts",
+          "startLine": 9,
+          "endLine": 9,
+          "sha256": "d2228a30af72a3a6643231b42c024c33a9a87e5fcc56f0eaaaf1a2346272d591",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/pr.ts#L9"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/pr.ts",
+          "startLine": 12,
+          "endLine": 12,
+          "sha256": "d2228a30af72a3a6643231b42c024c33a9a87e5fcc56f0eaaaf1a2346272d591",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/pr.ts#L12"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "pr <number>",
+        "textSha256": "97813aff8bbadc4477f38a0b5ac4b341c84fd94fcd925f8d6d6061a5dacae016",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-85cbf178dc09",
+      "title": "opencode providers",
+      "kind": "cli-command",
+      "group": "opencode providers",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "manage AI providers and credentials",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/providers.ts",
+          "startLine": 240,
+          "endLine": 240,
+          "sha256": "e04e76a3411301b8587cb410e0eec54ec77786baa5726256d2e640ce8bee702e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L240"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "providers",
+        "textSha256": "70d05c9973c514254813121bdee6df73339d3aadc6df3d27fdcc3445e8d78754",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-0851c3063761",
+      "title": "opencode read <path>",
+      "kind": "cli-command",
+      "group": "opencode read",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "read file contents as JSON",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/file.ts",
+          "startLine": 32,
+          "endLine": 32,
+          "sha256": "1ba6134685309407755dc0677e24054c95a5a4e1735465697b91348c9ee9831c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L32"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/file.ts",
+          "startLine": 35,
+          "endLine": 35,
+          "sha256": "1ba6134685309407755dc0677e24054c95a5a4e1735465697b91348c9ee9831c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L35"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "read <path>",
+        "textSha256": "adeb20965e41fd2448581c224b793f61c2154cec97df2c720cd5dca2e3507bc1",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-c03cd944d3b7",
+      "title": "opencode rg",
+      "kind": "cli-command",
+      "group": "opencode rg",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "ripgrep debugging utilities",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+          "startLine": 9,
+          "endLine": 9,
+          "sha256": "8383d04b17d0b1626fb03957c30b812efc3e1a8a89490ac47bcce306950bfd4f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L9"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "rg",
+        "textSha256": "f0b444b605cbd227ea47a5fb5be0da8eb95071e80ded24f4001382a8d171f07c",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-30670551c6aa",
+      "title": "opencode run [message..]",
+      "kind": "cli-command",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "run opencode with a message",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 127,
+          "endLine": 127,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L127"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "run [message..]",
+        "textSha256": "a6324bcb9b7c4d29f7e085213a29a7400c08a72e0f24353960bb55db1f97d07f",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-50898ac0fec4",
+      "title": "opencode run",
+      "kind": "cli-command",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "run the GitHub agent",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.ts",
+          "startLine": 18,
+          "endLine": 18,
+          "sha256": "d5f4f679adf7bae51ac830606323fe2cc96149da6135c53f6ea3a379062c67d4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L18"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "run",
+        "textSha256": "6c1a05774605c102c01303146a1d8df0bb4e2905ccfe053f485f0ea1249bf52c",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-32b743172e09",
+      "title": "opencode run --agent",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "agent to use",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 170,
+          "endLine": 170,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L170"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "f4a8508ce962a8cd978b602965747701e53e2fde3ec307ea55523d9c99c84cd8",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-ce91c7397d9f",
+      "title": "opencode run --attach",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "attach to a running opencode server (e.g., http://localhost:4096)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 190,
+          "endLine": 190,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L190"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "38454cb9a00430babe9825c7f416d385e937c95a9c6046e4e89f7194374983a8",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-a8100f189216",
+      "title": "opencode run --auto",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "auto-approve permissions that are not explicitly denied (dangerous!)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 242,
+          "endLine": 242,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L242"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "8bfc246adf70cdf4194ac9bad78bfbe03728d47d4938967c5c96ab1bcbca3403",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-0c42fb333c33",
+      "title": "opencode run --command",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "the command to run, use message for args",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 143,
+          "endLine": 143,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L143"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "044b601f15b7e3051c9b02bc34e0b46614208586dc5d058256c47a50da740c8d",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-f2932a285746",
+      "title": "opencode run --continue",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "continue the last session",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 147,
+          "endLine": 147,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L147"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": "[",
+        "textSha256": "4673a152381f5ef469b0c5a8d197372696ef7621a958d2a2c1a47be78807704f",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-3f10ed3c9d4b",
+      "title": "opencode run --dangerously-skip-permissions",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Option --dangerously-skip-permissions of opencode run.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 252,
+          "endLine": 252,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L252"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-1bf98974ca27",
+      "title": "opencode run --demo",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "enable direct interactive demo slash commands; pass one as the message to run it immediately",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 257,
+          "endLine": 257,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L257"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "c6ec30e631c5f01de8d562932a302fc175f4080a4ccd6da954f205a3608f9ec5",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-66bf3741ceb8",
+      "title": "opencode run --dir",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "directory to run in, path on remote server if attaching",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 204,
+          "endLine": 204,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L204"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "cb21e8315b7c568b0f6a7c1eb9c6c674026a686642d5e60c32c5515602c3270e",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-d6c35f5c1cd1",
+      "title": "opencode run --event",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GitHub mock event to run the agent for",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.ts",
+          "startLine": 22,
+          "endLine": 22,
+          "sha256": "d5f4f679adf7bae51ac830606323fe2cc96149da6135c53f6ea3a379062c67d4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L22"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run",
+        "type": "string",
+        "alias": null,
+        "textSha256": "5b06f5912660898b7054f6bd7514b12827ef9d15b0f41be9e09a467d5c42dca4",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-3b64e8cec357",
+      "title": "opencode run --file",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "file(s) to attach to message",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 180,
+          "endLine": 180,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L180"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "7e09eee700e62b5eabfa751fb0f4a40e79378929e3154ed6a3a88d24d0e5f1af",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-65bb303ba37e",
+      "title": "opencode run --fork",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "fork the session before continuing (requires --continue or --session)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 157,
+          "endLine": 157,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L157"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "5a9d6748ef73ddd109ff78b16c02d90a8f1f11dd3584769bf43a26b40d182b93",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-ddf17d64c19b",
+      "title": "opencode run --format",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "format: default (formatted) or json (raw JSON events)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 174,
+          "endLine": 174,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L174"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "20d6cd93f00ca16ed832a8d78d95eabe435d52f53959c4d6bbee9ebb5f14d974",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-b576c9e8f7c7",
+      "title": "opencode run --interactive",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "run in direct interactive split-footer mode",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 236,
+          "endLine": 236,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L236"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": "[",
+        "textSha256": "3996a90b47f2ceb993f9a9e34b8b3ad65cd98550430adec999fcd5dd3539e210",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-4437373c492b",
+      "title": "opencode run --mini",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Option --mini of opencode run.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 220,
+          "endLine": 220,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L220"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-929ad28d3e63",
+      "title": "opencode run --model",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "model to use in the format of provider/model",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 165,
+          "endLine": 165,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L165"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "957f400ae72a91e41688b9156f35fec90496c8884ee2006491e42db992926bf0",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-f9d4aa470e6b",
+      "title": "opencode run --password",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "basic auth password (defaults to OPENCODE_SERVER_PASSWORD)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 194,
+          "endLine": 194,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L194"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "d854c5175fa9002ca0016bae5a7bd400eaa6f1beaa754990bbf770996d4d5733",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e5d2c7336ee7",
+      "title": "opencode run --port",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "port for the local server (defaults to random port if no value provided)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 208,
+          "endLine": 208,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L208"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "number",
+        "alias": null,
+        "textSha256": "da3cc7cde5ba7ab2bd02eb5e953001e2147491c235137ff7607fb61b1389a268",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-a21b0cee8440",
+      "title": "opencode run --replay",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "replay interactive session history on resume and after resize (use --no-replay to disable)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 225,
+          "endLine": 225,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L225"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "57692aec8f025bc7f7bfcb3ec8595e7441d3c0eb18003ab2e1a7f86f944aabec",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-4f3a5fb2168b",
+      "title": "opencode run --replay-limit",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "cap visible interactive replay to the newest N messages",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 231,
+          "endLine": 231,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L231"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "number",
+        "alias": null,
+        "textSha256": "4cc4e7065b44b8aee4c4a9f1b738ce9acf36071960de3568e26b0c4debd66f2c",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-c1ec484375ae",
+      "title": "opencode run --session",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "session id to continue",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 152,
+          "endLine": 152,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L152"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "afd97af0b9b1af475ab7b59a36b6ec917e5b24bbc395fded8b1e7859820082f1",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-5edacfd46161",
+      "title": "opencode run --share",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "share the session",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 161,
+          "endLine": 161,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L161"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "dea459deb500e1aabf7d88fd4cb86e0e2d2aeaa542ad0775241b52e94f26f18b",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-ce23aafb2b72",
+      "title": "opencode run --thinking",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show thinking blocks",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 216,
+          "endLine": 216,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L216"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "2c72ea9868b48f884e68739f159c566a76cd930241a8f2e3c065a1a6dc7d272a",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-a9f86e64e80a",
+      "title": "opencode run --title",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "title for the session (uses truncated prompt if no value provided)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 186,
+          "endLine": 186,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L186"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "49548d5f30fbbd6ac2b90d659b0640d6ce5eef9128dff28215474c085aafc0d6",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-76d7d561b273",
+      "title": "opencode run --token",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "GitHub personal access token (github_pat_********)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/github.ts",
+          "startLine": 26,
+          "endLine": 26,
+          "sha256": "d5f4f679adf7bae51ac830606323fe2cc96149da6135c53f6ea3a379062c67d4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L26"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run",
+        "type": "string",
+        "alias": null,
+        "textSha256": "164b5f26f45d4a3a2bb2f5830511dd179013308aa6c79ad92b283f1234e208be",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-870b6274bd74",
+      "title": "opencode run --username",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "basic auth username (defaults to OPENCODE_SERVER_USERNAME or 'opencode')",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 199,
+          "endLine": 199,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L199"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": "[",
+        "textSha256": "e69c8cfad35a6778ea80fbf8114f7d4868dca85fa66a00ddd5b7691364943929",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-198684324849",
+      "title": "opencode run --variant",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "model variant (provider-specific reasoning effort, e.g., high, max, minimal)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 212,
+          "endLine": 212,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L212"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "75212fdec60e40e3ea9ff7cde138d1c69fa50522a212bacbc5ae0d5186d351d1",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-8ac8cdf67658",
+      "title": "opencode run --yolo",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Option --yolo of opencode run.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 247,
+          "endLine": 247,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L247"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "run [message..]",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-b35f224490b3",
+      "title": "opencode run <message>",
+      "kind": "cli-flag",
+      "group": "opencode run",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "message to send",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/run.ts",
+          "startLine": 137,
+          "endLine": 137,
+          "sha256": "bde848ca17f30834beb4ef0dfecb3b819730746ec2023c1ac55ecef7ca25dd37",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/run.ts#L137"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "run [message..]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "f9a2a92747cbe4e5dcd892486f41681b57a0384ef60c5ff528fd18c806138dfd",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-33f301f1859d",
+      "title": "opencode scrap",
+      "kind": "cli-command",
+      "group": "opencode scrap",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "list all known projects",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/scrap.ts",
+          "startLine": 5,
+          "endLine": 5,
+          "sha256": "05e3bf6e8e742fb900e94308d3da9606fbb362ea0811578d45f66a8f67933a62",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/scrap.ts#L5"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "scrap",
+        "textSha256": "a4d32506b8171f71d7510d97c91f42f9a85799076daf3b58d236cfd38e9ea9a8",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-0198141b8cde",
+      "title": "opencode search <pattern>",
+      "kind": "cli-command",
+      "group": "opencode search",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "search file contents using ripgrep",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+          "startLine": 48,
+          "endLine": 48,
+          "sha256": "8383d04b17d0b1626fb03957c30b812efc3e1a8a89490ac47bcce306950bfd4f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L48"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+          "startLine": 52,
+          "endLine": 52,
+          "sha256": "8383d04b17d0b1626fb03957c30b812efc3e1a8a89490ac47bcce306950bfd4f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L52"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "search <pattern>",
+        "textSha256": "107e5db8c8993e77150a295294c0580e48eb67487666a703326982794739eb16",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-991475ea0802",
+      "title": "opencode search <query>",
+      "kind": "cli-command",
+      "group": "opencode search",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "search files by query",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/file.ts",
+          "startLine": 17,
+          "endLine": 17,
+          "sha256": "1ba6134685309407755dc0677e24054c95a5a4e1735465697b91348c9ee9831c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L17"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/file.ts",
+          "startLine": 20,
+          "endLine": 20,
+          "sha256": "1ba6134685309407755dc0677e24054c95a5a4e1735465697b91348c9ee9831c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L20"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "search <query>",
+        "textSha256": "bbe813791b1ab98776d731cdb84f13e62a5ae425a7121259e8ed14e0996a0c87",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-8b67d3890dd2",
+      "title": "opencode search --glob",
+      "kind": "cli-flag",
+      "group": "opencode search",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "File glob patterns",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+          "startLine": 57,
+          "endLine": 57,
+          "sha256": "8383d04b17d0b1626fb03957c30b812efc3e1a8a89490ac47bcce306950bfd4f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L57"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "search <pattern>",
+        "type": "array",
+        "alias": null,
+        "textSha256": "6b800e75b10be02fc6399d17546287de142892f51715202695a76c33a19e1e02",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e383037dae74",
+      "title": "opencode search --limit",
+      "kind": "cli-flag",
+      "group": "opencode search",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Limit number of results",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/ripgrep.ts",
+          "startLine": 61,
+          "endLine": 61,
+          "sha256": "8383d04b17d0b1626fb03957c30b812efc3e1a8a89490ac47bcce306950bfd4f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L61"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "search <pattern>",
+        "type": "number",
+        "alias": null,
+        "textSha256": "1b4d8f0bfc6af20a1e71c5efc61eaa9b006dd5f98021425934e306d8c5018e9b",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-2f8d84ff0070",
+      "title": "opencode serve",
+      "kind": "cli-command",
+      "group": "opencode serve",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "starts a headless opencode server",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/serve.ts",
+          "startLine": 7,
+          "endLine": 7,
+          "sha256": "4cdec5fb55b58a3215aec3d58c6e15a3ef0db75dd6f613180c901214be67983f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/serve.ts#L7"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "serve",
+        "textSha256": "5644fc2b87d0bc20b1501c4f79e731f022b11783f2ad6b44d4408c4df83d73ef",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-ab4bcad10be4",
+      "title": "opencode session",
+      "kind": "cli-command",
+      "group": "opencode session",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "manage sessions",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/session.ts",
+          "startLine": 45,
+          "endLine": 45,
+          "sha256": "9de1d42ed0ffd67c22d2d3d52ce3fe9a77650da8fd4a18550212792cb265d984",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L45"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "session",
+        "textSha256": "bc558cb2cc9c12a98107e229f649f72568466629467fad99c40d8e0207ee908a",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-3dceba32e8f6",
+      "title": "opencode skill",
+      "kind": "cli-command",
+      "group": "opencode skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "list all available skills",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/skill.ts",
+          "startLine": 7,
+          "endLine": 7,
+          "sha256": "e8aeac1d4a48092c9ad2cd1ccf6bb0fd5a3adf081909584f543ca2f923a475e2",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/skill.ts#L7"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "skill",
+        "textSha256": "0a7efe6be17daecf19b23e4b1c815627c4d0cd38ca12849ef13556bb87d09afd",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-a4d512150e74",
+      "title": "opencode snapshot",
+      "kind": "cli-command",
+      "group": "opencode snapshot",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "snapshot debugging utilities",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/snapshot.ts",
+          "startLine": 7,
+          "endLine": 7,
+          "sha256": "815f13589f27309cc9a47a00ed71c0f1c809f0f6eee5d1893c61e48812b01163",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L7"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "snapshot",
+        "textSha256": "ae6582003756c7ed89674978e1f56bc586babdfde23238b40862ecb9e106469f",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-ec4a75b3334a",
+      "title": "opencode startup",
+      "kind": "cli-command",
+      "group": "opencode startup",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "print startup timing",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/startup.ts",
+          "startLine": 5,
+          "endLine": 5,
+          "sha256": "dbe4ceff73f9ade215edea3ef88901bc5b630eafb5ad647a9ed0b1c1c45dfe16",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/startup.ts#L5"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "startup",
+        "textSha256": "c5db51db59dd8886bab0c33abe90306b512562a03836f16349635ec416f7b92b",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e36e9996d6b8",
+      "title": "opencode stats",
+      "kind": "cli-command",
+      "group": "opencode stats",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show token usage and cost statistics",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/stats.ts",
+          "startLine": 50,
+          "endLine": 50,
+          "sha256": "f66f788fb6b701805f8dabf8469d6ceb6137e65e751f8394eac50163ae471a00",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/stats.ts#L50"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "stats",
+        "textSha256": "c6288239aa46f023d467adce7c54277b16499f23b276476c39a036c52be7a708",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-990190d54b66",
+      "title": "opencode stats --days",
+      "kind": "cli-flag",
+      "group": "opencode stats",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show stats for the last N days (default: all time)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/stats.ts",
+          "startLine": 54,
+          "endLine": 54,
+          "sha256": "f66f788fb6b701805f8dabf8469d6ceb6137e65e751f8394eac50163ae471a00",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/stats.ts#L54"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "stats",
+        "type": "number",
+        "alias": null,
+        "textSha256": "c94735d67a4b289e98c195a9d949cf74f9bd3dabcb8b2a0075b5a0941ad16349",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-43453bdabff3",
+      "title": "opencode stats --models",
+      "kind": "cli-flag",
+      "group": "opencode stats",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show model statistics (default: hidden). Pass a number to show top N, otherwise shows all",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/stats.ts",
+          "startLine": 62,
+          "endLine": 62,
+          "sha256": "f66f788fb6b701805f8dabf8469d6ceb6137e65e751f8394eac50163ae471a00",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/stats.ts#L62"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "stats",
+        "type": null,
+        "alias": null,
+        "textSha256": "abe7d85ed2f0c5a944e773e01336e4569594cd379e709fd19b5a0f322c89b0f5",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-a4762ba85d4c",
+      "title": "opencode stats --project",
+      "kind": "cli-flag",
+      "group": "opencode stats",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "filter by project (default: all projects, empty string: current project)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/stats.ts",
+          "startLine": 65,
+          "endLine": 65,
+          "sha256": "f66f788fb6b701805f8dabf8469d6ceb6137e65e751f8394eac50163ae471a00",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/stats.ts#L65"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "stats",
+        "type": "string",
+        "alias": null,
+        "textSha256": "af05806ce3ade9d749716ab5e28595f0c1fd2c5de2023b55e8dcb060f5f3a362",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-fdd2e0cd8d2b",
+      "title": "opencode stats --tools",
+      "kind": "cli-flag",
+      "group": "opencode stats",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "number of tools to show (default: all)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/stats.ts",
+          "startLine": 58,
+          "endLine": 58,
+          "sha256": "f66f788fb6b701805f8dabf8469d6ceb6137e65e751f8394eac50163ae471a00",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/stats.ts#L58"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "stats",
+        "type": "number",
+        "alias": null,
+        "textSha256": "f75c27973d080de487f09d440a91c71155250cd8cd022d093ba988e2757b5d34",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-3b33879931b1",
+      "title": "opencode switch",
+      "kind": "cli-command",
+      "group": "opencode switch",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "CLI command switch.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/account.ts",
+          "startLine": 208,
+          "endLine": 208,
+          "sha256": "3e5ae1d8e47c5ef7291ee91ac736c77cefd6aa5e57301fbc200add1a3df7cfd6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/account.ts#L208"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "switch",
+        "textSha256": "513913ddcd1dc0a1a23aae778675677a55b38d654c44e9b6f3d3903aa3e41123",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-cb623b40cb39",
+      "title": "opencode symbols <query>",
+      "kind": "cli-command",
+      "group": "opencode symbols",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "search workspace symbols",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/lsp.ts",
+          "startLine": 31,
+          "endLine": 31,
+          "sha256": "721cc8acdf6aef4b9c990ec6ab70bf40d0aa8968150fe1b00c1ca7b2dac81467",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L31"
+        },
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/lsp.ts",
+          "startLine": 33,
+          "endLine": 33,
+          "sha256": "721cc8acdf6aef4b9c990ec6ab70bf40d0aa8968150fe1b00c1ca7b2dac81467",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L33"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "symbols <query>",
+        "textSha256": "1e8c0dd8471a8dbb826e62ad86fdb155f4cf1fc82200c554e5cbf0a40d6d3f13",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-62d857339891",
+      "title": "opencode track",
+      "kind": "cli-command",
+      "group": "opencode track",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "track current snapshot state",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/snapshot.ts",
+          "startLine": 14,
+          "endLine": 14,
+          "sha256": "815f13589f27309cc9a47a00ed71c0f1c809f0f6eee5d1893c61e48812b01163",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L14"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "track",
+        "textSha256": "18c87e2b68183f25e7d8b0dc94013ff8d3154257c0d6c2b6ab11b964286498b9",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-bdc1d0f8ccf4",
+      "title": "opencode uninstall",
+      "kind": "cli-command",
+      "group": "opencode uninstall",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "uninstall opencode and remove all related files",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/uninstall.ts",
+          "startLine": 26,
+          "endLine": 26,
+          "sha256": "459e970cdb388248358a531c9b9c28ad3a95ef9b3498db5e3f8d9d1cf68350ac",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/uninstall.ts#L26"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "uninstall",
+        "textSha256": "9012617296c9e893fc3758d9de23e8011ba26c8aeceec365cf915ea8025ececa",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-49fe1cd7e4e2",
+      "title": "opencode uninstall --dry-run",
+      "kind": "cli-flag",
+      "group": "opencode uninstall",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "show what would be removed without removing",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/uninstall.ts",
+          "startLine": 42,
+          "endLine": 42,
+          "sha256": "459e970cdb388248358a531c9b9c28ad3a95ef9b3498db5e3f8d9d1cf68350ac",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/uninstall.ts#L42"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "uninstall",
+        "type": "boolean",
+        "alias": null,
+        "textSha256": "36b7b9ad3936d6c7f346e8f14ac05a2dc03d347ce3c377d773fb81593b4471b3",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-24b84d7e8a20",
+      "title": "opencode uninstall --force",
+      "kind": "cli-flag",
+      "group": "opencode uninstall",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "skip confirmation prompts",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/uninstall.ts",
+          "startLine": 47,
+          "endLine": 47,
+          "sha256": "459e970cdb388248358a531c9b9c28ad3a95ef9b3498db5e3f8d9d1cf68350ac",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/uninstall.ts#L47"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "uninstall",
+        "type": "boolean",
+        "alias": "f",
+        "textSha256": "c7a08c57b2e1a825535e967e43e627c58d0dc5c7b24339a6a8b14f3d922b2ca4",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e7dbb1a3f8d0",
+      "title": "opencode uninstall --keep-config",
+      "kind": "cli-flag",
+      "group": "opencode uninstall",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "keep configuration files",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/uninstall.ts",
+          "startLine": 30,
+          "endLine": 30,
+          "sha256": "459e970cdb388248358a531c9b9c28ad3a95ef9b3498db5e3f8d9d1cf68350ac",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/uninstall.ts#L30"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "uninstall",
+        "type": "boolean",
+        "alias": "c",
+        "textSha256": "9ca75063fd681f270a3c71c8a3eca236227f4aab65454473376a77e2d2b427a0",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-d5a789c1fbd3",
+      "title": "opencode uninstall --keep-data",
+      "kind": "cli-flag",
+      "group": "opencode uninstall",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "keep session data and snapshots",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/uninstall.ts",
+          "startLine": 36,
+          "endLine": 36,
+          "sha256": "459e970cdb388248358a531c9b9c28ad3a95ef9b3498db5e3f8d9d1cf68350ac",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/uninstall.ts#L36"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "uninstall",
+        "type": "boolean",
+        "alias": "d",
+        "textSha256": "abf9434d6a1787a98232d51994413093bc5c8952827d8021488071fb87206dba",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-c7825a554f75",
+      "title": "opencode upgrade [target]",
+      "kind": "cli-command",
+      "group": "opencode upgrade",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "upgrade opencode to the latest or a specific version",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/upgrade.ts",
+          "startLine": 8,
+          "endLine": 8,
+          "sha256": "75b7eab3fe79aa81287cd0ebd24b94891f11eb07e52cce9ec8f33a06317e527c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/upgrade.ts#L8"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "upgrade [target]",
+        "textSha256": "b06848c64eb12d97dec173d22ca7a7d643aec04e135857682a1285f0cb99a120",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-7c2461c325c0",
+      "title": "opencode upgrade --method",
+      "kind": "cli-flag",
+      "group": "opencode upgrade",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "installation method to use",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/upgrade.ts",
+          "startLine": 16,
+          "endLine": 16,
+          "sha256": "75b7eab3fe79aa81287cd0ebd24b94891f11eb07e52cce9ec8f33a06317e527c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/upgrade.ts#L16"
+        }
+      ],
+      "details": {
+        "kind": "cli-flag",
+        "command": "upgrade [target]",
+        "type": "string",
+        "alias": "m",
+        "textSha256": "d01cac79027449ec1873831209ac5c46f8d083170c14f92e3b6179564ba92305",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-e568732c9a47",
+      "title": "opencode upgrade <target>",
+      "kind": "cli-flag",
+      "group": "opencode upgrade",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "version to upgrade to, for ex '0.1.48' or 'v0.1.48'",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/upgrade.ts",
+          "startLine": 12,
+          "endLine": 12,
+          "sha256": "75b7eab3fe79aa81287cd0ebd24b94891f11eb07e52cce9ec8f33a06317e527c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/upgrade.ts#L12"
+        }
+      ],
+      "details": {
+        "kind": "cli-positional",
+        "command": "upgrade [target]",
+        "type": "string",
+        "alias": null,
+        "textSha256": "cad33292607de32000d84b19361d50cde84e65ec346bfc2b1e0ed13fcf9e27f8",
+        "condition": "Declared by the command's yargs builder in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-7847cedfb01d",
+      "title": "opencode v2",
+      "kind": "cli-command",
+      "group": "opencode v2",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "debug v2 catalog and built-in plugins",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/v2.ts",
+          "startLine": 10,
+          "endLine": 10,
+          "sha256": "83d25db18d72a95d3c1487c03f84269fa9282f58b1b2fbc70308d8621d9984eb",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/v2.ts#L10"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "v2",
+        "textSha256": "c36307150127bfa0f6d5f20df3dd17170efc487c6986866e2c0d4e6209a31b55",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-77d273e8dbb4",
+      "title": "opencode wait",
+      "kind": "cli-command",
+      "group": "opencode wait",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "wait indefinitely (for debugging)",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/debug/index.ts",
+          "startLine": 42,
+          "endLine": 42,
+          "sha256": "0c44f063daf6779616b3473d9942cb700291c554ac9f7c5f5bd73e0458695b05",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L42"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "wait",
+        "textSha256": "1d4fd1b882b3e7cb8297999ebd33370864523141ef1361503dc966ee5f99b6d7",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    },
+    {
+      "id": "cli-9293ed218e9e",
+      "title": "opencode web",
+      "kind": "cli-command",
+      "group": "opencode web",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "start opencode server and open web interface",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/cli/cmd/web.ts",
+          "startLine": 32,
+          "endLine": 32,
+          "sha256": "f5e78263ec3822a42359b02db470ff1aade45fb9ab050aa1ab554f531b62180b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/web.ts#L32"
+        }
+      ],
+      "details": {
+        "kind": "cli-command",
+        "usage": "web",
+        "textSha256": "0bc3dfb747077ea79ec9c7bfe4627671d2010ba4cff7037459772a7764dc60f1",
+        "condition": "Registered yargs command module in the shipped CLI source."
+      }
+    }
+  ]
+}

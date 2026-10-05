@@ -91,15 +91,15 @@ function lintRepo(text) {
   return repo;
 }
 
-test("narrative lint: a verdict cached before pinning (untagged sentence hash) is still a hit, and still blocks", async () => {
+test("narrative lint: a direct-provider verdict remains a hit and still blocks", async () => {
   const sentence = "This reference lists 303 settings keys, 41 of them undocumented.";
   const repo = lintRepo(`# Settings\n\n${sentence}\n`);
   const cacheFile = path.join(tmp(), "narrative-lint-cache.json");
-  fs.writeFileSync(cacheFile, JSON.stringify({ [lintKey(sentence)]: 0.97 }));
+  fs.writeFileSync(cacheFile, JSON.stringify({ [`${config.cacheVersion}:${lintKey(sentence)}`]: 0.97 }));
   const fetchImpl = async () => { throw new Error("a cached verdict must not be asked again"); };
   const findings = await narrativeLint(repo, { cacheFile, config, fetchImpl });
   assert.deepEqual(findings, [{ file: "outputs/page.md", probability: 0.97, sentence }]);
-  assert.deepEqual(JSON.parse(fs.readFileSync(cacheFile, "utf8")), { [`jev-1.13:${lintKey(sentence)}`]: 0.97 });
+  assert.deepEqual(JSON.parse(fs.readFileSync(cacheFile, "utf8")), { [`${config.cacheVersion}:${lintKey(sentence)}`]: 0.97 });
 });
 
 test("narrative lint asks the pinned model, caches zero verdicts, and keeps them when Jev goes down", async () => {
@@ -117,7 +117,7 @@ test("narrative lint asks the pinned model, caches zero verdicts, and keeps them
   assert.equal(bodies[0].model, "jev-1.13.0");
   assert.equal(config.endpoint, "https://api.typesafe.ai/v1/systemone");
   // The verdict judged before the outage was saved, a zero included, and is not asked again.
-  assert.deepEqual(JSON.parse(fs.readFileSync(cacheFile, "utf8")), { [`jev-1.13:${lintKey(kept)}`]: 0 });
+  assert.deepEqual(JSON.parse(fs.readFileSync(cacheFile, "utf8")), { [`${config.cacheVersion}:${lintKey(kept)}`]: 0 });
   const asked = [];
   const ok = async (url, options) => { asked.push(JSON.parse(options.body).state.sentence); return { ok: true, status: 200, json: async () => ({ answers: { stale_statistic: { noul: 0.1 } } }) }; };
   assert.deepEqual(await narrativeLint(repo, { cacheFile, config, fetchImpl: ok }), []);

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' http://127.0.0.1:8766; img-src 'self' data: blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'">
 <title>Trace: see an agent session as a landscape</title>
-<meta name="description" content="Load a Codex/ChatGPT or Claude Code session log and explore what filled the model's context, what it did, and every prompt the harness injected between turns. Runs entirely in your browser.">
+<meta name="description" content="Load a real coding-agent session and explore what filled the model's context, what it did, and every prompt the harness injected between turns. Runs entirely in your browser.">
 <meta name="color-scheme" content="dark">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
@@ -48,7 +48,7 @@
       <p class="or">Or drop the files yourself</p>
       <div id="drop" class="drop" tabindex="0" role="button" aria-describedby="drop-help">
         <p class="drop-big">Drop a session file or folder here</p>
-        <p id="drop-help" class="drop-help">A Codex/ChatGPT rollout <code>.jsonl</code>, or a Claude Code session <code>.jsonl</code> with its same-named folder, so subagents come too. A network capture (<code>.har</code>) saved beside the session by <code>tools/capture</code> comes along on its own; one dropped with the session attaches too.</p>
+        <p id="drop-help" class="drop-help">A Codex/ChatGPT rollout, Claude Code session, Cursor Agent stream (<code>.jsonl</code>), Cursor desktop export, or native OpenCode export (<code>.json</code>). Include related session exports to bring Claude Code or OpenCode subagents. A network capture (<code>.har</code>) dropped with the session attaches too.</p>
         <div class="drop-buttons">
           <label class="btn">Choose files<input id="pick-files" type="file" multiple accept=".jsonl,.json,.har,application/json"></label>
           <label class="btn">Choose a folder<input id="pick-folder" type="file" webkitdirectory multiple></label>

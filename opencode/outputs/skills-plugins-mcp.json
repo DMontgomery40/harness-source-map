@@ -1,0 +1,612 @@
+{
+  "schemaVersion": 2,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "sourceIdentity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a",
+  "items": [
+    {
+      "id": "occ-ba4eb032c37d3c12304c261e",
+      "title": "packages/core/src/plugin/agent.ts:13 — You are an AI coding agent. Help the user accomplish software engineerin…",
+      "kind": "skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "You are an AI coding agent. Help the user accomplish software engineering tasks by inspecting the workspace, making targeted changes, and using tools according to the configured permissions.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/agent.ts",
+          "startLine": 13,
+          "endLine": 13,
+          "startOffset": 382,
+          "endOffset": 574,
+          "sha256": "1a026cb47129d734d89481eff48ec804093118337bf7c0a1a13e3c26171737b7",
+          "textSha256": "ba8b04c5d55b65b13a2c2ec633ff7e5fbb284cbe47c3511c1a17e76ba97a36df",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/agent.ts#L13-L13"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "BUILD_SYSTEM"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.44,
+          "probabilities": {
+            "documentation": 0.03,
+            "human": 0,
+            "user_template": 0.02,
+            "parameter": 0,
+            "code_data": 0.32,
+            "tool": 0.08,
+            "context": 0.01,
+            "unknown": 0.03,
+            "instructions": 0.51
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 1.89,
+          "confidence": 0.28,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.07,
+            "1": 0.27,
+            "2": 0.35,
+            "3": 0.31
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-6ad88b493eabdfd84ed66262",
+      "title": "packages/core/src/plugin/agent.ts:15 — You are a file search specialist. You excel at thoroughly navigating and…",
+      "kind": "skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "You are a file search specialist. You excel at thoroughly navigating and exploring codebases.\n\nYour strengths:\n- Rapidly finding files using glob patterns\n- Searching code and text with powerful regex patterns\n- Reading and analyzing file contents\n\nGuidelines:\n- Use Glob for broad file pattern matching\n- Use Grep for searching file contents with regex\n- Use Read when you know the specific file path you need to read\n- Adapt your search approach based on the thoroughness level specified by the caller\n- Return file paths as absolute paths in your final response\n- For clear communication, avoid using emojis\n- Do not create any files, or run bash commands that modify the user's system state in any way\n\nComplete the user's search request efficiently and report your findings clearly.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/agent.ts",
+          "startLine": 15,
+          "endLine": 31,
+          "startOffset": 599,
+          "endOffset": 1388,
+          "sha256": "d2146cf5e5c97ec63786260548992f06249bb5b13b336e9b38123014c1dbf49b",
+          "textSha256": "6aa9c501f541538f90e9a1182c149ced5a5fde581c6e76e61687382192133cc3",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/agent.ts#L15-L31"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "PROMPT_EXPLORE"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.96
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.75,
+          "probabilities": {
+            "context": 0,
+            "human": 0,
+            "user_template": 0.03,
+            "parameter": 0,
+            "code_data": 0.08,
+            "tool": 0.09,
+            "documentation": 0.01,
+            "unknown": 0,
+            "instructions": 0.79
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.88,
+          "confidence": 0.88,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.01,
+            "2": 0.08,
+            "3": 0.9
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-7162f7436c2e9cecb84dd243",
+      "title": "packages/core/src/plugin/agent.ts:33 — You are a context summarization agent. You are given a conversation betw…",
+      "kind": "skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "You are a context summarization agent. You are given a conversation between a user and an agent. Your goal is to produce a structured summary matching the format specified so another coding agent can continue the work.\n\nAlways follow the exact output structure requested by the user prompt. Keep every section, preserve exact file paths and identifiers when known, and prefer terse bullets over paragraphs.\n\nDo not continue the conversation. Do not respond to any questions in the conversation. Only output the structured summary in the exact format requested by the user prompt. Respond in the same language as the conversation.",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/agent.ts",
+          "startLine": 33,
+          "endLine": 37,
+          "startOffset": 1416,
+          "endOffset": 2047,
+          "sha256": "a351dba3f2c98a8d03f66a9fd702059de83dc36d41c598624765e7dc42bbc445",
+          "textSha256": "7a0024eef9b7fe1983d75e124a4f498ecb2acb91dda954f15d18e51ea9d519f8",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/agent.ts#L33-L37"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "PROMPT_COMPACTION"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.95
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.59,
+          "probabilities": {
+            "documentation": 0.04,
+            "human": 0,
+            "user_template": 0.05,
+            "parameter": 0,
+            "code_data": 0.25,
+            "tool": 0.01,
+            "context": 0.01,
+            "unknown": 0.01,
+            "instructions": 0.63
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.74,
+          "confidence": 0.74,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.03,
+            "2": 0.18,
+            "3": 0.78
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-30d9173e3cd3d789ffa4e98c",
+      "title": "packages/core/src/plugin/agent.ts:39 — You are a title generator. You output ONLY a thread title. Nothing else.…",
+      "kind": "skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "You are a title generator. You output ONLY a thread title. Nothing else.\n\n<task>\nGenerate a brief title that would help the user find this conversation later.\n\nFollow all rules in <rules>\nUse the <examples> so you know what a good title looks like.\nYour output must be:\n- A single line\n- <=50 characters\n- No explanations\n</task>\n\n<rules>\n- you MUST use the same language as the user message you are summarizing\n- Title must be grammatically correct and read naturally - no word salad\n- Never include tool names in the title (e.g. \"read tool\", \"bash tool\", \"edit tool\")\n- Focus on the main topic or question the user needs to retrieve\n- Vary your phrasing - avoid repetitive patterns like always starting with \"Analyzing\"\n- When a file is mentioned, focus on WHAT the user wants to do WITH the file, not just that they shared it\n- Keep exact: technical terms, numbers, filenames, HTTP codes\n- Remove: the, this, my, a, an\n- Never assume tech stack\n- Never use tools\n- NEVER respond to questions, just generate a title for the conversation\n- The title should NEVER include \"summarizing\" or \"generating\" when generating a title\n- DO NOT SAY YOU CANNOT GENERATE A TITLE OR COMPLAIN ABOUT THE INPUT\n- Always output something meaningful, even if the input is minimal.\n- If the user message is short or conversational (e.g. \"hello\", \"lol\", \"what's up\", \"hey\"):\n  -> create a title that reflects the user's tone or intent (such as Greeting, Quick check-in, Light chat, Intro message, etc.)\n</rules>\n\n<examples>\n\"debug 500 errors in production\" -> Debugging production 500 errors\n\"refactor user service\" -> Refactoring user service\n\"why is app.js failing\" -> app.js failure investigation\n\"implement rate limiting\" -> Rate limiting implementation\n\"how do I connect postgres to my API\" -> Postgres API connection\n\"best practices for React hooks\" -> React hooks best practices\n\"@src/credential.ts can you add refresh token support\" -> Credential refresh token support\n\"@utils/parser.ts this is broken\" -> Parser bug fix\n\"look at @config.json\" -> Config review\n\"@App.tsx add dark mode toggle\" -> Dark mode toggle in App\n</examples>",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/agent.ts",
+          "startLine": 39,
+          "endLine": 82,
+          "startOffset": 2070,
+          "endOffset": 4191,
+          "sha256": "04dd3503989737fb65fd6037125ccf70fb5be43436ad301a7520da83de747fd4",
+          "textSha256": "d2f45520a3d99f523c139cde9409420ed6662514b506ca4aba76df659bfe5997",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/agent.ts#L39-L82"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "PROMPT_TITLE"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.97
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.7,
+          "probabilities": {
+            "documentation": 0.02,
+            "human": 0,
+            "user_template": 0.08,
+            "parameter": 0.01,
+            "code_data": 0.14,
+            "tool": 0.01,
+            "context": 0,
+            "unknown": 0.01,
+            "instructions": 0.73
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.79,
+          "confidence": 0.79,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.03,
+            "2": 0.12,
+            "3": 0.84
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-8ae829b9b4e9ec9eb5467ee3",
+      "title": "packages/core/src/plugin/agent.ts:84 — Summarize what was done in this conversation. Write like a pull request …",
+      "kind": "skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Summarize what was done in this conversation. Write like a pull request description.\n\nRules:\n- 2-3 sentences max\n- Describe the changes made, not the process\n- Do not mention running tests, builds, or other validation steps\n- Do not explain what the user asked for\n- Write in first person (I added..., I fixed...)\n- Never ask questions or add new questions\n- If the conversation ends with an unanswered question to the user, preserve that exact question\n- If the conversation ends with an imperative statement or request to the user (e.g. \"Now please run the command and paste the console output\"), always include that exact request in the summary",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/agent.ts",
+          "startLine": 84,
+          "endLine": 94,
+          "startOffset": 4216,
+          "endOffset": 4865,
+          "sha256": "ee82e3302013340162addeac6f00e4a42d75511f9a4260e75f39cb6bffd31e05",
+          "textSha256": "d7d778c42104edf39b30284adf458e38a0ae1d97fd02d3d51721057562651627",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/agent.ts#L84-L94"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "PROMPT_SUMMARY"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.93
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.64,
+          "probabilities": {
+            "documentation": 0.07,
+            "human": 0,
+            "user_template": 0.06,
+            "parameter": 0,
+            "code_data": 0.15,
+            "tool": 0.02,
+            "context": 0.01,
+            "unknown": 0.01,
+            "instructions": 0.68
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.73,
+          "confidence": 0.73,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.03,
+            "2": 0.18,
+            "3": 0.78
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-9ab6f9a310e9b30bf88d8b11",
+      "title": "packages/core/src/plugin/command/initialize.txt:1 — Create or update  AGENTS.md  for this repository. The goal is a compact …",
+      "kind": "skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Create or update `AGENTS.md` for this repository.\n\nThe goal is a compact instruction file that helps future OpenCode sessions avoid mistakes and ramp up quickly. Every line should answer: \"Would an agent likely miss this without help?\" If not, leave it out.\n\nUser-provided focus or constraints (honor these):\n$ARGUMENTS\n\n## How to investigate\n\nRead the highest-value sources first:\n- `README*`, root manifests, workspace config, lockfiles\n- build, test, lint, formatter, typecheck, and codegen config\n- CI workflows and pre-commit / task runner config\n- existing instruction files (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules/`, `.cursorrules`, `.github/copilot-instructions.md`)\n- repo-local OpenCode config such as `opencode.json`\n\nIf architecture is still unclear after reading config and docs, inspect a small number of representative code files to find the real entrypoints, package boundaries, and execution flow. Prefer reading the files that explain how the system is wired together over random leaf files.\n\nPrefer executable sources of truth over prose. If docs conflict with config or scripts, trust the executable source and only keep what you can verify.\n\n## What to extract\n\nLook for the highest-signal facts for an agent working in this repo:\n- exact developer commands, especially non-obvious ones\n- how to run a single test, a single package, or a focused verification step\n- required command order when it matters, such as `lint -> typecheck -> test`\n- monorepo or multi-package boundaries, ownership of major directories, and the real app/library entrypoints\n- framework or toolchain quirks: generated code, migrations, codegen, build artifacts, special env loading, dev servers, infra deploy flow\n- testing quirks: fixtures, integration test prerequisites, snapshot workflows, required services, flaky or expensive suites\n- important constraints from existing instruction files worth preserving\n\nGood `AGENTS.md` content is usually hard-earned context that took reading multiple files to infer.\n\n## Questions\n\nOnly ask the user questions if the repo cannot answer something important. Use the `question` tool for one short batch at most.\n\nGood questions:\n- undocumented team conventions\n- branch / PR / release expectations\n- missing setup or test prerequisites that are known but not written down\n\nDo not ask about anything the repo already makes clear.\n\n## Writing rules\n\nInclude only high-signal, repo-specific guidance such as:\n- exact commands and shortcuts the agent would otherwise guess wrong\n- architecture notes that are not obvious from filenames\n- conventions that differ from language or framework defaults\n- setup requirements, environment quirks, and operational gotchas\n- references to existing instruction sources that matter\n\nExclude:\n- generic software advice\n- long tutorials or exhaustive file trees\n- obvious language conventions\n- speculative claims or anything you could not verify\n- content better stored in another file referenced via `opencode.json` `instructions`\n\nWhen in doubt, omit.\n\nPrefer short sections and bullets. If the repo is simple, keep the file simple. If the repo is large, summarize the few structural facts that actually change how an agent should work.\n\nIf `AGENTS.md` already exists at `${path}`, improve it in place rather than rewriting blindly. Preserve verified useful guidance, delete fluff or stale claims, and reconcile it with the current codebase.\n",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/command/initialize.txt",
+          "startLine": 1,
+          "endLine": 65,
+          "startOffset": 0,
+          "endOffset": 3420,
+          "sha256": "bc5243883cdcc4c5e73e98604b3e3d263fe0fbccc0fc38140b650873c7fd175a",
+          "textSha256": "bc5243883cdcc4c5e73e98604b3e3d263fe0fbccc0fc38140b650873c7fd175a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/command/initialize.txt#L1-L65"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "source-text"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.93
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.77,
+          "probabilities": {
+            "tool": 0,
+            "context": 0.02,
+            "human": 0,
+            "instructions": 0.8,
+            "documentation": 0.12,
+            "code_data": 0,
+            "user_template": 0.05,
+            "parameter": 0,
+            "unknown": 0.01
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2,
+          "confidence": 0.45,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.21,
+            "2": 0.48,
+            "3": 0.28
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-d0e57245e39d9ccc9175e26d",
+      "title": "packages/core/src/plugin/command/review.txt:1 — You are a code reviewer. Your job is to review code changes and provide …",
+      "kind": "skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "You are a code reviewer. Your job is to review code changes and provide actionable feedback.\n\n---\n\nInput: $ARGUMENTS\n\n---\n\n## Determining What to Review\n\nBased on the input provided, determine which type of review to perform:\n\n1. **No arguments (default)**: Review all uncommitted changes\n   - Run: `git diff` for unstaged changes\n   - Run: `git diff --cached` for staged changes\n   - Run: `git status --short` to identify untracked (net new) files\n\n2. **Commit hash** (40-char SHA or short hash): Review that specific commit\n   - Run: `git show $ARGUMENTS`\n\n3. **Branch name**: Compare current branch to the specified branch\n   - Run: `git diff $ARGUMENTS...HEAD`\n\n4. **PR URL or number** (contains \"github.com\" or \"pull\" or looks like a PR number): Review the pull request\n   - Run: `gh pr view $ARGUMENTS` to get PR context\n   - Run: `gh pr diff $ARGUMENTS` to get the diff\n\nUse best judgement when processing input.\n\n---\n\n## Gathering Context\n\n**Diffs alone are not enough.** After getting the diff, read the entire file(s) being modified to understand the full context. Code that looks wrong in isolation may be correct given surrounding logic—and vice versa.\n\n- Use the diff to identify which files changed\n- Use `git status --short` to identify untracked files, then read their full contents\n- Read the full file to understand existing patterns, control flow, and error handling\n- Check for existing style guide or conventions files (CONVENTIONS.md, AGENTS.md, .editorconfig, etc.)\n\n---\n\n## What to Look For\n\n**Bugs** - Your primary focus.\n- Logic errors, off-by-one mistakes, incorrect conditionals\n- If-else guards: missing guards, incorrect branching, unreachable code paths\n- Edge cases: null/empty/undefined inputs, error conditions, race conditions\n- Security issues: injection, auth bypass, data exposure\n- Broken error handling that swallows failures, throws unexpectedly or returns error types that are not caught.\n\n**Structure** - Does the code fit the codebase?\n- Does it follow existing patterns and conventions?\n- Are there established abstractions it should use but doesn't?\n- Excessive nesting that could be flattened with early returns or extraction\n\n**Performance** - Only flag if obviously problematic.\n- O(n²) on unbounded data, N+1 queries, blocking I/O on hot paths\n\n**Behavior Changes** - If a behavioral change is introduced, raise it (especially if it's possibly unintentional).\n\n---\n\n## Before You Flag Something\n\n**Be certain.** If you're going to call something a bug, you need to be confident it actually is one.\n\n- Only review the changes - do not review pre-existing code that wasn't modified\n- Don't flag something as a bug if you're unsure - investigate first\n- Don't invent hypothetical problems - if an edge case matters, explain the realistic scenario where it breaks\n- If you need more context to be sure, use the tools below to get it\n\n**Don't be a zealot about style.** When checking code against conventions:\n\n- Verify the code is *actually* in violation. Don't complain about else statements if early returns are already being used correctly.\n- Some \"violations\" are acceptable when they're the simplest option. A `let` statement is fine if the alternative is convoluted.\n- Excessive nesting is a legitimate concern regardless of other style choices.\n\n---\n\n## Tools\n\nUse these to inform your review:\n\n- **Explore agent** - Find how existing code handles similar problems. Check patterns, conventions, and prior art before claiming something doesn't fit.\n- **Exa Code Context** - Verify correct usage of libraries/APIs before flagging something as wrong.\n- **Web Search** - Research best practices if you're unsure about a pattern.\n\nIf you're uncertain about something and can't verify it with these tools, say \"I'm not sure about X\" rather than flagging it as a definite issue.\n\n---\n\n## Output\n\n1. If there is a bug, be direct and clear about why it is a bug.\n2. Clearly communicate severity of issues. Do not overstate severity.\n3. Critiques should clearly and explicitly communicate the scenarios, environments, or inputs that are necessary for the bug to arise. The comment should immediately indicate that the issue's severity depends on these factors.\n4. Your tone should be matter-of-fact and not accusatory or overly positive. It should read as a helpful AI assistant suggestion without sounding too much like a human reviewer.\n5. Write so the reader can quickly understand the issue without reading too closely.\n6. AVOID flattery, do not give any comments that are not helpful to the reader.\n",
+      "provenance": [
+        {
+          "file": "packages/core/src/plugin/command/review.txt",
+          "startLine": 1,
+          "endLine": 100,
+          "startOffset": 0,
+          "endOffset": 4547,
+          "sha256": "7e32f34643877db0d3690ff3cdcd29f3cd5edb6d2a07286a9471bbbc0417a46a",
+          "textSha256": "7e32f34643877db0d3690ff3cdcd29f3cd5edb6d2a07286a9471bbbc0417a46a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/command/review.txt#L1-L100"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "source-text"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.95
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.9,
+          "probabilities": {
+            "tool": 0.02,
+            "context": 0,
+            "human": 0,
+            "instructions": 0.92,
+            "documentation": 0.05,
+            "code_data": 0,
+            "user_template": 0.01,
+            "parameter": 0,
+            "unknown": 0
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.16,
+          "confidence": 0.45,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.17,
+            "2": 0.47000000000000003,
+            "3": 0.35
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-3eb3a61b60c68be687fbb16d",
+      "title": "packages/core/src/skill/guidance.ts:19 — Use the skill tool to load a skill when a task matches its description.",
+      "kind": "skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Use the skill tool to load a skill when a task matches its description.",
+      "provenance": [
+        {
+          "file": "packages/core/src/skill/guidance.ts",
+          "startLine": 19,
+          "endLine": 19,
+          "startOffset": 591,
+          "endOffset": 664,
+          "sha256": "b7db14f6b12afde3f0679b60980b45d99da93a5f8472eeebd7345b4bcbd74f1f",
+          "textSha256": "c8f01665b45c41c56ac44f173174166b2c31aee0b33c9879e105b418fd455885",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/skill/guidance.ts#L19-L19"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.81
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.36,
+          "probabilities": {
+            "instructions": 0.21,
+            "documentation": 0.02,
+            "parameter": 0,
+            "unknown": 0.01,
+            "code_data": 0.16,
+            "tool": 0.42,
+            "context": 0.05,
+            "human": 0.12,
+            "user_template": 0.01
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.4,
+          "confidence": 0.4,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.12,
+            "2": 0.26,
+            "3": 0.59
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-03a6e7700bf8a4392f05b731",
+      "title": "packages/opencode/src/skill/index.ts:34 — Use ONLY when the user is editing or creating opencode's own configurati…",
+      "kind": "skill",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Use ONLY when the user is editing or creating opencode's own configuration: opencode.json, opencode.jsonc, files under .opencode/, or files under ~/.config/opencode/. Also use when creating or fixing opencode agents, subagents, skills, plugins, MCP servers, or permission rules. Do not use for the user's own application code, or for any project that is not configuring opencode itself.",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/skill/index.ts",
+          "startLine": 34,
+          "endLine": 34,
+          "startOffset": 1620,
+          "endOffset": 2008,
+          "sha256": "8798399442f470ad9f25a97d0e53a19d9d6f405bef9d12a9d241a048b154284e",
+          "textSha256": "005957c825ebc1eea571edbdbebcf2f942534659c6321304a456a54b31170648",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/skill/index.ts#L34-L34"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "CUSTOMIZE_OPENCODE_SKILL_DESCRIPTION"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.93
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.81,
+          "probabilities": {
+            "code_data": 0.06,
+            "unknown": 0,
+            "parameter": 0.01,
+            "documentation": 0.01,
+            "human": 0,
+            "user_template": 0,
+            "context": 0,
+            "tool": 0.84,
+            "instructions": 0.08
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.8,
+          "confidence": 0.8,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.02,
+            "2": 0.12,
+            "3": 0.85
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    }
+  ]
+}
