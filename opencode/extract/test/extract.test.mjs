@@ -62,11 +62,12 @@ test("typed libraries publish each classified positive exactly once and account 
   assert.equal(discovery.items.length, prepared.discovery.records.length);
   assert.equal(new Set(ids).size, ids.length);
   assert.deepEqual(new Set(ids), new Set(discovery.items.filter((item) => item.publication === "typed-positive").map((item) => item.id)));
-  for (const required of ["model-instructions", "conversation-prompts", "tools-schemas", "agents", "skills-plugins-mcp", "providers-models-network-reasoning", "sessions-compaction-storage-export", "approvals-sandboxing", "configuration-precedence", "environment-variables", "cli-commands-flags", "other-model-facing-text"]) {
-    assert.ok(catalog.libraries.some((library) => library.id === required), `missing library ${required}`);
-  }
+  assert.deepEqual(catalog.libraries.map((library) => library.id), ["instructions", "context-templates", "tools-parameters"]);
   const coverage = JSON.parse(prepared.outputs["discovery-coverage.json"]);
-  assert.equal(coverage.classifiedPositives, ids.length);
+  // A positive is on a Discovered page, or published by the record that already holds its text.
+  const elsewhere = discovery.items.filter((item) => item.publication === "same-text-as-published-record");
+  assert.ok(elsewhere.every((item) => item.publishedIn));
+  assert.equal(coverage.classifiedPositives, ids.length + elsewhere.length);
   assert.equal(coverage.classified + coverage.pending, discovery.items.length);
   // Without a saved ledger nothing is classified, so nothing is published as model-facing.
   if (!savedJudgments(prepared.closure.identity)) assert.equal(ids.length, 0);

@@ -246,7 +246,8 @@ function renderDocument(document, ids) {
     content: body,
     filterVocabulary: document.filter?.vocabulary,
     outline,
-    tocOutline: document.format === "source" && document.searchRecords?.length ? outline.filter(item => item.level <= 3) : outline
+    // A long page (`outlineDepth`) lists only its groups in the sidebar, not every entry.
+    tocOutline: document.outlineDepth ? outline.filter(item => item.level <= document.outlineDepth) : document.format === "source" && document.searchRecords?.length ? outline.filter(item => item.level <= 3) : outline
   };
 }
 

@@ -98,7 +98,9 @@ export async function auditCursorCoverage({
   const unresolved = [];
   for (const source of sources) {
     const expectedKind = source.role?.choice === "tool" || source.role?.choice === "parameter" ? "tool" : "prompt";
-    const local = localCoverage(source, exactByKindAndText.get(`${expectedKind}\0${source.text}`) ?? []);
+    // Exact text of the expected kind, else the text inside any published record (a reviewed
+    // record that contains it is where the site publishes it).
+    const local = localCoverage(source, exactByKindAndText.get(`${expectedKind}\0${source.text}`) ?? []) ?? localCoverage(source, search.items);
     if (local) exactResults.push({ id: source.id, file: source.file, offset: source.offset, source_sha256: source.text_sha256, expected_kind: expectedKind, ...local });
     else unresolved.push(source);
   }

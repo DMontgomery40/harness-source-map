@@ -8,6 +8,7 @@ import { buildTrace } from "./src/shared/trace-build.mjs";
 import { renderLanding } from "./src/shared/landing.mjs";
 import { SEARCH_CLIENT_FILES } from "./src/shared/search-ui.mjs";
 import { writeSearchText } from "./src/shared/search-index.mjs";
+import { pruneEmptyPages } from "./src/shared/record-sections.mjs";
 import { buildSite as buildClaudeCode } from "./src/claude-code/build-site.mjs";
 import { categories as claudeCodeCategories } from "./src/claude-code/catalog.mjs";
 import { site as claudeCodeSite } from "./src/claude-code/config.mjs";
@@ -32,6 +33,9 @@ const PRODUCTS = [
 
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
+
+// A page cut from part of a records file is built only when it has records (record-sections.mjs).
+for (const product of PRODUCTS) product.categories = await pruneEmptyPages(product.categories, path.join(repoRoot, product.id));
 
 for (const product of PRODUCTS) {
   const section = SITE.products[product.id].path;

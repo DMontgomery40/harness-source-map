@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { records, toolFiles } from './catalog.mjs';
 import { buildFullLibrary } from './lib/full-library.mjs';
-import { cliCommands, environmentVariables } from './lib/structured.mjs';
+import { cliCommands, cliTags, environmentVariables, envTags } from './lib/structured.mjs';
 
 export const VERSION = '1.18.34';
 export const COMMIT = 'aec0b9a6d8898f68f923aaf08b7306d931fd9d76';
@@ -22,21 +22,69 @@ function fence(text, language) {
   return `${delimiter}${language}\n${text}${text.endsWith('\n') ? '' : '\n'}${delimiter}`;
 }
 
-function markdown(title, items) {
-  return `# OpenCode ${title}\n\nRelease: v${VERSION}. Upstream commit: ${COMMIT}.\n\n${evidenceNote}\n\n` + items.map(item => {
-    const refs = item.provenance.map(p => `- [${p.file}:${p.startLine}-${p.endLine}](${p.url}) — SHA-256 \`${p.sha256}\``).join('\n');
-    return `## ${item.title}\n\nRecord: \`${item.id}\`. Kind: ${item.details.kind}.\n\n${item.details.summary}\n\nCondition: ${item.details.condition}\n\n${refs}\n\n${fence(item.text, item.details.language ?? 'typescript')}\n`;
-  }).join('\n');
+// The reviewed records' groups, in page order: tools by tool, the rest by what they do.
+const GROUPS = {
+  prompts: [
+    ['Session prompts', item => item.title.startsWith('Session prompt: ')],
+    ['Agent prompts', item => item.title.startsWith('Agent prompt: ') || item.details.kind === 'agent-generation-prompt'],
+    ['How prompts are chosen and assembled', () => true]
+  ],
+  configuration: [
+    ['Config files and layers', item => /^(?:Configuration layers|Global config|Project and config|Environment and file)/.test(item.title)],
+    ['Agents', item => /agent/i.test(item.title)],
+    ['Instructions', item => /^(?:Global, project|Instructions discovered)/.test(item.title)],
+    ['Flags and environment', () => true]
+  ],
+  'network-tracing': [
+    ['Request preparation', item => /^(?:Request preparation|Session identity|Final request|Final permission|Core runner request)/.test(item.title)],
+    ['Native runtime', item => /^Native|^Default AI SDK/.test(item.title)],
+    ['Providers, endpoints and catalogs', item => /^(?:Bundled provider|OpenRouter attribution|Model endpoint|Resolved SDK|Runtime model catalog|Provider option)/.test(item.title)],
+    ['Reasoning, streaming and history', () => true]
+  ]
+};
+const toolOf = item => item.title.match(/^Tool (?:description|parameter source): (.+)$/)?.[1];
+export function groupOf(name, item) {
+  if (name === 'tools') return toolOf(item) ?? 'Registration, schemas and MCP';
+  return (GROUPS[name] ?? []).find(([, test]) => test(item))?.[0] ?? 'Records';
 }
 
-// Grouped records: a group heading, then each record with its read or declaration sites.
-function structuredMarkdown(title, items) {
+// Records in their groups, groups in first-appearance order (tools) or the listed order.
+function grouped(name, items) {
+  const order = name === 'tools' ? [...new Set(items.map(item => groupOf(name, item)))] : (GROUPS[name] ?? []).map(([label]) => label);
+  const withGroup = items.map(item => ({ ...item, group: groupOf(name, item) }));
+  return order.flatMap(label => withGroup.filter(item => item.group === label));
+}
+
+const INTROS = {
+  prompts: 'The prompt files OpenCode ships for each model family and agent, and the source that chooses and assembles them.',
+  tools: 'Every built-in tool description and the parameter schema it is sent with, then the source that registers tools, adapts schemas to providers and materializes MCP tools.',
+  configuration: 'Where OpenCode reads configuration and instructions, and which layer wins.',
+  'network-tracing': 'How a request is prepared, which runtime and provider SDK sends it, and how reasoning and history are stored and replayed.'
+};
+
+function markdown(title, items, name) {
+  const groups = [];
+  for (const item of items) {
+    if (!groups.length || groups.at(-1).label !== item.group) groups.push({ label: item.group ?? 'Records', items: [] });
+    groups.at(-1).items.push(item);
+  }
+  return `# OpenCode ${title}\n\n${INTROS[name] ? `${INTROS[name]} ` : ''}Release v${VERSION}, commit \`${COMMIT.slice(0, 12)}\`. ${evidenceNote}\n\n` + groups.map(group => `## ${group.label}\n\n` + group.items.map(item => {
+    const refs = item.provenance.map(p => `Source: [\`${p.file.split('/').at(-1)}\` lines ${p.startLine}–${p.endLine}](${p.url}) · sha256 \`${p.sha256.slice(0, 12)}…\``).join('\n\n');
+    return `### ${item.title}\n\n${item.details.summary}\n\n**When:** ${item.details.condition}\n\n${refs}\n\n${fence(item.text, item.details.language ?? 'typescript')}\n`;
+  }).join('\n')).join('\n');
+}
+
+// Grouped records: a group heading, then each record with its value, the code that reads it and
+// where.
+function structuredMarkdown(title, items, intro) {
   const groups = new Map();
   for (const item of items) (groups.get(item.group) ?? groups.set(item.group, []).get(item.group)).push(item);
-  return `# OpenCode ${title}\n\nRelease: v${VERSION}. Upstream commit: ${COMMIT}.\n\n${evidenceNote}\n\nRead structurally from every non-test source file in the pinned workspace closure. ${items.length} records.\n\n` + [...groups].map(([group, records]) => `## ${group}\n\n` + records.map(item => {
-    const refs = item.provenance.map(p => `- [${p.file}:${p.startLine}](${p.url})`).join('\n');
-    const facts = [item.details.type && `Type: \`${item.details.type}\`.`, item.details.alias && `Alias: \`${item.details.alias}\`.`, item.details.readers && `Read through: ${item.details.readers.join(', ')}.`].filter(Boolean).join(' ');
-    return `### ${item.title}\n\n${item.text}${facts ? `\n\n${facts}` : ''}\n\n${refs}\n`;
+  return `# OpenCode ${title}\n\n${intro}\n\n` + [...groups].map(([group, records]) => `## ${group}\n\n` + records.map(item => {
+    const where = item.provenance.slice(0, 4).map(p => `[\`${p.file.replace(/^packages\//, '')}:${p.startLine}\`](${p.url})`).join(', ') + (item.provenance.length > 4 ? ` and ${item.provenance.length - 4} more` : '');
+    const facts = [item.details.alias && `Alias: \`${item.details.alias}\`.`, item.details.type && item.kind !== 'env-var' && `Type: \`${item.details.type}\`.`].filter(Boolean).join(' ');
+    const code = item.details.code?.length ? `\n\n${fence(item.details.code.join('\n'), 'typescript')}` : '';
+    const text = facts && !/[.!?:]$/.test(item.text) ? `${item.text}.` : item.text;
+    return `### ${item.title}\n\n${text}${facts ? ` ${facts}` : ''}\n\nSource: ${where}${code}\n`;
   }).join('\n')).join('\n');
 }
 
@@ -182,7 +230,10 @@ export function extract(source, options = {}) {
     'Core runner and standalone native adapters are mapped as separate source paths, without claiming that a captured CLI run selected them.',
     'Source records do not prove exact request bodies, received visible reasoning, serving-provider identity, geography, retention or downstream hops.',
   ];
-  const full = options.fullLibrary ?? buildFullLibrary(source, options);
+  const base = options.fullLibrary ?? buildFullLibrary(source, options);
+  // The same classified library, without positives a reviewed record above already publishes.
+  const reviewed = Object.values(groups).flat().map(record => ({ id: record.id, text: record.text }));
+  const full = buildFullLibrary(source, { prepared: base, judgments: base.judgments, covered: reviewed });
   const outputs = {
     'capture-summary.json': JSON.stringify({ schemaVersion: 1, product: 'OpenCode', version: VERSION, upstreamCommit: COMMIT, upstream: UPSTREAM,
       evidence: 'public-source', observedTraffic: false,
@@ -197,27 +248,37 @@ export function extract(source, options = {}) {
   };
   const titles = { prompts: 'prompts', tools: 'tools', configuration: 'configuration', 'network-tracing': 'network and reasoning plumbing' };
   for (const [name, items] of Object.entries(groups)) {
-    outputs[`${name}.json`] = JSON.stringify(inventory(items), null, 2) + '\n';
-    outputs[`${name}.md`] = markdown(titles[name], items);
+    const ordered = grouped(name, items);
+    outputs[`${name}.json`] = JSON.stringify(inventory(ordered), null, 2) + '\n';
+    outputs[`${name}.md`] = markdown(titles[name], ordered, name);
   }
   outputs['source-inventory.json'] = JSON.stringify(inventory(sourceInventory), null, 2) + '\n';
   outputs['upstream-license.txt'] = license;
   outputs['source-inventory.md'] = markdown('public source inventory', sourceInventory);
-  const findingIDs = ['prompt-provider-routing', 'network-request-preparation', 'config-instructions', 'tool-registry', 'network-native-runtime', 'network-sdk-endpoint', 'network-reasoning-storage', 'network-history-replay', 'network-export'];
-  outputs['key-findings.md'] = `# OpenCode key findings\n\nRelease: v${VERSION}. Upstream commit: ${COMMIT}.\n\n${evidenceNote}\n\n` + findingIDs.map(id => {
-    const record = Object.values(groups).flat().find(item => item.id === id);
-    return `## ${record.title}\n\n${record.details.summary}\n\nCondition: ${record.details.condition}\n\n[Public source](${record.provenance[0].url}).\n`;
-  }).join('\n') + '\n## Evidence limits\n\n' + limitations.map(text => `- ${text}`).join('\n') + '\n';
+  // The findings a reader should see first, each with the shipped source that establishes it.
+  const findings = [
+    ['How the system prompt is chosen', ['prompt-provider-routing', 'config-instructions']],
+    ['How a request is built and sent', ['network-request-preparation', 'tool-registry', 'network-native-runtime', 'network-sdk-endpoint']],
+    ['Reasoning, history and export', ['network-reasoning-storage', 'network-history-replay', 'network-export']]
+  ];
+  const all = Object.values(groups).flat();
+  outputs['key-findings.md'] = `# OpenCode key findings\n\nWhat OpenCode v${VERSION} does with the model's context, read from the shipped source at commit \`${COMMIT.slice(0, 12)}\`. Each finding shows the code that establishes it and when it applies; the full records are on the prompts, tools, configuration and network pages. ${evidenceNote}\n\n` + findings.map(([label, ids]) => `## ${label}\n\n` + ids.map(id => {
+    const record = all.find(item => item.id === id);
+    const refs = record.provenance.map(p => `Source: [\`${p.file.replace(/^packages\//, '')}\` lines ${p.startLine}–${p.endLine}](${p.url}) · sha256 \`${p.sha256.slice(0, 12)}…\``).join('\n\n');
+    return `### ${record.title}\n\n${record.details.summary}\n\n**When:** ${record.details.condition}\n\n${refs}\n\n${fence(record.text, record.details.language ?? 'typescript')}\n`;
+  }).join('\n')).join('\n') + '\n## Evidence limits\n\n' + limitations.map(text => `- ${text}`).join('\n') + '\n';
   Object.assign(outputs, full.outputs);
   // Env vars and CLI commands/flags, read structurally from the same closure.
   const meta = { version: VERSION, commit: COMMIT, upstream: UPSTREAM };
+  const env = environmentVariables(full.closure, meta), cli = cliCommands(full.closure, meta);
   const structured = [
-    ['env-vars', 'environment variables', environmentVariables(full.closure, meta)],
-    ['cli', 'CLI commands and flags', cliCommands(full.closure, meta)]
+    ['env-vars', 'environment variables', env, envTags(env), `OpenCode v${VERSION} reads ${env.length} environment variables by name: ${env.filter(r => r.title.startsWith('OPENCODE_')).length} of its own and ${env.filter(r => !r.title.startsWith('OPENCODE_')).length} that providers, the host or other tools define. Each was found where the code reads it (process.env, Bun.env, OpenCode's Flag helpers or Effect Config), and the reading code says what value it expects. Topics group them by what they control; whether one is set depends on the user's environment.`],
+    ['cli', 'CLI commands and flags', cli, cliTags(cli), `Every command, subcommand, option and positional argument the opencode CLI declares in its yargs command modules (${cli.filter(r => r.kind === 'cli-command').length} commands, ${cli.filter(r => r.kind !== 'cli-command').length} options and arguments), with the help text it shows. Default commands are named after the module that declares them.`]
   ];
-  for (const [name, title, items] of structured) {
+  for (const [name, title, items, tags, intro] of structured) {
     outputs[`${name}.json`] = JSON.stringify(inventory(items), null, 2) + '\n';
-    outputs[`${name}.md`] = structuredMarkdown(title, items);
+    outputs[`${name}-tags.json`] = JSON.stringify(tags, null, 2) + '\n';
+    outputs[`${name}.md`] = structuredMarkdown(title, items, intro);
   }
   return outputs;
 }

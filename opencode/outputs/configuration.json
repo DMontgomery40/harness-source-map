@@ -26,7 +26,8 @@
         "language": "typescript",
         "condition": "Config.loadInstanceState merges enabled sources in source order; project/config-directory/organization/managed sources are conditional.",
         "summary": "Order: well-known remote config, global config, OPENCODE_CONFIG, project files, discovered config directories and Markdown agents, OPENCODE_CONFIG_CONTENT, active organization, managed directory, macOS managed preferences; later permission and legacy-tool compatibility transforms apply."
-      }
+      },
+      "group": "Config files and layers"
     },
     {
       "id": "config-global-merge",
@@ -50,7 +51,8 @@
         "language": "typescript",
         "condition": "Layer merges use mergeConfigConcatArrays during instance loading; global file loader has its own ordered merges.",
         "summary": "Instructions concatenate and deduplicate when both layers provide them. Other fields use deep merge; do not assume all arrays concatenate."
-      }
+      },
+      "group": "Config files and layers"
     },
     {
       "id": "config-global-files",
@@ -74,7 +76,8 @@
         "language": "typescript",
         "condition": "Global config is loaded before project layers.",
         "summary": "Loads config.json, opencode.json, then opencode.jsonc in that order."
-      }
+      },
+      "group": "Config files and layers"
     },
     {
       "id": "config-paths",
@@ -98,7 +101,8 @@
         "language": "typescript",
         "condition": "OPENCODE_DISABLE_PROJECT_CONFIG excludes project discovery; OPENCODE_CONFIG_DIR appends an explicit directory.",
         "summary": "Project file list is reversed before merge. Config directories include global config, discovered .opencode directories, home .opencode and the explicit config directory, deduplicated."
-      }
+      },
+      "group": "Config files and layers"
     },
     {
       "id": "config-variables",
@@ -122,7 +126,8 @@
         "language": "typescript",
         "condition": "ConfigVariable.substitute expands {env:VAR} and {file:path} when config text is loaded.",
         "summary": "File references resolve relative to the config directory, with home expansion; full contents are escaped into JSON text. This extractor never expands private configuration."
-      }
+      },
+      "group": "Config files and layers"
     },
     {
       "id": "config-agent-markdown",
@@ -146,7 +151,8 @@
         "language": "typescript",
         "condition": "Config directories are scanned for agent/agents Markdown and legacy mode/modes Markdown.",
         "summary": "Markdown body becomes the agent prompt; frontmatter fields configure it."
-      }
+      },
+      "group": "Agents"
     },
     {
       "id": "config-agent-state",
@@ -170,7 +176,8 @@
         "language": "typescript",
         "condition": "Agent.state merges default and user permissions, built-in agents and cfg.agent entries.",
         "summary": "Configured agents can disable agents or override model, variant, prompt, description, temperature, top_p, mode, steps, options and permissions."
-      }
+      },
+      "group": "Agents"
     },
     {
       "id": "config-agent-default",
@@ -194,7 +201,8 @@
         "language": "typescript",
         "condition": "Configured default_agent is used when valid, visible and not subagent-only; otherwise the first visible primary/all agent wins.",
         "summary": "Agent choice determines prompt replacement, permissions and options applied later."
-      }
+      },
+      "group": "Agents"
     },
     {
       "id": "config-instructions",
@@ -218,7 +226,8 @@
         "language": "typescript",
         "condition": "Instruction.system loads discovered instructions; Claude compatibility may be disabled and project config may be disabled.",
         "summary": "First existing global candidate wins. Project search tries AGENTS.md, CLAUDE.md when enabled, then deprecated CONTEXT.md and stops at the first filename with matches. Explicit instructions add globs/files or fetched URL bodies."
-      }
+      },
+      "group": "Instructions"
     },
     {
       "id": "config-nearby-instructions",
@@ -242,7 +251,8 @@
         "language": "typescript",
         "condition": "Instruction.resolve walks upward from the read target, within the instance directory, and excludes system/already-loaded/already-claimed files.",
         "summary": "Nearby instruction contents attach once per assistant message and are not a universal system prompt layer."
-      }
+      },
+      "group": "Instructions"
     },
     {
       "id": "config-runtime-flags",
@@ -266,7 +276,8 @@
         "language": "typescript",
         "condition": "RuntimeFlags service reads environment configuration; selected flags inherit OPENCODE_EXPERIMENTAL unless explicitly set.",
         "summary": "Includes native LLM, WebSockets, plan, code mode, LSP, question, references, external skills, Claude compatibility, client and output-limit controls."
-      }
+      },
+      "group": "Flags and environment"
     },
     {
       "id": "config-core-flags",
@@ -290,7 +301,8 @@
         "language": "typescript",
         "condition": "Flag fields read process environment; selected controls are evaluated at access time.",
         "summary": "Includes config path/content/directory, project-config disablement, permission override, catalog path/URL/fetch disablement and auto-compaction/pruning controls. Source extraction preserves variable names without reading their runtime values."
-      }
+      },
+      "group": "Flags and environment"
     }
   ]
 }

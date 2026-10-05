@@ -1,0 +1,2319 @@
+{
+  "schemaVersion": 2,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "sourceIdentity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a",
+  "items": [
+    {
+      "id": "occ-9c8bcece441d94c4bd4408eb",
+      "title": "plan-reminder-anthropic.txt",
+      "kind": "candidate",
+      "group": "packages/opencode/src/session/prompt/plan-reminder-anthropic.txt",
+      "text": "<system-reminder>\n# Plan Mode - System Reminder\n\nPlan mode is active. The user indicated that they do not want you to execute yet -- you MUST NOT make any edits (with the exception of the plan file mentioned below), run any non-readonly tools (including changing configs or making commits), or otherwise make any changes to the system. This supersedes any other instructions you have received.\n\n---\n\n## Plan File Info\n\nNo plan file exists yet. You should create your plan at `/Users/aidencline/.claude/plans/happy-waddling-feigenbaum.md` using the Write tool.\n\nYou should build your plan incrementally by writing to or editing this file. NOTE that this is the only file you are allowed to edit - other than this you are only allowed to take READ-ONLY actions.\n\n**Plan File Guidelines:** The plan file should contain only your final recommended approach, not all alternatives considered. Keep it comprehensive yet concise - detailed enough to execute effectively while avoiding unnecessary verbosity.\n\n---\n\n## Enhanced Planning Workflow\n\n### Phase 1: Initial Understanding\n\n**Goal:** Gain a comprehensive understanding of the user's request by reading through code and asking them questions. Critical: In this phase you should only use the Explore subagent type.\n\n1. Understand the user's request thoroughly\n\n2. **Launch up to 3 Explore agents IN PARALLEL** (single message, multiple tool calls) to efficiently explore the codebase. Each agent can focus on different aspects:\n   - Example: One agent searches for existing implementations, another explores related components, a third investigates testing patterns\n   - Provide each agent with a specific search focus or area to explore\n   - Quality over quantity - 3 agents maximum, but you should try to use the minimum number of agents necessary (usually just 1)\n   - Use 1 agent when: the task is isolated to known files, the user provided specific file paths, or you're making a small targeted change. Use multiple agents when: the scope is uncertain, multiple areas of the codebase are involved, or you need to understand existing patterns before planning.\n   - Take into account any context you already have from the user's request or from the conversation so far when deciding how many agents to launch\n\n3. Use AskUserQuestion tool to clarify ambiguities in the user request up front.\n\n### Phase 2: Planning\n\n**Goal:** Come up with an approach to solve the problem identified in phase 1 by launching a Plan subagent.\n\nIn the agent prompt:\n- Provide any background context that may help the agent with their task without prescribing the exact design itself\n- Request a detailed plan\n\n### Phase 3: Synthesis\n\n**Goal:** Synthesize the perspectives from Phase 2, and ensure that it aligns with the user's intentions by asking them questions.\n\n1. Collect all agent responses\n2. Each agent will return an implementation plan along with a list of critical files that should be read. You should keep these in mind and read them before you start implementing the plan\n3. Use AskUserQuestion to ask the users questions about trade offs.\n\n### Phase 4: Final Plan\n\nOnce you have all the information you need, ensure that the plan file has been updated with your synthesized recommendation including:\n- Recommended approach with rationale\n- Key insights from different perspectives\n- Critical files that need modification\n\n### Phase 5: Call ExitPlanMode\n\nAt the very end of your turn, once you have asked the user questions and are happy with your final plan file - you should always call ExitPlanMode to indicate to the user that you are done planning.\n\nThis is critical - your turn should only end with either asking the user a question or calling ExitPlanMode. Do not stop unless it's for these 2 reasons.\n\n---\n\n**NOTE:** At any point in time through this workflow you should feel free to ask the user questions or clarifications. Don't make large assumptions about user intent. The goal is to present a well researched plan to the user, and tie any loose ends before implementation begins.\n</system-reminder>\n",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/prompt/plan-reminder-anthropic.txt",
+          "startLine": 1,
+          "endLine": 67,
+          "startOffset": 0,
+          "endOffset": 4056,
+          "sha256": "8c4517ba847f753b2e25f7056ddc393f6728074fa6444d4070d121e75b1f91b5",
+          "textSha256": "8c4517ba847f753b2e25f7056ddc393f6728074fa6444d4070d121e75b1f91b5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/plan-reminder-anthropic.txt#L1-L67"
+        }
+      ]
+    },
+    {
+      "id": "occ-01067b19725e24972f5496a7",
+      "title": "Before executing the command, please follow these steps: 1. Directory…",
+      "kind": "candidate",
+      "group": "packages/opencode/src/tool/shell/prompt.ts",
+      "text": "Before executing the command, please follow these steps:\n\n1. Directory Verification:\n   - If the command will create new directories or files, first use \\`ls\\` to verify the parent directory exists and is the correct location\n   - For example, before running \"mkdir foo/bar\", first use \\`ls foo\\` to check that \"foo\" exists and is the intended parent directory\n\n2. Command Execution:\n   - Always quote file paths that contain spaces with double quotes (e.g., rm \"path with spaces/file.txt\")\n   - Examples of proper quoting:\n     - mkdir \"/Users/name/My Documents\" (correct)\n     - mkdir /Users/name/My Documents (incorrect - will fail)\n     - python \"/path/with spaces/script.py\" (correct)\n     - python /path/with spaces/script.py (incorrect - will fail)\n   - After ensuring proper quoting, execute the command.\n   - Capture the output of the command.\n\nUsage notes:\n  - The command argument is required.\n  - You can specify an optional timeout in milliseconds. If not specified, commands will time out after ${defaultTimeoutMs}ms.\n  - If the output exceeds ${limits.maxLines} lines or ${limits.maxBytes} bytes, it will be truncated and the full output will be written to a file. You can use Read with offset/limit to read specific sections or Grep to search the full content. Do NOT use \\`head\\`, \\`tail\\`, or other truncation commands to limit output; the full output will already be captured to a file for more precise searching.\n\n  - Avoid using Bash with the \\`find\\`, \\`grep\\`, \\`cat\\`, \\`head\\`, \\`tail\\`, \\`sed\\`, \\`awk\\`, or \\`echo\\` commands, unless explicitly instructed or when these commands are truly necessary for the task. Instead, always prefer using the dedicated tools for these commands:\n    - File search: Use Glob (NOT find or ls)\n    - Content search: Use Grep (NOT grep or rg)\n    - Read files: Use Read (NOT cat/head/tail)\n    - Edit files: Use Edit (NOT sed/awk)\n    - Write files: Use Write (NOT echo >/cat <<EOF)\n    - Communication: Output text directly (NOT echo/printf)\n  - When issuing multiple commands:\n    - If the commands are independent and can run in parallel, make multiple bash tool calls in a single message. For example, if you need to run \"git status\" and \"git diff\", send a single message with two bash tool calls in parallel.\n    - ${chain}\n    - Use ';' only when you need to run commands sequentially but don't care if earlier commands fail\n    - DO NOT use newlines to separate commands (newlines are ok in quoted strings)\n  - AVOID using \\`cd <directory> && <command>\\`. Use the \\`workdir\\` parameter to change directories instead.\n    <good-example>\n    Use workdir=\"/foo/bar\" with command: pytest tests\n    </good-example>\n    <bad-example>\n    cd /foo/bar && pytest tests\n    </bad-example>",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/tool/shell/prompt.ts",
+          "startLine": 79,
+          "endLine": 118,
+          "startOffset": 4270,
+          "endOffset": 7015,
+          "sha256": "b5b79155add97691cb46493fc9ce6edbd5d0b368b7cf0538a3b8139020c142e1",
+          "textSha256": "5caa9cffea2d36879da063e5d462da96457dfc204c40af50a1521913e1dc61fa",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L79-L118"
+        }
+      ]
+    },
+    {
+      "id": "occ-e0ffecc72a150f0004a57708",
+      "title": "NO_MODELS_TIP",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}/connect{/highlight} to add an AI provider and start coding",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 71,
+          "endLine": 71,
+          "startOffset": 2089,
+          "endOffset": 2165,
+          "sha256": "52c3c297201b96450d83b519b154647e3f3792f98996c56ec1b4bb925f8d6cff",
+          "textSha256": "bc50d152f5121f220784a90cd8fe0403cbe5c24b265c0ccaceec14ddca55de38",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L71-L71"
+        }
+      ]
+    },
+    {
+      "id": "occ-236681454b41b471fb965afe",
+      "title": "${shortcutText(command)} or ${shortcutText(shortcut)}",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "${shortcutText(command)} or ${shortcutText(shortcut)}",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 80,
+          "endLine": 80,
+          "startOffset": 2410,
+          "endOffset": 2465,
+          "sha256": "728cb41b2169b99f25d9b30377aeddfe6cc0a841e2735967e900b154732c1a0a",
+          "textSha256": "1853ed4afc11313b02c704d64887482dd0f69ea865edc1aa8ba9f25fb2ed523a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L80-L80"
+        }
+      ]
+    },
+    {
+      "id": "occ-dcc2d1ed246cf52e6546c401",
+      "title": "Press ${shortcutText(shortcut)} ${text}",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Press ${shortcutText(shortcut)} ${text}",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 85,
+          "endLine": 85,
+          "startOffset": 2561,
+          "endOffset": 2602,
+          "sha256": "4104b12da528deec69a7fe9d4cfb3b1b18a5c7ecf1263ce28bef31ba04bfda81",
+          "textSha256": "181c0164e1f59377d2eb77962ad2223d5b96c15ac8d403e6b62ab9fc3322cd8d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L85-L85"
+        }
+      ]
+    },
+    {
+      "id": "occ-e31a050e520a588e2c4373f4",
+      "title": "Type {highlight}@{/highlight} followed by a filename to fuzzy search…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Type {highlight}@{/highlight} followed by a filename to fuzzy search and attach files",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 165,
+          "endLine": 165,
+          "startOffset": 6137,
+          "endOffset": 6224,
+          "sha256": "d090d03cb5d440f1ca13107cd7e74ac2158b099b85c90b7239aa925f2a79bc7e",
+          "textSha256": "85c09e2621367940f2e0683112d430a268f0aba6451e69ca007513165e2cdf58",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L165-L165"
+        }
+      ]
+    },
+    {
+      "id": "occ-b3abadd213b0328826c78584",
+      "title": "Start a message with {highlight} {/highlight} to run shell commands…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Start a message with {highlight}!{/highlight} to run shell commands (e.g., {highlight}!ls -la{/highlight})",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 166,
+          "endLine": 166,
+          "startOffset": 6228,
+          "endOffset": 6336,
+          "sha256": "25544a70db2c83d2b7b7de7eb6f368a27390de994da13d542bdc23e0ca3d5249",
+          "textSha256": "ba3bc3ed1005cf2c08dcb3f15c80ea35c2954f06407d279c3b5823ff0a083a62",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L166-L166"
+        }
+      ]
+    },
+    {
+      "id": "occ-e300bbdbaef0c5eb75bf93a7",
+      "title": "to cycle between Build and Plan agents",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to cycle between Build and Plan agents",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 167,
+          "endLine": 167,
+          "startOffset": 6385,
+          "endOffset": 6425,
+          "sha256": "ce5dd00eb5b0e32a01aeef82881ce18582aec560a8b837a333130ea04da59338",
+          "textSha256": "e7e8797111af439cc620a2bc252f546f15ca34bf13b7f42d0f16a71c0aa79c43",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L167-L167"
+        }
+      ]
+    },
+    {
+      "id": "occ-b8657339e8c002405b77a9ef",
+      "title": "Use {highlight}/undo{/highlight} to revert the last message and file…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}/undo{/highlight} to revert the last message and file changes",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 168,
+          "endLine": 168,
+          "startOffset": 6430,
+          "endOffset": 6508,
+          "sha256": "d642bdc78edbb227d6c3515f86f738e2f0c79a76fbb03354cb46b28478a3e2f3",
+          "textSha256": "27869ef33e523d08398f917651a49025ec7d1caea0bf6dc14500922d1495d3cb",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L168-L168"
+        }
+      ]
+    },
+    {
+      "id": "occ-3505be753eb33145fc742227",
+      "title": "Use {highlight}/redo{/highlight} to restore previously undone messages…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}/redo{/highlight} to restore previously undone messages and file changes",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 169,
+          "endLine": 169,
+          "startOffset": 6512,
+          "endOffset": 6601,
+          "sha256": "6aad2e347edb07860074579524ce7b4c883cf882d3c3e6e9179f02d5331d2a41",
+          "textSha256": "b79f6569e331543ef4ac4aa44f9b36d9f820c52316dcc9d1b4806fd33562427b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L169-L169"
+        }
+      ]
+    },
+    {
+      "id": "occ-568668305afb1bda1d004789",
+      "title": "Run {highlight}/share{/highlight} to create a public opencode.ai link",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}/share{/highlight} to create a public opencode.ai link",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 170,
+          "endLine": 170,
+          "startOffset": 6605,
+          "endOffset": 6676,
+          "sha256": "54d4f3b371c2b9ce50402047c52d3460a6d55aaf72b22f9260703649930dd4bb",
+          "textSha256": "632ee915d01cdfc146c14577e82047be75a5f8eb95b950c8feb6dedfba31d169",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L170-L170"
+        }
+      ]
+    },
+    {
+      "id": "occ-f4cd977a663208e50fe55ba8",
+      "title": "Drag and drop images or PDFs into the terminal as context",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Drag and drop images or PDFs into the terminal as context",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 171,
+          "endLine": 171,
+          "startOffset": 6680,
+          "endOffset": 6739,
+          "sha256": "21c3daef78e699387b1a0d4fc054b29562fa1c4e5da53cc61b562c0383ee3bdc",
+          "textSha256": "e3599a5818a0d579617cfc12f0fba628d9e391552a7eaafeacc51012716aa97b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L171-L171"
+        }
+      ]
+    },
+    {
+      "id": "occ-73a8b8cedcd2c60ba9537d23",
+      "title": "to paste images from your clipboard into the prompt",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to paste images from your clipboard into the prompt",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 172,
+          "endLine": 172,
+          "startOffset": 6788,
+          "endOffset": 6841,
+          "sha256": "9c5b34af39ad585a39c6c9c016240aac8521ea81a1ddd641325dbfd693b42eb5",
+          "textSha256": "18c72c0d6d1b994e93308230cdff8d4ad4b4772f2010c55dedee18547c3f874f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L172-L172"
+        }
+      ]
+    },
+    {
+      "id": "occ-38be54d3b61d8869debcb419",
+      "title": "Use ${commandText(\"/editor\", shortcuts.editorOpen())} to compose…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${commandText(\"/editor\", shortcuts.editorOpen())} to compose messages in your external editor",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 173,
+          "endLine": 173,
+          "startOffset": 6861,
+          "endOffset": 6960,
+          "sha256": "110a2d04408d2e3d0e4fecf282f9850eca124f0d3698b206fcfbec95b0c91fb6",
+          "textSha256": "3cf6474836b63451806adcb6fde760a9ccc79d44e06be43d97285cfc2943bb1a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L173-L173"
+        }
+      ]
+    },
+    {
+      "id": "occ-16e400a6e41e500800776be2",
+      "title": "Run {highlight}/init{/highlight} to auto-generate project rules based…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}/init{/highlight} to auto-generate project rules based on your codebase",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 174,
+          "endLine": 174,
+          "startOffset": 6964,
+          "endOffset": 7052,
+          "sha256": "0956f0f25517fffd2750b4173a5e93e9ae145d2de3c0ad8aaf878de98b9e9374",
+          "textSha256": "63772c1adcb5c0e54c6c354b3e78163aebbce6726c8def03d8a15a5af78780a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L174-L174"
+        }
+      ]
+    },
+    {
+      "id": "occ-761f12980e27f7c6358f04f7",
+      "title": "Use ${commandText(\"/models\", shortcuts.modelList())} to switch between…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${commandText(\"/models\", shortcuts.modelList())} to switch between available AI models",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 175,
+          "endLine": 175,
+          "startOffset": 7071,
+          "endOffset": 7163,
+          "sha256": "f45a9ad23ce832c6434369efd75e1f01d41b4ee45e4f7ecd5f64f083f3c87e1a",
+          "textSha256": "fec0c63afa2e56b44e024abadc1439b66abb11c76655bac6129f8ef41d27f186",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L175-L175"
+        }
+      ]
+    },
+    {
+      "id": "occ-af331b72394e70ee2f5bcd51",
+      "title": "Use ${commandText(\"/themes\", shortcuts.themeList())} to switch between…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${commandText(\"/themes\", shortcuts.themeList())} to switch between ${themeCount} built-in themes",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 176,
+          "endLine": 176,
+          "startOffset": 7182,
+          "endOffset": 7284,
+          "sha256": "0d956c9b2498000ae1d28275c5e04422b8a49bc6aac3c9ba7763f0fcb78ffa29",
+          "textSha256": "bd353b714af3431747ac702d9291a6468803d3ddaaf9cd553b4581a7913efc14",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L176-L176"
+        }
+      ]
+    },
+    {
+      "id": "occ-e64250978e54d69a9da16e99",
+      "title": "Use ${commandText(\"/new\", shortcuts.sessionNew())} to start a fresh…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${commandText(\"/new\", shortcuts.sessionNew())} to start a fresh conversation session",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 177,
+          "endLine": 177,
+          "startOffset": 7303,
+          "endOffset": 7393,
+          "sha256": "0f6dadfb2003fca1fccf1ec7293788237424dddc639a1a6c1a31716a0d0e2c7e",
+          "textSha256": "0cb66569d432c22657702e459a6e681739826be3430f52e1131c769df9ad4c38",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L177-L177"
+        }
+      ]
+    },
+    {
+      "id": "occ-69abaac0056bfee0a4758724",
+      "title": "Use ${commandText(\"/sessions\", shortcuts.sessionList())} to list, pin,…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${commandText(\"/sessions\", shortcuts.sessionList())} to list, pin, and continue sessions",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 178,
+          "endLine": 178,
+          "startOffset": 7412,
+          "endOffset": 7506,
+          "sha256": "e44dc8eb8ffcb2240bd06cf18964b026a037c4d330cee7464d5a8cb7994b6a9b",
+          "textSha256": "a38e63677ac9f7898f75774922e2e7886798fac6066ca1c7f130e4c38b8f63d7",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L178-L178"
+        }
+      ]
+    },
+    {
+      "id": "occ-038ece05fb6652960ca21cdd",
+      "title": "in the session list to pin one at the top",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "in the session list to pin one at the top",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 179,
+          "endLine": 179,
+          "startOffset": 7561,
+          "endOffset": 7604,
+          "sha256": "7c53e44ce918e28f1f4407cf753474d04f130d71c65acf86e373684043b0a410",
+          "textSha256": "727e7e33bab43b48635a3db66b58eb46a8534278b95fcc31ea6021abe876d3aa",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L179-L179"
+        }
+      ]
+    },
+    {
+      "id": "occ-cee5f1351b4a61e0bd4c1545",
+      "title": "Use ${shortcutText(shortcuts.sessionQuickSwitch1())} through…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${shortcutText(shortcuts.sessionQuickSwitch1())} through ${shortcutText(shortcuts.sessionQuickSwitch9())} to switch pinned sessions",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 182,
+          "endLine": 182,
+          "startOffset": 7703,
+          "endOffset": 7840,
+          "sha256": "ba4974c31561eb668c3149f3d473134c31dd866f8aecd7484d11bbac517eaada",
+          "textSha256": "aaaeb9faca8e57aa9760dc2a92db7269fd7c463219d7108e969a5523a6fa830c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L182-L182"
+        }
+      ]
+    },
+    {
+      "id": "occ-a4affc090e1a373adbf128e3",
+      "title": "Run {highlight}/compact{/highlight} to summarize long sessions near…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}/compact{/highlight} to summarize long sessions near context limits",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 184,
+          "endLine": 184,
+          "startOffset": 7862,
+          "endOffset": 7946,
+          "sha256": "e55135c3291a0480ce79f13bb11c93a04574ca5f44673fcceeee66a673ffe373",
+          "textSha256": "69dc19b12be2ac37c0e3959302c2e2e12ce01a018d65cdabf3335eb3c30d4ea9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L184-L184"
+        }
+      ]
+    },
+    {
+      "id": "occ-17485faa60c56774dd5931c7",
+      "title": "Use ${commandText(\"/export\", shortcuts.sessionExport())} to save the…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${commandText(\"/export\", shortcuts.sessionExport())} to save the conversation as Markdown",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 185,
+          "endLine": 185,
+          "startOffset": 7965,
+          "endOffset": 8060,
+          "sha256": "614ef1c76fa7b44c1d4cd6e7024b549bdb1bee7f8d888ff4037aa9d9e8f6be5e",
+          "textSha256": "25dacb427e260b293099d94bb64f5e01e1e82d256b5a1195ab6d767d2f3839ca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L185-L185"
+        }
+      ]
+    },
+    {
+      "id": "occ-191df4154cae13bc5f18313b",
+      "title": "to copy the assistant's last message to clipboard",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to copy the assistant's last message to clipboard",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 186,
+          "endLine": 186,
+          "startOffset": 8111,
+          "endOffset": 8162,
+          "sha256": "2858db24c040605ecf3d4db28bdf24276b623498aa5b1c340553dc8b80626618",
+          "textSha256": "1020997a862c67ca7d24db35e61035bdbfb1db2be530d1fde6f7deb560180d90",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L186-L186"
+        }
+      ]
+    },
+    {
+      "id": "occ-b5ed30407c01f22f7a37a5f6",
+      "title": "to see all available actions and commands",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to see all available actions and commands",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 187,
+          "endLine": 187,
+          "startOffset": 8213,
+          "endOffset": 8256,
+          "sha256": "7296b45a183426b4d8b8f83a011a3ee3b9e997d6de13ab7e889aa713f333a386",
+          "textSha256": "02fe1a5234e57cb332301cd94d9ce8f2e50e17bdc065747bcc9165d00225b930",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L187-L187"
+        }
+      ]
+    },
+    {
+      "id": "occ-1e8eafaafa554e09e6fb48cf",
+      "title": "Run {highlight}/connect{/highlight} to add API keys for 75+ supported…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}/connect{/highlight} to add API keys for 75+ supported LLM providers",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 188,
+          "endLine": 188,
+          "startOffset": 8261,
+          "endOffset": 8346,
+          "sha256": "e205864eafd718ddc341afdfce40305f2ae09c1cb8ecb8c3c214283df7666461",
+          "textSha256": "6d22567d499df5b3d118c3e495aeb4b9cfb62de8f3edaa937dfdcd1dbb0bca78",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L188-L188"
+        }
+      ]
+    },
+    {
+      "id": "occ-0dc064a5cae873fe1f3b3f24",
+      "title": "The leader key is ${shortcutText(shortcuts.leader())}; combine with…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "The leader key is ${shortcutText(shortcuts.leader())}; combine with other keys for quick actions",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 189,
+          "endLine": 189,
+          "startOffset": 8365,
+          "endOffset": 8463,
+          "sha256": "91f6fe1f249f967e5be813df22f4ca03950b7ba516fc15c82defee7168462db6",
+          "textSha256": "cf03d1a541e460c36b9d0569dfea1b9fa22646ad9590846bff68680dcb2d5330",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L189-L189"
+        }
+      ]
+    },
+    {
+      "id": "occ-e3eea1e05d2f92a5254dfe49",
+      "title": "to quickly switch between recently used models",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to quickly switch between recently used models",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 190,
+          "endLine": 190,
+          "startOffset": 8518,
+          "endOffset": 8566,
+          "sha256": "35c4c7f9de72bcc874ae28ca0b468cbdea4bb43b437e6221ec154054d6d0a7df",
+          "textSha256": "9e8db89f721644fcdcf5d04d7bcd98a0dd6b35dd15f9df0681e81c1c0594f4a1",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L190-L190"
+        }
+      ]
+    },
+    {
+      "id": "occ-0b293d1afc59824dec8f4dc4",
+      "title": "in a session to show or hide the sidebar panel",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "in a session to show or hide the sidebar panel",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 191,
+          "endLine": 191,
+          "startOffset": 8626,
+          "endOffset": 8674,
+          "sha256": "2102b254c96c5c50e597681e3de10c50e36ef3c3c0ec9da2012ccc53e6cbe79d",
+          "textSha256": "23d5119ab00253ef39b58843ac868a8391518fc6a43af17e10dc7fecd9f4dfd5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L191-L191"
+        }
+      ]
+    },
+    {
+      "id": "occ-869885b10e705c28918d39eb",
+      "title": "Use…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${shortcutText(shortcuts.messagesPageUp())}/${shortcutText(shortcuts.messagesPageDown())} to navigate through conversation history",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 194,
+          "endLine": 194,
+          "startOffset": 8765,
+          "endOffset": 8901,
+          "sha256": "7ae9292ee4206f923edf618791df5ca464162b97579661eb628c84e6e947a3a9",
+          "textSha256": "a30828e39464c79d2d47246158e1f1dcff531f1b3f004ae65f9ba55a6d94656d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L194-L194"
+        }
+      ]
+    },
+    {
+      "id": "occ-b8a7374dcd288a2a86387981",
+      "title": "to jump to the beginning of the conversation",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to jump to the beginning of the conversation",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 196,
+          "endLine": 196,
+          "startOffset": 8971,
+          "endOffset": 9017,
+          "sha256": "88f17392b6d1dbac074e1ce07383593fa2163d92e5cc9518173bb15ee7a3d82c",
+          "textSha256": "31f48084bb36045d6c979a8824d82c320a114c85e171b54227f087675db3edaa",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L196-L196"
+        }
+      ]
+    },
+    {
+      "id": "occ-e00a8b96f9df85abfcb6d6ad",
+      "title": "to jump to the most recent message",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to jump to the most recent message",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 197,
+          "endLine": 197,
+          "startOffset": 9069,
+          "endOffset": 9105,
+          "sha256": "20c040cfa23bef3b03c74d3da53a0dc4380189d00e0509b9af6f6c96c267197f",
+          "textSha256": "158712c3281e8849aa718225eee46d880b527d7be13a465c62db63fbc24b24f6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L197-L197"
+        }
+      ]
+    },
+    {
+      "id": "occ-d6397f16f7d1bc6a8185c806",
+      "title": "to add newlines in your prompt",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to add newlines in your prompt",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 198,
+          "endLine": 198,
+          "startOffset": 9157,
+          "endOffset": 9189,
+          "sha256": "0a50426f72aa12d782aca5babc67604151436e72f706034b0cd9a983cdf5133d",
+          "textSha256": "6018ed72f763a074afa8ce8cbd06f5270d8913fd5825e92056e4d046df9e88f5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L198-L198"
+        }
+      ]
+    },
+    {
+      "id": "occ-f689dcad071d2bf2ab33afe0",
+      "title": "when typing to clear the input field",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "when typing to clear the input field",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 199,
+          "endLine": 199,
+          "startOffset": 9239,
+          "endOffset": 9277,
+          "sha256": "9e6028c8b1cb895c5159a97bda0c32014b85d9269feb7ddf9ce297dea9c88825",
+          "textSha256": "5b519151948334058607d709782dfc8b3a9ada09dc8dc59a74f7cac4434b37ca",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L199-L199"
+        }
+      ]
+    },
+    {
+      "id": "occ-142580ab2fdfe973a1389d06",
+      "title": "to stop the AI mid-response",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to stop the AI mid-response",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 200,
+          "endLine": 200,
+          "startOffset": 9333,
+          "endOffset": 9362,
+          "sha256": "4869b0b5961ed27424f6947202346d172db66c3cbe4a6ce122cf1bb990627f0d",
+          "textSha256": "eac7cf6764671551282abe29719fdbcf18c31a95f2235df43928ccd490eae77a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L200-L200"
+        }
+      ]
+    },
+    {
+      "id": "occ-7890883bca5a020329b6a676",
+      "title": "Switch to {highlight}Plan{/highlight} agent for suggestions without…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Switch to {highlight}Plan{/highlight} agent for suggestions without making changes",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 201,
+          "endLine": 201,
+          "startOffset": 9367,
+          "endOffset": 9451,
+          "sha256": "0aa73b08b72c951f8616a988e1c8eefc5d5c678e2f5b1c71bc1255aab988c58b",
+          "textSha256": "4e13d3d1eb3a2ace250df1049e3dd483f13e93b339c46e4c96f323fdad0a1454",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L201-L201"
+        }
+      ]
+    },
+    {
+      "id": "occ-9492b25e69d5070e92c55214",
+      "title": "Use {highlight}@agent-name{/highlight} in prompts to invoke specialized…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}@agent-name{/highlight} in prompts to invoke specialized subagents",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 202,
+          "endLine": 202,
+          "startOffset": 9455,
+          "endOffset": 9538,
+          "sha256": "4796ee4f96d90c5ec0337663f145bbd1102a472f7ff1cd8e7adb918eba06b410",
+          "textSha256": "f5f13ab3a52556d702c9916e15b07e2790f53c1a18fead50c1c6f03ee06a01b3",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L202-L202"
+        }
+      ]
+    },
+    {
+      "id": "occ-3c2bdafdb5b352047e9c7ad5",
+      "title": "Use ${items.map(shortcutText).join(\" / \")} for parent/child sessions",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${items.map(shortcutText).join(\" / \")} for parent/child sessions",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 211,
+          "endLine": 211,
+          "startOffset": 9777,
+          "endOffset": 9847,
+          "sha256": "05f49f663f169c95cafd8ee62d156cec5fcabb3a29d40cff2995ff7429afd05d",
+          "textSha256": "67dc39e13f0a19e117e607aea7900cc9930b9ca2cea83407c0056732eb0f5c5e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L211-L211"
+        }
+      ]
+    },
+    {
+      "id": "occ-1c8899e453cbd49141f0fda4",
+      "title": "Create {highlight}opencode.json{/highlight} for server settings, and…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Create {highlight}opencode.json{/highlight} for server settings, and {highlight}tui.json{/highlight} for TUI",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 213,
+          "endLine": 213,
+          "startOffset": 9855,
+          "endOffset": 9965,
+          "sha256": "11c1529785de038658cd48bb03bd3c8fa90980a48508cb9721a786f60b82ba0c",
+          "textSha256": "5ad20837309fb12725c3153e6ea214decb4c206399d6d43a938e0b14f495411e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L213-L213"
+        }
+      ]
+    },
+    {
+      "id": "occ-633ce170a4797a6861ad85b6",
+      "title": "Place TUI settings in {highlight}…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Place TUI settings in {highlight}~/.config/opencode/tui.json{/highlight} for global config",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 214,
+          "endLine": 214,
+          "startOffset": 9969,
+          "endOffset": 10061,
+          "sha256": "c467ff783d20d06580284d0f7a89ec25d49419f66e8e4b4d2bae096243192ea0",
+          "textSha256": "ad867b5854fb901a4078c55909ef0bf13aa33e1e81e4175188b13c8ddcb16134",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L214-L214"
+        }
+      ]
+    },
+    {
+      "id": "occ-9863475a70037500f064bede",
+      "title": "Add {highlight}$schema{/highlight} to your config for autocomplete in…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Add {highlight}$schema{/highlight} to your config for autocomplete in your editor",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 215,
+          "endLine": 215,
+          "startOffset": 10065,
+          "endOffset": 10148,
+          "sha256": "50fa6ab62665269a94a6b2f579d5e15cddeea955b7d9825f85397112453b62e1",
+          "textSha256": "17d7da2db5ba55818d9bfd4d8ae6ecf8af2adba2555aa616677e0a0fbeb5bbf7",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L215-L215"
+        }
+      ]
+    },
+    {
+      "id": "occ-1f4ca463aa33b75cf93dbce0",
+      "title": "Configure {highlight}model{/highlight} in config to set your default…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Configure {highlight}model{/highlight} in config to set your default model",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 216,
+          "endLine": 216,
+          "startOffset": 10152,
+          "endOffset": 10228,
+          "sha256": "b51147cd0b2d1a4f1170ba1d0b9cb2cf2f7b0b41ad739091a8371fcdb823987c",
+          "textSha256": "ff7e26bd2ce0de13f92fd5fcc04b1509c6425e6333e1e7bcca62182b1c64c83f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L216-L216"
+        }
+      ]
+    },
+    {
+      "id": "occ-30b1af1c5766554a09d4cba5",
+      "title": "Override any keybind in {highlight}tui.json{/highlight} via the…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Override any keybind in {highlight}tui.json{/highlight} via the {highlight}keybinds{/highlight} section",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 217,
+          "endLine": 217,
+          "startOffset": 10232,
+          "endOffset": 10337,
+          "sha256": "941b67ee2c38a32092f591be19728cd2fd2ba958fb9484d495d2d827aebbba5e",
+          "textSha256": "e721dbeee25fe461d27d5b7739d44a288624a0bf23031dc15deda57a06658d95",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L217-L217"
+        }
+      ]
+    },
+    {
+      "id": "occ-1372bc87db2df39319938e2e",
+      "title": "Set any keybind to {highlight}none{/highlight} to disable it completely",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set any keybind to {highlight}none{/highlight} to disable it completely",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 218,
+          "endLine": 218,
+          "startOffset": 10341,
+          "endOffset": 10414,
+          "sha256": "c9d91736d4bad77a8b35074043999ffb0d3d6c3004597414f7a4f41e0a69a6e5",
+          "textSha256": "c6f01b12ec1e0065ebcda5e515bbeb9c19edb2993e205234d95290508dfc4571",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L218-L218"
+        }
+      ]
+    },
+    {
+      "id": "occ-534f381849f04fe9986ebb0a",
+      "title": "Configure local or remote MCP servers in the {highlight}mcp{/highlight}…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Configure local or remote MCP servers in the {highlight}mcp{/highlight} config section",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 219,
+          "endLine": 219,
+          "startOffset": 10418,
+          "endOffset": 10506,
+          "sha256": "32bb503965f514e0009c1b2b00a10e0b668bab62c2937f6331c35314cd15b32b",
+          "textSha256": "29d4eb81fd745b04fb6056b9d4ed2949a9a21803156d814d19a23b98550027f5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L219-L219"
+        }
+      ]
+    },
+    {
+      "id": "occ-fe290cca67d099a078dcfca3",
+      "title": "Add {highlight}.md{/highlight} files to… (line 220)",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Add {highlight}.md{/highlight} files to {highlight}.opencode/commands/{/highlight} for reusable prompts",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 220,
+          "endLine": 220,
+          "startOffset": 10510,
+          "endOffset": 10615,
+          "sha256": "fbc641cc656d8f31c96dbe4afe35ae0fd56595a86fb596ccdf604ba052dcfbae",
+          "textSha256": "37725929863f7e49ec737112d5d3e7a83668a6d2a16eb72a884f81304942388c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L220-L220"
+        }
+      ]
+    },
+    {
+      "id": "occ-9c7f672e664f1cbf0d00fede",
+      "title": "Use {highlight}$ARGUMENTS{/highlight}, {highlight}$1{/highlight},…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}$ARGUMENTS{/highlight}, {highlight}$1{/highlight}, {highlight}$2{/highlight} in custom commands for dynamic input",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 221,
+          "endLine": 221,
+          "startOffset": 10619,
+          "endOffset": 10749,
+          "sha256": "fbbc2100d2872defcbed612af9f67ae47a43e5128735ff6aa825c750690c9be6",
+          "textSha256": "2e9e5ea12031fbbb96dd9b2d35199808ece96be6aea49f39a170edd32fc68f15",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L221-L221"
+        }
+      ]
+    },
+    {
+      "id": "occ-ad0473024a922a6ac375bf28",
+      "title": "Use backticks to inject shell output (e.g., {highlight} git status…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use backticks to inject shell output (e.g., {highlight}`git status`{/highlight})",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 222,
+          "endLine": 222,
+          "startOffset": 10753,
+          "endOffset": 10835,
+          "sha256": "7c524f75fa5a336b1aae8d09683ee5f095b890bea339b7aef87b89c6e1acdbe5",
+          "textSha256": "df8f727aec1c2a31c8a4e901106c7608137ad7ae302dea82727bfa22ebeecb8e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L222-L222"
+        }
+      ]
+    },
+    {
+      "id": "occ-e2403f989e106d944bbd8a2c",
+      "title": "Add {highlight}.md{/highlight} files to… (line 223)",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Add {highlight}.md{/highlight} files to {highlight}.opencode/agents/{/highlight} for specialized AI personas",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 223,
+          "endLine": 223,
+          "startOffset": 10839,
+          "endOffset": 10949,
+          "sha256": "b084d1118afad28e62896f8d323752367f6e3e243e7a9517be9011810292105e",
+          "textSha256": "a7e7328120312ae4ed5b1566d552d6683d349e70cf280755afea63c194ecaaed",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L223-L223"
+        }
+      ]
+    },
+    {
+      "id": "occ-f5eea776a7358fc2c679600b",
+      "title": "Configure per-agent permissions for {highlight}edit{/highlight},…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Configure per-agent permissions for {highlight}edit{/highlight}, {highlight}bash{/highlight}, and {highlight}webfetch{/highlight} tools",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 224,
+          "endLine": 224,
+          "startOffset": 10953,
+          "endOffset": 11090,
+          "sha256": "bb7318f29df7b3e7bf028cf12f437ac4a72294c9bed0b1c39dc70564eeb094de",
+          "textSha256": "46c44d1b0b077729eda4375b51cde27ad4203c1decb5b7b360a34c989358c6ec",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L224-L224"
+        }
+      ]
+    },
+    {
+      "id": "occ-a707bedf3eeee3416a11ef7b",
+      "title": "Use patterns like {highlight}\"git \": \"allow\"{/highlight} for granular…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use patterns like {highlight}\"git *\": \"allow\"{/highlight} for granular bash permissions",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 225,
+          "endLine": 225,
+          "startOffset": 11094,
+          "endOffset": 11183,
+          "sha256": "a386ae5f49a1af78e3454cb495999e5d0a5228ba8ff14ffd2c3ce01b93dd8efd",
+          "textSha256": "270de5531b86d90979d961b4a805b8a942605760a038d740f3ac6b27569fa31a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L225-L225"
+        }
+      ]
+    },
+    {
+      "id": "occ-8d5f75d59107d8e5827ecf04",
+      "title": "Set {highlight}\"rm -rf \": \"deny\"{/highlight} to block destructive…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set {highlight}\"rm -rf *\": \"deny\"{/highlight} to block destructive commands",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 226,
+          "endLine": 226,
+          "startOffset": 11187,
+          "endOffset": 11264,
+          "sha256": "b586f434a5a88d91757dba90fb34aaa92a81fd76bfc6fd65dc240bb419bbbe66",
+          "textSha256": "14b9fb102be55cdbe66cfd476b73fc222b5507522a46b37c9168ab58bf30d395",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L226-L226"
+        }
+      ]
+    },
+    {
+      "id": "occ-59dc0613337de0794bd35bec",
+      "title": "Configure {highlight}\"git push\": \"ask\"{/highlight} to require approval…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Configure {highlight}\"git push\": \"ask\"{/highlight} to require approval before pushing",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 227,
+          "endLine": 227,
+          "startOffset": 11268,
+          "endOffset": 11355,
+          "sha256": "d3da5bf732b861ceab9aec08aeb08426ed7511e52204804797d16d7ec8958dbd",
+          "textSha256": "ad474f751141dfa028e667aea4bcc181054a2027b529be1a44320569ed134b33",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L227-L227"
+        }
+      ]
+    },
+    {
+      "id": "occ-92e7c5f649d3220963b3ef00",
+      "title": "Set {highlight}\"formatter\": true{/highlight} to enable built-in…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set {highlight}\"formatter\": true{/highlight} to enable built-in formatters",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 228,
+          "endLine": 228,
+          "startOffset": 11359,
+          "endOffset": 11435,
+          "sha256": "f2c68a5d4447a0bb0635e333092dea637ce8c505ade509de31a6fed2b83be580",
+          "textSha256": "dd18b4b6680fa58ae68c002ac19fa5d96449367cf981536ad281cab4b66d9752",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L228-L228"
+        }
+      ]
+    },
+    {
+      "id": "occ-f110c13e102f46ddd24f80ad",
+      "title": "Set {highlight}\"formatter\": false{/highlight} to disable inherited…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set {highlight}\"formatter\": false{/highlight} to disable inherited formatters",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 229,
+          "endLine": 229,
+          "startOffset": 11439,
+          "endOffset": 11518,
+          "sha256": "45ffab2217dd0cb9df1b9d9d712ed2990300a44d613646e5516317883cdc98ca",
+          "textSha256": "3c421b26faaf7fd76a7a3e46f6415d2f901fd266674cd155861b25b345dfddb4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L229-L229"
+        }
+      ]
+    },
+    {
+      "id": "occ-23a8eaa21c919b8b077b55f3",
+      "title": "Define custom formatter commands with file extensions in config",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Define custom formatter commands with file extensions in config",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 230,
+          "endLine": 230,
+          "startOffset": 11522,
+          "endOffset": 11587,
+          "sha256": "fa81f30198e0c5565ef6e943c3415d77e3fc381de5c3e3bf042329f2cf34d672",
+          "textSha256": "73f3ab33462961d3279611cad24fdee8e05d66ffa1dcea2cc4f231ef92f32547",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L230-L230"
+        }
+      ]
+    },
+    {
+      "id": "occ-c90375ce1a7918939bc9db18",
+      "title": "Set {highlight}\"lsp\": true{/highlight} to enable built-in LSP code…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set {highlight}\"lsp\": true{/highlight} to enable built-in LSP code analysis",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 231,
+          "endLine": 231,
+          "startOffset": 11591,
+          "endOffset": 11668,
+          "sha256": "91ba94ac72f80dab5c81fd158116d979f4127f0961af1932ecd2a649e580f1a6",
+          "textSha256": "105384eedb8e7809881c1e6ac8ac193fcc69944295c2235886a1c89aaeb408d0",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L231-L231"
+        }
+      ]
+    },
+    {
+      "id": "occ-7befa461a4541b5aea0085fe",
+      "title": "Create {highlight}.ts{/highlight} files in…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Create {highlight}.ts{/highlight} files in {highlight}.opencode/tools/{/highlight} to define new LLM tools",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 232,
+          "endLine": 232,
+          "startOffset": 11672,
+          "endOffset": 11780,
+          "sha256": "400b50ad105f5f31e8b19f687159f95849b438b4edfbdc39552e1d26e4b3159e",
+          "textSha256": "09f5556d255622bcc6b57b1d15dd4e277fc664176f8fdf1fd69315ef9224e10d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L232-L232"
+        }
+      ]
+    },
+    {
+      "id": "occ-665904204a1058b5360dc73e",
+      "title": "Tool definitions can invoke scripts written in Python, Go, etc",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Tool definitions can invoke scripts written in Python, Go, etc",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 233,
+          "endLine": 233,
+          "startOffset": 11784,
+          "endOffset": 11848,
+          "sha256": "903d84d3a3d1b2aff03f5537b13e98e24932a6b66bc0939f3199688515a67545",
+          "textSha256": "9e6793cb853159dc0795b282388021d464dd82fc3578f3613bbe6ada54028472",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L233-L233"
+        }
+      ]
+    },
+    {
+      "id": "occ-0c86764a2fe861002f704724",
+      "title": "Add {highlight}.ts{/highlight} files to…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Add {highlight}.ts{/highlight} files to {highlight}.opencode/plugins/{/highlight} for event hooks",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 234,
+          "endLine": 234,
+          "startOffset": 11852,
+          "endOffset": 11951,
+          "sha256": "26d73c0c89d2b7a052bc1bc4d911451693b1ef7dd398e1aaa66f4de0f8f4b307",
+          "textSha256": "00defb5d05663c6364e8b5da482bf5985838a00cfe42ad63ab9f463221237c9b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L234-L234"
+        }
+      ]
+    },
+    {
+      "id": "occ-2c222384ce543c5794d07650",
+      "title": "Use plugins to send OS notifications when sessions complete",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use plugins to send OS notifications when sessions complete",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 235,
+          "endLine": 235,
+          "startOffset": 11955,
+          "endOffset": 12016,
+          "sha256": "b84925073c2b0edc908fe19b5c22ff424e25c157de25b8271159a022a20c8471",
+          "textSha256": "57d4dd793b9d7deab6cce31adfc1fd51f4e24e04bc3a4fcc85edf45f41abc3d4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L235-L235"
+        }
+      ]
+    },
+    {
+      "id": "occ-c6eaeb15b682245844d66db9",
+      "title": "Create a plugin to prevent OpenCode from reading sensitive files",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Create a plugin to prevent OpenCode from reading sensitive files",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 236,
+          "endLine": 236,
+          "startOffset": 12020,
+          "endOffset": 12086,
+          "sha256": "77861de5a84d657ad0e3c7c307895464e85ca7f9532935d5b4ca7c69b567a33a",
+          "textSha256": "0872118574e8a08cd4f4af23888c92c72d8fb4f70a198d5ae84be8694cbc112c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L236-L236"
+        }
+      ]
+    },
+    {
+      "id": "occ-2fb839b2821363afd8b26d5d",
+      "title": "Use {highlight}opencode run{/highlight} for non-interactive scripting",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}opencode run{/highlight} for non-interactive scripting",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 237,
+          "endLine": 237,
+          "startOffset": 12090,
+          "endOffset": 12161,
+          "sha256": "c035e744010ad59bf3e5abc3da71137a6ea14df38be1ae0bd6634bcc2e386e53",
+          "textSha256": "e541c7de68292ac1215afea631d1c1095fd3910dfab465ff6890de0ecedebd2f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L237-L237"
+        }
+      ]
+    },
+    {
+      "id": "occ-ab6620060e379a657cb2a8b7",
+      "title": "Use {highlight}opencode --continue{/highlight} to resume the last…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}opencode --continue{/highlight} to resume the last session",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 238,
+          "endLine": 238,
+          "startOffset": 12165,
+          "endOffset": 12240,
+          "sha256": "226d747333b178544baee36627d26e7d0efc7deeb5f8f14751815d5570c02142",
+          "textSha256": "70d72f2ad36a39364a43fb177330283b0529a99ac6945fdd1fd7bc0c10424de9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L238-L238"
+        }
+      ]
+    },
+    {
+      "id": "occ-602be5ddd5ce3bc6e0e60551",
+      "title": "Use {highlight}opencode run -f file.ts{/highlight} to attach files via…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}opencode run -f file.ts{/highlight} to attach files via CLI",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 239,
+          "endLine": 239,
+          "startOffset": 12244,
+          "endOffset": 12320,
+          "sha256": "24cca7f62751cbb970ea2914cf807057e2223d52c4b495b793ce5f1e9611fa4f",
+          "textSha256": "931024e82daced9dc5c54840d0377610a55675f596f95c1153ec36d9a9950078",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L239-L239"
+        }
+      ]
+    },
+    {
+      "id": "occ-dfb8bd04dd4a588cd68965b9",
+      "title": "Use {highlight}--format json{/highlight} for machine-readable output in…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}--format json{/highlight} for machine-readable output in scripts",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 240,
+          "endLine": 240,
+          "startOffset": 12324,
+          "endOffset": 12405,
+          "sha256": "05f5f17a76b43a14612cfa490686fb4c8f37a2d0a3e8d62e8a72bdf1c8bd19a7",
+          "textSha256": "cce5021f514b6aaf4f1e151719f9038de564923b9c8d233f2c8391d00d4fd28d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L240-L240"
+        }
+      ]
+    },
+    {
+      "id": "occ-d00dee1c55687ae2cdc522bb",
+      "title": "Run {highlight}opencode serve{/highlight} for headless API access to…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}opencode serve{/highlight} for headless API access to OpenCode",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 241,
+          "endLine": 241,
+          "startOffset": 12409,
+          "endOffset": 12488,
+          "sha256": "03278d275d464a39baf104737a7e9ff88d08213792000e3f0fa408ace8054e9e",
+          "textSha256": "cce07446f56b7a7b3832f51968f7f4e82f43a58d6f384bd31d2633d78b2b8e66",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L241-L241"
+        }
+      ]
+    },
+    {
+      "id": "occ-405809d156c55f9957794b77",
+      "title": "Use {highlight}opencode run --attach{/highlight} to connect to a…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}opencode run --attach{/highlight} to connect to a running server",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 242,
+          "endLine": 242,
+          "startOffset": 12492,
+          "endOffset": 12573,
+          "sha256": "d378462584e1be7db7cfd8bab9a34165cddb79545c45c7045808a3fadc2c2988",
+          "textSha256": "3194b4f0383d7b96673fd205fafc9eed35881628fd091a0e863cb98cce7877cf",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L242-L242"
+        }
+      ]
+    },
+    {
+      "id": "occ-0d0a2ecb9fc869875a49cfc8",
+      "title": "Run {highlight}opencode upgrade{/highlight} to update to the latest…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}opencode upgrade{/highlight} to update to the latest version",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 243,
+          "endLine": 243,
+          "startOffset": 12577,
+          "endOffset": 12654,
+          "sha256": "8c02d65fd0f5fb210129b0f00289ba2cf32c42a2a31115f5bfc9dc887e9071ee",
+          "textSha256": "75978b81a1a42c9a1e8e69fb6214f613297513f884b419dd8a2e52d2094f8bc7",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L243-L243"
+        }
+      ]
+    },
+    {
+      "id": "occ-3dcac04858e48d66c5607af0",
+      "title": "Run {highlight}opencode auth list{/highlight} to see all configured…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}opencode auth list{/highlight} to see all configured providers",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 244,
+          "endLine": 244,
+          "startOffset": 12658,
+          "endOffset": 12737,
+          "sha256": "2977451c42ba40a858b09e415e7111397bcc2ff5f25537e97371e95dc6fe666e",
+          "textSha256": "c312f5b5db24ab2cfebb019b09316a6f3264599dacaef01ca4b68b5026126605",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L244-L244"
+        }
+      ]
+    },
+    {
+      "id": "occ-a2792719f491a8a2e0496da9",
+      "title": "Run {highlight}opencode agent create{/highlight} for guided agent…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}opencode agent create{/highlight} for guided agent creation",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 245,
+          "endLine": 245,
+          "startOffset": 12741,
+          "endOffset": 12817,
+          "sha256": "c38527c0cba24c4b0a315bd6f17fa68b9bb2a0e0aa660debe4de58cfda8c73b0",
+          "textSha256": "a46f4afb739d1a051e91d9c6ac94ee767459aa458ebac8edf9bd4aed144dfa1d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L245-L245"
+        }
+      ]
+    },
+    {
+      "id": "occ-29de1189209814bb0d19f545",
+      "title": "Use {highlight}/opencode{/highlight} in GitHub issues/PRs to trigger AI…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}/opencode{/highlight} in GitHub issues/PRs to trigger AI actions",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 246,
+          "endLine": 246,
+          "startOffset": 12821,
+          "endOffset": 12902,
+          "sha256": "14cecbe682336db0ca360b27dcce31acfacdc53ae9b237cb55fcaaa976f16719",
+          "textSha256": "3514b6e6a00348f324d6b0cb44351f06a9cb9124ed574b3c1241df2bee036e1b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L246-L246"
+        }
+      ]
+    },
+    {
+      "id": "occ-93602813f0faed548d348b59",
+      "title": "Run {highlight}opencode github install{/highlight} to set up the GitHub…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}opencode github install{/highlight} to set up the GitHub workflow",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 247,
+          "endLine": 247,
+          "startOffset": 12906,
+          "endOffset": 12988,
+          "sha256": "348c7aed56450adcbe08e5d0c3228e4113615b8952c8a7725c2d6e823606ab23",
+          "textSha256": "5b683b245ebfedf724ea5a086ce9d185673a945a98b8f47afc8d59bcd37fdafe",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L247-L247"
+        }
+      ]
+    },
+    {
+      "id": "occ-17aebef500d4079b44bca573",
+      "title": "Comment {highlight}/opencode fix this{/highlight} on issues to…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Comment {highlight}/opencode fix this{/highlight} on issues to auto-create PRs",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 248,
+          "endLine": 248,
+          "startOffset": 12992,
+          "endOffset": 13072,
+          "sha256": "20f88aee499b3984fdd8a1ed2040d59c66988c816cbfdb8027c205d3da319b0c",
+          "textSha256": "cee20e54fb53548f6057a65f4dcbe89fed55e500d7ecd95b6817be9987901c79",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L248-L248"
+        }
+      ]
+    },
+    {
+      "id": "occ-749662914180a06d1217414a",
+      "title": "Comment {highlight}/oc{/highlight} on PR code lines for targeted code…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Comment {highlight}/oc{/highlight} on PR code lines for targeted code reviews",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 249,
+          "endLine": 249,
+          "startOffset": 13076,
+          "endOffset": 13155,
+          "sha256": "05d884c0bd808379f84845e5ca79fbce92b22bd2aedc320eb3c9902b36da207e",
+          "textSha256": "3dc1823fd57c06c5a05868345f8d376b27670b4c8525ed07f1b5f2527c952cbb",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L249-L249"
+        }
+      ]
+    },
+    {
+      "id": "occ-377349a6b571c414d1290fff",
+      "title": "Use {highlight}\"theme\": \"system\"{/highlight} to match your terminal's…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}\"theme\": \"system\"{/highlight} to match your terminal's colors",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 250,
+          "endLine": 250,
+          "startOffset": 13159,
+          "endOffset": 13238,
+          "sha256": "b5e3df50dceda0626b4fc25e6f923b0afbbbdb45e98418f41024c434e8fe53b7",
+          "textSha256": "e6291151175a0a873768d2cf3dbf4c55ae16b64e22dd399e86d96776e9860c74",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L250-L250"
+        }
+      ]
+    },
+    {
+      "id": "occ-b4adc7d793ba722d88f00af1",
+      "title": "Create JSON theme files in {highlight}.opencode/themes/{/highlight}…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Create JSON theme files in {highlight}.opencode/themes/{/highlight} directory",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 251,
+          "endLine": 251,
+          "startOffset": 13242,
+          "endOffset": 13321,
+          "sha256": "fd7212b8f7aede92396a3091ffa3c6f9cb313f3c41046c8a70e224b9c81aab63",
+          "textSha256": "712526b4d790930a97dd43aad9ff00e34d8ba72caed1dcf13a89177dd3f5ad4b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L251-L251"
+        }
+      ]
+    },
+    {
+      "id": "occ-edae54705f229b6db2e173d6",
+      "title": "Themes support dark/light variants for both modes",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Themes support dark/light variants for both modes",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 252,
+          "endLine": 252,
+          "startOffset": 13325,
+          "endOffset": 13376,
+          "sha256": "eafc333d9e70510786af05058fa166483576ff8ec357cb86da688a2afea985d5",
+          "textSha256": "471015b21376c2e2820f6ef576d63957c1d3f9b57074566967bdaa1bc36a24d7",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L252-L252"
+        }
+      ]
+    },
+    {
+      "id": "occ-850a47b454c89d40f1653837",
+      "title": "Use numeric xterm color codes 0-255 in custom theme JSON",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use numeric xterm color codes 0-255 in custom theme JSON",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 253,
+          "endLine": 253,
+          "startOffset": 13380,
+          "endOffset": 13438,
+          "sha256": "dd92e1739b6298e87d0e38f68e882ab8971b2f6d2a6d8d3b797b2b323cfe8d6f",
+          "textSha256": "f5da8c3ed94eddf7a690ea964e4f5b85a1edd241c6a43e05ba00fddf615032c6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L253-L253"
+        }
+      ]
+    },
+    {
+      "id": "occ-22babaefa2e7e2711a1c8348",
+      "title": "Use {highlight}{env:VAR NAME}{/highlight} for environment variables in…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}{env:VAR_NAME}{/highlight} for environment variables in config",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 254,
+          "endLine": 254,
+          "startOffset": 13442,
+          "endOffset": 13521,
+          "sha256": "9efa176ae4d687aa71ce9777010f2f02896cf555868ec44f13a46697d469b0e8",
+          "textSha256": "9ccc9339b943104d5d0fa30d519b371cea6b2df8ce77a10cd1dc9780b18b4913",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L254-L254"
+        }
+      ]
+    },
+    {
+      "id": "occ-a0f56127cd797e5b0b77bb8b",
+      "title": "Use {highlight}{file:path}{/highlight} to include file contents in…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}{file:path}{/highlight} to include file contents in config values",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 255,
+          "endLine": 255,
+          "startOffset": 13525,
+          "endOffset": 13607,
+          "sha256": "a3cc7160543ce1eb36ed896a16fcd3a5ad6e6c5e367f6b70b26ab7ce4cfcd56d",
+          "textSha256": "4e8541f95ffa90520bd2a69286bc3d7ee8cd5f2aa60a57b147408c64c2b14cdf",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L255-L255"
+        }
+      ]
+    },
+    {
+      "id": "occ-d22076e51975ec1b540438c8",
+      "title": "Use {highlight}instructions{/highlight} in config to load additional…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}instructions{/highlight} in config to load additional rules files",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 256,
+          "endLine": 256,
+          "startOffset": 13611,
+          "endOffset": 13693,
+          "sha256": "2d8fcb867adb1fa48c60cefa83df5c4aaa2ea7ca988a22153f74646d8bcd3e2e",
+          "textSha256": "31bbe0ff42af8e6c31b389191f7b483c17ff0d2f2d57d3d1154fcfab83d248c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L256-L256"
+        }
+      ]
+    },
+    {
+      "id": "occ-1e651030ba51ec39eb7f5925",
+      "title": "Set agent {highlight}temperature{/highlight} from 0.0 (focused) to 1.0…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set agent {highlight}temperature{/highlight} from 0.0 (focused) to 1.0 (creative)",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 257,
+          "endLine": 257,
+          "startOffset": 13697,
+          "endOffset": 13780,
+          "sha256": "f68b83984c60db6b13b580249040402af5ea1981301be914ab7d560bf53705a8",
+          "textSha256": "954a8df9f5b2a85e3410aaf05608476dc4537a129f1f98a767a8aaa57c30d5b2",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L257-L257"
+        }
+      ]
+    },
+    {
+      "id": "occ-c362e2df6095000a7682af7d",
+      "title": "Configure {highlight}steps{/highlight} to limit agentic iterations per…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Configure {highlight}steps{/highlight} to limit agentic iterations per request",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 258,
+          "endLine": 258,
+          "startOffset": 13784,
+          "endOffset": 13864,
+          "sha256": "3473451e34fdc83b1f924aceb4466f0ae1c010a378bee0d137249696d2c6e5f4",
+          "textSha256": "d0f606042dee384977e3fc725193a4861cfe125630b98cb4e7bcb9d82bcb06eb",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L258-L258"
+        }
+      ]
+    },
+    {
+      "id": "occ-604c00ca33e4bf745e50aca8",
+      "title": "Set {highlight}\"tools\": {\"bash\": false}{/highlight} to disable specific…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set {highlight}\"tools\": {\"bash\": false}{/highlight} to disable specific tools",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 259,
+          "endLine": 259,
+          "startOffset": 13868,
+          "endOffset": 13947,
+          "sha256": "973b7a1001043f3f544fed925279bc61912411fa1c1004df22d49101ec97dbaf",
+          "textSha256": "c882d86a2a394454f7733bc928525dc163898cd60f1ab11e7ba0ec799c15f088",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L259-L259"
+        }
+      ]
+    },
+    {
+      "id": "occ-a95b4742fd4565e66d8a1b21",
+      "title": "Set {highlight}\"mcp \": false{/highlight} to disable all tools from an…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set {highlight}\"mcp_*\": false{/highlight} to disable all tools from an MCP server",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 260,
+          "endLine": 260,
+          "startOffset": 13951,
+          "endOffset": 14034,
+          "sha256": "56718b15fb4065c2dc2f1079a11f3e3bc15c5c904be8d97c515bcd0a29bc7758",
+          "textSha256": "afa1b11f03b831a1e7455315b4151a269f3a68bf7e765455ae4bea2ec4c63e0f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L260-L260"
+        }
+      ]
+    },
+    {
+      "id": "occ-ed77eb7fee57f6b19eecf138",
+      "title": "Override global tool settings per agent configuration",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Override global tool settings per agent configuration",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 261,
+          "endLine": 261,
+          "startOffset": 14038,
+          "endOffset": 14093,
+          "sha256": "73cafcfef6a3fcac023e15f85211be8cb3537b7a566848f3b4012018458e64ed",
+          "textSha256": "5b638f469248d59d358995e5716acd48631190b51ccb83669541ab39aeeb3073",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L261-L261"
+        }
+      ]
+    },
+    {
+      "id": "occ-d90e090df1e3af566bff734f",
+      "title": "Set {highlight}\"share\": \"auto\"{/highlight} to automatically share all…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set {highlight}\"share\": \"auto\"{/highlight} to automatically share all sessions",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 262,
+          "endLine": 262,
+          "startOffset": 14097,
+          "endOffset": 14177,
+          "sha256": "74bd8cf52c9c68812e069e2d1368e4719673ac32c7eb5f73c322a95a7f70be23",
+          "textSha256": "e7518c64d8419cdb990556a6512bde3df5dbc95fc64505d710ff264b009669d7",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L262-L262"
+        }
+      ]
+    },
+    {
+      "id": "occ-46191965c7de65c23bc820ff",
+      "title": "Set {highlight}\"share\": \"disabled\"{/highlight} to prevent any session…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Set {highlight}\"share\": \"disabled\"{/highlight} to prevent any session sharing",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 263,
+          "endLine": 263,
+          "startOffset": 14181,
+          "endOffset": 14260,
+          "sha256": "0f8c831a55db95bfa98462f8ed153ed72ed557ba955eba3b710d460567113a3b",
+          "textSha256": "243f00cf9d261476bbd05a6cf6c44c445f69d2867e91237496b0ebe1896fd860",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L263-L263"
+        }
+      ]
+    },
+    {
+      "id": "occ-2950576d593196e06bccdd53",
+      "title": "Run {highlight}/unshare{/highlight} to remove a session from public…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}/unshare{/highlight} to remove a session from public access",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 264,
+          "endLine": 264,
+          "startOffset": 14264,
+          "endOffset": 14340,
+          "sha256": "7cfd98fc7f5a4287164d9b41d01869b90cfae027b1159c9e5c6f2a971eaa6fb5",
+          "textSha256": "c6a823bf415393939764f613bcdfb0ebe24e8b185d7fae35378c0d8a029febce",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L264-L264"
+        }
+      ]
+    },
+    {
+      "id": "occ-5b33c98c6eac2fc183b13063",
+      "title": "Permission {highlight}doom loop{/highlight} prevents infinite tool call…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Permission {highlight}doom_loop{/highlight} prevents infinite tool call loops",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 265,
+          "endLine": 265,
+          "startOffset": 14344,
+          "endOffset": 14423,
+          "sha256": "cf09ea159929b69e4cd6c62af948a82b09d95646167e20b43443bb194ab09aae",
+          "textSha256": "3f519c7f254e4cb305bcc37432f02897e3b4761c9e026d04a09394b0a813de3d",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L265-L265"
+        }
+      ]
+    },
+    {
+      "id": "occ-f288bee0622b5b7e1dbcdcaa",
+      "title": "Permission {highlight}external directory{/highlight} protects files…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Permission {highlight}external_directory{/highlight} protects files outside project",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 266,
+          "endLine": 266,
+          "startOffset": 14427,
+          "endOffset": 14512,
+          "sha256": "b2160c55a7c5bd815e99081af03cb14e8304af2131d19e6de8799d88b6c5b124",
+          "textSha256": "41c6734bba5af7aaa15cd42432f76c12f5c9fefdfdadb2a86e2c00b10e5d11ea",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L266-L266"
+        }
+      ]
+    },
+    {
+      "id": "occ-0265f78baea08f4c36d5f757",
+      "title": "Run {highlight}opencode debug config{/highlight} to troubleshoot…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}opencode debug config{/highlight} to troubleshoot configuration",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 267,
+          "endLine": 267,
+          "startOffset": 14516,
+          "endOffset": 14596,
+          "sha256": "562d266725b0dcbe84a9eb174f8c9f356750f76048f64b9c0bc04812f3f2f3b7",
+          "textSha256": "b6e54944c25e5754ce70eea7b96f84936af1ddeef062734842954822fd16d22a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L267-L267"
+        }
+      ]
+    },
+    {
+      "id": "occ-24bfaeffbfa9e22ab8b0c24d",
+      "title": "Use {highlight}--print-logs{/highlight} flag to see detailed logs in…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}--print-logs{/highlight} flag to see detailed logs in stderr",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 268,
+          "endLine": 268,
+          "startOffset": 14600,
+          "endOffset": 14677,
+          "sha256": "4c8d571fb00102ba174b127eed02073b97e7ee9e16261d5a9eda24a7c4427e44",
+          "textSha256": "badbe38090f236a399e36adcdf9d97884e1ae550f2e947ebd8c099bcb35da93a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L268-L268"
+        }
+      ]
+    },
+    {
+      "id": "occ-c3610ef5effdc3d9e5c79bef",
+      "title": "Use ${commandText(\"/timeline\", shortcuts.sessionTimeline())} to jump to…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${commandText(\"/timeline\", shortcuts.sessionTimeline())} to jump to specific messages",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 269,
+          "endLine": 269,
+          "startOffset": 14696,
+          "endOffset": 14787,
+          "sha256": "6e4e706fc3137811074c411cfb81b84ff48a18b9abad6b30dbd3accf521ec99a",
+          "textSha256": "14a3e218e57d4bc6fe61e0804ea5a040263f28c92358b93a46b211032cb9125a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L269-L269"
+        }
+      ]
+    },
+    {
+      "id": "occ-5408511cab4ef4d3c2cda753",
+      "title": "to toggle code block visibility in messages",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to toggle code block visibility in messages",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 270,
+          "endLine": 270,
+          "startOffset": 14847,
+          "endOffset": 14892,
+          "sha256": "37cd18f4706a0ea1e3b81db7cee726932ccdd475168cf88282a73b4eba8d34d5",
+          "textSha256": "749bd4d82181858fa399bf8b43a08b45af3ada0923b218826432f0132e957701",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L270-L270"
+        }
+      ]
+    },
+    {
+      "id": "occ-ace1286de440005dd8cd191b",
+      "title": "Use ${commandText(\"/status\", shortcuts.statusView())} to see system…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${commandText(\"/status\", shortcuts.statusView())} to see system status info",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 271,
+          "endLine": 271,
+          "startOffset": 14912,
+          "endOffset": 14993,
+          "sha256": "6d8e5bf3f754b896006b9a534ad0cc1e49ba33198d5c2ab0bde6cc5332dc2523",
+          "textSha256": "8fc8accb00c2713e069b5bbf689c33e4809793958bcba0b60e22740ce31dca75",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L271-L271"
+        }
+      ]
+    },
+    {
+      "id": "occ-8b583fb2dabcf49a20726cd7",
+      "title": "Enable {highlight}scroll acceleration{/highlight} in…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Enable {highlight}scroll_acceleration{/highlight} in {highlight}tui.json{/highlight} for smooth scrolling",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 272,
+          "endLine": 272,
+          "startOffset": 14997,
+          "endOffset": 15104,
+          "sha256": "15c76b9861e9c5617fff2a45239511e8389464db40234ad32ae7a8bc35af0177",
+          "textSha256": "3305b056a6ad17d6de9f4cfd8d4ea1a246f9f6938c462be1227d7e02818dc03b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L272-L272"
+        }
+      ]
+    },
+    {
+      "id": "occ-19d79aa72a954b2457561ced",
+      "title": "Toggle username display in chat via the command palette…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Toggle username display in chat via the command palette (${shortcutText(shortcuts.commandList())})",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 275,
+          "endLine": 275,
+          "startOffset": 15159,
+          "endOffset": 15259,
+          "sha256": "64cbdb5b27311aca646d6e26f4dd1b8376629bd3797b57155189061ba18b5ac3",
+          "textSha256": "c74ff59ec926ed6fdeec12f870ccf61bb3aafb1d305238f6a0c7fc408cfb40ad",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L275-L275"
+        }
+      ]
+    },
+    {
+      "id": "occ-2b5024acf72ebc335f34ecf6",
+      "title": "Toggle username display in chat via the command palette",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Toggle username display in chat via the command palette",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 276,
+          "endLine": 276,
+          "startOffset": 15268,
+          "endOffset": 15325,
+          "sha256": "ac8779ed508bcd6a7ba78d94b1c0afe5e6d01c4c80ff64ba63cb02e96152d458",
+          "textSha256": "d415fb584bbfec4498775c2228e026e33db3c846606ba5228e80606b4a53ccc9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L276-L276"
+        }
+      ]
+    },
+    {
+      "id": "occ-7220b653ffac511c4b6b2885",
+      "title": "Run {highlight}docker run -it --rm…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Run {highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} in a container",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 277,
+          "endLine": 277,
+          "startOffset": 15329,
+          "endOffset": 15419,
+          "sha256": "179d068a6d8cd378fec08916c27c01482db3095a53e0c9b1016870c317dc6195",
+          "textSha256": "cdad9975c7f65bdd2a3770b6be5751c3b78e408c6f3a0d4ec5fd8e6d0119cdde",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L277-L277"
+        }
+      ]
+    },
+    {
+      "id": "occ-baac0e0ee6b98c2fe06a80b7",
+      "title": "Use {highlight}/connect{/highlight} with OpenCode Zen for curated,…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}/connect{/highlight} with OpenCode Zen for curated, tested models",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 278,
+          "endLine": 278,
+          "startOffset": 15423,
+          "endOffset": 15505,
+          "sha256": "a7bd4e6c99ba44c1264b33ece12fc47ddf54f74afcc507e9cc603b5b01f9e65a",
+          "textSha256": "9dbafc3bd62caec0c990fdb25250419525d755076b74e709ef50849c9b30c8b5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L278-L278"
+        }
+      ]
+    },
+    {
+      "id": "occ-1258971a8a85dc11fd927867",
+      "title": "Commit your project's {highlight}AGENTS.md{/highlight} file to Git for…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Commit your project's {highlight}AGENTS.md{/highlight} file to Git for team sharing",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 279,
+          "endLine": 279,
+          "startOffset": 15509,
+          "endOffset": 15594,
+          "sha256": "29a0fe6c2fa1475393b5fb2258dfccf59287858885e94bd1ce6c96707766fce2",
+          "textSha256": "1c234b0bba13d56f63f8b6976e648464df79b7d7d42efdd1bc830946e5e420bd",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L279-L279"
+        }
+      ]
+    },
+    {
+      "id": "occ-eb86f4003824d6b86d557d1a",
+      "title": "Use {highlight}/review{/highlight} to review uncommitted changes,…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}/review{/highlight} to review uncommitted changes, branches, or PRs",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 280,
+          "endLine": 280,
+          "startOffset": 15598,
+          "endOffset": 15682,
+          "sha256": "55f82e0b8b20fbae1318f7d3f5122363ec045c7395306ce7f8cdd2fd02e62b42",
+          "textSha256": "28f9f2f3a3bf943710bb00eadb979ecdcd67ac5606460fd79fb56b483097083f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L280-L280"
+        }
+      ]
+    },
+    {
+      "id": "occ-946aa993d2fa1fcf1f43fe84",
+      "title": "Use ${commandText(\"/help\", shortcuts.helpShow())} to show the help…",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use ${commandText(\"/help\", shortcuts.helpShow())} to show the help dialog",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 281,
+          "endLine": 281,
+          "startOffset": 15701,
+          "endOffset": 15776,
+          "sha256": "e3ccb6e0b2ad944046ab3ad6ef0b4cf408c846dd2c6befbcdc579da65bc77978",
+          "textSha256": "2f716cccda6e8dba199a3044b78221054e81f5e39778b66481de6edb9b3c0936",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L281-L281"
+        }
+      ]
+    },
+    {
+      "id": "occ-2f67f742748403c17b63e24d",
+      "title": "Use {highlight}/rename{/highlight} to rename the current session",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "Use {highlight}/rename{/highlight} to rename the current session",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 282,
+          "endLine": 282,
+          "startOffset": 15780,
+          "endOffset": 15846,
+          "sha256": "87bfc896eeb2b8fe4926d6cca41aec839e7af2e7084aae17ef8b3618ed5bf2ed",
+          "textSha256": "0656a174e2aeb6563f41ec735b46e4605b8ddb8313038f70b0b05e62c9dfa4c3",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L282-L282"
+        }
+      ]
+    },
+    {
+      "id": "occ-aad69ff1d62a2ad1444f5a07",
+      "title": "to undo changes in your prompt",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to undo changes in your prompt",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 285,
+          "endLine": 285,
+          "startOffset": 15923,
+          "endOffset": 15955,
+          "sha256": "d4dad81ef17df84959bb7a3f4791a1c22d2d417a1a537b48e6aecdd160a48aae",
+          "textSha256": "9ad9ffbfe86baa3df7ef5f5e607d34bdb5267d8adfe05941fb9e2fabcc298346",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L285-L285"
+        }
+      ]
+    },
+    {
+      "id": "occ-f3e0177e1a97baf304dc7925",
+      "title": "to suspend the terminal and return to your shell",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+      "text": "to suspend the terminal and return to your shell",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips-view.tsx",
+          "startLine": 287,
+          "endLine": 287,
+          "startOffset": 16043,
+          "endOffset": 16093,
+          "sha256": "4a3e3c817b76ec3aa6458150a470b7f47ff6523cc97942fa54503012fd83ebf2",
+          "textSha256": "f80483271e206d489f28679457e27a72ca6fe9a3cb0eff2e99faea0a9f4e4c0a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips-view.tsx#L287-L287"
+        }
+      ]
+    },
+    {
+      "id": "occ-a7d1f376be303f8ee1cc9417",
+      "title": "tips.toggle (line 14)",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips.tsx",
+      "text": "Show tips",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips.tsx",
+          "startLine": 14,
+          "endLine": 14,
+          "startOffset": 483,
+          "endOffset": 494,
+          "sha256": "b5eb29da1f236dc48a1cc856bd527707fda622a0768537f21c4242f9d6debda1",
+          "textSha256": "754e196536fe89cd979eae1689559bfe7224476e6e07733b48728f285704fad4",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips.tsx#L14-L14"
+        }
+      ]
+    },
+    {
+      "id": "occ-ba79527f182b2fa410ea0802",
+      "title": "tips.toggle (line 14)",
+      "kind": "candidate",
+      "group": "packages/tui/src/feature-plugins/home/tips.tsx",
+      "text": "Hide tips",
+      "reason": "Source failed the privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/tui/src/feature-plugins/home/tips.tsx",
+          "startLine": 14,
+          "endLine": 14,
+          "startOffset": 497,
+          "endOffset": 508,
+          "sha256": "15d7c2c0c0b41ce376e672a4bb74aadfd1e2e1f71c43cb121a1ea3cc25a86070",
+          "textSha256": "76dc7f7093db4fbdcd4989a49045bcb7ea18d73a1867d655226a55b3822e5e25",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/feature-plugins/home/tips.tsx#L14-L14"
+        }
+      ]
+    }
+  ]
+}

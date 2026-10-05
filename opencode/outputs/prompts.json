@@ -33,7 +33,8 @@
         "condition": "SystemPrompt.provider: model.api.id includes claude, after earlier model-name branches; agent.prompt overrides the selected provider prompt.",
         "summary": "SystemPrompt.provider: model.api.id includes claude, after earlier model-name branches; agent.prompt overrides the selected provider prompt.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-beast",
@@ -64,7 +65,8 @@
         "condition": "SystemPrompt.provider: model.api.id includes gpt-4, o1 or o3; this branch precedes the general gpt branch.",
         "summary": "SystemPrompt.provider: model.api.id includes gpt-4, o1 or o3; this branch precedes the general gpt branch.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-build-switch",
@@ -95,7 +97,8 @@
         "condition": "SessionReminders.apply: switches from plan to build when experimentalPlanMode is disabled; with experimentalPlanMode enabled, the latest assistant agent was plan and the current agent is not plan. Existing plan-file information may be appended.",
         "summary": "SessionReminders.apply: switches from plan to build when experimentalPlanMode is disabled; with experimentalPlanMode enabled, the latest assistant agent was plan and the current agent is not plan. Existing plan-file information may be appended.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-codex",
@@ -126,7 +129,8 @@
         "condition": "SystemPrompt.provider: model.api.id includes gpt and codex, but not gpt-6; earlier muse and gpt-4/o1/o3 branches win.",
         "summary": "SystemPrompt.provider: model.api.id includes gpt and codex, but not gpt-6; earlier muse and gpt-4/o1/o3 branches win.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-copilot-gpt-5",
@@ -150,7 +154,8 @@
         "condition": "Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.",
         "summary": "Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-default",
@@ -181,7 +186,8 @@
         "condition": "SystemPrompt.provider fallback when no preceding model-name or provider-ID branch matches; agent.prompt overrides it.",
         "summary": "SystemPrompt.provider fallback when no preceding model-name or provider-ID branch matches; agent.prompt overrides it.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-gemini",
@@ -212,7 +218,8 @@
         "condition": "SystemPrompt.provider: model.api.id includes gemini-, after preceding muse/OpenAI-name branches.",
         "summary": "SystemPrompt.provider: model.api.id includes gemini-, after preceding muse/OpenAI-name branches.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-gpt-astra",
@@ -243,7 +250,8 @@
         "condition": "SystemPrompt.provider: model.api.id includes gpt and gpt-6, after muse and gpt-4/o1/o3; takes precedence over the codex branch.",
         "summary": "SystemPrompt.provider: model.api.id includes gpt and gpt-6, after muse and gpt-4/o1/o3; takes precedence over the codex branch.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-gpt",
@@ -274,7 +282,8 @@
         "condition": "SystemPrompt.provider: model.api.id includes gpt, after muse and gpt-4/o1/o3; neither gpt-6 nor codex matches.",
         "summary": "SystemPrompt.provider: model.api.id includes gpt, after muse and gpt-4/o1/o3; neither gpt-6 nor codex matches.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-kimi",
@@ -305,7 +314,8 @@
         "condition": "SystemPrompt.provider: case-insensitive model.api.id includes kimi, or providerID is kimi-for-coding, moonshotai or moonshotai-cn, after earlier branches.",
         "summary": "SystemPrompt.provider: case-insensitive model.api.id includes kimi, or providerID is kimi-for-coding, moonshotai or moonshotai-cn, after earlier branches.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-meta",
@@ -336,7 +346,8 @@
         "condition": "SystemPrompt.provider: model.api.id includes muse; {{MODEL_NAME}} becomes Muse Glimmer for muse-glimmer, otherwise Muse Spark.",
         "summary": "SystemPrompt.provider: model.api.id includes muse; {{MODEL_NAME}} becomes Muse Glimmer for muse-glimmer, otherwise Muse Spark.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-plan-mode",
@@ -367,7 +378,8 @@
         "condition": "SessionReminders.apply: experimentalPlanMode enabled, current agent is plan and latest assistant agent was not plan; ${planInfo} is replaced with real plan-file state.",
         "summary": "SessionReminders.apply: experimentalPlanMode enabled, current agent is plan and latest assistant agent was not plan; ${planInfo} is replaced with real plan-file state.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-plan-reminder-anthropic",
@@ -391,7 +403,8 @@
         "condition": "Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.",
         "summary": "Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-plan",
@@ -422,7 +435,8 @@
         "condition": "SessionReminders.apply: experimentalPlanMode is disabled and current agent.name is plan; appended to the latest user message.",
         "summary": "SessionReminders.apply: experimentalPlanMode is disabled and current agent.name is plan; appended to the latest user message.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-trinity",
@@ -453,7 +467,8 @@
         "condition": "SystemPrompt.provider: case-insensitive model.api.id includes trinity, after preceding model-name branches.",
         "summary": "SystemPrompt.provider: case-insensitive model.api.id includes trinity, after preceding model-name branches.",
         "language": "text"
-      }
+      },
+      "group": "Session prompts"
     },
     {
       "id": "prompt-agent-compaction",
@@ -484,7 +499,8 @@
         "condition": "Agent.state defines the compaction agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.",
         "summary": "Agent.state defines the compaction agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.",
         "language": "text"
-      }
+      },
+      "group": "Agent prompts"
     },
     {
       "id": "prompt-agent-explore",
@@ -515,7 +531,8 @@
         "condition": "Agent.state defines the explore agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.",
         "summary": "Agent.state defines the explore agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.",
         "language": "text"
-      }
+      },
+      "group": "Agent prompts"
     },
     {
       "id": "prompt-agent-summary",
@@ -546,7 +563,8 @@
         "condition": "Agent.state defines the summary agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.",
         "summary": "Agent.state defines the summary agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.",
         "language": "text"
-      }
+      },
+      "group": "Agent prompts"
     },
     {
       "id": "prompt-agent-title",
@@ -577,7 +595,8 @@
         "condition": "Agent.state defines the title agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.",
         "summary": "Agent.state defines the title agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.",
         "language": "text"
-      }
+      },
+      "group": "Agent prompts"
     },
     {
       "id": "prompt-agent-generate",
@@ -608,7 +627,8 @@
         "language": "text",
         "condition": "Agent.generate creates an agent configuration; uses the requested model or default model and the experimental.chat.system.transform hook. OpenAI OAuth places this system text in provider options instructions.",
         "summary": "Separate agent-configuration generation request, not the main conversation provider prompt."
-      }
+      },
+      "group": "Agent prompts"
     },
     {
       "id": "prompt-provider-routing",
@@ -632,7 +652,8 @@
         "language": "typescript",
         "condition": "SystemPrompt.provider selects by ordered model.api.id branches, then provider ID, then fallback; request preparation may replace it with agent.prompt.",
         "summary": "Selection is conditional source behavior. Model publisher names do not identify the observed serving provider."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-environment",
@@ -656,7 +677,8 @@
         "language": "typescript",
         "condition": "SystemPrompt.environment runs during main conversation assembly; described project references are sorted and included only when present.",
         "summary": "Template values are runtime model ID, working directory, workspace root, repository state, platform and date. This record preserves the template without local expansion."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-skills-mcp",
@@ -680,7 +702,8 @@
         "language": "typescript",
         "condition": "Skill guidance is omitted when skill is disabled. MCP instructions are included when no tools are declared or at least one server tool is permitted.",
         "summary": "Dynamic content comes from available skills and connected MCP servers; it is absent from this public-source inventory."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-main-assembly",
@@ -704,7 +727,8 @@
         "language": "typescript",
         "condition": "Main session loop runs experimental.chat.messages.transform, loads environment/instructions/MCP/skills, converts history and calls the session processor.",
         "summary": "Environment precedes instructions, then MCP instructions and skill guidance. Structured output adds a system instruction; a last-step assistant instruction may be added."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-structured-output",
@@ -728,7 +752,8 @@
         "language": "typescript",
         "condition": "Latest user format is json_schema; main assembly advertises StructuredOutput, adds the system instruction and requires a tool call.",
         "summary": "These are inline source constants, not an observed formatted request."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-max-steps",
@@ -752,7 +777,8 @@
         "language": "typescript",
         "condition": "Main session loop appends this as assistant content when the configured agent step limit is reached; core runner has a separate call site.",
         "summary": "The source instruction changes what the harness asks the model to do at its configured limit."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-reminder-routing",
@@ -776,7 +802,8 @@
         "language": "typescript",
         "condition": "SessionReminders.apply has separate paths for the experimental plan flag, current agent, previous assistant agent and real plan-file existence.",
         "summary": "The upstream synthetic flag identifies harness-generated message parts. This extraction creates no sessions or example transcripts."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-core-runner",
@@ -800,7 +827,8 @@
         "language": "typescript",
         "condition": "Separate core SessionRunner.runTurn source path; applies when that runner is invoked, not merely because the source exists.",
         "summary": "Uses agent system plus a system-context baseline and converted history. Its activation and parity with a particular installed CLI require separate runtime evidence."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-compaction-templates",
@@ -824,7 +852,8 @@
         "language": "typescript",
         "condition": "Compaction buildPrompt chooses new-summary or prior-summary update instructions; caller or plugin may replace the constructed prompt.",
         "summary": "Preserves exact summary structure and update rules from inline public source constants."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-compaction-assembly",
@@ -848,7 +877,8 @@
         "language": "typescript",
         "condition": "SessionCompaction.process selects the compaction agent/model and relevant history; experimental.session.compacting may provide a prompt or extra context.",
         "summary": "The conversation is serialized with prior summaries and passed through buildPrompt unless replaced. This request has no tools and an empty extra system list, while the compaction agent prompt is still applied by request preparation."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-compaction-builder",
@@ -872,7 +902,8 @@
         "language": "typescript",
         "condition": "buildPrompt is used by the compaction source paths; input carries real history and optional previous summary.",
         "summary": "Creates conversation/prior-summary tags and appends the conditional instructions. No assembled session prompt is fabricated by extraction."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-task-continuation",
@@ -896,7 +927,8 @@
         "language": "typescript",
         "condition": "Task subtask handling has a command value; otherwise this path returns before adding the continuation message.",
         "summary": "Adds a harness-generated user instruction to summarize task output and continue."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-agent-mention",
@@ -920,7 +952,8 @@
         "language": "typescript",
         "condition": "Resolving a user part of type agent; the task permission result can add a user-invocation hint.",
         "summary": "Appends guidance to call the task tool with the named subagent. The actual name comes from the real user part."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-core-agents",
@@ -944,7 +977,8 @@
         "language": "typescript",
         "condition": "Separate core agent plugin transforms the core agent catalog; this source path is distinct from legacy Agent.state.",
         "summary": "Contains build, explore, compaction, title and summary system text, plus built-in permissions. Source presence does not establish this plugin path was used in an installed CLI run."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     },
     {
       "id": "prompt-core-environment",
@@ -968,7 +1002,8 @@
         "language": "typescript",
         "condition": "Core system-context built-ins register environment and date baseline/update loaders.",
         "summary": "The core runner consumes a context baseline; environment/date updates are separate templates from the legacy session environment."
-      }
+      },
+      "group": "How prompts are chosen and assembled"
     }
   ]
 }

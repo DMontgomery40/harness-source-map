@@ -1,19 +1,18 @@
 # OpenCode prompts
 
-Release: v1.18.34. Upstream commit: aec0b9a6d8898f68f923aaf08b7306d931fd9d76.
+The prompt files OpenCode ships for each model family and agent, and the source that chooses and assembles them. Release v1.18.34, commit `aec0b9a6d889`. These records derive only from public upstream source. Conditions describe possible harness behavior; they do not establish that any text was sent in a session. Runtime configuration, plugins, MCP servers, provider catalogs and SDK serialization can change a request. Private recordings are not inputs to this extractor. Source excerpts are copyright (c) 2025 opencode, under the [upstream MIT license](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/LICENSE); its notice is preserved in upstream-license.txt.
 
-These records derive only from public upstream source. Conditions describe possible harness behavior; they do not establish that any text was sent in a session. Runtime configuration, plugins, MCP servers, provider catalogs and SDK serialization can change a request. Private recordings are not inputs to this extractor. Source excerpts are copyright (c) 2025 opencode, under the [upstream MIT license](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/LICENSE); its notice is preserved in upstream-license.txt.
+## Session prompts
 
-## Session prompt: anthropic
-
-Record: `prompt-anthropic`. Kind: prompt-file.
+### Session prompt: anthropic
 
 SystemPrompt.provider: model.api.id includes claude, after earlier model-name branches; agent.prompt overrides the selected provider prompt.
 
-Condition: SystemPrompt.provider: model.api.id includes claude, after earlier model-name branches; agent.prompt overrides the selected provider prompt.
+**When:** SystemPrompt.provider: model.api.id includes claude, after earlier model-name branches; agent.prompt overrides the selected provider prompt.
 
-- [packages/opencode/src/session/prompt/anthropic.txt:1-105](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/anthropic.txt#L1-L105) — SHA-256 `8324e4cf58eb45d4d9d6fd120f5e8da59e0548de48e7e6aefcdfbf2923f40b4e`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`anthropic.txt` lines 1–105](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/anthropic.txt#L1-L105) · sha256 `8324e4cf58eb…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ```text
 You are OpenCode, the best coding agent on the planet.
@@ -123,16 +122,15 @@ assistant: Clients are marked as failed in the `connectToServer` function in src
 </example>
 ```
 
-## Session prompt: beast
-
-Record: `prompt-beast`. Kind: prompt-file.
+### Session prompt: beast
 
 SystemPrompt.provider: model.api.id includes gpt-4, o1 or o3; this branch precedes the general gpt branch.
 
-Condition: SystemPrompt.provider: model.api.id includes gpt-4, o1 or o3; this branch precedes the general gpt branch.
+**When:** SystemPrompt.provider: model.api.id includes gpt-4, o1 or o3; this branch precedes the general gpt branch.
 
-- [packages/opencode/src/session/prompt/beast.txt:1-147](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/beast.txt#L1-L147) — SHA-256 `a384d7b485829c1fe43bd6deaae10466db2c16b8cba045764538974f737958ba`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`beast.txt` lines 1–147](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/beast.txt#L1-L147) · sha256 `a384d7b48582…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ````text
 You are opencode, an agent - please keep going until the user’s query is completely resolved, before ending your turn and yielding back to the user.
@@ -284,16 +282,15 @@ If the user tells you to stage and commit, you may do so.
 You are NEVER allowed to stage and commit files automatically.
 ````
 
-## Session prompt: build-switch
-
-Record: `prompt-build-switch`. Kind: prompt-file.
+### Session prompt: build-switch
 
 SessionReminders.apply: switches from plan to build when experimentalPlanMode is disabled; with experimentalPlanMode enabled, the latest assistant agent was plan and the current agent is not plan. Existing plan-file information may be appended.
 
-Condition: SessionReminders.apply: switches from plan to build when experimentalPlanMode is disabled; with experimentalPlanMode enabled, the latest assistant agent was plan and the current agent is not plan. Existing plan-file information may be appended.
+**When:** SessionReminders.apply: switches from plan to build when experimentalPlanMode is disabled; with experimentalPlanMode enabled, the latest assistant agent was plan and the current agent is not plan. Existing plan-file information may be appended.
 
-- [packages/opencode/src/session/prompt/build-switch.txt:1-5](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/build-switch.txt#L1-L5) — SHA-256 `5e3db616a685a3dfaaf95fb86ae6e2acfbdf520bda60f7b27f727d2a88ba8a25`
-- [packages/opencode/src/session/reminders.ts:1-92](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/reminders.ts#L1-L92) — SHA-256 `cb684f1b13330966c6d8b07b2279bb5e0f060211597fd8da172c591dfc7f8cd7`
+Source: [`build-switch.txt` lines 1–5](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/build-switch.txt#L1-L5) · sha256 `5e3db616a685…`
+
+Source: [`reminders.ts` lines 1–92](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/reminders.ts#L1-L92) · sha256 `cb684f1b1333…`
 
 ```text
 <system-reminder>
@@ -303,16 +300,15 @@ You are permitted to make file changes, run shell commands, and utilize your ars
 </system-reminder>
 ```
 
-## Session prompt: codex
-
-Record: `prompt-codex`. Kind: prompt-file.
+### Session prompt: codex
 
 SystemPrompt.provider: model.api.id includes gpt and codex, but not gpt-6; earlier muse and gpt-4/o1/o3 branches win.
 
-Condition: SystemPrompt.provider: model.api.id includes gpt and codex, but not gpt-6; earlier muse and gpt-4/o1/o3 branches win.
+**When:** SystemPrompt.provider: model.api.id includes gpt and codex, but not gpt-6; earlier muse and gpt-4/o1/o3 branches win.
 
-- [packages/opencode/src/session/prompt/codex.txt:1-79](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/codex.txt#L1-L79) — SHA-256 `c30bca40693a47965e25ceac3f02d3709712af7abeab1278bba53a9efcffa928`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`codex.txt` lines 1–79](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/codex.txt#L1-L79) · sha256 `c30bca40693a…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ```text
 You are OpenCode, the best coding agent on the planet.
@@ -396,15 +392,13 @@ You are producing plain text that will later be styled by the CLI. Follow these 
   * Examples: src/app.ts, src/app.ts:42, b/server/index.js#L10, C:\repo\project\main.rs:12:5
 ```
 
-## Session prompt: copilot-gpt-5
-
-Record: `prompt-copilot-gpt-5`. Kind: prompt-file.
+### Session prompt: copilot-gpt-5
 
 Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.
 
-Condition: Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.
+**When:** Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.
 
-- [packages/opencode/src/session/prompt/copilot-gpt-5.txt:1-143](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/copilot-gpt-5.txt#L1-L143) — SHA-256 `0ef5261daf7a4ae72b3e874cabc7b06cf34d991376d1dcfa1874734b13031828`
+Source: [`copilot-gpt-5.txt` lines 1–143](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/copilot-gpt-5.txt#L1-L143) · sha256 `0ef5261daf7a…`
 
 `````text
 You are an expert AI programming assistant
@@ -552,16 +546,15 @@ Wrap more complex blocks of math equations in $$.
 </outputFormatting>
 `````
 
-## Session prompt: default
-
-Record: `prompt-default`. Kind: prompt-file.
+### Session prompt: default
 
 SystemPrompt.provider fallback when no preceding model-name or provider-ID branch matches; agent.prompt overrides it.
 
-Condition: SystemPrompt.provider fallback when no preceding model-name or provider-ID branch matches; agent.prompt overrides it.
+**When:** SystemPrompt.provider fallback when no preceding model-name or provider-ID branch matches; agent.prompt overrides it.
 
-- [packages/opencode/src/session/prompt/default.txt:1-95](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/default.txt#L1-L95) — SHA-256 `962fbf3cb3ec659c9a5244425ee2e7bb141ad4428f489a630a7738566880dc6a`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`default.txt` lines 1–95](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/default.txt#L1-L95) · sha256 `962fbf3cb3ec…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ```text
 You are opencode, an interactive CLI tool that helps users with software engineering tasks. Use the instructions below and the tools available to you to assist the user.
@@ -661,16 +654,15 @@ assistant: Clients are marked as failed in the `connectToServer` function in src
 </example>
 ```
 
-## Session prompt: gemini
-
-Record: `prompt-gemini`. Kind: prompt-file.
+### Session prompt: gemini
 
 SystemPrompt.provider: model.api.id includes gemini-, after preceding muse/OpenAI-name branches.
 
-Condition: SystemPrompt.provider: model.api.id includes gemini-, after preceding muse/OpenAI-name branches.
+**When:** SystemPrompt.provider: model.api.id includes gemini-, after preceding muse/OpenAI-name branches.
 
-- [packages/opencode/src/session/prompt/gemini.txt:1-155](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/gemini.txt#L1-L155) — SHA-256 `921750803b0314b88b8adc996e2afcf1a61fd7d9dd6dfcf812baeadac1468cf3`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`gemini.txt` lines 1–155](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/gemini.txt#L1-L155) · sha256 `921750803b03…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ```text
 You are opencode, an interactive CLI agent specializing in software engineering tasks. Your primary goal is to help users safely and efficiently, adhering strictly to the following instructions and utilizing your available tools.
@@ -830,16 +822,15 @@ To help you check their settings, I can read their contents. Which one would you
 Your core function is efficient and safe assistance. Balance extreme conciseness with the crucial need for clarity, especially regarding safety and potential system modifications. Always prioritize user control and project conventions. Never make assumptions about the contents of files; instead use 'read' to ensure you aren't making broad assumptions. Finally, you are an agent - please keep going until the user's query is completely resolved.
 ```
 
-## Session prompt: gpt-astra
-
-Record: `prompt-gpt-astra`. Kind: prompt-file.
+### Session prompt: gpt-astra
 
 SystemPrompt.provider: model.api.id includes gpt and gpt-6, after muse and gpt-4/o1/o3; takes precedence over the codex branch.
 
-Condition: SystemPrompt.provider: model.api.id includes gpt and gpt-6, after muse and gpt-4/o1/o3; takes precedence over the codex branch.
+**When:** SystemPrompt.provider: model.api.id includes gpt and gpt-6, after muse and gpt-4/o1/o3; takes precedence over the codex branch.
 
-- [packages/opencode/src/session/prompt/gpt-astra.txt:1-46](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/gpt-astra.txt#L1-L46) — SHA-256 `46d386ea8dd8db5734d06f6ec1d04c566f1224b1afa5bc5b0ccefd6f853281f9`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`gpt-astra.txt` lines 1–46](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/gpt-astra.txt#L1-L46) · sha256 `46d386ea8dd8…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ```text
 You are an AI agent powered by OpenCode, a coding agent harness. Help the user accomplish their goals using the tools you have available.
@@ -890,16 +881,15 @@ In your final answer back to the user, focus on the most important information.
 Do not spawn subagents unless the user or applicable AGENTS.md/skill instructions explicitly ask for subagents, delegation, or parallel agent work.
 ```
 
-## Session prompt: gpt
-
-Record: `prompt-gpt`. Kind: prompt-file.
+### Session prompt: gpt
 
 SystemPrompt.provider: model.api.id includes gpt, after muse and gpt-4/o1/o3; neither gpt-6 nor codex matches.
 
-Condition: SystemPrompt.provider: model.api.id includes gpt, after muse and gpt-4/o1/o3; neither gpt-6 nor codex matches.
+**When:** SystemPrompt.provider: model.api.id includes gpt, after muse and gpt-4/o1/o3; neither gpt-6 nor codex matches.
 
-- [packages/opencode/src/session/prompt/gpt.txt:1-107](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/gpt.txt#L1-L107) — SHA-256 `83a66a46a5febbc21454161d5f053638b22d25d95e09d77b8f6da33debc848ad`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`gpt.txt` lines 1–107](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/gpt.txt#L1-L107) · sha256 `83a66a46a5fe…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ```text
 You are OpenCode, You and the user share the same workspace and collaborate to achieve the user's goals.
@@ -1011,16 +1001,15 @@ If the user asks for a code explanation, include code references. For simple tas
 For large or complex changes, lead with the solution, then explain what you did and why. For casual chat, just chat. If something couldn’t be done (tests, builds, etc.), say so. Suggest next steps only when they are natural and useful; if you list options, use numbered items.
 ```
 
-## Session prompt: kimi
-
-Record: `prompt-kimi`. Kind: prompt-file.
+### Session prompt: kimi
 
 SystemPrompt.provider: case-insensitive model.api.id includes kimi, or providerID is kimi-for-coding, moonshotai or moonshotai-cn, after earlier branches.
 
-Condition: SystemPrompt.provider: case-insensitive model.api.id includes kimi, or providerID is kimi-for-coding, moonshotai or moonshotai-cn, after earlier branches.
+**When:** SystemPrompt.provider: case-insensitive model.api.id includes kimi, or providerID is kimi-for-coding, moonshotai or moonshotai-cn, after earlier branches.
 
-- [packages/opencode/src/session/prompt/kimi.txt:1-95](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/kimi.txt#L1-L95) — SHA-256 `ade9199b00df5aa3b51bb02b8e8c711f3e0de224345aef7df9f31d3ea08a5bc7`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`kimi.txt` lines 1–95](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/kimi.txt#L1-L95) · sha256 `ade9199b00df…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ```text
 You are OpenCode, an interactive general AI agent running on a user's computer.
@@ -1120,16 +1109,15 @@ At any time, you should be HELPFUL, CONCISE, and ACCURATE. Be thorough in your a
 - When the task requires creating or modifying files, always use tools to do so. Never treat displaying code in your response as a substitute for actually writing it to the file system.
 ```
 
-## Session prompt: meta
-
-Record: `prompt-meta`. Kind: prompt-file.
+### Session prompt: meta
 
 SystemPrompt.provider: model.api.id includes muse; {{MODEL_NAME}} becomes Muse Glimmer for muse-glimmer, otherwise Muse Spark.
 
-Condition: SystemPrompt.provider: model.api.id includes muse; {{MODEL_NAME}} becomes Muse Glimmer for muse-glimmer, otherwise Muse Spark.
+**When:** SystemPrompt.provider: model.api.id includes muse; {{MODEL_NAME}} becomes Muse Glimmer for muse-glimmer, otherwise Muse Spark.
 
-- [packages/opencode/src/session/prompt/meta.txt:1-65](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/meta.txt#L1-L65) — SHA-256 `9068607ce8bbb3f9b09531d8114fc16e1724de96cd1e364565c9f6f6b2b61df3`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`meta.txt` lines 1–65](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/meta.txt#L1-L65) · sha256 `9068607ce8bb…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ```text
 You are OpenCode, a coding agent that helps users with software engineering tasks. You are powered by {{MODEL_NAME}}, a large language model trained by Meta MSL.
@@ -1199,16 +1187,15 @@ Use the instructions below and the tools available to assist the user.
 - When users ask directly about OpenCode (eg. "can OpenCode do...", "are you able to do...") or its features (eg. implement a hook, write a slash command, or install an MCP server), use the WebFetch tool to gather information to answer the question from the OpenCode docs at https://opencode.ai/docs.
 ```
 
-## Session prompt: plan-mode
-
-Record: `prompt-plan-mode`. Kind: prompt-file.
+### Session prompt: plan-mode
 
 SessionReminders.apply: experimentalPlanMode enabled, current agent is plan and latest assistant agent was not plan; ${planInfo} is replaced with real plan-file state.
 
-Condition: SessionReminders.apply: experimentalPlanMode enabled, current agent is plan and latest assistant agent was not plan; ${planInfo} is replaced with real plan-file state.
+**When:** SessionReminders.apply: experimentalPlanMode enabled, current agent is plan and latest assistant agent was not plan; ${planInfo} is replaced with real plan-file state.
 
-- [packages/opencode/src/session/prompt/plan-mode.txt:1-70](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/plan-mode.txt#L1-L70) — SHA-256 `473381e8f20d054fa24ed3631a3b741a4fd432dadb8a0f0925f73d94a6e2866c`
-- [packages/opencode/src/session/reminders.ts:1-92](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/reminders.ts#L1-L92) — SHA-256 `cb684f1b13330966c6d8b07b2279bb5e0f060211597fd8da172c591dfc7f8cd7`
+Source: [`plan-mode.txt` lines 1–70](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/plan-mode.txt#L1-L70) · sha256 `473381e8f20d…`
+
+Source: [`reminders.ts` lines 1–92](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/reminders.ts#L1-L92) · sha256 `cb684f1b1333…`
 
 ```text
 <system-reminder>
@@ -1283,15 +1270,13 @@ NOTE: At any point in time through this workflow you should feel free to ask the
 </system-reminder>
 ```
 
-## Session prompt: plan-reminder-anthropic
-
-Record: `prompt-plan-reminder-anthropic`. Kind: prompt-file.
+### Session prompt: plan-reminder-anthropic
 
 Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.
 
-Condition: Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.
+**When:** Present as a shipped source file; no import or call site was found in the pinned packages source. Source presence alone does not establish use.
 
-- [packages/opencode/src/session/prompt/plan-reminder-anthropic.txt:1-67](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/plan-reminder-anthropic.txt#L1-L67) — SHA-256 `8c4517ba847f753b2e25f7056ddc393f6728074fa6444d4070d121e75b1f91b5`
+Source: [`plan-reminder-anthropic.txt` lines 1–67](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/plan-reminder-anthropic.txt#L1-L67) · sha256 `8c4517ba847f…`
 
 ```text
 <system-reminder>
@@ -1363,16 +1348,15 @@ This is critical - your turn should only end with either asking the user a quest
 </system-reminder>
 ```
 
-## Session prompt: plan
-
-Record: `prompt-plan`. Kind: prompt-file.
+### Session prompt: plan
 
 SessionReminders.apply: experimentalPlanMode is disabled and current agent.name is plan; appended to the latest user message.
 
-Condition: SessionReminders.apply: experimentalPlanMode is disabled and current agent.name is plan; appended to the latest user message.
+**When:** SessionReminders.apply: experimentalPlanMode is disabled and current agent.name is plan; appended to the latest user message.
 
-- [packages/opencode/src/session/prompt/plan.txt:1-26](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/plan.txt#L1-L26) — SHA-256 `455db97e0d21e8097c2afb539d167b4b2483e99b585dbc4fff23cafd4a3029b8`
-- [packages/opencode/src/session/reminders.ts:1-92](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/reminders.ts#L1-L92) — SHA-256 `cb684f1b13330966c6d8b07b2279bb5e0f060211597fd8da172c591dfc7f8cd7`
+Source: [`plan.txt` lines 1–26](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/plan.txt#L1-L26) · sha256 `455db97e0d21…`
+
+Source: [`reminders.ts` lines 1–92](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/reminders.ts#L1-L92) · sha256 `cb684f1b1333…`
 
 ```text
 <system-reminder>
@@ -1403,16 +1387,15 @@ The user indicated that they do not want you to execute yet -- you MUST NOT make
 </system-reminder>
 ```
 
-## Session prompt: trinity
-
-Record: `prompt-trinity`. Kind: prompt-file.
+### Session prompt: trinity
 
 SystemPrompt.provider: case-insensitive model.api.id includes trinity, after preceding model-name branches.
 
-Condition: SystemPrompt.provider: case-insensitive model.api.id includes trinity, after preceding model-name branches.
+**When:** SystemPrompt.provider: case-insensitive model.api.id includes trinity, after preceding model-name branches.
 
-- [packages/opencode/src/session/prompt/trinity.txt:1-97](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/trinity.txt#L1-L97) — SHA-256 `0019dc1d018d08c1b5a065d10896e22d2615d33580088f44aefc3a042a46ebe2`
-- [packages/opencode/src/session/system.ts:1-154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) — SHA-256 `7257f0660202d3e5d7ef86ee48cb4e51d5d0aa67703c274b8eb840b8ae307bbc`
+Source: [`trinity.txt` lines 1–97](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt/trinity.txt#L1-L97) · sha256 `0019dc1d018d…`
+
+Source: [`system.ts` lines 1–154](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L1-L154) · sha256 `7257f0660202…`
 
 ```text
 You are opencode, an interactive CLI tool that helps users with software engineering tasks. Use the instructions below and the tools available to you to assist the user.
@@ -1514,16 +1497,17 @@ assistant: Clients are marked as failed in the `connectToServer` function in src
 </example>
 ```
 
-## Agent prompt: compaction
+## Agent prompts
 
-Record: `prompt-agent-compaction`. Kind: agent-prompt.
+### Agent prompt: compaction
 
 Agent.state defines the compaction agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
 
-Condition: Agent.state defines the compaction agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
+**When:** Agent.state defines the compaction agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
 
-- [packages/opencode/src/agent/prompt/compaction.txt:1-5](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/prompt/compaction.txt#L1-L5) — SHA-256 `552db0de0af1873a8acd4a631e2548345d4c43192de1d9be69c8feab4b41f80c`
-- [packages/opencode/src/agent/agent.ts:1-453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) — SHA-256 `e781c571d584fa996200e320f14c2735e32968256b8db194391e7c06aed7433e`
+Source: [`compaction.txt` lines 1–5](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/prompt/compaction.txt#L1-L5) · sha256 `552db0de0af1…`
+
+Source: [`agent.ts` lines 1–453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) · sha256 `e781c571d584…`
 
 ```text
 You are a context summarization agent. You are given a conversation between a user and an agent. Your goal is to produce a structured summary matching the format specified so another coding agent can continue the work.
@@ -1533,16 +1517,15 @@ Always follow the exact output structure requested by the user prompt. Keep ever
 Do not continue the conversation. Do not respond to any questions in the conversation. Only output the structured summary in the exact format requested by the user prompt. Respond in the same language as the conversation.
 ```
 
-## Agent prompt: explore
-
-Record: `prompt-agent-explore`. Kind: agent-prompt.
+### Agent prompt: explore
 
 Agent.state defines the explore agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
 
-Condition: Agent.state defines the explore agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
+**When:** Agent.state defines the explore agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
 
-- [packages/opencode/src/agent/prompt/explore.txt:1-18](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/prompt/explore.txt#L1-L18) — SHA-256 `97c4780dea390f347fed0879fb30aaa08c0fc65c8cad0f6c1aec02ca6fd91e13`
-- [packages/opencode/src/agent/agent.ts:1-453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) — SHA-256 `e781c571d584fa996200e320f14c2735e32968256b8db194391e7c06aed7433e`
+Source: [`explore.txt` lines 1–18](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/prompt/explore.txt#L1-L18) · sha256 `97c4780dea39…`
+
+Source: [`agent.ts` lines 1–453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) · sha256 `e781c571d584…`
 
 ```text
 You are a file search specialist. You excel at thoroughly navigating and exploring codebases.
@@ -1565,16 +1548,15 @@ Guidelines:
 Complete the user's search request efficiently and report your findings clearly.
 ```
 
-## Agent prompt: summary
-
-Record: `prompt-agent-summary`. Kind: agent-prompt.
+### Agent prompt: summary
 
 Agent.state defines the summary agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
 
-Condition: Agent.state defines the summary agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
+**When:** Agent.state defines the summary agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
 
-- [packages/opencode/src/agent/prompt/summary.txt:1-11](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/prompt/summary.txt#L1-L11) — SHA-256 `307314eb41cc38a90881ae9f26e0402ceeed04e71046014486a9908ad4520233`
-- [packages/opencode/src/agent/agent.ts:1-453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) — SHA-256 `e781c571d584fa996200e320f14c2735e32968256b8db194391e7c06aed7433e`
+Source: [`summary.txt` lines 1–11](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/prompt/summary.txt#L1-L11) · sha256 `307314eb41cc…`
+
+Source: [`agent.ts` lines 1–453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) · sha256 `e781c571d584…`
 
 ```text
 Summarize what was done in this conversation. Write like a pull request description.
@@ -1590,16 +1572,15 @@ Rules:
 - If the conversation ends with an imperative statement or request to the user (e.g. "Now please run the command and paste the console output"), always include that exact request in the summary
 ```
 
-## Agent prompt: title
-
-Record: `prompt-agent-title`. Kind: agent-prompt.
+### Agent prompt: title
 
 Agent.state defines the title agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
 
-Condition: Agent.state defines the title agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
+**When:** Agent.state defines the title agent with this prompt; config can override or disable that agent. The configured agent prompt replaces the provider-selected prompt in request preparation.
 
-- [packages/opencode/src/agent/prompt/title.txt:1-44](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/prompt/title.txt#L1-L44) — SHA-256 `e7a6848eba328f28c7e870874cf0591e4edbaf90d7602ad8fdfe90601c6e656f`
-- [packages/opencode/src/agent/agent.ts:1-453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) — SHA-256 `e781c571d584fa996200e320f14c2735e32968256b8db194391e7c06aed7433e`
+Source: [`title.txt` lines 1–44](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/prompt/title.txt#L1-L44) · sha256 `e7a6848eba32…`
+
+Source: [`agent.ts` lines 1–453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) · sha256 `e781c571d584…`
 
 ```text
 You are a title generator. You output ONLY a thread title. Nothing else.
@@ -1648,16 +1629,15 @@ Your output must be:
 </examples>
 ```
 
-## Agent configuration generator
-
-Record: `prompt-agent-generate`. Kind: agent-generation-prompt.
+### Agent configuration generator
 
 Separate agent-configuration generation request, not the main conversation provider prompt.
 
-Condition: Agent.generate creates an agent configuration; uses the requested model or default model and the experimental.chat.system.transform hook. OpenAI OAuth places this system text in provider options instructions.
+**When:** Agent.generate creates an agent configuration; uses the requested model or default model and the experimental.chat.system.transform hook. OpenAI OAuth places this system text in provider options instructions.
 
-- [packages/opencode/src/agent/generate.txt:1-75](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/generate.txt#L1-L75) — SHA-256 `52e34e03857e80356f8e1c282a22d83223fa259f50cbb6c0746901afec50e328`
-- [packages/opencode/src/agent/agent.ts:1-453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) — SHA-256 `e781c571d584fa996200e320f14c2735e32968256b8db194391e7c06aed7433e`
+Source: [`generate.txt` lines 1–75](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/generate.txt#L1-L75) · sha256 `52e34e03857e…`
+
+Source: [`agent.ts` lines 1–453](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L1-L453) · sha256 `e781c571d584…`
 
 ```text
 You are an elite AI agent architect specializing in crafting high-performance agent configurations. Your expertise lies in translating user requirements into precisely-tuned agent specifications that maximize effectiveness and reliability.
@@ -1737,15 +1717,15 @@ Key principles for your system prompts:
 Remember: The agents you create should be autonomous experts capable of handling their designated tasks with minimal additional guidance. Your system prompts are their complete operational manual.
 ```
 
-## Provider prompt routing
+## How prompts are chosen and assembled
 
-Record: `prompt-provider-routing`. Kind: source-code.
+### Provider prompt routing
 
 Selection is conditional source behavior. Model publisher names do not identify the observed serving provider.
 
-Condition: SystemPrompt.provider selects by ordered model.api.id branches, then provider ID, then fallback; request preparation may replace it with agent.prompt.
+**When:** SystemPrompt.provider selects by ordered model.api.id branches, then provider ID, then fallback; request preparation may replace it with agent.prompt.
 
-- [packages/opencode/src/session/system.ts:28-51](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L28-L51) — SHA-256 `b59739026cff8db874f2376923c0c20a3c8b3750adbfa05dad5c5f74a2802537`
+Source: [`system.ts` lines 28–51](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L28-L51) · sha256 `b59739026cff…`
 
 ```typescript
 export function provider(model: Provider.Model) {
@@ -1774,15 +1754,13 @@ export function provider(model: Provider.Model) {
 }
 ```
 
-## Environment and project reference templates
-
-Record: `prompt-environment`. Kind: source-code.
+### Environment and project reference templates
 
 Template values are runtime model ID, working directory, workspace root, repository state, platform and date. This record preserves the template without local expansion.
 
-Condition: SystemPrompt.environment runs during main conversation assembly; described project references are sorted and included only when present.
+**When:** SystemPrompt.environment runs during main conversation assembly; described project references are sorted and included only when present.
 
-- [packages/opencode/src/session/system.ts:69-105](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L69-L105) — SHA-256 `783cbff18bb255c80ae99aae3b62f726dc2fef1dba4df7048dabbb6a7eae52d3`
+Source: [`system.ts` lines 69–105](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L69-L105) · sha256 `783cbff18bb2…`
 
 ```typescript
       environment: Effect.fn("SystemPrompt.environment")(function* (model: Provider.Model) {
@@ -1824,15 +1802,13 @@ Condition: SystemPrompt.environment runs during main conversation assembly; desc
       }),
 ```
 
-## Skill catalog and MCP server instructions
-
-Record: `prompt-skills-mcp`. Kind: source-code.
+### Skill catalog and MCP server instructions
 
 Dynamic content comes from available skills and connected MCP servers; it is absent from this public-source inventory.
 
-Condition: Skill guidance is omitted when skill is disabled. MCP instructions are included when no tools are declared or at least one server tool is permitted.
+**When:** Skill guidance is omitted when skill is disabled. MCP instructions are included when no tools are declared or at least one server tool is permitted.
 
-- [packages/opencode/src/session/system.ts:107-137](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L107-L137) — SHA-256 `6fb18255b9174697efd9ce8c6d2d692434e3234a4b6fcd1d4fcdea41d916a506`
+Source: [`system.ts` lines 107–137](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L107-L137) · sha256 `6fb18255b917…`
 
 ```typescript
       skills: Effect.fn("SystemPrompt.skills")(function* (agent: Agent.Info) {
@@ -1868,15 +1844,13 @@ Condition: Skill guidance is omitted when skill is disabled. MCP instructions ar
       }),
 ```
 
-## Main conversation context assembly
-
-Record: `prompt-main-assembly`. Kind: source-code.
+### Main conversation context assembly
 
 Environment precedes instructions, then MCP instructions and skill guidance. Structured output adds a system instruction; a last-step assistant instruction may be added.
 
-Condition: Main session loop runs experimental.chat.messages.transform, loads environment/instructions/MCP/skills, converts history and calls the session processor.
+**When:** Main session loop runs experimental.chat.messages.transform, loads environment/instructions/MCP/skills, converts history and calls the session processor.
 
-- [packages/opencode/src/session/prompt.ts:1255-1288](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L1255-L1288) — SHA-256 `6bde25eb8ed81460644a13aa7f0d18c41930fe047f877654d68fe4da91142a01`
+Source: [`prompt.ts` lines 1255–1288](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L1255-L1288) · sha256 `6bde25eb8ed8…`
 
 ```typescript
             yield* plugin.trigger("experimental.chat.messages.transform", {}, { messages: msgs })
@@ -1915,15 +1889,13 @@ Condition: Main session loop runs experimental.chat.messages.transform, loads en
             if (structured !== undefined) {
 ```
 
-## Structured output instruction
-
-Record: `prompt-structured-output`. Kind: source-code.
+### Structured output instruction
 
 These are inline source constants, not an observed formatted request.
 
-Condition: Latest user format is json_schema; main assembly advertises StructuredOutput, adds the system instruction and requires a tool call.
+**When:** Latest user format is json_schema; main assembly advertises StructuredOutput, adds the system instruction and requires a tool call.
 
-- [packages/opencode/src/session/prompt.ts:74-82](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L74-L82) — SHA-256 `e5b7a6b0cefcd45a43bd9297fb0d7741fd14e0e9aa94032b18e19b1036d4b1b1`
+Source: [`prompt.ts` lines 74–82](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L74-L82) · sha256 `e5b7a6b0cefc…`
 
 ```typescript
 const STRUCTURED_OUTPUT_DESCRIPTION = `Use this tool to return your final response in the requested structured format.
@@ -1937,15 +1909,13 @@ IMPORTANT:
 const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `IMPORTANT: The user has requested structured output. You MUST use the StructuredOutput tool to provide your final response. Do NOT respond with plain text - you MUST call the StructuredOutput tool with your answer formatted according to the schema.`
 ```
 
-## Maximum step instruction
-
-Record: `prompt-max-steps`. Kind: source-code.
+### Maximum step instruction
 
 The source instruction changes what the harness asks the model to do at its configured limit.
 
-Condition: Main session loop appends this as assistant content when the configured agent step limit is reached; core runner has a separate call site.
+**When:** Main session loop appends this as assistant content when the configured agent step limit is reached; core runner has a separate call site.
 
-- [packages/core/src/session/runner/max-steps.ts:1-16](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/max-steps.ts#L1-L16) — SHA-256 `02393226c3446c7df0ef22af4ab231cacb4653d70e295f4c59089e109131b4e8`
+Source: [`max-steps.ts` lines 1–16](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/max-steps.ts#L1-L16) · sha256 `02393226c344…`
 
 ```typescript
 export const MAX_STEPS_PROMPT = `CRITICAL - MAXIMUM STEPS REACHED
@@ -1966,15 +1936,13 @@ Response must include:
 Any attempt to use tools is a critical violation. Respond with text ONLY.`
 ```
 
-## Plan and build reminder routing
-
-Record: `prompt-reminder-routing`. Kind: source-code.
+### Plan and build reminder routing
 
 The upstream synthetic flag identifies harness-generated message parts. This extraction creates no sessions or example transcripts.
 
-Condition: SessionReminders.apply has separate paths for the experimental plan flag, current agent, previous assistant agent and real plan-file existence.
+**When:** SessionReminders.apply has separate paths for the experimental plan flag, current agent, previous assistant agent and real plan-file existence.
 
-- [packages/opencode/src/session/reminders.ts:1-92](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/reminders.ts#L1-L92) — SHA-256 `cb684f1b13330966c6d8b07b2279bb5e0f060211597fd8da172c591dfc7f8cd7`
+Source: [`reminders.ts` lines 1–92](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/reminders.ts#L1-L92) · sha256 `cb684f1b1333…`
 
 ```typescript
 import path from "path"
@@ -2071,15 +2039,13 @@ export const apply = Effect.fn("SessionReminders.apply")(function* (input: {
 export * as SessionReminders from "./reminders"
 ```
 
-## Core runner system context assembly
-
-Record: `prompt-core-runner`. Kind: source-code.
+### Core runner system context assembly
 
 Uses agent system plus a system-context baseline and converted history. Its activation and parity with a particular installed CLI require separate runtime evidence.
 
-Condition: Separate core SessionRunner.runTurn source path; applies when that runner is invoked, not merely because the source exists.
+**When:** Separate core SessionRunner.runTurn source path; applies when that runner is invoked, not merely because the source exists.
 
-- [packages/core/src/session/runner/llm.ts:168-226](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/llm.ts#L168-L226) — SHA-256 `76a25bcaf6b454fda8c526723a4d9a1df1958ca45ea9b9623e307feffc6320cd`
+Source: [`llm.ts` lines 168–226](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/llm.ts#L168-L226) · sha256 `76a25bcaf6b4…`
 
 ```typescript
     const loadSystemContext = (agent: AgentV2.Selection) =>
@@ -2143,15 +2109,13 @@ Condition: Separate core SessionRunner.runTurn source path; applies when that ru
       const startSnapshot = yield* snapshots.capture()
 ```
 
-## Compaction summary and update instructions
-
-Record: `prompt-compaction-templates`. Kind: source-code.
+### Compaction summary and update instructions
 
 Preserves exact summary structure and update rules from inline public source constants.
 
-Condition: Compaction buildPrompt chooses new-summary or prior-summary update instructions; caller or plugin may replace the constructed prompt.
+**When:** Compaction buildPrompt chooses new-summary or prior-summary update instructions; caller or plugin may replace the constructed prompt.
 
-- [packages/core/src/session/compaction.ts:16-55](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/compaction.ts#L16-L55) — SHA-256 `836c96a8ac0b91b02f156f02966b697c28b41fa207942d9fbfcb1ed9bdf3336a`
+Source: [`compaction.ts` lines 16–55](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/compaction.ts#L16-L55) · sha256 `836c96a8ac0b…`
 
 ```typescript
 const SUMMARY_TEMPLATE = `Output exactly the Markdown structure shown inside <template> and keep the section order unchanged. Do not include the <template> tags in your response.
@@ -2196,15 +2160,13 @@ When combining:
 - Update "Objective" and "Next Move" to reflect the current work state.`
 ```
 
-## Compaction prompt assembly and override
-
-Record: `prompt-compaction-assembly`. Kind: source-code.
+### Compaction prompt assembly and override
 
 The conversation is serialized with prior summaries and passed through buildPrompt unless replaced. This request has no tools and an empty extra system list, while the compaction agent prompt is still applied by request preparation.
 
-Condition: SessionCompaction.process selects the compaction agent/model and relevant history; experimental.session.compacting may provide a prompt or extra context.
+**When:** SessionCompaction.process selects the compaction agent/model and relevant history; experimental.session.compacting may provide a prompt or extra context.
 
-- [packages/opencode/src/session/compaction.ts:358-439](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/compaction.ts#L358-L439) — SHA-256 `40f87bcd6b538491ad7d49209f74803b9de7dfad75dbed2421821564def88451`
+Source: [`compaction.ts` lines 358–439](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/compaction.ts#L358-L439) · sha256 `40f87bcd6b53…`
 
 ```typescript
       const agent = yield* agents.get("compaction")
@@ -2291,15 +2253,13 @@ Condition: SessionCompaction.process selects the compaction agent/model and rele
                   ...(compacting.prompt ? ["The following is the conversation history:", conversation] : []),
 ```
 
-## Compaction builder source
-
-Record: `prompt-compaction-builder`. Kind: source-code.
+### Compaction builder source
 
 Creates conversation/prior-summary tags and appends the conditional instructions. No assembled session prompt is fabricated by extraction.
 
-Condition: buildPrompt is used by the compaction source paths; input carries real history and optional previous summary.
+**When:** buildPrompt is used by the compaction source paths; input carries real history and optional previous summary.
 
-- [packages/core/src/session/compaction.ts:160-175](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/compaction.ts#L160-L175) — SHA-256 `c8da77eb5ed3d1b951e0e3a34caf52b67eb187fd5ff7e8bcef5434029200b41b`
+Source: [`compaction.ts` lines 160–175](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/compaction.ts#L160-L175) · sha256 `c8da77eb5ed3…`
 
 ```typescript
 export const buildPrompt = (input: { readonly previousSummary?: string; readonly context: readonly string[] }) => {
@@ -2320,15 +2280,13 @@ export const buildPrompt = (input: { readonly previousSummary?: string; readonly
 
 ```
 
-## Command task continuation instruction
-
-Record: `prompt-task-continuation`. Kind: source-code.
+### Command task continuation instruction
 
 Adds a harness-generated user instruction to summarize task output and continue.
 
-Condition: Task subtask handling has a command value; otherwise this path returns before adding the continuation message.
+**When:** Task subtask handling has a command value; otherwise this path returns before adding the continuation message.
 
-- [packages/opencode/src/session/prompt.ts:430-449](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L430-L449) — SHA-256 `fee295c39af9505460b7ae213e098b3844e52543ed889c1a130fb7617841768a`
+Source: [`prompt.ts` lines 430–449](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L430-L449) · sha256 `fee295c39af9…`
 
 ```typescript
       if (!task.command) return
@@ -2353,15 +2311,13 @@ Condition: Task subtask handling has a command value; otherwise this path return
     })
 ```
 
-## Explicit agent mention guidance
-
-Record: `prompt-agent-mention`. Kind: source-code.
+### Explicit agent mention guidance
 
 Appends guidance to call the task tool with the named subagent. The actual name comes from the real user part.
 
-Condition: Resolving a user part of type agent; the task permission result can add a user-invocation hint.
+**When:** Resolving a user part of type agent; the task permission result can add a user-invocation hint.
 
-- [packages/opencode/src/session/prompt.ts:974-990](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L974-L990) — SHA-256 `ed3c5712da72ec0778f211b63c91fe6025d2ebcd18b03eb5ff10546bfb6c88a8`
+Source: [`prompt.ts` lines 974–990](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L974-L990) · sha256 `ed3c5712da72…`
 
 ```typescript
         if (part.type === "agent") {
@@ -2383,15 +2339,13 @@ Condition: Resolving a user part of type agent; the task permission result can a
         }
 ```
 
-## Core agent plugin prompts and permissions
-
-Record: `prompt-core-agents`. Kind: source-code.
+### Core agent plugin prompts and permissions
 
 Contains build, explore, compaction, title and summary system text, plus built-in permissions. Source presence does not establish this plugin path was used in an installed CLI run.
 
-Condition: Separate core agent plugin transforms the core agent catalog; this source path is distinct from legacy Agent.state.
+**When:** Separate core agent plugin transforms the core agent catalog; this source path is distinct from legacy Agent.state.
 
-- [packages/core/src/plugin/agent.ts:1-202](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/agent.ts#L1-L202) — SHA-256 `c4959f11ff42f45e40ad76467446a9f60a249490039c2f0c97f0ed9f64e7779e`
+Source: [`agent.ts` lines 1–202](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/agent.ts#L1-L202) · sha256 `c4959f11ff42…`
 
 ```typescript
 export * as AgentPlugin from "./agent"
@@ -2598,15 +2552,13 @@ export const Plugin = define({
 })
 ```
 
-## Core environment and date context templates
-
-Record: `prompt-core-environment`. Kind: source-code.
+### Core environment and date context templates
 
 The core runner consumes a context baseline; environment/date updates are separate templates from the legacy session environment.
 
-Condition: Core system-context built-ins register environment and date baseline/update loaders.
+**When:** Core system-context built-ins register environment and date baseline/update loaders.
 
-- [packages/core/src/system-context/builtins.ts:1-50](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/system-context/builtins.ts#L1-L50) — SHA-256 `a5907c811772e7e93aab23884593f2e93348cca3c1cb8c3b41b0268c0a8d275e`
+Source: [`builtins.ts` lines 1–50](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/system-context/builtins.ts#L1-L50) · sha256 `a5907c811772…`
 
 ```typescript
 export * as SystemContextBuiltIns from "./builtins"

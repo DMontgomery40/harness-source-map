@@ -25,12 +25,12 @@
       "tree_sha256": "e7220f127d51f5a2f80f4e31d9df07271db52920cd35bee8d3d8e7214cb4547c"
     }
   },
-  "sources": 7,
-  "covered": 7,
+  "sources": 4611,
+  "covered": 4611,
   "unverified_gaps": 0,
   "unanswered": 0,
   "unsearched": 0,
-  "provider_pending": 200529,
-  "local_review": 236,
+  "provider_pending": 0,
+  "local_review": 338,
   "publication": "partial"
 }

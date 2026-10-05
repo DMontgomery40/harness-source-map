@@ -1,18 +1,16 @@
 # OpenCode configuration
 
-Release: v1.18.34. Upstream commit: aec0b9a6d8898f68f923aaf08b7306d931fd9d76.
+Where OpenCode reads configuration and instructions, and which layer wins. Release v1.18.34, commit `aec0b9a6d889`. These records derive only from public upstream source. Conditions describe possible harness behavior; they do not establish that any text was sent in a session. Runtime configuration, plugins, MCP servers, provider catalogs and SDK serialization can change a request. Private recordings are not inputs to this extractor. Source excerpts are copyright (c) 2025 opencode, under the [upstream MIT license](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/LICENSE); its notice is preserved in upstream-license.txt.
 
-These records derive only from public upstream source. Conditions describe possible harness behavior; they do not establish that any text was sent in a session. Runtime configuration, plugins, MCP servers, provider catalogs and SDK serialization can change a request. Private recordings are not inputs to this extractor. Source excerpts are copyright (c) 2025 opencode, under the [upstream MIT license](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/LICENSE); its notice is preserved in upstream-license.txt.
+## Config files and layers
 
-## Configuration layers and overrides
-
-Record: `config-precedence`. Kind: source-code.
+### Configuration layers and overrides
 
 Order: well-known remote config, global config, OPENCODE_CONFIG, project files, discovered config directories and Markdown agents, OPENCODE_CONFIG_CONTENT, active organization, managed directory, macOS managed preferences; later permission and legacy-tool compatibility transforms apply.
 
-Condition: Config.loadInstanceState merges enabled sources in source order; project/config-directory/organization/managed sources are conditional.
+**When:** Config.loadInstanceState merges enabled sources in source order; project/config-directory/organization/managed sources are conditional.
 
-- [packages/opencode/src/config/config.ts:328-612](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L328-L612) — SHA-256 `65b210b8df3d47c9bf4500d496810d6d3fd7ee90ca4dfa7cc58cf96a2d7c65f7`
+Source: [`config.ts` lines 328–612](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L328-L612) · sha256 `65b210b8df3d…`
 
 ```typescript
     const loadInstanceState = Effect.fn("Config.loadInstanceState")(
@@ -302,15 +300,13 @@ Condition: Config.loadInstanceState merges enabled sources in source order; proj
     )
 ```
 
-## Global config files and instruction-array merge
-
-Record: `config-global-merge`. Kind: source-code.
+### Global config files and instruction-array merge
 
 Instructions concatenate and deduplicate when both layers provide them. Other fields use deep merge; do not assume all arrays concatenate.
 
-Condition: Layer merges use mergeConfigConcatArrays during instance loading; global file loader has its own ordered merges.
+**When:** Layer merges use mergeConfigConcatArrays during instance loading; global file loader has its own ordered merges.
 
-- [packages/opencode/src/config/config.ts:40-52](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L40-L52) — SHA-256 `dbcf229e8ee267b9eba8500c522f93ab9a385835acad0d52161a6990c0cadfdd`
+Source: [`config.ts` lines 40–52](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L40-L52) · sha256 `dbcf229e8ee2…`
 
 ```typescript
 // Custom merge function that concatenates array fields instead of replacing them
@@ -328,15 +324,13 @@ function mergeConfigConcatArrays(target: Info, source: Info): Info {
 }
 ```
 
-## Global config file order
-
-Record: `config-global-files`. Kind: source-code.
+### Global config file order
 
 Loads config.json, opencode.json, then opencode.jsonc in that order.
 
-Condition: Global config is loaded before project layers.
+**When:** Global config is loaded before project layers.
 
-- [packages/opencode/src/config/config.ts:260-293](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L260-L293) — SHA-256 `f615795c486e0d5afd94277767b0a3d8920744dfb5c57354e58c26fc139ab5bf`
+Source: [`config.ts` lines 260–293](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L260-L293) · sha256 `f615795c486e…`
 
 ```typescript
     const loadGlobal = Effect.fnUntraced(function* (env?: Record<string, string>) {
@@ -375,15 +369,13 @@ Condition: Global config is loaded before project layers.
     })
 ```
 
-## Project and config directory discovery
-
-Record: `config-paths`. Kind: source-code.
+### Project and config directory discovery
 
 Project file list is reversed before merge. Config directories include global config, discovered .opencode directories, home .opencode and the explicit config directory, deduplicated.
 
-Condition: OPENCODE_DISABLE_PROJECT_CONFIG excludes project discovery; OPENCODE_CONFIG_DIR appends an explicit directory.
+**When:** OPENCODE_DISABLE_PROJECT_CONFIG excludes project discovery; OPENCODE_CONFIG_DIR appends an explicit directory.
 
-- [packages/opencode/src/config/paths.ts:1-45](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/paths.ts#L1-L45) — SHA-256 `cd86a34461b27caf1042f8cba140fbbed47790c4f30cd9691f87298e8d4d4444`
+Source: [`paths.ts` lines 1–45](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/paths.ts#L1-L45) · sha256 `cd86a34461b2…`
 
 ```typescript
 export * as ConfigPaths from "./paths"
@@ -433,15 +425,13 @@ export function fileInDirectory(dir: string, name: string) {
 }
 ```
 
-## Environment and file substitutions
-
-Record: `config-variables`. Kind: source-code.
+### Environment and file substitutions
 
 File references resolve relative to the config directory, with home expansion; full contents are escaped into JSON text. This extractor never expands private configuration.
 
-Condition: ConfigVariable.substitute expands {env:VAR} and {file:path} when config text is loaded.
+**When:** ConfigVariable.substitute expands {env:VAR} and {file:path} when config text is loaded.
 
-- [packages/opencode/src/config/variable.ts:1-91](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/variable.ts#L1-L91) — SHA-256 `07b454c273d22baa72c0f7999d906af7a2bf7fab17643c81dc18849921d8fd36`
+Source: [`variable.ts` lines 1–91](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/variable.ts#L1-L91) · sha256 `07b454c273d2…`
 
 ```typescript
 export * as ConfigVariable from "./variable"
@@ -537,15 +527,15 @@ export async function substitute(input: SubstituteInput) {
 }
 ```
 
-## Markdown agent configuration
+## Agents
 
-Record: `config-agent-markdown`. Kind: source-code.
+### Markdown agent configuration
 
 Markdown body becomes the agent prompt; frontmatter fields configure it.
 
-Condition: Config directories are scanned for agent/agents Markdown and legacy mode/modes Markdown.
+**When:** Config directories are scanned for agent/agents Markdown and legacy mode/modes Markdown.
 
-- [packages/opencode/src/config/agent.ts:1-59](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/agent.ts#L1-L59) — SHA-256 `4844d4dfa48a516f5b134b0e310c3b0fc11292d0180b0b12ab8d96a43775efa7`
+Source: [`agent.ts` lines 1–59](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/agent.ts#L1-L59) · sha256 `4844d4dfa48a…`
 
 ```typescript
 export * as ConfigAgent from "./agent"
@@ -609,15 +599,13 @@ export async function loadMode(dir: string) {
 }
 ```
 
-## Built-in agents and configured agent overrides
-
-Record: `config-agent-state`. Kind: source-code.
+### Built-in agents and configured agent overrides
 
 Configured agents can disable agents or override model, variant, prompt, description, temperature, top_p, mode, steps, options and permissions.
 
-Condition: Agent.state merges default and user permissions, built-in agents and cfg.agent entries.
+**When:** Agent.state merges default and user permissions, built-in agents and cfg.agent entries.
 
-- [packages/opencode/src/agent/agent.ts:119-294](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L119-L294) — SHA-256 `341c8521ec9d4f704a9caa1587375d8bef19dde31187f6fc191903045a24dc38`
+Source: [`agent.ts` lines 119–294](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L119-L294) · sha256 `341c8521ec9d…`
 
 ```typescript
         const defaults = Permission.fromConfig({
@@ -798,15 +786,13 @@ Condition: Agent.state merges default and user permissions, built-in agents and 
         }
 ```
 
-## Default agent selection
-
-Record: `config-agent-default`. Kind: source-code.
+### Default agent selection
 
 Agent choice determines prompt replacement, permissions and options applied later.
 
-Condition: Configured default_agent is used when valid, visible and not subagent-only; otherwise the first visible primary/all agent wins.
+**When:** Configured default_agent is used when valid, visible and not subagent-only; otherwise the first visible primary/all agent wins.
 
-- [packages/opencode/src/agent/agent.ts:329-348](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L329-L348) — SHA-256 `30211d3260034b5e132b688eb44ef927709b2bfe17a24f53fe8b1ae359790cce`
+Source: [`agent.ts` lines 329–348](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L329-L348) · sha256 `30211d326003…`
 
 ```typescript
           const c = yield* config.get()
@@ -831,15 +817,15 @@ Condition: Configured default_agent is used when valid, visible and not subagent
           list,
 ```
 
-## Global, project and configured instructions
+## Instructions
 
-Record: `config-instructions`. Kind: source-code.
+### Global, project and configured instructions
 
 First existing global candidate wins. Project search tries AGENTS.md, CLAUDE.md when enabled, then deprecated CONTEXT.md and stops at the first filename with matches. Explicit instructions add globs/files or fetched URL bodies.
 
-Condition: Instruction.system loads discovered instructions; Claude compatibility may be disabled and project config may be disabled.
+**When:** Instruction.system loads discovered instructions; Claude compatibility may be disabled and project config may be disabled.
 
-- [packages/opencode/src/session/instruction.ts:58-178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L58-L178) — SHA-256 `58f5f531a3cf01120c690794c51f2b44661d46dff5caf23b7bece02e4bed4655`
+Source: [`instruction.ts` lines 58–178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L58-L178) · sha256 `58f5f531a3cf…`
 
 ```typescript
     const flags = yield* RuntimeFlags.Service
@@ -965,15 +951,13 @@ Condition: Instruction.system loads discovered instructions; Claude compatibilit
 
 ```
 
-## Instructions discovered while reading a file
-
-Record: `config-nearby-instructions`. Kind: source-code.
+### Instructions discovered while reading a file
 
 Nearby instruction contents attach once per assistant message and are not a universal system prompt layer.
 
-Condition: Instruction.resolve walks upward from the read target, within the instance directory, and excludes system/already-loaded/already-claimed files.
+**When:** Instruction.resolve walks upward from the read target, within the instance directory, and excludes system/already-loaded/already-claimed files.
 
-- [packages/opencode/src/session/instruction.ts:179-221](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L179-L221) — SHA-256 `480caef21d9fee7b0bf6fb9c4c123ab47fdd103e4e5f10f1b05ceea3e411fb1c`
+Source: [`instruction.ts` lines 179–221](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L179-L221) · sha256 `480caef21d9f…`
 
 ```typescript
     const resolve = Effect.fn("Instruction.resolve")(function* (
@@ -1021,15 +1005,15 @@ Condition: Instruction.resolve walks upward from the read target, within the ins
     })
 ```
 
-## Runtime feature flags
+## Flags and environment
 
-Record: `config-runtime-flags`. Kind: source-code.
+### Runtime feature flags
 
 Includes native LLM, WebSockets, plan, code mode, LSP, question, references, external skills, Claude compatibility, client and output-limit controls.
 
-Condition: RuntimeFlags service reads environment configuration; selected flags inherit OPENCODE_EXPERIMENTAL unless explicitly set.
+**When:** RuntimeFlags service reads environment configuration; selected flags inherit OPENCODE_EXPERIMENTAL unless explicitly set.
 
-- [packages/opencode/src/effect/runtime-flags.ts:1-78](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L1-L78) — SHA-256 `5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9`
+Source: [`runtime-flags.ts` lines 1–78](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L1-L78) · sha256 `5b580cb96f9d…`
 
 ```typescript
 import { Config, ConfigProvider, Context, Effect, Layer, Option } from "effect"
@@ -1112,15 +1096,13 @@ export * as RuntimeFlags from "./runtime-flags"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 ```
 
-## Configuration and catalog environment controls
-
-Record: `config-core-flags`. Kind: source-code.
+### Configuration and catalog environment controls
 
 Includes config path/content/directory, project-config disablement, permission override, catalog path/URL/fetch disablement and auto-compaction/pruning controls. Source extraction preserves variable names without reading their runtime values.
 
-Condition: Flag fields read process environment; selected controls are evaluated at access time.
+**When:** Flag fields read process environment; selected controls are evaluated at access time.
 
-- [packages/core/src/flag/flag.ts:1-78](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L1-L78) — SHA-256 `f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5`
+Source: [`flag.ts` lines 1–78](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L1-L78) · sha256 `f387ba5da5b2…`
 
 ```typescript
 import { Config } from "effect"

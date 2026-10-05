@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { discoveryQuestions, packQuestions, textHash } from "../../../codex/extract/codex/lib/jev-discovery.mjs";
 import { PrivacyError, privacyScan } from "../../../codex/extract/codex/lib/privacy.mjs";
 import { decodeLiteral, literalsOf } from "./ts-literals.mjs";
+import { discoveredTags, libraryMarkdown, nameOf, unclassifiedMarkdown, uniqueTitles } from "./presentation.mjs";
 
 export const VERSION = "1.18.34";
 export const COMMIT = "aec0b9a6d8898f68f923aaf08b7306d931fd9d76";
@@ -228,40 +229,16 @@ export function discoverOccurrences(closure) {
   return { records, stats };
 }
 
+// Discovered pages by what Jev judged the text to be, as the site's sections divide the rest.
 const LIBRARIES = [
-  ["model-instructions", "Model and agent instructions"],
-  ["conversation-prompts", "Conversation and utility prompts"],
-  ["tools-schemas", "Tools and schemas"],
-  ["agents", "Agents"],
-  ["skills-plugins-mcp", "Skills, plugins and MCP"],
-  ["providers-models-network-reasoning", "Providers, models, network and reasoning"],
-  ["sessions-compaction-storage-export", "Sessions, compaction, storage and export"],
-  ["approvals-sandboxing", "Approvals and sandboxing"],
-  ["configuration-precedence", "Configuration and precedence"],
-  ["environment-variables", "Environment variables"],
-  ["cli-commands-flags", "CLI commands and flags"],
-  ["other-model-facing-text", "Other discovered model-facing text"],
+  ["instructions", "Discovered instructions and prompts"],
+  ["context-templates", "Discovered context and user-turn templates"],
+  ["tools-parameters", "Discovered tool and parameter descriptions"],
 ];
+const LIBRARY_BY_ROLE = { instructions: "instructions", context: "context-templates", user_template: "context-templates", tool: "tools-parameters", parameter: "tools-parameters" };
 
 export const libraryDefinitions = () => LIBRARIES.map(([id, title]) => ({ id, title, json: `${id}.json`, markdown: `${id}.md` }));
 
-function libraryFor(record) {
-  const file = record.file.toLowerCase();
-  const text = record.text.trim();
-  const role = record.role.kind;
-  if (/\/(?:session|agent)\/prompt\/|\/system-context\//.test(file)) return "model-instructions";
-  if (/\/(?:tool|tools)\//.test(file) || /^(?:description|toolDescription)$/i.test(role)) return "tools-schemas";
-  if (/\/agent\//.test(file) || /agent/.test(role)) return "agents";
-  if (/\/(?:skill|plugin|mcp)\//.test(file)) return "skills-plugins-mcp";
-  if (/\/(?:provider|providers|llm|protocol|protocols|network|reasoning)\//.test(file) || /packages\/llm\//.test(file)) return "providers-models-network-reasoning";
-  if (/\/(?:session|sessions|compaction|storage|share|export)\//.test(file)) return "sessions-compaction-storage-export";
-  if (/\/(?:permission|permissions|sandbox|policy|approval)\//.test(file)) return "approvals-sandboxing";
-  if (/^[A-Z][A-Z0-9_]{2,}$/.test(text) || /\/(?:env|flag)\//.test(file)) return "environment-variables";
-  if (/\/config\//.test(file) || /(?:precedence|configuration)/.test(file)) return "configuration-precedence";
-  if (/\/cli\/|\/command\//.test(file) || /^--[a-z0-9-]+$/i.test(text)) return "cli-commands-flags";
-  if (MODEL_ROLE.test(role) || /(?:prompt|instruction|reminder|message)/i.test(file)) return "conversation-prompts";
-  return "other-model-facing-text";
-}
 
 function plainTitle(record) {
   const excerpt = record.text.replace(/\s+/g, " ").replace(/[\[\]#`*_~<>!&\\|]/g, " ").trim().slice(0, 72) || "Source text";
@@ -329,7 +306,16 @@ export function savedJudgments(identity, work = WORK) {
   return ledger.records;
 }
 
-export function buildFullLibrary(source, { judgments, prepared, work } = {}) {
+// A positive whose exact text a reviewed record already publishes (the whole text, or contained in
+// it) is listed in the discovery inventory with that record instead of on a Discovered page, as
+// Claude Code's "Other model-facing text" lists only what no other page covers.
+function coveringRecord(text, covered) {
+  const exact = covered.find((record) => record.text === text);
+  if (exact) return exact;
+  return text.trim().length >= 32 ? covered.find((record) => record.text.includes(text)) : undefined;
+}
+
+export function buildFullLibrary(source, { judgments, prepared, work, covered = [] } = {}) {
   const closure = prepared?.closure ?? buildSourceClosure(source);
   const discovery = prepared?.discovery ?? discoverOccurrences(closure);
   judgments ??= savedJudgments(closure.identity, work);
@@ -337,14 +323,21 @@ export function buildFullLibrary(source, { judgments, prepared, work } = {}) {
   const judged = judgments ? new Map(judgments.map((record) => [record.id, record])) : new Map();
   const libraries = new Map(LIBRARIES.map(([id]) => [id, []]));
   const discoveryItems = [];
+  const fileText = new Map(closure.included.map((file) => [file.file, file.text]));
   for (const record of discovery.records) {
-    const library = libraryFor(record);
     const decision = judged.get(record.id) ?? preparation.status.get(record.id);
-    const published = isPublishedPositive(decision);
+    const library = LIBRARY_BY_ROLE[decision?.role?.choice] ?? null;
+    const positive = isPublishedPositive(decision);
+    // Nothing is left out: a positive a reviewed record also holds is published here too, noting
+    // that record; the same text shipped in several places is one entry that lists every place.
+    const coveredBy = positive ? coveringRecord(record.text, covered) : undefined;
+    const sameText = positive ? libraries.get(library)?.find((other) => other.text === record.text) : undefined;
+    const published = positive && !sameText;
     const item = {
       id: record.id,
-      title: plainTitle(record),
-      kind: library === "tools-schemas" ? "tool" : library === "agents" ? "agent" : library === "skills-plugins-mcp" ? "skill" : library === "environment-variables" ? "env-var" : library === "cli-commands-flags" ? "cli-command" : "prompt",
+      title: nameOf(record, fileText.get(record.file) ?? ""),
+      group: record.file,
+      kind: library === "tools-parameters" ? "tool" : "prompt",
       version: VERSION,
       upstreamCommit: COMMIT,
       text: record.text,
@@ -358,17 +351,22 @@ export function buildFullLibrary(source, { judgments, prepared, work } = {}) {
         modelFacing: decision?.model_facing ?? null,
         semanticRole: decision?.role ?? null,
         sourceDirectness: decision?.evidence ?? null,
+        alsoIn: coveredBy ? { id: coveredBy.id, title: coveredBy.title } : null,
         condition: "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified.",
       },
     };
     if (published) libraries.get(library).push(item);
+    if (sameText) sameText.provenance.push(record.provenance);
     discoveryItems.push({
       id: record.id,
       title: item.title,
       kind: "candidate",
       candidateLibrary: library,
       publishedLibrary: published ? library : null,
+      publishedIn: sameText ? sameText.id : null,
+      alsoInReviewedRecord: coveredBy ? coveredBy.id : null,
       publication: published ? "typed-positive"
+        : sameText ? "same-text-as-published-record"
         : decision?.status === "classified" ? "classified-non-positive"
         : decision?.status === "unanswered" ? "pending-provider"
         : "local-review",
@@ -383,6 +381,7 @@ export function buildFullLibrary(source, { judgments, prepared, work } = {}) {
     });
   }
   for (const items of libraries.values()) items.sort((a, b) => a.provenance[0].file.localeCompare(b.provenance[0].file) || a.provenance[0].startOffset - b.provenance[0].startOffset || a.id.localeCompare(b.id));
+  for (const items of libraries.values()) uniqueTitles(items);
   const inventory = (items) => ({ schemaVersion: 2, product: "OpenCode", version: VERSION, upstreamCommit: COMMIT, sourceIdentity: closure.identity, items });
   const sourceItems = closure.included.map((file) => ({
     id: safeID("source", file.file), title: file.file, kind: "source-file", version: VERSION, upstreamCommit: COMMIT, text: file.text,
@@ -394,6 +393,7 @@ export function buildFullLibrary(source, { judgments, prepared, work } = {}) {
   if (new Set(assigned).size !== assigned.length) throw new Error("Typed-library assignment contains duplicates.");
   const classified = discoveryItems.filter((item) => item.discoveryStatus === "classified");
   const positives = discoveryItems.filter((item) => item.publication === "typed-positive");
+  const reviewedPositives = discoveryItems.filter((item) => item.publication === "same-text-as-published-record");
   const negatives = discoveryItems.filter((item) => item.publication === "classified-non-positive");
   const providerPending = discoveryItems.filter((item) => item.discoveryStatus === "unanswered");
   const withheld = discoveryItems.filter((item) => item.discoveryStatus === "withheld");
@@ -412,14 +412,20 @@ export function buildFullLibrary(source, { judgments, prepared, work } = {}) {
   const outputs = {
     "source-inventory.json": `${JSON.stringify({ ...inventory(sourceItems), scope, excludedFiles: closure.excluded }, null, 2)}\n`,
     "source-inventory.md": sourceInventoryMarkdown(closure),
-    "discovery-inventory.json": `${JSON.stringify({ ...inventory(discoveryItems), summary: { ...discovery.stats, eligible: preparation.eligible, batches: preparation.batches, payloadBytes: preparation.payloadBytes, classified: classified.length, classifiedPositives: positives.length, classifiedNegatives: negatives.length, providerPending: providerPending.length, withheld: withheld.length, oversized: oversized.length, localReview: withheld.length + oversized.length, pending: pending.length } }, null, 2)}\n`,
+    "discovery-inventory.json": `${JSON.stringify({ ...inventory(discoveryItems), summary: { ...discovery.stats, eligible: preparation.eligible, batches: preparation.batches, payloadBytes: preparation.payloadBytes, classified: classified.length, classifiedPositives: positives.length + reviewedPositives.length, sameTextMerged: reviewedPositives.length, alsoInReviewedRecords: positives.filter((item) => item.alsoInReviewedRecord).length, publishedDiscovered: positives.length, classifiedNegatives: negatives.length, providerPending: providerPending.length, withheld: withheld.length, oversized: oversized.length, localReview: withheld.length + oversized.length, pending: pending.length } }, null, 2)}\n`,
+    "unclassified.json": `${JSON.stringify(inventory(discoveryItems.filter((item) => item.discoveryStatus === "withheld" || item.discoveryStatus === "oversized").map((item) => ({ id: item.id, title: item.title, kind: "candidate", group: item.provenance[0].file, text: discovery.records.find((record) => record.id === item.id).text, reason: item.reason, status: item.discoveryStatus, provenance: item.provenance }))), null, 2)}\n`,
+    "discovered-tags.json": `${JSON.stringify(discoveredTags([...libraries.values()].flat()), null, 2)}\n`,
     "library-catalog.json": `${JSON.stringify({ schemaVersion: 1, product: "OpenCode", version: VERSION, upstreamCommit: COMMIT, sourceIdentity: closure.identity, totalRecords: assigned.length, libraries: catalog }, null, 2)}\n`,
-    "discovery-coverage.json": `${JSON.stringify({ schemaVersion: 1, product: "OpenCode", version: VERSION, upstreamCommit: COMMIT, sourceIdentity: closure.identity, status: providerPending.length || withheld.length || oversized.length ? "partial" : "complete", classified: classified.length, classifiedPositives: positives.length, classifiedNegatives: negatives.length, publishedRecords: assigned.length, exactCovered: positives.length, providerPending: providerPending.length, withheld: withheld.length, oversized: oversized.length, localReview: withheld.length + oversized.length, pending: pending.length, unverifiedGaps: 0, method: "Every classified positive is published once with its exact occurrence text. Privacy-withheld, oversized and unanswered occurrences remain explicit unresolved work." }, null, 2)}\n`,
+    "discovery-coverage.json": `${JSON.stringify({ schemaVersion: 1, product: "OpenCode", version: VERSION, upstreamCommit: COMMIT, sourceIdentity: closure.identity, status: providerPending.length || withheld.length || oversized.length ? "partial" : "complete", classified: classified.length, classifiedPositives: positives.length + reviewedPositives.length, sameTextMerged: reviewedPositives.length, classifiedNegatives: negatives.length, publishedRecords: assigned.length, exactCovered: positives.length + reviewedPositives.length, providerPending: providerPending.length, withheld: withheld.length, oversized: oversized.length, localReview: withheld.length + oversized.length, pending: pending.length, unverifiedGaps: 0, method: "Every classified positive is published once with its exact occurrence text: on a Discovered page (noting any reviewed record that also contains it), or merged into the entry with the same text (publishedIn). Withheld and oversized occurrences are listed with their exact text on the Not classified page. Privacy-withheld, oversized and unanswered occurrences remain explicit unresolved work." }, null, 2)}\n`,
   };
+  const unclassified = JSON.parse(outputs["unclassified.json"]).items;
+  uniqueTitles(unclassified);
+  outputs["unclassified.json"] = `${JSON.stringify(inventory(unclassified), null, 2)}\n`;
+  outputs["unclassified.md"] = unclassifiedMarkdown(unclassified, { version: VERSION });
   for (const [id, title] of LIBRARIES) {
     const items = libraries.get(id);
     outputs[`${id}.json`] = `${JSON.stringify(inventory(items), null, 2)}\n`;
-    outputs[`${id}.md`] = markdown(title, items);
+    outputs[`${id}.md`] = libraryMarkdown(id, title, items, { version: VERSION, commit: COMMIT });
   }
-  return { outputs, closure, discovery, preparation, libraries, summary: { scope, discovery: JSON.parse(outputs["discovery-inventory.json"]).summary, libraryCounts: Object.fromEntries(catalog.map((item) => [item.id, item.count])) } };
+  return { outputs, closure, discovery, preparation, libraries, judgments, summary: { scope, discovery: JSON.parse(outputs["discovery-inventory.json"]).summary, libraryCounts: Object.fromEntries(catalog.map((item) => [item.id, item.count])) } };
 }

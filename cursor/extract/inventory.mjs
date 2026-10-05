@@ -8,6 +8,7 @@ import { JEV_TEMPFAIL_EXIT } from "../../codex/extract/codex/lib/jev-provider.mj
 import { privacyScan } from "../../codex/extract/codex/lib/privacy.mjs";
 import { loadRelease, outputsRoot, publicRelease } from "./lib.mjs";
 import { LEDGER_FILE, readLedgerRecords } from "./classify.mjs";
+import { discoveredTags, renderDiscovered, shapeDiscovered } from "./discovered-presentation.mjs";
 
 const MODEL_ROLES = new Set(["tool", "parameter", "instructions", "context", "user_template"]);
 
@@ -81,20 +82,6 @@ function stageInventory(file, header, ledger, ledgerFile) {
 
 const fence = text => "~".repeat(Math.max(4, ...[...text.matchAll(/~+/g)].map(match => match[0].length + 1)));
 
-function render(records, release) {
-  const lines = [
-    "# Cursor Jev-discovered records",
-    "",
-    `These ${records.length} typed records are complete shipped-source occurrences from Cursor desktop ${release.desktop.version} and Agent CLI ${release.agent_cli.version}. TypeSafe Jev supplied bounded role and source-strength judgments; those probabilities prioritize evidence and do not prove live delivery.`,
-    ""
-  ];
-  for (const record of records) {
-    const p = record.provenance[0];
-    const mark = fence(record.text);
-    lines.push(`## ${record.title}`, "", `Source: \`${p.file}\`, bytes ${p.byte_start}-${p.byte_end}, source SHA-256 \`${p.source_sha256}\`.`, "", `${mark}text`, record.text, mark, "");
-  }
-  return `${lines.join("\n")}\n`;
-}
 
 export function publishInventory({ ledgerFile = LEDGER_FILE, log = console.log } = {}) {
   const ledger = JSON.parse(fs.readFileSync(ledgerFile, "utf8"));
@@ -109,7 +96,7 @@ export function publishInventory({ ledgerFile = LEDGER_FILE, log = console.log }
   const localReview = (statusCounts.withheld ?? 0) + (statusCounts.oversized ?? 0);
   const pending = providerPending + localReview;
   if (pending && process.env.JEV_PARTIAL_EXPORT !== "1") throw new Error(`${providerPending ? `${providerPending} Cursor occurrences still await provider answers` : `${pending} Cursor occurrences require local review`}; use JEV_PARTIAL_EXPORT=1 only for an explicitly labelled partial publication`);
-  const discovered = [];
+  let discovered = [];
   for (const record of recordsOf(ledger, ledgerFile)) {
     if (record.status !== "classified" || record.model_facing?.noul < 0.8 || !MODEL_ROLES.has(record.role?.choice)) continue;
     discovered.push({
@@ -133,11 +120,17 @@ export function publishInventory({ ledgerFile = LEDGER_FILE, log = console.log }
   }
   const staticRecords = JSON.parse(fs.readFileSync(path.join(outputsRoot, "source-records.json"), "utf8")).items;
   const cleanProvenance = provenance => provenance.map(({ source_text: _sourceText, ...item }) => item);
+  const occurrences = discovered.length;
+  const shaped = shapeDiscovered(discovered, staticRecords);
+  discovered = shaped.items;
   const searchItems = [...staticRecords.map(({ id, title, kind, text, surface, evidence_classification, provenance }) => ({ id, title, kind, text, surface, evidence_classification, provenance: cleanProvenance(provenance) })), ...discovered];
   const summary = {
     candidates: ledger.record_count ?? Object.values(statusCounts).reduce((sum, count) => sum + count, 0),
     classified: statusCounts.classified ?? 0,
     discovered_records: discovered.length,
+    discovered_occurrences: occurrences,
+    covered_by_reviewed_records: shaped.coveredByCurated,
+    same_text_merged: shaped.merged,
     provider_pending: providerPending,
     local_review: localReview,
     skipped_occurrences: ledger.candidate_stats.skipped,
@@ -146,10 +139,11 @@ export function publishInventory({ ledgerFile = LEDGER_FILE, log = console.log }
     publication: pending ? "partial-unanswered-or-local-review" : "complete"
   };
   const inventoryStage = stageInventory(path.join(outputsRoot, "inventory.json"), { schema: 1, area: "cursor-inventory", release: expected, summary, exclusions: ledger.candidate_stats.exclusions }, ledger, ledgerFile);
-  const discoveredMarkdown = render(discovered, expected);
+  const discoveredMarkdown = renderDiscovered(discovered, expected, { coveredByCurated: shaped.coveredByCurated, merged: shaped.merged, occurrences });
   const documents = new Map([
     ["Cursor discovered records", `${JSON.stringify({ schema: 1, area: "cursor-discovered-records", release: expected, summary, items: discovered }, null, 2)}\n`],
     ["Cursor discovered records Markdown", discoveredMarkdown],
+    ["Cursor discovered tags", `${JSON.stringify(discoveredTags(discovered), null, 2)}\n`],
     ["Cursor search records", `${JSON.stringify({ schema: 1, product: "Cursor", release: expected, partial: Boolean(pending), items: searchItems }, null, 2)}\n`]
   ]);
   try {
@@ -158,6 +152,7 @@ export function publishInventory({ ledgerFile = LEDGER_FILE, log = console.log }
     privacyScan(new Map([["Cursor final discovery summary", finalSummary]]));
     fs.writeFileSync(path.join(outputsRoot, "discovered-records.json"), documents.get("Cursor discovered records"));
     fs.writeFileSync(path.join(outputsRoot, "discovered-records.md"), documents.get("Cursor discovered records Markdown"));
+    fs.writeFileSync(path.join(outputsRoot, "discovered-tags.json"), documents.get("Cursor discovered tags"));
     fs.writeFileSync(path.join(outputsRoot, "search-records.json"), documents.get("Cursor search records"));
     fs.writeFileSync(path.join(outputsRoot, "discovery-summary.json"), finalSummary);
     inventoryStage.commit();

@@ -1,0 +1,540 @@
+{
+  "tags": [
+    {
+      "id": "cli-command",
+      "label": "Commands",
+      "kind": "status",
+      "definition": "A command or subcommand.",
+      "count": 68
+    },
+    {
+      "id": "cli-flag",
+      "label": "Options",
+      "kind": "status",
+      "definition": "A --flag of a command.",
+      "count": 84
+    },
+    {
+      "id": "cli-positional",
+      "label": "Positional arguments",
+      "kind": "status",
+      "definition": "An argument given by position.",
+      "count": 19
+    }
+  ],
+  "items": {
+    "cli-fa3759b17c3b": [
+      "cli-command"
+    ],
+    "cli-145c85ae1bdc": [
+      "cli-flag"
+    ],
+    "cli-2a8f7611387c": [
+      "cli-flag"
+    ],
+    "cli-e913b7b0216d": [
+      "cli-flag"
+    ],
+    "cli-3ea23846bff9": [
+      "cli-flag"
+    ],
+    "cli-160e52989526": [
+      "cli-flag"
+    ],
+    "cli-328bfeb1e03e": [
+      "cli-flag"
+    ],
+    "cli-d765b102aa94": [
+      "cli-flag"
+    ],
+    "cli-cfcbd7a87148": [
+      "cli-flag"
+    ],
+    "cli-e84ce5687120": [
+      "cli-flag"
+    ],
+    "cli-5eca46178d67": [
+      "cli-flag"
+    ],
+    "cli-78a99521781c": [
+      "cli-flag"
+    ],
+    "cli-f853fa1521b9": [
+      "cli-flag"
+    ],
+    "cli-5b4c9785fdce": [
+      "cli-flag"
+    ],
+    "cli-74f6f0a0f685": [
+      "cli-flag"
+    ],
+    "cli-d6a376162eb5": [
+      "cli-positional"
+    ],
+    "cli-dd451f7efc4c": [
+      "cli-command"
+    ],
+    "cli-a47d75665d0a": [
+      "cli-flag"
+    ],
+    "cli-d9fa3f18ff7f": [
+      "cli-command"
+    ],
+    "cli-4108e800eefa": [
+      "cli-command"
+    ],
+    "cli-3aec7182cd0c": [
+      "cli-command"
+    ],
+    "cli-484658090f43": [
+      "cli-flag"
+    ],
+    "cli-d9bd20262a31": [
+      "cli-flag"
+    ],
+    "cli-c165c6f56068": [
+      "cli-flag"
+    ],
+    "cli-a89261aeeecd": [
+      "cli-flag"
+    ],
+    "cli-586d41f81d92": [
+      "cli-flag"
+    ],
+    "cli-e1b5dcd789ef": [
+      "cli-command"
+    ],
+    "cli-ec6f8f063c75": [
+      "cli-flag"
+    ],
+    "cli-f61d4cfb5e25": [
+      "cli-flag"
+    ],
+    "cli-d5c612748f3a": [
+      "cli-flag"
+    ],
+    "cli-83bbea4abdc2": [
+      "cli-flag"
+    ],
+    "cli-337bd90eacfc": [
+      "cli-flag"
+    ],
+    "cli-8b323dd4171a": [
+      "cli-flag"
+    ],
+    "cli-b748d8de1b2f": [
+      "cli-flag"
+    ],
+    "cli-7f696b1e21a7": [
+      "cli-flag"
+    ],
+    "cli-f80301eb45d1": [
+      "cli-flag"
+    ],
+    "cli-60fe98f53e5a": [
+      "cli-flag"
+    ],
+    "cli-8fcabfd94cd8": [
+      "cli-command"
+    ],
+    "cli-f6041693ecec": [
+      "cli-command"
+    ],
+    "cli-0307d649cbc1": [
+      "cli-command"
+    ],
+    "cli-bd360261e6ee": [
+      "cli-command"
+    ],
+    "cli-08bac3f441a9": [
+      "cli-flag"
+    ],
+    "cli-db800e2e2647": [
+      "cli-positional"
+    ],
+    "cli-7847cedfb01d": [
+      "cli-command"
+    ],
+    "cli-ec4a75b3334a": [
+      "cli-command"
+    ],
+    "cli-df3a45156ad2": [
+      "cli-command"
+    ],
+    "cli-f9d9c19995b9": [
+      "cli-command"
+    ],
+    "cli-62d857339891": [
+      "cli-command"
+    ],
+    "cli-a4d512150e74": [
+      "cli-command"
+    ],
+    "cli-3dceba32e8f6": [
+      "cli-command"
+    ],
+    "cli-33f301f1859d": [
+      "cli-command"
+    ],
+    "cli-0198141b8cde": [
+      "cli-command"
+    ],
+    "cli-23b2f40b2212": [
+      "cli-command"
+    ],
+    "cli-c03cd944d3b7": [
+      "cli-command"
+    ],
+    "cli-343754acbbf0": [
+      "cli-command"
+    ],
+    "cli-cb623b40cb39": [
+      "cli-command"
+    ],
+    "cli-77a3e3764794": [
+      "cli-command"
+    ],
+    "cli-db05e2a8366d": [
+      "cli-command"
+    ],
+    "cli-a0a07a19a3a2": [
+      "cli-command"
+    ],
+    "cli-272bcaf62b83": [
+      "cli-command"
+    ],
+    "cli-77d273e8dbb4": [
+      "cli-command"
+    ],
+    "cli-c0ec7d585a4a": [
+      "cli-command"
+    ],
+    "cli-1191f8d8a7e0": [
+      "cli-command"
+    ],
+    "cli-810d1b7c3251": [
+      "cli-command"
+    ],
+    "cli-0851c3063761": [
+      "cli-command"
+    ],
+    "cli-991475ea0802": [
+      "cli-command"
+    ],
+    "cli-51654e6c01e6": [
+      "cli-command"
+    ],
+    "cli-22f29a0aecea": [
+      "cli-command"
+    ],
+    "cli-01feb496a015": [
+      "cli-flag"
+    ],
+    "cli-b2fa99e2e3e8": [
+      "cli-flag"
+    ],
+    "cli-7c83f8821335": [
+      "cli-flag"
+    ],
+    "cli-74d85b253ae1": [
+      "cli-flag"
+    ],
+    "cli-63dec36f648a": [
+      "cli-flag"
+    ],
+    "cli-aa78d2a8a13d": [
+      "cli-positional"
+    ],
+    "cli-2d0631c69d60": [
+      "cli-positional"
+    ],
+    "cli-76616b8b422e": [
+      "cli-positional"
+    ],
+    "cli-6515fd5b9c1f": [
+      "cli-positional"
+    ],
+    "cli-cd33c44d9094": [
+      "cli-positional"
+    ],
+    "cli-e549e772d248": [
+      "cli-positional"
+    ],
+    "cli-657036f8be53": [
+      "cli-positional"
+    ],
+    "cli-0c7a398dcd7d": [
+      "cli-command"
+    ],
+    "cli-3b72193ad4a0": [
+      "cli-flag"
+    ],
+    "cli-f850aaf0b873": [
+      "cli-positional"
+    ],
+    "cli-3e558c466cd4": [
+      "cli-command"
+    ],
+    "cli-c8bc76dd9392": [
+      "cli-command"
+    ],
+    "cli-50898ac0fec4": [
+      "cli-command"
+    ],
+    "cli-9034387d6fab": [
+      "cli-command"
+    ],
+    "cli-d6c35f5c1cd1": [
+      "cli-flag"
+    ],
+    "cli-76d7d561b273": [
+      "cli-flag"
+    ],
+    "cli-20e31aa13081": [
+      "cli-command"
+    ],
+    "cli-a136b20f2de3": [
+      "cli-command"
+    ],
+    "cli-2732b216cc59": [
+      "cli-positional"
+    ],
+    "cli-986c5f56c03d": [
+      "cli-command"
+    ],
+    "cli-ab2b5e876b05": [
+      "cli-positional"
+    ],
+    "cli-36405043a6be": [
+      "cli-command"
+    ],
+    "cli-c3df2d27da68": [
+      "cli-command"
+    ],
+    "cli-188f716e716b": [
+      "cli-command"
+    ],
+    "cli-218b2d0a07f3": [
+      "cli-command"
+    ],
+    "cli-ee6ef65406a0": [
+      "cli-command"
+    ],
+    "cli-4bfba993a213": [
+      "cli-command"
+    ],
+    "cli-e974cfe6256d": [
+      "cli-flag"
+    ],
+    "cli-db5f4d04be39": [
+      "cli-flag"
+    ],
+    "cli-f4a7383cb1f8": [
+      "cli-flag"
+    ],
+    "cli-3308b345632e": [
+      "cli-positional"
+    ],
+    "cli-8ac6890824bb": [
+      "cli-command"
+    ],
+    "cli-88ab2081e973": [
+      "cli-flag"
+    ],
+    "cli-472371791277": [
+      "cli-flag"
+    ],
+    "cli-e8781026aea3": [
+      "cli-positional"
+    ],
+    "cli-8bfa636d8c9f": [
+      "cli-command"
+    ],
+    "cli-e60d59212093": [
+      "cli-command"
+    ],
+    "cli-25810d8e91cd": [
+      "cli-command"
+    ],
+    "cli-82ff7d8068da": [
+      "cli-flag"
+    ],
+    "cli-c8a2f0c3f0d1": [
+      "cli-flag"
+    ],
+    "cli-d9b7cb2eb604": [
+      "cli-command"
+    ],
+    "cli-273f0060c7d2": [
+      "cli-command"
+    ],
+    "cli-5578164677c6": [
+      "cli-command"
+    ],
+    "cli-5c48805fb21e": [
+      "cli-command"
+    ],
+    "cli-85cbf178dc09": [
+      "cli-command"
+    ],
+    "cli-ba2b5fca4c0d": [
+      "cli-flag"
+    ],
+    "cli-50649b656f49": [
+      "cli-flag"
+    ],
+    "cli-60e8c300aa66": [
+      "cli-positional"
+    ],
+    "cli-9633b573d260": [
+      "cli-positional"
+    ],
+    "cli-30670551c6aa": [
+      "cli-command"
+    ],
+    "cli-32b743172e09": [
+      "cli-flag"
+    ],
+    "cli-ce91c7397d9f": [
+      "cli-flag"
+    ],
+    "cli-a8100f189216": [
+      "cli-flag"
+    ],
+    "cli-0c42fb333c33": [
+      "cli-flag"
+    ],
+    "cli-f2932a285746": [
+      "cli-flag"
+    ],
+    "cli-3f10ed3c9d4b": [
+      "cli-flag"
+    ],
+    "cli-1bf98974ca27": [
+      "cli-flag"
+    ],
+    "cli-66bf3741ceb8": [
+      "cli-flag"
+    ],
+    "cli-3b64e8cec357": [
+      "cli-flag"
+    ],
+    "cli-65bb303ba37e": [
+      "cli-flag"
+    ],
+    "cli-ddf17d64c19b": [
+      "cli-flag"
+    ],
+    "cli-b576c9e8f7c7": [
+      "cli-flag"
+    ],
+    "cli-4437373c492b": [
+      "cli-flag"
+    ],
+    "cli-929ad28d3e63": [
+      "cli-flag"
+    ],
+    "cli-f9d4aa470e6b": [
+      "cli-flag"
+    ],
+    "cli-e5d2c7336ee7": [
+      "cli-flag"
+    ],
+    "cli-a21b0cee8440": [
+      "cli-flag"
+    ],
+    "cli-4f3a5fb2168b": [
+      "cli-flag"
+    ],
+    "cli-c1ec484375ae": [
+      "cli-flag"
+    ],
+    "cli-5edacfd46161": [
+      "cli-flag"
+    ],
+    "cli-ce23aafb2b72": [
+      "cli-flag"
+    ],
+    "cli-a9f86e64e80a": [
+      "cli-flag"
+    ],
+    "cli-870b6274bd74": [
+      "cli-flag"
+    ],
+    "cli-198684324849": [
+      "cli-flag"
+    ],
+    "cli-8ac8cdf67658": [
+      "cli-flag"
+    ],
+    "cli-b35f224490b3": [
+      "cli-positional"
+    ],
+    "cli-2f8d84ff0070": [
+      "cli-command"
+    ],
+    "cli-06c9b6a2769d": [
+      "cli-command"
+    ],
+    "cli-ad147b131a0f": [
+      "cli-command"
+    ],
+    "cli-ab4bcad10be4": [
+      "cli-command"
+    ],
+    "cli-5cd47edf7afc": [
+      "cli-flag"
+    ],
+    "cli-03e33350a976": [
+      "cli-flag"
+    ],
+    "cli-04fe99782850": [
+      "cli-positional"
+    ],
+    "cli-e36e9996d6b8": [
+      "cli-command"
+    ],
+    "cli-990190d54b66": [
+      "cli-flag"
+    ],
+    "cli-43453bdabff3": [
+      "cli-flag"
+    ],
+    "cli-a4762ba85d4c": [
+      "cli-flag"
+    ],
+    "cli-fdd2e0cd8d2b": [
+      "cli-flag"
+    ],
+    "cli-3b33879931b1": [
+      "cli-command"
+    ],
+    "cli-bdc1d0f8ccf4": [
+      "cli-command"
+    ],
+    "cli-49fe1cd7e4e2": [
+      "cli-flag"
+    ],
+    "cli-24b84d7e8a20": [
+      "cli-flag"
+    ],
+    "cli-e7dbb1a3f8d0": [
+      "cli-flag"
+    ],
+    "cli-d5a789c1fbd3": [
+      "cli-flag"
+    ],
+    "cli-c7825a554f75": [
+      "cli-command"
+    ],
+    "cli-7c2461c325c0": [
+      "cli-flag"
+    ],
+    "cli-e568732c9a47": [
+      "cli-positional"
+    ],
+    "cli-9293ed218e9e": [
+      "cli-command"
+    ]
+  }
+}
