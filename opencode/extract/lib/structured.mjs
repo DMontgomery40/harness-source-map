@@ -163,7 +163,7 @@ export function cliCommands(closure, { version, commit, upstream }) {
         const flag = option[1] === "positional" ? `<${option[3]}>` : `--${option[3]}`;
         records.push({
           id: `cli-${sha256(`${file.file}:${command.usage}:${option[1]}:${option[3]}`).slice(0, 12)}`,
-          title: `opencode${name ? ` ${name}` : ""} ${flag}`, kind: "cli-flag", group: `opencode${name ? ` ${name}` : ""}`, version, upstreamCommit: commit,
+          title: `opencode${name ? ` ${name}` : ""} ${flag}${option[1] === "positional" ? " (argument)" : ""}`, kind: "cli-flag", group: `opencode${name ? ` ${name}` : ""}`, version, upstreamCommit: commit,
           text: text || `${option[1] === "positional" ? "Positional argument" : "Option"} ${flag} of opencode ${name}.`,
           provenance: [site(file, command.index + option.index, upstream, commit)],
           details: { kind: option[1] === "positional" ? "cli-positional" : "cli-flag", command: command.usage, type: type ?? null, alias: alias ?? null, textSha256: sha256(text), condition: "Declared by the command's yargs builder in the shipped CLI source." }

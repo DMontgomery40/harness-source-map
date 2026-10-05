@@ -136,6 +136,8 @@ test('OpenCode nested flags retain the shipped subcommand', () => {
   const items=JSON.parse(fs.readFileSync(path.join(root,'opencode/outputs/cli.json'))).items;
   assert.ok(items.some(r=>r.title==='opencode github run --event'));
   assert.ok(items.some(r=>r.title==='opencode session list --format'));
+  assert.ok(items.some(r=>r.title==='opencode debug diagnostics <file> (argument)' && r.details.kind==='cli-positional'));
+  assert.ok(items.some(r=>r.title==='opencode session delete <sessionID> (argument)' && r.details.kind==='cli-positional'));
 });
 
 test('archives are bound to the complete authoritative discovery state', async () => {
@@ -147,4 +149,22 @@ test('archives are bound to the complete authoritative discovery state', async (
     assert.equal(manifest.verdict_state?.file,file);
     assert.equal(manifest.verdict_state?.sha256,digest);
   }
+});
+
+test('real lone-surrogate literals remain reversible in UTF-8 page source', async () => {
+  const { gunzipSync }=await import('node:zlib');
+  const archive=path.join(root,'cursor/outputs/full-catalog');
+  const manifest=JSON.parse(fs.readFileSync(path.join(archive,'manifest.json')));
+  let count=0;
+  for(const part of manifest.parts) for(const row of gunzipSync(fs.readFileSync(path.join(archive,part.file))).toString().trimEnd().split('\n')) {
+    const record=JSON.parse(row);
+    if(record.text.isWellFormed()) continue;
+    count++;
+    const md=occurrenceMarkdown(record);
+    assert.equal(Buffer.from(md).toString(),md,'UTF-8 encoding must not replace the literal');
+    const json=md.match(/~{4,}json\n([^\n]+)\n~{4,}/)?.[1];
+    assert.ok(json,'escaped exact literal is visible');
+    assert.equal(JSON.parse(json),record.text);
+  }
+  assert.ok(count>0,'pinned Cursor archive contains lone-surrogate literals');
 });

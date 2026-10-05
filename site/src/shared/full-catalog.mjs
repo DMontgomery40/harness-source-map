@@ -33,8 +33,10 @@ export function verdictOf(record) {
   const positive = record.model_facing?.noul >= 0.8 && roles.has(record.role?.choice);
   return { tag: positive ? 'model-facing' : 'not-model-facing', label: `Jev judged ${positive ? 'model-facing' : 'not model-facing'} (confidence ${record.model_facing?.noul ?? 'unavailable'}; role ${record.role?.choice ?? 'unknown'}). This is a classifier judgment, not proof of delivery.` };
 }
+const needsEscapedLiteral = text => !text.isWellFormed() || /[\u0000-\u0008\u000b-\u001f\u007f]/.test(text);
 export function titleOf(record) {
-  const words = record.text.replace(/\s+/g, ' ').trim();
+  const display = needsEscapedLiteral(record.text) ? `Escaped shipped literal ${JSON.stringify(record.text)}` : record.text;
+  const words = display.replace(/\s+/g, ' ').trim();
   const opening = words.slice(0, 80).replace(/[\[\]#`*_~<>!&\\|]/g, ' ').replace(/\s+/g, ' ').trim();
   return opening || 'Empty shipped string';
 }
@@ -47,7 +49,10 @@ export function occurrenceMarkdown(record, { title = titleOf(record) } = {}) {
   const hash = record.span_sha256 ?? record.text_sha256 ?? crypto.createHash('sha256').update(record.text).digest('hex');
   const lines = [`### ${title}`, '', `Source: \`${inline(record.file)}\`, ${location}, SHA-256 \`${hash.slice(0, 16)}\`.`, '', verdict.label, ''];
   if (record.redaction) lines.push('Privacy: third-party personal email masked. The source hash identifies the original shipped bytes.', '');
-  if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(record.text)) lines.push('Readable escaped literal (JSON):', '', `${fence}json`, JSON.stringify(record.text), fence, '');
+  if (needsEscapedLiteral(record.text)) {
+    lines.push('Readable escaped literal (JSON; preserves every UTF-16 code unit):', '', `${fence}json`, JSON.stringify(record.text), fence, '');
+    return lines.join('\n');
+  }
   // The readable opening is deliberately separate from the exact literal. Never infer semantics
   // from minified code or invent a schema: describe only the observable source form.
   const codeLike = record.text.length > 240 && /[{};=]/.test(record.text) && !/\n/.test(record.text);
