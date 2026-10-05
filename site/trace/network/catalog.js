@@ -62,7 +62,7 @@ const CHAT = [
   { host: /^(?:dashscope(?:-intl|-us)?|coding(?:-intl)?\.dashscope)\.aliyuncs\.com$/, path: /\/(?:compatible-mode\/)?v1\/chat\/completions\/?$/, method: 'POST', role: 'model', label: 'Alibaba/Qwen chat completions', reveals: 'Observed Alibaba API destination, requested model, messages, tool schemas and received reasoning_content.' },
   { host: /^[a-z0-9.-]+\.maas\.aliyuncs\.com$/, path: /\/compatible-mode\/v1\/chat\/completions\/?$/, method: 'POST', role: 'model', label: 'Alibaba/Qwen chat completions', reveals: 'Observed workspace API destination and exact request/response bodies; host spelling does not establish geography or retention.' },
   { host: 'api.deepseek.com', path: /^\/(?:v1\/|beta\/)?chat\/completions\/?$/, method: 'POST', role: 'model', label: 'DeepSeek chat completions', reveals: 'Observed DeepSeek API destination, messages, tools and received reasoning_content.' },
-  { host: /^api\.(?:kimi\.com|moonshot\.ai|moonshot\.cn|moonshotai\.cn)$/, path: /^\/(?:coding\/)?v1\/chat\/completions\/?$/, method: 'POST', role: 'model', label: 'Moonshot/Kimi chat completions', reveals: 'Observed Moonshot/Kimi API destination, messages, tools and received reasoning_content.' },
+  { host: /^api\.(?:kimi\.(?:com|ai)|moonshot\.ai|moonshot\.cn|moonshotai\.cn)$/, path: /^\/(?:coding\/)?v1\/chat\/completions\/?$/, method: 'POST', role: 'model', label: 'Moonshot/Kimi chat completions', reveals: 'Observed Moonshot/Kimi API destination, messages, tools and received reasoning_content.' },
 ];
 export const CATALOG = { "claude-code": CC, codex: CX, opencode: CHAT };
 

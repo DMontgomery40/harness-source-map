@@ -5,8 +5,26 @@ import { bodyText, jsonOr, parseSSE, header } from './har.js';
 
 const number = value => Number.isFinite(value) ? value : null;
 const text = value => typeof value === 'string' ? value : '';
-const chars = value => typeof value === 'string' ? value.length : Array.isArray(value) ? value.reduce((n, p) => n + text(p?.text).length, 0) : 0;
+const readableText = value => typeof value === 'string' ? value : Array.isArray(value) ? value.map(p => text(p?.text)).join('') : '';
+const chars = value => readableText(value).length;
 const fields = ['reasoning', 'reasoning_content', 'reasoning_text'];
+
+// One walk of the observed fields serves the summary and the separate reader.
+// Structured text arrays keep their text parts in order; opaque data contributes
+// its size and type only, never a made-up readable representation.
+function* observedReasoning(message) {
+  for (const field of fields) if (typeof message[field] === 'string' || Array.isArray(message[field])) {
+    const value = readableText(message[field]);
+    yield { field, type: 'text', chars: value.length, text: value, encrypted: false, format: null, index: null };
+  }
+  for (const detail of Array.isArray(message.reasoning_details) ? message.reasoning_details : []) {
+    const encrypted = detail.type === 'reasoning.encrypted';
+    const value = encrypted ? '' : readableText(detail.text || detail.summary);
+    yield { field: 'reasoning_details', type: String(detail.type || 'unknown'),
+      chars: encrypted ? text(detail.data).length : value.length, text: value,
+      encrypted, format: detail.format || null, index: number(detail.index) };
+  }
+}
 
 function chunks(entry) {
   const raw = bodyText(entry, 'response') || '';
@@ -33,15 +51,11 @@ export function chatCompletionsCall(entry, info, R, product) {
       const index = number(choice.index) ?? 0, message = choice.delta || choice.message || {};
       if (choice.finish_reason != null) finish.set(index, R.str(String(choice.finish_reason)));
       content.set(index, (content.get(index) || 0) + chars(message.content));
-      const addReason = (field, kind, length, encrypted = false, format = null, ri = null) => {
+      for (const observed of observedReasoning(message)) {
+        const { field, encrypted, format, index: ri } = observed, kind = R.str(observed.type);
         const key = `${index}:${field}:${kind}:${ri ?? ''}`;
         const item = reasoning.get(key) || { choice: index, field, type: kind, chars: 0, encrypted, format: format ? R.str(String(format)) : null, index: ri };
-        item.chars += length; reasoning.set(key, item);
-      };
-      for (const field of fields) if (typeof message[field] === 'string') addReason(field, 'text', message[field].length);
-      for (const detail of Array.isArray(message.reasoning_details) ? message.reasoning_details : []) {
-        const encrypted = detail.type === 'reasoning.encrypted';
-        addReason('reasoning_details', R.str(String(detail.type || 'unknown')), encrypted ? text(detail.data).length : chars(detail.text || detail.summary), encrypted, detail.format, number(detail.index));
+        item.chars += observed.chars; reasoning.set(key, item);
       }
       for (const tool of Array.isArray(message.tool_calls) ? message.tool_calls : []) {
         const key = `${index}:${tool.index ?? tool.id ?? tools.size}`;
@@ -75,7 +89,7 @@ export function chatCompletionsCall(entry, info, R, product) {
     system: messages.flatMap((m, i) => ['system', 'developer'].includes(m.role) ? [{ i, role: m.role, chars: chars(m.content) }] : []),
     messages: { count: messages.length, roles, parts: messages.map((m, i) => ({ i, role: m.role || '?', chars: chars(m.content),
       toolCalls: Array.isArray(m.tool_calls) ? m.tool_calls.length : 0,
-      reasoning: fields.filter(f => m[f] != null).map(field => ({ field, chars: chars(m[field]) })),
+      reasoning: [...observedReasoning(m)].filter(r => r.field !== 'reasoning_details').map(({ field, chars }) => ({ field, chars })),
       reasoningDetails: Array.isArray(m.reasoning_details) ? m.reasoning_details.length : 0 })) },
     tools: (Array.isArray(request.tools) ? request.tools : []).map(t => ({ name: R.str(String(t.function?.name || t.name || t.type || 'tool')),
       type: t.type || null, chars: JSON.stringify(t).length, descriptionChars: chars(t.function?.description), parameters: !!t.function?.parameters })),
@@ -91,11 +105,11 @@ export function chatReasoningText(entry, R) {
   const append = (label, fragment) => out.set(label, (out.get(label) || '') + fragment);
   for (const value of chunks(entry).values) for (const choice of value.choices || []) {
     const message = choice.delta || choice.message || {};
-    for (const field of fields) if (typeof message[field] === 'string' && message[field]) append(`${field} [choice ${choice.index ?? 0}]`, message[field]);
-    for (const detail of Array.isArray(message.reasoning_details) ? message.reasoning_details : []) {
-      const label = `reasoning_details: ${R.str(String(detail.type || 'unknown'))} [choice ${choice.index ?? 0}${detail.index != null ? `, index ${detail.index}` : ''}]`;
-      if (detail.type === 'reasoning.encrypted') append(label, `[opaque data: ${text(detail.data).length} characters; no readable reasoning]\n`);
-      else if (detail.text || detail.summary) append(label, text(detail.text || detail.summary));
+    for (const observed of observedReasoning(message)) {
+      const field = observed.field === 'reasoning_details' ? `${observed.field}: ${R.str(observed.type)}` : observed.field;
+      const label = `${field} [choice ${choice.index ?? 0}${observed.index != null ? `, index ${observed.index}` : ''}]`;
+      if (observed.encrypted) append(label, `[opaque data: ${observed.chars} characters; no readable reasoning]\n`);
+      else if (observed.text) append(label, observed.text);
     }
   }
   return [...out].map(([label, value]) => `${label}\n${R.str(value)}`).join('\n\n');

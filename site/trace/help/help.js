@@ -6,7 +6,7 @@ import { el, fmtInt } from "../panels.js";
 import { createRecordingPanel } from "./recording.js";
 import { resolverHealth } from "../local-session.js";
 
-const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT", opencode: 'OpenCode' };
+import { productLabel } from '../products.js';
 const LOCAL = "http://127.0.0.1:8766";
 const TOPICS = [
   { key: "open", title: "Open a session" },
@@ -129,15 +129,15 @@ export function createHelp(ctx) {
 
   function renderBody() {
     const s = S();
-    const product = s?.trace ? PRODUCT[s.trace.product] : null;
+    const product = s?.trace ? productLabel(s.trace.product) : null;
     const parts = {
       open: () => [
         h("Open a session"),
-        p("Trace reads the session logs Claude Code and Codex/ChatGPT keep on your computer. Nothing is uploaded; the files are read in this tab."),
+        p("Trace reads Claude Code and Codex/ChatGPT session logs and native OpenCode exports from your computer. Nothing is uploaded; the files are read in this tab."),
         steps([
           ["Paste an id or a link", "A Claude Code session id (from the log's file name, or /status), or a Codex/ChatGPT link or thread id. Trace works out which folder the log is in."],
           ["Pick the folder once", "The first time, choose ~/.claude/projects (Claude Code) or ~/.codex/sessions (Codex/ChatGPT). Chrome remembers it, so the next paste opens straight away."],
-          ["Or drop the files", "A Codex/ChatGPT rollout, or a Claude Code session's .jsonl with its same-named folder so its subagents come too."],
+          ["Or drop the files", "A native OpenCode .json export, a Codex/ChatGPT rollout, or a Claude Code session's .jsonl with its same-named folder so its subagents come too. Drop a recorded OpenCode folder to open its exports and HAR together."],
         ]),
         cmd("In the folder picker, press ⌘⇧G and paste:", "~/.claude/projects"),
         p("With the local resolver running (see “See everything on this machine”), a pasted id opens with no picker, and so do Claude desktop agent-mode sessions, which live in the Claude app's own folder."),

@@ -12,8 +12,8 @@ import {
 } from "./findings.js";
 import { collectTransit, reportTransit } from "./transit.js";
 import { chatCompletionsCall, chatReasoningText } from './chat-completions.js';
+import { productLabel } from '../products.js';
 
-const PRODUCT_NAME = { "claude-code": "Claude Code", codex: "Codex/ChatGPT", opencode: 'OpenCode' };
 const EAGER_ROLES = new Set(["model", "side", "flags", "bootstrap", "catalog", "telemetry"]);
 const SMALL = 65536;            // other bodies up to this size are read eagerly too (MCP requests, small lists)
 const BODY_MAX = 2_000_000;     // a lazily read body is cut here
@@ -211,7 +211,7 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   const product = observedProduct || (trace.product === 'opencode' ? 'opencode' : null);
   if (product === "browser") throw new Error("This looks like a browser capture of chatgpt.com or claude.ai (a web chat). Those have no session log, so Trace can't attach them; this layer reads captures of Claude Code and Codex/ChatGPT CLI or app sessions.");
   if (!product) throw new Error("No Claude Code, Codex/ChatGPT or OpenCode traffic in this capture.");
-  if (product !== trace.product) throw new Error(`This capture is ${PRODUCT_NAME[product]} traffic, but the loaded session is ${PRODUCT_NAME[trace.product]}. Load the ${PRODUCT_NAME[product]} session it belongs to.`);
+  if (product !== trace.product) throw new Error(`This capture is ${productLabel(product)} traffic, but the loaded session is ${productLabel(trace.product)}. Load the ${productLabel(product)} session it belongs to.`);
 
   // ---- which entries belong to the loaded session
   const mine = new Set(sessionIdsOf(trace));

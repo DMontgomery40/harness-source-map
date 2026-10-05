@@ -8,7 +8,7 @@ import { foldOpen, setFold, valueOf, setValue } from "../panel-memory.js";
 import { modelBreakdown, findings, runs, entryGroups, hostTable, callSignature, callDelta, callTokens, wireTokenRows, latestLimits } from "./digest.js";
 
 export const NETWORK_LENS = { key: "network", q: "What went over the wire", icon: "⇄" };
-const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT", opencode: 'OpenCode' };
+import { productLabel } from '../products.js';
 const DOCS = { "claude-code": "../claude-code/", codex: "../codex/", opencode: '../opencode/' };
 
 // The reference docs' search for a flag, beta, header or env name: /claude-code/?q=<name> opens the
@@ -16,7 +16,7 @@ const DOCS = { "claude-code": "../claude-code/", codex: "../codex/", opencode: '
 export function docsHref(product, name) {
   return `${DOCS[product] || DOCS["claude-code"]}?q=${encodeURIComponent(String(name))}`;
 }
-const docLink = (product, name, text = name) => el("a", { class: "net-doc", href: docsHref(product, name), title: `Search the ${PRODUCT[product]} reference for ${name}`, text });
+const docLink = (product, name, text = name) => el("a", { class: "net-doc", href: docsHref(product, name), title: `Search the ${productLabel(product)} reference for ${name}`, text });
 
 const fmtBytes = (n) => (n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${fmtInt(n)} B`);
 const fmtMs = (n) => (n == null ? "–" : n >= 1000 ? `${(n / 1000).toFixed(1)} s` : `${Math.round(n)} ms`);
@@ -176,7 +176,7 @@ export function networkLens(S, A) {
   const out = [];
   if(cap.voice?.observed)out.push(section('WebRTC voice evidence',el('p',{text:`${fmtInt(cap.voice.messages)} data-channel messages · ${cap.voice.calls.length} observed call(s). Audio was not recorded.`})));
   out.push(el("h2", { text: NETWORK_LENS.q }),
-    el("p", { class: "lede", text: `A network capture loaded with this ${PRODUCT[product]} session. Exact identifiers join traffic to the log; other requests remain unattributed. Credentials and identity were redacted in your browser as the capture was read; nothing is saved.` }));
+    el("p", { class: "lede", text: `A network capture loaded with this ${productLabel(product)} session. Exact identifiers join traffic to the log; other requests remain unattributed. Credentials and identity were redacted in your browser as the capture was read; nothing is saved.` }));
   const readerSlot = el("div", { class: "net-reader-slot" });
   const unattributed = cap.entries.filter(e => e.association === 'unattributed').length;
   out.push(el("p", { class: "meta net-source" }, `${cap.files.join(", ")} · ${fmtInt(cap.kept)} of ${fmtInt(cap.total)} requests displayed · ${fmtInt(cap.entries.length - unattributed)} associated · ${fmtInt(unattributed)} unattributed`,

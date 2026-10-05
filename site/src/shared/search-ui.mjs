@@ -1,4 +1,4 @@
-// The docs search trigger and loader, shared by both sections' pages and the landing page. The
+// The docs search trigger and loader, shared by every section's pages and the landing page. The
 // palette itself is a real ES module (search/palette.js, copied to dist/search/ by site/build.mjs);
 // it resolves the section indexes and every result link against its own URL, so pages load it by
 // a relative path that works from any mount point.
@@ -16,13 +16,13 @@ export const SEARCH_CLIENT_FILES = [
 const ICON = `<svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" focusable="false"><circle cx="6.9" cy="6.9" r="4.7"/><path d="m10.4 10.4 3.8 3.8"/></svg>`;
 
 // The corner-links pill: "Search ⌘K" (icon only on phones). `section` is the product id whose index
-// the palette searches first; "all" searches both products.
+// the palette searches first; "all" searches every product.
 export function searchTrigger(section) {
   const where = SITE.products[section]?.label ?? "all products";
   return `<button class="search-link" type="button" data-search-open data-search-section="${section}" aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K /" aria-label="Search ${where} (⌘K or /)"><span class="search-link-mark" aria-hidden="true">${ICON}</span><span class="search-link-label">Search</span><kbd class="search-link-kbd" aria-hidden="true" data-search-kbd>⌘K</kbd></button>`;
 }
 
-// The landing page's wide search field (both products).
+// The landing page's wide search field (all products).
 export function searchField() {
   return `<button class="search-field" type="button" data-search-open data-search-section="all" aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K /" aria-label="Search all products (⌘K or /)"><span class="search-field-icon" aria-hidden="true">${ICON}</span><span class="search-field-text">Search prompts, env vars, settings, hooks, tools…</span><kbd aria-hidden="true" data-search-kbd>⌘K</kbd></button>`;
 }
