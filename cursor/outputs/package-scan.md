@@ -280,12 +280,12 @@ Rust crates compiled into first-party binaries (from source paths in panic locat
 
 ## File inventory
 
-15765 files, 1683.5 MB. Kinds in the first table are listed file by file in the JSON; the rest are counted and hashed as a group.
+15764 files, 1683.5 MB. Kinds in the first table are listed file by file in the JSON; the rest are counted and hashed as a group.
 
 | Kind | Files | MB |
 | --- | ---: | ---: |
 | web-code (grouped) | 11881 | 321.4 |
-| config | 1387 | 16.0 |
+| config | 1386 | 16.0 |
 | locale (grouped) | 747 | 48.8 |
 | document (grouped) | 710 | 2.3 |
 | other (grouped) | 533 | 43.9 |

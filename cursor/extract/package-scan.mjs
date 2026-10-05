@@ -42,6 +42,7 @@ export async function main() {
   const cache = loadCache(cacheFile);
   const { inventory: scanned, texts } = scanTree(releaseDir, {
     cache,
+    skip: rel => rel === "acquisition.json",
     isThirdParty: rel => !isCursorFirstParty(rel),
     bytesFor: (rel, abs) => withoutRange(fs.readFileSync(abs), seaRanges.get(rel))
   });
