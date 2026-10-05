@@ -4,9 +4,11 @@ Keeps both sections of harness.dtmont.com current: `/codex/` (ChatGPT desktop ap
 Codex CLI, the GPT-6 catalog) and `/claude-code/` (the Claude Code npm build). It runs hourly from a
 LaunchAgent and publishes only when an upstream source changed and the repo's gate passes.
 
-**State: installed.** The LaunchAgent runs from `~/harness-watch` at minute :07. Its template pins
-TypeSafe and enables the approved broad Jev sweeps for both products. A provider outage keeps the
-new build pending and triggers the watcher's retry and notification path. To reinstall or remove it:
+**State: installed.** The LaunchAgent runs from `~/harness-watch` at minute :07. Its template enables
+the approved broad Jev sweeps for both products and leaves provider selection in automatic mode:
+TypeSafe direct first, then OpenRouter when direct service is unavailable. A failure of the full
+provider chain keeps the new build pending and triggers the watcher's retry and notification path.
+To apply a template change, reinstall; to remove it:
 
 ```sh
 watch/install-launchd.sh --print    # show the plist it would write (changes nothing)
@@ -63,10 +65,18 @@ answer. The cycle's files are restored, nothing is published, and the same versi
 cycle, even for a daily target, since an outage that hits before any agent ran costs no agent work
 to retry. The exception is a refresh that already ran a repair or review agent. Retrying it would redo that agent work, so it
 waits for the target's next scheduled check instead. A notification goes out when the outage starts
-and again once a day while it lasts, not every hour. A missing or revoked TypeSafe key also reads as
-an outage, so that daily reminder is how it shows up. Each target records its outage as `jevOutage`
+and again once a day while it lasts, not every hour. Missing or rejected credentials become an outage
+only when no authorized provider in the chain can answer. Each target records its outage as `jevOutage`
 in its entry in `watch/state.json`. That target's next successful refresh or publish clears it, and
 so does any failure that is not a Jev outage.
+
+Automatic mode reads `TYPESAFE_API_KEY` and `OPENROUTER_API_KEY` from the process or `~/.env` as
+data. It retries TypeSafe's network, timeout, overload and server failures, then uses OpenRouter for
+missing direct credentials, exhausted retryable failures, or direct HTTP 401/402/403. It does not
+send a malformed request or malformed provider answer to a second destination. Set
+`JEV_PROVIDER=typesafe` for direct-only operation or `JEV_PROVIDER=openrouter` for router-only
+operation. Both routes pin and validate their own requested and served model identities, and their
+verdict cache namespaces remain separate.
 
 Cadence: Codex/ChatGPT hourly through 2026-10-06 (Dev Day plus a week), then daily; Claude Code
 daily, against the newer of the npm `latest` and `next` dist-tags, never going back to an older build

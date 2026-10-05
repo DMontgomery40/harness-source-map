@@ -538,7 +538,7 @@ export const triageKey = (product, it) => `v1:${h12(`${product}\n${it.where}\n${
 // A malformed request (JevRequestError) is a bug here and throws. `config` and `askOptions`
 // ({ fetchImpl, attempts, sleep, ... }) are injectable for tests.
 export async function triage(items, { product, cacheFile, cap = Number.MAX_SAFE_INTEGER, config = decisionConfig(), batched=false, ...askOptions } = {}) {
-  const cache = cacheFile ? openCache(cacheFile) : null;
+  const cache = cacheFile ? openCache(cacheFile,{config}) : null;
   const chosen = items.slice(0, cap);
   let unavailable = null;
   const labels = items.map(it => ({ ...it, choice: null, confidence: null }));

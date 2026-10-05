@@ -5,7 +5,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { files, provenance, sha256, source, VERSION, PLATFORM, BINARY_SHA256 } from "./lib.mjs";
 import { isDerived } from "./decisions-lib.mjs";
-import { openCache } from "../../codex/extract/codex/lib/jev-provider.mjs";
+import { decisionConfig, openCache } from "../../codex/extract/codex/lib/jev-provider.mjs";
 import { occurrenceId, verdictKey } from './classify.mjs';
 import { broadVerdict } from './discovery-role.mjs';
 
@@ -13,7 +13,7 @@ const root = new URL("../", import.meta.url).pathname;
 const candidates = JSON.parse(readFileSync(`${root}work/candidates.json`, "utf8"));
 const candidateStats=JSON.parse(readFileSync(`${root}work/candidates.stats.json`,'utf8')).stats;
 // classify.mjs writes this cache; keys carry the Jev version (openCache).
-const verdicts = openCache(`${root}work/jev-verdicts-v2.json`);
+const verdicts = openCache(`${root}work/jev-verdicts-v2.json`,{config:decisionConfig()});
 const broad=process.env.JEV_BROAD_EXPORT==='1';
 const partial=broad&&process.env.JEV_PARTIAL_EXPORT==='1';
 const broadLedger=broad?JSON.parse(readFileSync(`${root}work/jev-discovery-cc.json`,'utf8')):null;

@@ -36,7 +36,7 @@ test("prompt sweep asks the pinned model with retries, and an outage surfaces as
   const fetchImpl = async (url, options) => {
     calls += 1;
     body = JSON.parse(options.body);
-    return calls === 1 ? { ok: false, status: 502, headers: new Headers() } : { ok: true, status: 200, json: async () => ({ answers: { model_facing: { noul: 0.91 } } }) };
+    return calls === 1 ? { ok: false, status: 502, headers: new Headers() } : { ok: true, status: 200, json: async () => ({ model:'jev-1.13.0', answers: { model_facing: { noul: 0.91 } } }) };
   };
   assert.equal(await modelFacing(config, { file: "a.js", text: "You are a helpful assistant." }, { fetchImpl, sleep: async () => {} }), 0.91);
   assert.equal(calls, 2);

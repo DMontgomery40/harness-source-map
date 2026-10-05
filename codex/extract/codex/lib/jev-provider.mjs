@@ -8,8 +8,9 @@ import { privacyScan } from './privacy.mjs';
 
 // Bump JEV_VERSION with the pinned models; cached verdicts from another version are not reused.
 export const JEV_VERSION = 'jev-1.13';
-const DIRECT = { provider: 'TypeSafe', endpoint: 'https://api.typesafe.ai/v1/systemone', model: 'jev-1.13.0' };
-const ROUTER = { provider: 'OpenRouter', endpoint: 'https://openrouter.ai/api/v1/systemone', model: 'typesafe/jev-1.13' };
+const DIRECT = { provider: 'TypeSafe', id: 'typesafe', endpoint: 'https://api.typesafe.ai/v1/systemone', model: 'jev-1.13.0', keyName: 'TYPESAFE_API_KEY', servedModel: /^jev-1\.13\.0(?:-|$)/ };
+const ROUTER = { provider: 'OpenRouter', id: 'openrouter', endpoint: 'https://openrouter.ai/api/v1/systemone', model: 'typesafe/jev-1.13', keyName: 'OPENROUTER_API_KEY', servedModel: /^typesafe\/jev-1\.13(?:-|$)/ };
+const PROVIDERS = Symbol('jev providers');
 // Every cache written before pinning came from jev-1.13.0 (the classify caches record it per entry).
 const LEGACY_VERSION = 'jev-1.13';
 // Exit code a script uses when Jev is unavailable, so callers can retry later instead of failing.
@@ -28,16 +29,29 @@ export class JevAnswerShapeError extends JevRequestError {
   constructor(message) { super(message); this.name = 'JevAnswerShapeError'; }
 }
 
+const cacheVersion = provider => `${JEV_VERSION}@${provider.id}/${provider.model}`;
+const publicProvider = provider => ({ provider:provider.provider, endpoint:provider.endpoint, model:provider.model, configured:Boolean(provider.key) });
+const selectProvider = (config, provider) => {
+  Object.assign(config, { provider:provider.provider, endpoint:provider.endpoint, model:provider.model, key:provider.key, cacheVersion:cacheVersion(provider) });
+};
+
 // Read credentials as data; never source the environment file or expose its contents.
-// TypeSafe direct is the default; OpenRouter when JEV_PROVIDER=openrouter or no TypeSafe key exists.
+// Automatic mode tries TypeSafe direct first, then the separately authorized OpenRouter route.
+// Explicit JEV_PROVIDER values stay single-provider so operators can require one destination.
 export function decisionConfig(env = process.env, read = () => fs.readFileSync(path.join(os.homedir(), '.env'), 'utf8')) {
   let text = '';
   try { text = read(); } catch { /* Environment variables can supply credentials. */ }
   const value = name => env[name] || text.match(new RegExp(`^\\s*(?:export\\s+)?${name}\\s*=\\s*["']?([^"'\\s]+)`, 'm'))?.[1];
   const direct = value('TYPESAFE_API_KEY');
   const router = value('OPENROUTER_API_KEY');
-  const useRouter = env.JEV_PROVIDER === 'openrouter' || (env.JEV_PROVIDER !== 'typesafe' && !direct && Boolean(router));
-  return useRouter ? { ...ROUTER, key: router, version: JEV_VERSION } : { ...DIRECT, key: direct, version: JEV_VERSION };
+  if (env.JEV_PROVIDER && !['typesafe','openrouter'].includes(env.JEV_PROVIDER)) throw new JevRequestError(`Unknown JEV_PROVIDER ${env.JEV_PROVIDER}`);
+  const available = [{...DIRECT,key:direct},{...ROUTER,key:router}];
+  const providers = env.JEV_PROVIDER === 'typesafe' ? available.slice(0,1) : env.JEV_PROVIDER === 'openrouter' ? available.slice(1) : available;
+  const initial = providers.find(provider => provider.key) ?? providers[0];
+  const config = { version:JEV_VERSION, mode:env.JEV_PROVIDER ?? 'auto', providerChain:providers.map(publicProvider) };
+  Object.defineProperty(config, PROVIDERS, { value:providers });
+  selectProvider(config,initial);
+  return config;
 }
 
 const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504, 529]);
@@ -48,11 +62,38 @@ const sleepMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 // Retries rate limits, server errors, timeouts and network failures with backoff; then throws
 // JevUnavailableError. A malformed request throws JevRequestError.
 export async function ask(config, { state, questions }, { fetchImpl = globalThis.fetch, attempts = 4, timeoutMs = 60_000, baseDelayMs = 1000, sleep = sleepMs } = {}) {
-  if (!config?.key) throw new JevUnavailableError(`no ${config?.provider === 'OpenRouter' ? 'OPENROUTER_API_KEY' : 'TYPESAFE_API_KEY'}`);
-  const body = JSON.stringify({ model: config.model, state, questions });
-  // Every Jev caller, including Claude Code's older classifiers, crosses this same outbound
-  // boundary. Scan precisely the bytes sent; a caller's earlier filter is defense in depth.
-  privacyScan(new Map([['Jev request',body]]));
+  const requestedModel=String(config?.model??'');
+  const exactServedModel=new RegExp(`^${requestedModel.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?:-|$)`);
+  const providers = config?.[PROVIDERS] ?? [{
+    provider:config?.provider,
+    id:config?.provider === 'OpenRouter' ? 'openrouter' : 'typesafe',
+    endpoint:config?.endpoint,
+    model:config?.model,
+    key:config?.key,
+    keyName:config?.provider === 'OpenRouter' ? 'OPENROUTER_API_KEY' : 'TYPESAFE_API_KEY',
+    servedModel:config?.servedModel ?? exactServedModel
+  }];
+  // Build and scan every possible outbound body before the first request. A failover changes only
+  // the pinned provider model; the already scanned state and questions are reused byte-for-byte.
+  const requests = providers.map(provider => ({provider, body:JSON.stringify({model:provider.model,state,questions})}));
+  privacyScan(new Map(requests.map(({provider,body})=>[`Jev request (${provider.provider})`,body])));
+  const unavailable=[];
+  for (const request of requests) {
+    const {provider,body}=request;
+    if (!provider.key) {unavailable.push(`no ${provider.keyName}`);continue;}
+    try {
+      const result=await askProvider(provider,body,questions,{fetchImpl,attempts,timeoutMs,baseDelayMs,sleep});
+      selectProvider(config,provider);
+      return {...result,jev_provider:provider.provider,requested_model:provider.model,served_model:result.model};
+    } catch(error) {
+      if (!(error instanceof JevUnavailableError) || requests.length===1) throw error;
+      unavailable.push(error.reason);
+    }
+  }
+  throw new JevUnavailableError(unavailable.join('; '));
+}
+
+async function askProvider(config, body, questions, { fetchImpl, attempts, timeoutMs, baseDelayMs, sleep }) {
   let reason = 'no attempt made', retryAfterMs = null;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     if (attempt) await sleep(retryAfterMs ?? baseDelayMs * 2 ** (attempt - 1));
@@ -78,28 +119,37 @@ export async function ask(config, { state, questions }, { fetchImpl = globalThis
     if (UNAVAILABLE.has(response.status)) throw new JevUnavailableError(`${config.provider} ${response.status}`);
     if (!response.ok) throw new JevRequestError(`${config.provider} ${response.status}: ${(await response.text().catch(() => '')).slice(0, 300)}`);
     let result;
-    try { result = await response.json(); } catch { reason = `${config.provider} returned invalid JSON`; continue; }
-    if (!result?.answers || typeof result.answers !== 'object') { reason = `${config.provider} answer without answers`; continue; }
+    try { result = await response.json(); } catch { throw new JevAnswerShapeError(`${config.provider} returned invalid JSON`); }
+    if (!result?.answers || typeof result.answers !== 'object') throw new JevAnswerShapeError(`${config.provider} answer without answers`);
+    if (typeof result.model !== 'string' || !config.servedModel.test(result.model)) throw new JevAnswerShapeError(`${config.provider} served unexpected model ${JSON.stringify(result.model)}`);
     for (const id of Object.keys(questions)) if (!(id in result.answers)) throw new JevAnswerShapeError(`${config.provider} answer is missing question ${id}`);
     return result;
   }
   throw new JevUnavailableError(`${reason} after ${attempts} attempts`);
 }
 
-// A verdict cache file whose keys carry the model version: `<version>:<key>`. Entries written
-// before pinning (no version prefix) were all produced by LEGACY_VERSION and are read as such, so
-// pinning re-sends nothing. Saving rewrites every key with its prefix.
-export function openCache(file, { version = JEV_VERSION } = {}) {
+// A verdict cache file whose keys carry the provider and pinned model as well as the Jev version.
+// Passing the shared config makes the namespace follow the provider that actually answered: ask()
+// updates config only after a valid response, so a direct outage cannot overwrite a direct verdict
+// with the OpenRouter result. Old provider-blind entries remain preserved but are not reused by a
+// provider-aware cache because their origin cannot be recovered safely.
+export function openCache(file, { version = JEV_VERSION, config } = {}) {
   let raw = {};
   try { raw = JSON.parse(fs.readFileSync(file, 'utf8')); } catch { raw = {}; }
   const entries = {};
   for (const [key, value] of Object.entries(raw)) entries[key.startsWith('jev-') ? key : `${LEGACY_VERSION}:${key}`] = value;
-  const full = key => `${version}:${key}`;
+  const currentVersion = () => config?.cacheVersion ?? version;
+  const configuredVersions = () => {
+    if (!config?.providerChain) return [currentVersion()];
+    const versions=config.providerChain.map(provider=>cacheVersion({id:provider.provider==='OpenRouter'?'openrouter':'typesafe',model:provider.model}));
+    return [currentVersion(),...versions.filter(v=>v!==currentVersion())];
+  };
+  const matches = key => configuredVersions().map(v=>`${v}:${key}`);
   return {
-    version,
-    has: key => full(key) in entries,
-    get: key => entries[full(key)],
-    set(key, value) { entries[full(key)] = value; return value; },
+    get version() { return currentVersion(); },
+    has: key => matches(key).some(full=>full in entries),
+    get: key => entries[matches(key).find(full=>full in entries)],
+    set(key, value) { entries[`${currentVersion()}:${key}`] = value; return value; },
     get size() { return Object.keys(entries).length; },
     save() { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(entries)); }
   };

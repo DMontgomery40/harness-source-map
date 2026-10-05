@@ -276,7 +276,7 @@ export function oldRangeResolver({ prevDir, newDir, outputsDir }) {
 export async function flagRelease({ prevDir, newDir, outputsDir, cacheFile, config, askOptions = {}, log = () => {} }) {
   const successorsFile = path.join(newDir, "successors.json");
   const pairs = (existsSync(successorsFile) ? readJson(successorsFile) : []).filter(s => s.successor);
-  const cache = openCache(cacheFile);
+  const cache = openCache(cacheFile,{config});
   const resolve = oldRangeResolver({ prevDir, newDir, outputsDir });
   const out = [];
   try {

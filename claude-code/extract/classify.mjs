@@ -42,7 +42,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if(candidateSource.binary_sha256!==BINARY_SHA256||candidateSource.mode!==(process.env.JEV_BROAD_EXPORT==='1'?'broad':'legacy')) throw new Error('Claude Code candidate inventory is stale or has the wrong discovery mode');
   if(process.env.JEV_BROAD_EXPORT==='1') {
     const fs=await import('node:fs');
-    const cache=openCache(`${root}jev-discovery-cc-cache.json`);
+    const cache=openCache(`${root}jev-discovery-cc-cache.json`,{config});
     const options={cache,batchSize:16,concurrency:6,offline:process.env.JEV_OFFLINE==='1'};
     const sources=candidates.map(c=>({...c,id:occurrenceId(c)}));
     // An uncalibrated Noul screen can hide the very short or unusual prompt we are trying
@@ -61,7 +61,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     // erase safe classified results. Only unanswered provider work blocks publication.
     if(pending.some(r=>r.status==='unanswered')) process.exitCode=75;
   } else {
-  const cache = openCache(cacheFile);
+  const cache = openCache(cacheFile,{config});
   const unique = [...new Map(candidates.map(c => [verdictKey(c.text), c.text])).entries()].filter(([hash]) => !cache.has(hash));
   const withheld=[];
   for(const [hash,text] of unique) {

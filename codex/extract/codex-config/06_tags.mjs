@@ -21,11 +21,11 @@ const taxonomyFile = path.join(here, "taxonomy.json");
 const seedFile = path.join(here, "persistent-seed.json");
 const taxonomy = existsSync(taxonomyFile) ? readJson(taxonomyFile) : { tags: [] };
 const seed = existsSync(seedFile) ? readJson(seedFile) : [];
-const cache = openCache(path.join(repo, "work", "tag-verdicts.json"));
 const taxonomyVersion = sha(JSON.stringify(taxonomy)).slice(0, 12);
 const THRESHOLD = 0.7;
 
 const config = decisionConfig();
+const cache = openCache(path.join(repo, "work", "tag-verdicts.json"),{config});
 const key = config.key;
 // Cache keys: "<taxonomy version>:<sha256 of the state sent>".
 export const tagKey = (taxonomyVersion, state) => `${taxonomyVersion}:${sha(JSON.stringify(state))}`;
