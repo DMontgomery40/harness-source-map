@@ -20,7 +20,7 @@ Own site/src/opencode, site/src/shared/{site.mjs,landing.mjs,trace-build.mjs}, s
 
 Status: ready. Blocked by: none. Blocks: T5.
 
-Own site/trace and its tests. Add native OpenCode JSON exports to loadTrace and separate reasoning parts. Extend network classification/findings/body display for OpenRouter, Qwen/Alibaba, DeepSeek and Moonshot/Kimi. Show observed and reported routing accurately. Read real source schemas and the coordinator's private real session paths when available; do not create synthetic sessions or responses. The existing landscape opens first; preserve every existing mode. Live recording paths are provided privately at runtime, never embedded in tracked files. Validate using real recordings and supported public boundaries.
+Own site/trace and its tests. Add native OpenCode JSON exports to loadTrace and separate reasoning parts. Extend network classification/findings/body display for OpenRouter, Qwen/Alibaba, DeepSeek and Moonshot/Kimi through analyzeCapture. Show observed and reported routing accurately. Read real source schemas and the coordinator's private real session paths when available; do not create synthetic sessions or responses. The existing landscape opens first; preserve every existing mode. Live recording paths are provided privately at runtime, never embedded in tracked files. Validate using real recordings and supported public boundaries.
 
 ## T4: Easy opt-in capture
 

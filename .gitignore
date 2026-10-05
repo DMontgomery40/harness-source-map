@@ -3,6 +3,7 @@ work/
 # A work folder linked in from the main checkout (a worktree's symlink) is ignored too.
 /claude-code/work
 /codex/work
+/opencode/work
 node_modules
 site/node_modules
 site/dist/
