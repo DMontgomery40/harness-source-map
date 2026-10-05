@@ -235,7 +235,7 @@ function modelsTable(cap) {
           el("span", { class: "meta", text: r.main ? " main" : r.notIn === r.calls ? native ? " side · no exact step match" : " side · not in your log" : " side" })),
         el("td", { class: "num", text: fmtInt(r.calls) }), el("td", { class: "num", text: fmtInt(r.inLog) }), el("td", { class: "num", text: fmtInt(r.notIn) }),
         num(r.input), num(r.output), num(r.cacheRead), num(r.cacheWrite))))),
-    el("p", { class: "note", text: cap.product === 'cursor' ? 'Cursor AgentService protobuf does not expose token counts in the undecoded transport summary.' : cap.product === "codex" || cap.product === 'opencode' ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part." }));
+    el("p", { class: "note", text: cap.product === 'cursor' ? 'This AgentService call summary does not extract token counts; open the decoded response when a shipped descriptor sidecar is loaded.' : cap.product === "codex" || cap.product === 'opencode' ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part." }));
 }
 
 // ---------------------------------------------------------------- model calls
@@ -263,7 +263,7 @@ function callsSection(cap, trace, A) {
   return topFold("sec:calls", "Model calls", `${fmtInt(inLog.length)} ${native ? 'joined' : 'in your log'}, ${fmtInt(notIn.length)} ${native ? 'unjoined' : 'not'} · ${byModel(cap.calls)}`,
     el("p", { class: "note", text: `Joined by ${cap.join.keys}.${product === "codex" && cap.join.items ? ` ${fmtInt(cap.join.itemsMatched)} of ${fmtInt(cap.join.items)} attributed input items match blocks in the log.` : ""}` }),
     notIn.length ? fold([`${native ? 'Calls without an exact step match' : 'Requests not in your log'} (${fmtInt(notIn.length)})`, byModel(notIn)], true, "calls:notlog",
-      el("p", { class: "note", text: product === 'cursor' ? 'These AgentService calls carried no exact request ID matching a native step. Their protobuf bytes remain visible, but ownership stays unattributed.' : product === 'opencode' ? 'These captured calls have no exact native step join. A session header may identify their session; it does not identify a specific native step. Open a call to inspect the request as sent.' : product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent." }),
+      el("p", { class: "note", text: product === 'cursor' ? 'These AgentService calls carried no exact request ID matching a native step. Their captured payloads remain visible, but ownership stays unattributed.' : product === 'opencode' ? 'These captured calls have no exact native step join. A session header may identify their session; it does not identify a specific native step. Open a call to inspect the request as sent.' : product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent." }),
       el("ul", { class: "items" }, notIn.map((c) => item(c)))) : null,
     ...[...groups].map(([sig, list]) => {
       const c0 = list[0];
@@ -631,10 +631,10 @@ function callCard(cap, c, trace, A, at) {
   } else if (product === 'cursor') {
     kids.push(fold(['Cursor AgentService payload', c.response.partial ? 'partial' : c.response.complete ? 'complete' : 'status unavailable'], false, key('cursor-proto'), kv([
       ['Observed client destination', c.routing.destination, 'traffic to Cursor; downstream model routing was not observed'],
-      ['Protocol', 'application/connect+proto', 'exact captured bytes; decoded only when a shipped descriptor is available'],
+      ['Protocol', 'application/connect+proto', c.decoded ? 'decoded with exact classes from the pinned shipped Agent CLI' : 'exact captured bytes; no matching shipped descriptor sidecar loaded'],
       ['Association', c.association === 'request-id' ? 'exact request ID' : c.association === 'session-id' ? 'exact session ID' : 'unattributed'],
       ['Request bytes', fmtBytes(c.reqBytes || 0)], ['Response bytes', fmtBytes(c.resBytes || 0)],
-    ]), el('p', { class: 'note', text: 'Open Request as sent or Response to inspect the credential-checked captured bytes. A Cursor endpoint does not reveal an unobserved downstream provider, geography or retention policy.' })));
+    ]), el('p', { class: 'note', text: `Open Request as sent or Response to inspect the credential-checked ${c.decoded ? 'decoded protobuf fields' : 'captured bytes'}. A Cursor endpoint does not reveal an unobserved downstream provider, geography or retention policy.` })));
   } else if (product === "claude-code") {
     const m = c.messages;
     const deferred = c.tools.filter((t) => t.defer).length;

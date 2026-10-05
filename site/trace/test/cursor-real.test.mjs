@@ -5,6 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { loadTrace } from '../loader.js';
@@ -12,6 +13,7 @@ import { readRef } from '../model.js';
 import { analyzeCapture } from '../network/capture.js';
 import { header } from '../network/har.js';
 import { exportCursorDesktopSession, exportCursorDesktopTranscript } from '../../../tools/capture/cursor-desktop-export.mjs';
+import { decodeCursorAgentHar } from '../../../tools/capture/cursor-agent-decode.mjs';
 
 const bytesSource = (name, bytes) => ({ name, size: bytes.length, slice: async (a, b) => bytes.subarray(a, b) });
 
@@ -108,7 +110,7 @@ test('the real current Cursor desktop transcript opens without inventing unavail
 });
 
 test('Cursor capture commands expose non-recording help without requiring a model run', () => {
-  for (const file of ['cursor-agent-capture.mjs', 'cursor-desktop-capture.mjs']) {
+  for (const file of ['cursor-agent-capture.mjs', 'cursor-agent-decode.mjs', 'cursor-desktop-capture.mjs']) {
     const run = spawnSync(process.execPath, [fileURLToPath(new URL(`../../../tools/capture/${file}`, import.meta.url))], { encoding: 'utf8' });
     assert.equal(run.status, 0, run.stderr);
     assert.match(run.stdout, /real Cursor/i);
@@ -170,4 +172,32 @@ test('a real Cursor HAR joins only by an exact observed session or request ident
   assert.ok(capture.entries.some(entry => entry.host.endsWith('.cursor.sh') && entry.path === '/agent.v1.AgentService/Run'));
   assert.ok(raw.every(entry => !/^https?:\/\/https?:\/\//.test(entry.request.url)), 'observer URLs contain one scheme');
   assert.ok(raw.every(entry => entry._traceCapture?.partial !== true), 'complete real run has no partial checkpoints');
+});
+
+test('the real AgentService capture decodes with the exact shipped Cursor descriptors', {
+  skip: (!process.env.TRACE_CURSOR_AGENT_STREAM || !process.env.TRACE_CURSOR_HAR || !process.env.TRACE_CURSOR_AGENT_INDEX) &&
+    'set private real Cursor stream, HAR, and pinned Agent CLI index paths',
+}, async () => {
+  const { entries } = await agentRecording();
+  const { trace } = await loadTrace(entries);
+  const text = await readFile(process.env.TRACE_CURSOR_HAR, 'utf8');
+  const har = JSON.parse(text);
+  const sidecar = decodeCursorAgentHar(har, { indexFile: process.env.TRACE_CURSOR_AGENT_INDEX });
+  const persisted = JSON.parse(await readFile(path.join(path.dirname(process.env.TRACE_CURSOR_HAR), 'agent-service-decoded.json'), 'utf8'));
+  const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+  assert.equal(digest(persisted), digest(sidecar), 'the private persisted derivative matches a fresh exact decode');
+  const runs = har.log.entries.filter(entry => new URL(entry.request.url).pathname === '/agent.v1.AgentService/Run');
+  assert.equal(sidecar.entries.length, runs.length);
+  assert.ok(sidecar.entries.every(entry => entry.request.frames.length > 0 && entry.response.frames.length > 0));
+  assert.ok(sidecar.entries.some(entry => entry.request.frames.some(frame => frame.message?.message?.case === 'runRequest')));
+  assert.equal(JSON.stringify(sidecar).includes(process.env.TRACE_CURSOR_AGENT_INDEX), false, 'private decoder path is not persisted');
+
+  const { capture, store } = await analyzeCapture([
+    { name: 'capture.har', text: JSON.stringify(har) },
+    { name: 'agent-service-decoded.json', text: JSON.stringify(persisted) },
+  ], trace);
+  assert.equal(capture.decodedAgentService, runs.length);
+  const body = store.body(sidecar.entries[0].harIndex, 'request');
+  assert.match(body.mode, /shipped AgentService descriptors/i);
+  assert.match(body.text, /runRequest/);
 });

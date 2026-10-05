@@ -14,7 +14,7 @@ import { createPlayback } from "./playback.js";
 import { createTransport, playheadForRequest } from "./transport.js";
 import { nextShot, agentPAt, createFollowZoom } from "./director.js";
 import { createHarnessMode } from "./harness/mode.js";
-import { looksLikeHar, capturesFor } from "./network/har.js";
+import { looksLikeHar, looksLikeCursorDecoded, capturesFor } from "./network/har.js";
 import { networkLens, wireCard, wireSummary, wireTokens, NETWORK_LENS, closeWireReader } from "./network/panel.js";
 import { sourcesLens, SOURCES_LENS } from "./sources/panel.js";
 import { EXAMPLE_ID, loadPublicExample, createLoadOwnership } from "./example-loader.js";
@@ -322,13 +322,16 @@ const pendingBody = new Map();
 let bodySeq = 0;
 const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode or Cursor desktop .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
 
-// Captures among picked files: .har files, and .json files whose first bytes are a HAR's (a Claude Code
-// subagent's .meta.json is not one).
+// Captures among picked files: .har files, HAR-shaped .json files, and Cursor's
+// private decoded AgentService sidecar (a session .json remains separate).
 async function splitCaptures(files) {
   const hars = [], rest = [];
   for (const f of files) {
     let har = /\.har$/i.test(f.path);
-    if (!har && /\.json$/i.test(f.path) && f.file?.slice) { try { har = looksLikeHar(await f.file.slice(0, 256).text()); } catch { har = false; } }
+    if (!har && /\.json$/i.test(f.path) && f.file?.slice) { try {
+      const head = await f.file.slice(0, 256).text();
+      har = looksLikeHar(head) || looksLikeCursorDecoded(head);
+    } catch { har = false; } }
     (har ? hars : rest).push(f);
   }
   return { hars, logs: rest };

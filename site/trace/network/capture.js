@@ -18,9 +18,22 @@ const EAGER_ROLES = new Set(["model", "side", "flags", "bootstrap", "catalog", "
 const SMALL = 65536;            // other bodies up to this size are read eagerly too (MCP requests, small lists)
 const BODY_MAX = 2_000_000;     // a lazily read body is cut here
 const VALUE_MAX = 300;          // a flag value's JSON shown in the table
+const CURSOR_DECODED = 'trace-cursor-agent-service-decoded';
 
 const lowerHeaders = (list) => { const o = {}; for (const h of list || []) { const k = String(h.name).toLowerCase(); if (!(k in o)) o[k] = h.value; } return o; };
 const short = (id) => String(id || "").slice(0, 8);
+
+function capturedBytes(part) {
+  if (!part || typeof part.text !== 'string') return new Uint8Array();
+  if (part.encoding !== 'base64') return new TextEncoder().encode(part.text);
+  const binary = atob(part.text);
+  return Uint8Array.from(binary, char => char.charCodeAt(0));
+}
+
+async function capturedSha256(part) {
+  const digest = await crypto.subtle.digest('SHA-256', capturedBytes(part));
+  return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
 
 // The session ids of a loaded Trace: Claude Code's root session id (subagent rows share it), every
 // Codex/ChatGPT thread id of the family.
@@ -199,9 +212,19 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   const names = [];
   const voiceRecords=[];
   const processDestinations=[];
+  const cursorDecoded=[];
+  const captureRanges=[];
   for (const f of files) {
+    let value;
+    try { value = JSON.parse(f.text); } catch { value = null; }
+    if (value?.format === CURSOR_DECODED) {
+      names.push(f.name);
+      cursorDecoded.push({ name: f.name, value });
+      continue;
+    }
     const har = parseHar(f.text);
     names.push(f.name);
+    const start = raw.length;
     voiceRecords.push(...scopeVoice(har.log._traceVoice,sessionIdsOf(trace)));
     const observed = har.log._traceProcessDestinations;
     if (observed?.format === 'trace-cursor-process-destinations' && Array.isArray(observed.destinations))
@@ -216,8 +239,34 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
     const explicit = attachment?.association === "explicit" && attachment.product === trace.product && Array.isArray(attachment.sessionIds);
     if (explicit && !attachment.sessionIds.some(id => sessionIdsOf(trace).includes(String(id).toLowerCase()))) throw new Error("This explicitly attached capture doesn't hold the loaded session.");
     for (const e of har.log.entries) raw.push(e._traceAssociation === "explicit" && !explicit ? {...e,_traceAssociation:"unattributed"} : e);
+    captureRanges.push({ name: f.name, start, count: har.log.entries.length });
   }
   if (!raw.length) throw new Error("That capture has no requests in it.");
+  const decodedByEntry = new Map();
+  for (const artifact of cursorDecoded) {
+    const decoded = artifact.value;
+    if (decoded.version !== 1 || decoded.product !== 'cursor' || decoded.surface !== 'agent-cli' ||
+      decoded.source?.evidence !== 'shipped-artifact' || !Array.isArray(decoded.entries))
+      throw new Error('The Cursor AgentService sidecar has unsupported provenance or structure.');
+    const ranges = captureRanges.filter(range => range.name === decoded.capture);
+    if (ranges.length !== 1) throw new Error('The Cursor AgentService sidecar does not name exactly one loaded HAR.');
+    const range = ranges[0];
+    for (const item of decoded.entries) {
+      const local = Number(item.harIndex);
+      if (!Number.isInteger(local) || local < 0 || local >= range.count) throw new Error('The Cursor AgentService sidecar names an unavailable HAR entry.');
+      const i = range.start + local, entry = raw[i];
+      let pathname = '';
+      try { pathname = new URL(entry.request?.url).pathname; } catch { /* rejected below */ }
+      if (entry.request?.method !== item.method || pathname !== item.path || item.path !== '/agent.v1.AgentService/Run')
+        throw new Error('The Cursor AgentService sidecar does not match its HAR entry.');
+      const requestPart = entry.request?.postData, responsePart = entry.response?.content;
+      if (item.request?.capturedBytes !== capturedBytes(requestPart).byteLength || item.response?.capturedBytes !== capturedBytes(responsePart).byteLength ||
+        item.request?.capturedSha256 !== await capturedSha256(requestPart) || item.response?.capturedSha256 !== await capturedSha256(responsePart))
+        throw new Error('The Cursor AgentService sidecar body hashes do not match the loaded HAR.');
+      if (decodedByEntry.has(i)) throw new Error('More than one decoded Cursor sidecar names the same HAR entry.');
+      decodedByEntry.set(i, item);
+    }
+  }
   const infos = raw.map((e, i) => entryInfo(e, i));
   const observedProduct = captureProduct(raw,infos);
   const product = observedProduct || (trace.product === 'opencode' || trace.product === 'cursor' ? trace.product : null);
@@ -285,6 +334,7 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   // ---- classify, then read the revealing bodies and collect identity values before redacting anything
   const R = createRedactor();
   R.protect([...mine, ...others]);
+  for (const decoded of decodedByEntry.values()) R.harvest(decoded);
   for (const x of kept) {
     Object.assign(x,classify(product,x));
     if (product === "codex" && x.role === "other" && codexResponsesEntry(raw[x.i],x)) Object.assign(x,{role:"model",label:"Responses (custom endpoint)",reveals:"Responses protocol request and returned response, identified by exact harness client metadata."});
@@ -323,7 +373,7 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
       if (x.protocol === 'chat-completions' && x.role === 'model') {
         calls.push(chatCompletionsCall(e, x, R, product));
       } else if (product === 'cursor' && x.role === 'model') {
-        calls.push(cursorProtoCall(e, x, R));
+        calls.push(cursorProtoCall(e, x, R, decodedByEntry.has(x.i)));
       } else if (product === "codex" && x.association === "unattributed" && x.role === "model") continue;
       else if (product === "claude-code") {
         if (x.role === "model" || (x.role === "side" && x.method === "POST" && /\/v1\/messages/.test(x.path))) {
@@ -479,10 +529,11 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   const failures = calls.filter(c => (c.protocol === 'chat-completions' || c.protocol === 'connect-proto') && (c.status >= 400 || c.response.error)).length;
   if (failures) notes.push(`${failures} model call${failures === 1 ? '' : 's'} returned an HTTP/provider error. Read the captured response for details.`);
   if (processDestinations.length) notes.push(`${processDestinations.length} remote IP/port observations came from the recorder-owned process tree. They are destination metadata only and are not associated to a request, session, hostname, or provider.`);
+  if (decodedByEntry.size) notes.push(`${decodedByEntry.size} Cursor AgentService/Run request${decodedByEntry.size === 1 ? '' : 's'} was decoded with exact protobuf classes from the pinned shipped Agent CLI artifact.`);
 
   const capture = {
     voice:summarizeVoice(voiceRecords), product, clientIdentified: !!observedProduct, files: names, total: infos.length, kept: kept.length, elsewhere, otherSessions: [...others].map((s) => `${short(s)}…`), notes,
-    entries, processDestinations, roles, calls, byRequest, join, betas: betaList, flags: flagList, attributes, bootstrap, handshake, catalog,
+    entries, processDestinations, decodedAgentService: decodedByEntry.size, roles, calls, byRequest, join, betas: betaList, flags: flagList, attributes, bootstrap, handshake, catalog,
     metrics: { names: metricNames, shadowSelectionMethods: shadow }, events, telemetryCounts, rateLimits: rateSeries.sort((a, b) => (a.t ?? 0) - (b.t ?? 0)),
     account: { facts, identityFields: [...identityFields] }, headerNames: [...headerNames.values()].sort((a, b) => a.name.localeCompare(b.name)), transit,
     ms: now() - t0,
@@ -501,6 +552,8 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
       if (text == null || text === "") return { text: "", mode: "no body", cut: false };
       const mime = part === "response" ? infos[i].mime : String(header(e.request.headers, "content-type") || "");
       if (product === 'cursor' && /application\/connect\+proto/i.test(mime)) {
+        const decoded = decodedByEntry.get(i)?.[part];
+        if (decoded) return cut(JSON.stringify(R.json(harvested(R, decoded)), null, 2), 'application/connect+proto, exact shipped AgentService descriptors, redacted');
         const encoded = part === 'response' ? e.response?.content : e.request?.postData;
         if (encoded?.encoding === 'base64') return cut(`Exact captured protobuf bytes (${encoded.size ?? 'unknown'} bytes), base64 encoded:\n\n${R.str(encoded.text || '')}`, 'application/connect+proto, opaque base64');
         return cut(`Captured application/connect+proto body (${String(text).length} decoded characters). No shipped-schema decoder was applied:\n\n${R.str(text)}`, 'application/connect+proto, opaque');
@@ -553,14 +606,14 @@ function clampJson(v, max = 4000) {
 // Cursor AgentService/Run is ConnectRPC protobuf. This summary records only
 // transport facts and exact observed IDs; request/response bytes stay in the
 // local body reader until a shipped descriptor provides an exact decoder.
-function cursorProtoCall(entry, info, R) {
+function cursorProtoCall(entry, info, R, decoded = false) {
   const requestId = header(entry.request?.headers, 'x-request-id') || header(entry.request?.headers, 'x-original-request-id') ||
     header(entry.response?.headers, 'x-request-id') || null;
   const sessionId = ['x-cursor-session-id', 'x-session-id', 'cursor-session-id', 'session-id']
     .map(name => header(entry.request?.headers, name)).find(Boolean) || null;
   const complete = !info.partial && info.status >= 200 && info.status < 300;
   return { product: 'cursor', protocol: 'connect-proto', transport: 'http', entry: info.i, t: info.t, status: info.status,
-    kind: 'main', requestClass: 'AgentService/Run (opaque ConnectRPC)', model: null,
+    kind: 'main', decoded, requestClass: decoded ? 'AgentService/Run (shipped descriptor decoded)' : 'AgentService/Run (opaque ConnectRPC)', model: null,
     requestId: requestId ? R.str(String(requestId)) : null, sessionId: sessionId ? R.str(String(sessionId)) : null,
     association: info.association || 'unattributed', routing: { destination: info.host },
     response: { complete, partial: info.partial || !complete, error: info.status >= 400 ? { status: info.status } : null, reasoning: [] },

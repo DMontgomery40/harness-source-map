@@ -244,7 +244,9 @@ export async function recordCursorDesktop(opts) {
       if (typeof value?.providerOptions?.cursor?.requestId === 'string') out.push(value.providerOptions.cursor.requestId);
       return out;
     });
-    evidence = cursorCaptureEvidence(har, native ? [native.info.id] : [], requestIds);
+    evidence = cursorCaptureEvidence(har, native ? [native.info.id] : [], requestIds, {
+      observation: 'Process-scoped HTTPS proxy; exact listed traffic only. Passive process destinations remain separate unattributed metadata.',
+    });
     agentServiceRuns = har.log.entries.filter(entry => {
       try { return new URL(entry.request?.url).pathname === '/agent.v1.AgentService/Run'; } catch { return false; }
     }).length;
