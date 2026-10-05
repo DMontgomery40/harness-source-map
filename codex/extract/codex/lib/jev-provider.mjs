@@ -32,7 +32,7 @@ export class JevAnswerShapeError extends JevRequestError {
 const cacheVersion = provider => `${JEV_VERSION}@${provider.id}/${provider.model}`;
 const publicProvider = provider => ({ provider:provider.provider, endpoint:provider.endpoint, model:provider.model, configured:Boolean(provider.key) });
 const selectProvider = (config, provider) => {
-  Object.assign(config, { provider:provider.provider, endpoint:provider.endpoint, model:provider.model, key:provider.key, cacheVersion:cacheVersion(provider) });
+  Object.assign(config, { provider:provider.provider, endpoint:provider.endpoint, model:provider.model, key:provider.key, servedModel:provider.servedModel, cacheVersion:cacheVersion(provider) });
 };
 
 // Read credentials as data; never source the environment file or expose its contents.
@@ -55,7 +55,11 @@ export function decisionConfig(env = process.env, read = () => fs.readFileSync(p
 }
 
 const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504, 529]);
-const UNAVAILABLE = new Set([401, 402, 403]);
+export const JEV_FALLBACK_HTTP_STATUSES = Object.freeze([401, 402, 403]);
+const UNAVAILABLE = new Set(JEV_FALLBACK_HTTP_STATUSES);
+
+export const isFallbackEligible = error => error instanceof JevUnavailableError;
+export const servedModelMatches = (config, model) => typeof model === 'string' && config.servedModel.test(model);
 const sleepMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 // Asks Jev `questions` about `state` and returns the parsed response ({ model, answers, usage }).
@@ -86,7 +90,7 @@ export async function ask(config, { state, questions }, { fetchImpl = globalThis
       selectProvider(config,provider);
       return {...result,jev_provider:provider.provider,requested_model:provider.model,served_model:result.model};
     } catch(error) {
-      if (!(error instanceof JevUnavailableError) || requests.length===1) throw error;
+      if (!isFallbackEligible(error) || requests.length===1) throw error;
       unavailable.push(error.reason);
     }
   }
@@ -121,7 +125,7 @@ async function askProvider(config, body, questions, { fetchImpl, attempts, timeo
     let result;
     try { result = await response.json(); } catch { throw new JevAnswerShapeError(`${config.provider} returned invalid JSON`); }
     if (!result?.answers || typeof result.answers !== 'object') throw new JevAnswerShapeError(`${config.provider} answer without answers`);
-    if (typeof result.model !== 'string' || !config.servedModel.test(result.model)) throw new JevAnswerShapeError(`${config.provider} served unexpected model ${JSON.stringify(result.model)}`);
+    if (result.model !== undefined && !servedModelMatches(config,result.model)) throw new JevAnswerShapeError(`${config.provider} served unexpected model ${JSON.stringify(result.model)}`);
     for (const id of Object.keys(questions)) if (!(id in result.answers)) throw new JevAnswerShapeError(`${config.provider} answer is missing question ${id}`);
     return result;
   }
@@ -139,17 +143,12 @@ export function openCache(file, { version = JEV_VERSION, config } = {}) {
   const entries = {};
   for (const [key, value] of Object.entries(raw)) entries[key.startsWith('jev-') ? key : `${LEGACY_VERSION}:${key}`] = value;
   const currentVersion = () => config?.cacheVersion ?? version;
-  const configuredVersions = () => {
-    if (!config?.providerChain) return [currentVersion()];
-    const versions=config.providerChain.map(provider=>cacheVersion({id:provider.provider==='OpenRouter'?'openrouter':'typesafe',model:provider.model}));
-    return [currentVersion(),...versions.filter(v=>v!==currentVersion())];
-  };
-  const matches = key => configuredVersions().map(v=>`${v}:${key}`);
+  const full = key => `${currentVersion()}:${key}`;
   return {
     get version() { return currentVersion(); },
-    has: key => matches(key).some(full=>full in entries),
-    get: key => entries[matches(key).find(full=>full in entries)],
-    set(key, value) { entries[`${currentVersion()}:${key}`] = value; return value; },
+    has: key => full(key) in entries,
+    get: key => entries[full(key)],
+    set(key, value) { entries[full(key)] = value; return value; },
     get size() { return Object.keys(entries).length; },
     save() { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(entries)); }
   };

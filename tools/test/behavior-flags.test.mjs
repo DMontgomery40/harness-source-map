@@ -137,7 +137,7 @@ test("a release: full old ranges resolved, every successor pair flagged once, ve
   const again = await flagRelease({ ...r, config, askOptions: { fetchImpl: async () => assert.fail("cached verdicts must not be re-sent") } });
   assert.deepEqual(again.doc.pairs.map(p => p.flag), ["likely", "wording only"]);
   const stored = Object.keys(JSON.parse(readFileSync(r.cacheFile, "utf8")));
-  assert.ok(stored.every(k => k.startsWith(`${config.cacheVersion??'jev-1.13'}:${QUESTION_VERSION}:`)), stored.join(","));
+  assert.ok(stored.every(k => k.startsWith(`jev-1.13:${QUESTION_VERSION}:`)), stored.join(","));
 });
 
 test("a likely flag on a doubtful successor match is shown but does not notify", async () => {
@@ -145,7 +145,7 @@ test("a likely flag on a doubtful successor match is shown but does not notify",
   const pairs = JSON.parse(readFileSync(path.join(r.newDir, "successors.json"), "utf8"));
   pairs[0].confidence = THRESHOLDS.notifySuccessorConfidence - 0.01;
   writeFileSync(path.join(r.newDir, "successors.json"), JSON.stringify(pairs));
-  const { doc } = await flagRelease({ ...r, config, askOptions: { fetchImpl: async (url, opts) => reply(200, { model:'jev-1.13.0', answers: answersFor(JSON.parse(opts.body).state) }) } });
+  const { doc } = await flagRelease({ ...r, config, askOptions: { fetchImpl: async (url, opts) => reply(200, { answers: answersFor(JSON.parse(opts.body).state) }) } });
   assert.equal(doc.pairs[0].flag, "likely");
   assert.equal(doc.pairs[0].notify, false);
 });
@@ -153,7 +153,7 @@ test("a likely flag on a doubtful successor match is shown but does not notify",
 test("outage: verdicts so far are saved, no flags file is written, and the exit is 75", async () => {
   const r = release();
   let calls = 0;
-  const fetchImpl = async (url, opts) => (calls++ === 0 ? reply(200, { model:'jev-1.13.0', answers: answersFor(JSON.parse(opts.body).state) }) : reply(503, {}));
+  const fetchImpl = async (url, opts) => (calls++ === 0 ? reply(200, { answers: answersFor(JSON.parse(opts.body).state) }) : reply(503, {}));
   const { code, doc } = await flagRelease({ ...r, config, askOptions: { fetchImpl, attempts: 2, sleep: async () => {} } });
   assert.equal(code, JEV_TEMPFAIL_EXIT);
   assert.equal(doc, null);

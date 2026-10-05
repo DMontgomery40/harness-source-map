@@ -105,7 +105,7 @@ test("publishScan: Jev unavailable still writes the raw diff; an unchanged basel
 test("Jev labels are recorded with choice and confidence, cached, and capped", async () => {
   const items = Array.from({ length: 5 }, (_, i) => ({ kind: "url", where: "bin", text: `New url string in bin: https://e${i}.example.com` }));
   let calls = 0;
-  const fetchImpl = async () => { calls += 1; return { ok: true, status: 200, json: async () => ({ model:'jev-1.13.0', answers: { signal: { choice: "security", confidence: 0.812 } } }) }; };
+  const fetchImpl = async () => { calls += 1; return { ok: true, status: 200, json: async () => ({ answers: { signal: { choice: "security", confidence: 0.812 } } }) }; };
   const cacheFile = path.join(tmp(), "verdicts.json");
   const r = await triage(items, { product: "Fake", cacheFile, cap: 3, config, fetchImpl });
   assert.equal(r.skipped, 2);
@@ -127,7 +127,7 @@ test("package triage: a direct-provider verdict stays a hit in its provider name
 
 test("package triage: retries a rate limit, degrades on an outage, and fails on a malformed request", async () => {
   const items = [{ kind: "url", where: "bin", text: "a" }, { kind: "url", where: "bin", text: "b" }];
-  const answer = { ok: true, status: 200, json: async () => ({ model:'jev-1.13.0', answers: { signal: { choice: "routine", confidence: 0.7 } } }) };
+  const answer = { ok: true, status: 200, json: async () => ({ answers: { signal: { choice: "routine", confidence: 0.7 } } }) };
   let calls = 0;
   const flaky = async () => (++calls === 1 ? { ok: false, status: 429, headers: new Headers() } : answer);
   const retried = await triage(items.slice(0, 1), { product: "Fake", config, fetchImpl: flaky, sleep: async () => {} });

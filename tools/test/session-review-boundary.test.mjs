@@ -26,9 +26,9 @@ test('deduplicated safe chunk retains every full source boundary and rejects a s
 test('private source context is excluded from provider body',async()=>{
  const candidates=semanticCandidates([{text:'Neutral engineering text explains a parser and event routing. '.repeat(90)}]);let calls=0;
  const selected=candidates[0];
- await reviewSanitizedCandidates(candidates,{approvedHashes:[selected.hash],localBoundaryLoader,config:{provider:'TypeSafe',key:'fixture',endpoint:'https://fixture.example/systemone',model:'fixture'},fetcher:async(url,options)=>{
+ await reviewSanitizedCandidates(candidates,{approvedHashes:[selected.hash],localBoundaryLoader,config:{key:'fixture'},fetcher:async(url,options)=>{
   calls++;const body=JSON.parse(options.body);assert.deepEqual(body.state,{text:selected.text});assert.deepEqual(Object.keys(body.questions),['privacy']);assert.ok(!options.body.includes('sourceContexts'));assert.ok(!options.body.includes(selected.sourceContexts[0].hash));
-  return {ok:true,json:async()=>({model:'fixture',answers:{privacy:{noul:0}}})};
+  return {ok:true,json:async()=>({answers:{privacy:{noul:0}}})};
  }});assert.equal(calls,1);
 });
 test('effective provider credential boundary rejects a later candidate before the first send',async()=>{
@@ -37,7 +37,7 @@ test('effective provider credential boundary rejects a later candidate before th
  for(const concurrency of [1,4,16])await assert.rejects(reviewSanitizedCandidates(candidates,{approvedHashes:candidates.map(c=>c.hash),localBoundaryLoader,concurrency,config:{key:secret},fetcher:async()=>{calls++;throw Error('must not send');}}),/boundary rejected/);
  assert.equal(calls,0);
 });
-const reply=(status,body)=>({status,ok:status>=200&&status<300,headers:{get:()=>null},json:async()=>status>=200&&status<300?{model:'fixture',...body}:body,text:async()=>JSON.stringify(body)});
+const reply=(status,body)=>({status,ok:status>=200&&status<300,headers:{get:()=>null},json:async()=>body,text:async()=>JSON.stringify(body)});
 const config={provider:'TypeSafe',endpoint:'https://fixture.example/systemone',model:'fixture',key:'fixture-review-key'};
 const neutralRows=count=>Array.from({length:count},(_,i)=>({text:`Neutral engineering note ${i} explains how the parser routes events to handlers.`}));
 const quiet={attempts:2,sleep:async()=>{}};

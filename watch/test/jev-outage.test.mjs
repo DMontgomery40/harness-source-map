@@ -119,7 +119,7 @@ test("narrative lint asks the pinned model, caches zero verdicts, and keeps them
   // The verdict judged before the outage was saved, a zero included, and is not asked again.
   assert.deepEqual(JSON.parse(fs.readFileSync(cacheFile, "utf8")), { [`${config.cacheVersion}:${lintKey(kept)}`]: 0 });
   const asked = [];
-  const ok = async (url, options) => { asked.push(JSON.parse(options.body).state.sentence); return { ok: true, status: 200, json: async () => ({ model:'jev-1.13.0', answers: { stale_statistic: { noul: 0.1 } } }) }; };
+  const ok = async (url, options) => { asked.push(JSON.parse(options.body).state.sentence); return { ok: true, status: 200, json: async () => ({ answers: { stale_statistic: { noul: 0.1 } } }) }; };
   assert.deepEqual(await narrativeLint(repo, { cacheFile, config, fetchImpl: ok }), []);
   assert.deepEqual(asked, [lost]);
 });
