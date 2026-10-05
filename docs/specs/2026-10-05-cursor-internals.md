@@ -18,7 +18,7 @@ The primary research use is evidence about prompts, tools, configuration, local 
 
 The first release snapshot is the installed, signed macOS arm64 desktop app and the official Agent CLI package fetched from Cursor's own distribution endpoints:
 
-- Cursor desktop `3.17.8`, application commit `2fdd31c9f33f7fbe501f2d57772dc5bf64b63620`, package distro `d5c0e77a0214208f36b56d42e8e787de88d02ea4`.
+- Cursor desktop `3.23.12`, application commit `2d29876d567da1607532b23bbf2cd5ddbca496f0`, package distro `d5c0e77a0214208f36b56d42e8e787de88d02ea4`. The app applied this already-downloaded update when the initial real desktop session closed; the earlier observed `3.17.8` build is not the extraction baseline.
 - Cursor Agent CLI `2026.10.01-e373342`, official archive SHA-256 `629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc`.
 
 The acquisition record must preserve the official URLs, hashes, signing/notarization result, architecture and package metadata without publishing machine paths. A future refresh downloads or copies into `cursor/work/releases/<desktop version>-<cli version>/`; outputs never depend on an unversioned live application path.
