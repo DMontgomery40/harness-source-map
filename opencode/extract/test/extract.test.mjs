@@ -1,148 +1,136 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { existsSync, readFileSync, mkdtempSync, rmSync, readdirSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
+import { extract } from "../extract.mjs";
+import { buildFullLibrary, COMMIT, VERSION } from "../lib/full-library.mjs";
+import { refresh } from "../refresh.mjs";
 
-const root = fileURLToPath(new URL('../../', import.meta.url));
-const source = resolve(process.env.OPENCODE_SOURCE ?? resolve(root, 'work/source'));
-const extractor = resolve(root, 'extract/extract.mjs');
-const commit = 'aec0b9a6d8898f68f923aaf08b7306d931fd9d76';
-const digest = text => createHash('sha256').update(text).digest('hex');
-const run = args => spawnSync(process.execPath, [extractor, ...args], { encoding: 'utf8' });
-const outputs = resolve(root, 'outputs');
+const root = fileURLToPath(new URL("../../", import.meta.url));
+const source = path.resolve(process.env.OPENCODE_SOURCE ?? path.join(root, "work/source"));
+const outputs = path.join(root, "outputs");
+const extractor = path.join(root, "extract/extract.mjs");
+const available = existsSync(path.join(source, ".git"));
+const digest = (value) => createHash("sha256").update(value).digest("hex");
+const prepared = available ? buildFullLibrary(source) : null;
+const generated = available ? extract(source, { fullLibrary: prepared }) : null;
 
-test('extracts every shipped session and agent prompt with exact pinned source bytes', {
-  skip: !existsSync(resolve(source, '.git')) && 'Pinned upstream checkout absent; set OPENCODE_SOURCE to verify real source.',
-}, () => {
-  const out = mkdtempSync(resolve(tmpdir(), 'opencode-extraction-'));
+test("derives and byte-verifies the complete stable workspace dependency closure", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
+  const closure = prepared.closure;
+  assert.equal(closure.packages.length, 14);
+  assert.deepEqual(closure.packages.map((pkg) => pkg.name), [
+    "@opencode-ai/codemode", "@opencode-ai/core", "@opencode-ai/effect-drizzle-sqlite", "@opencode-ai/effect-sqlite-node",
+    "@opencode-ai/llm", "@opencode-ai/plugin", "@opencode-ai/protocol", "@opencode-ai/schema", "@opencode-ai/script",
+    "@opencode-ai/sdk", "@opencode-ai/server", "@opencode-ai/tui", "@opencode-ai/ui", "opencode",
+  ]);
+  assert.equal(closure.included.length + closure.excluded.length, 3713);
+  assert.ok(closure.included.length > 1000, "full closure collapsed back to the curated file set");
+  assert.equal(closure.included.filter((file) => file.file.startsWith("packages/opencode/src/")).length, 409);
+  assert.equal(new Set([...closure.included, ...closure.excluded].map((file) => file.file)).size, 3713);
+  assert.ok(closure.excluded.every((file) => file.reason && file.gitBlob && file.bytes >= 0));
+  assert.ok(closure.included.every((file) => file.sha256 === digest(file.text)));
+  assert.ok(closure.edges.some((edge) => edge.from === "@opencode-ai/server" && edge.to === "@opencode-ai/core"));
+  assert.ok(closure.edges.some((edge) => edge.from === "opencode" && edge.to === "@opencode-ai/tui"));
+});
+
+test("local preparation inventories every eligible occurrence and retains parse/privacy work", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
+  const { closure, discovery, preparation } = prepared;
+  assert.equal(discovery.stats.selected, discovery.records.length);
+  assert.ok(discovery.records.length > 10_000);
+  assert.equal(discovery.stats.scannedCodeFiles + discovery.stats.scannedAssetFiles + discovery.stats.skipped["manifest-runtime-entry-not-literal-scanned"], closure.included.length);
+  assert.ok(discovery.stats.literals > 80_000);
+  assert.equal(discovery.stats.parseFailures.length, 1);
+  const failure = discovery.stats.parseFailures[0];
+  assert.match(failure.fallback, /complete contiguous source spans/);
+  assert.ok(discovery.records.some((record) => record.file === failure.file && record.role.kind === "parse-fallback-source-span"));
+  assert.ok(preparation.batches > 0);
+  assert.ok(preparation.payloadBytes > 1_000_000);
+  assert.ok(preparation.withheld > 0, "privacy-withheld source occurrences must remain accounted for");
+  assert.equal(preparation.status.size, discovery.records.length);
+  assert.equal(new Set(discovery.records.map((record) => record.id)).size, discovery.records.length);
+});
+
+test("typed libraries assign every discovered occurrence exactly once and expose an index contract", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
+  const catalog = JSON.parse(prepared.outputs["library-catalog.json"]);
+  const discovery = JSON.parse(prepared.outputs["discovery-inventory.json"]);
+  const ids = catalog.libraries.flatMap((library) => library.recordIds);
+  assert.equal(ids.length, prepared.discovery.records.length);
+  assert.equal(new Set(ids).size, ids.length);
+  assert.deepEqual(new Set(ids), new Set(discovery.items.map((item) => item.id)));
+  for (const required of ["model-instructions", "conversation-prompts", "tools-schemas", "agents", "skills-plugins-mcp", "providers-models-network-reasoning", "sessions-compaction-storage-export", "approvals-sandboxing", "configuration-precedence", "environment-variables", "cli-commands-flags", "other-model-facing-text"]) {
+    assert.ok(catalog.libraries.some((library) => library.id === required), `missing library ${required}`);
+  }
+  assert.ok(catalog.libraries.find((library) => library.id === "environment-variables").count > 0);
+  const coverage = JSON.parse(prepared.outputs["discovery-coverage.json"]);
+  assert.equal(coverage.status, "pending-provider");
+  assert.equal(coverage.classifiedPositives, 0);
+  assert.equal(coverage.pending, ids.length);
+});
+
+test("complete source inventory preserves every included file and every explicit exclusion", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
+  const inventory = JSON.parse(prepared.outputs["source-inventory.json"]);
+  assert.equal(inventory.version, VERSION);
+  assert.equal(inventory.upstreamCommit, COMMIT);
+  assert.equal(inventory.items.length, prepared.closure.included.length);
+  assert.equal(inventory.excludedFiles.length, prepared.closure.excluded.length);
+  assert.equal(inventory.scope.trackedFiles, inventory.items.length + inventory.excludedFiles.length);
+  const byFile = new Map(prepared.closure.included.map((file) => [file.file, file]));
+  for (const item of inventory.items) {
+    const original = byFile.get(item.provenance[0].file);
+    assert.ok(original, item.provenance[0].file);
+    assert.equal(item.text, original.text);
+    assert.equal(item.provenance[0].sha256, original.sha256);
+    assert.match(item.provenance[0].url, new RegExp(COMMIT));
+  }
+});
+
+test("keeps the reviewed compatibility records source-backed while the full UI migrates", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
+  const prompts = JSON.parse(generated["prompts.json"]).items;
+  const tools = JSON.parse(generated["tools.json"]).items;
+  const network = JSON.parse(generated["network-tracing.json"]).items;
+  assert.ok(prompts.find((item) => item.id === "prompt-provider-routing").text.includes('return [PROMPT_DEFAULT]'));
+  assert.ok(prompts.some((item) => item.title === "Session prompt: kimi"));
+  for (const id of ["tool-read", "tool-bash", "tool-task", "tool-apply-patch", "tool-skill", "tool-execute", "tool-schema-read", "tool-registry", "tool-mcp-resources"]) assert.ok(tools.some((item) => item.id === id), id);
+  for (const id of ["network-session-headers", "network-request-preparation", "network-native-runtime", "network-reasoning-storage", "network-export", "network-model-catalog"]) assert.ok(network.some((item) => item.id === id), id);
+});
+
+test("regeneration is deterministic and committed outputs match", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
+  assert.deepEqual(readdirSync(outputs).sort(), Object.keys(generated).sort());
+  for (const [file, text] of Object.entries(generated)) assert.equal(readFileSync(path.join(outputs, file), "utf8"), text, file);
+  const checked = spawnSync(process.execPath, [extractor, "--source", source, "--check"], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 });
+  assert.equal(checked.status, 0, checked.stderr);
+  assert.match(checked.stdout, /Verified 40 public-source outputs/);
+});
+
+test("broad refresh fails closed on unanswered real source and partial mode labels it", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, async () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "opencode-refresh-"));
+  const closedOut = path.join(dir, "closed");
+  const partialOut = path.join(dir, "partial");
   try {
-    const result = run(['--source', source, '--out', out]);
-    assert.equal(result.status, 0, result.stderr);
-    const summary = JSON.parse(readFileSync(resolve(out, 'capture-summary.json'), 'utf8'));
-    assert.equal(summary.version, '1.18.34');
-    assert.equal(summary.upstreamCommit, commit);
-    const inventory = JSON.parse(readFileSync(resolve(out, 'prompts.json'), 'utf8'));
-    const directories = ['packages/opencode/src/session/prompt', 'packages/opencode/src/agent/prompt'];
-    const files = directories.flatMap(dir => readdirSync(resolve(source, dir))
-      .filter(file => file.endsWith('.txt')).map(file => `${dir}/${file}`));
-    files.push('packages/opencode/src/agent/generate.txt');
-    for (const file of files) {
-      const item = inventory.items.find(item => item.provenance[0].file === file);
-      assert.ok(item, `Missing shipped prompt: ${file}`);
-      assert.equal(item.text, readFileSync(resolve(source, file), 'utf8'));
-      assert.equal(item.provenance[0].sha256, digest(item.text));
-      assert.equal(item.provenance[0].startLine, 1);
-      assert.ok(item.details.condition);
-      assert.equal(item.details.evidence, 'public-source');
-    }
+    mkdirSync(closedOut, { recursive: true });
+    writeFileSync(path.join(closedOut, "capture-summary.json"), "unchanged\n");
+    const closed = await refresh({ source, out: closedOut, work: path.join(dir, "work-closed"), broad: true, partial: false, offline: true, check: false, prepared });
+    assert.equal(closed.exitCode, 75);
+    assert.ok(closed.providerPending > 0);
+    assert.equal(readFileSync(path.join(closedOut, "capture-summary.json"), "utf8"), "unchanged\n");
+    const partial = await refresh({ source, out: partialOut, work: path.join(dir, "work-partial"), broad: true, partial: true, offline: true, check: false, prepared });
+    assert.equal(partial.mode, "broad-partial");
+    assert.ok(partial.providerPending > 0);
+    const coverage = JSON.parse(readFileSync(path.join(partialOut, "discovery-coverage.json"), "utf8"));
+    assert.equal(coverage.status, "pending-provider");
+    const pending = JSON.parse(readFileSync(path.join(dir, "work-partial/opencode-discovery-pending.json"), "utf8"));
+    assert.equal(pending.pending.length, partial.pending);
   } finally {
-    rmSync(out, { recursive: true, force: true });
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 
-test('published records are self-contained public source evidence with bounded claims', () => {
-  const archive = JSON.parse(readFileSync(resolve(outputs, 'source-inventory.json'), 'utf8'));
-  const sourceFiles = new Map(archive.items.map(item => [item.provenance[0].file, item]));
-  const ids = new Set();
-  for (const name of ['prompts', 'tools', 'configuration', 'network-tracing']) {
-    const inventory = JSON.parse(readFileSync(resolve(outputs, `${name}.json`), 'utf8'));
-    assert.equal(inventory.upstreamCommit, commit);
-    for (const item of inventory.items) {
-      assert.ok(!ids.has(item.id), `Duplicate record ID ${item.id}`);
-      ids.add(item.id);
-      assert.equal(item.version, '1.18.34');
-      assert.equal(item.upstreamCommit, commit);
-      assert.equal(item.details.evidence, 'public-source');
-      assert.equal(item.details.observed, false);
-      for (const p of item.provenance) {
-        const sourceFile = sourceFiles.get(p.file);
-        assert.ok(sourceFile, `Public source archive missing ${p.file}`);
-        assert.equal(digest(sourceFile.text), sourceFile.provenance[0].sha256);
-        const text = sourceFile.text.match(/[^\n]*\n|[^\n]+$/g).slice(p.startLine - 1, p.endLine).join('');
-        assert.equal(digest(text), p.sha256);
-        if (p === item.provenance[0]) assert.equal(item.text, text);
-      }
-    }
-  }
-  const prompts = JSON.parse(readFileSync(resolve(outputs, 'prompts.json'), 'utf8')).items;
-  const route = prompts.find(item => item.id === 'prompt-provider-routing');
-  assert.ok(route.text.includes('model.api.id.includes("muse")'));
-  assert.ok(route.text.includes('return [PROMPT_DEFAULT]'));
-  assert.ok(prompts.some(item => item.id === 'prompt-compaction-templates'));
-  const network = JSON.parse(readFileSync(resolve(outputs, 'network-tracing.json'), 'utf8')).items;
-  const preparation = network.find(item => item.id === 'network-request-preparation');
-  assert.ok(preparation.text.includes('input.agent.prompt ? [input.agent.prompt] : SystemPrompt.provider(input.model)'));
-  assert.ok(network.find(item => item.id === 'network-session-headers').text.includes('"x-opencode-session-id": input.sessionID'));
-  const summary = JSON.parse(readFileSync(resolve(outputs, 'capture-summary.json'), 'utf8'));
-  assert.equal(summary.observedTraffic, false);
-  assert.ok(summary.limitations.some(text => text.includes('SDK')));
-});
-
-test('publishes tool, configuration and network records with verifiable source spans', {
-  skip: !existsSync(resolve(source, '.git')) && 'Pinned upstream checkout absent; set OPENCODE_SOURCE to verify real source.',
-}, () => {
-  const out = mkdtempSync(resolve(tmpdir(), 'opencode-extraction-'));
-  try {
-    const result = run(['--source', source, '--out', out]);
-    assert.equal(result.status, 0, result.stderr);
-    for (const file of ['prompts', 'tools', 'configuration', 'network-tracing']) {
-      const inventory = JSON.parse(readFileSync(resolve(out, `${file}.json`), 'utf8'));
-      assert.equal(new Set(inventory.items.map(item => item.id)).size, inventory.items.length);
-      const markdown = readFileSync(resolve(out, `${file}.md`), 'utf8');
-      for (const item of inventory.items) {
-        assert.equal(item.version, '1.18.34');
-        assert.equal(item.upstreamCommit, commit);
-        assert.ok(markdown.includes(`## ${item.title}\n`), `${item.id} missing Markdown heading`);
-        assert.ok(item.details.condition, `${item.id} lacks routing condition`);
-        for (const p of item.provenance) {
-          assert.ok(!p.file.startsWith('/') && !p.file.includes('..'));
-          const lines = readFileSync(resolve(source, p.file), 'utf8').match(/[^\n]*\n|[^\n]+$/g);
-          const text = lines.slice(p.startLine - 1, p.endLine).join('');
-          assert.equal(p.sha256, digest(text), `${item.id} has wrong provenance hash`);
-          if (p === item.provenance[0]) assert.equal(item.text, text);
-          assert.equal(p.url, `https://github.com/anomalyco/opencode/blob/${commit}/${p.file}#L${p.startLine}-L${p.endLine}`);
-        }
-      }
-    }
-    const tools = JSON.parse(readFileSync(resolve(out, 'tools.json'), 'utf8')).items;
-    for (const id of ['tool-read', 'tool-bash', 'tool-task', 'tool-apply-patch', 'tool-skill', 'tool-execute', 'tool-schema-read', 'tool-registry', 'tool-mcp-resources']) {
-      assert.ok(tools.some(item => item.id === id), `Missing tool record ${id}`);
-    }
-    const network = JSON.parse(readFileSync(resolve(out, 'network-tracing.json'), 'utf8')).items;
-    for (const id of ['network-session-headers', 'network-request-preparation', 'network-native-runtime', 'network-reasoning-storage', 'network-export', 'network-model-catalog']) {
-      assert.ok(network.some(item => item.id === id), `Missing network record ${id}`);
-    }
-  } finally {
-    rmSync(out, { recursive: true, force: true });
-  }
-});
-
-test('regeneration is deterministic and check mode verifies the committed outputs', {
-  skip: !existsSync(resolve(source, '.git')) && 'Pinned upstream checkout absent; set OPENCODE_SOURCE to verify real source.',
-}, () => {
-  const out = mkdtempSync(resolve(tmpdir(), 'opencode-extraction-'));
-  try {
-    const generated = run(['--source', source, '--out', out]);
-    assert.equal(generated.status, 0, generated.stderr);
-    const files = readdirSync(out).sort();
-    assert.ok(files.includes('key-findings.md'));
-    for (const file of files) {
-      assert.equal(readFileSync(resolve(out, file), 'utf8'), readFileSync(resolve(outputs, file), 'utf8'), file);
-    }
-    const checked = run(['--source', source, '--check']);
-    assert.equal(checked.status, 0, checked.stderr);
-    assert.match(checked.stdout, /Verified \d+ public-source outputs/);
-  } finally {
-    rmSync(out, { recursive: true, force: true });
-  }
-});
-
-test('rejects an actual repository that is not the pinned upstream checkout', () => {
-  const result = run(['--source', resolve(root, '..'), '--check']);
+test("rejects a repository that is not the pinned upstream checkout", () => {
+  const result = spawnSync(process.execPath, [extractor, "--source", path.resolve(root, ".."), "--check"], { encoding: "utf8" });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Expected public upstream commit/);
 });

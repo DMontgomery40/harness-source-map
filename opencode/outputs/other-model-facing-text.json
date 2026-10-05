@@ -1,0 +1,947 @@
+{
+  "schemaVersion": 2,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "sourceIdentity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a",
+  "items": [
+    {
+      "id": "occ-af5df28a3049240504f4e008",
+      "title": "packages/codemode/src/tool-runtime.ts:554 — This is a restricted JavaScript language for calling tools, not a genera…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "This is a restricted JavaScript language for calling tools, not a general-purpose runtime.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 554,
+          "endLine": 554,
+          "startOffset": 22063,
+          "endOffset": 22155,
+          "sha256": "b90cd6d8330c77ecad5e3813a2ec7c19361d49847a2137a3f6a14bef4cac40e2",
+          "textSha256": "81bfc0417f0210231c2fa5d32c1a976774ae3d6a8aa866221e725affa2378b50",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L554-L554"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.84
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "parameter": 0,
+            "user_template": 0.01,
+            "instructions": 0.28,
+            "context": 0.05,
+            "tool": 0.14,
+            "unknown": 0.01,
+            "human": 0.03,
+            "code_data": 0.24,
+            "documentation": 0.24
+          },
+          "confidence": 0.18
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.42,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.06,
+            "1": 0.08,
+            "2": 0.25,
+            "3": 0.61
+          },
+          "confidence": 0.42
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-5167487bf9785cd52881c35e",
+      "title": "packages/codemode/src/tool-runtime.ts:557 — This is a restricted JavaScript language for calling tools, not a genera…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "This is a restricted JavaScript language for calling tools, not a general-purpose runtime. Inside the confined interpreter, `tools` contains the Code Mode tools listed or searchable below and internal runtime tools; surrounding agent tools are not available.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 557,
+          "endLine": 557,
+          "startOffset": 22440,
+          "endOffset": 22700,
+          "sha256": "06dc96180334468b427005cc607a890fc5a9911f408832758e9b07897c1f1cfe",
+          "textSha256": "035c9e568ff98db60c63113d6389d660de64b853be4c65c10cac7a1ac094f6da",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L557-L557"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.81
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "parameter": 0,
+            "user_template": 0,
+            "context": 0.1,
+            "instructions": 0.39,
+            "tool": 0.09,
+            "human": 0.01,
+            "unknown": 0.01,
+            "code_data": 0.27,
+            "documentation": 0.13
+          },
+          "confidence": 0.3
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.4,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.06,
+            "1": 0.1,
+            "2": 0.24,
+            "3": 0.6
+          },
+          "confidence": 0.4
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-85e25e05263f45e45c1b1fbb",
+      "title": "packages/codemode/src/tool-runtime.ts:560 — Do not infer or normalize tool names; use only exact signatures shown be…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Do not infer or normalize tool names; use only exact signatures shown below or returned by search.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 560,
+          "endLine": 560,
+          "startOffset": 22736,
+          "endOffset": 22836,
+          "sha256": "4f0218271248e0ed32c9e19318dfabbddc36e91e6aff2ed95a2a64050027eb0a",
+          "textSha256": "e76d55682abb3cefbf93449c44faeaa0f2786b8056653aff43b8e37265c3895e",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L560-L560"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.86
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "parameter": 0,
+            "user_template": 0,
+            "instructions": 0.56,
+            "context": 0.03,
+            "tool": 0.06,
+            "human": 0,
+            "unknown": 0.01,
+            "code_data": 0.28,
+            "documentation": 0.05
+          },
+          "confidence": 0.5
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.4,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.12,
+            "2": 0.28,
+            "3": 0.57
+          },
+          "confidence": 0.4
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-fffa2c532b34b8a025f5cfe4",
+      "title": "packages/codemode/src/tool-runtime.ts:573 — 1. Pick a tool from the list under     Available tools  - each line is t…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "1. Pick a tool from the list under `## Available tools` - each line is the exact call signature; use it as-is rather than guessing segments.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 573,
+          "endLine": 573,
+          "startOffset": 23155,
+          "endOffset": 23297,
+          "sha256": "bea127dc53f6f2e07739d31871d613c434971417c4b5b458a5e950e35cd60b39",
+          "textSha256": "9de71de1d586b4c8612661bc6a9f37cb441002922d2cebd4c913b9563bfaf723",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L573-L573"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.89
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "parameter": 0,
+            "user_template": 0,
+            "instructions": 0.62,
+            "context": 0.01,
+            "tool": 0.07,
+            "unknown": 0.01,
+            "human": 0,
+            "code_data": 0.19,
+            "documentation": 0.1
+          },
+          "confidence": 0.57
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.51,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.1,
+            "2": 0.25,
+            "3": 0.64
+          },
+          "confidence": 0.51
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-0e462507bd7511228d83e914",
+      "title": "packages/codemode/src/tool-runtime.ts:574 — 2. Call it using the exact signature shown:  const result = await tools.…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "2. Call it using the exact signature shown: `const result = await tools.<namespace>.<tool>(input)`; bracket notation and quotes are part of the path.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 574,
+          "endLine": 574,
+          "startOffset": 23313,
+          "endOffset": 23464,
+          "sha256": "c73fefa62b5612d30e308b14ea0becbf71bc42e49d882cda0ea316aed09199b2",
+          "textSha256": "065575671ea3efb9bc517c822f17148efccd31643a68fc53510af5300061ad6f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L574-L574"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.82
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0.18,
+            "unknown": 0.01,
+            "user_template": 0.01,
+            "code_data": 0.08,
+            "human": 0,
+            "instructions": 0.59,
+            "parameter": 0,
+            "tool": 0.12,
+            "context": 0.01
+          },
+          "confidence": 0.54
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.05,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.07,
+            "1": 0.19,
+            "2": 0.36,
+            "3": 0.38
+          },
+          "confidence": 0.05
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-1806ca1ead9c2a582fd78407",
+      "title": "packages/codemode/src/tool-runtime.ts:575 — 3. Return only the fields you need from structured results; narrow unkno…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "3. Return only the fields you need from structured results; narrow unknown results before reading fields, and avoid returning large raw payloads.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 575,
+          "endLine": 575,
+          "startOffset": 23480,
+          "endOffset": 23627,
+          "sha256": "52b9958ebf6c6e1f04a8136bf76ee692aa013c60427004d0261108857d6560c8",
+          "textSha256": "34f9491f2756cfe38bb8e0777280ccd56d2098d376d48631f486ee9c801bb32a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L575-L575"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0.14,
+            "unknown": 0.01,
+            "user_template": 0.01,
+            "code_data": 0.16,
+            "human": 0,
+            "context": 0.01,
+            "parameter": 0,
+            "tool": 0.05,
+            "instructions": 0.62
+          },
+          "confidence": 0.58
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.21,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.19,
+            "2": 0.3,
+            "3": 0.47
+          },
+          "confidence": 0.21
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-773488df04dddea70bd91400",
+      "title": "packages/codemode/src/tool-runtime.ts:579 — 2. In the next execution, copy a returned path exactly, call it, and ret…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "2. In the next execution, copy a returned path exactly, call it, and return only the needed fields.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 579,
+          "endLine": 579,
+          "startOffset": 23792,
+          "endOffset": 23893,
+          "sha256": "f0ec92d5674e79c49adaa40a807595d23fd9812389d2519e2106a2f3e33d6902",
+          "textSha256": "d32ef1189f944692438162941e2d99496f77674a6e14a50d2fe82a0878de2354",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L579-L579"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.89
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0.06,
+            "unknown": 0.01,
+            "user_template": 0,
+            "instructions": 0.76,
+            "human": 0,
+            "context": 0.01,
+            "parameter": 0,
+            "tool": 0.03,
+            "code_data": 0.13
+          },
+          "confidence": 0.74
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.48,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.09,
+            "2": 0.27,
+            "3": 0.62
+          },
+          "confidence": 0.48
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-d359689b7b74873b2291e798",
+      "title": "packages/codemode/src/tool-runtime.ts:590 — - Only Code Mode tools listed here and internal runtime tools are availa…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "- Only Code Mode tools listed here and internal runtime tools are available; surrounding agent tools are not implicitly exposed.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 590,
+          "endLine": 590,
+          "startOffset": 24032,
+          "endOffset": 24162,
+          "sha256": "6687231124879e4a711b350a8c8d5e85ad89daf30eb16c0c65dae3e564d8177f",
+          "textSha256": "498b5d8e66f420870a6e64ad6302405761d2400cb374be15d84422dce6ea1045",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L590-L590"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.89
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "unknown": 0,
+            "documentation": 0.02,
+            "user_template": 0,
+            "context": 0.01,
+            "human": 0,
+            "instructions": 0.84,
+            "parameter": 0,
+            "tool": 0.02,
+            "code_data": 0.11
+          },
+          "confidence": 0.81
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.42,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.09,
+            "2": 0.28,
+            "3": 0.59
+          },
+          "confidence": 0.42
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-3c2cb8c45c22b3ca1ee8fba0",
+      "title": "packages/codemode/src/tool-runtime.ts:591 — - Only Code Mode tools listed here or returned by  tools.$codemode.searc…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "- Only Code Mode tools listed here or returned by `tools.$codemode.search` and internal runtime tools are available; surrounding agent tools are not implicitly exposed.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 591,
+          "endLine": 591,
+          "startOffset": 24175,
+          "endOffset": 24345,
+          "sha256": "30c091b1caebb27060e1c2bcebcddc299f6ee98b25fee2006f9d53f923c5fb68",
+          "textSha256": "55c38f5912ba4cbac32687db0afc16e537a0a7f1310a284922457f030a983ded",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L591-L591"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0.05,
+            "unknown": 0,
+            "user_template": 0,
+            "context": 0.01,
+            "human": 0,
+            "instructions": 0.8,
+            "parameter": 0,
+            "code_data": 0.11,
+            "tool": 0.02
+          },
+          "confidence": 0.77
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.37,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.05,
+            "1": 0.11,
+            "2": 0.27,
+            "3": 0.57
+          },
+          "confidence": 0.37
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-26f8cd145f2ef78ed4b46aa3",
+      "title": "packages/codemode/src/tool-runtime.ts:592 — - Filter, aggregate, and transform collections in code - never return th…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "- Filter, aggregate, and transform collections in code - never return them raw or call a tool per item across messages.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 592,
+          "endLine": 592,
+          "startOffset": 24355,
+          "endOffset": 24476,
+          "sha256": "271f6fee1f7c28379883c3de1fcc9af42b9b5c66a486d3b020032dacdeef38ae",
+          "textSha256": "afe859ea3202d0b252bba69c348b47333a74b2fa7b0aa689952d7e13a783524f",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L592-L592"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.83
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "unknown": 0.01,
+            "instructions": 0.5,
+            "user_template": 0,
+            "documentation": 0.1,
+            "human": 0,
+            "context": 0.03,
+            "parameter": 0,
+            "tool": 0.13,
+            "code_data": 0.23
+          },
+          "confidence": 0.44
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 1.9,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.08,
+            "1": 0.25,
+            "2": 0.36,
+            "3": 0.31
+          },
+          "confidence": 0.28
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-22b1e1108f0cb4e3fde4b842",
+      "title": "packages/codemode/src/tool-runtime.ts:593 — - A result typed  Promise unknown   may be structured data or text. Befo…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "- A result typed `Promise<unknown>` may be structured data or text. Before reading fields, check that it is a non-null object and not an array; otherwise handle the returned text or primitive directly.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 593,
+          "endLine": 593,
+          "startOffset": 24486,
+          "endOffset": 24689,
+          "sha256": "cd3318b49580f427b1f6c560a8b914ad7e3540e23446c0cb64c2da2a58b118ec",
+          "textSha256": "8ec85de203ed4623152d1e7e0cf2f90c10efdf5b6b3d165e5ad3d740e0d016f6",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L593-L593"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.82
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0.27,
+            "context": 0.02,
+            "user_template": 0,
+            "unknown": 0.01,
+            "human": 0,
+            "instructions": 0.49,
+            "parameter": 0,
+            "tool": 0.04,
+            "code_data": 0.17
+          },
+          "confidence": 0.42
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 1.96,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.13,
+            "1": 0.18,
+            "2": 0.28,
+            "3": 0.41
+          },
+          "confidence": 0
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-b02dde996dc294388f41cd13",
+      "title": "packages/codemode/src/tool-runtime.ts:608 — Use common JavaScript data operations, functions, control flow, selected…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Use common JavaScript data operations, functions, control flow, selected standard-library methods, and awaited tool calls. Built-ins include Date, RegExp, Map, Set, URL, URLSearchParams, and URI encoding helpers.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 608,
+          "endLine": 608,
+          "startOffset": 25376,
+          "endOffset": 25590,
+          "sha256": "4d13037dc1baba53a230e492c1860413aa103d5e7167f94dd325b91f8c87b225",
+          "textSha256": "c519742a24c4eb9945d8da5aa49b8e4a4e8871b9b4cf5265344f03374c3ae125",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L608-L608"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0.09,
+            "unknown": 0.01,
+            "user_template": 0,
+            "context": 0.03,
+            "human": 0,
+            "instructions": 0.76,
+            "parameter": 0,
+            "tool": 0.03,
+            "code_data": 0.08
+          },
+          "confidence": 0.71
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.52,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.07,
+            "2": 0.26,
+            "3": 0.65
+          },
+          "confidence": 0.52
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-a9e27fc42c761553c57e78e2",
+      "title": "packages/codemode/src/tool-runtime.ts:609 — Modules/imports, classes, generators, timers, fetch, eval, prototype acc…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Modules/imports, classes, generators, timers, fetch, eval, prototype access, unlisted methods, and promise chaining are unavailable. Use Code Mode tools for external operations. Use await with try/catch.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 609,
+          "endLine": 609,
+          "startOffset": 25596,
+          "endOffset": 25801,
+          "sha256": "17e5ab7255d2a3d978a481c7746245538f497e2aa366f80e932d93fd89e26a1a",
+          "textSha256": "dbbcf52f304679d51769ccc95347ab8204b6451f8f9dc5dcb1346a6e5bd2907a",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L609-L609"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.86
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "instructions": 0.71,
+            "documentation": 0.04,
+            "code_data": 0.2,
+            "parameter": 0,
+            "human": 0,
+            "user_template": 0,
+            "unknown": 0.01,
+            "tool": 0.01,
+            "context": 0.03
+          },
+          "confidence": 0.67
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.71,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.04,
+            "2": 0.18,
+            "3": 0.77
+          },
+          "confidence": 0.71
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-0c269bf43877f3728e1c3bcc",
+      "title": "packages/tui/src/component/dialog-workspace-create.tsx:49 — system-reminder The user has changed the current working directory to \"$…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "<system-reminder>The user has changed the current working directory to \"${dir}\". This is still the same project but at a possibly new location; take this into account when working with any files from now on.</system-reminder>",
+      "provenance": [
+        {
+          "file": "packages/tui/src/component/dialog-workspace-create.tsx",
+          "startLine": 49,
+          "endLine": 49,
+          "startOffset": 1768,
+          "endOffset": 1995,
+          "sha256": "77b0c6af0708fd2ff18645acf9b0e7b3d5cca81b33ce553b0369c2dbcd5a96bd",
+          "textSha256": "f85acdf6b1c542757ef985d3f35d91bf7d2d5a6d80feba53e8fd852e5306dd5b",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/component/dialog-workspace-create.tsx#L49-L49"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.8
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "context",
+          "probabilities": {
+            "unknown": 0.01,
+            "context": 0.34,
+            "tool": 0,
+            "code_data": 0.29,
+            "parameter": 0,
+            "human": 0.07,
+            "instructions": 0.28,
+            "user_template": 0.01,
+            "documentation": 0
+          },
+          "confidence": 0.25
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.01,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.08,
+            "1": 0.12,
+            "2": 0.51,
+            "3": 0.29
+          },
+          "confidence": 0.43
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    }
+  ]
+}

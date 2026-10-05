@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "sourceIdentity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a",
+  "status": "partial",
+  "classified": 10714,
+  "classifiedPositives": 178,
+  "classifiedNegatives": 10536,
+  "publishedRecords": 178,
+  "exactCovered": 178,
+  "providerPending": 0,
+  "withheld": 110,
+  "oversized": 0,
+  "localReview": 110,
+  "pending": 110,
+  "unverifiedGaps": 0,
+  "method": "Every classified positive is published once with its exact occurrence text. Privacy-withheld, oversized and unanswered occurrences remain explicit unresolved work."
+}

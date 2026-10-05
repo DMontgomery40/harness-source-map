@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { records, toolFiles } from './catalog.mjs';
+import { buildFullLibrary } from './lib/full-library.mjs';
 
 export const VERSION = '1.18.34';
 export const COMMIT = 'aec0b9a6d8898f68f923aaf08b7306d931fd9d76';
@@ -49,7 +50,7 @@ function git(source, args) {
   return execFileSync('git', ['-C', source, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 }
 
-export function extract(source) {
+export function extract(source, options = {}) {
   source = resolve(source);
   if (git(source, ['rev-parse', 'HEAD']).trim() !== COMMIT)
     throw new Error(`Expected public upstream commit ${COMMIT}.`);
@@ -169,10 +170,18 @@ export function extract(source) {
     'Core runner and standalone native adapters are mapped as separate source paths, without claiming that a captured CLI run selected them.',
     'Source records do not prove exact request bodies, received visible reasoning, serving-provider identity, geography, retention or downstream hops.',
   ];
+  const full = options.fullLibrary ?? buildFullLibrary(source, options);
   const outputs = {
     'capture-summary.json': JSON.stringify({ schemaVersion: 1, product: 'OpenCode', version: VERSION, upstreamCommit: COMMIT, upstream: UPSTREAM,
-      evidence: 'public-source', observedTraffic: false, recordCounts: counts, sourceFiles: sourceFiles.length,
-      extraction: 'Deterministic, pristine release checkout; selected files match pinned Git blobs. No network calls or session inputs.', limitations }, null, 2) + '\n',
+      evidence: 'public-source', observedTraffic: false,
+      recordCounts: { legacyReviewed: counts, completeLibraries: full.summary.libraryCounts },
+      sourceFiles: full.summary.scope.includedFiles,
+      excludedFiles: full.summary.scope.excludedFiles,
+      trackedFiles: full.summary.scope.trackedFiles,
+      workspacePackages: full.summary.scope.packages.map(item => item.name),
+      sourceIdentity: full.summary.scope.sourceIdentity,
+      discovery: full.summary.discovery,
+      extraction: 'Deterministic, pristine release checkout; complete first-party runtime workspace closure and every explicit package-tree exclusion match pinned Git blobs. No session inputs and no provider classification are required for local preparation.', limitations }, null, 2) + '\n',
   };
   const titles = { prompts: 'prompts', tools: 'tools', configuration: 'configuration', 'network-tracing': 'network and reasoning plumbing' };
   for (const [name, items] of Object.entries(groups)) {
@@ -187,7 +196,18 @@ export function extract(source) {
     const record = Object.values(groups).flat().find(item => item.id === id);
     return `## ${record.title}\n\n${record.details.summary}\n\nCondition: ${record.details.condition}\n\n[Public source](${record.provenance[0].url}).\n`;
   }).join('\n') + '\n## Evidence limits\n\n' + limitations.map(text => `- ${text}`).join('\n') + '\n';
+  Object.assign(outputs, full.outputs);
   return outputs;
+}
+
+export function writeOutputs(outputs, out, { check = false } = {}) {
+  if (!check) mkdirSync(out, { recursive: true });
+  for (const [file, text] of Object.entries(outputs)) {
+    const destination = resolve(out, file);
+    if (check) {
+      if (readFileSync(destination, 'utf8') !== text) throw new Error(`Generated output differs: ${file}`);
+    } else writeFileSync(destination, text);
+  }
 }
 
 function main() {
@@ -208,13 +228,7 @@ function main() {
     } else throw new Error(`Unknown argument: ${args[i]}`);
   }
   const outputs = extract(source);
-  if (!check) mkdirSync(out, { recursive: true });
-  for (const [file, text] of Object.entries(outputs)) {
-    const destination = resolve(out, file);
-    if (check) {
-      if (readFileSync(destination, 'utf8') !== text) throw new Error(`Generated output differs: ${file}`);
-    } else writeFileSync(destination, text);
-  }
+  writeOutputs(outputs, out, { check });
   process.stdout.write(`${check ? 'Verified' : 'Wrote'} ${Object.keys(outputs).length} public-source outputs for OpenCode v${VERSION} (${COMMIT.slice(0, 12)}).\n`);
 }
 
