@@ -161,12 +161,13 @@ export function cliCommands(closure, { version, commit, upstream }) {
         const type = spec.match(FIELD("type"))?.[2]?.trim();
         const alias = spec.match(FIELD("alias"))?.[2]?.trim();
         const flag = option[1] === "positional" ? `<${option[3]}>` : `--${option[3]}`;
+        const publishedText = text || `${option[1] === "positional" ? "Positional argument" : "Option"} ${flag} of opencode ${name}.`;
         records.push({
           id: `cli-${sha256(`${file.file}:${command.usage}:${option[1]}:${option[3]}`).slice(0, 12)}`,
           title: `opencode${name ? ` ${name}` : ""} ${flag}${option[1] === "positional" ? " (argument)" : ""}`, kind: "cli-flag", group: `opencode${name ? ` ${name}` : ""}`, version, upstreamCommit: commit,
-          text: text || `${option[1] === "positional" ? "Positional argument" : "Option"} ${flag} of opencode ${name}.`,
+          text: publishedText,
           provenance: [site(file, command.index + option.index, upstream, commit)],
-          details: { kind: option[1] === "positional" ? "cli-positional" : "cli-flag", command: command.usage, type: type ?? null, alias: alias ?? null, textSha256: sha256(text), condition: "Declared by the command's yargs builder in the shipped CLI source." }
+          details: { kind: option[1] === "positional" ? "cli-positional" : "cli-flag", command: command.usage, type: type ?? null, alias: alias ?? null, textSha256: sha256(publishedText), condition: "Declared by the command's yargs builder in the shipped CLI source." }
         });
       }
     });

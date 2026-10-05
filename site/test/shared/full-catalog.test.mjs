@@ -140,12 +140,26 @@ test('OpenCode nested flags retain the shipped subcommand', () => {
   assert.ok(items.some(r=>r.title==='opencode session delete <sessionID> (argument)' && r.details.kind==='cli-positional'));
 });
 
+test('OpenCode CLI description hashes cover the published fallback text', async () => {
+  const { createHash }=await import('node:crypto');
+  const items=JSON.parse(fs.readFileSync(path.join(root,'opencode/outputs/cli.json'))).items;
+  for(const item of items) assert.equal(item.details.textSha256,createHash('sha256').update(item.text).digest('hex'),item.title);
+});
+
+test('Cursor coverage references the expected published record kind', () => {
+  const report=JSON.parse(fs.readFileSync(path.join(root,'cursor/outputs/coverage.json')));
+  const search=JSON.parse(fs.readFileSync(path.join(root,'cursor/outputs/search-records.json')));
+  const byId=new Map(search.items.map(item=>[item.id,item]));
+  for(const result of report.results) if(result.status==='covered') for(const match of result.matches) assert.equal(byId.get(match.id)?.kind,result.expected_kind,result.id);
+});
+
 test('archives are bound to the complete authoritative discovery state', async () => {
   const { createHash }=await import('node:crypto');
   for(const product of ['cursor','opencode']) {
     const manifest=JSON.parse(fs.readFileSync(path.join(root,product,'outputs/full-catalog/manifest.json')));
     const file=product==='cursor'?'inventory.json':'discovery-inventory.json';
-    const digest=createHash('sha256').update(fs.readFileSync(path.join(root,product,'outputs',file))).digest('hex');
+    const summary=product==='cursor'?JSON.parse(fs.readFileSync(path.join(root,product,'outputs/discovery-summary.json'))):null;
+    const digest=summary?.inventory_sha256 ?? createHash('sha256').update(fs.readFileSync(path.join(root,product,'outputs',file))).digest('hex');
     assert.equal(manifest.verdict_state?.file,file);
     assert.equal(manifest.verdict_state?.sha256,digest);
   }

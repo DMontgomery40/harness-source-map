@@ -128,7 +128,7 @@
         "command": "$0 [project]",
         "type": "boolean",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "3a4b42c64355db7850f4357c1f62f6be0ee34b42ecf9707189bd304afcde54d6",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -154,7 +154,7 @@
         "command": "$0 [project]",
         "type": "boolean",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "2473f3398f06b11cf7d815928447b1ad4d841c4f9a49125f67adbf5c01ab349f",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -310,7 +310,7 @@
         "command": "$0 [project]",
         "type": "boolean",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "80e37593bbe139e3b3614b45c966ce33a65aee9da602a94e8ed22e5fb586c5bb",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -388,7 +388,7 @@
         "command": "$0 [project]",
         "type": "boolean",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "9094369b3f5eee03571fa4708a6d83be25182e6e543b292fc0eac58ec2874a0b",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -872,7 +872,7 @@
         "command": "attach <url>",
         "type": "boolean",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "8dabe5a41e06e382ae3697158d736116091e2d6fedb8746d14405731f15028a4",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -1324,7 +1324,7 @@
         "command": "diagnostics <file>",
         "type": "string",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "4564e70669cd6b8023945070915dcdad42b874e647cbff3f114bc7fbc9271468",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -1424,7 +1424,7 @@
         "command": "document-symbols <uri>",
         "type": "string",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "90d6d412c5fad74279d5a3ade5688e6619cd25a374351c096f39d513322760bf",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -2094,7 +2094,7 @@
         "command": "symbols <query>",
         "type": "string",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "b952ed1725d9ba4a46bbca50817c52e6015e38d0849e24c8e4d2be3c30706ff7",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -3555,7 +3555,7 @@
         "command": "run [message..]",
         "type": "boolean",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "d002066ba110d02e41a94ecc0a6b6befbbb55ec20e21279c50654ffe1041f4f7",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -3737,7 +3737,7 @@
         "command": "run [message..]",
         "type": "boolean",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "46848acfea782b3b858d2b7569547675b6022157465e64693febabdbda89492a",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
@@ -4049,7 +4049,7 @@
         "command": "run [message..]",
         "type": "boolean",
         "alias": null,
-        "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "textSha256": "6c9c4c6db033cdd2f31659f79b6992e19fd07b5a45522153acffdb1d97a74940",
         "condition": "Declared by the command's yargs builder in the shipped CLI source."
       }
     },
