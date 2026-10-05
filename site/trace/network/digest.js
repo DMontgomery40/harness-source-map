@@ -63,7 +63,7 @@ export function findings(cap, trace) {
   const notInModels = countBy(notIn, (c) => c.model || "model not named");
   if (product === 'opencode') {
     out.push({ id: 'notlog', label: 'Exact request evidence', warn: false, open: ['sec:calls', 'calls:notlog'],
-      text: `${plural(calls.length, 'captured model call')} show the actual request bodies. Native exports do not establish the complete system prompt, tool schemas or request transformations. ${plural(notIn.length, 'call')} lack an exact native step join; session headers establish session ownership only.` });
+      text: `${plural(calls.length, 'captured model call')} ${calls.length === 1 ? 'shows' : 'show'} the actual request bodies. Native exports do not establish the complete system prompt, tool schemas or request transformations. ${plural(notIn.length, 'call')} ${notIn.length === 1 ? 'lacks' : 'lack'} an exact native step match; session headers establish session ownership only.` });
   } else if (product === "codex") {
     const tools = [...new Set(calls.flatMap((c) => c.additionalTools || []))];
     const items = cap.join?.items || 0, matchedItems = cap.join?.itemsMatched || 0;
