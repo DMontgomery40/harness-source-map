@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "items": [
+    {
+      "id": "config-precedence",
+      "title": "Configuration layers and overrides",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "    const loadInstanceState = Effect.fn(\"Config.loadInstanceState\")(\n      function* (ctx: InstanceContext) {\n        const auth = yield* authSvc.all().pipe(Effect.orDie)\n\n        let result: Info = {}\n        const authEnv: Record<string, string> = {}\n        const consoleManagedProviders = new Set<string>()\n        let activeOrgName: string | undefined\n\n        const pluginScopeForSource = Effect.fnUntraced(function* (source: string) {\n          if (source.startsWith(\"http://\") || source.startsWith(\"https://\")) return \"global\"\n          if (source === \"OPENCODE_CONFIG_CONTENT\") return \"local\"\n          if (containsPath(source, ctx)) return \"local\"\n          return \"global\"\n        })\n\n        const mergePluginOrigins = Effect.fnUntraced(function* (\n          source: string,\n          // mergePluginOrigins receives raw Specs from one config source, before provenance for this merge step\n          // is attached.\n          list: ConfigPluginV1.Spec[] | undefined,\n          // Scope can be inferred from the source path, but some callers already know whether the config should\n          // behave as global or local and can pass that explicitly.\n          kind?: ConfigPlugin.Scope,\n        ) {\n          if (!list?.length) return\n          const hit = kind ?? (yield* pluginScopeForSource(source))\n          // Merge newly seen plugin origins with previously collected ones, then dedupe by plugin identity while\n          // keeping the winning source/scope metadata for downstream installs, writes, and diagnostics.\n          const plugins = ConfigPlugin.deduplicatePluginOrigins([\n            ...(result.plugin_origins ?? []),\n            ...list.map((spec) => ({ spec, source, scope: hit })),\n          ])\n          result.plugin = plugins.map((item) => item.spec)\n          result.plugin_origins = plugins\n        })\n\n        const merge = (source: string, next: Info, kind?: ConfigPlugin.Scope) => {\n          result = mergeConfigConcatArrays(result, next)\n          return mergePluginOrigins(source, next.plugin, kind)\n        }\n\n        for (const [key, value] of Object.entries(auth)) {\n          if (value.type === \"wellknown\") {\n            const url = key.replace(/\\/+$/, \"\")\n            authEnv[value.key] = value.token\n            const wellknownURL = `${url}/.well-known/opencode`\n            yield* Effect.logDebug(\"fetching remote config\", { url: wellknownURL })\n            const wellknown = yield* fetchRemoteJson(wellknownURL, undefined, ConfigV1.WellKnown, url)\n            const remote = yield* Effect.promise(() =>\n              substituteWellKnownRemoteConfig({\n                value: wellknown.remote_config,\n                dir: url,\n                source: wellknownURL,\n                env: authEnv,\n              }),\n            )\n            const fetchedConfig = remote\n              ? yield* Effect.gen(function* () {\n                  yield* Effect.logDebug(\"fetching remote config\", { url: remote.url })\n                  const data = yield* fetchRemoteJson(remote.url, remote.headers, Schema.Json, url)\n                  if (isRecord(data) && isRecord(data.config)) return data.config\n                  if (isRecord(data)) return data\n                  return yield* Effect.die(\n                    new Error(`failed to decode remote config from ${remote.url}: expected object`),\n                  )\n                })\n              : {}\n            const remoteConfig = mergeConfig(isRecord(wellknown.config) ? wellknown.config : {}, fetchedConfig)\n            if (!remoteConfig.$schema) remoteConfig.$schema = \"https://opencode.ai/config.json\"\n            const source = wellknownURL\n            const next = yield* loadConfig(\n              JSON.stringify(remoteConfig),\n              {\n                dir: path.dirname(source),\n                source,\n              },\n              authEnv,\n            )\n            yield* merge(source, next, \"global\")\n            yield* Effect.logDebug(\"loaded remote config from well-known\", { url })\n          }\n        }\n\n        const global = Object.keys(authEnv).length ? yield* loadGlobal(authEnv) : yield* getGlobal()\n        yield* merge(Global.Path.config, global, \"global\")\n\n        if (Flag.OPENCODE_CONFIG) {\n          yield* merge(Flag.OPENCODE_CONFIG, yield* loadFile(Flag.OPENCODE_CONFIG, authEnv))\n          yield* Effect.logDebug(\"loaded custom config\", { path: Flag.OPENCODE_CONFIG })\n        }\n\n        if (!Flag.OPENCODE_DISABLE_PROJECT_CONFIG) {\n          for (const file of yield* ConfigPaths.files(\"opencode\", ctx.directory, ctx.worktree).pipe(Effect.orDie)) {\n            yield* merge(file, yield* loadFile(file, authEnv), \"local\")\n          }\n        }\n\n        result.agent = result.agent || {}\n        result.mode = result.mode || {}\n        result.plugin = result.plugin || []\n\n        const directories = yield* ConfigPaths.directories(ctx.directory, ctx.worktree)\n\n        if (Flag.OPENCODE_CONFIG_DIR) {\n          yield* Effect.logDebug(\"loading config from OPENCODE_CONFIG_DIR\", { path: Flag.OPENCODE_CONFIG_DIR })\n        }\n\n        const deps: Fiber.Fiber<void>[] = []\n\n        for (const dir of directories) {\n          if (dir.endsWith(\".opencode\") || dir === Flag.OPENCODE_CONFIG_DIR) {\n            for (const file of [\"opencode.json\", \"opencode.jsonc\"]) {\n              const source = path.join(dir, file)\n              yield* Effect.logDebug(`loading config from ${source}`)\n              yield* merge(source, yield* loadFile(source, authEnv))\n              result.agent ??= {}\n              result.mode ??= {}\n              result.plugin ??= []\n            }\n          }\n\n          yield* ensureGitignore(dir).pipe(Effect.orDie)\n\n          const dep = yield* npmSvc\n            .install(dir, {\n              add: [\n                {\n                  name: \"@opencode-ai/plugin\",\n                  version: InstallationLocal ? undefined : InstallationVersion,\n                },\n              ],\n            })\n            .pipe(\n              Effect.exit,\n              Effect.tap((exit) =>\n                Exit.isFailure(exit)\n                  ? Effect.logWarning(\"background dependency install failed\", { dir, error: String(exit.cause) })\n                  : Effect.void,\n              ),\n              Effect.asVoid,\n              Effect.forkDetach,\n            )\n          deps.push(dep)\n\n          result.command = mergeDeep(result.command ?? {}, yield* Effect.promise(() => ConfigCommand.load(dir)))\n          result.agent = mergeDeep(result.agent ?? {}, yield* Effect.promise(() => ConfigAgent.load(dir)))\n          result.agent = mergeDeep(result.agent ?? {}, yield* Effect.promise(() => ConfigAgent.loadMode(dir)))\n          // Auto-discovered plugins under `.opencode/plugin(s)` are already local files, so ConfigPlugin.load\n          // returns normalized Specs and we only need to attach origin metadata here.\n          const list = yield* Effect.promise(() => ConfigPlugin.load(dir))\n          yield* mergePluginOrigins(dir, list)\n        }\n\n        if (process.env.OPENCODE_CONFIG_CONTENT) {\n          const source = \"OPENCODE_CONFIG_CONTENT\"\n          const next = yield* loadConfig(process.env.OPENCODE_CONFIG_CONTENT, {\n            dir: ctx.directory,\n            source,\n          })\n          yield* merge(source, next, \"local\")\n          yield* Effect.logDebug(\"loaded custom config from OPENCODE_CONFIG_CONTENT\")\n        }\n\n        const activeAccount = Option.getOrUndefined(\n          yield* accountSvc.active().pipe(Effect.catch(() => Effect.succeed(Option.none()))),\n        )\n        if (activeAccount?.active_org_id) {\n          const accountID = activeAccount.id\n          const orgID = activeAccount.active_org_id\n          const url = activeAccount.url\n          yield* Effect.gen(function* () {\n            const [configOpt, tokenOpt] = yield* Effect.all(\n              [accountSvc.config(accountID, orgID), accountSvc.token(accountID)],\n              { concurrency: 2 },\n            )\n            if (Option.isSome(tokenOpt)) {\n              process.env[\"OPENCODE_CONSOLE_TOKEN\"] = tokenOpt.value\n              yield* env.set(\"OPENCODE_CONSOLE_TOKEN\", tokenOpt.value)\n            }\n\n            if (Option.isSome(configOpt)) {\n              const source = `${url}/api/config`\n              const next = yield* loadConfig(JSON.stringify(configOpt.value), {\n                dir: path.dirname(source),\n                source,\n              })\n              for (const providerID of Object.keys(next.provider ?? {})) {\n                consoleManagedProviders.add(providerID)\n              }\n              yield* merge(source, next, \"global\")\n            }\n          }).pipe(\n            Effect.withSpan(\"Config.loadActiveOrgConfig\"),\n            Effect.catch((err) =>\n              Effect.logDebug(\"failed to fetch remote account config\", {\n                error: err instanceof Error ? err.message : String(err),\n              }),\n            ),\n          )\n        }\n\n        const managedDir = ConfigManaged.managedConfigDir()\n        if (existsSync(managedDir)) {\n          for (const file of [\"opencode.json\", \"opencode.jsonc\"]) {\n            const source = path.join(managedDir, file)\n            yield* merge(source, yield* loadFile(source), \"global\")\n          }\n        }\n\n        // macOS managed preferences (.mobileconfig deployed via MDM) override everything\n        const managed = yield* Effect.promise(() => ConfigManaged.readManagedPreferences())\n        if (managed) {\n          result = mergeConfigConcatArrays(\n            result,\n            yield* loadConfig(managed.text, {\n              dir: path.dirname(managed.source),\n              source: managed.source,\n            }),\n          )\n        }\n\n        for (const [name, mode] of Object.entries(result.mode ?? {})) {\n          result.agent = mergeDeep(result.agent ?? {}, {\n            [name]: {\n              ...mode,\n              mode: \"primary\" as const,\n            },\n          })\n        }\n\n        if (Flag.OPENCODE_PERMISSION) {\n          try {\n            result.permission = mergeDeep(result.permission ?? {}, JSON.parse(Flag.OPENCODE_PERMISSION))\n          } catch (err) {\n            yield* Effect.logWarning(\"OPENCODE_PERMISSION contains invalid JSON, skipping\", { err })\n          }\n        }\n\n        if (result.tools) {\n          const perms: Record<string, ConfigPermissionV1.Action> = {}\n          for (const [tool, enabled] of Object.entries(result.tools)) {\n            const action: ConfigPermissionV1.Action = enabled ? \"allow\" : \"deny\"\n            if (tool === \"write\" || tool === \"edit\" || tool === \"patch\") {\n              perms.edit = action\n              continue\n            }\n            perms[tool] = action\n          }\n          result.permission = mergeDeep(perms, result.permission ?? {})\n        }\n\n        if (!result.username) {\n          try {\n            result.username = os.userInfo().username || \"user\"\n          } catch (err) {\n            yield* Effect.logWarning(\"failed to read system username, using fallback\", { err })\n            result.username = \"user\"\n          }\n        }\n\n        if (result.autoshare === true && !result.share) {\n          result.share = \"auto\"\n        }\n\n        if (Flag.OPENCODE_DISABLE_AUTOCOMPACT) {\n          result.compaction = { ...result.compaction, auto: false }\n        }\n        if (Flag.OPENCODE_DISABLE_PRUNE) {\n          result.compaction = { ...result.compaction, prune: false }\n        }\n\n        return {\n          config: result,\n          directories,\n          deps,\n          consoleState: {\n            consoleManagedProviders: Array.from(consoleManagedProviders),\n            activeOrgName,\n            switchableOrgCount: 0,\n          },\n        }\n      },\n      Effect.provideService(FSUtil.Service, fs),\n    )\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/config/config.ts",
+          "startLine": 328,
+          "endLine": 612,
+          "sha256": "65b210b8df3d47c9bf4500d496810d6d3fd7ee90ca4dfa7cc58cf96a2d7c65f7",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L328-L612"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Config.loadInstanceState merges enabled sources in source order; project/config-directory/organization/managed sources are conditional.",
+        "summary": "Order: well-known remote config, global config, OPENCODE_CONFIG, project files, discovered config directories and Markdown agents, OPENCODE_CONFIG_CONTENT, active organization, managed directory, macOS managed preferences; later permission and legacy-tool compatibility transforms apply."
+      }
+    },
+    {
+      "id": "config-global-merge",
+      "title": "Global config files and instruction-array merge",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "// Custom merge function that concatenates array fields instead of replacing them\n// Keep remeda's deep conditional merge type out of hot config-loading paths; TS profiling showed it dominates here.\nfunction mergeConfig(target: Info, source: Info): Info {\n  return mergeDeep(target, source) as Info\n}\n\nfunction mergeConfigConcatArrays(target: Info, source: Info): Info {\n  const merged = mergeConfig(target, source)\n  if (target.instructions && source.instructions) {\n    merged.instructions = Array.from(new Set([...target.instructions, ...source.instructions]))\n  }\n  return merged\n}\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/config/config.ts",
+          "startLine": 40,
+          "endLine": 52,
+          "sha256": "dbcf229e8ee267b9eba8500c522f93ab9a385835acad0d52161a6990c0cadfdd",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L40-L52"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Layer merges use mergeConfigConcatArrays during instance loading; global file loader has its own ordered merges.",
+        "summary": "Instructions concatenate and deduplicate when both layers provide them. Other fields use deep merge; do not assume all arrays concatenate."
+      }
+    },
+    {
+      "id": "config-global-files",
+      "title": "Global config file order",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "    const loadGlobal = Effect.fnUntraced(function* (env?: Record<string, string>) {\n      let result: Info = {}\n      // Seed the default global config with the schema for editor completion, but avoid writing when the user\n      // explicitly routes config through env-provided paths or content.\n      if (!Flag.OPENCODE_CONFIG && !Flag.OPENCODE_CONFIG_DIR && !Flag.OPENCODE_CONFIG_CONTENT) {\n        const file = globalConfigFile()\n        if (!existsSync(file)) {\n          yield* fs\n            .writeWithDirs(file, JSON.stringify({ $schema: \"https://opencode.ai/config.json\" }, null, 2))\n            .pipe(Effect.catch(() => Effect.void))\n        }\n      }\n      result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, \"config.json\"), env))\n      result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, \"opencode.json\"), env))\n      result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, \"opencode.jsonc\"), env))\n\n      const legacy = path.join(Global.Path.config, \"config\")\n      if (existsSync(legacy)) {\n        yield* Effect.promise(() =>\n          import(pathToFileURL(legacy).href, { with: { type: \"toml\" } })\n            .then(async (mod) => {\n              const { provider, model, ...rest } = mod.default\n              if (provider && model) result.model = `${provider}/${model}`\n              result[\"$schema\"] = \"https://opencode.ai/config.json\"\n              result = mergeConfig(result, rest)\n              await fsNode.writeFile(path.join(Global.Path.config, \"config.json\"), JSON.stringify(result, null, 2))\n              await fsNode.unlink(legacy)\n            })\n            .catch(() => {}),\n        )\n      }\n\n      return result\n    })\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/config/config.ts",
+          "startLine": 260,
+          "endLine": 293,
+          "sha256": "f615795c486e0d5afd94277767b0a3d8920744dfb5c57354e58c26fc139ab5bf",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L260-L293"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Global config is loaded before project layers.",
+        "summary": "Loads config.json, opencode.json, then opencode.jsonc in that order."
+      }
+    },
+    {
+      "id": "config-paths",
+      "title": "Project and config directory discovery",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export * as ConfigPaths from \"./paths\"\n\nimport path from \"path\"\nimport { Flag } from \"@opencode-ai/core/flag/flag\"\nimport { Global } from \"@opencode-ai/core/global\"\nimport { unique } from \"remeda\"\nimport * as Effect from \"effect/Effect\"\nimport { FSUtil } from \"@opencode-ai/core/fs-util\"\n\nexport const files = Effect.fn(\"ConfigPaths.projectFiles\")(function* (\n  name: string,\n  directory: string,\n  worktree?: string,\n) {\n  const afs = yield* FSUtil.Service\n  return (yield* afs.up({\n    targets: [`${name}.jsonc`, `${name}.json`],\n    start: directory,\n    stop: worktree,\n  })).toReversed()\n})\n\nexport const directories = Effect.fn(\"ConfigPaths.directories\")(function* (directory: string, worktree?: string) {\n  const afs = yield* FSUtil.Service\n  return unique([\n    Global.Path.config,\n    ...(!Flag.OPENCODE_DISABLE_PROJECT_CONFIG\n      ? yield* afs.up({\n          targets: [\".opencode\"],\n          start: directory,\n          stop: worktree,\n        })\n      : []),\n    ...(yield* afs.up({\n      targets: [\".opencode\"],\n      start: Global.Path.home,\n      stop: Global.Path.home,\n    })),\n    ...(Flag.OPENCODE_CONFIG_DIR ? [Flag.OPENCODE_CONFIG_DIR] : []),\n  ])\n})\n\nexport function fileInDirectory(dir: string, name: string) {\n  return [path.join(dir, `${name}.json`), path.join(dir, `${name}.jsonc`)]\n}\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/config/paths.ts",
+          "startLine": 1,
+          "endLine": 45,
+          "sha256": "cd86a34461b27caf1042f8cba140fbbed47790c4f30cd9691f87298e8d4d4444",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/paths.ts#L1-L45"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "OPENCODE_DISABLE_PROJECT_CONFIG excludes project discovery; OPENCODE_CONFIG_DIR appends an explicit directory.",
+        "summary": "Project file list is reversed before merge. Config directories include global config, discovered .opencode directories, home .opencode and the explicit config directory, deduplicated."
+      }
+    },
+    {
+      "id": "config-variables",
+      "title": "Environment and file substitutions",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export * as ConfigVariable from \"./variable\"\n\nimport path from \"path\"\nimport os from \"os\"\nimport { Filesystem } from \"@/util/filesystem\"\nimport { InvalidError } from \"@opencode-ai/core/v1/config/error\"\n\ntype ParseSource =\n  | {\n      type: \"path\"\n      path: string\n    }\n  | {\n      type: \"virtual\"\n      source: string\n      dir: string\n    }\n\ntype SubstituteInput = ParseSource & {\n  text: string\n  missing?: \"error\" | \"empty\"\n  env?: Record<string, string>\n}\n\nfunction source(input: ParseSource) {\n  return input.type === \"path\" ? input.path : input.source\n}\n\nfunction dir(input: ParseSource) {\n  return input.type === \"path\" ? path.dirname(input.path) : input.dir\n}\n\n/** Apply {env:VAR} and {file:path} substitutions to config text. */\nexport async function substitute(input: SubstituteInput) {\n  const missing = input.missing ?? \"error\"\n  let text = input.text.replace(/\\{env:([^}]+)\\}/g, (_, varName) => {\n    return (input.env?.[varName] ?? process.env[varName]) || \"\"\n  })\n\n  const fileMatches = Array.from(text.matchAll(/\\{file:[^}]+\\}/g))\n  if (!fileMatches.length) return text\n\n  const configDir = dir(input)\n  const configSource = source(input)\n  let out = \"\"\n  let cursor = 0\n\n  for (const match of fileMatches) {\n    const token = match[0]\n    const index = match.index\n    out += text.slice(cursor, index)\n\n    const lineStart = text.lastIndexOf(\"\\n\", index - 1) + 1\n    const prefix = text.slice(lineStart, index).trimStart()\n    if (prefix.startsWith(\"//\")) {\n      out += token\n      cursor = index + token.length\n      continue\n    }\n\n    let filePath = token.replace(/^\\{file:/, \"\").replace(/\\}$/, \"\")\n    if (filePath.startsWith(\"~/\")) {\n      filePath = path.join(os.homedir(), filePath.slice(2))\n    }\n\n    const resolvedPath = path.isAbsolute(filePath) ? filePath : path.resolve(configDir, filePath)\n    const fileContent = (\n      await Filesystem.readText(resolvedPath).catch((error: NodeJS.ErrnoException) => {\n        if (missing === \"empty\") return \"\"\n\n        const errMsg = `bad file reference: \"${token}\"`\n        if (error.code === \"ENOENT\") {\n          throw new InvalidError(\n            {\n              path: configSource,\n              message: errMsg + ` ${resolvedPath} does not exist`,\n            },\n            { cause: error },\n          )\n        }\n        throw new InvalidError({ path: configSource, message: errMsg }, { cause: error })\n      })\n    ).trim()\n\n    out += JSON.stringify(fileContent).slice(1, -1)\n    cursor = index + token.length\n  }\n\n  out += text.slice(cursor)\n  return out\n}\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/config/variable.ts",
+          "startLine": 1,
+          "endLine": 91,
+          "sha256": "07b454c273d22baa72c0f7999d906af7a2bf7fab17643c81dc18849921d8fd36",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/variable.ts#L1-L91"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "ConfigVariable.substitute expands {env:VAR} and {file:path} when config text is loaded.",
+        "summary": "File references resolve relative to the config directory, with home expansion; full contents are escaped into JSON text. This extractor never expands private configuration."
+      }
+    },
+    {
+      "id": "config-agent-markdown",
+      "title": "Markdown agent configuration",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "export * as ConfigAgent from \"./agent\"\n\nimport path from \"path\"\nimport { Exit, Schema } from \"effect\"\nimport { Glob } from \"@opencode-ai/core/util/glob\"\nimport { ConfigAgentV1 } from \"@opencode-ai/core/v1/config/agent\"\nimport { configEntryNameFromPath } from \"./entry-name\"\nimport * as ConfigMarkdown from \"./markdown\"\nimport { ConfigParse } from \"./parse\"\n\nexport async function load(dir: string) {\n  const result: Record<string, ConfigAgentV1.Info> = {}\n  for (const item of await Glob.scan(\"{agent,agents}/**/*.md\", {\n    cwd: dir,\n    absolute: true,\n    dot: true,\n    symlink: true,\n  })) {\n    const md = await ConfigMarkdown.parse(item).catch(() => undefined)\n    if (!md) continue\n\n    const name = configEntryNameFromPath(path.relative(dir, item), [\"agent/\", \"agents/\"])\n\n    const config = {\n      name,\n      ...md.data,\n      prompt: md.content.trim(),\n    }\n    result[config.name] = ConfigParse.schema(ConfigAgentV1.Info, config, item)\n  }\n  return result\n}\n\nexport async function loadMode(dir: string) {\n  const result: Record<string, ConfigAgentV1.Info> = {}\n  for (const item of await Glob.scan(\"{mode,modes}/*.md\", {\n    cwd: dir,\n    absolute: true,\n    dot: true,\n    symlink: true,\n  })) {\n    const md = await ConfigMarkdown.parse(item).catch(() => undefined)\n    if (!md) continue\n\n    const config = {\n      name: configEntryNameFromPath(path.relative(dir, item), [\"mode/\", \"modes/\"]),\n      ...md.data,\n      prompt: md.content.trim(),\n    }\n    const parsed = Schema.decodeUnknownExit(ConfigAgentV1.Info)(config, { errors: \"all\", propertyOrder: \"original\" })\n    if (Exit.isSuccess(parsed)) {\n      result[config.name] = {\n        ...parsed.value,\n        mode: \"primary\" as const,\n      }\n    }\n  }\n  return result\n}\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/config/agent.ts",
+          "startLine": 1,
+          "endLine": 59,
+          "sha256": "4844d4dfa48a516f5b134b0e310c3b0fc11292d0180b0b12ab8d96a43775efa7",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/agent.ts#L1-L59"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Config directories are scanned for agent/agents Markdown and legacy mode/modes Markdown.",
+        "summary": "Markdown body becomes the agent prompt; frontmatter fields configure it."
+      }
+    },
+    {
+      "id": "config-agent-state",
+      "title": "Built-in agents and configured agent overrides",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "        const defaults = Permission.fromConfig({\n          \"*\": \"allow\",\n          doom_loop: \"ask\",\n          external_directory: {\n            \"*\": \"ask\",\n            ...Object.fromEntries(whitelistedDirs.map((dir) => [dir, \"allow\"])),\n          },\n          question: \"deny\",\n          plan_enter: \"deny\",\n          plan_exit: \"deny\",\n          // mirrors github.com/github/gitignore Node.gitignore pattern for .env files\n          read: {\n            \"*\": \"allow\",\n            \"*.env\": \"ask\",\n            \"*.env.*\": \"ask\",\n            \"*.env.example\": \"allow\",\n          },\n        })\n\n        const user = Permission.fromConfig(cfg.permission ?? {})\n\n        const agents: Record<string, Info> = {\n          build: {\n            name: \"build\",\n            description: \"The default agent. Executes tools based on configured permissions.\",\n            options: {},\n            permission: Permission.merge(\n              defaults,\n              Permission.fromConfig({\n                question: \"allow\",\n                plan_enter: \"allow\",\n              }),\n              user,\n            ),\n            mode: \"primary\",\n            native: true,\n          },\n          plan: {\n            name: \"plan\",\n            description: \"Plan mode. Disallows all edit tools.\",\n            options: {},\n            permission: Permission.merge(\n              defaults,\n              Permission.fromConfig({\n                question: \"allow\",\n                plan_exit: \"allow\",\n                task: {\n                  general: \"deny\",\n                },\n                external_directory: {\n                  [path.join(Global.Path.data, \"plans\", \"*\")]: \"allow\",\n                },\n                edit: {\n                  \"*\": \"deny\",\n                  [path.join(\".opencode\", \"plans\", \"*.md\")]: \"allow\",\n                  [path.relative(ctx.worktree, path.join(Global.Path.data, path.join(\"plans\", \"*.md\")))]: \"allow\",\n                },\n              }),\n              user,\n            ),\n            mode: \"primary\",\n            native: true,\n          },\n          general: {\n            name: \"general\",\n            description: `General-purpose agent for researching complex questions and executing multi-step tasks. Use this agent to execute multiple units of work in parallel.`,\n            permission: Permission.merge(\n              defaults,\n              Permission.fromConfig({\n                todowrite: \"deny\",\n              }),\n              user,\n            ),\n            options: {},\n            mode: \"subagent\",\n            native: true,\n          },\n          explore: {\n            name: \"explore\",\n            permission: Permission.merge(\n              defaults,\n              Permission.fromConfig({\n                \"*\": \"deny\",\n                grep: \"allow\",\n                glob: \"allow\",\n                list: \"allow\",\n                bash: \"allow\",\n                webfetch: \"allow\",\n                websearch: \"allow\",\n                read: \"allow\",\n                external_directory: readonlyExternalDirectory,\n              }),\n              user,\n            ),\n            description: `Fast agent specialized for exploring codebases. Use this when you need to quickly find files by patterns (eg. \"src/components/**/*.tsx\"), search code for keywords (eg. \"API endpoints\"), or answer questions about the codebase (eg. \"how do API endpoints work?\"). When calling this agent, specify the desired thoroughness level: \"quick\" for basic searches, \"medium\" for moderate exploration, or \"very thorough\" for comprehensive analysis across multiple locations and naming conventions.`,\n            prompt: PROMPT_EXPLORE,\n            options: {},\n            mode: \"subagent\",\n            native: true,\n          },\n          compaction: {\n            name: \"compaction\",\n            mode: \"primary\",\n            native: true,\n            hidden: true,\n            prompt: PROMPT_COMPACTION,\n            permission: Permission.merge(\n              defaults,\n              Permission.fromConfig({\n                \"*\": \"deny\",\n              }),\n              user,\n            ),\n            options: {},\n          },\n          title: {\n            name: \"title\",\n            mode: \"primary\",\n            options: {},\n            native: true,\n            hidden: true,\n            temperature: 0.5,\n            permission: Permission.merge(\n              defaults,\n              Permission.fromConfig({\n                \"*\": \"deny\",\n              }),\n              user,\n            ),\n            prompt: PROMPT_TITLE,\n          },\n          summary: {\n            name: \"summary\",\n            mode: \"primary\",\n            options: {},\n            native: true,\n            hidden: true,\n            permission: Permission.merge(\n              defaults,\n              Permission.fromConfig({\n                \"*\": \"deny\",\n              }),\n              user,\n            ),\n            prompt: PROMPT_SUMMARY,\n          },\n        }\n\n        for (const [key, value] of Object.entries(cfg.agent ?? {})) {\n          if (value.disable) {\n            delete agents[key]\n            continue\n          }\n          let item = agents[key]\n          if (!item)\n            item = agents[key] = {\n              name: key,\n              mode: \"all\",\n              permission: Permission.merge(defaults, user),\n              options: {},\n              native: false,\n            }\n          if (value.model) item.model = Provider.parseModel(value.model)\n          item.variant = value.variant ?? item.variant\n          item.prompt = value.prompt ?? item.prompt\n          item.description = value.description ?? item.description\n          item.temperature = value.temperature ?? item.temperature\n          item.topP = value.top_p ?? item.topP\n          item.mode = value.mode ?? item.mode\n          item.color = value.color ?? item.color\n          item.hidden = value.hidden ?? item.hidden\n          item.name = value.name ?? item.name\n          item.steps = value.steps ?? item.steps\n          item.options = mergeDeep(item.options, value.options ?? {})\n          item.permission = Permission.merge(item.permission, Permission.fromConfig(value.permission ?? {}))\n        }\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/agent/agent.ts",
+          "startLine": 119,
+          "endLine": 294,
+          "sha256": "341c8521ec9d4f704a9caa1587375d8bef19dde31187f6fc191903045a24dc38",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L119-L294"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Agent.state merges default and user permissions, built-in agents and cfg.agent entries.",
+        "summary": "Configured agents can disable agents or override model, variant, prompt, description, temperature, top_p, mode, steps, options and permissions."
+      }
+    },
+    {
+      "id": "config-agent-default",
+      "title": "Default agent selection",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "          const c = yield* config.get()\n          if (c.default_agent) {\n            const agent = agents[c.default_agent]\n            if (!agent) throw new Error(`default agent \"${c.default_agent}\" not found`)\n            if (agent.mode === \"subagent\") throw new Error(`default agent \"${c.default_agent}\" is a subagent`)\n            if (agent.hidden === true) throw new Error(`default agent \"${c.default_agent}\" is hidden`)\n            return agent\n          }\n          const visible = Object.values(agents).find((a) => a.mode !== \"subagent\" && a.hidden !== true)\n          if (!visible) throw new Error(\"no primary visible agent found\")\n          return visible\n        })\n\n        const defaultAgent = Effect.fnUntraced(function* () {\n          return (yield* defaultInfo()).name\n        })\n\n        return {\n          get,\n          list,\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/agent/agent.ts",
+          "startLine": 329,
+          "endLine": 348,
+          "sha256": "30211d3260034b5e132b688eb44ef927709b2bfe17a24f53fe8b1ae359790cce",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L329-L348"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Configured default_agent is used when valid, visible and not subagent-only; otherwise the first visible primary/all agent wins.",
+        "summary": "Agent choice determines prompt replacement, permissions and options applied later."
+      }
+    },
+    {
+      "id": "config-instructions",
+      "title": "Global, project and configured instructions",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "    const flags = yield* RuntimeFlags.Service\n    const http = HttpClient.filterStatusOk(withTransientReadRetry(yield* HttpClient.HttpClient))\n    const globalFiles = [\n      path.join(global.config, \"AGENTS.md\"),\n      ...(!flags.disableClaudeCodePrompt ? [path.join(global.home, \".claude\", \"CLAUDE.md\")] : []),\n    ]\n    const instructionFiles = [\n      \"AGENTS.md\",\n      ...(!flags.disableClaudeCodePrompt ? [\"CLAUDE.md\"] : []),\n      \"CONTEXT.md\", // deprecated\n    ]\n\n    const state = yield* InstanceState.make(\n      Effect.fn(\"Instruction.state\")(() =>\n        Effect.succeed({\n          // Track which instruction files have already been attached for a given assistant message.\n          claims: new Map<MessageID, Set<string>>(),\n        }),\n      ),\n    )\n\n    const relative = Effect.fnUntraced(function* (instruction: string) {\n      const ctx = yield* InstanceState.context\n      if (!Flag.OPENCODE_DISABLE_PROJECT_CONFIG) {\n        return yield* fs\n          .globUp(instruction, ctx.directory, ctx.worktree)\n          .pipe(Effect.catch(() => Effect.succeed([] as string[])))\n      }\n      return yield* fs\n        .globUp(instruction, global.config, global.config)\n        .pipe(Effect.catch(() => Effect.succeed([] as string[])))\n    })\n\n    const read = Effect.fnUntraced(function* (filepath: string) {\n      return yield* fs.readFileString(filepath).pipe(Effect.catch(() => Effect.succeed(\"\")))\n    })\n\n    const fetch = Effect.fnUntraced(function* (url: string) {\n      const res = yield* http.execute(HttpClientRequest.get(url)).pipe(\n        Effect.timeout(5000),\n        Effect.catch(() => Effect.succeed(null)),\n      )\n      if (!res) return \"\"\n      const body = yield* res.arrayBuffer.pipe(Effect.catch(() => Effect.succeed(new ArrayBuffer(0))))\n      return new TextDecoder().decode(body)\n    })\n\n    const clear = Effect.fn(\"Instruction.clear\")(function* (messageID: MessageID) {\n      const s = yield* InstanceState.get(state)\n      s.claims.delete(messageID)\n    })\n\n    const systemPaths = Effect.fn(\"Instruction.systemPaths\")(function* () {\n      const config = yield* cfg.get()\n      const ctx = yield* InstanceState.context\n      const paths = new Set<string>()\n\n      for (const file of globalFiles) {\n        if (yield* fs.existsSafe(file)) {\n          paths.add(path.resolve(file))\n          break\n        }\n      }\n\n      // The first project-level match wins so we don't stack AGENTS.md/CLAUDE.md from every ancestor.\n      if (!Flag.OPENCODE_DISABLE_PROJECT_CONFIG) {\n        for (const file of instructionFiles) {\n          const matches = yield* fs\n            .findUp(file, ctx.directory, ctx.worktree)\n            .pipe(Effect.catch(() => Effect.succeed([])))\n          if (matches.length > 0) {\n            matches.forEach((item) => paths.add(path.resolve(item)))\n            break\n          }\n        }\n      }\n\n      if (config.instructions) {\n        for (const raw of config.instructions) {\n          if (raw.startsWith(\"https://\") || raw.startsWith(\"http://\")) continue\n          const instruction = raw.startsWith(\"~/\") ? path.join(global.home, raw.slice(2)) : raw\n          const matches = yield* (\n            path.isAbsolute(instruction)\n              ? fs.glob(path.basename(instruction), {\n                  cwd: path.dirname(instruction),\n                  absolute: true,\n                  include: \"file\",\n                })\n              : relative(instruction)\n          ).pipe(Effect.catch(() => Effect.succeed([] as string[])))\n          matches.forEach((item) => paths.add(path.resolve(item)))\n        }\n      }\n\n      return paths\n    })\n\n    const system = Effect.fn(\"Instruction.system\")(function* () {\n      const config = yield* cfg.get()\n      const paths = yield* systemPaths()\n      const urls = (config.instructions ?? []).filter(\n        (item) => item.startsWith(\"https://\") || item.startsWith(\"http://\"),\n      )\n\n      const files = yield* Effect.forEach(Array.from(paths), read, { concurrency: 8 })\n      const remote = yield* Effect.forEach(urls, fetch, { concurrency: 4 })\n\n      return [\n        ...Array.from(paths).flatMap((item, i) => (files[i] ? [`Instructions from: ${item}\\n${files[i]}`] : [])),\n        ...urls.flatMap((item, i) => (remote[i] ? [`Instructions from: ${item}\\n${remote[i]}`] : [])),\n      ]\n    })\n\n    const find = Effect.fn(\"Instruction.find\")(function* (dir: string) {\n      for (const file of instructionFiles) {\n        const filepath = path.resolve(path.join(dir, file))\n        if (yield* fs.existsSafe(filepath)) return filepath\n      }\n      return undefined\n    })\n\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/instruction.ts",
+          "startLine": 58,
+          "endLine": 178,
+          "sha256": "58f5f531a3cf01120c690794c51f2b44661d46dff5caf23b7bece02e4bed4655",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L58-L178"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Instruction.system loads discovered instructions; Claude compatibility may be disabled and project config may be disabled.",
+        "summary": "First existing global candidate wins. Project search tries AGENTS.md, CLAUDE.md when enabled, then deprecated CONTEXT.md and stops at the first filename with matches. Explicit instructions add globs/files or fetched URL bodies."
+      }
+    },
+    {
+      "id": "config-nearby-instructions",
+      "title": "Instructions discovered while reading a file",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "    const resolve = Effect.fn(\"Instruction.resolve\")(function* (\n      messages: SessionV1.WithParts[],\n      filepath: string,\n      messageID: MessageID,\n    ) {\n      const sys = yield* systemPaths()\n      const already = extract(messages)\n      const results: { filepath: string; content: string }[] = []\n      const s = yield* InstanceState.get(state)\n      const root = path.resolve(yield* InstanceState.directory)\n\n      const target = path.resolve(filepath)\n      let current = path.dirname(target)\n\n      // Walk upward from the file being read and attach nearby instruction files once per message.\n      while (current.startsWith(root) && current !== root) {\n        const found = yield* find(current)\n        if (!found || found === target || sys.has(found) || already.has(found)) {\n          current = path.dirname(current)\n          continue\n        }\n\n        let set = s.claims.get(messageID)\n        if (!set) {\n          set = new Set()\n          s.claims.set(messageID, set)\n        }\n        if (set.has(found)) {\n          current = path.dirname(current)\n          continue\n        }\n\n        set.add(found)\n        const content = yield* read(found)\n        if (content) {\n          results.push({ filepath: found, content: `Instructions from: ${found}\\n${content}` })\n        }\n\n        current = path.dirname(current)\n      }\n\n      return results\n    })\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/session/instruction.ts",
+          "startLine": 179,
+          "endLine": 221,
+          "sha256": "480caef21d9fee7b0bf6fb9c4c123ab47fdd103e4e5f10f1b05ceea3e411fb1c",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L179-L221"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Instruction.resolve walks upward from the read target, within the instance directory, and excludes system/already-loaded/already-claimed files.",
+        "summary": "Nearby instruction contents attach once per assistant message and are not a universal system prompt layer."
+      }
+    },
+    {
+      "id": "config-runtime-flags",
+      "title": "Runtime feature flags",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "import { Config, ConfigProvider, Context, Effect, Layer, Option } from \"effect\"\nimport { ConfigService } from \"@/effect/config-service\"\n\nconst bool = (name: string) => Config.boolean(name).pipe(Config.withDefault(false))\nconst positiveInteger = (name: string) =>\n  Config.number(name).pipe(\n    Config.map((value) => (Number.isInteger(value) && value > 0 ? value : undefined)),\n    Config.orElse(() => Config.succeed(undefined)),\n  )\nconst experimental = bool(\"OPENCODE_EXPERIMENTAL\")\nconst enabledByExperimental = (name: string) =>\n  Config.all({ experimental, enabled: Config.boolean(name).pipe(Config.option) }).pipe(\n    Config.map((flags) => Option.getOrElse(flags.enabled, () => flags.experimental)),\n  )\n\nexport class Service extends ConfigService.Service<Service>()(\"@opencode/RuntimeFlags\", {\n  autoShare: bool(\"OPENCODE_AUTO_SHARE\"),\n  pure: bool(\"OPENCODE_PURE\"),\n  disableDefaultPlugins: bool(\"OPENCODE_DISABLE_DEFAULT_PLUGINS\"),\n  disableEmbeddedWebUi: bool(\"OPENCODE_DISABLE_EMBEDDED_WEB_UI\"),\n  disableExternalSkills: bool(\"OPENCODE_DISABLE_EXTERNAL_SKILLS\"),\n  disableLspDownload: bool(\"OPENCODE_DISABLE_LSP_DOWNLOAD\"),\n  disableClaudeCodePrompt: Config.all({\n    broad: bool(\"OPENCODE_DISABLE_CLAUDE_CODE\"),\n    direct: bool(\"OPENCODE_DISABLE_CLAUDE_CODE_PROMPT\"),\n  }).pipe(Config.map((flags) => flags.broad || flags.direct)),\n  disableClaudeCodeSkills: Config.all({\n    broad: bool(\"OPENCODE_DISABLE_CLAUDE_CODE\"),\n    direct: bool(\"OPENCODE_DISABLE_CLAUDE_CODE_SKILLS\"),\n  }).pipe(Config.map((flags) => flags.broad || flags.direct)),\n  enableExa: Config.all({\n    experimental,\n    enabled: bool(\"OPENCODE_ENABLE_EXA\"),\n    legacy: bool(\"OPENCODE_EXPERIMENTAL_EXA\"),\n  }).pipe(Config.map((flags) => flags.experimental || flags.enabled || flags.legacy)),\n  enableParallel: Config.all({\n    enabled: bool(\"OPENCODE_ENABLE_PARALLEL\"),\n    legacy: bool(\"OPENCODE_EXPERIMENTAL_PARALLEL\"),\n  }).pipe(Config.map((flags) => flags.enabled || flags.legacy)),\n  enableExperimentalModels: bool(\"OPENCODE_ENABLE_EXPERIMENTAL_MODELS\"),\n  enableQuestionTool: bool(\"OPENCODE_ENABLE_QUESTION_TOOL\"),\n  experimentalReferences: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_REFERENCES\"),\n  experimentalBackgroundSubagents: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS\"),\n  experimentalLspTy: bool(\"OPENCODE_EXPERIMENTAL_LSP_TY\"),\n  experimentalLspTool: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_LSP_TOOL\"),\n  experimentalOxfmt: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_OXFMT\"),\n  experimentalPlanMode: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_PLAN_MODE\"),\n  experimentalCodeMode: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_CODE_MODE\"),\n  experimentalEventSystem: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_EVENT_SYSTEM\"),\n  experimentalWorkspaces: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_WORKSPACES\"),\n  experimentalIconDiscovery: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_ICON_DISCOVERY\"),\n  outputTokenMax: positiveInteger(\"OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX\"),\n  bashDefaultTimeoutMs: positiveInteger(\"OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS\"),\n  experimentalNativeLlm: bool(\"OPENCODE_EXPERIMENTAL_NATIVE_LLM\"),\n  experimentalWebSockets: bool(\"OPENCODE_EXPERIMENTAL_WEBSOCKETS\"),\n  client: Config.string(\"OPENCODE_CLIENT\").pipe(Config.withDefault(\"cli\")),\n}) {}\n\nexport type Info = Context.Service.Shape<typeof Service>\n\nconst emptyConfigLayer = Service.layer.pipe(\n  Layer.provide(ConfigProvider.layer(ConfigProvider.fromUnknown({}))),\n  Layer.orDie,\n)\n\nexport const layer = (overrides: Partial<Info> = {}) =>\n  Layer.effect(\n    Service,\n    Effect.gen(function* () {\n      const flags = yield* Service\n      return Service.of({ ...flags, ...overrides })\n    }),\n  ).pipe(Layer.provide(emptyConfigLayer))\n\nexport const node = LayerNode.make({ service: Service, layer: Service.layer.pipe(Layer.orDie), deps: [] })\n\nexport * as RuntimeFlags from \"./runtime-flags\"\nimport { LayerNode } from \"@opencode-ai/core/effect/layer-node\"\n",
+      "provenance": [
+        {
+          "file": "packages/opencode/src/effect/runtime-flags.ts",
+          "startLine": 1,
+          "endLine": 78,
+          "sha256": "5b580cb96f9d5300f8ff995a29ec5e602e0e3e0200661dfff971998562f2a1a9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L1-L78"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "RuntimeFlags service reads environment configuration; selected flags inherit OPENCODE_EXPERIMENTAL unless explicitly set.",
+        "summary": "Includes native LLM, WebSockets, plan, code mode, LSP, question, references, external skills, Claude compatibility, client and output-limit controls."
+      }
+    },
+    {
+      "id": "config-core-flags",
+      "title": "Configuration and catalog environment controls",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "import { Config } from \"effect\"\n\nexport function truthy(key: string) {\n  const value = process.env[key]?.toLowerCase()\n  return value === \"true\" || value === \"1\"\n}\n\nconst copy = process.env[\"OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT\"]\nconst fff = process.env[\"OPENCODE_DISABLE_FFF\"]\n\nfunction enabledByExperimental(key: string) {\n  return process.env[key] === undefined ? truthy(\"OPENCODE_EXPERIMENTAL\") : truthy(key)\n}\n\nexport const Flag = {\n  OTEL_EXPORTER_OTLP_ENDPOINT: process.env[\"OTEL_EXPORTER_OTLP_ENDPOINT\"],\n  OTEL_EXPORTER_OTLP_HEADERS: process.env[\"OTEL_EXPORTER_OTLP_HEADERS\"],\n\n  OPENCODE_AUTO_HEAP_SNAPSHOT: truthy(\"OPENCODE_AUTO_HEAP_SNAPSHOT\"),\n  OPENCODE_GIT_BASH_PATH: process.env[\"OPENCODE_GIT_BASH_PATH\"],\n  OPENCODE_CONFIG: process.env[\"OPENCODE_CONFIG\"],\n  OPENCODE_CONFIG_CONTENT: process.env[\"OPENCODE_CONFIG_CONTENT\"],\n  OPENCODE_DISABLE_AUTOUPDATE: truthy(\"OPENCODE_DISABLE_AUTOUPDATE\"),\n  OPENCODE_ALWAYS_NOTIFY_UPDATE: truthy(\"OPENCODE_ALWAYS_NOTIFY_UPDATE\"),\n  OPENCODE_DISABLE_PRUNE: truthy(\"OPENCODE_DISABLE_PRUNE\"),\n  OPENCODE_DISABLE_TERMINAL_TITLE: truthy(\"OPENCODE_DISABLE_TERMINAL_TITLE\"),\n  OPENCODE_SHOW_TTFD: truthy(\"OPENCODE_SHOW_TTFD\"),\n  OPENCODE_DISABLE_AUTOCOMPACT: truthy(\"OPENCODE_DISABLE_AUTOCOMPACT\"),\n  OPENCODE_DISABLE_MODELS_FETCH: truthy(\"OPENCODE_DISABLE_MODELS_FETCH\"),\n  OPENCODE_DISABLE_MOUSE: truthy(\"OPENCODE_DISABLE_MOUSE\"),\n  OPENCODE_FAKE_VCS: process.env[\"OPENCODE_FAKE_VCS\"],\n  OPENCODE_SERVER_PASSWORD: process.env[\"OPENCODE_SERVER_PASSWORD\"],\n  OPENCODE_SERVER_USERNAME: process.env[\"OPENCODE_SERVER_USERNAME\"],\n  OPENCODE_DISABLE_FFF: fff === undefined ? process.platform === \"win32\" : truthy(\"OPENCODE_DISABLE_FFF\"),\n\n  // Experimental\n  OPENCODE_EXPERIMENTAL_FILEWATCHER: Config.boolean(\"OPENCODE_EXPERIMENTAL_FILEWATCHER\").pipe(\n    Config.withDefault(false),\n  ),\n  OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER: Config.boolean(\"OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER\").pipe(\n    Config.withDefault(false),\n  ),\n  OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT:\n    copy === undefined ? process.platform === \"win32\" : truthy(\"OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT\"),\n  OPENCODE_MODELS_URL: process.env[\"OPENCODE_MODELS_URL\"],\n  OPENCODE_MODELS_PATH: process.env[\"OPENCODE_MODELS_PATH\"],\n  OPENCODE_DB: process.env[\"OPENCODE_DB\"],\n\n  OPENCODE_WORKSPACE_ID: process.env[\"OPENCODE_WORKSPACE_ID\"],\n  OPENCODE_EXPERIMENTAL_WORKSPACES: enabledByExperimental(\"OPENCODE_EXPERIMENTAL_WORKSPACES\"),\n\n  // Evaluated at access time (not module load) because tests, the CLI, and\n  // external tooling set these env vars at runtime.\n  get OPENCODE_DISABLE_PROJECT_CONFIG() {\n    return truthy(\"OPENCODE_DISABLE_PROJECT_CONFIG\")\n  },\n  get OPENCODE_EXPERIMENTAL_REFERENCES() {\n    return enabledByExperimental(\"OPENCODE_EXPERIMENTAL_REFERENCES\")\n  },\n  get OPENCODE_TUI_CONFIG() {\n    return process.env[\"OPENCODE_TUI_CONFIG\"]\n  },\n  get OPENCODE_CONFIG_DIR() {\n    return process.env[\"OPENCODE_CONFIG_DIR\"]\n  },\n  get OPENCODE_PURE() {\n    return truthy(\"OPENCODE_PURE\")\n  },\n  get OPENCODE_PERMISSION() {\n    return process.env[\"OPENCODE_PERMISSION\"]\n  },\n  get OPENCODE_PLUGIN_META_FILE() {\n    return process.env[\"OPENCODE_PLUGIN_META_FILE\"]\n  },\n  get OPENCODE_CLIENT() {\n    return process.env[\"OPENCODE_CLIENT\"] ?? \"cli\"\n  },\n}\n",
+      "provenance": [
+        {
+          "file": "packages/core/src/flag/flag.ts",
+          "startLine": 1,
+          "endLine": 78,
+          "sha256": "f387ba5da5b24bb8fa316c8bc32aac778552c7bb199b42ed17adef03714ce6c5",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L1-L78"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "kind": "source-code",
+        "language": "typescript",
+        "condition": "Flag fields read process environment; selected controls are evaluated at access time.",
+        "summary": "Includes config path/content/directory, project-config disablement, permission override, catalog path/URL/fetch disablement and auto-compaction/pruning controls. Source extraction preserves variable names without reading their runtime values."
+      }
+    }
+  ]
+}
