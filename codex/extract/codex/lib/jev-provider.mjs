@@ -24,6 +24,9 @@ export class JevUnavailableError extends Error {
 export class JevRequestError extends Error {
   constructor(message) { super(message); this.name = 'JevRequestError'; }
 }
+export class JevAnswerShapeError extends JevRequestError {
+  constructor(message) { super(message); this.name = 'JevAnswerShapeError'; }
+}
 
 // Read credentials as data; never source the environment file or expose its contents.
 // TypeSafe direct is the default; OpenRouter when JEV_PROVIDER=openrouter or no TypeSafe key exists.
@@ -77,7 +80,7 @@ export async function ask(config, { state, questions }, { fetchImpl = globalThis
     let result;
     try { result = await response.json(); } catch { reason = `${config.provider} returned invalid JSON`; continue; }
     if (!result?.answers || typeof result.answers !== 'object') { reason = `${config.provider} answer without answers`; continue; }
-    for (const id of Object.keys(questions)) if (!(id in result.answers)) throw new JevRequestError(`${config.provider} answer is missing question ${id}`);
+    for (const id of Object.keys(questions)) if (!(id in result.answers)) throw new JevAnswerShapeError(`${config.provider} answer is missing question ${id}`);
     return result;
   }
   throw new JevUnavailableError(`${reason} after ${attempts} attempts`);

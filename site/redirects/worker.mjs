@@ -12,7 +12,8 @@ export function redirectTarget(url) {
   const section = SECTION_BY_HOST.get(u.hostname);
   if (!section) return null;
   const shared = u.pathname === "/trace" || u.pathname.startsWith("/trace/");
-  const path = shared ? u.pathname : `/${section}${u.pathname}`;
+  const movedInventory = section === "claude-code" && u.pathname === "/data/inventory.json";
+  const path = shared ? u.pathname : `/${section}${u.pathname}${movedInventory ? ".gz" : ""}`;
   return `${siteOrigin()}${path}${u.search}`;
 }
 

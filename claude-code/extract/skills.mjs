@@ -17,7 +17,8 @@
 //   "medium" and "high" and all return;
 // - prompts whose registration has another shape: a stable opening line, exactly one hit.
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
-import { VERSION, files as manifest, sha256 } from "./lib.mjs";
+import { VERSION, files as manifest } from "./lib.mjs";
+import { hashMatchesEmbeddedSpan } from "./provenance-verify.mjs";
 import { load, def, lookup, render, joinParts, abbrev, locate, isNode, renderItem, provOf, embeddedFile, findObjects, staticValue, rawOf, verifyParts, contractCheck, literalsInOrder, verifyBinary, renderArea, splitVariants, dedupeTexts, EXTRACTED, DOCS } from "./prompts-lib.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
@@ -383,8 +384,7 @@ function checkHashes(items) {
   const each = function* (v) { if (Array.isArray(v)) for (const x of v) yield* each(x); else if (v && typeof v === "object") { if (typeof v.binary_offset === "number" && typeof v.file === "string") yield v; for (const x of Object.values(v)) yield* each(x); } };
   for (const it of items) for (const p of each(it)) {
     const f = manifest.get(p.file); if (!f) { bad.push(`${it.id}: unknown file ${p.file}`); continue; }
-    const buf = readFileSync(EXTRACTED + p.file).subarray(p.binary_offset - f.file_offset, p.binary_offset - f.file_offset + p.length);
-    if (sha256(buf) !== p.sha256) bad.push(`${it.id}: hash mismatch ${p.file}@${p.binary_offset}`);
+    if (!hashMatchesEmbeddedSpan(EXTRACTED,p,f)) bad.push(`${it.id}: hash mismatch ${p.file}@${p.binary_offset}`);
     if (p.version !== VERSION) bad.push(`${it.id}: provenance version ${p.version}`);
   }
   return bad;

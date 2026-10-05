@@ -15,6 +15,7 @@ import { spawnSync } from "node:child_process";
 import { closeSync, cpSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { isDerived, knobIndex, validateDecision } from "./decisions-lib.mjs";
+import { hashMatchesEmbeddedSpan } from "./provenance-verify.mjs";
 import { compareVersions, describedVersion } from "./versions.mjs";
 import { JEV_TEMPFAIL_EXIT } from "../../codex/extract/codex/lib/jev-provider.mjs";
 
@@ -60,8 +61,7 @@ if (flag === "--verify") {
       for (const p of provenanceObjects(item)) {
         const f = manifest.get(p.file);
         if (!f) { problems.push(`${name}:${item.id} cites unknown file ${p.file}`); continue; }
-        const buf = readFileSync(path.join(work, "extracted", p.file)).subarray(p.binary_offset - f.file_offset, p.binary_offset - f.file_offset + p.length);
-        if (p.sha256 && createHash("sha256").update(buf).digest("hex") !== p.sha256) problems.push(`${name}:${item.id} hash mismatch at ${p.binary_offset}`);
+        if (p.sha256 && !hashMatchesEmbeddedSpan(path.join(work, "extracted"), p, f)) problems.push(`${name}:${item.id} hash mismatch at ${p.binary_offset}`);
       }
     }
   }

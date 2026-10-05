@@ -69,7 +69,7 @@ export const cc = {
     return { version, integrity: view([`${PKG}@${version}`, "dist.integrity"]) };
   },
 
-  async refresh({ now, dryRun, fingerprint }) {
+  async refresh({ now, dryRun, fingerprint }, runtime = {}) {
     // The same release again, or an older one (a tag moved back, or next was ahead of latest):
     // the published records already describe it or something newer, so there is nothing to publish.
     // Published means committed: records carried from an unpublished attempt (lib/carry.mjs) may

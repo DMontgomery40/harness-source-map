@@ -6,7 +6,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { categories } from '../../../site/src/codex/catalog.mjs';
 import { loadSearchRecords } from '../../../site/src/shared/search-index.mjs';
-import { verifyCoverage } from './lib/jev-discovery.mjs';
+import { JevAnswerError, localCoverage, verifyCoverage } from './lib/jev-discovery.mjs';
 import { decisionConfig, openCache, JevUnavailableError, JEV_TEMPFAIL_EXIT } from './lib/jev-provider.mjs';
 
 // Complete fenced payloads, with the heading that search exposes. No summary/prefix slicing.
@@ -55,15 +55,23 @@ export async function auditCoverage(config,sources,records,options={}) {
   const results=[];
   let outage=null;
   for(const source of sources) {
-    if(outage) {results.push({id:source.id,status:'unanswered',reason:outage});continue;}
     const role=source.role?.choice;
     const expectedKind=role==='tool'||role==='parameter'?'tool':'prompt';
     const candidates=records.filter(r=>r.kind===expectedKind);
-    try {results.push({id:source.id,file:source.file,offset:source.offset,source_sha256:source.text_sha256,expected_kind:expectedKind,...await verifyCoverage(config,source,candidates,{...options,checkpoint:options})});}
+    const identity={id:source.id,file:source.file,offset:source.offset,source_sha256:source.text_sha256,expected_kind:expectedKind};
+    if(outage) {
+      results.push({...identity,...(localCoverage(source,candidates)??{status:'unanswered',reason:outage})});
+      continue;
+    }
+    try {results.push({...identity,...await verifyCoverage(config,source,candidates,{...options,checkpoint:options})});}
     catch(error) {
+      if(error instanceof JevAnswerError) {
+        results.push({...identity,status:'unanswered',reason:error.message});
+        continue;
+      }
       if(!(error instanceof JevUnavailableError)) throw error;
       outage=error.reason;
-      results.push({id:source.id,status:'unanswered',reason:error.reason});
+      results.push({...identity,status:'unanswered',reason:error.reason});
     }
   }
   options.cache?.save?.();

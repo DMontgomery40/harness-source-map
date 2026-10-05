@@ -86,6 +86,7 @@ function renderDocument(document, ids) {
     title: document.title ?? name,
     slug: document.slug,
     data: document.data,
+    dataDownload: document.dataDownload,
     summary: document.summary,
     count: document.count,
     defaultOpen: document.defaultOpen,
@@ -110,7 +111,7 @@ function documentIndex(categories, rendered, routes) {
 // Every document's structured records are also published as JSON under /data/.
 function dataLink(document, prefix) {
   if (!document.data) return "";
-  const file = document.data.split("/").at(-1);
+  const file = document.dataDownload ?? document.data.split("/").at(-1);
   return `<p class="data-link"><a href="${prefix}data/${file}">${escapeHtml(file)}</a> · machine-readable records with offsets and hashes</p>`;
 }
 

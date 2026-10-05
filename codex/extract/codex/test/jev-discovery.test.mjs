@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { classifySources, packQuestions, verifyCoverage } from '../lib/jev-discovery.mjs';
+import { classifySources, packQuestions, validateAnswers, verifyCoverage } from '../lib/jev-discovery.mjs';
 import { decisionConfig, JevRequestError } from '../lib/jev-provider.mjs';
 
 const config = decisionConfig({ TYPESAFE_API_KEY: 'test-key' }, () => '');
@@ -21,6 +21,29 @@ test('byte packing measures the actual state and question keys sent to Jev',()=>
   const bytes=Buffer.byteLength(JSON.stringify({state,questions:{route_0:item.questions.route}}));
   assert.equal(packQuestions([item],{state,keyOf:i=>`route_${i}`,maxBytes:bytes-1}).oversized.length,1);
   assert.equal(packQuestions([item],{state,keyOf:i=>`route_${i}`,maxBytes:bytes}).batches.length,1);
+});
+
+test('Score validation accepts provider rounding but rejects a materially different value',()=>{
+  const questions={evidence:{type:'score',criteria:['none','weak','suggestive','direct']}};
+  const rounded={type:'score',score:.2,probabilities:{'0':.91,'1':.03,'2':.04,'3':.02},confidence:.9};
+  assert.doesNotThrow(()=>validateAnswers(questions,{evidence:rounded}));
+  assert.throws(()=>validateAnswers(questions,{evidence:{...rounded,score:1}}),JevRequestError);
+});
+
+test('Choice validation keeps near-tied provider selections but rejects a different winner',()=>{
+  const questions={role:{type:'choice',criteria:{code_data:'code',tool:'tool',unknown:'unknown'}}};
+  const close={type:'choice',choice:'code_data',probabilities:{code_data:.49,tool:.5,unknown:.01},confidence:.5};
+  assert.doesNotThrow(()=>validateAnswers(questions,{role:close}));
+  assert.throws(()=>validateAnswers(questions,{role:{...close,probabilities:{code_data:.49,tool:.51,unknown:0}}}),JevRequestError);
+  assert.throws(()=>validateAnswers(questions,{role:{...close,probabilities:{code_data:.2,tool:.79,unknown:.01}}}),JevRequestError);
+});
+
+test('large Choice menus allow cumulative display rounding without accepting a small invalid menu',()=>{
+  const keys=Array.from({length:254},(_,i)=>`record_${i}`);
+  const questions={route:{type:'choice',criteria:Object.fromEntries(keys.map(k=>[k,k]))}};
+  const zeroes=Object.fromEntries(keys.map(k=>[k,0]));
+  assert.doesNotThrow(()=>validateAnswers(questions,{route:{type:'choice',choice:keys[0],probabilities:zeroes,confidence:.5}}));
+  assert.throws(()=>validateAnswers({route:{type:'choice',criteria:{a:'a',b:'b'}}},{route:{type:'choice',choice:'a',probabilities:{a:0,b:0},confidence:.5}}),JevRequestError);
 });
 
 test('discovery processes every source, batches mixed judgments, and preserves source identity', async () => {
@@ -79,13 +102,32 @@ test('unsafe source text is withheld before any provider request', async () => {
   assert.equal(result.records[0].status, 'withheld');
 });
 
-test('invalid typed responses cannot be cached as source judgments', async () => {
-  await assert.rejects(classifySources(config, [{ id: 's', file: 'app.js', text: 'Read an image attachment.' }], { fetchImpl: async (_, opts) => {
-    const body = JSON.parse(opts.body), answers = reply(body.questions);
-    const id = Object.keys(body.questions).find(k => body.questions[k].type === 'choice');
-    answers[id].choice = 'invented';
+test('invalid typed responses stay unanswered while independent sources continue', async () => {
+  const cacheEntries=new Map(),cache={has:k=>cacheEntries.has(k),get:k=>cacheEntries.get(k),set:(k,v)=>cacheEntries.set(k,v)};
+  const sources=[{id:'bad',file:'app.js',text:'Read an image attachment.'},{id:'good',file:'app.js',text:'View a local image file.'}];
+  const result=await classifySources(config,sources,{batchSize:1,concurrency:1,validationAttempts:1,cache,fetchImpl:async(_,opts)=>{
+    const body=JSON.parse(opts.body),answers=reply(body.questions);
+    if(Object.values(body.questions)[0].instructions.source.text===sources[0].text){
+      const id=Object.keys(body.questions).find(k=>body.questions[k].type==='choice');
+      answers[id].choice='invented';
+    }
     return response(answers);
-  }}), JevRequestError);
+  }});
+  assert.deepEqual(result.records.map(r=>r.status),['unanswered','classified']);
+  assert.equal(cacheEntries.size,1);
+});
+
+test('missing question answers retry, then leave only their batch unanswered', async () => {
+  const sources=[{id:'bad',file:'app.js',text:'Read an image attachment.'},{id:'good',file:'app.js',text:'View a local image file.'}];
+  let calls=0;
+  const result=await classifySources(config,sources,{batchSize:1,concurrency:1,validationAttempts:2,fetchImpl:async(_,opts)=>{
+    calls++;
+    const body=JSON.parse(opts.body);
+    return response(Object.values(body.questions)[0].instructions.source.text===sources[0].text?{}:reply(body.questions));
+  }});
+  assert.equal(calls,3);
+  assert.deepEqual(result.records.map(r=>r.status),['unanswered','classified']);
+  assert.match(result.records[0].reason,/missing question/);
 });
 
 test('outage keeps every source unresolved, and complete long sources are never truncated', async () => {

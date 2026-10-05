@@ -4,9 +4,9 @@ Keeps both sections of harness.dtmont.com current: `/codex/` (ChatGPT desktop ap
 Codex CLI, the GPT-6 catalog) and `/claude-code/` (the Claude Code npm build). It runs hourly from a
 LaunchAgent and publishes only when an upstream source changed and the repo's gate passes.
 
-**State: not installed.** It was switched off on 2026-09-26 at David's request, then moved into this
-repo. The publish step has been reworked for the one site (below). Install it only when David says
-to turn it on:
+**State: installed.** The LaunchAgent runs from `~/harness-watch` at minute :07. Its template pins
+TypeSafe and enables the approved broad Jev sweeps for both products. A provider outage keeps the
+new build pending and triggers the watcher's retry and notification path. To reinstall or remove it:
 
 ```sh
 watch/install-launchd.sh --print    # show the plist it would write (changes nothing)
