@@ -137,7 +137,9 @@ test("a release: full old ranges resolved, every successor pair flagged once, ve
   const again = await flagRelease({ ...r, config, askOptions: { fetchImpl: async () => assert.fail("cached verdicts must not be re-sent") } });
   assert.deepEqual(again.doc.pairs.map(p => p.flag), ["likely", "wording only"]);
   const stored = Object.keys(JSON.parse(readFileSync(r.cacheFile, "utf8")));
-  assert.ok(stored.every(k => k.startsWith(`jev-1.13:${QUESTION_VERSION}:`)), stored.join(","));
+  // Keys are namespaced by the provider and model that answered (jev-provider.mjs openCache).
+  assert.equal(stored.length, 2);
+  assert.ok(stored.every(k => k.startsWith(`jev-1.13@typesafe/jev-1.13.0:${QUESTION_VERSION}:`)), stored.join(","));
 });
 
 test("a likely flag on a doubtful successor match is shown but does not notify", async () => {
