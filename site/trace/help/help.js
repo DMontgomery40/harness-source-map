@@ -6,7 +6,7 @@ import { el, fmtInt } from "../panels.js";
 import { createRecordingPanel } from "./recording.js";
 import { resolverHealth } from "../local-session.js";
 
-const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT" };
+const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT", opencode: 'OpenCode' };
 const LOCAL = "http://127.0.0.1:8766";
 const TOPICS = [
   { key: "open", title: "Open a session" },
@@ -164,11 +164,11 @@ export function createHelp(ctx) {
         p("A capture records traffic while a session runs, including request data the log can omit, such as prompts, tool definitions and flags. It cannot recover earlier traffic."),
         recording.element,
         el("h4", { class: "help-h4", text: "CLI capture route" }),
-        steps([["Start the session through the capture tool", "From the harness-source-map repo, instead of plain claude or codex:"]]),
-        cmd(null, `tools/capture/capture.sh -- ${s?.trace?.product === "codex" ? "codex" : "claude"}`),
-        steps([["That's all", "When the command exits, the capture is saved beside the session's log. Trace attaches it every time you open that session, and “What went over the wire” (key 5) appears."]], 2),
-        p("Already have a .har? File it beside its session so it attaches from now on:"),
-        cmd(null, "node tools/capture/file-capture.mjs capture.har"),
+        steps([["Start the session through the capture tool", "From the harness-source-map repo, run your real task with recording enabled:"]]),
+        cmd(null, s?.trace?.product === 'opencode' ? 'node tools/capture/opencode-capture.mjs --open -- --model PROVIDER/MODEL "YOUR REAL TASK"' : `tools/capture/capture.sh -- ${s?.trace?.product === "codex" ? "codex" : "claude"}`),
+        steps([["Open the result", s?.trace?.product === 'opencode' ? 'Drop the private recording folder into Trace: it holds the native session export and capture.har. “What went over the wire” (key 5) appears.' : 'When the command exits, the capture is saved beside the session’s log. Trace attaches it every time you open that session, and “What went over the wire” (key 5) appears.']], 2),
+        p(s?.trace?.product === 'opencode' ? 'Already have a native export and HAR? Drop them together into Trace.' : "Already have a .har? File it beside its session so it attaches from now on:"),
+        s?.trace?.product === 'opencode' ? null : cmd(null, "node tools/capture/file-capture.mjs capture.har"),
         s?.trace ? el("p", { class: "help-p" }, btn("Or choose a .har for this visit", () => { close(); ctx.A.pickHar?.(); })) : null,
         p("Credentials never reach the file: each one is replaced by a description of what was sent. Trace also hides identity when it shows a capture."),
       ],

@@ -8,8 +8,8 @@ import { foldOpen, setFold, valueOf, setValue } from "../panel-memory.js";
 import { modelBreakdown, findings, runs, entryGroups, hostTable, callSignature, callDelta, callTokens, wireTokenRows, latestLimits } from "./digest.js";
 
 export const NETWORK_LENS = { key: "network", q: "What went over the wire", icon: "⇄" };
-const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT" };
-const DOCS = { "claude-code": "../claude-code/", codex: "../codex/" };
+const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT", opencode: 'OpenCode' };
+const DOCS = { "claude-code": "../claude-code/", codex: "../codex/", opencode: '../opencode/' };
 
 // The reference docs' search for a flag, beta, header or env name: /claude-code/?q=<name> opens the
 // section's ⌘K palette with it.
@@ -176,7 +176,7 @@ export function networkLens(S, A) {
   const out = [];
   if(cap.voice?.observed)out.push(section('WebRTC voice evidence',el('p',{text:`${fmtInt(cap.voice.messages)} data-channel messages · ${cap.voice.calls.length} observed call(s). Audio was not recorded.`})));
   out.push(el("h2", { text: NETWORK_LENS.q }),
-    el("p", { class: "lede", text: `A network capture of this ${PRODUCT[product]} session, joined to its log: what the harness sent that the log doesn't show. Credentials and identity were redacted in your browser as the capture was read; nothing is saved.` }));
+    el("p", { class: "lede", text: `A network capture loaded with this ${PRODUCT[product]} session. Exact identifiers join traffic to the log; other requests remain unattributed. Credentials and identity were redacted in your browser as the capture was read; nothing is saved.` }));
   const readerSlot = el("div", { class: "net-reader-slot" });
   out.push(el("p", { class: "meta net-source" }, `${cap.files.join(", ")} · ${fmtInt(cap.kept)} of ${fmtInt(cap.total)} requests belong to this session`,
     cap.elsewhere ? ` · ${fmtInt(cap.elsewhere)} belonged to ${cap.otherSessions.length ? `other sessions (${cap.otherSessions.join(", ")})` : "other sessions"} and are left out` : "",
@@ -233,7 +233,7 @@ function modelsTable(cap) {
           el("span", { class: "meta", text: r.main ? " main" : r.notIn === r.calls ? " side · not in your log" : " side" })),
         el("td", { class: "num", text: fmtInt(r.calls) }), el("td", { class: "num", text: fmtInt(r.inLog) }), el("td", { class: "num", text: fmtInt(r.notIn) }),
         num(r.input), num(r.output), num(r.cacheRead), num(r.cacheWrite))))),
-    el("p", { class: "note", text: cap.product === "codex" ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part." }));
+    el("p", { class: "note", text: cap.product === "codex" || cap.product === 'opencode' ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part." }));
 }
 
 // ---------------------------------------------------------------- model calls
@@ -260,7 +260,7 @@ function callsSection(cap, trace, A) {
   return topFold("sec:calls", "Model calls", `${fmtInt(inLog.length)} in your log, ${fmtInt(notIn.length)} not · ${byModel(cap.calls)}`,
     el("p", { class: "note", text: `Joined by ${cap.join.keys}.${product === "codex" && cap.join.items ? ` ${fmtInt(cap.join.itemsMatched)} of ${fmtInt(cap.join.items)} attributed input items match blocks in the log.` : ""}` }),
     notIn.length ? fold([`Requests not in your log (${fmtInt(notIn.length)})`, byModel(notIn)], true, "calls:notlog",
-      el("p", { class: "note", text: product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent." }),
+      el("p", { class: "note", text: product === 'opencode' ? 'These captured calls have no exact native step join. A session header may identify their session; it does not identify a specific native step. Open a call to inspect the request as sent.' : product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent." }),
       el("ul", { class: "items" }, notIn.map((c) => item(c)))) : null,
     ...[...groups].map(([sig, list]) => {
       const c0 = list[0];
@@ -333,7 +333,7 @@ function endpointItem(cap, e, byI, A) {
 function entryList(cap, e, g, A) {
   const row = (x) => el("li", { "data-anchor": `entry:${x.i}` },
     el("code", { text: `${x.method} ${x.host}${x.path}${x.query && x.query.length ? `?${x.query.join("&")}` : ""}` }),
-    el("span", { class: "meta", text: ` ${x.status || "–"} · ${x.t ? `${fmtClock(x.t)} · ` : ""}${fmtBytes(x.reqBytes)} → ${fmtBytes(x.resBytes)}${x.ws ? ` · ${fmtInt(x.ws)} frames` : ""}${x.eager ? "" : " · read on demand"} ` }),
+    el("span", { class: "meta", text: ` ${x.status || "no HTTP response"} · ${x.t ? `${fmtClock(x.t)} · ` : ""}${fmtBytes(x.reqBytes)} → ${fmtBytes(x.resBytes)}${x.ws ? ` · ${fmtInt(x.ws)} frames` : ""}${x.partial ? ' · incomplete at recorder checkpoint' : ''}${x.association === 'unattributed' ? ' · unattributed' : ''}${x.withheldBodies ? ` · ${x.withheldBodies} bodies withheld by recorder` : ''}${x.eager ? "" : " · read on demand"} ` }),
     bodyButtons(A, x.i, [["headers", "Headers"], ...(x.reqBytes ? [["request", "Request"]] : []), ...(x.ws ? [["frames", "Frames"]] : x.resBytes ? [["response", "Response"]] : [])], `${x.method} ${x.host}${x.path}`, `entry:${x.i}`),
     readerAt(A, `entry:${x.i}`));
   const head = g.items.slice(0, 25), rest = g.items.slice(25);
@@ -581,8 +581,9 @@ function callCard(cap, c, trace, A, at) {
     product === "codex" ? ["Request kind", c.requestKind || (c.generate === false ? "prewarm" : "turn"), c.generate === false ? "generate: false" : null] : ["Request class", c.requestClass || "–", c.kind === "side" ? "a side call" : null],
     ["Model", c.model || "–"],
   ]));
-  const parts = product === "claude-code" ? [["headers", "Headers"], ["request", "Request as sent"], ["response", "Response"]] : [["headers", "Handshake headers"], ["frames", "Frames"]];
-  kids.push(el("div", { class: "net-actions" }, bodyButtons(A, c.entry, parts, product === "claude-code" ? `Call ${n + 1}` : "Responses websocket", `card:${n}`)), readerAt(A, `card:${n}`, c.entry));
+  const http = product === 'claude-code' || c.transport === 'http';
+  const parts = http ? [["headers", "Headers"], ["request", "Request as sent"], ["response", "Response"], ...(c.protocol === 'chat-completions' ? [['reasoning', 'Received reasoning']] : [])] : [["headers", "Handshake headers"], ["frames", "Frames"]];
+  kids.push(el("div", { class: "net-actions" }, bodyButtons(A, c.entry, parts, http ? `Call ${n + 1}` : "Responses websocket", `card:${n}`)), readerAt(A, `card:${n}`, c.entry));
   // Sensitive data sent with this call: open when something on it is flagged.
   const { rows, socket } = sensitiveRows(cap, c);
   const multi = new Map((cap.transit?.credentials || []).filter((y) => y.hosts.length > 1).map((y) => [y.kind, y]));
@@ -598,7 +599,33 @@ function callCard(cap, c, trace, A, at) {
     socket.length ? el("p", { class: "note", text: "On the websocket handshake (every call on this socket):" }) : null,
     socket.length ? el("ul", { class: "net-list" }, socket.map(line)) : null));
   const logged = at && at.req && at.req.tokens ? at.req : null;
-  if (product === "claude-code") {
+  if (c.protocol === 'chat-completions') {
+    const route = c.routing, response = c.response;
+    kids.push(fold(['Destination and routing', route.reportedProvider || 'serving provider not reported'], false, key('route'), kv([
+      ['Observed client destination', route.destination, route.gateway ? 'gateway' : 'direct API host'],
+      ['Requested model', c.model || '–'],
+      route.modelNamespace ? ['Model identifier namespace', route.modelNamespace, 'from the requested identifier; separate from the destination'] : null,
+      ['Reported serving provider', route.reportedProviders.join(', ') || 'not reported', 'response metadata; further downstream traffic was not observed'],
+      ['Routing preferences as sent', shortJson(route.preferences, Infinity)],
+      route.requestedModels ? ['Requested fallback models', shortJson(route.requestedModels, Infinity)] : null,
+      ['Session association', c.association === 'session-id' ? 'exact session header' : c.association || 'unattributed', c.joinedBy ? `native step joined by ${c.joinedBy}` : 'native step unattributed'],
+    ]), el('p', { class: 'note', text: 'A model publisher or reported provider does not establish geography, retention or an unobserved downstream hop.' })));
+    kids.push(fold(['Request as sent', `${plural(c.messages.count, 'message')} · ${plural(c.tools.length, 'tool schema')}`], false, key('sent'), kv([
+      ['Message roles', Object.entries(c.messages.roles).map(([role, count]) => `${role} ${count}`).join(', ')],
+      ['System/developer content', `${c.system.length} messages · ${fmtInt(c.system.reduce((n, b) => n + b.chars, 0))} characters`, 'read the exact content with Request as sent'],
+      ['Parameters', shortJson(c.params, Infinity)],
+    ]), toolsTable(c), el('p', { class: 'note', text: 'Complete message content and tool schemas remain in the local request body reader.' })));
+    kids.push(fold(['Received reasoning', `${plural(response.reasoning.length, 'field')} · ${fmtInt(response.reasoning.filter(r => !r.encrypted).reduce((n, r) => n + r.chars, 0))} readable characters`], false, key('reasoning'),
+      el('ul', { class: 'net-list' }, response.reasoning.map(r => el('li', { text: `${r.field} · ${r.type} · choice ${r.choice} · ${fmtInt(r.chars)} characters${r.encrypted ? ' · opaque/encrypted; no readable reasoning' : ''}` }))),
+      el('p', { class: 'note', text: 'Received reasoning opens the observed fields separately from final text. Multiple fields may repeat the same received content.' })));
+    kids.push(fold(['The response', response.error || c.status >= 400 ? 'HTTP/provider error' : response.complete ? 'complete' : 'partial / stream ended early'], false, key('response'), kv([
+      ['Reported model', response.model || '–'], ['Finish reasons', response.finish.map(f => `choice ${f.choice}: ${f.reason}`).join(', ') || 'not received'],
+      ['Final text', `${fmtInt(response.content.reduce((n, p) => n + p.chars, 0))} characters`, 'read the exact content with Response'],
+      ['Tool calls', response.toolCalls.map(t => t.name || 'unnamed').join(', ') || 'none'],
+      ['Usage as received', shortJson(response.usage, Infinity)],
+      response.error ? ['Provider error', shortJson(response.error, Infinity), 'read Response for the captured error body'] : null,
+    ])));
+  } else if (product === "claude-code") {
     const m = c.messages;
     const deferred = c.tools.filter((t) => t.defer).length;
     const notLog = [

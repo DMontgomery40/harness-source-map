@@ -357,10 +357,12 @@ test("provenance: each header, event and frame the catalog explains is in what s
   const cxRoot = join(repo, "codex/work");
   const cxSrc = existsSync(cxRoot) ? readdirSync(cxRoot).filter((n) => /^codex-src-rust-/.test(n)).map((n) => join(cxRoot, n, "codex-rs")).filter(existsSync) : [];
   const cx = cxSrc.length ? textOf(cxSrc.at(-1), /\.rs$/) : null;
+  const ocRoot = process.env.TRACE_OPENCODE_SOURCE || join(repo, 'opencode/work/source');
+  const oc = existsSync(join(ocRoot, 'packages/opencode/src/session/llm/request.ts')) ? textOf(join(ocRoot, 'packages/opencode/src'), /\.ts$/) : null;
   const missing = [];
   for (const p of PROVENANCE) {
     if (p.serverSent) continue;
-    const hay = p.product === "claude-code" ? cc : cx;
+    const hay = p.product === "claude-code" ? cc : p.product === 'opencode' ? oc : cx;
     if (!hay) continue;
     if (!hay.some((t) => t.includes(p.literal))) missing.push(`${p.product} ${p.kind} ${p.name}`);
   }

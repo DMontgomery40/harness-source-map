@@ -55,21 +55,30 @@ const CX = [
   { host: /^(localhost|127\.0\.0\.1)(:\d+)?$/, path: /./, role: "mcp", label: "Local MCP server", reveals: "Traffic to an MCP server on this machine." },
 ];
 
-export const CATALOG = { "claude-code": CC, codex: CX };
+// Destination recognition is shared: the model publisher is not the client
+// destination, and a gateway's downstream route is known only when reported.
+const CHAT = [
+  { host: 'openrouter.ai', path: /^\/api\/v1\/chat\/completions\/?$/, method: 'POST', role: 'model', label: 'OpenRouter chat completions', reveals: 'Observed gateway destination, requested model and routing preferences; reported serving provider and received reasoning when present.' },
+  { host: /^(?:dashscope(?:-intl|-us)?|coding(?:-intl)?\.dashscope)\.aliyuncs\.com$/, path: /\/(?:compatible-mode\/)?v1\/chat\/completions\/?$/, method: 'POST', role: 'model', label: 'Alibaba/Qwen chat completions', reveals: 'Observed Alibaba API destination, requested model, messages, tool schemas and received reasoning_content.' },
+  { host: /^[a-z0-9.-]+\.maas\.aliyuncs\.com$/, path: /\/compatible-mode\/v1\/chat\/completions\/?$/, method: 'POST', role: 'model', label: 'Alibaba/Qwen chat completions', reveals: 'Observed workspace API destination and exact request/response bodies; host spelling does not establish geography or retention.' },
+  { host: 'api.deepseek.com', path: /^\/(?:v1\/|beta\/)?chat\/completions\/?$/, method: 'POST', role: 'model', label: 'DeepSeek chat completions', reveals: 'Observed DeepSeek API destination, messages, tools and received reasoning_content.' },
+  { host: /^api\.(?:kimi\.com|moonshot\.ai|moonshot\.cn|moonshotai\.cn)$/, path: /^\/(?:coding\/)?v1\/chat\/completions\/?$/, method: 'POST', role: 'model', label: 'Moonshot/Kimi chat completions', reveals: 'Observed Moonshot/Kimi API destination, messages, tools and received reasoning_content.' },
+];
+export const CATALOG = { "claude-code": CC, codex: CX, opencode: CHAT };
 
 // The catalog entry for a request: { role, label, reveals }, "other" when nothing matches.
 export function classify(product, info) {
-  for (const c of CATALOG[product] || []) {
+  for (const c of [...(CATALOG[product] || []), ...(product === 'opencode' ? [] : CHAT)]) {
     const hostOk = typeof c.host === "string" ? info.host === c.host : c.host.test(info.host);
     if (!hostOk || !c.path.test(info.path) || (c.method && c.method !== info.method)) continue;
-    return { role: c.role, label: c.label, reveals: c.reveals };
+    return { role: c.role, label: c.label, reveals: c.reveals, ...(CHAT.includes(c) ? { protocol: 'chat-completions' } : {}) };
   }
   return { role: "other", label: info.host || "unknown host", reveals: "Not in the catalog." };
 }
 
 // Which product a capture is from, by its hosts and headers; null when neither.
 export function productOf(infos, headersOf) {
-  let cc = 0, cx = 0, browser = 0;
+  let cc = 0, cx = 0, oc = 0, browser = 0;
   for (const x of infos) {
     if (x.host === "api.anthropic.com" || x.host === "mcp-proxy.anthropic.com") cc++;
     if (x.host === "chatgpt.com" && /^\/backend-api\/codex\//.test(x.path)) cx++;
@@ -77,7 +86,10 @@ export function productOf(infos, headersOf) {
     const h = headersOf(x.i);
     if (h["x-claude-code-session-id"]) cc += 5;
     if (h["x-codex-turn-metadata"] || h.originator) cx += 5;
+    if (h['x-opencode-session-id']) oc += 5;
+    else if (h['x-title'] === 'opencode' || /^opencode\//i.test(h['user-agent'] || '')) oc++;
   }
+  if (oc && oc >= cc && oc >= cx) return 'opencode';
   if (!cc && !cx) return browser ? "browser" : null;
   return cc >= cx ? "claude-code" : "codex";
 }
@@ -92,12 +104,15 @@ export const DECISIONS = {
     "tengu_api_query", "tengu_api_success", "tengu_tool_schema_sizes", "tengu_cli_flags", "tengu_feature_sad",
   ],
   codex: ["codex_thread_initialized", "codex_turn_event", "codex_command_execution_event", "codex_dynamic_tool_call_event", "codex_hook_run"],
+  opencode: [],
 };
 
 // Names the catalog explains, with the literal to look for in what ships (the extracted Claude Code binary,
 // the codex-rs source). serverSent: the server writes it and the client only reads it, so the client may
 // not carry the literal; the provenance test does not assert those.
 export const PROVENANCE = [
+  { product: 'opencode', kind: 'header', name: 'x-opencode-session-id', literal: 'x-opencode-session-id' },
+  { product: 'opencode', kind: 'header', name: 'x-opencode-parent-session-id', literal: 'x-opencode-parent-session-id' },
   { product: "claude-code", kind: "header", name: "x-claude-code-request-class", literal: "x-claude-code-request-class" },
   { product: "claude-code", kind: "header", name: "x-claude-code-session-id", literal: "X-Claude-Code-Session-Id" },
   { product: "claude-code", kind: "header", name: "anthropic-beta", literal: "anthropic-beta" },

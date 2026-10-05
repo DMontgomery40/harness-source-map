@@ -13,7 +13,7 @@ export function looksLikeHar(head) {
 // names no session at all. Keep the ones that name the open session, and the ones that name none; a capture
 // filed beside another session (a whole projects folder was dropped) stays out.
 // files: [{ path }]. sessionIds: the open session's ids (Claude Code's session, every Codex/ChatGPT thread).
-const UUIDS = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+const UUIDS = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|ses_[a-z0-9]+/gi;
 export function capturesFor(files, sessionIds) {
   const mine = new Set([...sessionIds].map((id) => String(id).toLowerCase()));
   return files.filter((f) => {
@@ -83,6 +83,8 @@ export function entryInfo(entry, i) {
     resBytes: resC && resC.text ? resC.text.length : Math.max(0, Number(resC && resC.size) || 0),
     timings: { wait: num(tm.wait), receive: num(tm.receive), send: num(tm.send), total: num(entry.time) },
     ws: Array.isArray(entry._webSocketMessages) ? entry._webSocketMessages.length : 0,
+    partial: entry._traceCapture?.partial === true,
+    withheldBodies: Array.isArray(entry._traceCapture?.withheldBodies) ? entry._traceCapture.withheldBodies.length : 0,
   };
 }
 
