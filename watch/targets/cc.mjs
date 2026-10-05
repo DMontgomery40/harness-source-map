@@ -124,11 +124,18 @@ export const cc = {
     }
     if (r.status !== 0) throw new Error(`refresh failed (${r.status}): ${(r.stderr || r.stdout).slice(-800)}`);
     const summary = JSON.parse(r.stdout.trim().split("\n").at(-1));
+    if((runtime.broadExport??process.env.JEV_BROAD_EXPORT==='1')) {
+      const coverageFile=path.join(repo,'work/jev-discovery-cc-coverage.json');
+      if(existsSync(coverageFile)) {
+        const coverage=JSON.parse(readFileSync(coverageFile,'utf8'));
+        if(coverage.source?.binary_sha256===summary.sources?.binary_sha256&&coverage.new_gaps&&!dryRun) notify('Claude Code source-map gaps',`${coverage.new_gaps} new source occurrence(s) need coverage review; ${coverage.gaps} unresolved in this build`);
+      }
+    }
     // Prompt edits Jev reads as likely changing model behaviour (uncalibrated; a person confirms).
     const behaviorFile = path.join(repo, "work/releases", fingerprint.version, "behavior-flags.json");
     const likely = existsSync(behaviorFile) ? [...new Set(JSON.parse(readFileSync(behaviorFile, "utf8")).pairs.filter(p => p.notify).map(p => `${p.area}:${p.id}`))] : [];
     if (likely.length && !dryRun) notify("Claude Code behaviour flags", `${fingerprint.version}: ${likely.length} prompt edit(s) likely change model behaviour (uncalibrated, for review): ${likely.slice(0, 5).join(", ")}`);
-    // Findings are notified and go into the changelog; a failing scan never fails the refresh.
+    // Findings are notified and go into the changelog. Pending Jev work retries the build.
     const scanDiffs = [];
     for (const sc of SCANS) {
       if (!existsSync(path.join(repo, sc.script))) continue;
@@ -137,6 +144,8 @@ export const cc = {
       const out = run(node, [sc.script], { cwd: repo, timeoutMs: 20 * 60 * 1000 });
       if (out.status !== 0) {
         log(`cc ${sc.script} failed (${out.status}): ${(out.stderr || out.stdout).slice(-300)}`);
+        if(sc.script==='extract/package-scan.mjs'&&out.status===JEV_TEMPFAIL_EXIT) jevCheck(sc.script,out,agents);
+        if(sc.script==='extract/package-scan.mjs') throw new Error(`required package scan failed (${out.status}); publication stopped`);
         if (!dryRun) notify(`Claude Code ${sc.label}`, `${sc.script} exited ${out.status}; its outputs were left unchanged`);
         run("git", ["checkout", "--", ...sc.outputs.filter(file => existsSync(path.join(repo, file)))], { cwd: repo });
         continue;

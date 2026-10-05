@@ -17,6 +17,8 @@ async function fixture(check, {scripts=true}={}) {
  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'codex-required-inputs-'));
  fs.mkdirSync(path.join(repo,'outputs'));
  fs.mkdirSync(path.join(repo,'work'));
+ fs.mkdirSync(path.join(repo,'extract/codex'),{recursive:true});
+ fs.writeFileSync(path.join(repo,'extract/codex/coverage-audit.mjs'),'// fixture');
  if(scripts) for(const [script,output] of generated){
   fs.mkdirSync(path.dirname(path.join(repo,script)),{recursive:true});
   fs.writeFileSync(path.join(repo,script),'// fixture');
@@ -89,10 +91,17 @@ function outageRunner(failure) {
  };
  return commands;
 }
-for(const [script,previous] of [['extract/codex-config/run_all.sh',null],['extract/codex/chatgpt-prompts.mjs',fingerprint],['extract/codex/prompt-sweep.mjs',fingerprint]]) test(`${script} exiting 75 is a Jev outage: restored, unpublished, not a failure`,async()=>fixture(async repo=>{
+for(const [script,previous] of [['extract/codex-config/run_all.sh',null],['extract/codex/chatgpt-prompts.mjs',fingerprint],['extract/codex/prompt-sweep.mjs',fingerprint],['extract/codex/coverage-audit.mjs',fingerprint]]) test(`${script} exiting 75 is a Jev outage: unpublished, not a failure`,async()=>fixture(async repo=>{
  const commands=outageRunner(script);
  const notes=[];
- await assert.rejects(codex.refresh({now:Date.now(),dryRun:false,fingerprint,previous},{...runtime(repo,commands),notify:(...n)=>notes.push(n)}),error=>error instanceof JevUnavailableError&&error.afterAgent===false&&error.message.includes(`${script} exited 75`));
- assertNoPublication(repo,commands.calls);
+ await assert.rejects(codex.refresh({now:Date.now(),dryRun:false,fingerprint,previous},{...runtime(repo,commands),broadExport:script==='extract/codex/coverage-audit.mjs',notify:(...n)=>notes.push(n)}),error=>error instanceof JevUnavailableError&&error.afterAgent===false&&error.message.includes(`${script} exited 75`));
+ if(script==='extract/codex/coverage-audit.mjs') assert.equal(commands.calls.some(call=>call.command==='git'&&call.args[0]==='status'),false);
+ else assertNoPublication(repo,commands.calls);
  assert.deepEqual(notes,[]);
+}));
+
+test('scheduled sweep does not run broad coverage audit without explicit opt-in',async()=>fixture(async repo=>{
+ const commands=outageRunner('extract/codex/coverage-audit.mjs');
+ await assert.rejects(codex.refresh({now:Date.now(),dryRun:false,fingerprint,previous:fingerprint},runtime(repo,commands)),/required surface scan is missing/);
+ assert.equal(commands.calls.some(call=>call.args[0]==='extract/codex/coverage-audit.mjs'),false);
 }));

@@ -40,6 +40,7 @@ It is **not** about token cost or the fact that context is re-read every turn. D
     review material remain private. This exception does not authorize any other private recording.
 
 ## Rules
+- **Jev discovery:** read `docs/specs/jev-discovery.md` and, when available, the global `jev-workflows` skill before changing a classifier or coverage sweep. Check candidate selection, complete source text, privacy filtering, batch-size accounting, cache identity, unanswered work, and site record indexing as separate layers. The broad shipped-source export is opt-in and needs the specific external-payload authorization described in the spec; local preparation does not grant it.
 - Run the gate before calling work done: `npm run check` (build, all tests, link check, leak check).
 - Trace always opens in the 3D landscape (2D only without WebGL or with reduced motion). The harness
   layer and any new layer are reached from it and never open first, whether by default, URL or saved

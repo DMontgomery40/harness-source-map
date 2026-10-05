@@ -43,3 +43,10 @@ test("an outage throws JevUnavailableError after retries; a malformed request th
   const bad = async () => ({ ok: false, status: 400, headers: new Headers(), text: async () => "bad" });
   await assert.rejects(judge(config, openCache(cacheIn()), code, knobs, { fetchImpl: bad }), JevRequestError);
 });
+
+test('an oversized decision function remains a local-review item with its ending intact',async()=>{
+  const long=`function n(){/* ${'context '.repeat(12000)} */ return process.env.FOO??settings.foo}`;
+  const result=await judge(config,openCache(cacheIn()),long,knobs,{fetchImpl:async()=>assert.fail('oversized source must not be shortened and sent')});
+  assert.equal(result.status,'needs-local-review');
+  assert.equal(result.resolves,null);
+});

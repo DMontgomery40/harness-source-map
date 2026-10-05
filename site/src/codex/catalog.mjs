@@ -186,6 +186,7 @@ export const categories = [
         path: "outputs/desktop-model-facing-text.md",
         anchor: "desktop-model-facing-text-md",
         slug: "desktop-model-facing-text",
+        records: "outputs/desktop-model-facing-text.json",
         format: "markdown",
         title: "Other model-facing text",
         defaultOpen: false

@@ -18,6 +18,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { SCHEMA_VERSION, codesignInfo, linkInfo, loadCache, publishScan, renderPage, saveCache, scanTree, sortKeys, stringFamilies } from "../../tools/package-scan/core.mjs";
+import { JEV_TEMPFAIL_EXIT } from "../../codex/extract/codex/lib/jev-provider.mjs";
 
 const JS = /\.(m?js|cjs)$/;
 
@@ -126,8 +127,10 @@ async function main() {
     intro: "Everything the Claude Code release ships besides the JavaScript the other pages read: every file in the darwin-arm64 package and the npm wrapper, the code signing, entitlements and linking of the native binary, the interesting strings in its native code, and the native addons and other files embedded in it. Each new release is compared with this one, so a new permission, endpoint, flag, addon or codename shows up the day the release ships. The `__BUN` section, which holds the JavaScript, is left out of the string scan. Credential-looking strings are never shown; only their kind and a hash.",
     sourceLine: `Source: Claude Code ${version}, \`@anthropic-ai/claude-code-darwin-arm64\`; paths are relative to the release folder (\`package/\` is the platform package, \`wrapper/package/\` the npm wrapper).${bun ? ` \`__BUN\`: ${bun.filesize.toLocaleString("en-US")} bytes at offset ${bun.fileoff}.` : ""}`
   }) + embeddedSection(embedded);
-  const summary = await publishScan({ product: "Claude Code", repo, inventory, texts, page: `${page.replace(/\n+$/, "")}\n`, extraDiff: embeddedDiff, started });
+  const summary = await publishScan({ product: "Claude Code", repo, inventory, texts, page: `${page.replace(/\n+$/, "")}\n`, extraDiff: embeddedDiff, started,triageOptions:{batched:true} });
   console.log(JSON.stringify({ ...summary, version }));
+  if(summary.needs_local_review) process.exitCode=2;
+  else if(summary.pending) process.exitCode=JEV_TEMPFAIL_EXIT;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();

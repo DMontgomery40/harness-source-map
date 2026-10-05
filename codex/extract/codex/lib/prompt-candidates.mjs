@@ -90,30 +90,46 @@ export function literalRole(src, outer, index) {
 
 // Candidates across the asar's app scripts. Only complete fixed text already covered
 // by an extracted prompt is excluded; a shared anchor or prefix is insufficient.
-export function promptCandidates(asar, { known = [] } = {}) {
+export function promptCandidates(asar, options = {}) {
+  return discoverPromptCandidates(asar, {mode:'legacy',...options}).candidates;
+}
+
+// Broad discovery has no prompt-phrase allowlist or 200-character prose threshold. Count
+// every exclusion, including locale bundles, so the report states what was not classified.
+export function discoverPromptCandidates(asar, { known = [], mode = 'broad' } = {}) {
   // Placeholders (<…>) stand for run-time values; compare the fixed text on both sides.
   const fixed = text => squash(text.replace(/<…>/g, " "));
   const knownText = known.map(fixed);
   const found = [];
-  for (const entry of asar.appScripts.filter(entry => !isLocaleBundle(entry.path))) {
+  const stats={scripts:asar.appScripts.length,locale_scripts:0,literals:0,selected:0,skipped:{}};
+  const skip=reason=>stats.skipped[reason]=(stats.skipped[reason]??0)+1;
+  for (const entry of asar.appScripts) {
+    if (isLocaleBundle(entry.path)) {stats.locale_scripts++;continue;}
     const src = asar.textOf(entry);
     const { outer } = literalsOf(src);
     for (const [index, literal] of outer.entries()) {
-      if (literal.end - literal.start < 24) continue;
+      stats.literals++;
+      if (literal.end - literal.start < (mode==='broad'?3:24)) {skip('short');continue;}
       const role = literalRole(src, outer, index);
-      if (role.kind === "translator-note") continue;
+      if (role.kind === "translator-note") {skip('translator-note');continue;}
       // Avoid constructing a VM for the many short identifiers and ordinary UI labels.
-      if (literal.end - literal.start < 200 && !promptHint(src.slice(literal.start + 1, literal.end - 1), role)) continue;
+      const raw=src.slice(literal.start+1,literal.end-1);
+      const broad = text => /\s/.test(text) && (text.match(/[A-Za-z][A-Za-z'’-]*/g)??[]).length >= (/^(?:tool-description|description|toolDescription|server_instructions|developerInstructions|systemPrompt|prompt|[a-z]+Prompt)$/.test(role.kind)?2:3);
+      if (mode==='broad' ? !broad(raw) : literal.end-literal.start<200 && !promptHint(raw,role)) {skip('not-prose-or-role');continue;}
       const text = literalText(src, literal);
-      if (!text) continue;
-      if (!looksLikeProse(text) && !promptHint(text, role)) continue;
-      if (knownText.some(k => k.includes(fixed(text)))) continue;
+      if (!text) {skip('undecodable');continue;}
+      if (mode==='broad' ? !broad(text) : !looksLikeProse(text) && !promptHint(text,role)) {skip('not-prose-or-role');continue;}
+      const knownMatch=knownText.some(k=>k.includes(fixed(text)));
+      // Published words do not prove this occurrence's role is indexed. In broad mode the
+      // match is only a routing hint; classification and typed coverage must still run.
+      if(knownMatch&&mode!=='broad') {skip('known-complete-text');continue;}
       const hash = candidateHash(text);
-      found.push({ hash, file: entry.path, offset: literal.start, role, text,
+      found.push({ hash, file: entry.path, offset: literal.start, role, text,...(mode==='broad'?{known_text_match:knownMatch}:{}),
         source_context: `${src.slice(Math.max(0,literal.start-400),literal.start)}<candidate literal>${src.slice(literal.end,literal.end+400)}` });
     }
   }
-  return found;
+  stats.selected=found.length;
+  return {candidates:found,stats};
 }
 
 // Call only after per-occurrence role decisions and privacy checks. Keep every positive

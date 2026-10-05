@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { promptCandidates, mergePublishedCandidates } from '../lib/prompt-candidates.mjs';
+import { promptCandidates, discoverPromptCandidates, mergePublishedCandidates } from '../lib/prompt-candidates.mjs';
 
 const bundle = code => ({ appScripts: [{path:'webview/assets/harness.js'}], textOf: () => code });
 
@@ -39,4 +39,21 @@ test('identical setting and tool text retains both occurrences before classifica
   assert.equal(published[0].role.tool,'read_page');
   const both=mergePublishedCandidates(candidates);
   assert.equal(both[0].also_at[0].offset,candidates[1].offset);
+});
+
+test('broad discovery sends short unnamed prose and schema fields to Jev and accounts for every literal', () => {
+  const code='const x="Write a poem"; const t={name:"draw",description:"Draw images"}; const y="ordinary_identifier"; const z={defaultMessage:"Close tab",description:"Explain this button to translators"};';
+  const result=discoverPromptCandidates(bundle(code));
+  assert.deepEqual(result.candidates.map(c=>c.text),['Write a poem','Draw images']);
+  assert.equal(result.stats.literals,6);
+  assert.equal(result.stats.selected,2);
+  assert.equal(Object.values(result.stats.skipped).reduce((n,v)=>n+v,0)+result.stats.selected,result.stats.literals);
+});
+
+test('published text alone cannot hide a different role occurrence from broad coverage review',()=>{
+  const text='Read the image attachment.';
+  const code=`const tool={name:"read_image",description:${JSON.stringify(text)}};`;
+  const discovered=discoverPromptCandidates(bundle(code),{known:[text]});
+  assert.equal(discovered.candidates.length,1);
+  assert.equal(discovered.candidates[0].known_text_match,true);
 });

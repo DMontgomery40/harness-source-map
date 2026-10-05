@@ -109,7 +109,7 @@ test("Jev labels are recorded with choice and confidence, cached, and capped", a
   const cacheFile = path.join(tmp(), "verdicts.json");
   const r = await triage(items, { product: "Fake", cacheFile, cap: 3, config, fetchImpl });
   assert.equal(r.skipped, 2);
-  assert.deepEqual(r.labels.map(l => [l.choice, l.confidence]), [["security", 0.81], ["security", 0.81], ["security", 0.81]]);
+  assert.deepEqual(r.labels.map(l => [l.choice, l.confidence]), [["security", 0.81], ["security", 0.81], ["security", 0.81],[null,null],[null,null]]);
   await triage(items, { product: "Fake", cacheFile, cap: 3, config, fetchImpl });
   assert.equal(calls, 3);
 });
@@ -146,4 +146,29 @@ test("Codex/ChatGPT: third-party runtimes get no strings; app.asar file-list del
   assert.ok(!isThirdParty("Contents/Resources/cua_node/lib/node_modules/@oai/sky/Codex Computer Use.app/Contents/MacOS/SkyComputerUseService"));
   assert.ok(!isThirdParty("Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"));
   assert.deepEqual(asarDiff({ asar: { paths: ["a.js", "b.js"] } }, { asar: { paths: ["b.js", "c.js"] } }).map(x => x.text), ["New app.asar file: c.js", "Removed app.asar file: a.js"]);
+});
+
+test('package discovery retains all added strings and complete instruction endings',()=>{
+  const tail='Only after explicit approval.';
+  const full=Array.from({length:73},(_,i)=>'Use the tool. '.repeat(150)+tail+i);
+  const families=stringFamilies(Buffer.from(full.join('\0')));
+  const before={files:{},macho:{bin:{strings:{},prose_hashes:[]}},bundles:{},dependencies:{}};
+  const after={files:{},macho:{bin:{strings:families.values,prose_hashes:families.prose_hashes}},bundles:{},dependencies:{}};
+  const d=diffInventories(before,after,{texts:{bin:families.prose_texts}});
+  const items=triageItems(d);
+  assert.equal(items.length,73);
+  assert.deepEqual(items.map(x=>x.text.replace(/^New prose string in bin: /,'')).sort(),full.sort());
+});
+
+test('a package classification cap retains an unresolved queue and cannot advance the baseline',async()=>{
+  const repo=tmp(); fs.mkdirSync(path.join(repo,'outputs'));
+  const previous={schema:1,files:{},macho:{},bundles:{},dependencies:{},summary:{files:0}};
+  const baseline=JSON.stringify(previous);
+  fs.writeFileSync(path.join(repo,'outputs/package-scan.json'),baseline);
+  const inventory={...previous,files:{'new.js':{kind:'text',size:1,sha256:'new'}},summary:{files:1}};
+  const result=await publishScan({product:'Fake',repo,inventory,texts:{},page:'# New',cap:0,readBaseline:()=>baseline});
+  assert.equal(result.pending,1);
+  assert.equal(result.needs_local_review,1);
+  assert.equal(fs.readFileSync(path.join(repo,'outputs/package-scan.json'),'utf8'),baseline);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(repo,'work/package-scan-pending.json'))).pending.length,1);
 });

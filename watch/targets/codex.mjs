@@ -127,13 +127,24 @@ export const codex = {
     const sweep = run(node, ["extract/codex/prompt-sweep.mjs"], { cwd: repo, timeoutMs: 15 * 60 * 1000 });
     if (sweep.status !== 0) {
       log(`codex prompt sweep failed: ${(sweep.stderr || sweep.stdout).slice(-300)}`);
-      run("git", ["checkout", "--", "outputs/desktop-model-facing-text.md"], { cwd: repo });
+      run("git", ["checkout", "--", "outputs/desktop-model-facing-text.md", "outputs/desktop-model-facing-text.json"], { cwd: repo });
       if (sweep.status === JEV_TEMPFAIL_EXIT) throw outage("extract/codex/prompt-sweep.mjs", sweep);
       throw new Error(`required prompt sweep failed (${sweep.status}); publication stopped: ${(sweep.stderr || sweep.stdout).slice(-800)}`);
     } else {
       const swept = JSON.parse(sweep.stdout.trim().split("\n").at(-1));
       if (swept.jev_unavailable && !dryRun) notify("Codex/ChatGPT prompt sweep", `${swept.unclassified} candidates unclassified: ${swept.jev_unavailable}`);
       if (existsSync(sweepDiffFile)) { sweepDiff = readFileSync(sweepDiffFile, "utf8").trim(); rmSync(sweepDiffFile, { force: true }); }
+    }
+    // The complete occurrence sweep requires a separate external-corpus authorization. It
+    // is opt-in; only its results may drive this coverage audit. Scheduled legacy sweeps
+    // continue without loading an old broad-discovery ledger for a different build.
+    if((runtime.broadExport??process.env.JEV_BROAD_EXPORT==='1')) {
+      if(!existsSync(path.join(repo,'extract/codex/coverage-audit.mjs'))) throw new Error('required discovery coverage audit is missing; publication stopped');
+      const coverage=run(node,['extract/codex/coverage-audit.mjs'],{cwd:repo,timeoutMs:15*60*1000});
+      if(coverage.status===JEV_TEMPFAIL_EXIT) throw outage('extract/codex/coverage-audit.mjs',coverage);
+      if(coverage.status!==0) throw new Error(`required discovery coverage audit failed (${coverage.status}); publication stopped`);
+      const coverageSummary=JSON.parse(coverage.stdout.trim().split('\n').at(-1));
+      if(!dryRun&&coverageSummary.new_gaps) notify('Codex/ChatGPT source-map gaps',`${coverageSummary.new_gaps} new source occurrence(s) need coverage review; ${coverageSummary.unverified_gaps} unresolved in this build`);
     }
     // Early-warning scans of the build: new feature surfaces, embedded payloads, the whole
     // package. Each writes its baseline under outputs/ and a diff file only when something
@@ -152,10 +163,11 @@ export const codex = {
       if (out.status !== 0) {
         log(`codex ${s.script} failed (${out.status}): ${(out.stderr || out.stdout).slice(-300)}`);
         // The surface scan is required: Jev being unavailable there means retrying the cycle.
-        const required = out.status === JEV_TEMPFAIL_EXIT && s.script === "extract/codex/surface-scan.mjs";
+        const required = out.status === JEV_TEMPFAIL_EXIT && /(?:surface|package)-scan\.mjs$/.test(s.script);
         if (!dryRun && !required) notify(`Codex/ChatGPT ${s.label}`, `${s.script} exited ${out.status}; its outputs were left unchanged`);
         run("git", ["checkout", "--", ...s.outputs.filter(file => existsSync(path.join(repo, file)))], { cwd: repo });
         if (required) throw outage(s.script, out);
+        if (/(?:surface|package)-scan\.mjs$/.test(s.script)) throw new Error(`required ${s.label} failed (${out.status}); publication stopped`);
         continue;
       }
       if (!existsSync(diffFile)) continue;

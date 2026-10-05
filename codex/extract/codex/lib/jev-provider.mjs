@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { privacyScan } from './privacy.mjs';
 
 // The one Jev helper for every script in this repo: provider choice, the pinned model, retries,
 // and verdict caches tagged with the model version that produced them.
@@ -36,7 +37,7 @@ export function decisionConfig(env = process.env, read = () => fs.readFileSync(p
   return useRouter ? { ...ROUTER, key: router, version: JEV_VERSION } : { ...DIRECT, key: direct, version: JEV_VERSION };
 }
 
-const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504]);
+const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504, 529]);
 const UNAVAILABLE = new Set([401, 402, 403]);
 const sleepMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -45,6 +46,10 @@ const sleepMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 // JevUnavailableError. A malformed request throws JevRequestError.
 export async function ask(config, { state, questions }, { fetchImpl = globalThis.fetch, attempts = 4, timeoutMs = 60_000, baseDelayMs = 1000, sleep = sleepMs } = {}) {
   if (!config?.key) throw new JevUnavailableError(`no ${config?.provider === 'OpenRouter' ? 'OPENROUTER_API_KEY' : 'TYPESAFE_API_KEY'}`);
+  const body = JSON.stringify({ model: config.model, state, questions });
+  // Every Jev caller, including Claude Code's older classifiers, crosses this same outbound
+  // boundary. Scan precisely the bytes sent; a caller's earlier filter is defense in depth.
+  privacyScan(new Map([['Jev request',body]]));
   let reason = 'no attempt made', retryAfterMs = null;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     if (attempt) await sleep(retryAfterMs ?? baseDelayMs * 2 ** (attempt - 1));
@@ -54,7 +59,7 @@ export async function ask(config, { state, questions }, { fetchImpl = globalThis
       response = await fetchImpl(config.endpoint, {
         method: 'POST',
         headers: { authorization: `Bearer ${config.key}`, 'content-type': 'application/json' },
-        body: JSON.stringify({ model: config.model, state, questions }),
+        body,
         signal: AbortSignal.timeout(timeoutMs)
       });
     } catch (error) {
@@ -69,11 +74,11 @@ export async function ask(config, { state, questions }, { fetchImpl = globalThis
     }
     if (UNAVAILABLE.has(response.status)) throw new JevUnavailableError(`${config.provider} ${response.status}`);
     if (!response.ok) throw new JevRequestError(`${config.provider} ${response.status}: ${(await response.text().catch(() => '')).slice(0, 300)}`);
-    let body;
-    try { body = await response.json(); } catch { reason = `${config.provider} returned invalid JSON`; continue; }
-    if (!body?.answers || typeof body.answers !== 'object') { reason = `${config.provider} answer without answers`; continue; }
-    for (const id of Object.keys(questions)) if (!(id in body.answers)) throw new JevRequestError(`${config.provider} answer is missing question ${id}`);
-    return body;
+    let result;
+    try { result = await response.json(); } catch { reason = `${config.provider} returned invalid JSON`; continue; }
+    if (!result?.answers || typeof result.answers !== 'object') { reason = `${config.provider} answer without answers`; continue; }
+    for (const id of Object.keys(questions)) if (!(id in result.answers)) throw new JevRequestError(`${config.provider} answer is missing question ${id}`);
+    return result;
   }
   throw new JevUnavailableError(`${reason} after ${attempts} attempts`);
 }

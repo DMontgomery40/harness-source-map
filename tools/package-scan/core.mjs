@@ -17,6 +17,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { JevUnavailableError, ask, decisionConfig, openCache } from "../../codex/extract/codex/lib/jev-provider.mjs";
+import { evaluateBatch, packQuestions } from "../../codex/extract/codex/lib/jev-discovery.mjs";
+import { privacyScan, PrivacyError } from "../../codex/extract/codex/lib/privacy.mjs";
 
 export const SCHEMA_VERSION = 1;
 // Bump when string classification changes, so cached per-binary analyses are recomputed.
@@ -230,7 +232,12 @@ export function classifyString(raw) {
   // Rust crate versions compiled in, from panic-location source paths in the cargo registry.
   const crate = s.match(/\/cargo\/registry\/src\/[^/]+\/([A-Za-z0-9_-]+?)-(\d+\.\d+\.\d+[A-Za-z0-9.+-]*)\//);
   if (crate) return [...out, ["crate", `${crate[1]}@${crate[2]}`]];
-  if (s.length > 400) return out;
+  // Long prose is stored as a hash in the inventory. Its complete transient text is needed
+  // for the diff and Jev; returning here previously erased every instruction tail past 400.
+  if (s.length > 400) {
+    if (s.split(/\s+/).length >= 8 && (s.match(/[A-Za-z]/g)?.length ?? 0) / s.length > 0.7) out.push(["prose", s]);
+    return out;
+  }
   if (HOST_RE.test(s) && !FILE_EXT_TAIL.test(s)) out.push(["host", s]);
   else if (API_PATH_RE.test(s)) out.push(["api_path", s]);
   else if (ENV_RE.test(s) && s.length <= 64 && ENV_PREFIX.test(s) && !ENUM_SEGMENT.test(s) && !/^SQLITE_/.test(s)) out.push(["env", s]);
@@ -273,7 +280,7 @@ export function stringFamilies(buf) {
     for (const [family, value] of classifyString(s)) {
       if (family === "private") privateCount += 1;
       else if (family === "credential") credentials.set(h12(s), value);
-      else if (family === "prose") prose.set(h10(value), value.length > 300 ? `${value.slice(0, 300)}…` : value);
+      else if (family === "prose") prose.set(h10(value), value);
       else values[family].add(value);
     }
   }
@@ -497,12 +504,12 @@ const TRIAGE_ORDER = ["entitlement", "plist", "signing", "file", "credential", "
 // changes to label.
 export function triageItems(d) {
   const items = [];
-  const push = (kind, where, text) => items.push({ kind, where, text: String(text).slice(0, 1500) });
+  const push = (kind, where, text) => items.push({ kind, where, text: String(text) });
   for (const e of d.entitlements) push("entitlement", e.path, `${e.after === null ? "Entitlement removed" : e.before === null ? "Entitlement added" : "Entitlement changed"}: ${e.key} = ${JSON.stringify(e.after ?? e.before)}`);
   for (const c of d.plists) push("plist", c.bundle, `Info.plist ${c.key}: ${JSON.stringify(c.before)} -> ${JSON.stringify(c.after)}`);
   for (const s of d.signing) push("signing", s.path, `Code signing ${s.key}: ${JSON.stringify(s.before)} -> ${JSON.stringify(s.after)}`);
   for (const f of d.files.added.filter(f => f.kind !== "symlink")) push("file", f.path, `New ${f.kind} file: ${f.path}`);
-  for (const s of d.strings) for (const v of s.added.slice(0, 25)) push(s.family, s.path, `New ${s.family} string in ${s.path}: ${v}`);
+  for (const s of d.strings) for (const v of s.added) push(s.family, s.path, `New ${s.family} string in ${s.path}: ${v}`);
   for (const l of d.libs) for (const v of l.added) push("lib", l.path, `New ${l.key} entry: ${v}`);
   for (const dep of d.dependencies) push("dependency", dep.scope, `Dependency ${dep.name}: ${dep.before ?? "(none)"} -> ${dep.after ?? "(removed)"}`);
   for (const x of d.extra) push("extra", x.where, x.text);
@@ -530,12 +537,40 @@ export const triageKey = (product, it) => `v1:${h12(`${product}\n${it.where}\n${
 // Each request retries through ask(); once Jev is unavailable the remaining items stay unlabelled.
 // A malformed request (JevRequestError) is a bug here and throws. `config` and `askOptions`
 // ({ fetchImpl, attempts, sleep, ... }) are injectable for tests.
-export async function triage(items, { product, cacheFile, cap = 60, config = decisionConfig(), ...askOptions } = {}) {
+export async function triage(items, { product, cacheFile, cap = Number.MAX_SAFE_INTEGER, config = decisionConfig(), batched=false, ...askOptions } = {}) {
   const cache = cacheFile ? openCache(cacheFile) : null;
   const chosen = items.slice(0, cap);
   let unavailable = null;
-  const labels = chosen.map(it => ({ ...it, choice: null, confidence: null }));
-  const queue = labels.map((it, i) => i);
+  const labels = items.map(it => ({ ...it, choice: null, confidence: null }));
+  for(const item of labels.slice(cap)) Object.assign(item,{status:'needs-local-review',reason:'Explicit classification cap'});
+  if(batched) {
+    const entries=new Map(),batchCache=cache??{has:k=>entries.has(k),get:k=>entries.get(k),set:(k,v)=>entries.set(k,v)};
+    const batchOptions={cache:batchCache,...askOptions};
+    const values=chosen.map((it,i)=>({i,questions:{signal:{...TRIAGE_QUESTION.signal,instructions:{task:TRIAGE_QUESTION.signal.instructions.replaceAll('state.','source.'),source:{product,where:it.where,change:it.text}}}}}));
+    const safe=values.filter(v=>{
+      try {privacyScan(new Map([['package classification',JSON.stringify(v.questions)]]));return true;}
+      catch(error) {if(!(error instanceof PrivacyError)) throw error;Object.assign(labels[v.i],{status:'withheld',reason:'Privacy boundary',text_sha256:crypto.createHash('sha256').update(labels[v.i].text).digest('hex')});delete labels[v.i].text;return false;}
+    });
+    const requestState={task:'Independent package changes; each question supplies its source.'};
+    const {batches,oversized}=packQuestions(safe,{batchSize:16,state:requestState,keyOf:i=>String(i)});
+    oversized.forEach(v=>Object.assign(labels[v.i],{status:'needs-local-review',reason:'Complete change exceeds the request budget'}));
+    for(const batch of batches) {
+      const questions=Object.fromEntries(batch.map((v,i)=>[String(i),v.questions.signal]));
+      const payload={state:requestState,questions};
+      if(unavailable) {batch.forEach(v=>labels[v.i].reason=unavailable);continue;}
+      try {
+        const body=await evaluateBatch(config,payload,'package-batch-v1',batchOptions);
+        batch.forEach((v,i)=>Object.assign(labels[v.i],body.answers[String(i)]));
+      } catch(error) {
+        if(!(error instanceof JevUnavailableError)) {batchCache.save?.();throw error;}
+        unavailable??=error.reason;
+        batch.forEach(v=>labels[v.i].reason=error.reason);
+      }
+    }
+    batchCache.save?.();
+    return {labels,unavailable,skipped:items.length-chosen.length};
+  }
+  const queue = chosen.map((it, i) => i);
   await Promise.all(Array.from({ length: 8 }, async () => {
     while (queue.length) {
       const i = queue.shift();
@@ -714,7 +749,7 @@ export function assertPublishable(name, text) {
 // outputs/package-scan.{json,md} and work/package-diff.md (only when something changed against
 // an existing baseline), and returns the summary the caller prints. `extraDiff(prev, cur)` adds
 // product-specific changes as { where, text }.
-export async function publishScan({ product, repo, inventory, texts, page, extraDiff = () => [], cap = 60, started = Date.now(), readBaseline = null, triageOptions = {} }) {
+export async function publishScan({ product, repo, inventory, texts, page, extraDiff = () => [], cap = Number.MAX_SAFE_INTEGER, started = Date.now(), readBaseline = null, triageOptions = {} }) {
   const read = readBaseline ?? (() => {
     const r = spawnSync("git", ["show", "HEAD:./outputs/package-scan.json"], { cwd: repo, encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
     return r.status === 0 ? r.stdout : null;
@@ -726,17 +761,17 @@ export async function publishScan({ product, repo, inventory, texts, page, extra
   assertPublishable("package-scan.json", json);
   assertPublishable("package-scan.md", page);
   fs.mkdirSync(path.join(repo, "outputs"), { recursive: true });
-  fs.writeFileSync(path.join(repo, "outputs", "package-scan.json"), json);
-  fs.writeFileSync(path.join(repo, "outputs", "package-scan.md"), page);
   const diffFile = path.join(repo, "work", "package-diff.md");
   fs.rmSync(diffFile, { force: true });
-  const summary = { product, baseline: baseline ? "HEAD" : "none", files: inventory.summary.files, macho: Object.keys(inventory.macho).length, bundles: Object.keys(inventory.bundles).length, changes: 0, labelled: 0, flagged: 0, jev_unavailable: null, diff: null };
+  let pending=[];
+  const summary = { product, baseline: baseline ? "HEAD" : "none", files: inventory.summary.files, macho: Object.keys(inventory.macho).length, bundles: Object.keys(inventory.bundles).length, changes: 0, labelled: 0, flagged: 0, pending:0, needs_local_review:0, jev_unavailable: null, diff: null };
   if (baseline && baseline.schema === inventory.schema) {
     const d = diffInventories(baseline, inventory, { texts });
     d.extra.push(...extraDiff(baseline, inventory));
     if (!diffIsEmpty(d)) {
       const items = triageItems(d);
       const { labels, unavailable, skipped } = await triage(items, { product, cacheFile: path.join(repo, "work", "package-scan-verdicts.json"), cap, ...triageOptions });
+      pending=labels.filter(l=>!l.choice);
       const text = renderDiff(d, { title: `${product} package changes`, labels, unavailable, skipped });
       assertPublishable("package-diff.md", text);
       fs.mkdirSync(path.dirname(diffFile), { recursive: true });
@@ -744,9 +779,15 @@ export async function publishScan({ product, repo, inventory, texts, page, extra
       Object.assign(summary, {
         changes: items.length, labelled: labels.filter(l => l.choice).length,
         flagged: labels.filter(l => l.choice && l.choice !== "routine").length,
-        jev_unavailable: unavailable, diff: path.relative(repo, diffFile)
+        pending:pending.length,needs_local_review:pending.filter(l=>l.status==='needs-local-review'||l.status==='withheld').length,jev_unavailable: unavailable, diff: path.relative(repo, diffFile)
       });
     }
+  }
+  fs.mkdirSync(path.join(repo,'work'),{recursive:true});
+  fs.writeFileSync(path.join(repo,'work/package-scan-pending.json'),JSON.stringify({source:inventory.source??null,pending},null,1)+'\n');
+  if(!pending.length) {
+    fs.writeFileSync(path.join(repo, "outputs", "package-scan.json"), json);
+    fs.writeFileSync(path.join(repo, "outputs", "package-scan.md"), page);
   }
   summary.seconds = Math.round((Date.now() - started) / 100) / 10;
   return summary;
