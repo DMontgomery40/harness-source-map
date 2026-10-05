@@ -12,13 +12,13 @@ Own opencode/extract, opencode/outputs, opencode/README.md. Build a deterministi
 
 ## T2: Reference site
 
-Status: implementing. Blocked by: none. Blocks: T5.
+Status: resolved. Blocked by: none. Blocks: T5. Merged reference commits 0d7fe45 and 0678808; eight OpenCode pages, shared search and Trace references passed the full gate and browser acceptance.
 
 Own site/src/opencode, site/src/shared/{site.mjs,landing.mjs,trace-build.mjs}, site/build.mjs and site/test/shared/sections.test.mjs. Add OpenCode to site config, landing, builds, search and Trace reference indices using T1 outputs. Preserve existing sections and all existing products. Reuse existing rendering where appropriate without copying entire product renderers. Test against the actual extracted outputs and generated site; no fabricated records. Coordinator owns README/package docs.
 
 ## T3: Trace sessions and network analysis
 
-Status: ready. Blocked by: none. Blocks: T5.
+Status: resolved. Blocked by: none. Blocks: T5. Merged Trace commits 1bc3791, 1de0866, c97e17a and 77198ee. Real Qwen, DeepSeek and Kimi exports and captures validated native reasoning, request bodies, exact associations and reported serving providers without publishing recordings.
 
 Own site/trace and its tests. Add native OpenCode JSON exports to loadTrace and separate reasoning parts. Extend network classification/findings/body display for OpenRouter, Qwen/Alibaba, DeepSeek and Moonshot/Kimi through analyzeCapture. Show observed and reported routing accurately. Read real source schemas and the coordinator's private real session paths when available; do not create synthetic sessions or responses. The existing landscape opens first; preserve every existing mode. Live recording paths are provided privately at runtime, never embedded in tracked files. Validate using real recordings and supported public boundaries.
 
@@ -30,6 +30,6 @@ Own tools/capture and relevant tools/test files only. Add an easy OpenCode captu
 
 ## T5: Real acceptance and review
 
-Status: blocked. Blocked by: T1,T2,T3,T4.
+Status: resolved. Blocked by: T1,T2,T3,T4. Final integration HEAD e2e7145 passed the full gate with real Qwen export/HAR and an actual interrupted capture: 822 tests, 809 passed, 13 skipped; 4,376 links; 9,796 search entries; leak check clean across 1,191 files. Independent standards and spec reviews completed; review repairs merged as 2ca9785. Browser acceptance confirmed the initial 3D landscape, exact-step wording, separate reasoning, all-products search, capture help and private real network payload display.
 
 Coordinator owns package.json, README.md, plan status updates, installation, real OpenRouter sessions, private recordings, browser checks and integration. Run the full gate, review both standards and spec on the final diff, repair findings, record evidence and only then move to Cursor. Keep all private captures and paths out of tracked files.
