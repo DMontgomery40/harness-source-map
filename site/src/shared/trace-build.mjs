@@ -4,6 +4,7 @@
 // { byProduct: { "claude-code": …, codex: … } }. The index holds only hashes of published lines,
 // page titles and slugs, never session data.
 import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { selectRecordSections } from "./record-sections.mjs";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -152,7 +153,7 @@ export async function buildLiteralIndex({ productId, sourceRoot, version }) {
 
 // The product version the published records were read from.
 async function libraryVersion(sourceRoot) {
-  for (const [file, pick] of [["outputs/capture-summary.json", (j) => j.version], ["outputs/codex-cli-prompts.json", (j) => j.source?.cli_version]]) {
+  for (const [file, pick] of [["outputs/capture-summary.json", (j) => j.version], ["outputs/codex-cli-prompts.json", (j) => j.source?.cli_version], ["outputs/search-records.json", (j) => j.release?.desktop && `${j.release.desktop.version} + Agent CLI ${j.release.agent_cli.version}`]]) {
     const full = path.join(sourceRoot, file);
     if (existsSync(full)) { try { const v = pick(JSON.parse(await readFile(full, "utf8"))); if (v) return String(v); } catch { /* not this product */ } }
   }
@@ -181,7 +182,9 @@ export async function buildTrace({ siteRoot, sourceRoot, categories, siteId, ori
     if (!existsSync(full)) continue;
     const index = pages.push({ slug: file.slug, title: file.title }) - 1;
     const raw = await readFile(full, "utf8");
-    const text = file.transform ? file.transform(raw) : raw;
+    const transformed = file.transform ? file.transform(raw) : raw;
+    // A page that publishes part of a records file: the same sections its built page shows.
+    const text = file.includeRecord ? await selectRecordSections({ sourceRoot, file, markdown: transformed }) : transformed;
     texts.push({ slug: file.slug, text, ids: await headingIds(siteRoot, file.slug, section) });
     for (const hash of textLineHashes(text)) if (!(hash in lines)) lines[hash] = index;
   }

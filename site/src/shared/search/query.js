@@ -29,7 +29,8 @@ export const RECORD_KINDS = new Set(KINDS.filter(k => !["page", "h", "command"].
 const PRODUCT_ALIASES = new Map([
   ["claude-code", "claude-code"], ["claude", "claude-code"], ["cc", "claude-code"], ["claudecode", "claude-code"],
   ["codex", "codex"], ["chatgpt", "codex"], ["openai", "codex"], ["codex-chatgpt", "codex"], ["codex/chatgpt", "codex"],
-  ["opencode", "opencode"], ["open-code", "opencode"]
+  ["opencode", "opencode"], ["open-code", "opencode"],
+  ["cursor", "cursor"], ["cursor-agent", "cursor"]
 ]);
 
 const low = s => String(s ?? "").toLowerCase();

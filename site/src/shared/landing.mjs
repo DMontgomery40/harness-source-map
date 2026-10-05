@@ -22,13 +22,19 @@ const CHOICES = [
     kicker: "Open source",
     title: "OpenCode",
     line: "Model and agent prompts, conversation instructions, tools, configuration and network request assembly, read from release-pinned public source. Trace real OpenRouter runs and their visible reasoning."
+  },
+  {
+    id: "cursor",
+    kicker: "Anysphere",
+    title: "Cursor",
+    line: "Agent instructions, approval prompts, tool schemas, the AgentService request path, reasoning events and configuration from the shipped desktop app and Agent CLI, plus Binwalk and package scans."
   }
 ];
 
 export function renderLanding({ cardFile = "social-card.png" } = {}) {
   const origin = siteOrigin();
   const title = `${SITE.name} · What coding-agent harnesses send the model`;
-  const description = "The prompts, reminders, tools and settings that Claude Code, Codex/ChatGPT and OpenCode put in front of the model, with source provenance. Trace your own session and captured network requests.";
+  const description = "The prompts, reminders, tools and settings that Claude Code, Codex/ChatGPT, OpenCode and Cursor put in front of the model, with source provenance. Trace your own session and captured network requests.";
   const cards = CHOICES.map(c => `
       <a class="choice" href="${esc(SITE.products[c.id].path)}/">
         <span class="kicker">${esc(c.kicker)}</span>

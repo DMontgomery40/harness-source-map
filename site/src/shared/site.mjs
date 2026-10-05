@@ -8,7 +8,8 @@ export const SITE = {
   products: {
     "claude-code": { path: "claude-code", label: "Claude Code", legacyHost: "ccprompts.dtmont.com" },
     codex: { path: "codex", label: "Codex/ChatGPT", legacyHost: "gpt6aeon.dtmont.com" },
-    opencode: { path: "opencode", label: "OpenCode" }
+    opencode: { path: "opencode", label: "OpenCode" },
+    cursor: { path: "cursor", label: "Cursor" }
   }
 };
 

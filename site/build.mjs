@@ -1,5 +1,5 @@
-// Builds the one site: the landing chooser at /, the Claude Code section at /claude-code/, the
-// Codex/ChatGPT section at /codex/, and one Trace at /trace/ with both products' reference index.
+// Builds the one site: the landing chooser at /, one section per product (/claude-code/, /codex/,
+// /opencode/, /cursor/), and one Trace at /trace/ with every product's reference index.
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -15,6 +15,8 @@ import { buildSite as buildCodex } from "./src/codex/build-site.mjs";
 import { categories as codexCategories } from "./src/codex/catalog.mjs";
 import { buildSite as buildOpenCode } from "./src/opencode/build-site.mjs";
 import { categories as openCodeCategories } from "./src/opencode/catalog.mjs";
+import { buildSite as buildCursor } from "./src/cursor/build-site.mjs";
+import { categories as cursorCategories } from "./src/cursor/catalog.mjs";
 
 const siteRoot = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(siteRoot, "..");
@@ -24,7 +26,8 @@ const dist = path.join(siteRoot, "dist");
 const PRODUCTS = [
   { id: "claude-code", siteId: "ccprompts", build: buildClaudeCode, categories: claudeCodeCategories, assets: [claudeCodeSite.socialCard.file] },
   { id: "codex", siteId: "gpt6aeon", build: buildCodex, categories: codexCategories, assets: ["prompt-map-social-card.png", "binwalk-evidence.tar.gz"] },
-  { id: "opencode", siteId: "opencode", build: buildOpenCode, categories: openCodeCategories, assets: [] }
+  { id: "opencode", siteId: "opencode", build: buildOpenCode, categories: openCodeCategories, assets: [] },
+  { id: "cursor", siteId: "cursor", build: buildCursor, categories: cursorCategories, assets: [] }
 ];
 
 await rm(dist, { recursive: true, force: true });

@@ -1,48 +1,35 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+// The OpenCode section: the shared reference pages (site/src/codex/render.mjs) with OpenCode's
+// names, release line and the explicit network-capture command for Trace.
+import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { renderMarkdown } from "../codex/render.mjs";
-import { anchorOutline } from "../codex/toc.mjs";
-import { createRoutes } from "../codex/routes.mjs";
+import { buildSite as buildReference } from "../codex/build-site.mjs";
 import { escapeHtml } from "../shared/html.mjs";
-import { buildSearchIndex, logSearchStats, normalizeRecord } from "../shared/search-index.mjs";
-import { renderPage } from "./render.mjs";
+
+export async function profile(sourceRoot) {
+  const summary = JSON.parse(await readFile(path.join(sourceRoot, "outputs/capture-summary.json"), "utf8"));
+  return {
+    product: "opencode",
+    siteName: "OpenCode Source Map",
+    indexTitle: "OpenCode Source Map · Prompts, tools, configuration and network",
+    shareTitle: "OpenCode Source Map: Prompts, tools, configuration and network",
+    description: "OpenCode's model prompts, instructions, tools, configuration and network plumbing, read from pinned public source with file, line and hash provenance.",
+    shareDescription: "OpenCode's model prompts, instructions, tools, configuration and network plumbing, read from pinned public source.",
+    dek: "What OpenCode puts in front of the model: shipped model and agent prompts, conversation instructions, tool descriptions and request assembly, each tied to the public source that supplies it.",
+    socialCard: null,
+    featured: ["key-findings", "model-prompts", "conversation-prompts", "tools", "network-tracing", "configuration"],
+    intro: false,
+    guide: null,
+    front: () => `        <div class="markdown-body">
+          <p class="date">Public source · v${escapeHtml(summary.version)} · commit <code>${escapeHtml(summary.upstreamCommit)}</code></p>
+          <p>These are curated source records from ${escapeHtml(String(summary.sourceFiles))} pinned files. Which text reaches a model depends on the selected provider, agent, configuration, plugins and tools. A broad Jev sweep of the complete source tree is not published yet.</p>
+          <h3>See the actual request</h3>
+          <p>From the repository, record a real OpenCode run explicitly, then open its session export and HAR together in <a href="/trace/">Trace</a>. The network lens shows captured payloads, destination hosts, reported serving providers and visible reasoning. Your files stay in your browser.</p>
+          <pre><code>npm run trace:opencode -- --open -- --model openrouter/deepseek/deepseek-v3.2 "Your task"</code></pre>
+        </div>
+`
+  };
+}
 
 export async function buildSite({ sourceRoot, outFile, categories }) {
-  const summary = JSON.parse(await readFile(path.join(sourceRoot, "outputs/capture-summary.json"), "utf8"));
-  const documents = [];
-  for (const category of categories) {
-    for (const file of category.files) {
-      const raw = await readFile(path.join(sourceRoot, file.path), "utf8");
-      const source = file.transform ? file.transform(raw) : raw;
-      const content = file.format === "markdown" ? renderMarkdown(source, { headingOffset: 1 }) : `<pre><code>${escapeHtml(source)}</code></pre>`;
-      const anchored = anchorOutline(content, { anchor: file.anchor, ids: new Set() });
-      let records = [];
-      if (file.records) {
-        const inventory = JSON.parse(await readFile(path.join(sourceRoot, file.records.file), "utf8"));
-        records = inventory.items.filter(record => !file.includeRecord || file.includeRecord(record)).map(record => {
-          const normalized = normalizeRecord(record, { kind: file.records.kind });
-          const provenance = record.provenance[0];
-          return { ...normalized, when: record.details.condition, prov: { f: provenance.file, l: provenance.startLine, r: record.version } };
-        });
-      }
-      documents.push({ ...file, category: category.label, ...anchored, records });
-    }
-  }
-  const routes = createRoutes(documents);
-  for (const document of documents) {
-    document.html = routes.localize(document.html, document.anchor);
-    document.outline = document.outline.map(item => ({ ...item, id: routes.localId(item.id, document.anchor) }));
-  }
-  const { index, stats } = buildSearchIndex({ product: "opencode", documents, featured: ["key-findings", "network-tracing", "model-prompts", "configuration"], strictRecords: true });
-  const outDir = path.dirname(outFile);
-  await rm(outDir, { recursive: true, force: true });
-  await mkdir(outDir, { recursive: true });
-  await writeFile(outFile, renderPage({ documents, categories, summary }));
-  for (const document of documents) {
-    const page = path.join(outDir, document.slug, "index.html");
-    await mkdir(path.dirname(page), { recursive: true });
-    await writeFile(page, renderPage({ documents, categories, summary, current: document }));
-  }
-  await writeFile(path.join(outDir, "search-index.json"), JSON.stringify(index));
-  logSearchStats("opencode", stats);
+  await buildReference({ sourceRoot, outFile, categories, profile: await profile(sourceRoot) });
 }

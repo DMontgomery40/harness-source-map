@@ -87,7 +87,7 @@ export function applyFailure(s, key, decision, { head = null, now = Date.now(), 
 
 // Paths whose contents go into the deployed site or its gate. Uncommitted changes here that the
 // cycle did not produce would be deployed without being committed, so they block publishing.
-export const SITE_INPUTS = ["site", "codex", "claude-code", "tools", "package.json", "package-lock.json"];
+export const SITE_INPUTS = ["site", "codex", "claude-code", "opencode", "cursor", "tools", "package.json", "package-lock.json"];
 const under = (file, dir) => file === dir || file.startsWith(`${dir}/`);
 
 // Every path git reports as changed or untracked (not ignored), repo-root relative.

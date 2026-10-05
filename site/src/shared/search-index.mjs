@@ -89,7 +89,8 @@ const RAW_KIND = {
   "env-var": "env", setting: "setting", "cli-command": "cli", "cli-flag": "cli", "hook-event": "hook", tool: "tool",
   "slash-command": "slash", prompt: "prompt", reminder: "reminder", agent: "agent", skill: "skill", decision: "decision",
   "tool description": "tool", "parameter description": "tool", "output field description": "tool",
-  "tool result text": "prompt", "system prompt": "prompt", "prompt template": "prompt", file: "prompt", constant: "prompt"
+  "tool result text": "prompt", "system prompt": "prompt", "prompt template": "prompt", file: "prompt", constant: "prompt",
+  config: "setting"
 };
 
 // Which JSON holds a catalog document's records: `records` (a path, or { file, list, kind }; false
@@ -132,7 +133,12 @@ const num = v => (typeof v === "number" && Number.isFinite(v) ? v : typeof v ===
 export function provenanceOf(r) {
   const list = Array.isArray(r.provenance) ? r.provenance : r.provenance ? [r.provenance] : [];
   for (const p of [...list, r.details?.schema_provenance]) {
-    if (p?.file) return { f: p.file, o: num(p.binary_offset ?? p.offset), r: p.version ?? undefined };
+    if (p?.file) {
+      // Byte offsets and lines as Claude Code/Codex (binary_offset, offset), Cursor (byte_start,
+      // line_start) and OpenCode (startLine, with the release on the record) write them.
+      const line = num(p.startLine ?? p.line_start);
+      return { f: p.file, o: num(p.binary_offset ?? p.offset ?? p.byte_start), ...(line === undefined ? {} : { l: line }), r: p.version ?? (typeof r.version === "string" ? r.version : undefined) };
+    }
     // A source tree reference: "codex-rs@rust-v0.158.0:codex-rs/config/src/config_toml.rs:410".
     const m = typeof p?.source === "string" && p.source.match(/^[\w.-]+@([^:\s]+):(\S+?)(?::(\d+))?$/);
     if (m) return { f: m[2], l: m[3] ? Number(m[3]) : undefined, r: m[1] };
@@ -182,7 +188,7 @@ export async function loadSearchRecords({ sourceRoot, file, transform = s => s }
   const sourceVersion = typeof raw.source?.tag === "string" ? raw.source.tag : undefined;
   const doc = path.basename(file.path);
   const records = list
-    .filter(r => r && typeof r === "object" && (!r.document || r.document === doc))
+    .filter(r => r && typeof r === "object" && (!r.document || r.document === doc) && (!file.includeRecord || file.includeRecord(r)))
     .map(r => {
       const normalized = normalizeRecord(r, { kind: spec.kind, tags: (tagFile?.items?.[r.id] ?? []).map(t => labels.get(t) ?? t) });
       if (!normalized.prov && lists) normalized.prov = { f: spec.file, r: sourceVersion ?? "" };
