@@ -45,10 +45,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const cache=openCache(`${root}jev-discovery-cc-cache.json`);
     const options={cache,batchSize:16,concurrency:6,offline:process.env.JEV_OFFLINE==='1'};
     const sources=candidates.map(c=>({...c,id:occurrenceId(c)}));
-    const screened=await classifySources(config,sources,{...options,screenOnly:true,checkpoint:options});
-    const detailed=await classifySources(config,screened.records.filter(r=>r.status==='classified'&&r.model_facing.noul>=.2),{...options,checkpoint:options});
-    const records=new Map([...screened.records,...detailed.records].map(r=>[r.id,r]));
-    const ledger={source:{product:'Claude Code',version:VERSION,binary_sha256:BINARY_SHA256,candidate_count:candidates.length},question_version:DISCOVERY_VERSION,records:[...records.values()]};
+    // An uncalibrated Noul screen can hide the very short or unusual prompt we are trying
+    // to discover. Judge every eligible occurrence with all three independent questions.
+    const classified=await classifySources(config,sources,{...options,checkpoint:options});
+    const ledger={source:{product:'Claude Code',version:VERSION,binary_sha256:BINARY_SHA256,candidate_count:candidates.length},question_version:DISCOVERY_VERSION,records:classified.records};
     fs.writeFileSync(`${root}jev-discovery-cc.json`,JSON.stringify(ledger)+'\n');
     fs.writeFileSync(`${root}jev-discovery-cc-${BINARY_SHA256}.json`,JSON.stringify(ledger)+'\n');
     const pending=ledger.records.filter(r=>r.status!=='classified');
@@ -57,8 +57,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     fs.writeFileSync(`${root}jev-discovery-cc-pending-${BINARY_SHA256}.json`,pendingText);
     const staticReview=pending.filter(r=>r.status==='withheld'||r.status==='oversized').length;
     console.log(JSON.stringify({candidates:candidates.length,classified:ledger.records.length-pending.length,pending:pending.length,needs_local_review:staticReview}));
-    if(staticReview) process.exitCode=2;
-    else if(pending.length) process.exitCode=75;
+    // Static exceptions remain in the provenance inventory for local review. They do not
+    // erase safe classified results. Only unanswered provider work blocks publication.
+    if(pending.some(r=>r.status==='unanswered')) process.exitCode=75;
   } else {
   const cache = openCache(cacheFile);
   const unique = [...new Map(candidates.map(c => [verdictKey(c.text), c.text])).entries()].filter(([hash]) => !cache.has(hash));

@@ -52,10 +52,19 @@ for i in range(mod_len // 52):
     open(path, "wb").write(body)
     entry = {"name": name, "file_offset": payload_start + f[2], "length": f[3],
              "sha256": hashlib.sha256(body).hexdigest(), "bytecode_length": f[7], "flags": list(f[12:])}
-    if rel.endswith(".zst"):
-        out = subprocess.run(["zstd", "-d", "-q", "-c", path], capture_output=True, check=True).stdout
-        open(path[:-4], "wb").write(out)
-        entry.update(decompressed=rel[:-4], decompressed_sha256=hashlib.sha256(out).hexdigest())
+    # Bun also stores a few .js assets as zstd frames without a .zst suffix. Detect the
+    # frame header rather than trusting the filename, and retain the raw frame beside it.
+    compressed = rel.endswith(".zst") or body.startswith(b"\x28\xb5\x2f\xfd")
+    if compressed:
+        raw_path = path if rel.endswith(".zst") else path + ".zst"
+        if raw_path != path:
+            open(raw_path, "wb").write(body)
+        out = subprocess.run(["zstd", "-d", "-q", "-c", raw_path], capture_output=True, check=True).stdout
+        expanded_rel = rel[:-4] if rel.endswith(".zst") else rel
+        expanded_path = os.path.join(root, "extracted", expanded_rel)
+        open(expanded_path, "wb").write(out)
+        entry.update(compression="zstd", decompressed=expanded_rel,
+                     decompressed_length=len(out), decompressed_sha256=hashlib.sha256(out).hexdigest())
     entries.append(entry)
 
 json.dump({"binary": os.path.basename(binary), "binary_sha256": hashlib.sha256(data).hexdigest(), "files": entries},

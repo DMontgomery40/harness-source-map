@@ -455,7 +455,7 @@ function embeddedFile(f) {
   const text = utf16 ? buf.toString("utf16le") : buf.toString("utf8");
   const entry = manifest.get(f) ?? manifest.get(plain) ?? manifest.get(plain + ".zst");
   const p = fileProvenance(entry.name.replace("/$bunfs/root/", ""));
-  return { path: plain, words: text.split(/\s+/).filter(Boolean).length, text, provenance: { ...p, ...(entry.decompressed ? { decompressed: entry.decompressed, decompressed_sha256: entry.decompressed_sha256 } : {}), ...(utf16 ? { encoding: "utf-16le" } : {}) } };
+  return { path: plain, words: text.split(/\s+/).filter(Boolean).length, text, provenance: { ...p, ...(entry.decompressed ? { decompressed: entry.decompressed, decompressed_sha256: entry.decompressed_sha256 } : {}), ...(utf16 ? { [entry.compression ? 'decoded_encoding' : 'encoding']: "utf-16le" } : {}) } };
 }
 
 // Objects in `file` for which pred(obj, propMap) holds.

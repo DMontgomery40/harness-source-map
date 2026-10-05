@@ -1,7 +1,7 @@
 // Builds outputs/inventory.json and outputs/other-model-text.{json,md}.
-// Every prose literal (200+ characters) found in the binary gets a verdict: published in a
-// named document, collected on the "other model-facing text" page, or excluded because Jev
-// judged it human-facing UI, library text, or other. This makes omissions detectable.
+// Every selected occurrence gets a verdict: published in a named document,
+// collected on the "other model-facing text" page, excluded by Jev's role judgment,
+// or retained as an explicit local-review exception. This makes omissions detectable.
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { files, provenance, sha256, source, VERSION, PLATFORM, BINARY_SHA256 } from "./lib.mjs";
 import { isDerived } from "./decisions-lib.mjs";
@@ -11,11 +11,13 @@ import { broadVerdict } from './discovery-role.mjs';
 
 const root = new URL("../", import.meta.url).pathname;
 const candidates = JSON.parse(readFileSync(`${root}work/candidates.json`, "utf8"));
+const candidateStats=JSON.parse(readFileSync(`${root}work/candidates.stats.json`,'utf8')).stats;
 // classify.mjs writes this cache; keys carry the Jev version (openCache).
 const verdicts = openCache(`${root}work/jev-verdicts-v2.json`);
 const broad=process.env.JEV_BROAD_EXPORT==='1';
 const broadLedger=broad?JSON.parse(readFileSync(`${root}work/jev-discovery-cc.json`,'utf8')):null;
 if(broad&&broadLedger.source?.binary_sha256!==BINARY_SHA256) throw new Error('Claude Code broad verdicts belong to a different binary');
+if(broad&&broadLedger.source?.candidate_count!==candidates.length) throw new Error('Claude Code broad verdicts belong to a different candidate inventory');
 const broadRecords=broad?new Map(broadLedger.records.map(r=>[r.id,r])):null;
 const own = new Set(["inventory.json", "other-model-text.json"]);
 
@@ -26,7 +28,9 @@ for (const name of readdirSync(`${root}outputs`).filter(f => f.endsWith(".json")
   for (const item of data.items ?? []) for (const p of item.provenance ?? []) {
     if (!files.has(p.file)) continue;
     const list = ranges.get(p.file) ?? []; ranges.set(p.file, list);
-    list.push({ start: p.binary_offset, end: p.binary_offset + Math.max(p.length ?? 1, 1), area: data.area ?? name.replace(/\.json$/, ""), id: item.id });
+    list.push({ start: p.binary_offset, end: p.binary_offset + Math.max(p.length ?? 1, 1), encoding:p.encoding,
+      decompressed_start:p.decompressed_offset,decompressed_end:(p.decompressed_offset??0)+Math.max(p.decompressed_length??1,1),
+      area: data.area ?? name.replace(/\.json$/, ""), id: item.id });
   }
 }
 
@@ -34,10 +38,12 @@ const sources = new Map();
 const src = name => sources.get(name) ?? sources.set(name, source(name)).get(name);
 const rows = candidates.map(c => {
   const p = provenance(c.file, src(c.file), c.start, c.end);
-  const hit = (ranges.get(c.file) ?? []).find(r => r.start < p.binary_offset + p.length && r.end > p.binary_offset);
+  const hit = (ranges.get(c.file) ?? []).find(r => p.encoding==='zstd'
+    ? r.start===p.binary_offset&&r.end>=p.binary_offset+p.length&&(r.decompressed_start==null||r.decompressed_start<p.decompressed_offset+p.decompressed_length&&r.decompressed_end>p.decompressed_offset)
+    : r.encoding!=='zstd'&&r.start<p.binary_offset+p.length&&r.end>p.binary_offset);
   const v = broad?broadVerdict(broadRecords.get(occurrenceId(c))):verdicts.get(verdictKey(c.text));
   if(!v) throw new Error(`Missing Jev verdict for ${c.file}:${c.start}`);
-  return { ...p, words: c.words, audience: v.audience, confidence: v.confidence,role:v.role??null,model_facing:v.model_facing??null,evidence:v.evidence??null, published_in: hit ? `${hit.area}#${hit.id}` : null, text: c.text };
+  return { ...p, words: c.words, audience: v.audience, confidence: v.confidence,role:v.role??null,model_facing:v.model_facing??null,evidence:v.evidence??null,discovery_status:v.status??'classified', published_in: hit ? `${hit.area}#${hit.id}` : null, text: c.text };
 });
 
 // Model-facing and not covered elsewhere. Below 0.5 confidence stays in the inventory only;
@@ -46,10 +52,13 @@ const rows = candidates.map(c => {
 const docShare = new Map();
 for (const [file, list] of Object.entries(Object.groupBy(rows, r => r.file))) docShare.set(file, list.filter(r => r.audience === "developer_docs").length / list.length);
 const wordList = text => text.split(/\s+/).length >= 30 && !/[.,:;!?]/.test(text.replace(/\$\{[^}]*\}/g, ""));
-const modelFacing = r => r.audience === "model" && !wordList(r.text) && r.confidence >= (broad?0.8:docShare.get(r.file) >= 0.5 ? 0.8 : 0.5);
+const modelFacing = r => r.audience === "model" && (broad ? r.confidence>=0.8 : !wordList(r.text) && r.confidence >= (docShare.get(r.file) >= 0.5 ? 0.8 : 0.5));
 const leftover = rows.filter(r => !r.published_in && modelFacing(r));
 const byText = new Map();
-for (const r of leftover) { const k = sha256(r.text); const e = byText.get(k) ?? { ...r, locations: [] }; e.locations.push({ file: r.file, binary_offset: r.binary_offset, length: r.length, sha256: r.sha256, version: VERSION, platform: PLATFORM }); byText.set(k, e); }
+const locationOf=r=>({file:r.file,binary_offset:r.binary_offset,length:r.length,sha256:r.sha256,
+  ...(r.encoding?{encoding:r.encoding,...(r.encoding==='zstd'?{decompressed_offset:r.decompressed_offset,decompressed_length:r.decompressed_length,decompressed_sha256:r.decompressed_sha256,decoded_encoding:r.decoded_encoding}: {})}:{}),
+  version:VERSION,platform:PLATFORM});
+for (const r of leftover) { const k = sha256(r.text); const e = byText.get(k) ?? { ...r, locations: [] }; e.locations.push(locationOf(r)); byText.set(k, e); }
 const other = [...byText.values()].sort((a, b) => a.file.localeCompare(b.file) || a.binary_offset - b.binary_offset);
 for (const r of rows) if (!r.published_in && modelFacing(r)) r.published_in = "other-model-text";
 
@@ -77,7 +86,9 @@ const md = [
     ...list.flatMap(item => {
       const p = item.provenance[0];
       const f = fence(item.text);
-      return [`### ${item.title.replace(/[#`]/g, "")}`, "", `Source: \`${p.file}\` · offset ${p.binary_offset} · sha256 \`${p.sha256.slice(0, 12)}…\` · Jev confidence ${item.details.jev_confidence}${item.provenance.length > 1 ? ` · ${item.provenance.length} locations` : ""}`, "", `${f}text`, item.text, f, ""];
+      const where=p.encoding==='zstd'?`compressed blob offset ${p.binary_offset} · decoded offset ${p.decompressed_offset}`:`offset ${p.binary_offset}`;
+      const hashes=p.encoding==='zstd'?`blob sha256 \`${p.sha256.slice(0,12)}…\` · decoded sha256 \`${p.decompressed_sha256.slice(0,12)}…\``:`sha256 \`${p.sha256.slice(0,12)}…\``;
+      return [`### ${item.title.replace(/[#`]/g, "")}`, "", `Source: \`${p.file}\` · ${where} · ${hashes} · Jev confidence ${item.details.jev_confidence}${item.provenance.length > 1 ? ` · ${item.provenance.length} locations` : ""}`, "", `${f}text`, item.text, f, ""];
     })
   ])
 ].join("\n");
@@ -87,15 +98,16 @@ const summary = {
   candidates: rows.length,
   published: rows.filter(r => r.published_in && r.published_in !== "other-model-text").length,
   other_model_text: rows.filter(r => r.published_in === "other-model-text").length,
+  unresolved:rows.filter(r=>r.audience==='unresolved').length,
   excluded: Object.fromEntries(["developer_docs", "human_user", "library", "other"].map(a => [a, rows.filter(r => !r.published_in && r.audience === a).length])),
   uncertain_model: rows.filter(r => !r.published_in && r.audience === "model").length
 };
-const inventory = rows.map(({ text, ...r }) => ({ ...r, text_sha256: sha256(text), preview: text.replace(/\s+/g, " ").slice(0, 100) }));
-writeFileSync(`${root}outputs/inventory.json`, JSON.stringify({ area: "inventory", version: VERSION, platform: PLATFORM, binary_sha256: BINARY_SHA256, summary, items: inventory.map((r, i) => ({ id: `candidate-${i + 1}`, title: r.preview.slice(0, 60), kind: "other", details: { audience: r.audience, jev_confidence: r.confidence, published_in: r.published_in, words: r.words, text_sha256: r.text_sha256, preview: r.preview,...(broad?{jev_role:r.role,model_facing_probability:r.model_facing,evidence:r.evidence}: {}) }, provenance: [{ file: r.file, binary_offset: r.binary_offset, length: r.length, sha256: r.sha256, version: r.version, platform: r.platform }] })) }, null, 1));
+const inventory = rows.map(({ text, ...r }) => ({ ...r, text_sha256: sha256(text), preview: r.discovery_status==='withheld'?'[withheld pending local review]':text.replace(/\s+/g, " ").slice(0, 100) }));
+writeFileSync(`${root}outputs/inventory.json`, JSON.stringify({ area: "inventory", version: VERSION, platform: PLATFORM, binary_sha256: BINARY_SHA256, summary, items: inventory.map((r, i) => ({ id: `candidate-${i + 1}`, title: r.preview.slice(0, 60), kind: "other", details: { audience: r.audience, jev_confidence: r.confidence, published_in: r.published_in, words: r.words, text_sha256: r.text_sha256, preview: r.preview,...(broad?{jev_role:r.role,model_facing_probability:r.model_facing,evidence:r.evidence,discovery_status:r.discovery_status}: {}) }, provenance: [locationOf(r)] })) }, null, 1));
 console.log(summary);
 
 const jevModel = broad?'jev-1.13.0':candidates.map(c => verdicts.get(verdictKey(c.text))?.model).find(Boolean) ?? "jev";
-const inventoryScope=broad?'prose string and template literal occurrences of 24 characters or more selected by the broad source inventory':'prose string and template literals of 200 characters or more';
+const inventoryScope=broad?'JavaScript string and template literal occurrences with at least two words, prompt-bearing fields with one word, and exact contiguous spans from embedded Markdown and text assets':'prose string and template literals of 200 characters or more';
 writeFileSync(`${root}outputs/provenance.md`, `# Method and inventory
 
 ## Source
@@ -104,7 +116,7 @@ Claude Code ${VERSION} from npm (\`@anthropic-ai/claude-code\` with its \`darwin
 
 ## Extraction
 
-The binary is a Bun standalone executable. Its \`__BUN,__bun\` section holds a module table listing ${files.size} embedded files (JavaScript chunks, skills, and assets) with their offsets. \`extract/bun-extract.py\` decodes that table and writes each file out along with its absolute byte offset in \`claude.exe\` and its SHA-256. Every prompt and reference record on this site points back to one of those offsets, and the bytes at that offset are the text shown.
+The binary is a Bun standalone executable. Its \`__BUN,__bun\` section holds a module table listing ${files.size} embedded files (JavaScript chunks, skills, and assets) with their offsets. \`extract/bun-extract.py\` decodes that table and writes each file out along with its absolute byte offset in \`claude.exe\` and its SHA-256. Most source spans point to text bytes at that offset. For a zstd-compressed module, provenance instead names the compressed blob's binary offset and hash plus the decoded text's offset and hash; the text is not stored verbatim at the binary offset.
 
 ## Reading the code
 
@@ -112,12 +124,13 @@ The JavaScript is parsed with acorn rather than searched with regular expression
 
 ## Inventory
 
-The parser found ${summary.candidates} ${inventoryScope}. ${jevModel} (TypeSafe) judged who each one is written for. Of those literals:
+The parser found ${summary.candidates} ${inventoryScope}. ${broad?`${candidateStats.assets} text assets contributed ${candidateStats.asset_segments} spans. `:''}${jevModel} (TypeSafe) judged the safe, request-sized occurrences; exceptions remain visible in the inventory. Of those occurrences:
 
 - ${summary.published} are covered by a published document,
 - ${summary.other_model_text} were judged model-facing and are collected on [Other model-facing text](#other-model-text-md),
 - ${summary.excluded.developer_docs} are developer documentation (SDK types and schema descriptions), ${summary.excluded.human_user} are text shown to the person using the CLI, ${summary.excluded.library} are third-party library text, and ${summary.excluded.other} are other text such as fixtures,
 - ${summary.uncertain_model} were judged model-facing with less than 0.5 confidence; they are listed in \`inventory.json\` only.
+${broad?`- ${summary.unresolved} await local review because the privacy filter withheld their complete text or the request budget could not fit it. The public inventory retains source offsets and hashes without exposing withheld previews.\n- ${candidateStats.parse_failed} embedded JavaScript files did not parse; their filenames are recorded in the local candidate ledger.\n`:''}
 
 \`inventory.json\` lists every selected literal with its offset, hash, verdict, confidence, and where it is published. Jev's verdicts are probabilities, not proof. ${broad?'The local candidate ledger states which literals were excluded; dynamic text assembled at run time requires separate evidence.':'Shorter strings are covered only where a document includes them.'}
 
