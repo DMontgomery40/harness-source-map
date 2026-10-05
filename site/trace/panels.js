@@ -176,7 +176,7 @@ export function toolSite(tools, name) {
 }
 
 export function siteHref(site) {
-  if (!site || typeof site.slug !== "string" || !/^(?:(?:claude-code|codex|opencode)\/)?[a-z0-9-]+$/.test(site.slug)) return null;
+  if (!site || typeof site.slug !== "string" || !/^(?:(?:claude-code|codex|opencode|cursor)\/)?[a-z0-9-]+$/.test(site.slug)) return null;
   const anchor = typeof site.anchor === "string" && /^[A-Za-z0-9_-]+$/.test(site.anchor) ? `#${site.anchor}` : "";
   return `../${site.slug}/${anchor}`;
 }

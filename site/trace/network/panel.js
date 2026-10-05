@@ -9,7 +9,7 @@ import { modelBreakdown, findings, runs, entryGroups, hostTable, callSignature, 
 
 export const NETWORK_LENS = { key: "network", q: "What went over the wire", icon: "⇄" };
 import { productLabel } from '../products.js';
-const DOCS = { "claude-code": "../claude-code/", codex: "../codex/", opencode: '../opencode/' };
+const DOCS = { "claude-code": "../claude-code/", codex: "../codex/", opencode: '../opencode/', cursor: '../cursor/' };
 
 // The reference docs' search for a flag, beta, header or env name: /claude-code/?q=<name> opens the
 // section's ⌘K palette with it.
@@ -223,7 +223,7 @@ function findingsSection(cap, trace, A) {
 // Calls by model: the main model first, every other model the harness called (side calls, prewarms) after it.
 function modelsTable(cap) {
   const rows = modelBreakdown(cap);
-  const native = cap.product === 'opencode';
+  const native = cap.product === 'opencode' || cap.product === 'cursor';
   if (!rows.length) return el("p", { class: "note", text: "No model calls in this capture." });
   const num = (n) => el("td", { class: "num", text: fmtTok(n) });
   return el("div", { class: "net-models-box", "data-anchor": "finding:models" },
@@ -235,13 +235,13 @@ function modelsTable(cap) {
           el("span", { class: "meta", text: r.main ? " main" : r.notIn === r.calls ? native ? " side · no exact step match" : " side · not in your log" : " side" })),
         el("td", { class: "num", text: fmtInt(r.calls) }), el("td", { class: "num", text: fmtInt(r.inLog) }), el("td", { class: "num", text: fmtInt(r.notIn) }),
         num(r.input), num(r.output), num(r.cacheRead), num(r.cacheWrite))))),
-    el("p", { class: "note", text: cap.product === "codex" || cap.product === 'opencode' ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part." }));
+    el("p", { class: "note", text: cap.product === 'cursor' ? 'Cursor AgentService protobuf does not expose token counts in the undecoded transport summary.' : cap.product === "codex" || cap.product === 'opencode' ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part." }));
 }
 
 // ---------------------------------------------------------------- model calls
 function callsSection(cap, trace, A) {
   const product = cap.product;
-  const native = product === 'opencode';
+  const native = product === 'opencode' || product === 'cursor';
   const inLog = cap.calls.filter((c) => c.matched.length), notIn = cap.calls.filter((c) => !c.matched.length);
   const openCall = foldOpen("call-detail", false);
   const toggle = (c) => { setFold("call-detail", openCall === String(c.index) ? false : String(c.index)); rerender(A); };
@@ -263,7 +263,7 @@ function callsSection(cap, trace, A) {
   return topFold("sec:calls", "Model calls", `${fmtInt(inLog.length)} ${native ? 'joined' : 'in your log'}, ${fmtInt(notIn.length)} ${native ? 'unjoined' : 'not'} · ${byModel(cap.calls)}`,
     el("p", { class: "note", text: `Joined by ${cap.join.keys}.${product === "codex" && cap.join.items ? ` ${fmtInt(cap.join.itemsMatched)} of ${fmtInt(cap.join.items)} attributed input items match blocks in the log.` : ""}` }),
     notIn.length ? fold([`${native ? 'Calls without an exact step match' : 'Requests not in your log'} (${fmtInt(notIn.length)})`, byModel(notIn)], true, "calls:notlog",
-      el("p", { class: "note", text: product === 'opencode' ? 'These captured calls have no exact native step join. A session header may identify their session; it does not identify a specific native step. Open a call to inspect the request as sent.' : product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent." }),
+      el("p", { class: "note", text: product === 'cursor' ? 'These AgentService calls carried no exact request ID matching a native step. Their protobuf bytes remain visible, but ownership stays unattributed.' : product === 'opencode' ? 'These captured calls have no exact native step join. A session header may identify their session; it does not identify a specific native step. Open a call to inspect the request as sent.' : product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent." }),
       el("ul", { class: "items" }, notIn.map((c) => item(c)))) : null,
     ...[...groups].map(([sig, list]) => {
       const c0 = list[0];
@@ -580,7 +580,7 @@ function callCard(cap, c, trace, A, at) {
     c.timings ? `${fmtMs(c.timings.wait)} to first byte · ${fmtMs(c.timings.total)} total` : null].filter((v) => v != null && v !== "").join(" · ") }));
   if (at && at.same) kids.push(el("p", { class: "note", text: `The same HTTP call as ${at.agent.kind === "side" ? "the main thread's" : ""} request ${at.same.reqIdx + 1}: this row is one iteration of it.` }));
   kids.push(kv([
-    [product === "codex" ? "Response id" : "Request id", el("code", { text: c.requestId || "–" }), c.joinedBy ? `joined by ${c.joinedBy}` : product === 'opencode' ? 'no exact native step match' : "not in your log"],
+    [product === "codex" ? "Response id" : "Request id", el("code", { text: c.requestId || "–" }), c.joinedBy ? `joined by ${c.joinedBy}` : product === 'opencode' || product === 'cursor' ? 'no exact native step match' : "not in your log"],
     product === "codex" ? ["Request kind", c.requestKind || (c.generate === false ? "prewarm" : "turn"), c.generate === false ? "generate: false" : null] : ["Request class", c.requestClass || "–", c.kind === "side" ? "a side call" : null],
     ["Model", c.model || "–"],
   ]));
@@ -628,6 +628,13 @@ function callCard(cap, c, trace, A, at) {
       ['Usage as received', shortJson(response.usage, Infinity)],
       response.error ? ['Provider error', shortJson(response.error, Infinity), 'read Response for the captured error body'] : null,
     ])));
+  } else if (product === 'cursor') {
+    kids.push(fold(['Cursor AgentService payload', c.response.partial ? 'partial' : c.response.complete ? 'complete' : 'status unavailable'], false, key('cursor-proto'), kv([
+      ['Observed client destination', c.routing.destination, 'traffic to Cursor; downstream model routing was not observed'],
+      ['Protocol', 'application/connect+proto', 'exact captured bytes; decoded only when a shipped descriptor is available'],
+      ['Association', c.association === 'request-id' ? 'exact request ID' : c.association === 'session-id' ? 'exact session ID' : 'unattributed'],
+      ['Request bytes', fmtBytes(c.reqBytes || 0)], ['Response bytes', fmtBytes(c.resBytes || 0)],
+    ]), el('p', { class: 'note', text: 'Open Request as sent or Response to inspect the credential-checked captured bytes. A Cursor endpoint does not reveal an unobserved downstream provider, geography or retention policy.' })));
   } else if (product === "claude-code") {
     const m = c.messages;
     const deferred = c.tools.filter((t) => t.defer).length;

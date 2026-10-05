@@ -320,7 +320,7 @@ async function parseInWorker(files, root, current=()=>true) {
 let pendingNetwork = null;
 const pendingBody = new Map();
 let bodySeq = 0;
-const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
+const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode or Cursor desktop .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
 
 // Captures among picked files: .har files, and .json files whose first bytes are a HAR's (a Claude Code
 // subagent's .meta.json is not one).
@@ -374,14 +374,19 @@ function netButton() {
   btn.dataset.state = S.network ? "on" : "none";
   btn.textContent = S.network ? "Network capture ✓" : "+ Network capture";
 }
-const networkMatchCount = count => `${fmtInt(count)} ${S.trace?.product === 'opencode' ? `exact step match${count === 1 ? '' : 'es'}` : 'in your log'}`;
+const networkMatchCount = count => `${fmtInt(count)} ${S.trace?.product === 'opencode' ? `exact step match${count === 1 ? '' : 'es'}` : S.trace?.product === 'cursor' ? `exact identifier match${count === 1 ? '' : 'es'}` : 'in your log'}`;
 function netHelp(open = $("#net-help").hidden) {
   const box = $("#net-help");
   $("#add-capture").setAttribute("aria-expanded", String(open));
   box.hidden = !open;
   if (!open) return;
   const n = S.network;
-  const cmd = S.trace?.product === 'opencode' ? 'npm run trace:opencode -- --open -- --model openrouter/deepseek/deepseek-v3.2 "YOUR REAL TASK"' : `tools/capture/capture.sh -- ${S.trace?.product === "codex" ? "codex" : "claude"}`;
+  const isBundle = S.trace?.product === 'opencode' || S.trace?.product === 'cursor';
+  const cmd = S.trace?.product === 'cursor'
+    ? 'node tools/capture/cursor-agent-capture.mjs --open -- --mode ask --sandbox enabled "YOUR REAL TASK"'
+    : S.trace?.product === 'opencode'
+      ? 'npm run trace:opencode -- --open -- --model openrouter/deepseek/deepseek-v3.2 "YOUR REAL TASK"'
+      : `tools/capture/capture.sh -- ${S.trace?.product === "codex" ? "codex" : "claude"}`;
   const copy = el("button", { class: "btn small", type: "button", text: "Copy" });
   copy.addEventListener("click", () => navigator.clipboard?.writeText(cmd).then(() => { copy.textContent = "Copied"; }, () => { copy.textContent = "Select and copy"; }));
   const choose = el("button", { class: "btn small", type: "button", text: n ? "Choose another .har…" : "Choose a .har file…" });
@@ -398,10 +403,11 @@ function netHelp(open = $("#net-help").hidden) {
       : "No network capture for this session." }),
     el("p", { text: "A capture keeps future traffic while the session runs: prompts, tools and flags the log can omit. Earlier traffic cannot be recovered." }),
     S.trace?.product === "codex" ? el("p", { text: "For the desktop app, open Desktop recorder and help below. It records a future app run through the local helper. The recorder never quits an already-running app." }) : null,
+    S.trace?.product === "cursor" ? el("p", { text: "For Cursor desktop, quit the app first, then use the process-scoped desktop command in Recording help. The recorder launches one future app run and never quits it for you." }) : null,
     el("p", { text: "For a CLI session, run this from the harness-source-map repo:" }),
     el("div", { class: "path" }, el("code", { text: cmd }), copy),
-    el("p", { text: S.trace?.product === 'opencode' ? 'When the command exits, drop its private recording folder into Trace. The native export and capture.har open together.' : "When the command exits, the capture is saved beside that session's log, and Trace attaches it on its own every time the session opens (pasted id, folder or drop)." }),
-    S.trace?.product === 'opencode' ? el('p', { class: 'net-help-note', text: 'Already have an export and HAR? Drop them together, or choose the HAR here for this visit.' }) : el("p", { class: "net-help-note" }, "A .har you already have: ", el("code", { text: "node tools/capture/file-capture.mjs capture.har" }), " files it beside its session, or choose it here for this visit."),
+    el("p", { text: isBundle ? 'When the command exits, drop its private recording folder into Trace. The native session or export and capture.har open together.' : "When the command exits, the capture is saved beside that session's log, and Trace attaches it on its own every time the session opens (pasted id, folder or drop)." }),
+    isBundle ? el('p', { class: 'net-help-note', text: 'Already have a native session or export and HAR? Drop them together, or choose the HAR here for this visit.' }) : el("p", { class: "net-help-note" }, "A .har you already have: ", el("code", { text: "node tools/capture/file-capture.mjs capture.har" }), " files it beside its session, or choose it here for this visit."),
     el("div", { class: "net-help-actions" }, open5, choose, more, close)
   ].filter(child => child != null && child !== false));
 }
@@ -437,7 +443,7 @@ async function loadFiles(files, root) {
   files = rest;
   const logs = files.filter(f => /\.(jsonl|json)$/i.test(f.path));
   if (hars.length && !logs.length) return showError(HAR_ALONE);
-  if (!logs.length) return showError("No .jsonl session logs or native OpenCode .json exports in what was dropped.");
+  if (!logs.length) return showError("No .jsonl session logs or native OpenCode or Cursor desktop .json exports in what was dropped.");
   if (root === undefined) {
     if (pasteRoot && !holdsPaste(files, pasteRoot)) return missingPaste(files);
     root = pasteRoot;
