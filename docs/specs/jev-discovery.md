@@ -11,7 +11,7 @@ Research window: September 28–October 4, 2026, America/Denver. Repository comm
 
 ## Broad workflow (explicit opt-in)
 
-The hourly watcher continues its existing bounded prompt sweep. The complete occurrence sweep is locally prepared but disabled by default because its approximately 135,000 complete shipped-source payloads require separate authorization for external transfer. The opt-in below must only be used after that approval; the watcher runs the matching coverage audit only when the broad sweep is enabled. This prevents an app update from silently initiating the larger transfer.
+The hourly watcher continues its existing bounded prompt sweep. The complete occurrence sweep is disabled by default because complete shipped-source payloads require destination-specific authorization for external transfer. The user authorized privacy-filtered shipped-source sweeps to TypeSafe for this work. This does not silently authorize a future app build or another destination; the watcher runs the matching coverage audit only when broad mode is enabled.
 
 1. Inventory every app script and account for scanned literals, locale exclusions, translator notes and identifier-like strings. Broad discovery admits short unnamed prose and schema descriptions without a prompt-phrase allowlist. Already-published words are only a routing hint: a different occurrence or role must still be classified and audited. It does not claim to extract all possible dynamically assembled prompts.
 2. Screen each complete candidate occurrence with the broad model-facing Noul. Candidates at or above 0.2 receive mixed role Choice, model-facing Noul and source-directness Score judgments. Explicit source reviews remain separate boolean evidence. Occurrences with different source contexts remain distinct until publication.
@@ -40,7 +40,9 @@ The mixed batch used 27,736 input tokens versus 30,220 for the same three judgme
 
 Local preparation of the installed build found 1,620,102 literals across 14,570 scripts, including 151 locale scripts excluded from literal discovery. Broad selection yielded 134,945 occurrences, retaining already-published text for role review. Fourteen failed the privacy boundary; the three-question request budget marked 107 oversized. These are discovery counts, not counts of model-facing capabilities. No full-corpus live classification is claimed by preparation alone.
 
-The [API reference](https://docs.typesafe.ai/api) permits structured instructions, Choice up to 255 options and Score rubrics with 2–10 levels. It specifies retrying overload 529 as well as rate limit 429; the shared provider now handles both.
+The [API reference](https://docs.typesafe.ai/api) permits structured instructions, Choice up to 255 options and Score rubrics with 2–10 levels. It specifies retrying overload 529 as well as rate limit 429; the shared provider handles both. Live Jev 1.13 responses exposed display rounding: a one-decimal Score can differ from the mean of two-decimal level probabilities, and a selected Choice can trail another displayed option by 0.01 in a near tie. Validation allows only those rounding margins, retries malformed answers, and retains unanswered batches without discarding independent completed work.
+
+The authorized Claude Code sweep classified 80,163 of 80,648 candidate occurrences before TypeSafe returned HTTP 402. Another 451 await provider answers; the local privacy filter withheld 31 and the request budget marked three oversized. `JEV_PARTIAL_EXPORT=1` permits publishing the classified records while keeping all 485 unfinished occurrences explicitly unresolved in `inventory.json`. It is required when broad verdicts have unanswered work; omitting it fails closed. The separate coverage audit found 1,425 classified positives, 948 covered by exact or complete contained text in the typed site records, and 477 requiring provider comparison. It found no verified gap, but the 477 pending comparisons prevent a complete coverage claim. These counts describe the installed Claude Code 2.1.289 build, not later releases.
 
 ## Operator commands
 
@@ -66,6 +68,10 @@ JEV_BROAD_EXPORT=1 node claude-code/extract/candidates.mjs
 JEV_BROAD_EXPORT=1 node claude-code/extract/classify.mjs
 JEV_BROAD_EXPORT=1 node claude-code/extract/inventory.mjs
 JEV_BROAD_EXPORT=1 node claude-code/extract/discovery-coverage.mjs
+
+# If a provider outage leaves answers pending, publish only completed judgments
+# with explicit unresolved rows; retry the sweep from its cache when service resumes.
+JEV_BROAD_EXPORT=1 JEV_PARTIAL_EXPORT=1 node claude-code/extract/inventory.mjs
 
 # Published semantic-role coverage; retains unresolved comparisons.
 node codex/extract/codex/coverage-audit.mjs

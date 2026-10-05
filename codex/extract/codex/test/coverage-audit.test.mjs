@@ -24,3 +24,24 @@ test('coverage outages stop new requests for the rest of the source list',async(
   assert.equal(calls,1);
   assert.equal(result.unanswered,12);
 });
+test('exactly indexed source text is still covered after a provider outage',async()=>{
+  const sources=[
+    {id:'unknown',file:'app.js',text:'New behavior without a matching record.',role:{choice:'tool'}},
+    {id:'exact',file:'app.js',text:'Read the image attachment.',role:{choice:'tool'}}
+  ];
+  const records=[{id:'image',kind:'tool',text:'Read the image attachment.'}];
+  const result=await auditCoverage(config,sources,records,{attempts:1,fetchImpl:async()=>({ok:false,status:529,headers:new Headers()})});
+  assert.deepEqual(result.results.map(r=>r.status),['unanswered','covered']);
+  assert.equal(result.results[1].method,'exact-text');
+});
+test('a complete source literal inside a longer indexed Prompt remains covered after an outage',async()=>{
+  const text='Read the image attachment only after permission is granted.';
+  const sources=[
+    {id:'unknown',file:'app.js',text:'Different behavior with no matching record.',role:{choice:'instructions'}},
+    {id:'contained',file:'app.js',text,role:{choice:'instructions'}}
+  ];
+  const records=[{id:'image',kind:'prompt',text:`System instructions. ${text} Then summarize it.`}];
+  const result=await auditCoverage(config,sources,records,{attempts:1,fetchImpl:async()=>({ok:false,status:529,headers:new Headers()})});
+  assert.deepEqual(result.results.map(r=>r.status),['unanswered','covered']);
+  assert.equal(result.results[1].method,'contained-text');
+});

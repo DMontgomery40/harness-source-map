@@ -6,7 +6,7 @@ Claude Code 2.1.289 from npm (`@anthropic-ai/claude-code` with its `darwin-arm64
 
 ## Extraction
 
-The binary is a Bun standalone executable. Its `__BUN,__bun` section holds a module table listing 2414 embedded files (JavaScript chunks, skills, and assets) with their offsets. `extract/bun-extract.py` decodes that table and writes each file out along with its absolute byte offset in `claude.exe` and its SHA-256. Every prompt and reference record on this site points back to one of those offsets, and the bytes at that offset are the text shown.
+The binary is a Bun standalone executable. Its `__BUN,__bun` section holds a module table listing 2414 embedded files (JavaScript chunks, skills, and assets) with their offsets. `extract/bun-extract.py` decodes that table and writes each file out along with its absolute byte offset in `claude.exe` and its SHA-256. Most source spans point to text bytes at that offset. For a zstd-compressed module, provenance instead names the compressed blob's binary offset and hash plus the decoded text's offset and hash; the text is not stored verbatim at the binary offset.
 
 ## Reading the code
 
@@ -14,14 +14,18 @@ The JavaScript is parsed with acorn rather than searched with regular expression
 
 ## Inventory
 
-The parser found 4063 prose string and template literals of 200 characters or more. jev-1.13.0 (TypeSafe) judged who each one is written for. Of those literals:
+The parser found 80648 JavaScript string and template literal occurrences with at least two words, prompt-bearing fields with one word, and exact contiguous spans from embedded Markdown and text assets. 218 text assets contributed 845 spans. jev-1.13.0 (TypeSafe) judged 80163 occurrences; exceptions remain visible in the inventory. Of those occurrences:
 
-- 844 are covered by a published document,
-- 1328 were judged model-facing and are collected on [Other model-facing text](#other-model-text-md),
-- 444 are developer documentation (SDK types and schema descriptions), 1076 are text shown to the person using the CLI, 2 are third-party library text, and 30 are other text such as fixtures,
-- 339 were judged model-facing with less than 0.5 confidence; they are listed in `inventory.json` only.
+- 5123 are covered by a published document,
+- 774 were judged model-facing and are collected on [Other model-facing text](#other-model-text-md),
+- 269 are developer documentation (SDK types and schema descriptions), 12168 are text shown to the person using the CLI, 0 are third-party library text, and 60040 are other text such as fixtures,
+- 1827 were judged model-facing with less than 0.5 confidence; they are listed in `inventory.json` only.
+- 451 await a provider judgment and are not classified or published as model-facing text,
+- 34 need local review because the privacy filter withheld their complete text or the request budget could not fit it. The public inventory retains source offsets and hashes without exposing withheld previews.
+- 0 embedded JavaScript files did not parse; their filenames are recorded in the local candidate ledger.
 
-`inventory.json` lists every literal with its offset, hash, verdict, confidence, and where it is published. Jev's verdicts are probabilities, not proof. Shorter strings are covered only where a document includes them.
+
+`inventory.json` lists every selected literal with its offset, hash, verdict, confidence, and where it is published. Jev's verdicts are probabilities, not proof. The local candidate ledger states which literals were excluded; dynamic text assembled at run time requires separate evidence.
 
 ## Not in the binary
 

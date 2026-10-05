@@ -9,4 +9,5 @@ test('Claude Code broad inventory keeps Tool and human roles distinct by source 
   assert.equal(broadVerdict(source('tool',.49)).audience,'other');
   assert.deepEqual([broadVerdict({status:'withheld'}).audience,broadVerdict({status:'oversized'}).audience],['unresolved','unresolved']);
   assert.throws(()=>broadVerdict({status:'unanswered'}),/unresolved/);
+  assert.deepEqual(broadVerdict({status:'unanswered'},{allowUnanswered:true}),{audience:'unresolved',confidence:null,role:null,model_facing:null,evidence:null,status:'unanswered'});
 });

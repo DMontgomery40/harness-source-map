@@ -15,9 +15,11 @@ const candidateStats=JSON.parse(readFileSync(`${root}work/candidates.stats.json`
 // classify.mjs writes this cache; keys carry the Jev version (openCache).
 const verdicts = openCache(`${root}work/jev-verdicts-v2.json`);
 const broad=process.env.JEV_BROAD_EXPORT==='1';
+const partial=broad&&process.env.JEV_PARTIAL_EXPORT==='1';
 const broadLedger=broad?JSON.parse(readFileSync(`${root}work/jev-discovery-cc.json`,'utf8')):null;
 if(broad&&broadLedger.source?.binary_sha256!==BINARY_SHA256) throw new Error('Claude Code broad verdicts belong to a different binary');
 if(broad&&broadLedger.source?.candidate_count!==candidates.length) throw new Error('Claude Code broad verdicts belong to a different candidate inventory');
+if(broad&&!partial&&broadLedger.records.some(r=>r.status==='unanswered')) throw new Error('Claude Code broad verdicts have unanswered provider work; set JEV_PARTIAL_EXPORT=1 to publish an explicit incomplete inventory');
 const broadRecords=broad?new Map(broadLedger.records.map(r=>[r.id,r])):null;
 const own = new Set(["inventory.json", "other-model-text.json"]);
 
@@ -41,7 +43,7 @@ const rows = candidates.map(c => {
   const hit = (ranges.get(c.file) ?? []).find(r => p.encoding==='zstd'
     ? r.start===p.binary_offset&&r.end>=p.binary_offset+p.length&&(r.decompressed_start==null||r.decompressed_start<p.decompressed_offset+p.decompressed_length&&r.decompressed_end>p.decompressed_offset)
     : r.encoding!=='zstd'&&r.start<p.binary_offset+p.length&&r.end>p.binary_offset);
-  const v = broad?broadVerdict(broadRecords.get(occurrenceId(c))):verdicts.get(verdictKey(c.text));
+  const v = broad?broadVerdict(broadRecords.get(occurrenceId(c)),{allowUnanswered:partial}):verdicts.get(verdictKey(c.text));
   if(!v) throw new Error(`Missing Jev verdict for ${c.file}:${c.start}`);
   return { ...p, words: c.words, audience: v.audience, confidence: v.confidence,role:v.role??null,model_facing:v.model_facing??null,evidence:v.evidence??null,discovery_status:v.status??'classified', published_in: hit ? `${hit.area}#${hit.id}` : null, text: c.text };
 });
@@ -96,14 +98,18 @@ writeFileSync(`${root}outputs/other-model-text.md`, md);
 
 const summary = {
   candidates: rows.length,
+  classified:rows.filter(r=>r.discovery_status==='classified').length,
   published: rows.filter(r => r.published_in && r.published_in !== "other-model-text").length,
   other_model_text: rows.filter(r => r.published_in === "other-model-text").length,
   unresolved:rows.filter(r=>r.audience==='unresolved').length,
+  provider_pending:rows.filter(r=>r.discovery_status==='unanswered').length,
+  local_review:rows.filter(r=>r.discovery_status==='withheld'||r.discovery_status==='oversized').length,
   excluded: Object.fromEntries(["developer_docs", "human_user", "library", "other"].map(a => [a, rows.filter(r => !r.published_in && r.audience === a).length])),
   uncertain_model: rows.filter(r => !r.published_in && r.audience === "model").length
 };
 const inventory = rows.map(({ text, ...r }) => ({ ...r, text_sha256: sha256(text), preview: r.discovery_status==='withheld'?'[withheld pending local review]':text.replace(/\s+/g, " ").slice(0, 100) }));
-writeFileSync(`${root}outputs/inventory.json`, JSON.stringify({ area: "inventory", version: VERSION, platform: PLATFORM, binary_sha256: BINARY_SHA256, summary, items: inventory.map((r, i) => ({ id: `candidate-${i + 1}`, title: r.preview.slice(0, 60), kind: "other", details: { audience: r.audience, jev_confidence: r.confidence, published_in: r.published_in, words: r.words, text_sha256: r.text_sha256, preview: r.preview,...(broad?{jev_role:r.role,model_facing_probability:r.model_facing,evidence:r.evidence,discovery_status:r.discovery_status}: {}) }, provenance: [locationOf(r)] })) }, null, 1));
+// Keep every occurrence and field while staying below GitHub's per-file size limit.
+writeFileSync(`${root}outputs/inventory.json`, JSON.stringify({ area: "inventory", version: VERSION, platform: PLATFORM, binary_sha256: BINARY_SHA256, summary, items: inventory.map((r, i) => ({ id: `candidate-${i + 1}`, title: r.preview.slice(0, 60), kind: "other", details: { audience: r.audience, jev_confidence: r.confidence, published_in: r.published_in, words: r.words, text_sha256: r.text_sha256, preview: r.preview,...(broad?{jev_role:r.role,model_facing_probability:r.model_facing,evidence:r.evidence,discovery_status:r.discovery_status}: {}) }, provenance: [locationOf(r)] })) }) + '\n');
 console.log(summary);
 
 const jevModel = broad?'jev-1.13.0':candidates.map(c => verdicts.get(verdictKey(c.text))?.model).find(Boolean) ?? "jev";
@@ -124,13 +130,13 @@ The JavaScript is parsed with acorn rather than searched with regular expression
 
 ## Inventory
 
-The parser found ${summary.candidates} ${inventoryScope}. ${broad?`${candidateStats.assets} text assets contributed ${candidateStats.asset_segments} spans. `:''}${jevModel} (TypeSafe) judged the safe, request-sized occurrences; exceptions remain visible in the inventory. Of those occurrences:
+The parser found ${summary.candidates} ${inventoryScope}. ${broad?`${candidateStats.assets} text assets contributed ${candidateStats.asset_segments} spans. `:''}${jevModel} (TypeSafe) judged ${summary.classified} occurrences; exceptions remain visible in the inventory. Of those occurrences:
 
 - ${summary.published} are covered by a published document,
 - ${summary.other_model_text} were judged model-facing and are collected on [Other model-facing text](#other-model-text-md),
 - ${summary.excluded.developer_docs} are developer documentation (SDK types and schema descriptions), ${summary.excluded.human_user} are text shown to the person using the CLI, ${summary.excluded.library} are third-party library text, and ${summary.excluded.other} are other text such as fixtures,
 - ${summary.uncertain_model} were judged model-facing with less than 0.5 confidence; they are listed in \`inventory.json\` only.
-${broad?`- ${summary.unresolved} await local review because the privacy filter withheld their complete text or the request budget could not fit it. The public inventory retains source offsets and hashes without exposing withheld previews.\n- ${candidateStats.parse_failed} embedded JavaScript files did not parse; their filenames are recorded in the local candidate ledger.\n`:''}
+${broad?`- ${summary.provider_pending} await a provider judgment and are not classified or published as model-facing text,\n- ${summary.local_review} need local review because the privacy filter withheld their complete text or the request budget could not fit it. The public inventory retains source offsets and hashes without exposing withheld previews.\n- ${candidateStats.parse_failed} embedded JavaScript files did not parse; their filenames are recorded in the local candidate ledger.\n`:''}
 
 \`inventory.json\` lists every selected literal with its offset, hash, verdict, confidence, and where it is published. Jev's verdicts are probabilities, not proof. ${broad?'The local candidate ledger states which literals were excluded; dynamic text assembled at run time requires separate evidence.':'Shorter strings are covered only where a document includes them.'}
 
