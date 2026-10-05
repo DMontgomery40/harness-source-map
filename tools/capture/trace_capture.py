@@ -66,8 +66,13 @@ def token_kind(token):
         return "Anthropic API key"
     if token.startswith("sk-ant-"):
         return "Anthropic key"
-    if token.startswith("sk-"):
+    if token.startswith("sk-or-v1-"):
+        return "OpenRouter API key"
+    if token.startswith("sk-proj-"):
         return "OpenAI API key"
+    if token.startswith("sk-"):
+        # Several independent providers use this prefix; it cannot identify one.
+        return "API key"
     if token.startswith("npm_"):
         return "npm token"
     if re.match(r"gh[pousr]_", token):
@@ -346,6 +351,11 @@ class TraceCapture:
         self.control = ""
         self.status = ""
         self.counts = {"flows": 0, "wsFrames": 0, "checkpointTime": None, "checkpoints": 0}
+        # Completed HTTP bodies no longer change unless a later hook invalidates
+        # them. Retain their already-scrubbed HAR entries between checkpoints so
+        # large real package manifests are not decoded/redacted every second.
+        # Open streams, errors and all WebSockets remain uncached.
+        self.completed_entries = {}
 
     def load(self, loader):
         loader.add_option("trace_capture_output", str, "", "Private HAR checkpoint destination.")
@@ -406,6 +416,7 @@ class TraceCapture:
                     if chunks is not None:
                         chunks.clear()
                 self.flows.clear()
+                self.completed_entries.clear()
                 self._status()
         return self.recording
 
@@ -417,6 +428,7 @@ class TraceCapture:
         if not self._enabled():
             return
         self.flows[flow.id] = flow
+        self.completed_entries.pop(flow.id, None)
         self.dirty = True
         self.checkpoint()
 
@@ -473,9 +485,13 @@ class TraceCapture:
             return
         originals = [flow for flow in self.flows.values()
                      if cutoff is None or flow.request.timestamp_start <= cutoff]
-        snapshots = [sanitized_copy(flow, cutoff) for flow in originals]
+        # A cutoff can remove a late body or response, so it always rebuilds
+        # detached copies rather than reusing completed entries.
+        pending = [flow for flow in originals if cutoff is not None or flow.id not in self.completed_entries]
+        snapshots = [sanitized_copy(flow, cutoff) for flow in pending]
         har = self.writer.make_har(snapshots)
-        for entry, original, snapshot in zip(har["log"]["entries"], originals, snapshots):
+        fresh = {}
+        for entry, original, snapshot in zip(har["log"]["entries"], pending, snapshots):
             entry["_traceCapture"] = {
                 "flowId": original.id,
                 "partial": snapshot.metadata.get("trace_capture_cutoff_partial", False) or
@@ -485,6 +501,18 @@ class TraceCapture:
                 "credentials": "redacted on detached copy",
                 "withheldBodies": snapshot.metadata.get("trace_capture_withheld_bodies", []),
             }
+            fresh[original.id] = entry
+            if (cutoff is None and not original.websocket and not original.error and
+                    original.response is not None and original.response.timestamp_end is not None and
+                    original.request.timestamp_end is not None):
+                self.completed_entries[original.id] = entry
+        entries = []
+        for original in originals:
+            cached = fresh.get(original.id) or self.completed_entries[original.id]
+            entry = dict(cached)
+            entry["_traceCapture"] = dict(cached["_traceCapture"], snapshotTime=time.time())
+            entries.append(entry)
+        har["log"]["entries"] = entries
         data = json.dumps(har, ensure_ascii=True, indent=2).encode()
         self._write_private(self.output, data)
         self.dirty = False

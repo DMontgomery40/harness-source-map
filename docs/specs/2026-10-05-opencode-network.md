@@ -16,7 +16,7 @@ Initial upstream release: OpenCode v1.18.34, commit aec0b9a6d8898f68f923aaf08b73
 
 Extraction writes opencode/outputs/{capture-summary.json,prompts.json,prompts.md,tools.json,tools.md,configuration.md,key-findings.md,network-tracing.md}. Structured inventories use an items array with id, title, text, provenance and details. Each provenance entry has relative file, startLine/endLine, sha256 and a commit-pinned upstream URL. Release summary includes version and upstream commit. Markdown headings/fences match the structured records for search and reference indexing. Add source inventory or other output pages where needed, keeping claims bounded to the extracted areas.
 
-The OpenCode adapter uses the existing loadTrace(entries, options) boundary and native export shape {info, messages:[{info,parts}]}. Its browser parsing uses source byte references for the reader, with no private content retained in the summary object. Network parsing uses the existing buildCapture boundary and body store. Observe identity/session headers from upstream source before using them for exact association; never match solely by time.
+The OpenCode adapter uses the existing loadTrace(entries, options) boundary and native export shape {info, messages:[{info,parts}]}. Its browser parsing uses source byte references for the reader, with no private content retained in the summary object. Network parsing uses the existing analyzeCapture boundary and body store. Observe identity/session headers from upstream source before using them for exact association; never match solely by time.
 
 ## Acceptance
 
