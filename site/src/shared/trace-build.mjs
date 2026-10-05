@@ -8,13 +8,14 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { SITE } from "./site.mjs";
 
 const SKIP = new Set(["test", "dump.mjs", "dev-synthetic.js", "fixtures"]);
 
 // Qualify references after raw-slug heading lookup and record matching are complete.
 export function qualifyTraceReferences(index,section='') {
   if(!section)return index;
-  if(!['claude-code','codex'].includes(section))throw new Error('Unknown Trace reference section.');
+  if(!Object.values(SITE.products).some(product=>product.path===section))throw new Error('Unknown Trace reference section.');
   const refs=[...(index.pages || []),...(index.records || []),...Object.values(index.reminders || {}),...Object.values(index.templates || {}),...Object.values(index.tools || {})];
   for(const ref of refs)if(typeof ref.slug==='string' && /^[a-z0-9-]+$/.test(ref.slug))ref.slug=`${section}/${ref.slug}`;
   return index;
@@ -179,7 +180,8 @@ export async function buildTrace({ siteRoot, sourceRoot, categories, siteId, ori
     const full = path.join(sourceRoot, file.path);
     if (!existsSync(full)) continue;
     const index = pages.push({ slug: file.slug, title: file.title }) - 1;
-    const text = await readFile(full, "utf8");
+    const raw = await readFile(full, "utf8");
+    const text = file.transform ? file.transform(raw) : raw;
     texts.push({ slug: file.slug, text, ids: await headingIds(siteRoot, file.slug, section) });
     for (const hash of textLineHashes(text)) if (!(hash in lines)) lines[hash] = index;
   }
@@ -194,7 +196,8 @@ export async function buildTrace({ siteRoot, sourceRoot, categories, siteId, ori
     const page = pages.find(p => p.slug === slug);
     if (!page) continue;
     for (const [text, id] of await headingIds(siteRoot, slug, section)) {
-      if (/^[A-Za-z_][\w.-]*$/.test(text) && !index.tools[text]) index.tools[text] = { slug, anchor: id, title: text };
+      const name = section === SITE.products.opencode.path ? text.match(/^Tool description: ([A-Za-z_][\w.-]*)$/)?.[1]?.replaceAll("-", "_") ?? (text === "StructuredOutput description" ? "StructuredOutput" : null) : /^[A-Za-z_][\w.-]*$/.test(text) ? text : null;
+      if (name && !index.tools[name]) index.tools[name] = { slug, anchor: id, title: name };
     }
   }
 
@@ -208,7 +211,7 @@ export async function buildTrace({ siteRoot, sourceRoot, categories, siteId, ori
     const captured = new Set(summary.cli?.tool_names ?? []);
     const toolsChars = toolItems.filter(item => captured.has(item.title?.replace(/`/g, "") ?? item.id))
       .reduce((sum, item) => sum + (item.text?.length ?? 0) + JSON.stringify(item.details?.input_schema ?? item.details?.schema ?? {}).length, 0);
-    index.harness[summary.version] = {
+    if (summary.cli) index.harness[summary.version] = {
       systemChars: (summary.cli?.main_prompt_chars ?? 0) + (summary.cli?.identity?.length ?? 0),
       toolsChars,
       tools: captured.size,

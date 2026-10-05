@@ -13,6 +13,8 @@ import { categories as claudeCodeCategories } from "./src/claude-code/catalog.mj
 import { site as claudeCodeSite } from "./src/claude-code/config.mjs";
 import { buildSite as buildCodex } from "./src/codex/build-site.mjs";
 import { categories as codexCategories } from "./src/codex/catalog.mjs";
+import { buildSite as buildOpenCode } from "./src/opencode/build-site.mjs";
+import { categories as openCodeCategories } from "./src/opencode/catalog.mjs";
 
 const siteRoot = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(siteRoot, "..");
@@ -21,7 +23,8 @@ const dist = path.join(siteRoot, "dist");
 // siteId stays as each section's historical id; Trace shows it only as the index's name.
 const PRODUCTS = [
   { id: "claude-code", siteId: "ccprompts", build: buildClaudeCode, categories: claudeCodeCategories, assets: [claudeCodeSite.socialCard.file] },
-  { id: "codex", siteId: "gpt6aeon", build: buildCodex, categories: codexCategories, assets: ["prompt-map-social-card.png", "binwalk-evidence.tar.gz"] }
+  { id: "codex", siteId: "gpt6aeon", build: buildCodex, categories: codexCategories, assets: ["prompt-map-social-card.png", "binwalk-evidence.tar.gz"] },
+  { id: "opencode", siteId: "opencode", build: buildOpenCode, categories: openCodeCategories, assets: [] }
 ];
 
 await rm(dist, { recursive: true, force: true });

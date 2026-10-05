@@ -18,13 +18,13 @@ const ICON = `<svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke
 // The corner-links pill: "Search ⌘K" (icon only on phones). `section` is the product id whose index
 // the palette searches first; "all" searches both products.
 export function searchTrigger(section) {
-  const where = SITE.products[section]?.label ?? "both products";
+  const where = SITE.products[section]?.label ?? "all products";
   return `<button class="search-link" type="button" data-search-open data-search-section="${section}" aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K /" aria-label="Search ${where} (⌘K or /)"><span class="search-link-mark" aria-hidden="true">${ICON}</span><span class="search-link-label">Search</span><kbd class="search-link-kbd" aria-hidden="true" data-search-kbd>⌘K</kbd></button>`;
 }
 
 // The landing page's wide search field (both products).
 export function searchField() {
-  return `<button class="search-field" type="button" data-search-open data-search-section="all" aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K /" aria-label="Search both products (⌘K or /)"><span class="search-field-icon" aria-hidden="true">${ICON}</span><span class="search-field-text">Search prompts, env vars, settings, hooks, tools…</span><kbd aria-hidden="true" data-search-kbd>⌘K</kbd></button>`;
+  return `<button class="search-field" type="button" data-search-open data-search-section="all" aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K /" aria-label="Search all products (⌘K or /)"><span class="search-field-icon" aria-hidden="true">${ICON}</span><span class="search-field-text">Search prompts, env vars, settings, hooks, tools…</span><kbd aria-hidden="true" data-search-kbd>⌘K</kbd></button>`;
 }
 
 // `prefix` is the page's path back to the site root ("", "../", "../../").

@@ -2,12 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { categories as claudeCode } from "../../src/claude-code/catalog.mjs";
 import { categories as codex } from "../../src/codex/catalog.mjs";
+import { categories as opencode } from "../../src/opencode/catalog.mjs";
 import { SECTION_LABELS, SECTIONS } from "../../src/shared/sections.mjs";
 
 // The sidebar is a fixed set of sections shared by both products (site/src/shared/sections.mjs).
 // A new page goes into the section whose `holds` fits; a new top-level group per feature is the
 // clutter this test exists to stop.
-for (const [product, categories] of [["claude-code", claudeCode], ["codex", codex]]) {
+for (const [product, categories] of [["claude-code", claudeCode], ["codex", codex], ["opencode", opencode]]) {
   test(`${product}: every sidebar group is a shared section, in the shared order, never empty`, () => {
     const labels = categories.map(c => c.label);
     for (const label of labels) assert.ok(SECTION_LABELS.includes(label), `"${label}" is not a section in site/src/shared/sections.mjs; put the page in an existing section`);

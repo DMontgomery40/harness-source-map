@@ -1,4 +1,4 @@
-// The one site that publishes both products. Every absolute URL is derived from here, so a
+// The one site that publishes the supported harnesses. Every absolute URL is derived from here, so a
 // rename of the domain or the repo is a one-line change.
 export const SITE = {
   domain: "harness.dtmont.com",
@@ -7,7 +7,8 @@ export const SITE = {
   follow: { handle: "_DMontgomery40", url: "https://x.com/_DMontgomery40" },
   products: {
     "claude-code": { path: "claude-code", label: "Claude Code", legacyHost: "ccprompts.dtmont.com" },
-    codex: { path: "codex", label: "Codex/ChatGPT", legacyHost: "gpt6aeon.dtmont.com" }
+    codex: { path: "codex", label: "Codex/ChatGPT", legacyHost: "gpt6aeon.dtmont.com" },
+    opencode: { path: "opencode", label: "OpenCode" }
   }
 };
 
