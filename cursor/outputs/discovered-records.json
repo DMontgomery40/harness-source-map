@@ -1,0 +1,505 @@
+{
+  "schema": 1,
+  "area": "cursor-discovered-records",
+  "release": {
+    "id": "3.23.12-2026.10.01-e373342-aca5010df248da0327c4b823063c3bd0d4edeb31fa984cf862f2c8563c89ff66",
+    "artifact_identity": {
+      "algorithm": "sha256",
+      "sha256": "aca5010df248da0327c4b823063c3bd0d4edeb31fa984cf862f2c8563c89ff66",
+      "components": {
+        "desktop_tree_sha256": "5665959206bc6b07cac353114d68d791075593602fed5a27ac365cdbb780d995",
+        "agent_cli_archive_sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc"
+      }
+    },
+    "desktop": {
+      "version": "3.23.12",
+      "commit": "2d29876d567da1607532b23bbf2cd5ddbca496f0",
+      "distro": "d5c0e77a0214208f36b56d42e8e787de88d02ea4",
+      "architecture": "arm64",
+      "tree_sha256": "5665959206bc6b07cac353114d68d791075593602fed5a27ac365cdbb780d995"
+    },
+    "agent_cli": {
+      "version": "2026.10.01-e373342",
+      "architecture": "arm64",
+      "archive_sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc",
+      "tree_sha256": "e7220f127d51f5a2f80f4e31d9df07271db52920cd35bee8d3d8e7214cb4547c"
+    }
+  },
+  "summary": {
+    "candidates": 209954,
+    "classified": 9189,
+    "discovered_records": 7,
+    "provider_pending": 200529,
+    "local_review": 236,
+    "skipped_occurrences": {
+      "non-prose-or-short": 1323842
+    },
+    "excluded_files": 412,
+    "parse_failed": 0,
+    "publication": "partial-unanswered-or-local-review"
+  },
+  "items": [
+    {
+      "id": "jev-000001-cca7967661b0",
+      "title": "The user has exited ${e.pendingExitedCustomMode.label} custom mode. Stop…",
+      "kind": "prompt",
+      "surface": "agent-cli",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "The user has exited ${e.pendingExitedCustomMode.label} custom mode. Stop following that mode's skill. Continue without those constraints.",
+      "text_sha256": "44f1a0b6ec4731b0b65c80f14e322dae6a8bf09fcb159fa17b1db918ec906596",
+      "provenance": [
+        {
+          "file": "agent-cli/package/9577.index.js",
+          "surface": "agent-cli",
+          "byte_start": 111684,
+          "byte_end": 111823,
+          "line_start": 1,
+          "line_end": 1,
+          "source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "decoded_source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "span_sha256": "cca7967661b0e430ace50ef9a9a0d20524178b020b25965d0b1ca3fbed52c057"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "typesafe/jev-1.13",
+        "served_models": [
+          "typesafe/jev-1.13-20260917"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "code_data": 0.37,
+            "unknown": 0.01,
+            "parameter": 0,
+            "documentation": 0.01,
+            "user_template": 0.04,
+            "context": 0.01,
+            "tool": 0,
+            "instructions": 0.55,
+            "human": 0.01
+          },
+          "confidence": 0.49
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.22,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.08,
+            "2": 0.5,
+            "3": 0.38
+          },
+          "confidence": 0.46
+        }
+      }
+    },
+    {
+      "id": "jev-000002-9f358213145f",
+      "title": "Follow the attached skill",
+      "kind": "prompt",
+      "surface": "agent-cli",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Follow the attached skill",
+      "text_sha256": "b11137f61d09ad258e9d88f86aa83a9ef5125aed270a30bfa0bc23d14818f3b6",
+      "provenance": [
+        {
+          "file": "agent-cli/package/9577.index.js",
+          "surface": "agent-cli",
+          "byte_start": 111907,
+          "byte_end": 111934,
+          "line_start": 1,
+          "line_end": 1,
+          "source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "decoded_source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "span_sha256": "9f358213145fdf28ff68a80078e547a248aa20ee9171e9c56c2dd6d2d099130e"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "typesafe/jev-1.13",
+        "served_models": [
+          "typesafe/jev-1.13-20260917"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.8
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0.02,
+            "user_template": 0.01,
+            "context": 0.02,
+            "tool": 0.01,
+            "instructions": 0.55,
+            "code_data": 0.36,
+            "unknown": 0.02,
+            "parameter": 0,
+            "human": 0.01
+          },
+          "confidence": 0.51
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.38,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.13,
+            "2": 0.23,
+            "3": 0.6
+          },
+          "confidence": 0.38
+        }
+      }
+    },
+    {
+      "id": "jev-000003-57fa34802fce",
+      "title": "Follow the skill instructions in ${JSON.stringify(t)}",
+      "kind": "prompt",
+      "surface": "agent-cli",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Follow the skill instructions in ${JSON.stringify(t)}",
+      "text_sha256": "ba89f4335b84cecb0a6ec1bdafe145b78f5461b722d4744e6d9221854c0a733c",
+      "provenance": [
+        {
+          "file": "agent-cli/package/9577.index.js",
+          "surface": "agent-cli",
+          "byte_start": 111935,
+          "byte_end": 111990,
+          "line_start": 1,
+          "line_end": 1,
+          "source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "decoded_source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "span_sha256": "57fa34802fcef08123b7429ecef8913269889017637f78dd3b560a77ac163a03"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "typesafe/jev-1.13",
+        "served_models": [
+          "typesafe/jev-1.13-20260917"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.83
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0.01,
+            "user_template": 0.02,
+            "context": 0.01,
+            "tool": 0.01,
+            "code_data": 0.38,
+            "instructions": 0.56,
+            "unknown": 0.01,
+            "parameter": 0,
+            "human": 0
+          },
+          "confidence": 0.51
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.41,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.06,
+            "2": 0.39,
+            "3": 0.52
+          },
+          "confidence": 0.41
+        }
+      }
+    },
+    {
+      "id": "jev-000004-905558afe7ec",
+      "title": "The user has entered ${e.label} custom mode. ${r} until the user exits o…",
+      "kind": "prompt",
+      "surface": "agent-cli",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "The user has entered ${e.label} custom mode. ${r} until the user exits or switches modes. Do not drift back to default agent behavior.",
+      "text_sha256": "988f4fbc3c6e98e8ab4d2dd14ab96239b9b27433edc2043988a3cf06d99c748a",
+      "provenance": [
+        {
+          "file": "agent-cli/package/9577.index.js",
+          "surface": "agent-cli",
+          "byte_start": 111997,
+          "byte_end": 112133,
+          "line_start": 1,
+          "line_end": 1,
+          "source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "decoded_source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "span_sha256": "905558afe7ec2d07519bb4f65d31452c2ce69f25d31457b244f7da72e9dfce26"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "typesafe/jev-1.13",
+        "served_models": [
+          "typesafe/jev-1.13-20260917"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0,
+            "user_template": 0.01,
+            "tool": 0,
+            "context": 0.01,
+            "instructions": 0.78,
+            "code_data": 0.19,
+            "unknown": 0.01,
+            "parameter": 0,
+            "human": 0
+          },
+          "confidence": 0.75
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.39,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.07,
+            "2": 0.42,
+            "3": 0.49
+          },
+          "confidence": 0.39
+        }
+      }
+    },
+    {
+      "id": "jev-000005-446697298b20",
+      "title": "Reminder: you are still in ${e.label} mode. Follow that mode's skill on…",
+      "kind": "prompt",
+      "surface": "agent-cli",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Reminder: you are still in ${e.label} mode. Follow that mode's skill on this turn. Do not drop it because the request looks small or you already have context. Do not drift back to default agent behavior. If you cannot state the mode's hard rules, read ${r} before acting.",
+      "text_sha256": "8d6dc2d6b592ff7c5231bfe4951bc111237db9456cbe3f408e19b8c332e1212a",
+      "provenance": [
+        {
+          "file": "agent-cli/package/9577.index.js",
+          "surface": "agent-cli",
+          "byte_start": 112234,
+          "byte_end": 112507,
+          "line_start": 1,
+          "line_end": 1,
+          "source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "decoded_source_sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
+          "span_sha256": "446697298b20c57374419aa515f1cb654bc7639d05c351db1c37c41b5e961040"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "typesafe/jev-1.13",
+        "served_models": [
+          "typesafe/jev-1.13-20260917"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.89
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "documentation": 0.02,
+            "user_template": 0,
+            "context": 0.01,
+            "tool": 0.01,
+            "instructions": 0.54,
+            "code_data": 0.4,
+            "unknown": 0.01,
+            "parameter": 0,
+            "human": 0
+          },
+          "confidence": 0.49
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.31,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.09,
+            "2": 0.42,
+            "3": 0.46
+          },
+          "confidence": 0.31
+        }
+      }
+    },
+    {
+      "id": "jev-000006-4b0c61a6283a",
+      "title": "You are answering a single ephemeral question about the user's current w…",
+      "kind": "prompt",
+      "surface": "agent-cli",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "You are answering a single ephemeral question about the user's current work. Use the provided conversation as context and respond directly in one answer. Do not use tools. Do not ask follow-up questions, do not request mode switches, and do not mention tool limitations unless absolutely necessary.",
+      "text_sha256": "f44ba8a68acd3e4811b0b6a2e2fb42d334b1109d2a777a3d57867a744c183361",
+      "provenance": [
+        {
+          "file": "agent-cli/package/9969.index.js",
+          "surface": "agent-cli",
+          "byte_start": 765533,
+          "byte_end": 765833,
+          "line_start": 1,
+          "line_end": 1,
+          "source_sha256": "7d62ffa7d2ce4c39cd791a6f592f6bcf856f23533f51ff8e9b931e68f85816ad",
+          "decoded_source_sha256": "7d62ffa7d2ce4c39cd791a6f592f6bcf856f23533f51ff8e9b931e68f85816ad",
+          "span_sha256": "4b0c61a6283a693880cb0c11031a45c1a0087fe07fb7bdb9251bbc98503d3e89"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "typesafe/jev-1.13",
+        "served_models": [
+          "typesafe/jev-1.13-20260917"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "code_data": 0.24,
+            "unknown": 0.02,
+            "documentation": 0.02,
+            "parameter": 0.01,
+            "human": 0.01,
+            "user_template": 0.03,
+            "context": 0.01,
+            "tool": 0,
+            "instructions": 0.66
+          },
+          "confidence": 0.62
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.31,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.11,
+            "2": 0.43,
+            "3": 0.45
+          },
+          "confidence": 0.31
+        }
+      }
+    },
+    {
+      "id": "jev-000007-2d4e90e7b521",
+      "title": "If the conversation does not contain enough to answer, say so briefly.",
+      "kind": "prompt",
+      "surface": "agent-cli",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "If the conversation does not contain enough to answer, say so briefly.",
+      "text_sha256": "b1b329b5f0916464021852efffd95b30dc9b9e754d742a179289a33a9f4385e4",
+      "provenance": [
+        {
+          "file": "agent-cli/package/9969.index.js",
+          "surface": "agent-cli",
+          "byte_start": 765834,
+          "byte_end": 765906,
+          "line_start": 1,
+          "line_end": 1,
+          "source_sha256": "7d62ffa7d2ce4c39cd791a6f592f6bcf856f23533f51ff8e9b931e68f85816ad",
+          "decoded_source_sha256": "7d62ffa7d2ce4c39cd791a6f592f6bcf856f23533f51ff8e9b931e68f85816ad",
+          "span_sha256": "2d4e90e7b521fa6e6d1c8cef9ab18dee853f391f9015a0908da453b2f09a80e1"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "typesafe/jev-1.13",
+        "served_models": [
+          "typesafe/jev-1.13-20260917"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.82
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "probabilities": {
+            "code_data": 0.41,
+            "unknown": 0.03,
+            "documentation": 0.02,
+            "parameter": 0,
+            "human": 0.01,
+            "user_template": 0.01,
+            "context": 0.02,
+            "tool": 0,
+            "instructions": 0.5
+          },
+          "confidence": 0.43
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 1.51,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.07,
+            "1": 0.51,
+            "2": 0.27,
+            "3": 0.15
+          },
+          "confidence": 0.36
+        }
+      }
+    }
+  ]
+}

@@ -42,7 +42,11 @@ test("the landing, search and Trace reference index lead to actual OpenCode sour
     assert.match(renderLanding(), /href="opencode\/"/);
     const index = JSON.parse(await readFile(path.join(dir, "dist/opencode/search-index.json"), "utf8"));
     assert.equal(index.ver, "1.18.34");
-    assert.equal(index.items.filter(item => item.k === "tool").length, 43);
+    // The 43 reviewed tool records and every discovered library record Jev typed as a tool.
+    const catalog = JSON.parse(await readFile(path.join(sourceRoot, "outputs/library-catalog.json"), "utf8"));
+    let tools = 43;
+    for (const library of catalog.libraries) tools += JSON.parse(await readFile(path.join(sourceRoot, "outputs", library.json), "utf8")).items.filter(item => item.kind === "tool").length;
+    assert.equal(index.items.filter(item => item.k === "tool").length, tools);
     assert.deepEqual([...parseQuery("in:opencode kimi").products], ["opencode"]);
     const result = search(indexItems(index), parseQuery("in:opencode kimi"));
     assert.ok(result.total > 0);

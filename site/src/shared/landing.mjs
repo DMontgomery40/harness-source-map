@@ -100,13 +100,13 @@ export function renderLanding({ cardFile = "social-card.png" } = {}) {
   <main>
     <div class="eyebrow">${esc(SITE.name)}</div>
     <h1>What the agent harness puts in front of the model.</h1>
-    <p class="dek">The prompts, reminders, tool descriptions and settings that Claude Code, Codex/ChatGPT and OpenCode send, read from shipped apps and public source, each with its provenance.</p>
+    <p class="dek">The prompts, reminders, tool descriptions and settings that Claude Code, Codex/ChatGPT, OpenCode and Cursor send, read from shipped apps and public source, each with its provenance.</p>
     ${searchField()}
     <h2 id="pick">Which harness?</h2>
     <nav class="choices" aria-labelledby="pick">${cards}
     </nav>
     <section class="trace" aria-labelledby="trace-title">
-      <div><h2 id="trace-title" class="trace-title">Trace a session</h2><p>Open your own Claude Code, Codex/ChatGPT or OpenCode session and see its instructions, tools and visible reasoning. Add an opt-in network capture to inspect actual request payloads and destinations. Runs in your browser; nothing is uploaded.</p></div>
+      <div><h2 id="trace-title" class="trace-title">Trace a session</h2><p>Open your own Claude Code, Codex/ChatGPT, OpenCode or Cursor session and see its instructions, tools and visible reasoning. Add an opt-in network capture to inspect actual request payloads and destinations. Runs in your browser; nothing is uploaded.</p></div>
       <a class="trace-go" href="trace/">Open Trace</a>
       <a class="trace-shot" href="trace/" tabindex="-1"><img src="trace-landscape-2000.webp" srcset="trace-landscape-1000.webp 1000w, trace-landscape-2000.webp 2000w" sizes="(max-width: 1072px) calc(100vw - 32px), 1040px" width="2000" height="1162" loading="lazy" decoding="async" alt="Trace showing a Claude Code session as a 3D landscape: a ridge for each agent, its context stacked in layers by source, and a sidebar breaking down what filled the context."></a>
     </section>

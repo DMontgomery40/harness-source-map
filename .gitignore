@@ -25,3 +25,7 @@ __pycache__/
 .claude/worktrees/
 # capture.sh keeps an unfiled recording in the folder it ran from; never commit one
 /capture-*.har
+
+# Cursor's per-occurrence Jev inventory (every eligible occurrence and verdict) is ~200 MB, over
+# GitHub's and the host's file limits; it stays local until a compact download format exists.
+cursor/outputs/inventory.json
