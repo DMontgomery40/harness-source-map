@@ -66,6 +66,69 @@ requests to another.
 
 ## CLI sessions
 
+### OpenCode: one private bundle
+
+Run a real task with your configured provider and model:
+
+```sh
+node tools/capture/opencode-capture.mjs --open -- --model openrouter/MODEL "Read the relevant source and explain what the harness sends."
+```
+
+Replace `openrouter/MODEL` with a model available in your OpenRouter account. Direct Alibaba/Qwen,
+DeepSeek and Moonshot/Kimi providers work through the same command: pass the configured
+`provider/model` to `--model`. The command uses your existing OpenCode installation and account.
+It does not install models or configure providers. First-run dependency installation can produce
+large package traffic; finish normal OpenCode setup before recording your research task.
+
+Invoking this command explicitly activates recording for that one `opencode run`. It streams real
+JSON run events, including visible reasoning, then exports the exact observed sessions. Add OpenCode
+options such as `--dir`, `--session`, `--continue`, `--file` or `--variant` after `--`. Normal tool
+permissions remain in effect. Capture does not turn on automatic permission approval. Remote
+`--attach`, interactive mode and `--share` are refused because this command records a local private
+run. Sharing and share synchronization are disabled in the wrapped process, including resumed sessions.
+
+Each invocation creates a private folder under `~/.harness-source-map/captures/` with:
+
+- `session-<id>.json`: native session exports with credentials scrubbed before writing. Transcript,
+  reasoning, tool inputs/outputs and file content remain private. These are logged session evidence;
+  they do not establish the exact provider request.
+- `capture.har`: observed requests and streams with credentials redacted before disk by the existing
+  recorder and checked again. Unknown traffic is labeled unattributed.
+- `manifest.json`: installed CLI version, observed session associations, completion status and
+  capture/export problems. An incomplete recording exits nonzero and remains available for inspection.
+
+Use `--out DIR` before `--` to select another private parent folder, or `--opencode PATH` to select
+an installation. Output inside a repository must be ignored; the command refuses tracked output
+locations. It never promotes recordings to site examples, reference outputs or tests. A temporary
+certificate authority trusts only the wrapped process tree and is removed on exit. No system proxy,
+keychain trust, browser debugging or persistent setting is enabled.
+
+Open the Trace URL printed at completion and drop the session JSON and HAR together, then choose
+**What went over the wire**. `--open` opens that URL for you; you still choose the local files. Trace
+starts in the existing landscape. Requests are associated from actual `x-opencode-session-id`
+headers and native JSON `sessionID` events, never from timing or the latest stored session. Parent
+headers identify observed subagent relationships. Traffic without those identifiers stays unattributed.
+Keep the entire bundle private; credentials are removed, but prompts and source content are retained.
+
+Capture development uses only real sessions and traffic. Optional verification reads private files
+supplied at runtime without tracking their contents:
+
+```sh
+OPENCODE_REAL_HAR=/private/path/capture.har \
+OPENCODE_REAL_EXPORT=/private/path/session.json \
+OPENCODE_REAL_PARTIAL_HAR=/private/path/actual-interrupted.har \
+  node --test tools/test/opencode-capture.test.mjs
+```
+
+These checks skip when the corresponding private evidence path is absent. The ordinary checks also
+exercise command help and guards without making a provider call.
+`OPENCODE_REAL_MANIFEST` plus `OPENCODE_PROJECT_DIR` checks native export against an actual recorded
+session through the installed CLI. Export collection uses a temporary stdout PTY to avoid the
+installed Bun CLI cutting off large piped JSON. Bytes remain in memory until credential scrubbing;
+stderr stays separate, and collection has a 256 MiB limit and 60-second timeout.
+
+### Claude Code and Codex/ChatGPT
+
 ```sh
 tools/capture/capture.sh -- claude            # interactive Claude Code session
 tools/capture/capture.sh -- claude -p "…"     # one-shot
