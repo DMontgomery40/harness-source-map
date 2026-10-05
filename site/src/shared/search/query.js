@@ -25,10 +25,11 @@ export const KIND = Object.fromEntries(KINDS.map(k => [k.key, k]));
 const KIND_BY_PREFIX = new Map(KINDS.flatMap(k => [[k.key, k.key], ...k.prefixes.map(p => [p, k.key])]));
 export const RECORD_KINDS = new Set(KINDS.filter(k => !["page", "h", "command"].includes(k.key)).map(k => k.key));
 
-// `in:` names for the two products (site/src/shared/site.mjs ids).
+// `in:` names for the supported products (site/src/shared/site.mjs ids).
 const PRODUCT_ALIASES = new Map([
   ["claude-code", "claude-code"], ["claude", "claude-code"], ["cc", "claude-code"], ["claudecode", "claude-code"],
-  ["codex", "codex"], ["chatgpt", "codex"], ["openai", "codex"], ["codex-chatgpt", "codex"], ["codex/chatgpt", "codex"]
+  ["codex", "codex"], ["chatgpt", "codex"], ["openai", "codex"], ["codex-chatgpt", "codex"], ["codex/chatgpt", "codex"],
+  ["opencode", "opencode"], ["open-code", "opencode"]
 ]);
 
 const low = s => String(s ?? "").toLowerCase();

@@ -1,5 +1,4 @@
-// The site's front door: pick a harness (Claude Code or Codex/ChatGPT), or open Trace, which reads
-// sessions from both. Everything product-specific lives under /claude-code/ and /codex/.
+// The site's front door: pick a supported harness, or open the shared Trace viewer.
 import { SITE, siteOrigin, ICON_LINKS } from "./site.mjs";
 import { searchField, searchScript } from "./search-ui.mjs";
 
@@ -17,13 +16,19 @@ const CHOICES = [
     kicker: "OpenAI",
     title: "Codex/ChatGPT",
     line: "GPT-6 base and persistent-mode instructions, conditional modules, Codex CLI prompts, ChatGPT desktop and Work prompts, config.toml and env vars, read from the shipped apps and catalogs."
+  },
+  {
+    id: "opencode",
+    kicker: "Open source",
+    title: "OpenCode",
+    line: "Model and agent prompts, conversation instructions, tools, configuration and network request assembly, read from release-pinned public source. Trace real OpenRouter runs and their visible reasoning."
   }
 ];
 
 export function renderLanding({ cardFile = "social-card.png" } = {}) {
   const origin = siteOrigin();
-  const title = `${SITE.name} · What Claude Code and Codex/ChatGPT send the model`;
-  const description = "Every prompt, reminder, tool description and setting that Claude Code and Codex/ChatGPT put in front of the model, read from the shipped binaries with provenance. Trace your own session to see them arrive.";
+  const title = `${SITE.name} · What coding-agent harnesses send the model`;
+  const description = "The prompts, reminders, tools and settings that Claude Code, Codex/ChatGPT and OpenCode put in front of the model, with source provenance. Trace your own session and captured network requests.";
   const cards = CHOICES.map(c => `
       <a class="choice" href="${esc(SITE.products[c.id].path)}/">
         <span class="kicker">${esc(c.kicker)}</span>
@@ -89,13 +94,13 @@ export function renderLanding({ cardFile = "social-card.png" } = {}) {
   <main>
     <div class="eyebrow">${esc(SITE.name)}</div>
     <h1>What the agent harness puts in front of the model.</h1>
-    <p class="dek">Every prompt, reminder, tool description and setting that Claude Code and Codex/ChatGPT send, read from the shipped binaries, each with its source.</p>
+    <p class="dek">The prompts, reminders, tool descriptions and settings that Claude Code, Codex/ChatGPT and OpenCode send, read from shipped apps and public source, each with its provenance.</p>
     ${searchField()}
     <h2 id="pick">Which harness?</h2>
     <nav class="choices" aria-labelledby="pick">${cards}
     </nav>
     <section class="trace" aria-labelledby="trace-title">
-      <div><h2 id="trace-title" class="trace-title">Trace a session</h2><p>Open your own Claude Code or Codex/ChatGPT session log and see what reached the model, where it came from, and who got it. Runs in your browser; nothing is uploaded.</p></div>
+      <div><h2 id="trace-title" class="trace-title">Trace a session</h2><p>Open your own Claude Code, Codex/ChatGPT or OpenCode session and see its instructions, tools and visible reasoning. Add an opt-in network capture to inspect actual request payloads and destinations. Runs in your browser; nothing is uploaded.</p></div>
       <a class="trace-go" href="trace/">Open Trace</a>
       <a class="trace-shot" href="trace/" tabindex="-1"><img src="trace-landscape-2000.webp" srcset="trace-landscape-1000.webp 1000w, trace-landscape-2000.webp 2000w" sizes="(max-width: 1072px) calc(100vw - 32px), 1040px" width="2000" height="1162" loading="lazy" decoding="async" alt="Trace showing a Claude Code session as a 3D landscape: a ridge for each agent, its context stacked in layers by source, and a sidebar breaking down what filled the context."></a>
     </section>
