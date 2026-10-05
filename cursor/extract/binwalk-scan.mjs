@@ -257,7 +257,7 @@ export async function main() {
   const targets = [];
   for (const target of cursorTargets({ desktopRoot, cliRoot })) {
     const base = { path: `${target.distribution}/${target.path}`, role: target.role, distribution: target.distribution, kind: target.kind, present: target.present };
-    if (target.kind === "summary") { targets.push({ ...base, observed_count: target.observed_count }); continue; }
+    if (target.kind === "summary") { targets.push({ ...base, observed_count: target.observed_count, signature_counts: {}, payloads: [] }); continue; }
     if (!target.present) { targets.push(base); continue; }
     let asar = null;
     if (target.asar) asar = asarInventory(target.file, { extractDir: path.join(repo, "work/asar-extracted", target.distribution, path.basename(target.file)) });

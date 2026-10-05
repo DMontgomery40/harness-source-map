@@ -22,7 +22,9 @@
    "distribution": "agent-cli",
    "kind": "summary",
    "present": true,
-   "observed_count": 0
+   "observed_count": 0,
+   "signature_counts": {},
+   "payloads": []
   },
   {
    "path": "agent-cli/1268.index.js",
@@ -8211,7 +8213,9 @@
    "distribution": "desktop",
    "kind": "summary",
    "present": true,
-   "observed_count": 0
+   "observed_count": 0,
+   "signature_counts": {},
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/bin/cursor-tunnel",
