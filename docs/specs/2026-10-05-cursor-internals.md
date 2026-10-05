@@ -18,7 +18,7 @@ The primary research use is evidence about prompts, tools, configuration, local 
 
 The first release snapshot is the installed, signed macOS arm64 desktop app and the official Agent CLI package fetched from Cursor's own distribution endpoints:
 
-- Cursor desktop `3.17.8`, application commit `2fdd31c9f33f7fbe501f2d57772dc5bf64b63620`, package distro `d5c0e77a0214208f36b56d42e8e787de88d02ea4`.
+- Cursor desktop `3.23.12`, application commit `2d29876d567da1607532b23bbf2cd5ddbca496f0`, package distro `d5c0e77a0214208f36b56d42e8e787de88d02ea4`. The app applied this already-downloaded update when the initial real desktop session closed; the earlier observed `3.17.8` build is not the extraction baseline.
 - Cursor Agent CLI `2026.10.01-e373342`, official archive SHA-256 `629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc`.
 
 The acquisition record must preserve the official URLs, hashes, signing/notarization result, architecture and package metadata without publishing machine paths. A future refresh downloads or copies into `cursor/work/releases/<desktop version>-<cli version>/`; outputs never depend on an unversioned live application path.
@@ -65,6 +65,10 @@ Extract complete, stable records from the pinned desktop and CLI JavaScript and 
 
 Each record has product surface (`desktop`, `agent-cli` or `shared`), release identity, exact relative file, line or byte range, source SHA-256, verbatim source text and an evidence classification. Minified bundles may use byte/line ranges with stable anchors, but the compiler must re-find and hash the complete source occurrence on every refresh. Counts and pages are generated from records.
 
+Cursor also participates in the shared Jev discovery and coverage workflow. The local prepare pass inventories every eligible occurrence in the pinned desktop and Agent CLI sources, including short prompt-bearing fields and embedded text assets, before any provider request. Broad export to TypeSafe is explicit, privacy-filtered and limited to the public shipped-source corpus; it never includes private sessions, captures, credentials or machine paths. Every eligible occurrence receives the mixed Noul, semantic-role Choice and source-directness Score judgments used by the established products. Cache identity includes the served model, complete request body, question wording, examples, criteria ordering and exact source identity. Batches are bounded by both item count and serialized bytes, provider failures retain an explicit unanswered queue, and incomplete exports fail closed unless the operator selects the labelled partial mode.
+
+Coverage compares classified positives with the typed records that the Cursor site actually indexes. Exact and complete-contained matches run locally; all remaining records are visited in bounded Choice windows with a `none` option and independently verified with complete-text Noul and completeness Score questions. Oversized, privacy-withheld, provider-pending and unverified candidates remain visible local-review rows. A routed near match is never promoted as coverage.
+
 ## Real Cursor sessions and captures
 
 Trace accepts both real Agent CLI stream JSON/session artifacts and real desktop session artifacts. Adapters preserve exact session, request, message, tool-call and reasoning identifiers that exist in the source. Unknown ownership remains unattributed; timestamps alone never establish request or session ownership.
@@ -83,7 +87,7 @@ Global search, landing copy, product labels, reference indices, link checking an
 
 ## Watcher
 
-The watcher fingerprints the official desktop update feed and official Agent CLI installer/package version separately. A change in either creates a complete pinned release snapshot, refreshes extraction, runs Binwalk and package scans, records bounded diffs, runs the full repository gate and publishes both products together through the existing watcher transaction. Failed required package scans stop publication. Binwalk failures notify and retain the previous baseline, matching the established product behavior.
+The watcher fingerprints the official desktop update feed and official Agent CLI installer/package version separately. A change in either creates a complete pinned release snapshot, refreshes extraction, runs Binwalk and package scans, runs the local Jev discovery inventory and the destination-authorized TypeSafe classification and coverage passes, records bounded diffs, runs the full repository gate and publishes all products together through the existing watcher transaction. Failed required package scans or incomplete Jev work stop baseline advancement. Provider outages retain the same build and unanswered queue for retry; labelled partial publication is an explicit operator action. Binwalk failures notify and retain the previous baseline, matching the established product behavior.
 
 ## Acceptance
 
@@ -93,6 +97,7 @@ Completion requires:
 - deterministic pinned acquisition and extraction with exact provenance;
 - real Binwalk 3 scans with carved desktop/CLI payloads, SEA and ASAR boundaries, nested findings and release diffs;
 - a whole-package inventory with signing, entitlements, linking, native addons, permissions, endpoints and withheld credential-shaped strings;
+- complete local Jev preparation, privacy accounting, cache-key validation, unanswered-work accounting and typed-record coverage for the pinned shipped sources;
 - real desktop and Agent CLI sessions opened in Trace, with real captured traffic and reasoning where Cursor exposes it;
 - browser verification that Trace opens in the landscape and all existing modes remain available;
 - watcher integration and a successful `npm run check`;
