@@ -87,7 +87,7 @@ export async function auditCursorCoverage({
     ids.add(record.id);
   }
 
-  const cache = openCache(path.join(workRoot, "cursor-coverage-cache.json"));
+  const cache = openCache(path.join(workRoot, "cursor-coverage-cache.json"),{config});
   const exactByKindAndText = new Map();
   for (const record of search.items) {
     const key = `${record.kind}\0${record.text}`;
