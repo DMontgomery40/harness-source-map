@@ -23,6 +23,8 @@ export function buildFullCatalog({ sourceRoot, outDir, context }) {
   const candidates = manifest.product==='cursor'?current.candidates:current.items.length;
   const skipped = manifest.product==='cursor'?Object.values(current.skipped_occurrences).reduce((a,b)=>a+b,0):0;
   if(identity!==catalogIdentity || manifest.candidates!==candidates || manifest.skipped!==skipped) throw new Error('Full catalog is stale for current source; run the local full-catalog exporter before publication');
+  const stateFile = manifest.product==='cursor'?'inventory.json':'discovery-inventory.json';
+  if(manifest.verdict_state?.file!==stateFile || manifest.verdict_state.sha256!==hash(fs.readFileSync(path.join(sourceRoot,'outputs',stateFile)))) throw new Error('Full catalog verdicts are stale; run the local full-catalog exporter before publication');
   const render = createStandaloneRenderer(context);
   const pages = [], byFile = new Map(), seen = new Set(), expectedHash = crypto.createHash('sha256'), publishedHash = crypto.createHash('sha256');
   let batch = [], bytes = 0, count = 0, locations = [];

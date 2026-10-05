@@ -146,7 +146,7 @@ export function cliCommands(closure, { version, commit, upstream }) {
       const stem = file.file.split("/").at(-1).replace(/\.[^.]+$/, "");
       let usage = command.usage.startsWith("$0") ? command.usage.replace(/^\$0/, stem === "tui" ? "" : stem).trim() : command.usage;
       if (parent && usage.split(/\s+/)[0] !== parent) usage = `${parent} ${usage}`;
-      const name = usage.split(/\s+/)[0] && !usage.startsWith("[") && !usage.startsWith("<") ? usage.split(/\s+/)[0] : "";
+      const name = usage.split(/\s+/).filter(word => word && !word.startsWith("[") && !word.startsWith("<")).join(" ");
       const commandTitle = `opencode${usage ? ` ${usage}` : ""}`;
       const commandText = describe ? unescape(describe) : `CLI command ${command.usage}.`;
       records.push({

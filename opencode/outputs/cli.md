@@ -1,6 +1,6 @@
 # OpenCode CLI commands and flags
 
-Every command, subcommand, option and positional argument the opencode CLI declares in its yargs command modules (68 commands, 103 options and arguments), with the help text it shows. Default commands are named after the module that declares them.
+Every command, subcommand, option and positional argument the opencode CLI declares in its yargs command modules (68 commands, 99 options and arguments), with the help text it shows. Default commands are named after the module that declares them.
 
 ## opencode
 
@@ -122,11 +122,7 @@ manage agents
 
 Source: [`opencode/src/cli/cmd/agent.ts:255`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L255)
 
-### opencode agent list
-
-list all available agents
-
-Source: [`opencode/src/cli/cmd/agent.ts:235`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L235)
+## opencode agent create
 
 ### opencode agent create
 
@@ -134,35 +130,43 @@ create a new agent
 
 Source: [`opencode/src/cli/cmd/agent.ts:34`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L34)
 
-### opencode agent --description
+### opencode agent create --description
 
 what the agent should do. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/agent.ts:42`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L42)
 
-### opencode agent --mode
+### opencode agent create --mode
 
 agent mode. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/agent.ts:46`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L46)
 
-### opencode agent --model
+### opencode agent create --model
 
 model to use in the format of provider/model. Alias: `[`. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/agent.ts:56`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L56)
 
-### opencode agent --path
+### opencode agent create --path
 
 directory path to generate the agent file. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/agent.ts:38`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L38)
 
-### opencode agent --permissions
+### opencode agent create --permissions
 
 comma-separated list of permissions to allow (default: all). Available: "${AVAILABLE_PERMISSIONS.join(", ")}". Alias: `[`. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/agent.ts:51`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L51)
+
+## opencode agent list
+
+### opencode agent list
+
+list all available agents
+
+Source: [`opencode/src/cli/cmd/agent.ts:235`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/agent.ts#L235)
 
 ## opencode attach
 
@@ -248,12 +252,6 @@ database tools
 
 Source: [`opencode/src/cli/cmd/db.ts:55`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/db.ts#L55)
 
-### opencode db path
-
-print the database path
-
-Source: [`opencode/src/cli/cmd/db.ts:46`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/db.ts#L46)
-
 ### opencode db [query]
 
 open an interactive sqlite3 shell or run a query
@@ -272,115 +270,15 @@ SQL query to execute. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/db.ts:14`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/db.ts#L14)
 
+## opencode db path
+
+### opencode db path
+
+print the database path
+
+Source: [`opencode/src/cli/cmd/db.ts:46`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/db.ts#L46)
+
 ## opencode debug
-
-### opencode debug v2
-
-debug v2 catalog and built-in plugins
-
-Source: [`opencode/src/cli/cmd/debug/v2.ts:10`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/v2.ts#L10)
-
-### opencode debug startup
-
-print startup timing
-
-Source: [`opencode/src/cli/cmd/debug/startup.ts:5`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/startup.ts#L5)
-
-### opencode debug diff <hash>
-
-show diff for a snapshot hash
-
-Source: [`opencode/src/cli/cmd/debug/snapshot.ts:38`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L38)
-
-### opencode debug patch <hash>
-
-show patch for a snapshot hash
-
-Source: [`opencode/src/cli/cmd/debug/snapshot.ts:23`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L23)
-
-### opencode debug track
-
-track current snapshot state
-
-Source: [`opencode/src/cli/cmd/debug/snapshot.ts:14`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L14)
-
-### opencode debug snapshot
-
-snapshot debugging utilities
-
-Source: [`opencode/src/cli/cmd/debug/snapshot.ts:7`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L7)
-
-### opencode debug skill
-
-list all available skills
-
-Source: [`opencode/src/cli/cmd/debug/skill.ts:7`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/skill.ts#L7)
-
-### opencode debug scrap
-
-list all known projects
-
-Source: [`opencode/src/cli/cmd/debug/scrap.ts:5`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/scrap.ts#L5)
-
-### opencode debug search <pattern>
-
-search file contents using ripgrep
-
-Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:48`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L48)
-
-### opencode debug files
-
-list files using ripgrep
-
-Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:16`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L16)
-
-### opencode debug rg
-
-ripgrep debugging utilities
-
-Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:9`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L9)
-
-### opencode debug document-symbols <uri>
-
-get symbols from a document
-
-Source: [`opencode/src/cli/cmd/debug/lsp.ts:42`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L42)
-
-### opencode debug symbols <query>
-
-search workspace symbols
-
-Source: [`opencode/src/cli/cmd/debug/lsp.ts:31`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L31)
-
-### opencode debug diagnostics <file>
-
-get diagnostics for a file
-
-Source: [`opencode/src/cli/cmd/debug/lsp.ts:16`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L16)
-
-### opencode debug lsp
-
-LSP debugging utilities
-
-Source: [`opencode/src/cli/cmd/debug/lsp.ts:8`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L8)
-
-### opencode debug paths
-
-show global paths (data, config, cache, state)
-
-Source: [`opencode/src/cli/cmd/debug/index.ts:80`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L80)
-
-### opencode debug info
-
-show debug information
-
-Source: [`opencode/src/cli/cmd/debug/index.ts:50`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L50)
-
-### opencode debug wait
-
-wait indefinitely (for debugging)
-
-Source: [`opencode/src/cli/cmd/debug/index.ts:42`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L42)
 
 ### opencode debug
 
@@ -388,29 +286,27 @@ debugging and troubleshooting tools
 
 Source: [`opencode/src/cli/cmd/debug/index.ts:20`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L20)
 
-### opencode debug file
+## opencode debug agent
 
-file system debugging utilities
+### opencode debug agent <name>
 
-Source: [`opencode/src/cli/cmd/debug/file.ts:68`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L68)
+show agent configuration details
 
-### opencode debug list <path>
+Source: [`opencode/src/cli/cmd/debug/agent.ts:5`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L5), [`opencode/src/cli/cmd/debug/agent.ts:9`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L9)
 
-list files in a directory
+### opencode debug agent --params
 
-Source: [`opencode/src/cli/cmd/debug/file.ts:53`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L53)
+Tool params as JSON or a JS object literal. Type: `string`.
 
-### opencode debug read <path>
+Source: [`opencode/src/cli/cmd/debug/agent.ts:18`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L18)
 
-read file contents as JSON
+### opencode debug agent --tool
 
-Source: [`opencode/src/cli/cmd/debug/file.ts:32`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L32)
+Tool id to execute. Type: `string`.
 
-### opencode debug search <query>
+Source: [`opencode/src/cli/cmd/debug/agent.ts:14`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L14)
 
-search files by query
-
-Source: [`opencode/src/cli/cmd/debug/file.ts:17`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L17)
+## opencode debug config
 
 ### opencode debug config
 
@@ -418,83 +314,209 @@ show resolved configuration
 
 Source: [`opencode/src/cli/cmd/debug/config.ts:7`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/config.ts#L7)
 
-### opencode debug agent <name>
+## opencode debug diagnostics
 
-show agent configuration details
+### opencode debug diagnostics <file>
 
-Source: [`opencode/src/cli/cmd/debug/agent.ts:5`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L5)
+get diagnostics for a file
 
-### opencode debug --glob
+Source: [`opencode/src/cli/cmd/debug/lsp.ts:16`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L16), [`opencode/src/cli/cmd/debug/lsp.ts:18`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L18)
+
+## opencode debug diff
+
+### opencode debug diff <hash>
+
+show diff for a snapshot hash
+
+Source: [`opencode/src/cli/cmd/debug/snapshot.ts:38`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L38), [`opencode/src/cli/cmd/debug/snapshot.ts:41`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L41)
+
+## opencode debug document-symbols
+
+### opencode debug document-symbols <uri>
+
+get symbols from a document
+
+Source: [`opencode/src/cli/cmd/debug/lsp.ts:42`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L42), [`opencode/src/cli/cmd/debug/lsp.ts:44`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L44)
+
+## opencode debug file
+
+### opencode debug file
+
+file system debugging utilities
+
+Source: [`opencode/src/cli/cmd/debug/file.ts:68`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L68)
+
+## opencode debug files
+
+### opencode debug files
+
+list files using ripgrep
+
+Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:16`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L16)
+
+### opencode debug files --glob
 
 Glob pattern to match files. Type: `string`.
 
-Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:24`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L24), [`opencode/src/cli/cmd/debug/ripgrep.ts:57`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L57)
+Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:24`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L24)
 
-### opencode debug --limit
+### opencode debug files --limit
 
 Limit number of results. Type: `number`.
 
-Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:28`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L28), [`opencode/src/cli/cmd/debug/ripgrep.ts:61`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L61)
+Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:28`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L28)
 
-### opencode debug --params
-
-Tool params as JSON or a JS object literal. Type: `string`.
-
-Source: [`opencode/src/cli/cmd/debug/agent.ts:18`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L18)
-
-### opencode debug --query
+### opencode debug files --query
 
 Filter files by query. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:20`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L20)
 
-### opencode debug --tool
+## opencode debug info
 
-Tool id to execute. Type: `string`.
+### opencode debug info
 
-Source: [`opencode/src/cli/cmd/debug/agent.ts:14`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L14)
+show debug information
 
-### opencode debug <file>
+Source: [`opencode/src/cli/cmd/debug/index.ts:50`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L50)
 
-Positional argument <file> of opencode debug. Type: `string`.
+## opencode debug list
 
-Source: [`opencode/src/cli/cmd/debug/lsp.ts:18`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L18)
+### opencode debug list <path>
 
-### opencode debug <hash>
+list files in a directory
 
-hash. Type: `string`.
+Source: [`opencode/src/cli/cmd/debug/file.ts:53`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L53), [`opencode/src/cli/cmd/debug/file.ts:56`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L56)
 
-Source: [`opencode/src/cli/cmd/debug/snapshot.ts:26`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L26), [`opencode/src/cli/cmd/debug/snapshot.ts:41`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L41)
+## opencode debug lsp
 
-### opencode debug <name>
+### opencode debug lsp
 
-Agent name. Type: `string`.
+LSP debugging utilities
 
-Source: [`opencode/src/cli/cmd/debug/agent.ts:9`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/agent.ts#L9)
+Source: [`opencode/src/cli/cmd/debug/lsp.ts:8`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L8)
 
-### opencode debug <path>
+## opencode debug patch
 
-File path to read. Type: `string`.
+### opencode debug patch <hash>
 
-Source: [`opencode/src/cli/cmd/debug/file.ts:35`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L35), [`opencode/src/cli/cmd/debug/file.ts:56`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L56)
+show patch for a snapshot hash
 
-### opencode debug <pattern>
+Source: [`opencode/src/cli/cmd/debug/snapshot.ts:23`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L23), [`opencode/src/cli/cmd/debug/snapshot.ts:26`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L26)
 
-Search pattern. Type: `string`.
+## opencode debug paths
 
-Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:52`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L52)
+### opencode debug paths
 
-### opencode debug <query>
+show global paths (data, config, cache, state)
 
-Search query. Type: `string`.
+Source: [`opencode/src/cli/cmd/debug/index.ts:80`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L80)
 
-Source: [`opencode/src/cli/cmd/debug/file.ts:20`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L20), [`opencode/src/cli/cmd/debug/lsp.ts:33`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L33)
+## opencode debug read
 
-### opencode debug <uri>
+### opencode debug read <path>
 
-Positional argument <uri> of opencode debug. Type: `string`.
+read file contents as JSON
 
-Source: [`opencode/src/cli/cmd/debug/lsp.ts:44`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L44)
+Source: [`opencode/src/cli/cmd/debug/file.ts:32`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L32), [`opencode/src/cli/cmd/debug/file.ts:35`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L35)
+
+## opencode debug rg
+
+### opencode debug rg
+
+ripgrep debugging utilities
+
+Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:9`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L9)
+
+## opencode debug scrap
+
+### opencode debug scrap
+
+list all known projects
+
+Source: [`opencode/src/cli/cmd/debug/scrap.ts:5`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/scrap.ts#L5)
+
+## opencode debug search
+
+### opencode debug search <pattern>
+
+search file contents using ripgrep
+
+Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:48`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L48), [`opencode/src/cli/cmd/debug/ripgrep.ts:52`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L52)
+
+### opencode debug search <query>
+
+search files by query
+
+Source: [`opencode/src/cli/cmd/debug/file.ts:17`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L17), [`opencode/src/cli/cmd/debug/file.ts:20`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/file.ts#L20)
+
+### opencode debug search --glob
+
+File glob patterns. Type: `array`.
+
+Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:57`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L57)
+
+### opencode debug search --limit
+
+Limit number of results. Type: `number`.
+
+Source: [`opencode/src/cli/cmd/debug/ripgrep.ts:61`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/ripgrep.ts#L61)
+
+## opencode debug skill
+
+### opencode debug skill
+
+list all available skills
+
+Source: [`opencode/src/cli/cmd/debug/skill.ts:7`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/skill.ts#L7)
+
+## opencode debug snapshot
+
+### opencode debug snapshot
+
+snapshot debugging utilities
+
+Source: [`opencode/src/cli/cmd/debug/snapshot.ts:7`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L7)
+
+## opencode debug startup
+
+### opencode debug startup
+
+print startup timing
+
+Source: [`opencode/src/cli/cmd/debug/startup.ts:5`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/startup.ts#L5)
+
+## opencode debug symbols
+
+### opencode debug symbols <query>
+
+search workspace symbols
+
+Source: [`opencode/src/cli/cmd/debug/lsp.ts:31`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L31), [`opencode/src/cli/cmd/debug/lsp.ts:33`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/lsp.ts#L33)
+
+## opencode debug track
+
+### opencode debug track
+
+track current snapshot state
+
+Source: [`opencode/src/cli/cmd/debug/snapshot.ts:14`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/snapshot.ts#L14)
+
+## opencode debug v2
+
+### opencode debug v2
+
+debug v2 catalog and built-in plugins
+
+Source: [`opencode/src/cli/cmd/debug/v2.ts:10`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/v2.ts#L10)
+
+## opencode debug wait
+
+### opencode debug wait
+
+wait indefinitely (for debugging)
+
+Source: [`opencode/src/cli/cmd/debug/index.ts:42`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/debug/index.ts#L42)
 
 ## opencode export
 
@@ -532,11 +554,7 @@ manage GitHub agent
 
 Source: [`opencode/src/cli/cmd/github.ts:38`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L38)
 
-### opencode github run
-
-run the GitHub agent
-
-Source: [`opencode/src/cli/cmd/github.ts:18`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L18)
+## opencode github install
 
 ### opencode github install
 
@@ -544,13 +562,21 @@ install the GitHub agent
 
 Source: [`opencode/src/cli/cmd/github.ts:8`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L8)
 
-### opencode github --event
+## opencode github run
+
+### opencode github run
+
+run the GitHub agent
+
+Source: [`opencode/src/cli/cmd/github.ts:18`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L18)
+
+### opencode github run --event
 
 GitHub mock event to run the agent for. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/github.ts:22`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/github.ts#L22)
 
-### opencode github --token
+### opencode github run --token
 
 GitHub personal access token (github_pat_********). Type: `string`.
 
@@ -594,11 +620,13 @@ Source: [`opencode/src/cli/cmd/account.ts:197`](https://github.com/anomalyco/ope
 
 ## opencode mcp
 
-### opencode mcp debug <name>
+### opencode mcp
 
-debug OAuth connection for an MCP server
+manage MCP (Model Context Protocol) servers
 
-Source: [`opencode/src/cli/cmd/mcp.ts:660`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L660)
+Source: [`opencode/src/cli/cmd/mcp.ts:96`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L96)
+
+## opencode mcp add
 
 ### opencode mcp add [name]
 
@@ -606,11 +634,31 @@ add an MCP server
 
 Source: [`opencode/src/cli/cmd/mcp.ts:430`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L430)
 
-### opencode mcp logout [name]
+### opencode mcp add --env
 
-remove OAuth credentials for an MCP server
+environment variable for a local MCP server (KEY=VALUE). Type: `string`.
 
-Source: [`opencode/src/cli/cmd/mcp.ts:337`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L337)
+Source: [`opencode/src/cli/cmd/mcp.ts:442`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L442)
+
+### opencode mcp add --header
+
+HTTP header for a remote MCP server (KEY=VALUE). Type: `string`.
+
+Source: [`opencode/src/cli/cmd/mcp.ts:447`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L447)
+
+### opencode mcp add --url
+
+URL for a remote MCP server. Type: `string`.
+
+Source: [`opencode/src/cli/cmd/mcp.ts:438`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L438)
+
+### opencode mcp add <name>
+
+name of the MCP server. Type: `string`.
+
+Source: [`opencode/src/cli/cmd/mcp.ts:434`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L434)
+
+## opencode mcp auth
 
 ### opencode mcp auth [name]
 
@@ -618,41 +666,41 @@ authenticate with an OAuth-enabled MCP server
 
 Source: [`opencode/src/cli/cmd/mcp.ts:171`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L171)
 
+### opencode mcp auth <name>
+
+name of the MCP server. Type: `string`.
+
+Source: [`opencode/src/cli/cmd/mcp.ts:175`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L175)
+
+## opencode mcp debug
+
+### opencode mcp debug <name>
+
+debug OAuth connection for an MCP server
+
+Source: [`opencode/src/cli/cmd/mcp.ts:660`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L660), [`opencode/src/cli/cmd/mcp.ts:663`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L663)
+
+## opencode mcp list
+
 ### opencode mcp list
 
 list MCP servers and their status
 
 Source: [`opencode/src/cli/cmd/mcp.ts:110`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L110), [`opencode/src/cli/cmd/mcp.ts:307`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L307)
 
-### opencode mcp
+## opencode mcp logout
 
-manage MCP (Model Context Protocol) servers
+### opencode mcp logout [name]
 
-Source: [`opencode/src/cli/cmd/mcp.ts:96`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L96)
+remove OAuth credentials for an MCP server
 
-### opencode mcp --env
+Source: [`opencode/src/cli/cmd/mcp.ts:337`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L337)
 
-environment variable for a local MCP server (KEY=VALUE). Type: `string`.
-
-Source: [`opencode/src/cli/cmd/mcp.ts:442`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L442)
-
-### opencode mcp --header
-
-HTTP header for a remote MCP server (KEY=VALUE). Type: `string`.
-
-Source: [`opencode/src/cli/cmd/mcp.ts:447`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L447)
-
-### opencode mcp --url
-
-URL for a remote MCP server. Type: `string`.
-
-Source: [`opencode/src/cli/cmd/mcp.ts:438`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L438)
-
-### opencode mcp <name>
+### opencode mcp logout <name>
 
 name of the MCP server. Type: `string`.
 
-Source: [`opencode/src/cli/cmd/mcp.ts:175`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L175), [`opencode/src/cli/cmd/mcp.ts:340`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L340), [`opencode/src/cli/cmd/mcp.ts:434`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L434), [`opencode/src/cli/cmd/mcp.ts:663`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L663)
+Source: [`opencode/src/cli/cmd/mcp.ts:340`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/mcp.ts#L340)
 
 ## opencode models
 
@@ -726,17 +774,13 @@ Source: [`opencode/src/cli/cmd/pr.ts:9`](https://github.com/anomalyco/opencode/b
 
 ## opencode providers
 
-### opencode providers logout [provider]
+### opencode providers
 
-log out from a configured provider
+manage AI providers and credentials
 
-Source: [`opencode/src/cli/cmd/providers.ts:492`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L492)
+Source: [`opencode/src/cli/cmd/providers.ts:240`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L240)
 
-### opencode providers login [url]
-
-log in to a provider
-
-Source: [`opencode/src/cli/cmd/providers.ts:300`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L300)
+## opencode providers list
 
 ### opencode providers list
 
@@ -744,35 +788,45 @@ list providers and credentials
 
 Source: [`opencode/src/cli/cmd/providers.ts:249`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L249)
 
-### opencode providers
+## opencode providers login
 
-manage AI providers and credentials
+### opencode providers login [url]
 
-Source: [`opencode/src/cli/cmd/providers.ts:240`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L240)
+log in to a provider
 
-### opencode providers --method
+Source: [`opencode/src/cli/cmd/providers.ts:300`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L300)
+
+### opencode providers login --method
 
 login method label (skips method selection). Alias: `[`. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/providers.ts:315`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L315)
 
-### opencode providers --provider
+### opencode providers login --provider
 
 provider id or name to log in to (skips provider selection). Alias: `[`. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/providers.ts:310`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L310)
 
-### opencode providers <provider>
-
-provider id or name to log out from. Type: `string`.
-
-Source: [`opencode/src/cli/cmd/providers.ts:495`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L495)
-
-### opencode providers <url>
+### opencode providers login <url>
 
 opencode auth provider. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/providers.ts:306`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L306)
+
+## opencode providers logout
+
+### opencode providers logout [provider]
+
+log out from a configured provider
+
+Source: [`opencode/src/cli/cmd/providers.ts:492`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L492)
+
+### opencode providers logout <provider>
+
+provider id or name to log out from. Type: `string`.
+
+Source: [`opencode/src/cli/cmd/providers.ts:495`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/providers.ts#L495)
 
 ## opencode run
 
@@ -948,41 +1002,39 @@ Source: [`opencode/src/cli/cmd/serve.ts:7`](https://github.com/anomalyco/opencod
 
 ## opencode session
 
-### opencode session list
-
-list sessions
-
-Source: [`opencode/src/cli/cmd/session.ts:71`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L71)
-
-### opencode session delete <sessionID>
-
-delete a session
-
-Source: [`opencode/src/cli/cmd/session.ts:52`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L52)
-
 ### opencode session
 
 manage sessions
 
 Source: [`opencode/src/cli/cmd/session.ts:45`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L45)
 
-### opencode session --format
+## opencode session delete
+
+### opencode session delete <sessionID>
+
+delete a session
+
+Source: [`opencode/src/cli/cmd/session.ts:52`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L52), [`opencode/src/cli/cmd/session.ts:55`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L55)
+
+## opencode session list
+
+### opencode session list
+
+list sessions
+
+Source: [`opencode/src/cli/cmd/session.ts:71`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L71)
+
+### opencode session list --format
 
 output format. Type: `string`.
 
 Source: [`opencode/src/cli/cmd/session.ts:80`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L80)
 
-### opencode session --max-count
+### opencode session list --max-count
 
 limit to N most recent sessions. Alias: `n`. Type: `number`.
 
 Source: [`opencode/src/cli/cmd/session.ts:75`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L75)
-
-### opencode session <sessionID>
-
-session ID to delete. Type: `string`.
-
-Source: [`opencode/src/cli/cmd/session.ts:55`](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/session.ts#L55)
 
 ## opencode stats
 

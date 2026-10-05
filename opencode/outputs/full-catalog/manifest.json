@@ -6,6 +6,10 @@
     "commit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
     "identity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a"
   },
+  "verdict_state": {
+    "file": "discovery-inventory.json",
+    "sha256": "dc54b71c0a37f611cc94354d90437bf1b60bc7e0d1d32d03f1657e8f8b7756d6"
+  },
   "candidates": 10824,
   "skipped": 0,
   "total": 10824,

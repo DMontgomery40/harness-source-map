@@ -84,7 +84,9 @@ export function exportCatalog(product) {
     if (skipped !== Object.values(ledger.candidate_stats.skipped).reduce((a, b) => a + b, 0)) throw new Error(`Skipped literal accounting changed: ${skipped}`);
   } else throw new Error(`Unsupported product: ${product}`);
   flush(); verifyCoverage(expected, ids);
-  const manifest = { schema: 1, product, source, candidates, skipped, total: ids.length, status_counts: statusCounts, privacy_policy: 'Third-party personal emails masked; all other public source text preserved.', files: [...files.values()].sort((a,b) => a.file.localeCompare(b.file)), parts };
+  const stateFile = product === 'cursor' ? 'inventory.json' : 'discovery-inventory.json';
+  const verdict_state = { file: stateFile, sha256: sha(fs.readFileSync(path.join(root, product, 'outputs', stateFile))) };
+  const manifest = { schema: 1, product, source, verdict_state, candidates, skipped, total: ids.length, status_counts: statusCounts, privacy_policy: 'Third-party personal emails masked; all other public source text preserved.', files: [...files.values()].sort((a,b) => a.file.localeCompare(b.file)), parts };
   fs.writeFileSync(path.join(staging, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
   fs.rmSync(output, { recursive: true, force: true }); fs.renameSync(staging, output);
   fs.writeFileSync(path.join(root, product, 'outputs/all-source-text.md'), indexMarkdown(manifest));

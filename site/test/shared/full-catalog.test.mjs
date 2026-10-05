@@ -131,3 +131,20 @@ test('OpenCode package filters retain every merged source package', async () => 
   }
   assert.ok(multi>0,'pinned source has merged texts across packages');
 });
+
+test('OpenCode nested flags retain the shipped subcommand', () => {
+  const items=JSON.parse(fs.readFileSync(path.join(root,'opencode/outputs/cli.json'))).items;
+  assert.ok(items.some(r=>r.title==='opencode github run --event'));
+  assert.ok(items.some(r=>r.title==='opencode session list --format'));
+});
+
+test('archives are bound to the complete authoritative discovery state', async () => {
+  const { createHash }=await import('node:crypto');
+  for(const product of ['cursor','opencode']) {
+    const manifest=JSON.parse(fs.readFileSync(path.join(root,product,'outputs/full-catalog/manifest.json')));
+    const file=product==='cursor'?'inventory.json':'discovery-inventory.json';
+    const digest=createHash('sha256').update(fs.readFileSync(path.join(root,product,'outputs',file))).digest('hex');
+    assert.equal(manifest.verdict_state?.file,file);
+    assert.equal(manifest.verdict_state?.sha256,digest);
+  }
+});
