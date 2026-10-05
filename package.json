@@ -4,14 +4,15 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test:extract && npm --prefix site test && npm --prefix site run test:local",
-    "test:extract": "node --test claude-code/extract/test/*.test.mjs codex/extract/codex/test/*.test.mjs watch/test/*.test.mjs",
+    "test:extract": "node --test claude-code/extract/test/*.test.mjs codex/extract/codex/test/*.test.mjs opencode/extract/test/*.test.mjs watch/test/*.test.mjs",
+    "trace:opencode": "node tools/capture/opencode-capture.mjs",
     "build": "npm --prefix site run build",
     "check": "npm run build && npm test && node tools/check-links.mjs && node tools/leak-check.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "What Claude Code and Codex/ChatGPT send the model, read from the shipped binaries, plus Trace for your own sessions. One repo, one site.",
+  "description": "What Claude Code, Codex/ChatGPT and OpenCode send the model, with source provenance and Trace for real sessions and network captures. One repo, one site.",
   "dependencies": {
     "acorn": "^8.18.0",
     "acorn-walk": "^8.3.5"
