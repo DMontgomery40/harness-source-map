@@ -40,7 +40,8 @@ const curated = [
     document("cli", "CLI commands and flags", { outlineDepth: 3, ...filtered("cli", "cli", "cli-tags") })
   ] },
   { label: "Build intel", files: [{ path: "outputs/capture-summary.json", anchor: "release-summary", slug: "release-summary", format: "source", title: "Release and extraction scope", records: false, defaultOpen: false }] },
-  { label: "Evidence and archive", files: [document("source-inventory", "Pinned source files", { records: { file: "outputs/source-inventory.json", kind: "h" }, defaultOpen: false, outlineDepth: 3 })] }
+  { label: "Evidence and archive", files: [
+    { path: "outputs/all-source-text.md", slug: "all-source-text", anchor: "all-source-text", format: "markdown", title: "All shipped source text", outlineDepth: 3, records: false },document("source-inventory", "Pinned source files", { records: { file: "outputs/source-inventory.json", kind: "h" }, defaultOpen: false, outlineDepth: 3 })] }
 ];
 
 export const categories = curated.map(category => ({ ...category, files: [...category.files, ...discovered(category.label)] }));

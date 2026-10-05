@@ -17,7 +17,7 @@ const discovered = (page, slug, title, intro) => ({
   records: { file: "outputs/discovered-records.json", tags: "outputs/discovered-tags.json" },
   filters: { records: "outputs/discovered-records.json", tags: "outputs/discovered-tags.json" },
   includeRecord: r => r.page === page,
-  intro: records => `${count(records.length, "text")} ${intro} that Jev judged to be written for the model, from ${count(new Set(records.map(r => r.group)).size, "shipped file")}. No reviewed page shows them; a text shipped in several bundles is listed once with every place. The bundles are minified, so each is titled by its opening words. Shipped text does not show that a session sent it.`
+  intro: records => `${count(records.length, "text")} ${intro} that Jev judged to be written for the model, from ${count(new Set(records.map(r => r.group)).size, "shipped file")}. A text shipped in several bundles is listed once with every location; overlap with a reviewed entry is noted. The bundles are minified, so each is titled by its opening words. Shipped text does not show that a session sent it.`
 });
 
 const page = (name, title, options = {}) => ({
@@ -43,6 +43,7 @@ export const categories = [
     page("package-scan.md", "Package scan: files, entitlements and endpoints")
   ] },
   { label: "Evidence and archive", files: [
+    { path: "outputs/all-source-text.md", slug: "all-source-text", anchor: "all-source-text", format: "markdown", title: "All shipped source text", outlineDepth: 3, records: false },
     page("agent-service-descriptors.json", "AgentService descriptors"),
     page("discovery-preparation.md", "Jev discovery preparation"),
     page("source-manifest.json", "Pinned source files and exclusions")

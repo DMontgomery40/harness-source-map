@@ -73,4 +73,5 @@ export async function buildSite({ sourceRoot, outFile, categories, profile = COD
     await mkdir(path.dirname(rawFile), { recursive: true });
     await writeFile(rawFile, document.source, "utf8");
   }
+  return { categories, documents, status, profile };
 }

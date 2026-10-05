@@ -10,7 +10,7 @@ agent.prompt replaces provider prompt; then input.system and user.system append.
 
 **When:** LLMRequestPrep.prepare runs before the selected runtime executes.
 
-Source: [`request.ts` lines 56–146](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L56-L146) · sha256 `98f2b612644a…`
+Source: [`request.ts` lines 56–146](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L56-L146) · SHA-256 `98f2b612644a…`
 
 ```typescript
 export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: PrepareInput) {
@@ -112,7 +112,7 @@ x-opencode-session-id and optional x-opencode-parent-session-id provide explicit
 
 **When:** Prepared request headers go to the selected runtime; model headers then plugin headers can override earlier fields.
 
-Source: [`request.ts` lines 177–208](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L177-L208) · sha256 `5d22219e991e…`
+Source: [`request.ts` lines 177–208](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L177-L208) · SHA-256 `5d22219e991e…`
 
 ```typescript
   const opencodeProjectID = input.model.providerID.startsWith("opencode")
@@ -155,7 +155,7 @@ GitHub Copilot may gain a compatibility _noop tool only when no tools remain and
 
 **When:** After params/headers hooks, resolveTools applies agent/session permissions and per-user tools disablement; selected Responses-family tools have strict false.
 
-Source: [`request.ts` lines 152–178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L152-L178) · sha256 `143ebda7ce0c…`
+Source: [`request.ts` lines 152–178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L152-L178) · SHA-256 `143ebda7ce0c…`
 
 ```typescript
   if (
@@ -193,7 +193,7 @@ Tool presence in the registry differs from final request inclusion.
 
 **When:** resolveTools is called during request preparation.
 
-Source: [`request.ts` lines 210–216](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L210-L216) · sha256 `61a7ee329dec…`
+Source: [`request.ts` lines 210–216](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L210-L216) · SHA-256 `61a7ee329dec…`
 
 ```typescript
 function resolveTools(input: Pick<PrepareInput, "tools" | "agent" | "permission" | "user">) {
@@ -211,7 +211,7 @@ Adds exact session/parent headers, model request, agent system and context basel
 
 **When:** Separate core SessionRunner source path constructs a request.
 
-Source: [`llm.ts` lines 203–226](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/llm.ts#L203-L226) · sha256 `8b83021af90e…`
+Source: [`llm.ts` lines 203–226](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/runner/llm.ts#L203-L226) · SHA-256 `8b83021af90e…`
 
 ```typescript
       const toolMaterialization = isLastStep ? undefined : yield* tools.materialize(agent.info?.permissions)
@@ -248,7 +248,7 @@ Default path passes prepared headers/messages/tools/options and applies Provider
 
 **When:** experimentalNativeLlm attempts native runtime; unsupported status falls back to AI SDK. Otherwise streamText is the default path.
 
-Source: [`llm.ts` lines 224–380](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm.ts#L224-L380) · sha256 `cdb03e317e03…`
+Source: [`llm.ts` lines 224–380](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm.ts#L224-L380) · SHA-256 `cdb03e317e03…`
 
 ```typescript
       // Runtime seam: native is an opt-in adapter over @opencode-ai/llm. It
@@ -416,7 +416,7 @@ Accepts provider IDs openai, anthropic or starting opencode, with supported SDK 
 
 **When:** Only when experimentalNativeLlm is enabled and this status gate succeeds.
 
-Source: [`native-runtime.ts` lines 48–75](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-runtime.ts#L48-L75) · sha256 `bdf464f6558b…`
+Source: [`native-runtime.ts` lines 48–75](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-runtime.ts#L48-L75) · SHA-256 `bdf464f6558b…`
 
 ```typescript
 }
@@ -455,7 +455,7 @@ Converts system messages, text, media, reasoning, tools and provider metadata in
 
 **When:** Native request adapter invoked only by a caller whose runtime support gate admits it; standalone package adapters are not proof of main CLI use.
 
-Source: [`native-request.ts` lines 1–196](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-request.ts#L1-L196) · sha256 `ee47e4430d7b…`
+Source: [`native-request.ts` lines 1–196](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-request.ts#L1-L196) · SHA-256 `ee47e4430d7b…`
 
 ```typescript
 import type { JsonSchema, LLMRequest, ProviderMetadata } from "@opencode-ai/llm"
@@ -662,7 +662,7 @@ Summary deltas become visible reasoning events, while encrypted_content stays in
 
 **When:** Native OpenAI Responses stream receives reasoning summary and output-item events.
 
-Source: [`openai-responses.ts` lines 624–671](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L624-L671) · sha256 `9c7e9b950c3e…`
+Source: [`openai-responses.ts` lines 624–671](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L624-L671) · SHA-256 `9c7e9b950c3e…`
 
 ```typescript
 const onReasoningDelta = (state: ParserState, event: OpenAIResponsesEvent): StepResult => {
@@ -721,7 +721,7 @@ Writes {info,messages}, where each message carries info and parts from session s
 
 **When:** User explicitly runs export for a real session; optional sanitize mode redacts transcript/file data.
 
-Source: [`export.ts` lines 222–292](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L222-L292) · sha256 `79e3bd1625f3…`
+Source: [`export.ts` lines 222–292](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L222-L292) · SHA-256 `79e3bd1625f3…`
 
 ```typescript
 export const ExportCommand = effectCmd({
@@ -803,7 +803,7 @@ Uses OpenAI Chat stream protocol at /chat/completions, adding usage/reasoning/pr
 
 **When:** Standalone native package OpenRouter route is selected; main CLI native runtime gate restricts provider IDs separately.
 
-Source: [`openrouter.ts` lines 1–98](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openrouter.ts#L1-L98) · sha256 `d036cfd496e0…`
+Source: [`openrouter.ts` lines 1–98](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openrouter.ts#L1-L98) · SHA-256 `d036cfd496e0…`
 
 ```typescript
 import { Effect, Schema } from "effect"
@@ -912,7 +912,7 @@ Includes openrouter.ai/api/v1 and api.deepseek.com/v1. Main CLI endpoint default
 
 **When:** Native package provider helpers use their default profile unless baseURL is overridden.
 
-Source: [`openai-compatible-profile.ts` lines 1–20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openai-compatible-profile.ts#L1-L20) · sha256 `7c4f115fb328…`
+Source: [`openai-compatible-profile.ts` lines 1–20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/providers/openai-compatible-profile.ts#L1-L20) · SHA-256 `7c4f115fb328…`
 
 ```typescript
 export interface OpenAICompatibleProfile {
@@ -943,7 +943,7 @@ Source schema separates system/user/assistant/tool content, tool function schema
 
 **When:** Native OpenAI Chat-compatible protocol serializes a canonical request and decodes SSE events.
 
-Source: [`openai-chat.ts` lines 34–160](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-chat.ts#L34-L160) · sha256 `e3c220427107…`
+Source: [`openai-chat.ts` lines 34–160](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-chat.ts#L34-L160) · SHA-256 `e3c220427107…`
 
 ```typescript
 // The body schema is the provider-native JSON body. `fromRequest` below builds
@@ -1083,7 +1083,7 @@ Includes OpenRouter, Alibaba and OpenAI-compatible SDK factories. SDK dependency
 
 **When:** Provider.resolveSDK selects factory using the configured or catalog-derived model.api.npm.
 
-Source: [`provider.ts` lines 144–175](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L144-L175) · sha256 `9d924c84e74b…`
+Source: [`provider.ts` lines 144–175](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L144-L175) · SHA-256 `9d924c84e74b…`
 
 ```typescript
   chat?: (modelId: string) => LanguageModelV3
@@ -1126,7 +1126,7 @@ Sets HTTP-Referer and X-Title for the client. These headers do not identify an u
 
 **When:** OpenRouter custom provider loader is used and headers are not overridden downstream.
 
-Source: [`provider.ts` lines 513–524](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L513-L524) · sha256 `bd0dd66aa81d…`
+Source: [`provider.ts` lines 513–524](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L513-L524) · SHA-256 `bd0dd66aa81d…`
 
 ```typescript
     openrouter: () =>
@@ -1149,7 +1149,7 @@ api.id, npm package and URL have separate precedence. Interleaved reasoning can 
 
 **When:** Config-defined model is merged with existing/catalog defaults.
 
-Source: [`provider.ts` lines 1542–1631](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1542-L1631) · sha256 `6e5dc45e13ce…`
+Source: [`provider.ts` lines 1542–1631](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1542-L1631) · SHA-256 `6e5dc45e13ce…`
 
 ```typescript
           }
@@ -1250,7 +1250,7 @@ Nonempty provider.options.baseURL takes precedence over model.api.url, then conf
 
 **When:** resolveSDK loads the selected provider package.
 
-Source: [`provider.ts` lines 1783–1864](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1783-L1864) · sha256 `25f9ae85b705…`
+Source: [`provider.ts` lines 1783–1864](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1783-L1864) · SHA-256 `25f9ae85b705…`
 
 ```typescript
     const list = Effect.fn("Provider.list")(() => InstanceState.use(state, (s) => s.providers))
@@ -1343,7 +1343,7 @@ Catalog URL defaults to models.opencode.ai and can be overridden. Provider endpo
 
 **When:** ModelsDev loads cache/OPENCODE_MODELS_PATH, build-injected snapshot, or network fetch when enabled; periodic refresh is conditional.
 
-Source: [`models-dev.ts` lines 1–266](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/models-dev.ts#L1-L266) · sha256 `f6e11d21709b…`
+Source: [`models-dev.ts` lines 1–266](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/models-dev.ts#L1-L266) · SHA-256 `f6e11d21709b…`
 
 ```typescript
 import path from "path"
@@ -1620,7 +1620,7 @@ Maps package to expected namespace; Azure receives openai and azure; gateway opt
 
 **When:** ProviderTransform.providerOptions is called before SDK execution.
 
-Source: [`transform.ts` lines 1421–1483](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1421-L1483) · sha256 `f2988163dc58…`
+Source: [`transform.ts` lines 1421–1483](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1421-L1483) · SHA-256 `f2988163dc58…`
 
 ```typescript
 export function providerOptions(model: Provider.Model, options: { [x: string]: any }) {
@@ -1696,7 +1696,7 @@ Configured interleaved reasoning fields move assistant reasoning into OpenAI-com
 
 **When:** ProviderTransform normalization applies after preceding provider-specific branches; DeepSeek names receive empty reasoning placeholders when missing.
 
-Source: [`transform.ts` lines 303–351](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L303-L351) · sha256 `b0f39386a3b7…`
+Source: [`transform.ts` lines 303–351](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L303-L351) · SHA-256 `b0f39386a3b7…`
 
 ```typescript
   // Deepseek requires all assistant messages to have reasoning on them
@@ -1756,7 +1756,7 @@ OpenRouter requests usage inclusion. Kimi Anthropic-compatible reasoning uses ad
 
 **When:** ProviderTransform.options or smallOptions creates defaults before model/agent/user variant merges.
 
-Source: [`transform.ts` lines 1220–1415](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1220-L1415) · sha256 `01c9c64618d7…`
+Source: [`transform.ts` lines 1220–1415](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1220-L1415) · SHA-256 `01c9c64618d7…`
 
 ```typescript
 export function options(input: {
@@ -1963,7 +1963,7 @@ Kimi on Anthropic-compatible transports has adaptive thinking efforts. Earlier D
 
 **When:** Reasoning capability enabled and no authoritative reasoning_options variants supersede these fallback branches.
 
-Source: [`transform.ts` lines 790–879](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L790-L879) · sha256 `d6c5db464ecc…`
+Source: [`transform.ts` lines 790–879](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L790-L879) · SHA-256 `d6c5db464ecc…`
 
 ```typescript
 export function variants(model: Provider.Model): Record<string, Record<string, any>> {
@@ -2064,7 +2064,7 @@ OpenRouter maps effort/budget to reasoning; Alibaba maps toggle/budget to enable
 
 **When:** Model catalog provides reasoning_options; effort, toggle or token-budget variants are mapped to selected SDK settings.
 
-Source: [`transform.ts` lines 1717–1922](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1717-L1922) · sha256 `992c24b2158a…`
+Source: [`transform.ts` lines 1717–1922](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/transform.ts#L1717-L1922) · SHA-256 `992c24b2158a…`
 
 ```typescript
 export function reasoningVariants(model: ModelsDev.Model, target: Provider.Model): Provider.Model["variants"] {
@@ -2281,7 +2281,7 @@ Reasoning start/delta/end remain separate from text; usage and finish metadata a
 
 **When:** Default AI SDK runtime fullStream is converted into canonical LLMEvents.
 
-Source: [`ai-sdk.ts` lines 1–291](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/ai-sdk.ts#L1-L291) · sha256 `3d2e653811ab…`
+Source: [`ai-sdk.ts` lines 1–291](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/ai-sdk.ts#L1-L291) · SHA-256 `3d2e653811ab…`
 
 ```typescript
 import { FinishReason, LLMEvent, ProviderMetadata, ToolResultValue } from "@opencode-ai/llm"
@@ -2583,7 +2583,7 @@ Persists distinct reasoning parts and provider metadata. Orphan reasoning deltas
 
 **When:** Reasoning events arrive from the selected runtime with a preceding reasoning-start.
 
-Source: [`processor.ts` lines 278–315](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L278-L315) · sha256 `a4f082ea43e0…`
+Source: [`processor.ts` lines 278–315](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L278-L315) · SHA-256 `a4f082ea43e0…`
 
 ```typescript
       const handleEvent = Effect.fnUntraced(function* (value: StreamEvent) {
@@ -2632,7 +2632,7 @@ Stores finish reason and normalized tokens/cost; logs provider-reported dropped 
 
 **When:** Session processor receives step-finish from the selected runtime.
 
-Source: [`processor.ts` lines 435–468](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L435-L468) · sha256 `59efe7713cec…`
+Source: [`processor.ts` lines 435–468](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L435-L468) · SHA-256 `59efe7713cec…`
 
 ```typescript
           case "step-finish": {
@@ -2677,7 +2677,7 @@ Visible part text becomes summary_text; reasoningEncryptedContent is passed sepa
 
 **When:** Native OpenAI Responses lowering sees a reasoning part with valid provider item ID metadata.
 
-Source: [`openai-responses.ts` lines 283–300](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L283-L300) · sha256 `b48097c72da0…`
+Source: [`openai-responses.ts` lines 283–300](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/protocols/openai-responses.ts#L283-L300) · SHA-256 `b48097c72da0…`
 
 ```typescript
 const lowerReasoning = (part: ReasoningPart): OpenAIResponsesReasoningInput | undefined => {
@@ -2706,7 +2706,7 @@ For the same model, reasoning parts preserve provider metadata. When model chang
 
 **When:** MessageV2 converts stored session parts for a new selected provider/model.
 
-Source: [`message-v2.ts` lines 249–386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/message-v2.ts#L249-L386) · sha256 `e01ecbdc054a…`
+Source: [`message-v2.ts` lines 249–386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/message-v2.ts#L249-L386) · SHA-256 `e01ecbdc054a…`
 
 ```typescript
       const differentModel = `${model.providerID}/${model.id}` !== `${msg.info.providerID}/${msg.info.modelID}`

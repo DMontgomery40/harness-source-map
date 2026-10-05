@@ -6,9 +6,9 @@
 
 ### Fast agent specialized for exploring codebases. Use this when you need…
 
-Source: [`agent.ts` line 161](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/agent.ts#L161-L161) · sha256 `da4b72030897…` · Jev confidence 0.83 · role: tool description
+Source: [`agent.ts` line 161](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/agent.ts#L161-L161) · SHA-256 `da4b72030897…` · Jev confidence 0.83 · role: tool description
 
-Also in: [`packages/opencode/src/agent/agent.ts` line 213](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L213-L213) · sha256 `2738159b159c…`
+Also in: [`packages/opencode/src/agent/agent.ts` line 213](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L213-L213) · SHA-256 `2738159b159c…`
 
 Also shown in the reviewed record *undefined*.
 
@@ -20,7 +20,7 @@ Fast agent specialized for exploring codebases. Use this when you need to quickl
 
 ### customize-opencode · description
 
-Source: [`skill.ts` line 23](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/skill.ts#L23-L23) · sha256 `b5c74da04d66…` · Jev confidence 0.84 · role: tool description
+Source: [`skill.ts` line 23](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/plugin/skill.ts#L23-L23) · SHA-256 `b5c74da04d66…` · Jev confidence 0.84 · role: tool description
 
 ~~~text
 Use ONLY when the user is editing or creating opencode's own configuration: opencode.json, opencode.jsonc, files under .opencode/, or files under ~/.config/opencode/. Also use when creating or fixing opencode agents, subagents, commands, skills, plugins, MCP servers, or permission rules. Do not use for the user's own application code, or for any project that is not configuring opencode itself.
@@ -30,7 +30,7 @@ Use ONLY when the user is editing or creating opencode's own configuration: open
 
 ### Use the skill tool to load a skill when a task matches its description.
 
-Source: [`guidance.ts` line 19](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/skill/guidance.ts#L19-L19) · sha256 `b7db14f6b12a…` · Jev confidence 0.81 · role: tool description
+Source: [`guidance.ts` line 19](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/skill/guidance.ts#L19-L19) · SHA-256 `b7db14f6b12a…` · Jev confidence 0.81 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -42,7 +42,7 @@ Use the skill tool to load a skill when a task matches its description.
 
 ### apply_patch tool
 
-Source: [`apply-patch.ts` line 72](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/apply-patch.ts#L72-L72) · sha256 `fff88ff88b5d…` · Jev confidence 0.87 · role: tool description
+Source: [`apply-patch.ts` line 72](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/apply-patch.ts#L72-L72) · SHA-256 `fff88ff88b5d…` · Jev confidence 0.87 · role: tool description
 
 ~~~text
 Apply one patch containing add, update, and delete file operations. All targets are resolved and approved before target contents are read. Operations apply sequentially; if a later operation fails, earlier operations remain applied and the failure reports them explicitly. Moves and atomic rollback are not supported yet.
@@ -52,7 +52,7 @@ Apply one patch containing add, update, and delete file operations. All targets 
 
 ### bash tool
 
-Source: [`bash.ts` line 109](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/bash.ts#L109-L109) · sha256 `b5f218319bb1…` · Jev confidence 0.92 · role: tool description
+Source: [`bash.ts` line 109](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/bash.ts#L109-L109) · SHA-256 `b5f218319bb1…` · Jev confidence 0.92 · role: tool description
 
 ~~~text
 Execute one shell command string with the host user's filesystem, process, and network authority. The active Location is the default working directory. Relative workdir values resolve from that Location. External workdir values require external_directory approval; best-effort command-argument path warnings are advisory only. Timeout values are milliseconds (default: ${DEFAULT_TIMEOUT_MS}; maximum: ${MAX_TIMEOUT_MS}). Uses the configured shell when set; otherwise uses /bin/sh on POSIX and COMSPEC or cmd.exe on Windows.
@@ -62,7 +62,7 @@ Execute one shell command string with the host user's filesystem, process, and n
 
 ### edit · path parameter
 
-Source: [`edit.ts` line 27](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/edit.ts#L27-L27) · sha256 `31c7e636a21b…` · Jev confidence 0.84 · role: parameter description
+Source: [`edit.ts` line 27](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/edit.ts#L27-L27) · SHA-256 `31c7e636a21b…` · Jev confidence 0.84 · role: parameter description
 
 ~~~text
 File path to edit. Relative paths resolve within the active Location. Absolute paths inside that Location are accepted; external absolute paths require external_directory approval.
@@ -70,7 +70,7 @@ File path to edit. Relative paths resolve within the active Location. Absolute p
 
 ### edit tool
 
-Source: [`edit.ts` line 103](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/edit.ts#L103-L103) · sha256 `800c4acc2b33…` · Jev confidence 0.90 · role: tool description
+Source: [`edit.ts` line 103](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/edit.ts#L103-L103) · SHA-256 `800c4acc2b33…` · Jev confidence 0.90 · role: tool description
 
 ~~~text
 Replace exact text in one file. Relative paths resolve within the active Location. Absolute paths inside the Location are accepted. Explicit external absolute paths require external_directory approval before edit approval.
@@ -80,7 +80,7 @@ Replace exact text in one file. Relative paths resolve within the active Locatio
 
 ### glob tool
 
-Source: [`glob.ts` line 49](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/glob.ts#L49-L49) · sha256 `5480c05c8044…` · Jev confidence 0.90 · role: tool description
+Source: [`glob.ts` line 49](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/glob.ts#L49-L49) · SHA-256 `5480c05c8044…` · Jev confidence 0.90 · role: tool description
 
 ~~~text
 Find files by glob pattern within the active Location. Returns concise relative file resources. Use a relative path to narrow the search and limit to bound the result count.
@@ -90,7 +90,7 @@ Find files by glob pattern within the active Location. Returns concise relative 
 
 ### grep tool
 
-Source: [`grep.ts` line 65](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/grep.ts#L65-L65) · sha256 `f1109aabf593…` · Jev confidence 0.91 · role: tool description
+Source: [`grep.ts` line 65](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/grep.ts#L65-L65) · SHA-256 `f1109aabf593…` · Jev confidence 0.91 · role: tool description
 
 ~~~text
 Search file contents by regular expression within the active Location or an absolute managed tool-output file. Use a path to narrow the search, include to filter files by glob, and limit to bound the match count. Returns concise file resources, line numbers, and bounded line previews.
@@ -100,7 +100,7 @@ Search file contents by regular expression within the active Location or an abso
 
 ### Use this tool when you need to ask the user questions during execution.…
 
-Source: [`question.ts` line 14–23](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/question.ts#L14-L23) · sha256 `69247c946eb6…` · Jev confidence 0.90 · role: tool description
+Source: [`question.ts` line 14–23](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/question.ts#L14-L23) · SHA-256 `69247c946eb6…` · Jev confidence 0.90 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -121,7 +121,7 @@ Usage notes:
 
 ### The 1-based directory entry or text line offset to start reading from
 
-Source: [`read.ts` line 21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/read.ts#L21-L21) · sha256 `b585ca0f72f6…` · Jev confidence 0.83 · role: parameter description
+Source: [`read.ts` line 21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/read.ts#L21-L21) · SHA-256 `b585ca0f72f6…` · Jev confidence 0.83 · role: parameter description
 
 ~~~text
 The 1-based directory entry or text line offset to start reading from
@@ -129,7 +129,7 @@ The 1-based directory entry or text line offset to start reading from
 
 ### read tool
 
-Source: [`read.ts` line 42](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/read.ts#L42-L42) · sha256 `a0d2795ef8e3…` · Jev confidence 0.88 · role: tool description
+Source: [`read.ts` line 42](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/read.ts#L42-L42) · SHA-256 `a0d2795ef8e3…` · Jev confidence 0.88 · role: tool description
 
 ~~~text
 Read a text file or supported image, page through a large UTF-8 text file by line offset, or list a directory page. Relative paths resolve from the current location; absolute paths inside it are accepted, while external absolute paths require external_directory approval.
@@ -139,7 +139,7 @@ Read a text file or supported image, page through a large UTF-8 text file by lin
 
 ### skill · name parameter
 
-Source: [`skill.ts` line 18](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/skill.ts#L18-L18) · sha256 `3745da62d5d9…` · Jev confidence 0.84 · role: parameter description
+Source: [`skill.ts` line 18](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/skill.ts#L18-L18) · SHA-256 `3745da62d5d9…` · Jev confidence 0.84 · role: parameter description
 
 ~~~text
 The name of the skill from the available skills list
@@ -147,7 +147,7 @@ The name of the skill from the available skills list
 
 ### Load a specialized skill when the task at hand matches one of the…
 
-Source: [`skill.ts` line 28](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/skill.ts#L28-L28) · sha256 `67c842516726…` · Jev confidence 0.86 · role: tool description
+Source: [`skill.ts` line 28](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/skill.ts#L28-L28) · SHA-256 `67c842516726…` · Jev confidence 0.86 · role: tool description
 
 ~~~text
 Load a specialized skill when the task at hand matches one of the available skills in the system context.
@@ -155,7 +155,7 @@ Load a specialized skill when the task at hand matches one of the available skil
 
 ### Use this tool to inject the skill's instructions and resources into the…
 
-Source: [`skill.ts` line 30](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/skill.ts#L30-L30) · sha256 `5e9ccb3eda1d…` · Jev confidence 0.87 · role: tool description
+Source: [`skill.ts` line 30](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/skill.ts#L30-L30) · SHA-256 `5e9ccb3eda1d…` · Jev confidence 0.87 · role: tool description
 
 ~~~text
 Use this tool to inject the skill's instructions and resources into the current conversation. The output may contain detailed workflow guidance as well as references to scripts, files, etc. in the same directory as the skill.
@@ -165,7 +165,7 @@ Use this tool to inject the skill's instructions and resources into the current 
 
 ### todowrite tool
 
-Source: [`todowrite.ts` line 35](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/todowrite.ts#L35-L35) · sha256 `af462ea3d432…` · Jev confidence 0.88 · role: tool description
+Source: [`todowrite.ts` line 35](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/todowrite.ts#L35-L35) · SHA-256 `af462ea3d432…` · Jev confidence 0.88 · role: tool description
 
 ~~~text
 Create and maintain a structured task list for the current coding session. Use it to track progress during multi-step work and keep todo statuses current.
@@ -175,7 +175,7 @@ Create and maintain a structured task list for the current coding session. Use i
 
 ### Fetch content from an HTTP or HTTPS URL and return it as text,…
 
-Source: [`webfetch.ts` line 21–23](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/webfetch.ts#L21-L23) · sha256 `0627ba397d48…` · Jev confidence 0.92 · role: tool description
+Source: [`webfetch.ts` line 21–23](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/webfetch.ts#L21-L23) · SHA-256 `0627ba397d48…` · Jev confidence 0.92 · role: tool description
 
 ~~~text
 Fetch content from an HTTP or HTTPS URL and return it as text, markdown, or HTML. Markdown is the default.
@@ -185,7 +185,7 @@ Use a more targeted tool when one is available. This tool is read-only. Large te
 
 ### webfetch · url parameter
 
-Source: [`webfetch.ts` line 28](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/webfetch.ts#L28-L28) · sha256 `6b8ffa19c5a0…` · Jev confidence 0.82 · role: parameter description
+Source: [`webfetch.ts` line 28](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/webfetch.ts#L28-L28) · SHA-256 `6b8ffa19c5a0…` · Jev confidence 0.82 · role: parameter description
 
 ~~~text
 The HTTP or HTTPS URL to fetch content from
@@ -195,7 +195,7 @@ The HTTP or HTTPS URL to fetch content from
 
 ### Search the web using the session's local web search provider. Use this…
 
-Source: [`websearch.ts` line 32–38](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L32-L38) · sha256 `54039f6820ac…` · Jev confidence 0.92 · role: tool description
+Source: [`websearch.ts` line 32–38](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L32-L38) · SHA-256 `54039f6820ac…` · Jev confidence 0.92 · role: tool description
 
 ~~~text
 Search the web using the session's local web search provider. Use this for current information beyond knowledge cutoff.
@@ -209,9 +209,9 @@ The current year is ${new Date().getFullYear()}. Use this year when searching fo
 
 ### websearch · type parameter
 
-Source: [`websearch.ts` line 50](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L50-L50) · sha256 `e3791b9ade53…` · Jev confidence 0.80 · role: parameter description
+Source: [`websearch.ts` line 50](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L50-L50) · SHA-256 `e3791b9ade53…` · Jev confidence 0.80 · role: parameter description
 
-Also in: [`packages/opencode/src/tool/websearch.ts` line 20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L20-L20) · sha256 `e3791b9ade53…`
+Also in: [`packages/opencode/src/tool/websearch.ts` line 20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L20-L20) · SHA-256 `e3791b9ade53…`
 
 Also shown in the reviewed record *undefined*.
 
@@ -223,7 +223,7 @@ Search type - 'auto': balanced search (default), 'fast': quick results, 'deep': 
 
 ### write · path parameter
 
-Source: [`write.ts` line 25](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/write.ts#L25-L25) · sha256 `9c31fabbb0b4…` · Jev confidence 0.87 · role: parameter description
+Source: [`write.ts` line 25](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/write.ts#L25-L25) · SHA-256 `9c31fabbb0b4…` · Jev confidence 0.87 · role: parameter description
 
 ~~~text
 File path to write. Relative paths resolve within the active Location. Absolute paths inside that Location are accepted; external absolute paths require external_directory approval.
@@ -231,7 +231,7 @@ File path to write. Relative paths resolve within the active Location. Absolute 
 
 ### write tool
 
-Source: [`write.ts` line 59](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/write.ts#L59-L59) · sha256 `8d36838007fc…` · Jev confidence 0.92 · role: tool description
+Source: [`write.ts` line 59](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/write.ts#L59-L59) · SHA-256 `8d36838007fc…` · Jev confidence 0.92 · role: tool description
 
 ~~~text
 Write content to one file. Relative paths resolve within the active Location. Absolute paths inside the Location are accepted. Explicit external absolute paths require external_directory approval before edit approval.
@@ -241,7 +241,7 @@ Write content to one file. Relative paths resolve within the active Location. Ab
 
 ### GENERATE_OBJECT_TOOL_DESCRIPTION
 
-Source: [`llm.ts` line 82](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/llm.ts#L82-L82) · sha256 `551c6c33a4db…` · Jev confidence 0.91 · role: tool description
+Source: [`llm.ts` line 82](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/llm.ts#L82-L82) · SHA-256 `551c6c33a4db…` · Jev confidence 0.91 · role: tool description
 
 ~~~text
 Return the structured result by calling this tool.
@@ -251,7 +251,7 @@ Return the structured result by calling this tool.
 
 ### Do not call this tool. It exists only for API compatibility and must…
 
-Source: [`request.ts` line 166](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L166-L166) · sha256 `413cd9799c4f…` · Jev confidence 0.86 · role: tool description
+Source: [`request.ts` line 166](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L166-L166) · SHA-256 `413cd9799c4f…` · Jev confidence 0.86 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -263,7 +263,7 @@ Do not call this tool. It exists only for API compatibility and must never be in
 
 ### STRUCTURED_OUTPUT_DESCRIPTION
 
-Source: [`prompt.ts` line 74–80](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L74-L80) · sha256 `89e752e4baf6…` · Jev confidence 0.94 · role: tool description
+Source: [`prompt.ts` line 74–80](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L74-L80) · SHA-256 `89e752e4baf6…` · Jev confidence 0.94 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -281,7 +281,7 @@ IMPORTANT:
 
 ### Lists resources provided by connected MCP servers. Resources provide…
 
-Source: [`tools.ts` line 142](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L142-L142) · sha256 `fb106dca76d3…` · Jev confidence 0.89 · role: tool description
+Source: [`tools.ts` line 142](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L142-L142) · SHA-256 `fb106dca76d3…` · Jev confidence 0.89 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -291,7 +291,7 @@ Lists resources provided by connected MCP servers. Resources provide context suc
 
 ### Optional MCP server name. When omitted, lists resources from every…
 
-Source: [`tools.ts` line 149](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L149-L149) · sha256 `7cff5a5b621c…` · Jev confidence 0.81 · role: parameter description
+Source: [`tools.ts` line 149](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L149-L149) · SHA-256 `7cff5a5b621c…` · Jev confidence 0.81 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -301,7 +301,7 @@ Optional MCP server name. When omitted, lists resources from every connected ser
 
 ### Lists resource templates provided by connected MCP servers. Resource…
 
-Source: [`tools.ts` line 224](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L224-L224) · sha256 `a936ffd72118…` · Jev confidence 0.83 · role: tool description
+Source: [`tools.ts` line 224](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L224-L224) · SHA-256 `a936ffd72118…` · Jev confidence 0.83 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -311,7 +311,7 @@ Lists resource templates provided by connected MCP servers. Resource templates a
 
 ### Read a specific resource from an MCP server using the server name and…
 
-Source: [`tools.ts` line 307](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L307-L307) · sha256 `e3fc97dbf9b2…` · Jev confidence 0.90 · role: tool description
+Source: [`tools.ts` line 307](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L307-L307) · SHA-256 `e3fc97dbf9b2…` · Jev confidence 0.90 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -321,7 +321,7 @@ Read a specific resource from an MCP server using the server name and resource U
 
 ### MCP server name exactly as returned by list mcp resources.
 
-Source: [`tools.ts` line 314](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L314-L314) · sha256 `435e5a09100b…` · Jev confidence 0.80 · role: parameter description
+Source: [`tools.ts` line 314](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L314-L314) · SHA-256 `435e5a09100b…` · Jev confidence 0.80 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -331,7 +331,7 @@ MCP server name exactly as returned by list_mcp_resources.
 
 ### Resource URI to read. Use the exact URI string returned by list mcp…
 
-Source: [`tools.ts` line 318](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L318-L318) · sha256 `1b18e97ba37b…` · Jev confidence 0.83 · role: parameter description
+Source: [`tools.ts` line 318](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L318-L318) · SHA-256 `1b18e97ba37b…` · Jev confidence 0.83 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -343,7 +343,7 @@ Resource URI to read. Use the exact URI string returned by list_mcp_resources.
 
 ### CUSTOMIZE_OPENCODE_SKILL_DESCRIPTION
 
-Source: [`index.ts` line 34](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/skill/index.ts#L34-L34) · sha256 `8798399442f4…` · Jev confidence 0.93 · role: tool description
+Source: [`index.ts` line 34](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/skill/index.ts#L34-L34) · SHA-256 `8798399442f4…` · Jev confidence 0.93 · role: tool description
 
 ~~~text
 Use ONLY when the user is editing or creating opencode's own configuration: opencode.json, opencode.jsonc, files under .opencode/, or files under ~/.config/opencode/. Also use when creating or fixing opencode agents, subagents, skills, plugins, MCP servers, or permission rules. Do not use for the user's own application code, or for any project that is not configuring opencode itself.
@@ -353,7 +353,7 @@ Use ONLY when the user is editing or creating opencode's own configuration: open
 
 ### The full patch text that describes all changes to be made
 
-Source: [`apply_patch.ts` line 19](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.ts#L19-L19) · sha256 `d80528913b53…` · Jev confidence 0.82 · role: parameter description
+Source: [`apply_patch.ts` line 19](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.ts#L19-L19) · SHA-256 `d80528913b53…` · Jev confidence 0.82 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -365,7 +365,7 @@ The full patch text that describes all changes to be made
 
 ### apply_patch.txt
 
-Source: [`apply_patch.txt` line 1–33](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.txt#L1-L33) · sha256 `2e88f3a8fb30…` · Jev confidence 0.94 · role: tool description
+Source: [`apply_patch.txt` line 1–33](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.txt#L1-L33) · SHA-256 `2e88f3a8fb30…` · Jev confidence 0.94 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -410,7 +410,7 @@ It is important to remember:
 
 ### DESCRIPTION
 
-Source: [`code-mode.ts` line 14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/code-mode.ts#L14-L14) · sha256 `b76ad478a76d…` · Jev confidence 0.85 · role: tool description
+Source: [`code-mode.ts` line 14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/code-mode.ts#L14-L14) · SHA-256 `b76ad478a76d…` · Jev confidence 0.85 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -422,7 +422,7 @@ Run a confined orchestration script with access to connected MCP tools.
 
 ### The absolute path to the file to modify
 
-Source: [`edit.ts` line 48](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L48-L48) · sha256 `22a276b70cb1…` · Jev confidence 0.81 · role: parameter description
+Source: [`edit.ts` line 48](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L48-L48) · SHA-256 `22a276b70cb1…` · Jev confidence 0.81 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -432,7 +432,7 @@ The absolute path to the file to modify
 
 ### The text to replace it with (must be different from oldString)
 
-Source: [`edit.ts` line 51](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L51-L51) · sha256 `048da5e34f73…` · Jev confidence 0.80 · role: parameter description
+Source: [`edit.ts` line 51](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L51-L51) · SHA-256 `048da5e34f73…` · Jev confidence 0.80 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -444,7 +444,7 @@ The text to replace it with (must be different from oldString)
 
 ### edit.txt
 
-Source: [`edit.txt` line 1–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.txt#L1-L10) · sha256 `4426ccf60241…` · Jev confidence 0.94 · role: tool description
+Source: [`edit.txt` line 1–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.txt#L1-L10) · SHA-256 `4426ccf60241…` · Jev confidence 0.94 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -466,7 +466,7 @@ Usage:
 
 ### The directory to search in. If not specified, the current working…
 
-Source: [`glob.ts` line 13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.ts#L13-L13) · sha256 `b86f1a5cc2c1…` · Jev confidence 0.90 · role: parameter description
+Source: [`glob.ts` line 13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.ts#L13-L13) · SHA-256 `b86f1a5cc2c1…` · Jev confidence 0.90 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -478,7 +478,7 @@ The directory to search in. If not specified, the current working directory will
 
 ### glob.txt
 
-Source: [`glob.txt` line 1–6](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.txt#L1-L6) · sha256 `50b2d2c41d4b…` · Jev confidence 0.93 · role: tool description
+Source: [`glob.txt` line 1–6](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.txt#L1-L6) · SHA-256 `50b2d2c41d4b…` · Jev confidence 0.93 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -496,7 +496,7 @@ Also shown in the reviewed record *undefined*.
 
 ### The regex pattern to search for in file contents
 
-Source: [`grep.ts` line 11](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L11-L11) · sha256 `06940f711589…` · Jev confidence 0.84 · role: parameter description
+Source: [`grep.ts` line 11](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L11-L11) · SHA-256 `06940f711589…` · Jev confidence 0.84 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -506,7 +506,7 @@ The regex pattern to search for in file contents
 
 ### The directory to search in. Defaults to the current working directory.
 
-Source: [`grep.ts` line 13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L13-L13) · sha256 `1913717f28ee…` · Jev confidence 0.80 · role: parameter description
+Source: [`grep.ts` line 13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L13-L13) · SHA-256 `1913717f28ee…` · Jev confidence 0.80 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -516,7 +516,7 @@ The directory to search in. Defaults to the current working directory.
 
 ### File pattern to include in the search (e.g. " .js", " .{ts,tsx}")
 
-Source: [`grep.ts` line 16](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L16-L16) · sha256 `185b5d834937…` · Jev confidence 0.84 · role: parameter description
+Source: [`grep.ts` line 16](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L16-L16) · SHA-256 `185b5d834937…` · Jev confidence 0.84 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -528,7 +528,7 @@ File pattern to include in the search (e.g. "*.js", "*.{ts,tsx}")
 
 ### grep.txt
 
-Source: [`grep.txt` line 1–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.txt#L1-L8) · sha256 `97fa2a992935…` · Jev confidence 0.93 · role: tool description
+Source: [`grep.txt` line 1–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.txt#L1-L8) · SHA-256 `97fa2a992935…` · Jev confidence 0.93 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -548,7 +548,7 @@ Also shown in the reviewed record *undefined*.
 
 ### The line number (1-based, as shown in editors)
 
-Source: [`lsp.ts` line 27](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L27-L27) · sha256 `a939418bca00…` · Jev confidence 0.80 · role: parameter description
+Source: [`lsp.ts` line 27](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L27-L27) · SHA-256 `a939418bca00…` · Jev confidence 0.80 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -558,7 +558,7 @@ The line number (1-based, as shown in editors)
 
 ### Search query for workspaceSymbol. Empty string requests all symbols.
 
-Source: [`lsp.ts` line 33](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L33-L33) · sha256 `f11c241770f1…` · Jev confidence 0.83 · role: parameter description
+Source: [`lsp.ts` line 33](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L33-L33) · SHA-256 `f11c241770f1…` · Jev confidence 0.83 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -570,7 +570,7 @@ Search query for workspaceSymbol. Empty string requests all symbols.
 
 ### lsp.txt
 
-Source: [`lsp.txt` line 1–24](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.txt#L1-L24) · sha256 `8f25f3ea038c…` · Jev confidence 0.86 · role: tool description
+Source: [`lsp.txt` line 1–24](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.txt#L1-L24) · SHA-256 `8f25f3ea038c…` · Jev confidence 0.86 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -606,7 +606,7 @@ Note: LSP servers must be configured for the file type. If no server is availabl
 
 ### plan-enter.txt
 
-Source: [`plan-enter.txt` line 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-enter.txt#L1-L14) · sha256 `c03e1829d0e0…` · Jev confidence 0.95 · role: tool description
+Source: [`plan-enter.txt` line 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-enter.txt#L1-L14) · SHA-256 `c03e1829d0e0…` · Jev confidence 0.95 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -632,7 +632,7 @@ Do NOT call this tool:
 
 ### plan-exit.txt
 
-Source: [`plan-exit.txt` line 1–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-exit.txt#L1-L13) · sha256 `00dba1a42959…` · Jev confidence 0.93 · role: tool description
+Source: [`plan-exit.txt` line 1–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-exit.txt#L1-L13) · SHA-256 `00dba1a42959…` · Jev confidence 0.93 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -657,7 +657,7 @@ Do NOT call this tool:
 
 ### question.txt
 
-Source: [`question.txt` line 1–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.txt#L1-L10) · sha256 `c0a5776acd58…` · Jev confidence 0.92 · role: tool description
+Source: [`question.txt` line 1–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.txt#L1-L10) · SHA-256 `c0a5776acd58…` · Jev confidence 0.92 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -679,7 +679,7 @@ Usage notes:
 
 ### The absolute path to the file or directory to read
 
-Source: [`read.ts` line 29](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.ts#L29-L29) · sha256 `f4883f4633ce…` · Jev confidence 0.85 · role: parameter description
+Source: [`read.ts` line 29](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.ts#L29-L29) · SHA-256 `f4883f4633ce…` · Jev confidence 0.85 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -691,7 +691,7 @@ The absolute path to the file or directory to read
 
 ### read.txt
 
-Source: [`read.txt` line 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.txt#L1-L14) · sha256 `98ee843341c2…` · Jev confidence 0.93 · role: tool description
+Source: [`read.txt` line 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.txt#L1-L14) · SHA-256 `98ee843341c2…` · Jev confidence 0.93 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -717,7 +717,7 @@ Usage:
 
 ### The working directory to run the command in. Defaults to the current…
 
-Source: [`prompt.ts` line 20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L20-L20) · sha256 `3225a42cc34e…` · Jev confidence 0.83 · role: parameter description
+Source: [`prompt.ts` line 20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L20-L20) · SHA-256 `3225a42cc34e…` · Jev confidence 0.83 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -727,7 +727,7 @@ The working directory to run the command in. Defaults to the current directory. 
 
 ### If the commands depend on each other and must run sequentially, use a…
 
-Source: [`prompt.ts` line 70](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L70-L70) · sha256 `6e1454e64925…` · Jev confidence 0.86 · role: tool description
+Source: [`prompt.ts` line 70](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L70-L70) · SHA-256 `6e1454e64925…` · Jev confidence 0.86 · role: tool description
 
 ~~~text
 If the commands depend on each other and must run sequentially, use a single bash tool call with '&&' to chain them together (e.g., `git add . && git commit -m "message" && git push`). For instance, if one operation must complete before another starts (like New-Item before Copy-Item, Write before bash for git operations, or git add before git commit), run these operations sequentially instead.
@@ -735,7 +735,7 @@ If the commands depend on each other and must run sequentially, use a single bas
 
 ### ${powershellNotes(name)} Before executing the command, please follow…
 
-Source: [`prompt.ts` line 128–169](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L128-L169) · sha256 `3645e50c0f50…` · Jev confidence 0.94 · role: tool description
+Source: [`prompt.ts` line 128–169](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L128-L169) · SHA-256 `3645e50c0f50…` · Jev confidence 0.94 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -786,7 +786,7 @@ Usage notes:
 
 ### cmd.exe shell notes - Use double quotes for paths with spaces. - Use…
 
-Source: [`prompt.ts` line 173–218](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L173-L218) · sha256 `22402d2c3aef…` · Jev confidence 0.93 · role: tool description
+Source: [`prompt.ts` line 173–218](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L173-L218) · SHA-256 `22402d2c3aef…` · Jev confidence 0.93 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -841,9 +841,9 @@ Usage notes:
 
 ### Executes a given ${shellDisplayName(name)} command with optional…
 
-Source: [`prompt.ts` line 226](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L226-L226) · sha256 `93b70e5f77dd…` · Jev confidence 0.83 · role: tool description
+Source: [`prompt.ts` line 226](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L226-L226) · SHA-256 `93b70e5f77dd…` · Jev confidence 0.83 · role: tool description
 
-Also in: [`packages/opencode/src/tool/shell/prompt.ts` line 238](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L238-L238) · sha256 `93b70e5f77dd…`
+Also in: [`packages/opencode/src/tool/shell/prompt.ts` line 238](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L238-L238) · SHA-256 `93b70e5f77dd…`
 
 Also shown in the reviewed record *undefined*.
 
@@ -853,9 +853,9 @@ Executes a given ${shellDisplayName(name)} command with optional timeout, ensuri
 
 ### All commands run in the current working directory by default. Use the… (line 228)
 
-Source: [`prompt.ts` line 228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L228-L228) · sha256 `29351d7fb3ca…` · Jev confidence 0.90 · role: tool description
+Source: [`prompt.ts` line 228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L228-L228) · SHA-256 `29351d7fb3ca…` · Jev confidence 0.90 · role: tool description
 
-Also in: [`packages/opencode/src/tool/shell/prompt.ts` line 240](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L240-L240) · sha256 `29351d7fb3ca…`
+Also in: [`packages/opencode/src/tool/shell/prompt.ts` line 240](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L240-L240) · SHA-256 `29351d7fb3ca…`
 
 Also shown in the reviewed record *undefined*.
 
@@ -865,7 +865,7 @@ All commands run in the current working directory by default. Use the `workdir` 
 
 ### Executes a given bash command in a persistent shell session with…
 
-Source: [`prompt.ts` line 259](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L259-L259) · sha256 `cb80d2a8c6b8…` · Jev confidence 0.84 · role: tool description
+Source: [`prompt.ts` line 259](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L259-L259) · SHA-256 `cb80d2a8c6b8…` · Jev confidence 0.84 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -875,7 +875,7 @@ Executes a given bash command in a persistent shell session with optional timeou
 
 ### All commands run in the current working directory by default. Use the… (line 261)
 
-Source: [`prompt.ts` line 261](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L261-L261) · sha256 `3ba2e6818566…` · Jev confidence 0.91 · role: tool description
+Source: [`prompt.ts` line 261](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L261-L261) · SHA-256 `3ba2e6818566…` · Jev confidence 0.91 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -887,7 +887,7 @@ All commands run in the current working directory by default. Use the `workdir` 
 
 ### shell.txt
 
-Source: [`shell.txt` line 1–21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/shell.txt#L1-L21) · sha256 `0db1a899b3c4…` · Jev confidence 0.95 · role: tool description
+Source: [`shell.txt` line 1–21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/shell.txt#L1-L21) · SHA-256 `0db1a899b3c4…` · Jev confidence 0.95 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -920,7 +920,7 @@ ${commandSection}
 
 ### The name of the skill from available skills
 
-Source: [`skill.ts` line 9](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L9-L9) · sha256 `ac25abb23a22…` · Jev confidence 0.83 · role: parameter description
+Source: [`skill.ts` line 9](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L9-L9) · SHA-256 `ac25abb23a22…` · Jev confidence 0.83 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -932,7 +932,7 @@ The name of the skill from available_skills
 
 ### skill.txt
 
-Source: [`skill.txt` line 1–5](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.txt#L1-L5) · sha256 `226f63ce9fd5…` · Jev confidence 0.87 · role: tool description
+Source: [`skill.txt` line 1–5](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.txt#L1-L5) · SHA-256 `226f63ce9fd5…` · Jev confidence 0.87 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -949,7 +949,7 @@ The skill name must match one of the skills listed in your system prompt.
 
 ### Use background only for independent work that can run while you…
 
-Source: [`task.ts` line 28](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L28-L28) · sha256 `4f2463eaf241…` · Jev confidence 0.82 · role: tool description
+Source: [`task.ts` line 28](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L28-L28) · SHA-256 `4f2463eaf241…` · Jev confidence 0.82 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -959,7 +959,7 @@ Use background only for independent work that can run while you continue elsewhe
 
 ### This should only be set if you mean to resume a previous task (you can…
 
-Source: [`task.ts` line 49](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L49-L49) · sha256 `9f25dc2b9f6a…` · Jev confidence 0.81 · role: parameter description
+Source: [`task.ts` line 49](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L49-L49) · SHA-256 `9f25dc2b9f6a…` · Jev confidence 0.81 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -971,7 +971,7 @@ This should only be set if you mean to resume a previous task (you can pass a pr
 
 ### task.txt
 
-Source: [`task.txt` line 1–19](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.txt#L1-L19) · sha256 `220dcf4ad258…` · Jev confidence 0.95 · role: tool description
+Source: [`task.txt` line 1–19](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.txt#L1-L19) · SHA-256 `220dcf4ad258…` · Jev confidence 0.95 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -1002,7 +1002,7 @@ Usage notes:
 
 ### todowrite.txt
 
-Source: [`todowrite.txt` line 1–44](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todowrite.txt#L1-L44) · sha256 `f214ea20cd87…` · Jev confidence 0.93 · role: tool description
+Source: [`todowrite.txt` line 1–44](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todowrite.txt#L1-L44) · SHA-256 `f214ea20cd87…` · Jev confidence 0.93 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -1058,7 +1058,7 @@ When in doubt, use it.
 
 ### The URL to fetch content from
 
-Source: [`webfetch.ts` line 14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L14-L14) · sha256 `58ae2472166d…` · Jev confidence 0.85 · role: parameter description
+Source: [`webfetch.ts` line 14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L14-L14) · SHA-256 `58ae2472166d…` · Jev confidence 0.85 · role: parameter description
 
 ~~~text
 The URL to fetch content from
@@ -1066,7 +1066,7 @@ The URL to fetch content from
 
 ### The format to return the content in (text, markdown, or html). Defaults…
 
-Source: [`webfetch.ts` line 17](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L17-L17) · sha256 `a5c6b7b9571e…` · Jev confidence 0.83 · role: parameter description
+Source: [`webfetch.ts` line 17](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L17-L17) · SHA-256 `a5c6b7b9571e…` · Jev confidence 0.83 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -1078,7 +1078,7 @@ The format to return the content in (text, markdown, or html). Defaults to markd
 
 ### webfetch.txt
 
-Source: [`webfetch.txt` line 1–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.txt#L1-L13) · sha256 `0da3ec7c3f6b…` · Jev confidence 0.92 · role: tool description
+Source: [`webfetch.txt` line 1–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.txt#L1-L13) · SHA-256 `0da3ec7c3f6b…` · Jev confidence 0.92 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -1103,7 +1103,7 @@ Usage notes:
 
 ### Number of search results to return (default: 8)
 
-Source: [`websearch.ts` line 13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L13-L13) · sha256 `6d38461077d3…` · Jev confidence 0.81 · role: parameter description
+Source: [`websearch.ts` line 13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L13-L13) · SHA-256 `6d38461077d3…` · Jev confidence 0.81 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -1115,7 +1115,7 @@ Number of search results to return (default: 8)
 
 ### websearch.txt
 
-Source: [`websearch.txt` line 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.txt#L1-L14) · sha256 `f31c862691e3…` · Jev confidence 0.91 · role: tool description
+Source: [`websearch.txt` line 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.txt#L1-L14) · SHA-256 `f31c862691e3…` · Jev confidence 0.91 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -1141,7 +1141,7 @@ The current year is {{year}}. You MUST use this year when searching for recent i
 
 ### The content to write to the file
 
-Source: [`write.ts` line 21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L21-L21) · sha256 `4fa9498aa1af…` · Jev confidence 0.80 · role: parameter description
+Source: [`write.ts` line 21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L21-L21) · SHA-256 `4fa9498aa1af…` · Jev confidence 0.80 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -1151,7 +1151,7 @@ The content to write to the file
 
 ### The absolute path to the file to write (must be absolute, not relative)
 
-Source: [`write.ts` line 23](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L23-L23) · sha256 `ee2a656f1245…` · Jev confidence 0.86 · role: parameter description
+Source: [`write.ts` line 23](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L23-L23) · SHA-256 `ee2a656f1245…` · Jev confidence 0.86 · role: parameter description
 
 Also shown in the reviewed record *undefined*.
 
@@ -1163,7 +1163,7 @@ The absolute path to the file to write (must be absolute, not relative)
 
 ### write.txt
 
-Source: [`write.txt` line 1–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.txt#L1-L8) · sha256 `8b7197b6e3a8…` · Jev confidence 0.93 · role: tool description
+Source: [`write.txt` line 1–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.txt#L1-L8) · SHA-256 `8b7197b6e3a8…` · Jev confidence 0.93 · role: tool description
 
 Also shown in the reviewed record *undefined*.
 
@@ -1183,7 +1183,7 @@ Usage:
 
 ### This is a custom tool
 
-Source: [`example.ts` line 8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/plugin/src/example.ts#L8-L8) · sha256 `39c03525d608…` · Jev confidence 0.86 · role: tool description
+Source: [`example.ts` line 8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/plugin/src/example.ts#L8-L8) · SHA-256 `39c03525d608…` · Jev confidence 0.86 · role: tool description
 
 ~~~text
 This is a custom tool

@@ -44,7 +44,7 @@ function templateValue(node, source, shift) {
   }).join("");
 }
 
-export function candidatesOf(source, entry) {
+export function candidatesOf(source, entry, { includeSkipped = false } = {}) {
   const { ast, shift } = parseSource(source, entry.format);
   const pending = [];
   const stats = { literals: 0, selected: 0, skipped: {} };
@@ -55,11 +55,11 @@ export function candidatesOf(source, entry) {
     const role = roleFor(node, parent);
     const words = wordsOf(value);
     const eligible = (words.length >= 2 && /\s/u.test(value)) || (words.length >= 1 && PROMPT_FIELD.test(role.kind));
-    if (!eligible) { skip("non-prose-or-short"); return; }
+    if (!eligible) { skip("non-prose-or-short"); if (!includeSkipped) return; }
     const start = node.start - shift;
     const end = node.end - shift;
     if (start < 0 || end > source.length) { skip("invalid-source-range"); return; }
-    pending.push({ start, end, line_start: node.loc.start.line, line_end: node.loc.end.line, text: value, words: words.length, role });
+    pending.push({ start, end, line_start: node.loc.start.line, line_end: node.loc.end.line, text: value, words: words.length, role, ...(!eligible ? { selection_reason: "non-prose-or-short" } : {}) });
   };
   walk.fullAncestor(ast, (node, _state, ancestors) => {
     const parent = ancestors.at(-2);
@@ -94,10 +94,11 @@ export function candidatesOf(source, entry) {
       words: item.words,
       role: item.role,
       source_context: sourceContext,
+      ...(item.selection_reason ? { selection_reason: item.selection_reason } : {}),
       ...(entry.container ? { container: entry.container } : {})
     });
   }
-  stats.selected = candidates.length;
+  stats.selected = candidates.filter(c => !c.selection_reason).length;
   return { candidates, stats };
 }
 

@@ -1,5 +1,6 @@
 // Builds the one site: the landing chooser at /, one section per product (/claude-code/, /codex/,
 // /opencode/, /cursor/), and one Trace at /trace/ with every product's reference index.
+import { buildFullCatalog } from "./src/shared/build-full-catalog.mjs";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -39,8 +40,9 @@ for (const product of PRODUCTS) product.categories = await pruneEmptyPages(produ
 
 for (const product of PRODUCTS) {
   const section = SITE.products[product.id].path;
-  await product.build({ sourceRoot: path.join(repoRoot, product.id), outFile: path.join(dist, section, "index.html"), categories: product.categories });
+  const context = await product.build({ sourceRoot: path.join(repoRoot, product.id), outFile: path.join(dist, section, "index.html"), categories: product.categories });
   for (const file of product.assets) await copyFile(path.join(siteRoot, "assets", product.id, file), path.join(dist, section, file));
+  if (["opencode", "cursor"].includes(product.id)) buildFullCatalog({ sourceRoot: path.join(repoRoot, product.id), outDir: path.join(dist, section), context });
   // The section's full text for the search palette, from the pages just built.
   const bytes = await writeSearchText(path.join(dist, section));
   if (process.env.SEARCH_INDEX_QUIET !== "1") console.log(`search text ${product.id}: ${(bytes / 1e6).toFixed(1)} MB`);

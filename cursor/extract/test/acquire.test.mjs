@@ -5,11 +5,11 @@ import test from "node:test";
 
 import { artifactIdentity, inspectCliArchive, inspectDesktop, validateProvenance, verifySnapshot } from "../acquire.mjs";
 
-const desktop = process.env.CURSOR_DESKTOP_APP || "/Applications/Cursor.app";
-const repo = path.resolve(import.meta.dirname, "../..");
-const archive = process.env.CURSOR_AGENT_ARCHIVE || path.join(repo, "work/agent-cli-package.tar.gz");
 
-test("installed Cursor desktop has the pinned signed release identity", { skip: !fs.existsSync(desktop) }, () => {
+const repo = path.resolve(import.meta.dirname, "../..");
+import { desktop, archive } from "./pinned-artifacts.mjs";
+
+test("pinned Cursor desktop has the pinned signed release identity", { skip: !fs.existsSync(desktop) }, () => {
   const found = inspectDesktop(desktop);
   assert.equal(found.version, "3.23.12");
   assert.equal(found.commit, "2d29876d567da1607532b23bbf2cd5ddbca496f0");

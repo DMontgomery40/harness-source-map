@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test:extract && npm --prefix site test && npm --prefix site run test:local",
-    "test:extract": "node --test claude-code/extract/test/*.test.mjs codex/extract/codex/test/*.test.mjs opencode/extract/test/*.test.mjs watch/test/*.test.mjs",
+    "test:extract": "node --test claude-code/extract/test/*.test.mjs codex/extract/codex/test/*.test.mjs opencode/extract/test/*.test.mjs cursor/extract/test/*.test.mjs watch/test/*.test.mjs",
     "trace:opencode": "node tools/capture/opencode-capture.mjs",
     "build": "npm --prefix site run build",
     "check": "npm run build && npm test && node tools/check-links.mjs && node tools/leak-check.mjs"

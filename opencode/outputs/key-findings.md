@@ -10,7 +10,7 @@ Selection is conditional source behavior. Model publisher names do not identify 
 
 **When:** SystemPrompt.provider selects by ordered model.api.id branches, then provider ID, then fallback; request preparation may replace it with agent.prompt.
 
-Source: [`opencode/src/session/system.ts` lines 28–51](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L28-L51) · sha256 `b59739026cff…`
+Source: [`opencode/src/session/system.ts` lines 28–51](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/system.ts#L28-L51) · SHA-256 `b59739026cff…`
 
 ```typescript
 export function provider(model: Provider.Model) {
@@ -45,7 +45,7 @@ First existing global candidate wins. Project search tries AGENTS.md, CLAUDE.md 
 
 **When:** Instruction.system loads discovered instructions; Claude compatibility may be disabled and project config may be disabled.
 
-Source: [`opencode/src/session/instruction.ts` lines 58–178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L58-L178) · sha256 `58f5f531a3cf…`
+Source: [`opencode/src/session/instruction.ts` lines 58–178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L58-L178) · SHA-256 `58f5f531a3cf…`
 
 ```typescript
     const flags = yield* RuntimeFlags.Service
@@ -179,7 +179,7 @@ agent.prompt replaces provider prompt; then input.system and user.system append.
 
 **When:** LLMRequestPrep.prepare runs before the selected runtime executes.
 
-Source: [`opencode/src/session/llm/request.ts` lines 56–146](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L56-L146) · sha256 `98f2b612644a…`
+Source: [`opencode/src/session/llm/request.ts` lines 56–146](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L56-L146) · SHA-256 `98f2b612644a…`
 
 ```typescript
 export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: PrepareInput) {
@@ -281,7 +281,7 @@ tool.definition may alter descriptions or schemas. Task descriptions append perm
 
 **When:** ToolRegistry state combines built-ins, config-directory custom tools and plugin tools; model/flags/permissions affect advertised tools.
 
-Source: [`opencode/src/tool/registry.ts` lines 120–353](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L120-L353) · sha256 `81af6d956205…`
+Source: [`opencode/src/tool/registry.ts` lines 120–353](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L120-L353) · SHA-256 `81af6d956205…`
 
 ```typescript
 
@@ -526,7 +526,7 @@ Accepts provider IDs openai, anthropic or starting opencode, with supported SDK 
 
 **When:** Only when experimentalNativeLlm is enabled and this status gate succeeds.
 
-Source: [`opencode/src/session/llm/native-runtime.ts` lines 48–75](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-runtime.ts#L48-L75) · sha256 `bdf464f6558b…`
+Source: [`opencode/src/session/llm/native-runtime.ts` lines 48–75](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/native-runtime.ts#L48-L75) · SHA-256 `bdf464f6558b…`
 
 ```typescript
 }
@@ -565,7 +565,7 @@ Nonempty provider.options.baseURL takes precedence over model.api.url, then conf
 
 **When:** resolveSDK loads the selected provider package.
 
-Source: [`opencode/src/provider/provider.ts` lines 1783–1864](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1783-L1864) · sha256 `25f9ae85b705…`
+Source: [`opencode/src/provider/provider.ts` lines 1783–1864](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/provider/provider.ts#L1783-L1864) · SHA-256 `25f9ae85b705…`
 
 ```typescript
     const list = Effect.fn("Provider.list")(() => InstanceState.use(state, (s) => s.providers))
@@ -660,7 +660,7 @@ Persists distinct reasoning parts and provider metadata. Orphan reasoning deltas
 
 **When:** Reasoning events arrive from the selected runtime with a preceding reasoning-start.
 
-Source: [`opencode/src/session/processor.ts` lines 278–315](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L278-L315) · sha256 `a4f082ea43e0…`
+Source: [`opencode/src/session/processor.ts` lines 278–315](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/processor.ts#L278-L315) · SHA-256 `a4f082ea43e0…`
 
 ```typescript
       const handleEvent = Effect.fnUntraced(function* (value: StreamEvent) {
@@ -709,7 +709,7 @@ For the same model, reasoning parts preserve provider metadata. When model chang
 
 **When:** MessageV2 converts stored session parts for a new selected provider/model.
 
-Source: [`opencode/src/session/message-v2.ts` lines 249–386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/message-v2.ts#L249-L386) · sha256 `e01ecbdc054a…`
+Source: [`opencode/src/session/message-v2.ts` lines 249–386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/message-v2.ts#L249-L386) · SHA-256 `e01ecbdc054a…`
 
 ```typescript
       const differentModel = `${model.providerID}/${model.id}` !== `${msg.info.providerID}/${msg.info.modelID}`
@@ -858,7 +858,7 @@ Writes {info,messages}, where each message carries info and parts from session s
 
 **When:** User explicitly runs export for a real session; optional sanitize mode redacts transcript/file data.
 
-Source: [`opencode/src/cli/cmd/export.ts` lines 222–292](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L222-L292) · sha256 `79e3bd1625f3…`
+Source: [`opencode/src/cli/cmd/export.ts` lines 222–292](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/cli/cmd/export.ts#L222-L292) · SHA-256 `79e3bd1625f3…`
 
 ```typescript
 export const ExportCommand = effectCmd({

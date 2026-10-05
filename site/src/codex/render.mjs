@@ -232,7 +232,7 @@ function renderDocument(document, ids) {
     body = `${filterBar(document.filter, wrapped.matched)}<div class="markdown-body">${wrapped.html}</div>`;
   }
   return {
-    path: document.path,
+    path: document.navKey ?? document.path,
     anchor,
     category: document.category,
     title: document.title ?? name,
@@ -321,6 +321,21 @@ export function renderSite({ categories, documents, status = null, profile = COD
     })),
     { path: "search-index.json", html: JSON.stringify(index), stats }
   ];
+}
+
+// Bulk source pages use the same chrome and entry renderer, but are rendered one at a time.
+// They never enter the full reference or its eager search payload.
+export function createStandaloneRenderer({ categories, documents, status = null, profile = CODEX_PROFILE }) {
+  const base = documents.map(document => renderDocument(document, new Set()));
+  return document => {
+    const current = renderDocument(document, new Set());
+    const rendered = [...base, current];
+    const routes = createRoutes(rendered);
+    const pageCategories = categories.map(category => category.label === "Evidence and archive"
+      ? { ...category, files: [...category.files, document] }
+      : category);
+    return renderPage({ categories: pageCategories, rendered, routes, current, status, profile });
+  };
 }
 
 function renderPage({ categories, rendered, routes, current = null, status = null, profile }) {
@@ -462,7 +477,7 @@ ${card ? `  <meta name="twitter:image" content="${origin}/${card.file}">
 ${tocStyles}
 ${filterStyles}
 ${guideStyles}
-${searchTriggerStyles}
+${searchTriggerStyles}${profile.additionalStyles ?? ""}
   </style>
 </head>
 <body>

@@ -69,7 +69,7 @@ function markdown(title, items, name) {
     groups.at(-1).items.push(item);
   }
   return `# OpenCode ${title}\n\n${INTROS[name] ? `${INTROS[name]} ` : ''}Release v${VERSION}, commit \`${COMMIT.slice(0, 12)}\`. ${evidenceNote}\n\n` + groups.map(group => `## ${group.label}\n\n` + group.items.map(item => {
-    const refs = item.provenance.map(p => `Source: [\`${p.file.split('/').at(-1)}\` lines ${p.startLine}–${p.endLine}](${p.url}) · sha256 \`${p.sha256.slice(0, 12)}…\``).join('\n\n');
+    const refs = item.provenance.map(p => `Source: [\`${p.file.split('/').at(-1)}\` lines ${p.startLine}–${p.endLine}](${p.url}) · SHA-256 \`${p.sha256.slice(0, 12)}…\``).join('\n\n');
     return `### ${item.title}\n\n${item.details.summary}\n\n**When:** ${item.details.condition}\n\n${refs}\n\n${fence(item.text, item.details.language ?? 'typescript')}\n`;
   }).join('\n')).join('\n');
 }
@@ -264,7 +264,7 @@ export function extract(source, options = {}) {
   const all = Object.values(groups).flat();
   outputs['key-findings.md'] = `# OpenCode key findings\n\nWhat OpenCode v${VERSION} does with the model's context, read from the shipped source at commit \`${COMMIT.slice(0, 12)}\`. Each finding shows the code that establishes it and when it applies; the full records are on the prompts, tools, configuration and network pages. ${evidenceNote}\n\n` + findings.map(([label, ids]) => `## ${label}\n\n` + ids.map(id => {
     const record = all.find(item => item.id === id);
-    const refs = record.provenance.map(p => `Source: [\`${p.file.replace(/^packages\//, '')}\` lines ${p.startLine}–${p.endLine}](${p.url}) · sha256 \`${p.sha256.slice(0, 12)}…\``).join('\n\n');
+    const refs = record.provenance.map(p => `Source: [\`${p.file.replace(/^packages\//, '')}\` lines ${p.startLine}–${p.endLine}](${p.url}) · SHA-256 \`${p.sha256.slice(0, 12)}…\``).join('\n\n');
     return `### ${record.title}\n\n${record.details.summary}\n\n**When:** ${record.details.condition}\n\n${refs}\n\n${fence(record.text, record.details.language ?? 'typescript')}\n`;
   }).join('\n')).join('\n') + '\n## Evidence limits\n\n' + limitations.map(text => `- ${text}`).join('\n') + '\n';
   Object.assign(outputs, full.outputs);

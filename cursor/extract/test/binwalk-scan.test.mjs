@@ -1,13 +1,12 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
 import { artifactDiff, asarInventory, cursorTargets, seaContainer } from "../binwalk-scan.mjs";
 
-const desktop = process.env.CURSOR_DESKTOP_APP || "/Applications/Cursor.app";
-const cli = process.env.CURSOR_AGENT_ROOT || path.join(os.homedir(), ".cursor/agent-cli/versions/2026.10.01-e373342");
+
+import { desktop, cli } from "./pinned-artifacts.mjs";
 
 test("current real Cursor SEA executables expose bounded, derived containers", { skip: !fs.existsSync(cli) }, () => {
   for (const name of ["cursor-agent-sea", "cursor-agent-worker-sea"]) {

@@ -101,7 +101,7 @@ test("keeps the reviewed compatibility records source-backed while the full UI m
 });
 
 test("regeneration is deterministic and committed outputs match", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
-  assert.deepEqual(readdirSync(outputs).sort(), Object.keys(generated).sort());
+  assert.deepEqual(readdirSync(outputs).sort(), [...Object.keys(generated), "all-source-text.md", "full-catalog"].sort());
   for (const [file, text] of Object.entries(generated)) assert.equal(readFileSync(path.join(outputs, file), "utf8"), text, file);
   const checked = spawnSync(process.execPath, [extractor, "--source", source, "--check"], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 });
   assert.equal(checked.status, 0, checked.stderr);

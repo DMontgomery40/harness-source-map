@@ -119,7 +119,7 @@ export function libraryMarkdown(id, title, items, { version, commit }) {
       const fence = fenceOf(item.text);
       const where = item.provenance.map((p, i) => {
         const lineRange = p.startLine === p.endLine ? `${p.startLine}` : `${p.startLine}–${p.endLine}`;
-        return `${i ? "Also in" : "Source"}: [\`${i ? p.file : path.basename(p.file)}\` line ${lineRange}](${p.url}) · sha256 \`${p.sha256.slice(0, 12)}…\``;
+        return `${i ? "Also in" : "Source"}: [\`${i ? p.file : path.basename(p.file)}\` line ${lineRange}](${p.url}) · SHA-256 \`${p.sha256.slice(0, 12)}…\``;
       });
       const judgment = [confidence(item) !== undefined && `Jev confidence ${confidence(item).toFixed(2)}`, roleLabel(item) && `role: ${roleLabel(item)}`].filter(Boolean).join(" · ");
       const alsoIn = item.details.alsoIn ? [`Also shown in the reviewed record *${item.details.alsoIn.title}*.`, ""] : [];

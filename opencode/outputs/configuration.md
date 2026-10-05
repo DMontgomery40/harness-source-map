@@ -10,7 +10,7 @@ Order: well-known remote config, global config, OPENCODE_CONFIG, project files, 
 
 **When:** Config.loadInstanceState merges enabled sources in source order; project/config-directory/organization/managed sources are conditional.
 
-Source: [`config.ts` lines 328–612](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L328-L612) · sha256 `65b210b8df3d…`
+Source: [`config.ts` lines 328–612](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L328-L612) · SHA-256 `65b210b8df3d…`
 
 ```typescript
     const loadInstanceState = Effect.fn("Config.loadInstanceState")(
@@ -306,7 +306,7 @@ Instructions concatenate and deduplicate when both layers provide them. Other fi
 
 **When:** Layer merges use mergeConfigConcatArrays during instance loading; global file loader has its own ordered merges.
 
-Source: [`config.ts` lines 40–52](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L40-L52) · sha256 `dbcf229e8ee2…`
+Source: [`config.ts` lines 40–52](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L40-L52) · SHA-256 `dbcf229e8ee2…`
 
 ```typescript
 // Custom merge function that concatenates array fields instead of replacing them
@@ -330,7 +330,7 @@ Loads config.json, opencode.json, then opencode.jsonc in that order.
 
 **When:** Global config is loaded before project layers.
 
-Source: [`config.ts` lines 260–293](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L260-L293) · sha256 `f615795c486e…`
+Source: [`config.ts` lines 260–293](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/config.ts#L260-L293) · SHA-256 `f615795c486e…`
 
 ```typescript
     const loadGlobal = Effect.fnUntraced(function* (env?: Record<string, string>) {
@@ -375,7 +375,7 @@ Project file list is reversed before merge. Config directories include global co
 
 **When:** OPENCODE_DISABLE_PROJECT_CONFIG excludes project discovery; OPENCODE_CONFIG_DIR appends an explicit directory.
 
-Source: [`paths.ts` lines 1–45](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/paths.ts#L1-L45) · sha256 `cd86a34461b2…`
+Source: [`paths.ts` lines 1–45](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/paths.ts#L1-L45) · SHA-256 `cd86a34461b2…`
 
 ```typescript
 export * as ConfigPaths from "./paths"
@@ -431,7 +431,7 @@ File references resolve relative to the config directory, with home expansion; f
 
 **When:** ConfigVariable.substitute expands {env:VAR} and {file:path} when config text is loaded.
 
-Source: [`variable.ts` lines 1–91](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/variable.ts#L1-L91) · sha256 `07b454c273d2…`
+Source: [`variable.ts` lines 1–91](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/variable.ts#L1-L91) · SHA-256 `07b454c273d2…`
 
 ```typescript
 export * as ConfigVariable from "./variable"
@@ -535,7 +535,7 @@ Markdown body becomes the agent prompt; frontmatter fields configure it.
 
 **When:** Config directories are scanned for agent/agents Markdown and legacy mode/modes Markdown.
 
-Source: [`agent.ts` lines 1–59](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/agent.ts#L1-L59) · sha256 `4844d4dfa48a…`
+Source: [`agent.ts` lines 1–59](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/config/agent.ts#L1-L59) · SHA-256 `4844d4dfa48a…`
 
 ```typescript
 export * as ConfigAgent from "./agent"
@@ -605,7 +605,7 @@ Configured agents can disable agents or override model, variant, prompt, descrip
 
 **When:** Agent.state merges default and user permissions, built-in agents and cfg.agent entries.
 
-Source: [`agent.ts` lines 119–294](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L119-L294) · sha256 `341c8521ec9d…`
+Source: [`agent.ts` lines 119–294](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L119-L294) · SHA-256 `341c8521ec9d…`
 
 ```typescript
         const defaults = Permission.fromConfig({
@@ -792,7 +792,7 @@ Agent choice determines prompt replacement, permissions and options applied late
 
 **When:** Configured default_agent is used when valid, visible and not subagent-only; otherwise the first visible primary/all agent wins.
 
-Source: [`agent.ts` lines 329–348](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L329-L348) · sha256 `30211d326003…`
+Source: [`agent.ts` lines 329–348](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L329-L348) · SHA-256 `30211d326003…`
 
 ```typescript
           const c = yield* config.get()
@@ -825,7 +825,7 @@ First existing global candidate wins. Project search tries AGENTS.md, CLAUDE.md 
 
 **When:** Instruction.system loads discovered instructions; Claude compatibility may be disabled and project config may be disabled.
 
-Source: [`instruction.ts` lines 58–178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L58-L178) · sha256 `58f5f531a3cf…`
+Source: [`instruction.ts` lines 58–178](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L58-L178) · SHA-256 `58f5f531a3cf…`
 
 ```typescript
     const flags = yield* RuntimeFlags.Service
@@ -957,7 +957,7 @@ Nearby instruction contents attach once per assistant message and are not a univ
 
 **When:** Instruction.resolve walks upward from the read target, within the instance directory, and excludes system/already-loaded/already-claimed files.
 
-Source: [`instruction.ts` lines 179–221](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L179-L221) · sha256 `480caef21d9f…`
+Source: [`instruction.ts` lines 179–221](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/instruction.ts#L179-L221) · SHA-256 `480caef21d9f…`
 
 ```typescript
     const resolve = Effect.fn("Instruction.resolve")(function* (
@@ -1013,7 +1013,7 @@ Includes native LLM, WebSockets, plan, code mode, LSP, question, references, ext
 
 **When:** RuntimeFlags service reads environment configuration; selected flags inherit OPENCODE_EXPERIMENTAL unless explicitly set.
 
-Source: [`runtime-flags.ts` lines 1–78](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L1-L78) · sha256 `5b580cb96f9d…`
+Source: [`runtime-flags.ts` lines 1–78](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/effect/runtime-flags.ts#L1-L78) · SHA-256 `5b580cb96f9d…`
 
 ```typescript
 import { Config, ConfigProvider, Context, Effect, Layer, Option } from "effect"
@@ -1102,7 +1102,7 @@ Includes config path/content/directory, project-config disablement, permission o
 
 **When:** Flag fields read process environment; selected controls are evaluated at access time.
 
-Source: [`flag.ts` lines 1–78](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L1-L78) · sha256 `f387ba5da5b2…`
+Source: [`flag.ts` lines 1–78](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/flag/flag.ts#L1-L78) · SHA-256 `f387ba5da5b2…`
 
 ```typescript
 import { Config } from "effect"

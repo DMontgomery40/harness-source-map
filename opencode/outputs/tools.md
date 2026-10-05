@@ -10,13 +10,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Model API ID includes gpt-, excludes oss and gpt-4; registry chooses apply_patch instead of edit/write.
 
-Source: [`apply_patch.txt` lines 1–33](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.txt#L1-L33) · sha256 `2e88f3a8fb30…`
+Source: [`apply_patch.txt` lines 1–33](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.txt#L1-L33) · SHA-256 `2e88f3a8fb30…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`apply_patch.ts` lines 1–313](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.ts#L1-L313) · sha256 `9bc5a1384a5e…`
+Source: [`apply_patch.ts` lines 1–313](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.ts#L1-L313) · SHA-256 `9bc5a1384a5e…`
 
 ````text
 Use the `apply_patch` tool to edit files. Your patch language is a stripped‑down, file‑oriented diff format designed to be easy to parse and safe to apply. You can think of it as a high‑level envelope:
@@ -60,9 +60,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Model API ID includes gpt-, excludes oss and gpt-4; registry chooses apply_patch instead of edit/write.
 
-Source: [`apply_patch.ts` lines 18–20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.ts#L18-L20) · sha256 `56727432bec5…`
+Source: [`apply_patch.ts` lines 18–20](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/apply_patch.ts#L18-L20) · SHA-256 `56727432bec5…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -78,13 +78,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.
 
-Source: [`edit.txt` lines 1–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.txt#L1-L10) · sha256 `4426ccf60241…`
+Source: [`edit.txt` lines 1–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.txt#L1-L10) · SHA-256 `4426ccf60241…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`edit.ts` lines 1–737](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L1-L737) · sha256 `f84d9d242137…`
+Source: [`edit.ts` lines 1–737](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L1-L737) · SHA-256 `f84d9d242137…`
 
 ```text
 Performs exact string replacements in files. 
@@ -105,9 +105,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.
 
-Source: [`edit.ts` lines 47–56](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L47-L56) · sha256 `a3ffe0066b44…`
+Source: [`edit.ts` lines 47–56](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/edit.ts#L47-L56) · SHA-256 `a3ffe0066b44…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -130,13 +130,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Built-in registry tool; final permission and user.tools filtering apply.
 
-Source: [`glob.txt` lines 1–6](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.txt#L1-L6) · sha256 `50b2d2c41d4b…`
+Source: [`glob.txt` lines 1–6](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.txt#L1-L6) · SHA-256 `50b2d2c41d4b…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`glob.ts` lines 1–76](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.ts#L1-L76) · sha256 `a5069377ae91…`
+Source: [`glob.ts` lines 1–76](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.ts#L1-L76) · SHA-256 `a5069377ae91…`
 
 ```text
 - Fast file pattern matching tool that works with any codebase size
@@ -153,9 +153,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Built-in registry tool; final permission and user.tools filtering apply.
 
-Source: [`glob.ts` lines 10–15](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.ts#L10-L15) · sha256 `6aa289507f2e…`
+Source: [`glob.ts` lines 10–15](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/glob.ts#L10-L15) · SHA-256 `6aa289507f2e…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -174,13 +174,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Built-in registry tool; final permission and user.tools filtering apply.
 
-Source: [`grep.txt` lines 1–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.txt#L1-L8) · sha256 `97fa2a992935…`
+Source: [`grep.txt` lines 1–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.txt#L1-L8) · SHA-256 `97fa2a992935…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`grep.ts` lines 1–115](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L1-L115) · sha256 `f7bbab8ae3fa…`
+Source: [`grep.ts` lines 1–115](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L1-L115) · SHA-256 `f7bbab8ae3fa…`
 
 ```text
 - Fast content search tool that works with any codebase size
@@ -199,9 +199,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Built-in registry tool; final permission and user.tools filtering apply.
 
-Source: [`grep.ts` lines 10–18](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L10-L18) · sha256 `26776eebb17e…`
+Source: [`grep.ts` lines 10–18](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/grep.ts#L10-L18) · SHA-256 `26776eebb17e…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -223,13 +223,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Registered only with experimentalLspTool enabled; final permission and user.tools filtering apply.
 
-Source: [`lsp.txt` lines 1–24](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.txt#L1-L24) · sha256 `8f25f3ea038c…`
+Source: [`lsp.txt` lines 1–24](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.txt#L1-L24) · SHA-256 `8f25f3ea038c…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`lsp.ts` lines 1–113](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L1-L113) · sha256 `993e1316f12a…`
+Source: [`lsp.ts` lines 1–113](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L1-L113) · SHA-256 `993e1316f12a…`
 
 ```text
 Interact with Language Server Protocol (LSP) servers to get code intelligence features.
@@ -264,9 +264,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Registered only with experimentalLspTool enabled; final permission and user.tools filtering apply.
 
-Source: [`lsp.ts` lines 23–35](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L23-L35) · sha256 `541d0324c621…`
+Source: [`lsp.ts` lines 23–35](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L23-L35) · SHA-256 `541d0324c621…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -292,11 +292,11 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Shipped description file, with no import or registry implementation found in pinned packages source; do not assume it is advertised.
 
-Source: [`plan-enter.txt` lines 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-enter.txt#L1-L14) · sha256 `c03e1829d0e0…`
+Source: [`plan-enter.txt` lines 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-enter.txt#L1-L14) · SHA-256 `c03e1829d0e0…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
 ```text
 Use this tool to suggest switching to plan agent when the user's request would benefit from planning before implementation.
@@ -323,13 +323,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Registered only with experimentalPlanMode enabled and client equal to cli; final permission and user.tools filtering apply.
 
-Source: [`plan-exit.txt` lines 1–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-exit.txt#L1-L13) · sha256 `00dba1a42959…`
+Source: [`plan-exit.txt` lines 1–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan-exit.txt#L1-L13) · SHA-256 `00dba1a42959…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`plan.ts` lines 1–79](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan.ts#L1-L79) · sha256 `cbe103563700…`
+Source: [`plan.ts` lines 1–79](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan.ts#L1-L79) · SHA-256 `cbe103563700…`
 
 ```text
 Use this tool when you have completed the planning phase and are ready to exit plan agent.
@@ -353,9 +353,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Registered only with experimentalPlanMode enabled and client equal to cli; final permission and user.tools filtering apply.
 
-Source: [`plan.ts` lines 13–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan.ts#L13-L13) · sha256 `b9baf0584f30…`
+Source: [`plan.ts` lines 13–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/plan.ts#L13-L13) · SHA-256 `b9baf0584f30…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({})
@@ -369,13 +369,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Registered when client is app, cli or desktop, or enableQuestionTool is set; final permission and user.tools filtering apply.
 
-Source: [`question.txt` lines 1–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.txt#L1-L10) · sha256 `c0a5776acd58…`
+Source: [`question.txt` lines 1–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.txt#L1-L10) · SHA-256 `c0a5776acd58…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`question.ts` lines 1–44](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.ts#L1-L44) · sha256 `15a90d87b9b9…`
+Source: [`question.ts` lines 1–44](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.ts#L1-L44) · SHA-256 `15a90d87b9b9…`
 
 ```text
 Use this tool when you need to ask the user questions during execution. This allows you to:
@@ -396,9 +396,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Registered when client is app, cli or desktop, or enableQuestionTool is set; final permission and user.tools filtering apply.
 
-Source: [`question.ts` lines 6–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.ts#L6-L8) · sha256 `dd1adf29943f…`
+Source: [`question.ts` lines 6–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/question.ts#L6-L8) · SHA-256 `dd1adf29943f…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -414,13 +414,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Built-in registry tool; nearby instruction files may be returned with real file contents; final permission and user.tools filtering apply.
 
-Source: [`read.txt` lines 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.txt#L1-L14) · sha256 `98ee843341c2…`
+Source: [`read.txt` lines 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.txt#L1-L14) · SHA-256 `98ee843341c2…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`read.ts` lines 1–386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.ts#L1-L386) · sha256 `afec8294965c…`
+Source: [`read.ts` lines 1–386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.ts#L1-L386) · SHA-256 `afec8294965c…`
 
 ```text
 Read a file or directory from the local filesystem. If the path does not exist, an error is returned.
@@ -445,9 +445,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Built-in registry tool; nearby instruction files may be returned with real file contents; final permission and user.tools filtering apply.
 
-Source: [`read.ts` lines 28–36](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.ts#L28-L36) · sha256 `54fe62542b50…`
+Source: [`read.ts` lines 28–36](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/read.ts#L28-L36) · SHA-256 `54fe62542b50…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -469,13 +469,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Built-in registry tool; executing it loads a real available skill; final permission and user.tools filtering apply.
 
-Source: [`skill.txt` lines 1–5](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.txt#L1-L5) · sha256 `226f63ce9fd5…`
+Source: [`skill.txt` lines 1–5](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.txt#L1-L5) · SHA-256 `226f63ce9fd5…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`skill.ts` lines 1–70](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L1-L70) · sha256 `629ada0c0a01…`
+Source: [`skill.ts` lines 1–70](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L1-L70) · SHA-256 `629ada0c0a01…`
 
 ```text
 Load a specialized skill when the task at hand matches one of the skills listed in the system prompt.
@@ -491,9 +491,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Built-in registry tool; executing it loads a real available skill; final permission and user.tools filtering apply.
 
-Source: [`skill.ts` lines 8–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L8-L10) · sha256 `b6537330c034…`
+Source: [`skill.ts` lines 8–10](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L8-L10) · SHA-256 `b6537330c034…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -509,13 +509,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Registry appends permitted subagent descriptions. experimentalBackgroundSubagents adds background guidance and changes the advertised parameter schema.
 
-Source: [`task.txt` lines 1–19](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.txt#L1-L19) · sha256 `220dcf4ad258…`
+Source: [`task.txt` lines 1–19](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.txt#L1-L19) · SHA-256 `220dcf4ad258…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`task.ts` lines 1–371](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L1-L371) · sha256 `db09fa5868ad…`
+Source: [`task.ts` lines 1–371](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L1-L371) · SHA-256 `db09fa5868ad…`
 
 ```text
 Launch a new agent to handle complex, multistep tasks autonomously.
@@ -545,9 +545,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Registry appends permitted subagent descriptions. experimentalBackgroundSubagents adds background guidance and changes the advertised parameter schema.
 
-Source: [`task.ts` lines 43–63](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L43-L63) · sha256 `854631995f4c…`
+Source: [`task.ts` lines 43–63](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L43-L63) · SHA-256 `854631995f4c…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 const BaseParameterFields = {
@@ -581,13 +581,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Built-in registry tool; final permission and user.tools filtering apply.
 
-Source: [`todowrite.txt` lines 1–44](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todowrite.txt#L1-L44) · sha256 `f214ea20cd87…`
+Source: [`todowrite.txt` lines 1–44](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todowrite.txt#L1-L44) · SHA-256 `f214ea20cd87…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`todo.ts` lines 1–46](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todo.ts#L1-L46) · sha256 `f18fdedc754e…`
+Source: [`todo.ts` lines 1–46](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todo.ts#L1-L46) · SHA-256 `f18fdedc754e…`
 
 ```text
 Create and maintain a structured task list for the current coding session. Tracks progress, organizes multi-step work, and surfaces status to the user.
@@ -642,9 +642,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Built-in registry tool; final permission and user.tools filtering apply.
 
-Source: [`todo.ts` lines 6–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todo.ts#L6-L8) · sha256 `b91fe2b5ce39…`
+Source: [`todo.ts` lines 6–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/todo.ts#L6-L8) · SHA-256 `b91fe2b5ce39…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -660,13 +660,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Built-in registry tool; final permission and user.tools filtering apply.
 
-Source: [`webfetch.txt` lines 1–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.txt#L1-L13) · sha256 `0da3ec7c3f6b…`
+Source: [`webfetch.txt` lines 1–13](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.txt#L1-L13) · SHA-256 `0da3ec7c3f6b…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`webfetch.ts` lines 1–192](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L1-L192) · sha256 `8d9efbad1ffd…`
+Source: [`webfetch.ts` lines 1–192](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L1-L192) · SHA-256 `8d9efbad1ffd…`
 
 ```text
 - Fetches content from a specified URL
@@ -690,9 +690,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Built-in registry tool; final permission and user.tools filtering apply.
 
-Source: [`webfetch.ts` lines 13–22](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L13-L22) · sha256 `33b92c7e578c…`
+Source: [`webfetch.ts` lines 13–22](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/webfetch.ts#L13-L22) · SHA-256 `33b92c7e578c…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -715,13 +715,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Advertised for opencode/opencode-go providers or enabled Exa/Parallel flags; {{year}} is replaced at tool initialization.
 
-Source: [`websearch.txt` lines 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.txt#L1-L14) · sha256 `f31c862691e3…`
+Source: [`websearch.txt` lines 1–14](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.txt#L1-L14) · SHA-256 `f31c862691e3…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`websearch.ts` lines 1–143](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L1-L143) · sha256 `edb175726b78…`
+Source: [`websearch.ts` lines 1–143](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L1-L143) · SHA-256 `edb175726b78…`
 
 ```text
 - Search the web using the session's web search provider - performs real-time web searches and can scrape content from specific URLs
@@ -746,9 +746,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Advertised for opencode/opencode-go providers or enabled Exa/Parallel flags; {{year}} is replaced at tool initialization.
 
-Source: [`websearch.ts` lines 10–25](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L10-L25) · sha256 `ff32dcd54afe…`
+Source: [`websearch.ts` lines 10–25](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/websearch.ts#L10-L25) · SHA-256 `ff32dcd54afe…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -777,13 +777,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.
 
-Source: [`write.txt` lines 1–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.txt#L1-L8) · sha256 `8b7197b6e3a8…`
+Source: [`write.txt` lines 1–8](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.txt#L1-L8) · SHA-256 `8b7197b6e3a8…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`write.ts` lines 1–104](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L1-L104) · sha256 `861de91cc678…`
+Source: [`write.ts` lines 1–104](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L1-L104) · SHA-256 `861de91cc678…`
 
 ```text
 Writes a file to the local filesystem.
@@ -802,9 +802,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Registry model selection does not choose apply_patch; final permission and user.tools filtering still apply.
 
-Source: [`write.ts` lines 20–25](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L20-L25) · sha256 `2bf9d3875bea…`
+Source: [`write.ts` lines 20–25](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L20-L25) · SHA-256 `2bf9d3875bea…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export const Parameters = Schema.Struct({
@@ -823,13 +823,13 @@ Exact shipped description template. Runtime initialization and tool.definition h
 
 **When:** Shell description is rendered for actual shell, platform, temporary directory, output limits and timeout; final permission and user.tools filtering apply.
 
-Source: [`shell.txt` lines 1–21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/shell.txt#L1-L21) · sha256 `0db1a899b3c4…`
+Source: [`shell.txt` lines 1–21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/shell.txt#L1-L21) · SHA-256 `0db1a899b3c4…`
 
-Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · sha256 `a8b24a6d58a8…`
+Source: [`registry.ts` lines 1–455](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L1-L455) · SHA-256 `a8b24a6d58a8…`
 
-Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · sha256 `90077551a9a4…`
+Source: [`request.ts` lines 1–228](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/llm/request.ts#L1-L228) · SHA-256 `90077551a9a4…`
 
-Source: [`shell.ts` lines 1–645](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell.ts#L1-L645) · sha256 `342d742ae324…`
+Source: [`shell.ts` lines 1–645](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell.ts#L1-L645) · SHA-256 `342d742ae324…`
 
 ```text
 ${intro}
@@ -861,9 +861,9 @@ Upstream TypeScript parameter declaration. This is source schema evidence, not a
 
 **When:** Shell description is rendered for actual shell, platform, temporary directory, output limits and timeout; final permission and user.tools filtering apply.
 
-Source: [`prompt.ts` lines 15–24](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L15-L24) · sha256 `e83af0a28b6b…`
+Source: [`prompt.ts` lines 15–24](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L15-L24) · SHA-256 `e83af0a28b6b…`
 
-Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · sha256 `123ae7e75b54…`
+Source: [`json-schema.ts` lines 1–164](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/json-schema.ts#L1-L164) · SHA-256 `123ae7e75b54…`
 
 ```typescript
 export function parameterSchema() {
@@ -886,7 +886,7 @@ tool.definition may alter descriptions or schemas. Task descriptions append perm
 
 **When:** ToolRegistry state combines built-ins, config-directory custom tools and plugin tools; model/flags/permissions affect advertised tools.
 
-Source: [`registry.ts` lines 120–353](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L120-L353) · sha256 `81af6d956205…`
+Source: [`registry.ts` lines 120–353](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/registry.ts#L120-L353) · SHA-256 `81af6d956205…`
 
 ```typescript
 
@@ -1131,7 +1131,7 @@ Schemas derive from ToolJsonSchema.fromTool then ProviderTransform.schema; descr
 
 **When:** SessionTools.resolve materializes registry tools for the selected model before LLM request preparation.
 
-Source: [`tools.ts` lines 91–134](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L91-L134) · sha256 `3d182c729418…`
+Source: [`tools.ts` lines 91–134](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L91-L134) · SHA-256 `3d182c729418…`
 
 ```typescript
 
@@ -1186,7 +1186,7 @@ Includes the dynamic sections omitted by the short shell.txt template. No local 
 
 **When:** ShellPrompt.render selects bash, PowerShell or cmd guidance using actual shell and platform, then substitutes output limits, timeout and temporary directory.
 
-Source: [`prompt.ts` lines 1–293](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L1-L293) · sha256 `f3c6bdb216a9…`
+Source: [`prompt.ts` lines 1–293](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L1-L293) · SHA-256 `f3c6bdb216a9…`
 
 ```typescript
 import { Schema } from "effect"
@@ -1490,7 +1490,7 @@ The registry also appends the current permitted subagent catalog.
 
 **When:** experimentalBackgroundSubagents enables additional description and background parameter; initialization chooses BaseParameters when the flag is disabled.
 
-Source: [`task.ts` lines 25–62](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L25-L62) · sha256 `4015d6915af9…`
+Source: [`task.ts` lines 25–62](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L25-L62) · SHA-256 `4015d6915af9…`
 
 ```typescript
 const BACKGROUND_DESCRIPTION = [
@@ -1539,7 +1539,7 @@ Parameters used internally and JSON Schema advertised to the model have differen
 
 **When:** TaskTool initializes using experimentalBackgroundSubagents.
 
-Source: [`task.ts` lines 360–369](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L360-L369) · sha256 `357493a27302…`
+Source: [`task.ts` lines 360–369](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/task.ts#L360-L369) · SHA-256 `357493a27302…`
 
 ```typescript
 
@@ -1560,7 +1560,7 @@ The confined orchestration script receives catalog instructions built from actua
 
 **When:** experimentalCodeMode enabled and registry finds a visible nonempty MCP catalog; execute replaces directly advertised MCP tools.
 
-Source: [`code-mode.ts` lines 12–64](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/code-mode.ts#L12-L64) · sha256 `4f5f1619f401…`
+Source: [`code-mode.ts` lines 12–64](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/code-mode.ts#L12-L64) · SHA-256 `4f5f1619f401…`
 
 ```typescript
 export const CODE_MODE_TOOL = "execute"
@@ -1624,7 +1624,7 @@ Source implementation includes its description and parameters; this does not est
 
 **When:** Registered built-in but excluded from activeTools; AI SDK repair path redirects unrecognized calls here.
 
-Source: [`invalid.ts` lines 1–21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/invalid.ts#L1-L21) · sha256 `2cc8ba3e9e24…`
+Source: [`invalid.ts` lines 1–21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/invalid.ts#L1-L21) · SHA-256 `2cc8ba3e9e24…`
 
 ```typescript
 import { Effect, Schema } from "effect"
@@ -1656,7 +1656,7 @@ Adds list_mcp_resources, list_mcp_resource_templates and read_mcp_resource with 
 
 **When:** At least one connected MCP server advertises resource capability.
 
-Source: [`tools.ts` lines 136–386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L136-L386) · sha256 `71f485cd95cd…`
+Source: [`tools.ts` lines 136–386](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L136-L386) · SHA-256 `71f485cd95cd…`
 
 ```typescript
   const hasMcpResourceServer = Object.values(yield* mcp.clients()).some(
@@ -1918,7 +1918,7 @@ MCP server tool names, descriptions and schemas are runtime additions, not a fix
 
 **When:** experimentalCodeMode disabled; connected MCP tools are converted and provider schemas are adapted before request filtering.
 
-Source: [`tools.ts` lines 388–502](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L388-L502) · sha256 `d6f2c497d0f4…`
+Source: [`tools.ts` lines 388–502](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/tools.ts#L388-L502) · SHA-256 `d6f2c497d0f4…`
 
 ```typescript
   if (flags.experimentalCodeMode) return tools
@@ -2044,7 +2044,7 @@ A dynamic final-answer tool is added alongside the resolved tools.
 
 **When:** Latest user format is json_schema; schema comes from that user request.
 
-Source: [`prompt.ts` lines 74–80](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L74-L80) · sha256 `5c15ede404e2…`
+Source: [`prompt.ts` lines 74–80](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L74-L80) · SHA-256 `5c15ede404e2…`
 
 ```typescript
 const STRUCTURED_OUTPUT_DESCRIPTION = `Use this tool to return your final response in the requested structured format.
@@ -2062,7 +2062,7 @@ InvalidArgumentsError produces model-facing rewrite guidance; tool outputs also 
 
 **When:** Tool wrapper rejects arguments that do not satisfy the advertised tool parameter decoder.
 
-Source: [`tool.ts` lines 17–34](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/tool.ts#L17-L34) · sha256 `e0a29316830a…`
+Source: [`tool.ts` lines 17–34](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/tool.ts#L17-L34) · SHA-256 `e0a29316830a…`
 
 ```typescript
 
@@ -2091,7 +2091,7 @@ Returns actual skill content with base-directory guidance and sampled files; the
 
 **When:** User/model invokes the skill tool for an available skill and permission succeeds.
 
-Source: [`skill.ts` lines 21–66](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L21-L66) · sha256 `151634f4deb4…`
+Source: [`skill.ts` lines 21–66](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/skill.ts#L21-L66) · SHA-256 `151634f4deb4…`
 
 ```typescript
       execute: (params: Schema.Schema.Type<typeof Parameters>, ctx: Tool.Context) =>
