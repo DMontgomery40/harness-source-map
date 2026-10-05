@@ -62,6 +62,16 @@ Record: `occ-1806ca1ead9c2a582fd78407`. Kind: prompt. Discovery: classified.
 3. Return only the fields you need from structured results; narrow unknown results before reading fields, and avoid returning large raw payloads.
 ```
 
+## packages/codemode/src/tool-runtime.ts:578 — 1. If needed, discover tools:  return await tools.$codemode.search({ que…
+
+Record: `occ-464fc25605220a9aa116ca27`. Kind: prompt. Discovery: classified.
+
+[packages/codemode/src/tool-runtime.ts:578-578](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L578-L578) — source SHA-256 `da739dce150eeadc76b8bcad5125eb9373b51830703e998f7008efeb18a83ded`; text SHA-256 `8cf41a6295219ec5c2f70756db95bbdbabd1a22367ee9f71d4d3ed28f1a407dd`.
+
+```text
+1. If needed, discover tools: `return await tools.$codemode.search({ query: "<intent + key nouns>" })`.
+```
+
 ## packages/codemode/src/tool-runtime.ts:579 — 2. In the next execution, copy a returned path exactly, call it, and ret…
 
 Record: `occ-773488df04dddea70bd91400`. Kind: prompt. Discovery: classified.
@@ -130,14 +140,4 @@ Record: `occ-a9e27fc42c761553c57e78e2`. Kind: prompt. Discovery: classified.
 
 ```text
 Modules/imports, classes, generators, timers, fetch, eval, prototype access, unlisted methods, and promise chaining are unavailable. Use Code Mode tools for external operations. Use await with try/catch.
-```
-
-## packages/tui/src/component/dialog-workspace-create.tsx:49 — system-reminder The user has changed the current working directory to "$…
-
-Record: `occ-0c269bf43877f3728e1c3bcc`. Kind: prompt. Discovery: classified.
-
-[packages/tui/src/component/dialog-workspace-create.tsx:49-49](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/component/dialog-workspace-create.tsx#L49-L49) — source SHA-256 `77b0c6af0708fd2ff18645acf9b0e7b3d5cca81b33ce553b0369c2dbcd5a96bd`; text SHA-256 `f85acdf6b1c542757ef985d3f35d91bf7d2d5a6d80feba53e8fd852e5306dd5b`.
-
-```text
-<system-reminder>The user has changed the current working directory to "${dir}". This is still the same project but at a possibly new location; take this into account when working with any files from now on.</system-reminder>
 ```

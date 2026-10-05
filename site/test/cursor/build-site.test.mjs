@@ -20,7 +20,10 @@ test("every shipped Cursor record is published on exactly one reference page, wi
   try {
     await symlink(viewer, path.join(dir, "trace"), "dir");
     await buildSite({ sourceRoot, outFile: path.join(dir, "dist/cursor/index.html"), categories });
-    const records = JSON.parse(await readFile(path.join(sourceRoot, "outputs/search-records.json"), "utf8")).items;
+    // The curated records and the Jev-classified discovered records, each on exactly one page.
+    const curated = JSON.parse(await readFile(path.join(sourceRoot, "outputs/source-records.json"), "utf8")).items;
+    const discovered = JSON.parse(await readFile(path.join(sourceRoot, "outputs/discovered-records.json"), "utf8")).items;
+    const records = [...curated, ...discovered];
     const index = JSON.parse(await readFile(path.join(dir, "dist/cursor/search-index.json"), "utf8"));
     const recordItems = index.items.filter(item => item.k !== "h");
     assert.equal(recordItems.length, records.length);
@@ -29,7 +32,6 @@ test("every shipped Cursor record is published on exactly one reference page, wi
     const home = await readFile(path.join(dir, "dist/cursor/index.html"), "utf8");
     assert.match(home, /Cursor Source Map/);
     assert.match(home, /3\.23\.12/);
-    assert.match(home, /not published/);
     assert.doesNotMatch(home, /Good takes/);
     const instructions = await readFile(path.join(dir, "dist/cursor/model-instructions/index.html"), "utf8");
     assert.match(instructions, /Base agent instructions 1/);
@@ -47,5 +49,5 @@ test("every shipped Cursor record is published on exactly one reference page, wi
 
 test("a partial records page refuses a selection that does not match its sections", async () => {
   const file = { slug: "x", path: "outputs/source-records.md", records: { file: "outputs/search-records.json" }, includeRecord: () => true };
-  await assert.rejects(selectRecordSections({ sourceRoot, file, markdown: "# Title\n\n## Only one\n\ntext\n" }), /records selected, 1 sections found/);
+  await assert.rejects(selectRecordSections({ sourceRoot, file, markdown: "# Title\n\n## Only one\n\ntext\n" }), /records selected from, 1 sections found/);
 });

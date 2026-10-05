@@ -52,7 +52,7 @@ function publish(outputs, out, check) {
 }
 
 export async function refresh(options) {
-  const prepared = options.prepared ?? buildFullLibrary(options.source);
+  const prepared = options.prepared ?? buildFullLibrary(options.source, { work: options.work });
   mkdirSync(options.work, { recursive: true });
   const identity = prepared.closure.identity;
   const local = {

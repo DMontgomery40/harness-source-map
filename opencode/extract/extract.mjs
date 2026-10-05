@@ -6,6 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { records, toolFiles } from './catalog.mjs';
 import { buildFullLibrary } from './lib/full-library.mjs';
+import { cliCommands, environmentVariables } from './lib/structured.mjs';
 
 export const VERSION = '1.18.34';
 export const COMMIT = 'aec0b9a6d8898f68f923aaf08b7306d931fd9d76';
@@ -26,6 +27,17 @@ function markdown(title, items) {
     const refs = item.provenance.map(p => `- [${p.file}:${p.startLine}-${p.endLine}](${p.url}) — SHA-256 \`${p.sha256}\``).join('\n');
     return `## ${item.title}\n\nRecord: \`${item.id}\`. Kind: ${item.details.kind}.\n\n${item.details.summary}\n\nCondition: ${item.details.condition}\n\n${refs}\n\n${fence(item.text, item.details.language ?? 'typescript')}\n`;
   }).join('\n');
+}
+
+// Grouped records: a group heading, then each record with its read or declaration sites.
+function structuredMarkdown(title, items) {
+  const groups = new Map();
+  for (const item of items) (groups.get(item.group) ?? groups.set(item.group, []).get(item.group)).push(item);
+  return `# OpenCode ${title}\n\nRelease: v${VERSION}. Upstream commit: ${COMMIT}.\n\n${evidenceNote}\n\nRead structurally from every non-test source file in the pinned workspace closure. ${items.length} records.\n\n` + [...groups].map(([group, records]) => `## ${group}\n\n` + records.map(item => {
+    const refs = item.provenance.map(p => `- [${p.file}:${p.startLine}](${p.url})`).join('\n');
+    const facts = [item.details.type && `Type: \`${item.details.type}\`.`, item.details.alias && `Alias: \`${item.details.alias}\`.`, item.details.readers && `Read through: ${item.details.readers.join(', ')}.`].filter(Boolean).join(' ');
+    return `### ${item.title}\n\n${item.text}${facts ? `\n\n${facts}` : ''}\n\n${refs}\n`;
+  }).join('\n')).join('\n');
 }
 
 const promptConditions = {
@@ -197,6 +209,16 @@ export function extract(source, options = {}) {
     return `## ${record.title}\n\n${record.details.summary}\n\nCondition: ${record.details.condition}\n\n[Public source](${record.provenance[0].url}).\n`;
   }).join('\n') + '\n## Evidence limits\n\n' + limitations.map(text => `- ${text}`).join('\n') + '\n';
   Object.assign(outputs, full.outputs);
+  // Env vars and CLI commands/flags, read structurally from the same closure.
+  const meta = { version: VERSION, commit: COMMIT, upstream: UPSTREAM };
+  const structured = [
+    ['env-vars', 'environment variables', environmentVariables(full.closure, meta)],
+    ['cli', 'CLI commands and flags', cliCommands(full.closure, meta)]
+  ];
+  for (const [name, title, items] of structured) {
+    outputs[`${name}.json`] = JSON.stringify(inventory(items), null, 2) + '\n';
+    outputs[`${name}.md`] = structuredMarkdown(title, items);
+  }
   return outputs;
 }
 

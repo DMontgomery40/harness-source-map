@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { discoveryQuestions, packQuestions, textHash } from "../../../codex/extract/codex/lib/jev-discovery.mjs";
 import { PrivacyError, privacyScan } from "../../../codex/extract/codex/lib/privacy.mjs";
 import { decodeLiteral, literalsOf } from "./ts-literals.mjs";
@@ -317,9 +318,21 @@ export function prepareDiscovery(discovery, options = {}) {
   return { status, batches: packed.batches.length, payloadBytes, eligible: ready.length, oversized: packed.oversized.length, withheld: [...status.values()].filter((item) => item.status === "withheld").length };
 }
 
-export function buildFullLibrary(source, { judgments, prepared } = {}) {
+// The broad classification ledger refresh.mjs keeps for a source identity (in opencode/work, which is
+// not committed). With it, an ordinary regeneration reproduces the published classified libraries.
+export const WORK = fileURLToPath(new URL("../../work/", import.meta.url));
+export function savedJudgments(identity, work = WORK) {
+  const file = path.join(work, `opencode-discovery-${identity}.json`);
+  if (!existsSync(file)) return undefined;
+  const ledger = JSON.parse(readFileSync(file, "utf8"));
+  if (ledger.source?.identity !== identity) throw new Error(`Jev ledger ${file} is for another source identity`);
+  return ledger.records;
+}
+
+export function buildFullLibrary(source, { judgments, prepared, work } = {}) {
   const closure = prepared?.closure ?? buildSourceClosure(source);
   const discovery = prepared?.discovery ?? discoverOccurrences(closure);
+  judgments ??= savedJudgments(closure.identity, work);
   const preparation = prepareDiscovery(discovery);
   const judged = judgments ? new Map(judgments.map((record) => [record.id, record])) : new Map();
   const libraries = new Map(LIBRARIES.map(([id]) => [id, []]));

@@ -121,10 +121,15 @@ export async function evaluateBatch(config, payload, version, options, usage = {
   return body;
 }
 
+export const providerSafeText = text => text.isWellFormed() && !/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\uFDD0-\uFDEF\uFFFE\uFFFF]/.test(text);
+
 export async function classifySources(config, sources, options = {}) {
   options = {cache:memoryCache(),concurrency:4,...options};
   const records = sources.map(s=>({...s,text_sha256:textHash(s.text)})), ready=[], usage={}, models=new Set();
   for (const record of records) {
+    // The provider rejects a whole batch (HTTP 400 "invalid Unicode text") for a lone surrogate, NUL,
+    // other C0 controls or a noncharacter; such sources go to local review instead.
+    if (typeof record.text==='string'&&!providerSafeText(record.text)) { Object.assign(record,{status:'withheld',reason:'Source contains control characters, noncharacters or ill-formed Unicode that the provider rejects; needs local review'}); continue; }
     try {
       const questions=discoveryQuestions(record,options);
       ready.push({record,questions:options.screenOnly?{model_facing:questions.model_facing}:questions});
@@ -149,6 +154,13 @@ export async function classifySources(config, sources, options = {}) {
       } catch (e) {
         if (e instanceof JevAnswerError) {
           batch.forEach(({record})=>Object.assign(record,{status:'unanswered',reason:e.message}));
+          continue;
+        }
+        // The provider rejects a whole batch for text it will not accept as Unicode, naming no item:
+        // each item is asked alone, and an item rejected alone goes to local review.
+        if (e instanceof JevRequestError && / 400: .*invalid Unicode/i.test(e.message)) {
+          if (batch.length>1) queue.unshift(...batch.map(item=>[item]));
+          else Object.assign(batch[0].record,{status:'withheld',reason:'The provider rejected this source text as invalid Unicode; needs local review'});
           continue;
         }
         if (!(e instanceof JevUnavailableError)) throw e;

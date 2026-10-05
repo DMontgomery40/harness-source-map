@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { classifySources, packQuestions, validateAnswers, verifyCoverage } from '../lib/jev-discovery.mjs';
+import { classifySources, packQuestions, validateAnswers, verifyCoverage, providerSafeText } from '../lib/jev-discovery.mjs';
 import { decisionConfig, JevRequestError } from '../lib/jev-provider.mjs';
 
 const config = decisionConfig({ TYPESAFE_API_KEY: 'test-key' }, () => '');
@@ -155,4 +155,9 @@ test('cache binds the full batch, question wording and Choice order', async () =
   await classifySources(config,[source],{...opts,reverseRoles:true});
   await classifySources(config,[{...source,text:source.text+' Only after approval.'}],opts);
   assert.equal(calls,3);
+});
+
+test("text the provider rejects as invalid Unicode is kept for local review, not sent", () => {
+  assert.equal(providerSafeText("Plain prompt text\twith tabs\nand newlines."), true);
+  for (const bad of ["nul\u0000byte", "bell\u0007", "escape\u001b[0m", "lone \ud800 surrogate", "nonchar \uffff"]) assert.equal(providerSafeText(bad), false, JSON.stringify(bad));
 });

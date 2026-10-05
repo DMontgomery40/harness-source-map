@@ -20,16 +20,6 @@ When combining:
 - Update "Objective" and "Next Move" to reflect the current work state.
 ```
 
-## packages/core/src/session/compaction.ts:161 — Here is the conversation so far: n n conversation  n${input.context.join…
-
-Record: `occ-cb422a972b237d132a9aa303`. Kind: prompt. Discovery: classified.
-
-[packages/core/src/session/compaction.ts:161-161](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/session/compaction.ts#L161-L161) — source SHA-256 `743cbc108627273da25b18c4b394bd85ba08f18f50cf64ccd5a763da31633397`; text SHA-256 `e5665b66cce66c80de0cb023264d7d791799d6c6db9c09ba6cdf373241b817db`.
-
-```text
-Here is the conversation so far:\n\n<conversation>\n${input.context.join("\n\n")}\n</conversation>
-```
-
 ## packages/core/src/session/compaction.ts:165 — Create a new anchored summary from the conversation history in the  conv…
 
 Record: `occ-da3e6512b6a9742e95c62d1d`. Kind: prompt. Discovery: classified.
@@ -130,16 +120,6 @@ Record: `occ-69032b247f5f992e8af39d62`. Kind: prompt. Discovery: classified.
 
 ```text
 Summarize the task tool output above and continue with your task.
-```
-
-## packages/opencode/src/session/prompt.ts:985 — Use the above message and context to generate a prompt and call the task…
-
-Record: `occ-faf81db5744f271d60ae6efa`. Kind: prompt. Discovery: classified.
-
-[packages/opencode/src/session/prompt.ts:985-985](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/session/prompt.ts#L985-L985) — source SHA-256 `a904daacc648ddcf08f03bf3ec84d935c3c861c0ff828f596aa7729e67660047`; text SHA-256 `7aa53f983c284a39bdb06d7371492074e129181715524f5de0db7077b3ab097d`.
-
-```text
- Use the above message and context to generate a prompt and call the task tool with subagent: 
 ```
 
 ## packages/opencode/src/session/system.ts:76 — You are powered by the model named ${model.api.id}. The exact model ID i…

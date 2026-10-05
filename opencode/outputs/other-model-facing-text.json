@@ -34,27 +34,28 @@
         "reason": null,
         "modelFacing": {
           "type": "noul",
-          "noul": 0.84
+          "noul": 0.85
         },
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.19,
           "probabilities": {
-            "parameter": 0,
+            "documentation": 0.22,
+            "code_data": 0.25,
             "user_template": 0.01,
-            "instructions": 0.28,
-            "context": 0.05,
-            "tool": 0.14,
             "unknown": 0.01,
-            "human": 0.03,
-            "code_data": 0.24,
-            "documentation": 0.24
-          },
-          "confidence": 0.18
+            "human": 0.04,
+            "parameter": 0,
+            "context": 0.06,
+            "instructions": 0.27,
+            "tool": 0.14
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.42,
+          "score": 2.45,
+          "confidence": 0.45,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -62,12 +63,11 @@
             "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
           },
           "probabilities": {
-            "0": 0.06,
-            "1": 0.08,
-            "2": 0.25,
-            "3": 0.61
-          },
-          "confidence": 0.42
+            "0": 0.05,
+            "1": 0.07,
+            "2": 0.24,
+            "3": 0.64
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -101,27 +101,28 @@
         "reason": null,
         "modelFacing": {
           "type": "noul",
-          "noul": 0.81
+          "noul": 0.82
         },
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.22,
           "probabilities": {
-            "parameter": 0,
-            "user_template": 0,
-            "context": 0.1,
-            "instructions": 0.39,
-            "tool": 0.09,
-            "human": 0.01,
+            "documentation": 0.14,
+            "code_data": 0.28,
             "unknown": 0.01,
-            "code_data": 0.27,
-            "documentation": 0.13
-          },
-          "confidence": 0.3
+            "user_template": 0,
+            "human": 0.01,
+            "parameter": 0,
+            "instructions": 0.31,
+            "tool": 0.15,
+            "context": 0.1
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.4,
+          "score": 2.46,
+          "confidence": 0.46,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -130,11 +131,10 @@
           },
           "probabilities": {
             "0": 0.06,
-            "1": 0.1,
-            "2": 0.24,
-            "3": 0.6
-          },
-          "confidence": 0.4
+            "1": 0.08,
+            "2": 0.21,
+            "3": 0.65
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -168,27 +168,28 @@
         "reason": null,
         "modelFacing": {
           "type": "noul",
-          "noul": 0.86
+          "noul": 0.85
         },
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.47,
           "probabilities": {
-            "parameter": 0,
+            "documentation": 0.04,
+            "code_data": 0.33,
             "user_template": 0,
-            "instructions": 0.56,
-            "context": 0.03,
-            "tool": 0.06,
-            "human": 0,
             "unknown": 0.01,
-            "code_data": 0.28,
-            "documentation": 0.05
-          },
-          "confidence": 0.5
+            "human": 0,
+            "parameter": 0,
+            "context": 0.04,
+            "tool": 0.05,
+            "instructions": 0.53
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.4,
+          "score": 2.39,
+          "confidence": 0.39,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -198,10 +199,9 @@
           "probabilities": {
             "0": 0.03,
             "1": 0.12,
-            "2": 0.28,
-            "3": 0.57
-          },
-          "confidence": 0.4
+            "2": 0.26,
+            "3": 0.59
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -240,22 +240,23 @@
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.62,
           "probabilities": {
-            "parameter": 0,
+            "documentation": 0.07,
+            "code_data": 0.17,
+            "unknown": 0.01,
             "user_template": 0,
-            "instructions": 0.62,
+            "human": 0,
+            "parameter": 0,
             "context": 0.01,
             "tool": 0.07,
-            "unknown": 0.01,
-            "human": 0,
-            "code_data": 0.19,
-            "documentation": 0.1
-          },
-          "confidence": 0.57
+            "instructions": 0.66
+          }
         },
         "sourceDirectness": {
           "type": "score",
           "score": 2.51,
+          "confidence": 0.51,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -264,11 +265,10 @@
           },
           "probabilities": {
             "0": 0.01,
-            "1": 0.1,
-            "2": 0.25,
-            "3": 0.64
-          },
-          "confidence": 0.51
+            "1": 0.09,
+            "2": 0.27,
+            "3": 0.63
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -302,27 +302,28 @@
         "reason": null,
         "modelFacing": {
           "type": "noul",
-          "noul": 0.82
+          "noul": 0.84
         },
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.57,
           "probabilities": {
-            "documentation": 0.18,
-            "unknown": 0.01,
+            "documentation": 0.2,
+            "code_data": 0.09,
+            "tool": 0.07,
             "user_template": 0.01,
-            "code_data": 0.08,
-            "human": 0,
-            "instructions": 0.59,
             "parameter": 0,
-            "tool": 0.12,
-            "context": 0.01
-          },
-          "confidence": 0.54
+            "human": 0,
+            "context": 0.01,
+            "instructions": 0.61,
+            "unknown": 0.01
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.05,
+          "score": 2.07,
+          "confidence": 0.07,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -334,8 +335,7 @@
             "1": 0.19,
             "2": 0.36,
             "3": 0.38
-          },
-          "confidence": 0.05
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -374,22 +374,23 @@
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.61,
           "probabilities": {
-            "documentation": 0.14,
-            "unknown": 0.01,
-            "user_template": 0.01,
+            "documentation": 0.12,
             "code_data": 0.16,
+            "tool": 0.04,
+            "user_template": 0.01,
+            "parameter": 0,
             "human": 0,
             "context": 0.01,
-            "parameter": 0,
-            "tool": 0.05,
-            "instructions": 0.62
-          },
-          "confidence": 0.58
+            "instructions": 0.65,
+            "unknown": 0.01
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.21,
+          "score": 2.08,
+          "confidence": 0.08,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -397,12 +398,78 @@
             "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
           },
           "probabilities": {
-            "0": 0.04,
-            "1": 0.19,
+            "0": 0.05,
+            "1": 0.23,
             "2": 0.3,
-            "3": 0.47
+            "3": 0.42
+          }
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    },
+    {
+      "id": "occ-464fc25605220a9aa116ca27",
+      "title": "packages/codemode/src/tool-runtime.ts:578 — 1. If needed, discover tools:  return await tools.$codemode.search({ que…",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "1. If needed, discover tools: `return await tools.$codemode.search({ query: \"<intent + key nouns>\" })`.",
+      "provenance": [
+        {
+          "file": "packages/codemode/src/tool-runtime.ts",
+          "startLine": 578,
+          "endLine": 578,
+          "startOffset": 23671,
+          "endOffset": 23776,
+          "sha256": "da739dce150eeadc76b8bcad5125eb9373b51830703e998f7008efeb18a83ded",
+          "textSha256": "8cf41a6295219ec5c2f70756db95bbdbabd1a22367ee9f71d4d3ed28f1a407dd",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/codemode/src/tool-runtime.ts#L578-L578"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "literal"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.82
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.29,
+          "probabilities": {
+            "documentation": 0.21,
+            "code_data": 0.18,
+            "tool": 0.2,
+            "user_template": 0,
+            "parameter": 0,
+            "human": 0,
+            "context": 0.02,
+            "instructions": 0.38,
+            "unknown": 0.01
+          }
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 1.88,
+          "confidence": 0,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
           },
-          "confidence": 0.21
+          "probabilities": {
+            "0": 0.12,
+            "1": 0.23,
+            "2": 0.31,
+            "3": 0.34
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -441,22 +508,23 @@
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.7,
           "probabilities": {
-            "documentation": 0.06,
-            "unknown": 0.01,
+            "documentation": 0.07,
+            "code_data": 0.16,
+            "tool": 0.03,
             "user_template": 0,
-            "instructions": 0.76,
+            "parameter": 0,
             "human": 0,
             "context": 0.01,
-            "parameter": 0,
-            "tool": 0.03,
-            "code_data": 0.13
-          },
-          "confidence": 0.74
+            "instructions": 0.72,
+            "unknown": 0.01
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.48,
+          "score": 2.43,
+          "confidence": 0.43,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -464,12 +532,11 @@
             "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
           },
           "probabilities": {
-            "0": 0.02,
-            "1": 0.09,
-            "2": 0.27,
-            "3": 0.62
-          },
-          "confidence": 0.48
+            "0": 0.03,
+            "1": 0.1,
+            "2": 0.3,
+            "3": 0.57
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -503,27 +570,28 @@
         "reason": null,
         "modelFacing": {
           "type": "noul",
-          "noul": 0.89
+          "noul": 0.88
         },
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.81,
           "probabilities": {
-            "unknown": 0,
             "documentation": 0.02,
+            "code_data": 0.1,
+            "tool": 0.03,
             "user_template": 0,
-            "context": 0.01,
-            "human": 0,
-            "instructions": 0.84,
             "parameter": 0,
-            "tool": 0.02,
-            "code_data": 0.11
-          },
-          "confidence": 0.81
+            "human": 0,
+            "context": 0.01,
+            "instructions": 0.84,
+            "unknown": 0
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.42,
+          "score": 2.4,
+          "confidence": 0.4,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -531,12 +599,11 @@
             "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
           },
           "probabilities": {
-            "0": 0.04,
+            "0": 0.03,
             "1": 0.09,
-            "2": 0.28,
-            "3": 0.59
-          },
-          "confidence": 0.42
+            "2": 0.31,
+            "3": 0.57
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -575,22 +642,23 @@
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.78,
           "probabilities": {
             "documentation": 0.05,
-            "unknown": 0,
+            "code_data": 0.12,
+            "tool": 0.01,
             "user_template": 0,
-            "context": 0.01,
-            "human": 0,
-            "instructions": 0.8,
             "parameter": 0,
-            "code_data": 0.11,
-            "tool": 0.02
-          },
-          "confidence": 0.77
+            "human": 0,
+            "context": 0.01,
+            "instructions": 0.8,
+            "unknown": 0.01
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.37,
+          "score": 2.38,
+          "confidence": 0.38,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -602,8 +670,7 @@
             "1": 0.11,
             "2": 0.27,
             "3": 0.57
-          },
-          "confidence": 0.37
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -637,27 +704,28 @@
         "reason": null,
         "modelFacing": {
           "type": "noul",
-          "noul": 0.83
+          "noul": 0.82
         },
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.44,
           "probabilities": {
-            "unknown": 0.01,
-            "instructions": 0.5,
+            "documentation": 0.12,
+            "code_data": 0.2,
+            "tool": 0.13,
             "user_template": 0,
-            "documentation": 0.1,
+            "parameter": 0,
             "human": 0,
             "context": 0.03,
-            "parameter": 0,
-            "tool": 0.13,
-            "code_data": 0.23
-          },
-          "confidence": 0.44
+            "instructions": 0.51,
+            "unknown": 0.01
+          }
         },
         "sourceDirectness": {
           "type": "score",
           "score": 1.9,
+          "confidence": 0.27,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -665,12 +733,11 @@
             "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
           },
           "probabilities": {
-            "0": 0.08,
-            "1": 0.25,
-            "2": 0.36,
-            "3": 0.31
-          },
-          "confidence": 0.28
+            "0": 0.09,
+            "1": 0.24,
+            "2": 0.35,
+            "3": 0.32
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -704,27 +771,28 @@
         "reason": null,
         "modelFacing": {
           "type": "noul",
-          "noul": 0.82
+          "noul": 0.84
         },
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.4,
           "probabilities": {
-            "documentation": 0.27,
-            "context": 0.02,
+            "documentation": 0.32,
+            "code_data": 0.15,
+            "tool": 0.03,
             "user_template": 0,
-            "unknown": 0.01,
-            "human": 0,
-            "instructions": 0.49,
             "parameter": 0,
-            "tool": 0.04,
-            "code_data": 0.17
-          },
-          "confidence": 0.42
+            "human": 0,
+            "context": 0.02,
+            "instructions": 0.47,
+            "unknown": 0.01
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 1.96,
+          "score": 2.02,
+          "confidence": 0.02,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -732,12 +800,11 @@
             "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
           },
           "probabilities": {
-            "0": 0.13,
+            "0": 0.11,
             "1": 0.18,
-            "2": 0.28,
-            "3": 0.41
-          },
-          "confidence": 0
+            "2": 0.29,
+            "3": 0.42
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -776,22 +843,23 @@
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.66,
           "probabilities": {
-            "documentation": 0.09,
-            "unknown": 0.01,
-            "user_template": 0,
-            "context": 0.03,
-            "human": 0,
-            "instructions": 0.76,
-            "parameter": 0,
+            "documentation": 0.12,
+            "code_data": 0.1,
             "tool": 0.03,
-            "code_data": 0.08
-          },
-          "confidence": 0.71
+            "user_template": 0,
+            "parameter": 0,
+            "human": 0,
+            "context": 0.04,
+            "instructions": 0.7,
+            "unknown": 0.01
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.52,
+          "score": 2.5,
+          "confidence": 0.5,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -801,10 +869,9 @@
           "probabilities": {
             "0": 0.02,
             "1": 0.07,
-            "2": 0.26,
-            "3": 0.65
-          },
-          "confidence": 0.52
+            "2": 0.29,
+            "3": 0.62
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }
@@ -838,27 +905,28 @@
         "reason": null,
         "modelFacing": {
           "type": "noul",
-          "noul": 0.86
+          "noul": 0.85
         },
         "semanticRole": {
           "type": "choice",
           "choice": "instructions",
+          "confidence": 0.64,
           "probabilities": {
-            "instructions": 0.71,
-            "documentation": 0.04,
-            "code_data": 0.2,
+            "documentation": 0.05,
+            "tool": 0.01,
+            "context": 0.03,
             "parameter": 0,
             "human": 0,
-            "user_template": 0,
             "unknown": 0.01,
-            "tool": 0.01,
-            "context": 0.03
-          },
-          "confidence": 0.67
+            "code_data": 0.22,
+            "user_template": 0,
+            "instructions": 0.68
+          }
         },
         "sourceDirectness": {
           "type": "score",
-          "score": 2.71,
+          "score": 2.66,
+          "confidence": 0.66,
           "legend": {
             "0": "No evidence of model delivery; human text, code or unrelated data.",
             "1": "Prompt-like words only; usage is unknown or could be human documentation.",
@@ -867,78 +935,10 @@
           },
           "probabilities": {
             "0": 0.01,
-            "1": 0.04,
-            "2": 0.18,
-            "3": 0.77
-          },
-          "confidence": 0.71
-        },
-        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
-      }
-    },
-    {
-      "id": "occ-0c269bf43877f3728e1c3bcc",
-      "title": "packages/tui/src/component/dialog-workspace-create.tsx:49 — system-reminder The user has changed the current working directory to \"$…",
-      "kind": "prompt",
-      "version": "1.18.34",
-      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
-      "text": "<system-reminder>The user has changed the current working directory to \"${dir}\". This is still the same project but at a possibly new location; take this into account when working with any files from now on.</system-reminder>",
-      "provenance": [
-        {
-          "file": "packages/tui/src/component/dialog-workspace-create.tsx",
-          "startLine": 49,
-          "endLine": 49,
-          "startOffset": 1768,
-          "endOffset": 1995,
-          "sha256": "77b0c6af0708fd2ff18645acf9b0e7b3d5cca81b33ce553b0369c2dbcd5a96bd",
-          "textSha256": "f85acdf6b1c542757ef985d3f35d91bf7d2d5a6d80feba53e8fd852e5306dd5b",
-          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/tui/src/component/dialog-workspace-create.tsx#L49-L49"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "sourceRole": {
-          "kind": "literal"
-        },
-        "discoveryStatus": "classified",
-        "reason": null,
-        "modelFacing": {
-          "type": "noul",
-          "noul": 0.8
-        },
-        "semanticRole": {
-          "type": "choice",
-          "choice": "context",
-          "probabilities": {
-            "unknown": 0.01,
-            "context": 0.34,
-            "tool": 0,
-            "code_data": 0.29,
-            "parameter": 0,
-            "human": 0.07,
-            "instructions": 0.28,
-            "user_template": 0.01,
-            "documentation": 0
-          },
-          "confidence": 0.25
-        },
-        "sourceDirectness": {
-          "type": "score",
-          "score": 2.01,
-          "legend": {
-            "0": "No evidence of model delivery; human text, code or unrelated data.",
-            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
-            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
-            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
-          },
-          "probabilities": {
-            "0": 0.08,
-            "1": 0.12,
-            "2": 0.51,
-            "3": 0.29
-          },
-          "confidence": 0.43
+            "1": 0.05,
+            "2": 0.21,
+            "3": 0.73
+          }
         },
         "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
       }

@@ -7,7 +7,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { extract } from "../extract.mjs";
-import { buildFullLibrary, COMMIT, VERSION } from "../lib/full-library.mjs";
+import { buildFullLibrary, COMMIT, savedJudgments, VERSION } from "../lib/full-library.mjs";
+import { cliCommands, environmentVariables } from "../lib/structured.mjs";
 import { refresh } from "../refresh.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
@@ -54,21 +55,21 @@ test("local preparation inventories every eligible occurrence and retains parse/
   assert.equal(new Set(discovery.records.map((record) => record.id)).size, discovery.records.length);
 });
 
-test("typed libraries assign every discovered occurrence exactly once and expose an index contract", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
+test("typed libraries publish each classified positive exactly once and account for every occurrence", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
   const catalog = JSON.parse(prepared.outputs["library-catalog.json"]);
   const discovery = JSON.parse(prepared.outputs["discovery-inventory.json"]);
   const ids = catalog.libraries.flatMap((library) => library.recordIds);
-  assert.equal(ids.length, prepared.discovery.records.length);
+  assert.equal(discovery.items.length, prepared.discovery.records.length);
   assert.equal(new Set(ids).size, ids.length);
-  assert.deepEqual(new Set(ids), new Set(discovery.items.map((item) => item.id)));
+  assert.deepEqual(new Set(ids), new Set(discovery.items.filter((item) => item.publication === "typed-positive").map((item) => item.id)));
   for (const required of ["model-instructions", "conversation-prompts", "tools-schemas", "agents", "skills-plugins-mcp", "providers-models-network-reasoning", "sessions-compaction-storage-export", "approvals-sandboxing", "configuration-precedence", "environment-variables", "cli-commands-flags", "other-model-facing-text"]) {
     assert.ok(catalog.libraries.some((library) => library.id === required), `missing library ${required}`);
   }
-  assert.ok(catalog.libraries.find((library) => library.id === "environment-variables").count > 0);
   const coverage = JSON.parse(prepared.outputs["discovery-coverage.json"]);
-  assert.equal(coverage.status, "pending-provider");
-  assert.equal(coverage.classifiedPositives, 0);
-  assert.equal(coverage.pending, ids.length);
+  assert.equal(coverage.classifiedPositives, ids.length);
+  assert.equal(coverage.classified + coverage.pending, discovery.items.length);
+  // Without a saved ledger nothing is classified, so nothing is published as model-facing.
+  if (!savedJudgments(prepared.closure.identity)) assert.equal(ids.length, 0);
 });
 
 test("complete source inventory preserves every included file and every explicit exclusion", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
@@ -103,7 +104,7 @@ test("regeneration is deterministic and committed outputs match", { skip: !avail
   for (const [file, text] of Object.entries(generated)) assert.equal(readFileSync(path.join(outputs, file), "utf8"), text, file);
   const checked = spawnSync(process.execPath, [extractor, "--source", source, "--check"], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 });
   assert.equal(checked.status, 0, checked.stderr);
-  assert.match(checked.stdout, /Verified 40 public-source outputs/);
+  assert.match(checked.stdout, new RegExp(`Verified ${Object.keys(generated).length} public-source outputs`));
 });
 
 test("broad refresh fails closed on unanswered real source and partial mode labels it", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, async () => {
@@ -121,7 +122,7 @@ test("broad refresh fails closed on unanswered real source and partial mode labe
     assert.equal(partial.mode, "broad-partial");
     assert.ok(partial.providerPending > 0);
     const coverage = JSON.parse(readFileSync(path.join(partialOut, "discovery-coverage.json"), "utf8"));
-    assert.equal(coverage.status, "pending-provider");
+    assert.equal(coverage.status, "partial");
     const pending = JSON.parse(readFileSync(path.join(dir, "work-partial/opencode-discovery-pending.json"), "utf8"));
     assert.equal(pending.pending.length, partial.pending);
   } finally {
@@ -133,4 +134,20 @@ test("rejects a repository that is not the pinned upstream checkout", () => {
   const result = spawnSync(process.execPath, [extractor, "--source", path.resolve(root, ".."), "--check"], { encoding: "utf8" });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Expected public upstream commit/);
+});
+
+test("env vars and CLI commands are read structurally from the closure with exact line provenance", { skip: !available && "Pinned upstream checkout absent; set OPENCODE_SOURCE." }, () => {
+  const meta = { version: VERSION, commit: COMMIT, upstream: "https://github.com/anomalyco/opencode" };
+  const files = new Map(prepared.closure.included.map((file) => [file.file, file.text.split("\n")]));
+  const env = environmentVariables(prepared.closure, meta);
+  const autoupdate = env.find((record) => record.title === "OPENCODE_DISABLE_AUTOUPDATE");
+  assert.ok(autoupdate);
+  assert.ok(autoupdate.details.readers.includes("flag helper"));
+  for (const record of env) for (const site of record.provenance) assert.ok(files.get(site.file)[site.startLine - 1].includes(record.title), `${record.title} at ${site.file}:${site.startLine}`);
+  const cli = cliCommands(prepared.closure, meta);
+  const run = cli.find((record) => record.title === "opencode run [message..]");
+  assert.equal(run.text, "run opencode with a message");
+  assert.equal(cli.find((record) => record.title === "opencode run --continue").text, "continue the last session");
+  assert.equal(new Set(cli.map((record) => record.title)).size, cli.length);
+  for (const record of cli) assert.ok(files.get(record.provenance[0].file)[record.provenance[0].startLine - 1].includes(record.kind === "cli-command" ? "command:" : record.title.split(" ").at(-1).replace(/^--|^<|>$/g, "")), record.title);
 });

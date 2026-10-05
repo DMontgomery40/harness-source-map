@@ -6,7 +6,12 @@ import { buildSite as buildReference } from "../codex/build-site.mjs";
 import { escapeHtml } from "../shared/html.mjs";
 
 export async function profile(sourceRoot) {
-  const { release, items } = JSON.parse(await readFile(path.join(sourceRoot, "outputs/search-records.json"), "utf8"));
+  const { release } = JSON.parse(await readFile(path.join(sourceRoot, "outputs/search-records.json"), "utf8"));
+  const curated = JSON.parse(await readFile(path.join(sourceRoot, "outputs/source-records.json"), "utf8")).items.length;
+  const summary = JSON.parse(await readFile(path.join(sourceRoot, "outputs/discovery-summary.json"), "utf8"));
+  const n = value => Number(value).toLocaleString("en-US");
+  const pending = summary.provider_pending + summary.local_review;
+  const unresolved = pending ? ` ${n(pending)} remain unresolved (${n(summary.local_review)} for local review${summary.provider_pending ? `, ${n(summary.provider_pending)} awaiting a provider answer` : ""}).` : "";
   return {
     product: "cursor",
     siteName: "Cursor Source Map",
@@ -21,7 +26,7 @@ export async function profile(sourceRoot) {
     guide: null,
     front: () => `        <div class="markdown-body">
           <p class="date">Desktop ${escapeHtml(release.desktop.version)} · commit <code>${escapeHtml(release.desktop.commit)}</code> · Agent CLI ${escapeHtml(release.agent_cli.version)}</p>
-          <p>These are ${items.length} curated records with exact byte ranges and hashes. Shipped source shows what the client contains and how it builds a request; it does not prove that a server selected a prompt or delivered it to a model. The broad Jev classification of every eligible string is prepared but not published.</p>
+          <p>${n(curated)} reviewed records and ${n(summary.discovered_records)} Jev-discovered model-facing records, each with exact byte ranges and hashes. Jev classified ${n(summary.classified)} of the ${n(summary.candidates)} eligible text occurrences in the shipped source.${unresolved} Shipped source shows what the client contains and how it builds a request; it does not prove that a server selected a prompt or delivered it to a model.</p>
           <p>Open a Cursor desktop transcript export or an Agent CLI session in <a href="/trace/">Trace</a> to see a real run.</p>
         </div>
 `

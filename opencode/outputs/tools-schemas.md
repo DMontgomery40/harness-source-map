@@ -62,16 +62,6 @@ Record: `occ-759f5600c727265e7baf9bde`. Kind: tool. Discovery: classified.
 Replace exact text in one file. Relative paths resolve within the active Location. Absolute paths inside the Location are accepted. Explicit external absolute paths require external_directory approval before edit approval.
 ```
 
-## packages/core/src/tool/glob.ts:21 — Relative directory to search. Defaults to the active Location.
-
-Record: `occ-47ba6917395c9af97b488294`. Kind: tool. Discovery: classified.
-
-[packages/core/src/tool/glob.ts:21-21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/glob.ts#L21-L21) — source SHA-256 `981a89b23fe67b18c350f7a000dd36cd58e62f55dcfe270204af4c95bf571d9c`; text SHA-256 `88f724aaad7534abfe16040d7c76adedc36ef5ea82c494bd53a305ecca3e8fb9`.
-
-```text
-Relative directory to search. Defaults to the active Location.
-```
-
 ## packages/core/src/tool/glob.ts:49 — Find files by glob pattern within the active Location. Returns concise r…
 
 Record: `occ-6a84b29acc5495afb10d8bb3`. Kind: tool. Discovery: classified.
@@ -219,6 +209,16 @@ Optional controls support result count, live crawling ('fallback' or 'preferred'
 The current year is ${new Date().getFullYear()}. Use this year when searching for recent information or current events.
 ```
 
+## packages/core/src/tool/websearch.ts:50 — Search type - 'auto': balanced search (default), 'fast': quick results, …
+
+Record: `occ-930c5e3f8a5ae672645d0b65`. Kind: tool. Discovery: classified.
+
+[packages/core/src/tool/websearch.ts:50-50](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/core/src/tool/websearch.ts#L50-L50) — source SHA-256 `e3791b9ade53d5e4e2c7c23602f23bdbe3c6eb521950fb03a5d089d1e85f9507`; text SHA-256 `21f0e6c725f98ac8e72c338dfbee09b1ab7213fd3127a0cd331633bb3a378b4d`.
+
+```text
+Search type - 'auto': balanced search (default), 'fast': quick results, 'deep': comprehensive search
+```
+
 ## packages/core/src/tool/write.ts:25 — File path to write. Relative paths resolve within the active Location. A…
 
 Record: `occ-7c293bc42ceee7d1a12848ab`. Kind: tool. Discovery: classified.
@@ -237,16 +237,6 @@ Record: `occ-3e3fd18a38c9c04e02017bba`. Kind: tool. Discovery: classified.
 
 ```text
 Write content to one file. Relative paths resolve within the active Location. Absolute paths inside the Location are accepted. Explicit external absolute paths require external_directory approval before edit approval.
-```
-
-## packages/opencode/src/agent/agent.ts:184 — General-purpose agent for researching complex questions and executing mu…
-
-Record: `occ-3602cdcb798cac30457c68c5`. Kind: tool. Discovery: classified.
-
-[packages/opencode/src/agent/agent.ts:184-184](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/agent/agent.ts#L184-L184) — source SHA-256 `d44908bd5cae3fd878977aa34e8b0c73a40941c394f02ab7ccbe4b4fad532aec`; text SHA-256 `950a89900835686ba0ba52dd1b9f2fc2ec6fd26cc5e0a82a16ebd43b03c256c8`.
-
-```text
-General-purpose agent for researching complex questions and executing multi-step tasks. Use this agent to execute multiple units of work in parallel.
 ```
 
 ## packages/opencode/src/agent/agent.ts:213 — Fast agent specialized for exploring codebases. Use this when you need t…
@@ -514,16 +504,6 @@ Record: `occ-bea91787774446b3dd148d66`. Kind: tool. Discovery: classified.
 
 ```text
 The line number (1-based, as shown in editors)
-```
-
-## packages/opencode/src/tool/lsp.ts:30 — The character offset (1-based, as shown in editors)
-
-Record: `occ-7d8aeca25ed00d033628f6b1`. Kind: tool. Discovery: classified.
-
-[packages/opencode/src/tool/lsp.ts:30-30](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/lsp.ts#L30-L30) — source SHA-256 `afa828e3ab8620cc01e99c783ac63c393dc28ba5df5025a6381d451b07902720`; text SHA-256 `114d48426cec89d618ea76fa252c2eaf0d78ddf699ea64f81c58cb1871d8eef8`.
-
-```text
-The character offset (1-based, as shown in editors)
 ```
 
 ## packages/opencode/src/tool/lsp.ts:33 — Search query for workspaceSymbol. Empty string requests all symbols.
@@ -857,6 +837,16 @@ Record: `occ-c177b8ab3bcf361e6f4c8d9d`. Kind: tool. Discovery: classified.
 All commands run in the current working directory by default. Use the `workdir` parameter if you need to run a command in a different directory. AVOID changing directories inside the command - use `workdir` instead.
 ```
 
+## packages/opencode/src/tool/shell/prompt.ts:250 — Create PR using gh pr create with a PowerShell here-string to pass the b…
+
+Record: `occ-300c2d0e2d8542ec1b709952`. Kind: tool. Discovery: classified.
+
+[packages/opencode/src/tool/shell/prompt.ts:250-250](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/shell/prompt.ts#L250-L250) — source SHA-256 `e22aafba8ed6ccbb216cebd9ba60567a84c49f2514cc9c9b11ba2d9195a454db`; text SHA-256 `d21c245cdb4c594ffe19b1c066b590c3d9b093459fe93d9b3b0228dd94b58b37`.
+
+```text
+Create PR using gh pr create with a PowerShell here-string to pass the body correctly.
+```
+
 ## packages/opencode/src/tool/shell/prompt.ts:259 — Executes a given bash command in a persistent shell session with optiona…
 
 Record: `occ-848ca0801e86c1dd139740f8`. Kind: tool. Discovery: classified.
@@ -1161,6 +1151,16 @@ Usage notes:
 The current year is {{year}}. You MUST use this year when searching for recent information or current events
 - Example: If the current year is 2026 and the user asks for "latest AI news", search for "AI news 2026", NOT "AI news 2025"
 
+```
+
+## packages/opencode/src/tool/write.ts:21 — The content to write to the file
+
+Record: `occ-613c9785ced5015e37e342b0`. Kind: tool. Discovery: classified.
+
+[packages/opencode/src/tool/write.ts:21-21](https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/opencode/src/tool/write.ts#L21-L21) — source SHA-256 `4fa9498aa1af126b65b236a56b5fe017109d6c570fd10977ca9cd4afa07e4739`; text SHA-256 `72a717c4398ee354fd07cbb9fedb325a4066c5d4b8f4747e6278c77b255ab99a`.
+
+```text
+The content to write to the file
 ```
 
 ## packages/opencode/src/tool/write.ts:23 — The absolute path to the file to write (must be absolute, not relative)
