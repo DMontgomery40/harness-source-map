@@ -6,15 +6,15 @@ This task-local ticket graph is the local issue tracker for the explicitly reque
 
 ## T1: Source extraction
 
-Status: resolved. Blocks: T2. Blocked by: none. Merged source commit a3662a4; 118 records from 92 public release files. Provenance, deterministic extraction and full gate passed.
+Status: reopened: incomplete library. Blocks: T2,T6. Blocked by: none. The merged source commit `a3662a4` published 118 curated records from only 92 public files; the pinned `packages/opencode/src` tree alone has 409 files, before its first-party workspace dependencies. Replace the curated boundary with complete source-closure inventory, occurrence discovery, Jev classification/coverage and topical typed libraries.
 
-Own opencode/extract, opencode/outputs, opencode/README.md. Build a deterministic release-pinned extractor and source records covering prompt files, tool descriptions, model routing, request assembly, instruction/config precedence and network/reasoning plumbing. The spec defines filenames and record shape. Inspect the complete public source relevant to each claim. Check provenance against the real checkout; no fake source fixtures. Add repeatable extraction checks to the repo gate via a test file under opencode/extract/test; coordinator owns package.json changes. Commit and report exact verification and gaps.
+Own `opencode/extract`, `opencode/outputs` and `opencode/README.md`. Build a deterministic release-pinned extractor over the complete first-party workspace dependency closure. Inventory every tracked source file and eligible occurrence; publish typed libraries for all surfaces named in the spec, other model-facing text, full provenance/exclusion inventory, Jev pending/coverage accounting and a single refresh contract for the watcher. Reuse shared Jev provider/privacy/coverage code. No prompt allowlist, hand-selected source boundary, fake source fixture or invented record is allowed. Add real-pinned-source tests for provenance, exhaustive file accounting, no duplicate/unassigned typed records, local preparation and coverage/index contracts.
 
 ## T2: Reference site
 
-Status: resolved. Blocked by: none. Blocks: T5. Merged reference commits 0d7fe45 and 0678808; eight OpenCode pages, shared search and Trace references passed the full gate and browser acceptance.
+Status: reopened: thin UI. Blocked by: T1. Blocks: T5,T6. The eight-page UI exposes the curated subset and does not maintain the library/navigation continuity of the established products.
 
-Own site/src/opencode, site/src/shared/{site.mjs,landing.mjs,trace-build.mjs}, site/build.mjs and site/test/shared/sections.test.mjs. Add OpenCode to site config, landing, builds, search and Trace reference indices using T1 outputs. Preserve existing sections and all existing products. Reuse existing rendering where appropriate without copying entire product renderers. Test against the actual extracted outputs and generated site; no fabricated records. Coordinator owns README/package docs.
+Own `site/src/opencode`, OpenCode additions to shared build/search/Trace indexing and focused tests. Render the full topical T1 library with the established index-style home, stable page routes, filters where appropriate, raw inventory downloads and the fixed seven sections. Assign every intended typed record exactly once. Test that all real T1 records reach global search and the Trace reference index, and that no source library is collapsed into a single giant archive page. Preserve all products and Trace modes; no fabricated records.
 
 ## T3: Trace sessions and network analysis
 
@@ -30,6 +30,12 @@ Own tools/capture and relevant tools/test files only. Add an easy OpenCode captu
 
 ## T5: Real acceptance and review
 
-Status: resolved. Blocked by: T1,T2,T3,T4. Final integration HEAD e2e7145 passed the full gate with real Qwen export/HAR and an actual interrupted capture: 822 tests, 809 passed, 13 skipped; 4,376 links; 9,796 search entries; leak check clean across 1,191 files. Independent standards and spec reviews completed; review repairs merged as 2ca9785. Browser acceptance confirmed the initial 3D landscape, exact-step wording, separate reasoning, all-products search, capture help and private real network payload display.
+Status: reopened. Blocked by: T1,T2,T6. The prior acceptance proved the real session/network path, but its source-library and reference-UI acceptance was based on the incomplete curated boundary.
 
 Coordinator owns package.json, README.md, plan status updates, installation, real OpenRouter sessions, private recordings, browser checks and integration. Run the full gate, review both standards and spec on the final diff, repair findings, record evidence and only then move to Cursor. Keep all private captures and paths out of tracked files.
+
+## T6: OpenCode watcher and release continuity
+
+Status: ready after T1 refresh contract. Blocked by: T1. Blocks: T5.
+
+Own `watch/targets/opencode.mjs`, minimal watcher registry/transaction additions, package scripts and operator docs. Fingerprint the official OpenCode release/tag and commit, acquire a pristine immutable source snapshot, run T1 local discovery plus destination-authorized broad Jev classification and indexed-record coverage, preserve source-keyed caches and exact pending release across provider outages, and publish through the existing all-product transaction. New tracked source files must be discovered automatically. Tests use the real pinned checkout or opt-in live official metadata; do not add fake release repositories or responses.
