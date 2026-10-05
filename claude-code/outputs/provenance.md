@@ -19,7 +19,7 @@ The parser found 80648 JavaScript string and template literal occurrences with a
 - 5123 are covered by a published document,
 - 774 were judged model-facing and are collected on [Other model-facing text](#other-model-text-md),
 - 269 are developer documentation (SDK types and schema descriptions), 12168 are text shown to the person using the CLI, 0 are third-party library text, and 60040 are other text such as fixtures,
-- 1827 were judged model-facing with less than 0.5 confidence; they are listed in `inventory.json` only.
+- 1827 were judged model-facing but fell below the 0.8 publication threshold; they are listed in `inventory.json` only.
 - 451 await a provider judgment and are not classified or published as model-facing text,
 - 34 need local review because the privacy filter withheld their complete text or the request budget could not fit it. The public inventory retains source offsets and hashes without exposing withheld previews.
 - 0 embedded JavaScript files did not parse; their filenames are recorded in the local candidate ledger.
