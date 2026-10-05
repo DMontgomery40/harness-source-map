@@ -9,6 +9,7 @@ import { descriptorReport } from "./agent-service-descriptors.mjs";
 import { asarInventory } from "./binwalk-scan.mjs";
 import { loadRelease, outputsRoot, publicRelease, readSource, sha256Bytes, sha256Text, sourceSelection } from "./lib.mjs";
 import { scrubHomes } from "./package-scan.mjs";
+import { GROUPS, displayTitles, groupOf, markdownTable, readableOf, shippedMessageClasses, shortFile } from "./lib-readable.mjs";
 
 const PROMPT_PATTERNS = [
   ["base-agent-instructions", "Base agent instructions", text => text.startsWith("You are an AI coding assistant, powered by")],
@@ -262,20 +263,58 @@ export function verifySourceRecords(records, release = loadRelease()) {
 }
 
 const fence = text => "`".repeat(Math.max(4, ...[...text.matchAll(/`+/g)].map(match => match[0].length + 1)));
+const SURFACE_LABEL = { desktop: "desktop", "agent-cli": "Agent CLI" };
 
+function readableMarkdown(readable) {
+  if (!readable) return [];
+  const lines = [];
+  if (readable.description) lines.push(readable.description, "");
+  if (readable.kind === "protobuf-message") lines.push(readable.note, "", markdownTable(readable.columns, readable.rows), "");
+  if (readable.kind === "protobuf-module") {
+    lines.push(readable.note, "");
+    for (const message of readable.messages) lines.push(`**${message.message}**`, "", message.rows.length ? markdownTable(message.columns, message.rows) : "No fields.", "");
+  }
+  if (readable.kind === "zod-schema") {
+    lines.push(readable.note, "");
+    for (const schema of readable.schemas) lines.push(...(schema.title ? [`**${schema.title}**`, ""] : []), markdownTable(schema.columns, schema.rows), "");
+  }
+  return lines;
+}
+
+// Codex/ChatGPT's reference layout: entries under their group, a one-line source, the readable
+// form when the shipped text is a descriptor, schema or minified code, then the exact text.
 function renderRecords(report) {
   const lines = [
     "# Cursor shipped source records",
     "",
-    `These ${report.items.length} records come from Cursor desktop ${report.release.desktop.version} and Agent CLI ${report.release.agent_cli.version}. Each record preserves the complete shipped occurrence and exact byte provenance. Shipped source establishes client behavior and schemas; it does not prove server-side prompt selection or live delivery.`,
+    `${report.items.length} records read from Cursor desktop ${report.release.desktop.version} and Agent CLI ${report.release.agent_cli.version}: agent instructions, approval prompts, tool and request schemas, reasoning events, session storage, skills and configuration. Each keeps the complete shipped occurrence with its exact byte range and hash. Protobuf descriptors are decoded with Cursor's own generated classes and minified schemas are reconstructed as key tables; the exact shipped text follows each one. Shipped source establishes client behavior and schemas; it does not prove server-side prompt selection or live delivery.`,
     ""
   ];
+  let group = null;
   for (const item of report.items) {
+    if (item.group !== group) { group = item.group; lines.push(`## ${group}`, ""); }
     const p = item.provenance[0];
     const mark = fence(item.text);
-    lines.push(`## ${item.title}`, "", `Source: \`${p.file}\`, bytes ${p.byte_start}-${p.byte_end}, SHA-256 \`${p.span_sha256}\`; surface \`${item.surface}\`; evidence \`${item.evidence_classification}\`.`, "", `${mark}text`, item.text, mark, "");
+    const source = `Source: \`${shortFile(p.file)}\` (${SURFACE_LABEL[item.surface] ?? item.surface}) · bytes ${p.byte_start}–${p.byte_end} · SHA-256 \`${p.span_sha256.slice(0, 12)}…\``;
+    const readable = readableMarkdown(item.readable);
+    const language = item.readable?.language ?? "text";
+    lines.push(`### ${item.title}`, "", source, "", ...readable, ...(readable.length ? ["#### Exact shipped text", ""] : []), `${mark}${language}`, item.text, mark, "");
   }
   return `${lines.join("\n")}\n`;
+}
+
+// Group order, display titles and readable forms; the record's text and provenance are untouched.
+function presentRecords(records, release) {
+  const classes = shippedMessageClasses(path.join(release.root, "agent-cli/package/index.js"));
+  const titles = displayTitles(records);
+  const order = new Map(GROUPS.map(([name], index) => [name, index]));
+  return records
+    .map((record, index) => {
+      const readable = readableOf({ ...record, title: titles.get(record.id) }, classes);
+      return { record: { ...record, title: titles.get(record.id), group: groupOf(record), ...(readable ? { readable } : {}) }, index };
+    })
+    .sort((a, b) => (order.get(a.record.group) ?? 99) - (order.get(b.record.group) ?? 99) || a.index - b.index)
+    .map(({ record }) => record);
 }
 
 export function extractSources({ log = console.log } = {}) {
@@ -283,7 +322,7 @@ export function extractSources({ log = console.log } = {}) {
   const { records, selection } = buildSourceRecords(release);
   const failures = verifySourceRecords(records, release);
   if (failures.length) throw new Error(`Cursor source provenance failed for ${failures.length} records`);
-  const publishedRecords = records.map(publicRecord);
+  const publishedRecords = presentRecords(records.map(publicRecord), release);
   const files = selection.selected.map(selected => {
     const entry = readSource(selected);
     return { file: entry.file, surface: entry.surface, format: entry.format, bytes: entry.bytes, sha256: entry.source_sha256, decoded_sha256: entry.decoded_sha256, encoding: entry.encoding, ...(entry.container ? { container: entry.container } : {}) };
