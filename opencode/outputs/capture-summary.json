@@ -7,13 +7,77 @@
   "evidence": "public-source",
   "observedTraffic": false,
   "recordCounts": {
-    "prompts": 35,
-    "tools": 43,
-    "configuration": 12,
-    "network-tracing": 28
+    "legacyReviewed": {
+      "prompts": 35,
+      "tools": 43,
+      "configuration": 12,
+      "network-tracing": 28
+    },
+    "completeLibraries": {
+      "model-instructions": 31,
+      "conversation-prompts": 3,
+      "tools-schemas": 84,
+      "agents": 2,
+      "skills-plugins-mcp": 9,
+      "providers-models-network-reasoning": 1,
+      "sessions-compaction-storage-export": 17,
+      "approvals-sandboxing": 0,
+      "configuration-precedence": 0,
+      "environment-variables": 0,
+      "cli-commands-flags": 17,
+      "other-model-facing-text": 14
+    }
   },
-  "sourceFiles": 92,
-  "extraction": "Deterministic, pristine release checkout; selected files match pinned Git blobs. No network calls or session inputs.",
+  "sourceFiles": 1429,
+  "excludedFiles": 2284,
+  "trackedFiles": 3713,
+  "workspacePackages": [
+    "@opencode-ai/codemode",
+    "@opencode-ai/core",
+    "@opencode-ai/effect-drizzle-sqlite",
+    "@opencode-ai/effect-sqlite-node",
+    "@opencode-ai/llm",
+    "@opencode-ai/plugin",
+    "@opencode-ai/protocol",
+    "@opencode-ai/schema",
+    "@opencode-ai/script",
+    "@opencode-ai/sdk",
+    "@opencode-ai/server",
+    "@opencode-ai/tui",
+    "@opencode-ai/ui",
+    "opencode"
+  ],
+  "sourceIdentity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a",
+  "discovery": {
+    "files": 1429,
+    "scannedCodeFiles": 1376,
+    "scannedAssetFiles": 52,
+    "literals": 90835,
+    "selected": 10824,
+    "skipped": {
+      "not-prose-or-prompt-role": 80081,
+      "manifest-runtime-entry-not-literal-scanned": 1
+    },
+    "parseFailures": [
+      {
+        "file": "packages/tui/src/component/dialog-retry-action.tsx",
+        "error": "unterminated string at 4236",
+        "fallback": "complete contiguous source spans"
+      }
+    ],
+    "eligible": 10714,
+    "batches": 818,
+    "payloadBytes": 74630845,
+    "classified": 10714,
+    "classifiedPositives": 178,
+    "classifiedNegatives": 10536,
+    "providerPending": 0,
+    "withheld": 110,
+    "oversized": 0,
+    "localReview": 110,
+    "pending": 110
+  },
+  "extraction": "Deterministic, pristine release checkout; complete first-party runtime workspace closure and every explicit package-tree exclusion match pinned Git blobs. No session inputs and no provider classification are required for local preparation.",
   "limitations": [
     "Installed CLI version, build-injected catalog and runtime identity require separate verification.",
     "No private instructions, environment values, skill bodies, MCP server content or plugin output is expanded.",

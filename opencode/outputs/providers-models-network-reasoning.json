@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 2,
+  "product": "OpenCode",
+  "version": "1.18.34",
+  "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+  "sourceIdentity": "ff2ef2527472d136b15ce1f3a6538d622968d2e90c73e1dfb25eda7554a4412a",
+  "items": [
+    {
+      "id": "occ-23a650744996021b98b10b31",
+      "title": "packages/llm/src/llm.ts:82 — Return the structured result by calling this tool.",
+      "kind": "prompt",
+      "version": "1.18.34",
+      "upstreamCommit": "aec0b9a6d8898f68f923aaf08b7306d931fd9d76",
+      "text": "Return the structured result by calling this tool.",
+      "provenance": [
+        {
+          "file": "packages/llm/src/llm.ts",
+          "startLine": 82,
+          "endLine": 82,
+          "startOffset": 2712,
+          "endOffset": 2764,
+          "sha256": "551c6c33a4db853e95262b629563de0b407785df91c094b49e2735ed4c94baaa",
+          "textSha256": "17b0901cd92950476da7afddf0bdb901b74beb5b0c9e8e2fc7dd622e083e0ad9",
+          "url": "https://github.com/anomalyco/opencode/blob/aec0b9a6d8898f68f923aaf08b7306d931fd9d76/packages/llm/src/llm.ts#L82-L82"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "sourceRole": {
+          "kind": "GENERATE_OBJECT_TOOL_DESCRIPTION"
+        },
+        "discoveryStatus": "classified",
+        "reason": null,
+        "modelFacing": {
+          "type": "noul",
+          "noul": 0.91
+        },
+        "semanticRole": {
+          "type": "choice",
+          "choice": "tool",
+          "probabilities": {
+            "context": 0,
+            "parameter": 0,
+            "human": 0,
+            "user_template": 0,
+            "documentation": 0,
+            "tool": 0.97,
+            "instructions": 0,
+            "unknown": 0,
+            "code_data": 0.03
+          },
+          "confidence": 0.96
+        },
+        "sourceDirectness": {
+          "type": "score",
+          "score": 2.71,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.05,
+            "2": 0.14,
+            "3": 0.79
+          },
+          "confidence": 0.71
+        },
+        "condition": "Source occurrence in the complete pinned workspace closure; runtime activation and delivery are unverified."
+      }
+    }
+  ]
+}

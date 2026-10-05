@@ -1,0 +1,4 @@
+# Generated Markdown fences preserve exact upstream text, including meaningful
+# trailing spaces. JSON carries the same bytes and hashes. Do not treat those
+# source bytes as repository formatting errors.
+outputs/*.md -whitespace
