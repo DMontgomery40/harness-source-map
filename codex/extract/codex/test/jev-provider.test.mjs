@@ -44,6 +44,12 @@ test('ask sends the pinned model and returns the parsed response', async () => {
   assert.equal(sent.headers.authorization, 'Bearer k');
 });
 
+test('the shared provider rejects a private outbound payload before any network call', async () => {
+  let called=false;
+  await assert.rejects(ask(config,{state:{text:'contact private-review@example.com'},questions},{fetchImpl:async()=>{called=true;return reply(200,{answers:{q:{noul:.9}}});}}),/e-mail address/i);
+  assert.equal(called,false);
+});
+
 test('ask retries rate limits, server errors and network failures, honouring retry-after', async () => {
   const waits = [];
   const replies = [() => reply(429, {}, { 'retry-after': '2' }), () => { throw new TypeError('fetch failed'); }, () => reply(503, {}), () => reply(200, { answers: { q: { noul: 0.1 } } })];
@@ -59,6 +65,13 @@ test('ask reports an outage as JevUnavailableError and a bad request as JevReque
   await assert.rejects(ask({ ...config, key: undefined }, { state: 'x', questions }, { fetchImpl: async () => assert.fail('no request without a key'), sleep }), /no TYPESAFE_API_KEY/);
   await assert.rejects(ask(config, { state: 'x', questions }, { fetchImpl: async () => reply(400, { error: 'state too large' }), sleep }), JevRequestError);
   await assert.rejects(ask(config, { state: 'x', questions }, { fetchImpl: async () => reply(200, { answers: {} }), sleep }), /missing question q/);
+});
+
+test('TypeSafe overload 529 is retried rather than treated as a malformed request', async () => {
+  let calls=0;
+  const body=await ask(config,{state:'x',questions},{fetchImpl:async()=>++calls===1?reply(529,{}):reply(200,{answers:{q:{noul:.8}}}),sleep:async()=>{}});
+  assert.equal(calls,2);
+  assert.equal(body.answers.q.noul,.8);
 });
 
 test('caches tag keys with the model version and read untagged legacy entries as jev-1.13', () => {

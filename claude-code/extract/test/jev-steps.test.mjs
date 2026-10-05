@@ -8,7 +8,7 @@ import test from "node:test";
 import { JEV_TEMPFAIL_EXIT, JevUnavailableError, decisionConfig, openCache } from "../../../codex/extract/codex/lib/jev-provider.mjs";
 import { classify, verdictKey } from "../classify.mjs";
 import { keepVerdicts } from "../jev-step.mjs";
-import { choose, successorKey } from "../successors.mjs";
+import { choose, chooseComplete, successorKey } from "../successors.mjs";
 import { tagKey } from "../tags.mjs";
 
 const config = decisionConfig({ TYPESAFE_API_KEY: "test-key" }, () => "");
@@ -51,6 +51,32 @@ test("successors: choices are cached by the texts as sent, in order, and not ask
   assert.deepEqual(Object.keys(sent.questions.successor.criteria), ["candidate_1", "candidate_2", "none"]);
   cache.save();
   assert.deepEqual(await choose(config, openCache(file), old, [a, b], { fetchImpl: never }), { choice: "candidate_1", confidence: 0.91 });
+});
+
+test('successor routing visits beyond 255 choices and verifies a complete revised text',async()=>{
+  const cache=openCache(cacheIn('successor-complete.json'));
+  const candidates=Array.from({length:300},(_,i)=>({norm:`candidate number ${i+1} with its complete instruction text${i===259?' target-260':''}`}));
+  let requests=0;
+  const fetchImpl=async(_url,opts)=>{
+    requests++;
+    const body=JSON.parse(opts.body),answers={};
+    for(const [id,q] of Object.entries(body.questions)) {
+      if(q.type==='choice') {
+        const keys=Object.keys(q.criteria),choice=keys.includes('candidate_260')?'candidate_260':keys[0];
+        answers[id]={type:'choice',choice,confidence:.95,probabilities:Object.fromEntries(keys.map(k=>[k,k===choice?1:0]))};
+      } else if(q.type==='noul') answers[id]={type:'noul',noul:q.instructions.new_text.includes('target-260')?.99:.01};
+      else answers[id]={type:'score',score:q.instructions.new_text.includes('target-260')?3:0,confidence:.95,probabilities:{'0':q.instructions.new_text.includes('target-260')?0:1,'1':0,'2':0,'3':q.instructions.new_text.includes('target-260')?1:0}};
+    }
+    return reply(answers)();
+  };
+  const found=await chooseComplete(config,cache,'original instruction text',candidates,{fetchImpl});
+  assert.equal(found.choice,'candidate_260');
+  assert.equal(found.status,'verified');
+  assert.equal(found.candidates_considered,300);
+  assert.equal(found.unsearched.length,0);
+  assert.ok(requests>=2);
+  const again=await chooseComplete(config,cache,'original instruction text',candidates,{fetchImpl:never});
+  assert.equal(again.choice,'candidate_260');
 });
 
 test("an outage saves the verdicts finished so far, then exits 75; other errors still throw after saving", async () => {

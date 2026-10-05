@@ -18,7 +18,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { codexApp } from "./lib/app-layout.mjs";
 import { openAsar } from "./lib/asar.mjs";
-import { decisionConfig } from "./lib/jev-provider.mjs";
+import { decisionConfig, JEV_TEMPFAIL_EXIT } from "./lib/jev-provider.mjs";
 import { SCHEMA_VERSION, loadCache, publishScan, renderPage, saveCache, scanTree, sortKeys } from "../../../tools/package-scan/core.mjs";
 
 // Binaries that get hashes, signing and linking but no strings: Electron/Chromium, Sparkle,
@@ -115,11 +115,13 @@ async function main() {
     coveredNote: coveredCount ? ` (${coveredCount} names the config.toml and environment-variable pages already document are left out)` : ""
   });
   const provider = decisionConfig();
-  const limit = process.env.PACKAGE_JEV_LIMIT === "all" ? Number.MAX_SAFE_INTEGER : Number(process.env.PACKAGE_JEV_LIMIT ?? 60);
+  const limit = process.env.PACKAGE_JEV_LIMIT === "all" ? Number.MAX_SAFE_INTEGER : Number(process.env.PACKAGE_JEV_LIMIT ?? Number.MAX_SAFE_INTEGER);
   if (!Number.isSafeInteger(limit) || limit < 0) throw new Error("PACKAGE_JEV_LIMIT must be all or a nonnegative integer");
   const summary = await publishScan({ product: "Codex/ChatGPT", repo, inventory, texts, page, extraDiff: asarDiff, started, cap: limit,
-    triageOptions: { config: provider } });
+    triageOptions: { config: provider,batched:true } });
   console.log(JSON.stringify({ ...summary, version, build }));
+  if(summary.needs_local_review) process.exitCode=2;
+  else if(summary.pending) process.exitCode=JEV_TEMPFAIL_EXIT;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();

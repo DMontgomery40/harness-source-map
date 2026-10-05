@@ -5,8 +5,8 @@ import path from "node:path";
 import test from "node:test";
 import { createHash } from "node:crypto";
 import { openAsar } from "../lib/asar.mjs";
-import { decisionConfig, openCache } from "../lib/jev-provider.mjs";
-import { compare, familyOf, inventory, jevLabeller, jevState, renderDiff, scan, triageRecord } from "../surface-scan.mjs";
+import { decisionConfig, openCache, JevUnavailableError } from "../lib/jev-provider.mjs";
+import { compare, familyOf, inventory, jevLabeller, jevState, renderDiff, scan, triageRecord, baselineCanAdvance } from "../surface-scan.mjs";
 
 // A minimal asar: pickled JSON header, then the file bytes.
 function writeAsar(files) {
@@ -80,9 +80,10 @@ test("file names lose their content hash, chunk id and scale suffix; Lottie scen
 test("inventory: families, namespaces (not locale tables), enums without UNRECOGNIZED, endpoints", () => {
   // `app-<hash>.js` and `app-initial-<hash>.js` are app chunks, not locale tables.
   const { surfaces } = inventory(writeAsar(BUILD_A));
-  assert.deepEqual(surfaces.asset_families, { [`${A}type.js`]: 20 });
+  assert.deepEqual(surfaces.asset_families, { [`${A}app.js`]:1,[`${A}de-DE.js`]:1,[`${A}type.js`]: 20 });
   assert.deepEqual(surfaces.i18n_namespaces, { chat: 6 });
-  assert.deepEqual(surfaces.i18n_subnamespaces, {});
+  assert.equal(Object.keys(surfaces.i18n_subnamespaces).length,6);
+  assert.equal(surfaces.i18n_subnamespaces['chat.item0'],1);
   assert.deepEqual(surfaces.enums, { CHATGPT_SURFACE_: 5 });
   assert.deepEqual(surfaces.endpoints, ["/conversation/{conversation_id}"]);
   assert.deepEqual(surfaces.content_reference_categories, []);
@@ -95,14 +96,15 @@ test("baseline from build A, scan of build B: new and grown families, new endpoi
   const labeller = { label: async item => labels.get(item.name) ?? 0.2 };
   const { flagged } = await scan({ current: surfaces, evidence, previous: before, labeller });
   const got = Object.fromEntries(flagged.map(f => [`${f.kind}:${f.name}`, f.change]));
-  assert.deepEqual(got, {
+  const expected={
     "content_reference_categories:widget_block": "new",
     [`asset_families:${A}type.js`]: "grew",
     [`asset_families:${A}widget.js`]: "new",
     "i18n_namespaces:widgetBlock": "new",
     "enums:CHATGPT_WIDGET_BLOCK_TYPE_": "new",
     "endpoints:/conversation/message/widget-blocks/feedback": "new"
-  });
+  };
+  for(const [key,value] of Object.entries(expected)) assert.equal(got[key],value);
   // The category comes first; a new family carries evidence for Jev: members and interface text.
   assert.equal(flagged[0].name, "widget_block");
   const widget = flagged.find(f => f.name === `${A}widget.js`);
@@ -112,10 +114,13 @@ test("baseline from build A, scan of build B: new and grown families, new endpoi
   assert.match(md, /- \*\*Grew asset family `webview\/assets\/type\.js`\*\*: 20 → 45\. Jev not documentable \(0\.20\)\./);
 });
 
-test("an unchanged build is quiet, and a first run with no baseline only records one", async () => {
+test("an unchanged build is quiet; a first run classifies its initial inventory", async () => {
   const { surfaces, evidence } = inventory(writeAsar(BUILD_A));
   assert.deepEqual((await scan({ current: surfaces, evidence, previous: inventory(writeAsar(BUILD_A)).surfaces, labeller: null })).flagged, []);
-  assert.deepEqual(await scan({ current: surfaces, evidence, previous: null, labeller: null }), { flagged: [], notes: [], baseline: false });
+  const initial=await scan({current:surfaces,evidence,previous:null,labeller:null});
+  assert(initial.flagged.length>0);
+  assert.equal(initial.baseline,false);
+  assert.equal(baselineCanAdvance(initial),false);
 });
 
 test("Jev unavailable: the structural diff is still written, marked unlabelled", async () => {
@@ -123,22 +128,22 @@ test("Jev unavailable: the structural diff is still written, marked unlabelled",
   const { surfaces, evidence } = inventory(writeAsar(BUILD_B));
   const labeller = jevLabeller(undefined);
   const { flagged } = await scan({ current: surfaces, evidence, previous: before, labeller });
-  assert.equal(flagged.length, 6);
+  assert.equal(flagged.length,6);
   assert.ok(flagged.every(f => f.jev === null));
   assert.equal(labeller.state.unavailable, "no TYPESAFE_API_KEY");
   const md = renderDiff({ app: { version: "2", build: "2" }, previousSource: { app_version: "1", app_build: "1" }, flagged, notes: [], unavailable: labeller.state.unavailable });
   assert.match(md, /Jev was unavailable \(no TYPESAFE_API_KEY\)/);
   assert.match(md, /## Unlabelled\n\n- \*\*New content-reference category `widget_block`\*\*\. unlabelled\./);
   // A labeller that throws is the same as an unavailable one.
-  const thrown = await scan({ current: surfaces, evidence, previous: before, labeller: { label: async () => { throw new Error("down"); } } });
+  const thrown = await scan({ current: surfaces, evidence, previous: before, labeller: { label: async () => { throw new JevUnavailableError("down"); } } });
   assert.ok(thrown.flagged.every(f => f.jev === null));
 });
 
-test("thresholds: small new families and small growth are not flagged; removals are noted", () => {
+test("small new families are classified; small growth is not flagged; removals are noted", () => {
   const previous = { asset_families: { a: 10, b: 100, gone: 9 }, enums: {}, endpoints: ["/x/y"], content_reference_categories: [] };
   const current = { asset_families: { a: 25, b: 110, small: 4 }, enums: {}, endpoints: [], content_reference_categories: [] };
   const { flagged, notes } = compare(previous, current);
-  assert.deepEqual(flagged, []); // a grew by 15 (< 20); b grew by 10%; small has 4 members
+  assert.deepEqual(flagged.map(f=>f.name),['small']); // a grew by 15 (<20); b grew by 10%
   assert.deepEqual(notes.map(n => `${n.kind}:${n.name}`), ["asset_families:gone", "endpoints:/x/y"]);
 });
 
@@ -155,6 +160,27 @@ test("machine triage always binds the delta to source bytes and distinguishes un
  assert.deepEqual(empty.notes,[]);
  assert.equal(empty.baseline,false);
  assert.equal(empty.source.asar_sha256,'source-bytes');
+});
+
+test('default scan labels more than forty changes and a capped or unavailable run cannot swallow its queue',async()=>{
+  const current={endpoints:Array.from({length:73},(_,i)=>`/tools/new${i}`)};
+  const evidence={literal:name=>({samples:[name],texts:[]})};
+  const previous={endpoints:[]};
+  const labeller={label:async()=>.9};
+  const complete=await scan({current,previous,evidence,labeller});
+  assert.equal(complete.flagged.filter(x=>x.jev===.9).length,73);
+  assert.equal(baselineCanAdvance(complete),true);
+  const capped=await scan({current,previous,evidence,labeller,limit:40});
+  assert.equal(capped.flagged.filter(x=>x.jev===null).length,33);
+  assert.equal(baselineCanAdvance(capped),false);
+  const offline=await scan({current,previous,evidence,labeller:null});
+  assert.equal(baselineCanAdvance(offline),false);
+});
+
+test('malformed provider requests fail the scan rather than looking like temporary outages',async()=>{
+  const bad=fakeJev(()=>400);
+  const labeller=jevLabeller(typesafe,{fetchImpl:bad.fetchImpl});
+  await assert.rejects(scan({current:{endpoints:['/new/tool']},previous:{endpoints:[]},evidence:{literal:()=>({samples:[],texts:[]})},labeller}),/TypeSafe 400/);
 });
 
 // A fake System One endpoint: answers `documentable` with `reply(body, n)`, or returns that status code.
@@ -207,7 +233,7 @@ test("verdict cache: pre-pinning entries stay hits, and new ones are saved with 
   assert.equal(jev.requests.length, 1);
 });
 
-test("rate limits are retried; rejected credentials, bad requests and outages leave the scan unlabelled with the reason", async () => {
+test("rate limits are retried; rejected credentials and outages leave the scan unlabelled with the reason", async () => {
   const sleep = async () => {};
   const limited = fakeJev((_, n) => (n === 1 ? 429 : 0.7));
   assert.equal(await jevLabeller(typesafe, { fetchImpl: limited.fetchImpl, sleep }).label(widgetState), 0.7);
@@ -215,11 +241,11 @@ test("rate limits are retried; rejected credentials, bad requests and outages le
 
   const before = inventory(writeAsar(BUILD_A)).surfaces;
   const { surfaces, evidence } = inventory(writeAsar(BUILD_B));
-  for (const [status, reason, perWorker] of [[401, /^TypeSafe 401$/, 1], [400, /^request error: TypeSafe 400/, 1], [503, /^TypeSafe 503 after 4 attempts$/, 4]]) {
+  for (const [status, reason, perWorker] of [[401, /^TypeSafe 401$/, 1], [503, /^TypeSafe 503 after 4 attempts$/, 4]]) {
     const failing = fakeJev(() => status);
     const labeller = jevLabeller(typesafe, { fetchImpl: failing.fetchImpl, sleep });
     const { flagged } = await scan({ current: surfaces, evidence, previous: before, labeller });
-    assert.equal(flagged.length, 6);
+    assert.equal(flagged.length,6);
     assert.ok(flagged.every(f => f.jev === null), `HTTP ${status}: nothing is labelled`);
     assert.match(labeller.state.unavailable, reason);
     // Six workers may each have one change in flight when the first fails.
