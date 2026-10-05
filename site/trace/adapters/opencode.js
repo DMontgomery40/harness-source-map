@@ -129,7 +129,7 @@ export async function parseOpenCodeExport(source, fileIndex, { onProgress = () =
   agent.model = agent.requests.find(r => r.model)?.model || null;
   finalizeAgent(agent);
   onProgress(bytes.length, bytes.length);
-  return { agent, meta: { id: info.id, parentID: info.parentID || null, version: info.version || null },
+  return { agent, meta: { id: info.id, parentID: info.parentID || null, version: info.version || null, title: typeof info.title === 'string' ? info.title : null },
     firstT: finite(info.time?.created), lastT: lastTime, bytesRead: bytes.length, notes };
 }
 
@@ -138,7 +138,7 @@ export function buildOpenCodeTrace(sessions, files) {
   const root = sessions.find(s => !s.meta.parentID || !byId.has(s.meta.parentID)) || sessions[0];
   const depth = (s, seen = new Set()) => { if (s === root || seen.has(s)) return 0; seen.add(s); const parent = byId.get(s.meta.parentID); return parent ? depth(parent, seen) + 1 : 1; };
   for (const s of sessions) { s.agent.kind = s === root ? 'root' : 'subagent'; s.agent.name = s === root ? 'root' : 'subagent'; s.agent.depth = depth(s); }
-  return { product: 'opencode', title: 'OpenCode session', version: root.meta.version, contextWindow: null,
+  return { product: 'opencode', title: root.meta.title || 'OpenCode session', version: root.meta.version, contextWindow: null,
     started: Math.min(...sessions.map(s => s.firstT)), ended: Math.max(...sessions.map(s => s.lastT)),
     agents: [root, ...sessions.filter(s => s !== root)].map(s => s.agent), files,
     notes: ['Native export parts are logged evidence, not an exact request payload. System prompt assembly, tool schemas and provider transformations require a network capture.',
