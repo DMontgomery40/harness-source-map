@@ -214,12 +214,23 @@ export const categories = [
         defaultOpen: false
       },
       {
+        path: "outputs/host-tool-registry-2026-10-04.json",
+        anchor: "host-tool-registry-2026-10-04-json",
+        slug: "host-tool-registry-2026-10-04",
+        records: { file: "outputs/host-tool-registry-2026-10-04.json", lists: ["tools"], kind: "tool" },
+        snapshot: "October 4, 2026",
+        format: "source",
+        title: "Host tool capture (October 4)",
+        defaultOpen: false
+      },
+      {
         path: "outputs/current-host-tool-manifest-2026-09-24.json",
         anchor: "current-host-tool-manifest-2026-09-24-json",
         slug: "complete-host-tool-manifest",
+        records: { file: "outputs/current-host-tool-manifest-2026-09-24.json", lists: ["tools", "direct_tools"], kind: "tool" },
         snapshot: "September 24, 2026",
         format: "source",
-        title: "Complete host tool manifest",
+        title: "Host tool capture (September 24)",
         defaultOpen: false
       },
       {
