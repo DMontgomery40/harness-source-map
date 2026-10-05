@@ -1,0 +1,2098 @@
+{
+  "schema": 1,
+  "product": "Cursor",
+  "area": "jev-discovery-preparation",
+  "source": {
+    "id": "3.23.12-2026.10.01-e373342",
+    "desktop": {
+      "version": "3.23.12",
+      "commit": "2d29876d567da1607532b23bbf2cd5ddbca496f0",
+      "distro": "d5c0e77a0214208f36b56d42e8e787de88d02ea4",
+      "architecture": "arm64",
+      "tree_sha256": "5665959206bc6b07cac353114d68d791075593602fed5a27ac365cdbb780d995"
+    },
+    "agent_cli": {
+      "version": "2026.10.01-e373342",
+      "architecture": "arm64",
+      "archive_sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc",
+      "tree_sha256": "e7220f127d51f5a2f80f4e31d9df07271db52920cd35bee8d3d8e7214cb4547c"
+    }
+  },
+  "files_selected": 297,
+  "files_excluded": 412,
+  "exclusions": [
+    {
+      "file": "agent-cli/package/8096.index.js.LICENSE.txt",
+      "surface": "agent-cli",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "agent-cli/package/index.js.LICENSE.txt",
+      "surface": "agent-cli",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/CHANGELOG.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/codec/dec/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/codec/dec/webp_dec.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/codec/enc/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/codec/enc/webp_enc.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/codec/LICENSE.codec.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/codec/pre.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/codec/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/decode.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/encode.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/index.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/meta.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/package.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/@jsquash/webp/utils.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/deps/copy.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/database.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/index.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/methods/aggregate.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/methods/backup.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/methods/function.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/methods/inspect.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/methods/pragma.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/methods/serialize.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/methods/table.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/methods/transaction.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/methods/wrappers.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/sqlite-error.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/lib/util.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/package.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/better-sqlite3/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/bindings/bindings.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/bindings/LICENSE.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/bindings/package.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/bindings/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/file-uri-to-path/History.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/file-uri-to-path/index.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/file-uri-to-path/package.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/file-uri-to-path/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/file-uri-to-path/test/test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/file-uri-to-path/test/tests.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/node-gyp-build/bin.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/node-gyp-build/build-test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/node-gyp-build/index.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/node-gyp-build/node-gyp-build.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/node-gyp-build/optional.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/node-gyp-build/package.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/node-gyp-build/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/node-gyp-build/SECURITY.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/benchmark/fixtures/add.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/benchmark/piscina-queue-comparison.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/benchmark/queue-comparison.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/benchmark/simple-benchmark-fixed-queue.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/benchmark/simple-benchmark.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/CHANGELOG.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/CODE_OF_CONDUCT.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/CONTRIBUTING.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/abort.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/common.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/errors.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/index.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/main.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/symbols.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/task_queue/array_queue.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/task_queue/common.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/task_queue/fixed_queue.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/task_queue/index.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/types.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/worker_pool/index.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/dist/worker.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/api-reference/api-overview.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/api-reference/class.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/api-reference/event.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/api-reference/interface.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/api-reference/method.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/api-reference/property.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/api-reference/static-property.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/examples/typescript.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/Introduction.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/update-log/changelog.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/docs/docs/update-log/release-notes.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/package.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/test/fixtures/eval-async.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/test/fixtures/eval.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/test/fixtures/multiple.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/test/fixtures/notify-then-sleep-or.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/test/fixtures/resource-limits.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/test/fixtures/send-buffer-then-get-length.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/test/fixtures/send-transferrable-then-get-length.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/test/fixtures/sleep.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/piscina/test/fixtures/vm.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter-bash/bindings/node/index.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter-bash/grammar.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter-bash/package.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter-bash/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter-bash/src/grammar.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter-bash/src/node-types.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/index.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/jest-tests/constants.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/jest-tests/parse_input.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/jest-tests/runit.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/jest-tests/test.test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/jest-tests/test2.test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/jest-tests/test3.test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/package.json",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/test/lookahead_iterable_test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/test/node_test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/test/parser_test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/test/query_test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/test/tree_test.js",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/vendor/tree-sitter/lib/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/vendor/tree-sitter/lib/src/unicode/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/vendor/tree-sitter/lib/src/wasm/stdlib-symbols.txt",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/node_modules/tree-sitter/vendor/tree-sitter/README.md",
+      "surface": "agent-cli",
+      "reason": "nested-runtime-dependency"
+    },
+    {
+      "file": "agent-cli/package/pdf-worker.js.LICENSE.txt",
+      "surface": "agent-cli",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/273.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/46.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/652.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/agent-sdk/@types/react/tsconfig.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime-grok.esm.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/canvas-runtime/canvas-runtime.esm.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@anysphere/tree-chunk-napi/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@anysphere/tree-chunk-napi/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@anysphere/tree-chunk-napi/tree-chunk-napi.darwin-universal.node",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/CHANGELOG.md",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/dec/webp_dec.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/dec/webp_dec.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/dec/webp_dec.wasm",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.wasm",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/enc/webp_enc.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/enc/webp_enc.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/enc/webp_enc.wasm",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/LICENSE.codec.md",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/Makefile.animated.backup",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/codec/pre.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/decode.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/decode.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/emscripten-types.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/encode.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/encode.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/LICENSE",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/meta.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/meta.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/utils.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@jsquash/webp/utils.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/build/Release/better_sqlite3.node",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/database.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/methods/aggregate.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/methods/backup.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/methods/function.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/methods/inspect.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/methods/pragma.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/methods/serialize.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/methods/table.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/methods/transaction.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/methods/wrappers.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/sqlite-error.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/lib/util.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/better-sqlite3/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/bindings/bindings.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/bindings/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/file-uri-to-path/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/file-uri-to-path/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/node-gyp-build/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/node-gyp-build/node-gyp-build.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/node-gyp-build/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/abort.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/abort.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/common.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/common.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/errors.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/errors.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/esm-wrapper.mjs",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/main.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/main.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/symbols.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/symbols.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/task_queue/array_queue.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/task_queue/array_queue.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/task_queue/common.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/task_queue/common.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/task_queue/fixed_queue.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/task_queue/fixed_queue.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/task_queue/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/task_queue/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/types.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/types.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/worker_pool/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/worker_pool/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/worker.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/dist/worker.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/piscina/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/tree-sitter-bash/bindings/node/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/tree-sitter-bash/bindings/node/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/tree-sitter-bash/build/Release/tree_sitter_bash_binding.node",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/tree-sitter-bash/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/tree-sitter-bash/src/node-types.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/tree-sitter/build/Release/tree_sitter_runtime_binding.node",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/tree-sitter/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/tree-sitter/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/whichlang-node/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/whichlang-node/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/whichlang-node/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/whichlang-node/whichlang-node.darwin-universal.node",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/273.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/46.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/613.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/652.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/865.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/node-gyp-build/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/node-gyp-build/node-gyp-build.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/node-gyp-build/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/tree-sitter-bash/bindings/node/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/tree-sitter-bash/build/Release/tree_sitter_bash_binding.node",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/tree-sitter-bash/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/tree-sitter-bash/src/node-types.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/tree-sitter/build/Release/tree_sitter_runtime_binding.node",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/tree-sitter/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/node_modules/tree-sitter/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-sdk/@types/react/tsconfig.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime-grok.esm.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/canvas-runtime/canvas-runtime.esm.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/CHANGELOG.md",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/dec/webp_dec.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/dec/webp_dec.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/dec/webp_dec.wasm",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.wasm",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/enc/webp_enc.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/enc/webp_enc.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/enc/webp_enc.wasm",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/LICENSE.codec.md",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/Makefile.animated.backup",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/codec/pre.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/decode.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/decode.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/emscripten-types.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/encode.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/encode.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/LICENSE",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/meta.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/meta.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/utils.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/@jsquash/webp/utils.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/abort.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/abort.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/common.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/common.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/errors.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/errors.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/esm-wrapper.mjs",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/main.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/main.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/symbols.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/symbols.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/task_queue/array_queue.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/task_queue/array_queue.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/task_queue/common.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/task_queue/common.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/task_queue/fixed_queue.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/task_queue/fixed_queue.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/task_queue/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/task_queue/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/types.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/types.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/worker_pool/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/worker_pool/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/worker.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/dist/worker.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/node_modules/piscina/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/scripts/ensure-agent-host-daemon-dist.cjs",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-always-local/dist/main.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-always-local/eslint.config.cjs",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-always-local/schemas/environment.schema.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-always-local/schemas/permissions.schema.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-browser-automation/dist/273.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-browser-automation/dist/46.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-checkout/extension.webpack.config.js",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-commits/dist/main.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-commits/worker/pre-compile.js",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-commits/worker/tsconfig.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/dist/273.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/dist/46.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/dist/backends/windows/__fixtures__/pipeline-win32-release-manifest.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/dist/extension.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/dist/mcp/__fixtures__/windows-tools.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/extension.webpack.config.js",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/src/backends/windows/__fixtures__/fake-sidecar.cjs",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/src/backends/windows/__fixtures__/pipeline-win32-release-manifest.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/src/mcp/__fixtures__/windows-tools.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-computer-use/tsconfig.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-deeplink/dist/main.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/273.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/46.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/652.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/agent-sdk/@types/react/tsconfig.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime-grok.esm.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/canvas-runtime/canvas-runtime.esm.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/CHANGELOG.md",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/dec/webp_dec.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/dec/webp_dec.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/dec/webp_dec.wasm",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/enc/webp_enc_simd.wasm",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/enc/webp_enc.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/enc/webp_enc.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/enc/webp_enc.wasm",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/LICENSE.codec.md",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/Makefile.animated.backup",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/codec/pre.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/decode.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/decode.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/emscripten-types.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/encode.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/encode.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/LICENSE",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/meta.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/meta.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/utils.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/@jsquash/webp/utils.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/abort.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/abort.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/common.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/common.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/errors.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/errors.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/esm-wrapper.mjs",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/main.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/main.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/symbols.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/symbols.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/task_queue/array_queue.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/task_queue/array_queue.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/task_queue/common.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/task_queue/common.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/task_queue/fixed_queue.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/task_queue/fixed_queue.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/task_queue/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/task_queue/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/types.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/types.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/worker_pool/index.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/worker_pool/index.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/worker.d.ts",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/dist/worker.js",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/node_modules/piscina/package.json",
+      "surface": "desktop",
+      "reason": "unpacked-third-party-runtime-dependency"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-mcp/eslint.config.cjs",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-polyfills-remote/eslint.config.cjs",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-resolver/extension-browser.webpack.config.js",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-resolver/rewrite-bufbuild-loader.js",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-retrieval/dist/main.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-retrieval/eslint.config.cjs",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-retrieval/node_modules/@anysphere/file-service/index.js",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-retrieval/schemas/package.schema.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-retrieval/worker/tsconfig.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-shadow-workspace/dist/extension.js.LICENSE.txt",
+      "surface": "desktop",
+      "reason": "third-party-license"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-socket/extension.webpack.config.js",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-c.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-cpp.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-css.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-go.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-html.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-java.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-javascript.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-javascriptreact.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-json.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-php.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-protobuf.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-python.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-ruby.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-rust.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-shellscript.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-sql.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-swift.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-terraform-deploy.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-terraform-mock.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-terraform-search.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-terraform-stack.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-terraform-test.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-terraform-vars.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-terraform.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-typescript.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-typescriptreact.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    },
+    {
+      "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-worktree-textmate/syntaxes/worktree-yaml.tmLanguage.json",
+      "surface": "desktop",
+      "reason": "outside-runtime-dist-or-package-metadata"
+    }
+  ],
+  "scripts": 260,
+  "json": 37,
+  "assets": 0,
+  "parse_failed": 0,
+  "parse_failed_files": [],
+  "literals": 1533796,
+  "selected": 209954,
+  "skipped": {
+    "non-prose-or-short": 1323842
+  },
+  "containers": {},
+  "candidate_ledger_sha256": "488157975fd8ed5d239078b6c184575e90fa533a06cd4b6e4b5a04ca35d613b1",
+  "provider_transfer": "none; local preparation only"
+}

@@ -1,0 +1,558 @@
+{
+  "schema": 1,
+  "product": "Cursor",
+  "release": {
+    "id": "3.23.12-2026.10.01-e373342",
+    "desktop": {
+      "version": "3.23.12",
+      "commit": "2d29876d567da1607532b23bbf2cd5ddbca496f0",
+      "distro": "d5c0e77a0214208f36b56d42e8e787de88d02ea4",
+      "architecture": "arm64",
+      "tree_sha256": "5665959206bc6b07cac353114d68d791075593602fed5a27ac365cdbb780d995"
+    },
+    "agent_cli": {
+      "version": "2026.10.01-e373342",
+      "architecture": "arm64",
+      "archive_sha256": "629e51de43a0b7fb3b86f5ebc7e579f7df7df941b39f29e82945cde750145afc",
+      "tree_sha256": "e7220f127d51f5a2f80f4e31d9df07271db52920cd35bee8d3d8e7214cb4547c"
+    }
+  },
+  "evidence": "shipped-artifact",
+  "source": {
+    "surface": "agent-cli",
+    "file": "agent-cli/package/index.js",
+    "bytes": 8200126,
+    "sha256": "f6bd8dece34b56431ee74f1ac827e032d054381085e7da7088e85abdd1008330",
+    "module": "./src/client.ts",
+    "module_occurrence": {
+      "byte_start": 2210628,
+      "byte_end": 2210655,
+      "span_sha256": "c67b32e927292700cd1e5e7cbc5069cc3fc0b3e687663bad1cd5654940468194",
+      "anchor": "},\"./src/client.ts\"(t,e,r){"
+    },
+    "generated_module": "../proto/dist/generated/agent/v1/agent_service_pb.js",
+    "generated_module_occurrence": {
+      "byte_start": 2215526,
+      "byte_end": 2215580,
+      "span_sha256": "690507188b47cfe090f023d90a21e8c469dc68c14bf676e45228551a0cb610a2",
+      "anchor": "\"../proto/dist/generated/agent/v1/agent_service_pb.js\""
+    },
+    "service_occurrence": {
+      "byte_start": 2215591,
+      "byte_end": 2215623,
+      "span_sha256": "9d9e45b5666b89328bf995fbc64349a9df78d3a261bd7b99918e6df55e0a0fc4",
+      "anchor": "typeName:\"agent.v1.AgentService\""
+    },
+    "request_occurrence": {
+      "byte_start": 5731085,
+      "byte_end": 5731117,
+      "span_sha256": "6c7b9a436d78b667a78964ec8395b0d2590ea8860a33cd7a58a7a4761ab9a4e1",
+      "anchor": "AgentClientMessage|1 run_request"
+    },
+    "response_occurrence": {
+      "byte_start": 5732280,
+      "byte_end": 5732319,
+      "span_sha256": "d0ab3871def9ddbe700e2b76614c89833a04ec5d3fcb1959139669cfd4c03603",
+      "anchor": "AgentServerMessage|1 interaction_update"
+    },
+    "bootstrap_occurrence": {
+      "byte_start": 8200060,
+      "byte_end": 8200121,
+      "span_sha256": "dd6cf82784784e33b85301cb84876e4242a002637302ea317a7c4c27926228e6",
+      "anchor": "var __webpack_exports__=__webpack_require__(\"./src/main.tsx\")"
+    },
+    "sea": {
+      "file": "agent-cli/package/cursor-agent-sea",
+      "executable_sha256": "cb1094c1d63727409ff31376df44a5146f44ae32ccc01bffbf591c473fff5adc",
+      "section": "NODE_SEA,__NODE_SEA_BLOB",
+      "section_offset": 102318080,
+      "section_size": 8200329,
+      "section_sha256": "3fd4b7e3d9fa160143cf671e4fc5008c49b1daca213087c20a9d61b4e4adf563",
+      "index_offset_in_section": 202,
+      "index_offset_in_executable": 102318282,
+      "index_bytes": 8200126
+    }
+  },
+  "service": {
+    "type_name": "agent.v1.AgentService",
+    "method": "Run",
+    "kind": "BiDiStreaming",
+    "input": "agent.v1.AgentClientMessage",
+    "output": "agent.v1.AgentServerMessage"
+  },
+  "messages": {
+    "AgentClientMessage": {
+      "export": "KS",
+      "type_name": "agent.v1.AgentClientMessage",
+      "fields": [
+        {
+          "number": 1,
+          "proto_name": "run_request",
+          "json_name": "runRequest",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.AgentRunRequest"
+        },
+        {
+          "number": 2,
+          "proto_name": "exec_client_message",
+          "json_name": "execClientMessage",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.ExecClientMessage"
+        },
+        {
+          "number": 5,
+          "proto_name": "exec_client_control_message",
+          "json_name": "execClientControlMessage",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.ExecClientControlMessage"
+        },
+        {
+          "number": 3,
+          "proto_name": "kv_client_message",
+          "json_name": "kvClientMessage",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.KvClientMessage"
+        },
+        {
+          "number": 4,
+          "proto_name": "conversation_action",
+          "json_name": "conversationAction",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.ConversationAction"
+        },
+        {
+          "number": 6,
+          "proto_name": "interaction_response",
+          "json_name": "interactionResponse",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.InteractionResponse"
+        },
+        {
+          "number": 7,
+          "proto_name": "client_heartbeat",
+          "json_name": "clientHeartbeat",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.ClientHeartbeat"
+        },
+        {
+          "number": 8,
+          "proto_name": "prewarm_request",
+          "json_name": "prewarmRequest",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.PrewarmRequest"
+        }
+      ]
+    },
+    "AgentServerMessage": {
+      "export": "Oy",
+      "type_name": "agent.v1.AgentServerMessage",
+      "fields": [
+        {
+          "number": 1,
+          "proto_name": "interaction_update",
+          "json_name": "interactionUpdate",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.InteractionUpdate"
+        },
+        {
+          "number": 2,
+          "proto_name": "exec_server_message",
+          "json_name": "execServerMessage",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.ExecServerMessage"
+        },
+        {
+          "number": 5,
+          "proto_name": "exec_server_control_message",
+          "json_name": "execServerControlMessage",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.ExecServerControlMessage"
+        },
+        {
+          "number": 3,
+          "proto_name": "conversation_checkpoint_update",
+          "json_name": "conversationCheckpointUpdate",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.ConversationStateStructure"
+        },
+        {
+          "number": 4,
+          "proto_name": "kv_server_message",
+          "json_name": "kvServerMessage",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.KvServerMessage"
+        },
+        {
+          "number": 7,
+          "proto_name": "interaction_query",
+          "json_name": "interactionQuery",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "oneof": "message",
+          "type": "agent.v1.InteractionQuery"
+        },
+        {
+          "number": 8,
+          "proto_name": "ttft_breakdown",
+          "json_name": "ttftBreakdown",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "type": "agent.v1.TtftBreakdown"
+        }
+      ]
+    },
+    "AgentRunRequest": {
+      "type_name": "agent.v1.AgentRunRequest",
+      "fields": [
+        {
+          "number": 1,
+          "proto_name": "conversation_state",
+          "json_name": "conversationState",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "type": "agent.v1.ConversationStateStructure"
+        },
+        {
+          "number": 2,
+          "proto_name": "action",
+          "json_name": "action",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "type": "agent.v1.ConversationAction"
+        },
+        {
+          "number": 3,
+          "proto_name": "model_details",
+          "json_name": "modelDetails",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "type": "agent.v1.ModelDetails"
+        },
+        {
+          "number": 9,
+          "proto_name": "requested_model",
+          "json_name": "requestedModel",
+          "kind": "message",
+          "repeated": false,
+          "optional": true,
+          "type": "agent.v1.RequestedModel"
+        },
+        {
+          "number": 4,
+          "proto_name": "mcp_tools",
+          "json_name": "mcpTools",
+          "kind": "message",
+          "repeated": false,
+          "optional": false,
+          "type": "agent.v1.McpTools"
+        },
+        {
+          "number": 5,
+          "proto_name": "conversation_id",
+          "json_name": "conversationId",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 9
+        },
+        {
+          "number": 6,
+          "proto_name": "mcp_file_system_options",
+          "json_name": "mcpFileSystemOptions",
+          "kind": "message",
+          "repeated": false,
+          "optional": true,
+          "type": "agent.v1.McpFileSystemOptions"
+        },
+        {
+          "number": 7,
+          "proto_name": "skill_options",
+          "json_name": "skillOptions",
+          "kind": "message",
+          "repeated": false,
+          "optional": true,
+          "type": "agent.v1.SkillOptions"
+        },
+        {
+          "number": 8,
+          "proto_name": "custom_system_prompt",
+          "json_name": "customSystemPrompt",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 9
+        },
+        {
+          "number": 10,
+          "proto_name": "suggest_next_prompt",
+          "json_name": "suggestNextPrompt",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 11,
+          "proto_name": "subagent_type_name",
+          "json_name": "subagentTypeName",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 9
+        },
+        {
+          "number": 12,
+          "proto_name": "exclude_workspace_context",
+          "json_name": "excludeWorkspaceContext",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 13,
+          "proto_name": "harness",
+          "json_name": "harness",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 9
+        },
+        {
+          "number": 14,
+          "proto_name": "selected_subagent_models",
+          "json_name": "selectedSubagentModels",
+          "kind": "message",
+          "repeated": true,
+          "optional": false,
+          "type": "agent.v1.RequestedModel"
+        },
+        {
+          "number": 15,
+          "proto_name": "selected_subagent_model_details",
+          "json_name": "selectedSubagentModelDetails",
+          "kind": "message",
+          "repeated": true,
+          "optional": false,
+          "type": "agent.v1.ModelDetails"
+        },
+        {
+          "number": 16,
+          "proto_name": "conversation_group_id",
+          "json_name": "conversationGroupId",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 9
+        },
+        {
+          "number": 17,
+          "proto_name": "pre_fetched_blobs",
+          "json_name": "preFetchedBlobs",
+          "kind": "message",
+          "repeated": true,
+          "optional": false,
+          "type": "agent.v1.PreFetchedBlob"
+        },
+        {
+          "number": 18,
+          "proto_name": "dev_raw_model_slug",
+          "json_name": "devRawModelSlug",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 9
+        },
+        {
+          "number": 19,
+          "proto_name": "client_supports_inline_images",
+          "json_name": "clientSupportsInlineImages",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 20,
+          "proto_name": "subagent_model_overrides",
+          "json_name": "subagentModelOverrides",
+          "kind": "message",
+          "repeated": true,
+          "optional": false,
+          "type": "agent.v1.SubagentModelOverride"
+        },
+        {
+          "number": 21,
+          "proto_name": "can_create_cloud_subagents",
+          "json_name": "canCreateCloudSubagents",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 22,
+          "proto_name": "suppress_subagent_progress_update_tool",
+          "json_name": "suppressSubagentProgressUpdateTool",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 23,
+          "proto_name": "client_supports_send_to_user",
+          "json_name": "clientSupportsSendToUser",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 24,
+          "proto_name": "computer_use_coordinate_mode",
+          "json_name": "computerUseCoordinateMode",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 9
+        },
+        {
+          "number": 25,
+          "proto_name": "run_id",
+          "json_name": "runId",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 9
+        },
+        {
+          "number": 26,
+          "proto_name": "agent_session_id",
+          "json_name": "agentSessionId",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 9
+        },
+        {
+          "number": 27,
+          "proto_name": "client_supports_prompt_context_usage_rpc",
+          "json_name": "clientSupportsPromptContextUsageRpc",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 28,
+          "proto_name": "client_supports_routed_model_update",
+          "json_name": "clientSupportsRoutedModelUpdate",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 29,
+          "proto_name": "system_prompt_spec",
+          "json_name": "systemPromptSpec",
+          "kind": "message",
+          "repeated": false,
+          "optional": true,
+          "type": "agent.v1.SystemPromptSpec"
+        },
+        {
+          "number": 30,
+          "proto_name": "client_llm_gateway_credential",
+          "json_name": "clientLlmGatewayCredential",
+          "kind": "message",
+          "repeated": false,
+          "optional": true,
+          "type": "agent.v1.ClientLlmGatewayCredential"
+        },
+        {
+          "number": 31,
+          "proto_name": "client_supports_preview_card",
+          "json_name": "clientSupportsPreviewCard",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 32,
+          "proto_name": "started_as_new_project",
+          "json_name": "startedAsNewProject",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        },
+        {
+          "number": 33,
+          "proto_name": "first_project_onboarding",
+          "json_name": "firstProjectOnboarding",
+          "kind": "scalar",
+          "repeated": false,
+          "optional": true,
+          "type": 8
+        }
+      ]
+    }
+  },
+  "framing": {
+    "media_type": "application/connect+proto",
+    "header_bytes": 5,
+    "flags_byte": 0,
+    "length": "unsigned 32-bit big-endian at header bytes 1-4",
+    "compressed_flag": 1,
+    "end_stream_flag": 2,
+    "decoder": "Use KS.fromBinary for normal request frames and Oy.fromBinary for normal response frames after per-frame decompression. Do not pass an end-stream frame to a protobuf class."
+  },
+  "source_length_characters": 8061051
+}
