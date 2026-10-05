@@ -31,12 +31,12 @@ const seedFile = path.join(root, `extract/tags/${prefix}-seed.json`);
 const hasTaxonomy = existsSync(taxonomyFile);
 const taxonomy = hasTaxonomy ? readJson(taxonomyFile) : null;
 const seed = hasTaxonomy && existsSync(seedFile) ? readJson(seedFile) : [];
-const cache = openCache(path.join(root, "work/tag-verdicts.json"));
 const taxonomyVersion = hasTaxonomy ? sha(JSON.stringify(taxonomy)).slice(0, 12) : null;
 const THRESHOLD = 0.7;
 const FEATURE = hasTaxonomy ? taxonomy.tags[0].id : null;
 
 const config = decisionConfig();
+const cache = openCache(path.join(root, "work/tag-verdicts.json"),{config});
 // Cache keys: "<prefix>:<taxonomy version>:<sha256 of the state sent>".
 export const tagKey = (prefix, taxonomyVersion, state) => `${prefix}:${taxonomyVersion}:${sha(JSON.stringify(state))}`;
 

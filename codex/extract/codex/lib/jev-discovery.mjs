@@ -93,7 +93,9 @@ export function packQuestions(items, { batchSize = 8, maxBytes = 96_000, state={
 }
 
 export async function evaluateBatch(config, payload, version, options, usage = {}) {
-  const key = `${version}:${config.model}:${hash(payload)}`;
+  // The disk cache's provider namespace carries the pinned requested model. Keep the semantic
+  // key provider-neutral so an automatic fallback can store and then reuse the router verdict.
+  const key = `${version}:${hash(payload)}`;
   let body;
   if (options.cache.has(key)) body = options.cache.get(key);
   else {
@@ -138,7 +140,7 @@ export async function classifySources(config, sources, options = {}) {
     while (queue.length) {
       const batch=queue.shift(), questions=Object.fromEntries(batch.flatMap((v,i)=>Object.entries(v.questions).map(([k,q])=>[`${i}_${k}`,q])));
       const payload={state:requestState,questions};
-      const key=`${DISCOVERY_VERSION}:${config.model}:${hash(payload)}`;
+      const key=`${DISCOVERY_VERSION}:${hash(payload)}`;
       if (unavailable && !options.cache.has(key)) { batch.forEach(({record})=>Object.assign(record,{status:'unanswered',reason:unavailable})); continue; }
       try {
         const body=await evaluateBatch(config,payload,DISCOVERY_VERSION,options,usage);

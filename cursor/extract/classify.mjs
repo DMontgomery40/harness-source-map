@@ -26,7 +26,7 @@ export async function classifyCursor({ config = decisionConfig(), candidatesFile
   const stats = JSON.parse(fs.readFileSync(statsFile, "utf8"));
   const expected = publicRelease(release);
   if (stats.source?.id !== expected.id || stats.source?.desktop?.tree_sha256 !== expected.desktop.tree_sha256 || stats.source?.agent_cli?.tree_sha256 !== expected.agent_cli.tree_sha256) throw new Error("Cursor candidate inventory is stale for the pinned release");
-  const cache = openCache(path.join(workRoot, "cursor-jev-cache.json"));
+  const cache = openCache(path.join(workRoot, "cursor-jev-cache.json"),{config});
   const checkpoint = { requestsCompleted: 0 };
   const options = {
     cache,

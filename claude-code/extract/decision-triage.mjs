@@ -25,7 +25,7 @@ export async function judge(config, cache, code, knobs, options) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const config = decisionConfig();
-  const cache = openCache(`${root}work/decision-triage-cache.json`);
+  const cache = openCache(`${root}work/decision-triage-cache.json`,{config});
   const candidates = JSON.parse(readFileSync(`${root}work/decision-candidates.json`, "utf8"));
 
   const queue = [...candidates], out = [];

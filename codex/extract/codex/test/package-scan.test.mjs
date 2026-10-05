@@ -114,15 +114,15 @@ test("Jev labels are recorded with choice and confidence, cached, and capped", a
   assert.equal(calls, 3);
 });
 
-test("package triage: a verdict cached before the model was pinned (untagged \"v1:<h12>\") is still a hit", async () => {
+test("package triage: a direct-provider verdict stays a hit in its provider namespace", async () => {
   const item = { kind: "url", where: "bin", text: "New url string in bin: https://legacy.example.com" };
   const cacheFile = path.join(tmp(), "verdicts.json");
-  fs.writeFileSync(cacheFile, JSON.stringify({ [triageKey("Fake", item)]: { choice: "feature", confidence: 0.9 } }));
+  fs.writeFileSync(cacheFile, JSON.stringify({ [`${config.cacheVersion}:${triageKey("Fake", item)}`]: { choice: "feature", confidence: 0.9 } }));
   const fetchImpl = async () => { throw new Error("a cached verdict must not be asked again"); };
   const r = await triage([item], { product: "Fake", cacheFile, config, fetchImpl });
   assert.deepEqual([r.labels[0].choice, r.labels[0].confidence, r.unavailable], ["feature", 0.9, null]);
   assert.match(triageKey("Fake", item), /^v1:[0-9a-f]{12}$/);
-  assert.deepEqual(Object.keys(JSON.parse(fs.readFileSync(cacheFile, "utf8"))), [`jev-1.13:${triageKey("Fake", item)}`]);
+  assert.deepEqual(Object.keys(JSON.parse(fs.readFileSync(cacheFile, "utf8"))), [`${config.cacheVersion}:${triageKey("Fake", item)}`]);
 });
 
 test("package triage: retries a rate limit, degrades on an outage, and fails on a malformed request", async () => {

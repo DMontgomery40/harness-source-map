@@ -53,7 +53,7 @@ async function judge(config, sentence, options) {
 export async function narrativeLint(repo, { threshold = 0.8, cacheFile = defaultCacheFile, config = decisionConfig(), ...askOptions } = {}) {
   const configFile = path.join(repo, "narrative-lint.json");
   const exempt = new Set(existsSync(configFile) ? JSON.parse(readFileSync(configFile, "utf8")).exempt : []);
-  const cache = openCache(cacheFile);
+  const cache = openCache(cacheFile,{config});
   const findings = [];
   try {
     for (const name of readdirSync(path.join(repo, "outputs")).filter(f => f.endsWith(".md"))) {

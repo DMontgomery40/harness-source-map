@@ -15,7 +15,6 @@
   <dict>
     <key>PATH</key><string>{{NODE_BIN}}:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
     <key>HOME</key><string>{{HOME}}</string>
-    <key>JEV_PROVIDER</key><string>typesafe</string>
     <key>JEV_BROAD_EXPORT</key><string>1</string>
   </dict>
   <key>StandardOutPath</key><string>{{REPO}}/watch/logs/launchd.out.log</string>

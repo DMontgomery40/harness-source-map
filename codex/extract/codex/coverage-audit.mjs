@@ -88,8 +88,9 @@ async function main() {
   const ledger=JSON.parse(fs.readFileSync(sourceFile,'utf8'));
   const sources=ledger.records.filter(r=>r.status==='classified'&&r.model_facing.noul>=.8);
   const records=await publishedCoverageRecords(repo);
-  const cache=openCache(path.join(repo,'work/discovery-coverage-verdicts.json'));
-  const result=await auditCoverage(decisionConfig(),sources,records,{cache});
+  const config=decisionConfig();
+  const cache=openCache(path.join(repo,'work/discovery-coverage-verdicts.json'),{config});
+  const result=await auditCoverage(config,sources,records,{cache});
   const summaryFile=path.join(repo,'work/discovery-coverage-pending.json');
   const previous=(()=>{try{return JSON.parse(fs.readFileSync(summaryFile,'utf8'));}catch{return {pending:[]};}})();
   const key=r=>`${r.source_sha256}:${r.expected_kind}`;
