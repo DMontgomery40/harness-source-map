@@ -63,7 +63,7 @@ export function findings(cap, trace) {
   const notInModels = countBy(notIn, (c) => c.model || "model not named");
   if (product === 'cursor') {
     out.push({ id: 'notlog', label: 'Exact request evidence', warn: notIn.length > 0, open: ['sec:calls', 'calls:notlog'],
-      text: `${plural(calls.length, 'captured AgentService call')} ${calls.length === 1 ? 'retains' : 'retain'} the observed protobuf bytes. ${plural(inLog.length, 'call')} ${inLog.length === 1 ? 'joins' : 'join'} a native step by exact request ID; ${plural(notIn.length, 'call')} remain unattributed. Timestamps are never used.` });
+      text: `${plural(calls.length, 'captured AgentService call')} ${calls.length === 1 ? 'retains' : 'retain'} the observed protobuf bytes${cap.decodedAgentService ? `; ${plural(cap.decodedAgentService, 'call')} ${cap.decodedAgentService === 1 ? 'is' : 'are'} decoded with the pinned shipped descriptor` : ''}. ${plural(inLog.length, 'call')} ${inLog.length === 1 ? 'joins' : 'join'} a native step by exact request ID; ${plural(notIn.length, 'call')} remain unattributed. Timestamps are never used.` });
   } else if (product === 'opencode') {
     out.push({ id: 'notlog', label: 'Exact request evidence', warn: false, open: ['sec:calls', 'calls:notlog'],
       text: `${plural(calls.length, 'captured model call')} ${calls.length === 1 ? 'shows' : 'show'} the actual request bodies. Native exports do not establish the complete system prompt, tool schemas or request transformations. ${plural(notIn.length, 'call')} ${notIn.length === 1 ? 'lacks' : 'lack'} an exact native step match; session headers establish session ownership only.` });
@@ -113,7 +113,7 @@ export function findings(cap, trace) {
   // 5. Switched on.
   if (product === 'cursor') {
     out.push({ id: 'on', label: 'Cursor routing boundary', warn: false, open: ['sec:calls'],
-      text: 'The observed client destination is Cursor AgentService. Opaque ConnectRPC bytes do not establish an unobserved downstream model provider, geography or retention policy.' });
+      text: `The observed client destination is Cursor AgentService. ${cap.decodedAgentService ? 'Decoded client payloads' : 'Opaque ConnectRPC bytes'} do not establish an unobserved downstream model provider, geography or retention policy.` });
   } else if (product === 'opencode') {
     const providers = [...new Set(calls.flatMap(c => c.routing?.reportedProviders || []))];
     out.push({ id: 'on', label: 'Provider routing', warn: false, open: ['sec:calls'],

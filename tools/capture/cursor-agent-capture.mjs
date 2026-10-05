@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 // Explicit process-local recording of one real Cursor Agent CLI run. The HTTP/2
-// observer does not alter TLS or routing; opaque protobuf stays opaque.
+// observer does not alter TLS or routing. When the pinned shipped Agent CLI
+// source is available, its exact protobuf classes decode AgentService bodies.
 import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { createWriteStream, existsSync, mkdirSync, mkdtempSync, chmodSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
 import { checkHar, findSecrets, harSecrets } from './check-har.mjs';
+import { CURSOR_AGENT_DECODED_FILE, decodeCursorAgentHar, resolveCursorAgentIndex } from './cursor-agent-decode.mjs';
 import { siteOrigin } from '../../site/src/shared/site.mjs';
 
 const HELP = `Record a real Cursor Agent CLI run and its application-layer HTTP/2 traffic.
@@ -15,7 +17,8 @@ const HELP = `Record a real Cursor Agent CLI run and its application-layer HTTP/
 
 The command forces --print --output-format stream-json and keeps the native stream,
 credential-checked HAR and manifest in a private per-run folder. The observer does
-not proxy traffic, replace certificates or decode protobuf. Unknown ownership stays
+not proxy traffic or replace certificates. When a matching pinned Agent CLI source
+is available, an exact decoded protobuf sidecar is added. Unknown ownership stays
 unattributed. Output defaults to ~/.harness-source-map/captures.
 `;
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -53,7 +56,9 @@ function options(args) {
 const save = (file, value) => writeFileSync(file, JSON.stringify(value, null, 2) + '\n', { mode: 0o600, flag: 'wx' });
 const values = (headers, name) => [...new Set((headers || []).filter(header => header.name.toLowerCase() === name).map(header => header.value))];
 
-export function cursorCaptureEvidence(har, sessionIds = [], requestIds = []) {
+export function cursorCaptureEvidence(har, sessionIds = [], requestIds = [], {
+  observation = 'Application-layer node:http2; exact captured ConnectRPC bytes are retained.',
+} = {}) {
   const sessions = new Set(sessionIds), requests = new Set(requestIds);
   let associated = 0, unattributed = 0, partial = 0, errors = 0;
   for (const entry of har?.log?.entries || []) {
@@ -67,8 +72,7 @@ export function cursorCaptureEvidence(har, sessionIds = [], requestIds = []) {
     if (entry._traceCapture?.partial || entry._traceCapture?.withheldBodies?.length || !entry.response?.status) partial++;
     if (Number(entry.response?.status) >= 400) errors++;
   }
-  return { entries: har?.log?.entries?.length || 0, associated, unattributed, partial, errors,
-    observation: 'Application-layer node:http2; protobuf bodies retained as opaque bytes.' };
+  return { entries: har?.log?.entries?.length || 0, associated, unattributed, partial, errors, observation };
 }
 
 export async function recordCursorAgent(opts) {
@@ -118,7 +122,7 @@ export async function recordCursorAgent(opts) {
   const secretKinds = findSecrets(streamText);
   if (secretKinds.length) { unlinkSync(streamFile); problems.push('The native stream failed credential checks and was removed.'); }
 
-  let evidence = null;
+  let evidence = null, decoded = null, decoderWarning = null;
   if (!existsSync(captureFile)) problems.push('No HTTP/2 traffic was observed.');
   else if (!checkHar(captureFile).ok) problems.push('The HTTP/2 observation failed credential checks and was removed.');
   else {
@@ -126,6 +130,19 @@ export async function recordCursorAgent(opts) {
     if (harSecrets(har).length) throw new Error('Checked Cursor HAR unexpectedly contains credentials.');
     evidence = cursorCaptureEvidence(har, [...sessions], [...requests]);
     writeFileSync(captureFile, JSON.stringify(har, null, 2) + '\n', { mode: 0o600 });
+    const indexFile = resolveCursorAgentIndex();
+    if (indexFile && existsSync(indexFile)) {
+      try {
+        const derivative = decodeCursorAgentHar(har, { indexFile, capture: 'capture.har' });
+        save(path.join(directory, CURSOR_AGENT_DECODED_FILE), derivative);
+        decoded = CURSOR_AGENT_DECODED_FILE;
+        evidence.decodedAgentService = derivative.entries.length;
+        evidence.decoder = 'Exact protobuf classes from the pinned shipped Cursor Agent CLI artifact.';
+      } catch {
+        decoderWarning = 'Exact shipped-descriptor decode was unavailable. The captured protobuf bytes remain opaque.';
+        evidence.decoder = 'Unavailable; captured protobuf bytes remain opaque.';
+      }
+    } else evidence.decoder = 'Pinned shipped Agent CLI source unavailable; captured protobuf bytes remain opaque.';
     if (!evidence.entries) problems.push('The observer wrote no HTTP/2 entries.');
     if (evidence.partial) problems.push(`${evidence.partial} HTTP/2 entries are partial or have withheld bodies.`);
     if (!evidence.associated) problems.push('No observed request carried an exact session or request identifier; traffic remains unattributed.');
@@ -133,13 +150,14 @@ export async function recordCursorAgent(opts) {
   const unique = [...new Set(problems)];
   const manifest = { format: 'trace-cursor-agent-capture', version: 1, product: 'cursor', surface: 'agent-cli', cliVersion: version.stdout.trim(),
     status: unique.length ? 'incomplete' : 'complete', commandExitCode: status, stream: existsSync(streamFile) ? 'stream.jsonl' : null,
-    capture: existsSync(captureFile) ? 'capture.har' : null, evidence, problems: unique,
-    association: 'Exact observed Cursor session or request identifiers only; opaque protobuf and unknown traffic remain unattributed.',
+    capture: existsSync(captureFile) ? 'capture.har' : null, decoded, evidence, problems: unique,
+    association: 'Exact observed Cursor session or request identifiers only; unknown traffic remains unattributed.',
     credentials: 'Observed headers and bodies were scrubbed before HAR checkpoints and checked again after capture. Native stream output remains private.' };
   save(path.join(directory, 'manifest.json'), manifest);
   for (const problem of unique) console.error(`cursor-agent-capture: ${problem}`);
+  if (decoderWarning) console.error(`cursor-agent-capture: ${decoderWarning}`);
   console.error(`cursor-agent-capture: ${manifest.status}; private bundle: ${directory}`);
-  console.error(`Open ${siteOrigin()}/trace/ and drop stream.jsonl and capture.har together.`);
+  console.error(`Open ${siteOrigin()}/trace/ and drop stream.jsonl, capture.har${decoded ? ` and ${decoded}` : ''} together.`);
   if (opts.open) spawnSync(process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'explorer.exe' : 'xdg-open', [`${siteOrigin()}/trace/`], { stdio: 'ignore' });
   return { directory, manifest, exitCode: unique.length ? 1 : 0 };
 }

@@ -8,6 +8,12 @@ export function looksLikeHar(head) {
   return /^﻿?\s*\{\s*"log"\s*:/.test(String(head || ""));
 }
 
+// A private decoder derivative accompanies its HAR. It is capture input rather
+// than a session export, so folder drops keep it with the network evidence.
+export function looksLikeCursorDecoded(head) {
+  return /^﻿?\s*\{[\s\S]{0,200}"format"\s*:\s*"trace-cursor-agent-service-decoded"/.test(String(head || ""));
+}
+
 // Which of the captures loaded with a session belong to it. A capture filed beside a session log
 // (tools/capture/file-capture.mjs) has that session's id in its path; one picked or dropped by hand usually
 // names no session at all. Keep the ones that name the open session, and the ones that name none; a capture
