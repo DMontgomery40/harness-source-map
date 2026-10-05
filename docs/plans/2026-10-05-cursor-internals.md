@@ -24,7 +24,7 @@ Own `site/src/cursor`, Cursor additions in shared site/build/search configuratio
 
 ## C4: Real desktop and Agent CLI Trace/capture
 
-Status: ready. Blocked by: none. Blocks: C6.
+Status: resolved in merge `806463e` (implementation `db1cdcc`). Blocked by: none. Blocks: C6.
 
 Own Cursor additions under `tools/capture`, `site/trace` and focused tests. Inspect real local Cursor desktop/CLI session formats privately. Add explicit process-scoped desktop and Agent CLI capture routes, real artifact adapters, sources and network analysis. Exact identifiers are the only automatic association. Validation uses coordinator-supplied private real recordings through environment paths; no synthetic transcript, response, HAR or session fixture.
 
