@@ -6,13 +6,13 @@ This task-local ticket graph is the local issue tracker for the explicitly reque
 
 ## T1: Source extraction
 
-Status: ready. Blocks: T2. Blocked by: none.
+Status: resolved. Blocks: T2. Blocked by: none. Merged source commit a3662a4; 118 records from 92 public release files. Provenance, deterministic extraction and full gate passed.
 
 Own opencode/extract, opencode/outputs, opencode/README.md. Build a deterministic release-pinned extractor and source records covering prompt files, tool descriptions, model routing, request assembly, instruction/config precedence and network/reasoning plumbing. The spec defines filenames and record shape. Inspect the complete public source relevant to each claim. Check provenance against the real checkout; no fake source fixtures. Add repeatable extraction checks to the repo gate via a test file under opencode/extract/test; coordinator owns package.json changes. Commit and report exact verification and gaps.
 
 ## T2: Reference site
 
-Status: blocked. Blocked by: T1. Blocks: T5.
+Status: implementing. Blocked by: none. Blocks: T5.
 
 Own site/src/opencode, site/src/shared/{site.mjs,landing.mjs,trace-build.mjs}, site/build.mjs and site/test/shared/sections.test.mjs. Add OpenCode to site config, landing, builds, search and Trace reference indices using T1 outputs. Preserve existing sections and all existing products. Reuse existing rendering where appropriate without copying entire product renderers. Test against the actual extracted outputs and generated site; no fabricated records. Coordinator owns README/package docs.
 
@@ -24,7 +24,7 @@ Own site/trace and its tests. Add native OpenCode JSON exports to loadTrace and 
 
 ## T4: Easy opt-in capture
 
-Status: ready. Blocked by: none. Blocks: T5.
+Status: resolved. Blocked by: none. Blocks: T5. Merged capture commit fc0b178. Real Qwen run completed through the final wrapper; native export and HAR credential gates passed.
 
 Own tools/capture and relevant tools/test files only. Add an easy OpenCode capture command that bundles a real native session export with credential-redacted HAR, explicit capture activation and actionable next/open instructions. Reuse existing recorder and ephemeral CA process-scoped trust. Derive real session ids from actual events/headers; keep unknown traffic unattributed. Avoid moving recordings into tracked paths. No synthetic/mock traffic; coordinator supplies live recordings and performs external API runs. Preserve Claude Code and Codex/ChatGPT capture paths. Document the command in tools/capture/README.md.
 
