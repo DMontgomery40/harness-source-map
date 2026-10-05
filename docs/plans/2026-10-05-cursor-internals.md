@@ -6,7 +6,7 @@ This task-local ticket graph is the issue tracker for the requested implement-sp
 
 ## C1: Release acquisition, Binwalk and package scan
 
-Status: snapshot hardening in progress after merge `63de1da` (implementation `077ccb6`, deterministic repair `e231e24`). Blocked by: none. Blocks: C2,C3,C5,C6.
+Status: resolved in merge `cdf06ba` (implementation `077ccb6`, deterministic repair `e231e24`, atomic snapshot repair `3b45a7c`). Blocked by: none. Blocks: C2,C3,C5,C6.
 
 Own `cursor/extract/acquire.mjs`, `cursor/extract/binwalk-scan.mjs`, `cursor/extract/package-scan.mjs`, their tests and `cursor/outputs/{binwalk-scan,package-scan}.{json,md}`. Pin the current real desktop app and official Agent CLI archive into ignored work storage. Snapshot keys include an exact composite artifact identity so same-version desktop repacks cannot collide. Stage and validate the complete two-distribution snapshot before atomically promoting it and `current.json`; failed work leaves the previous snapshot selected. Implement the target manifest, ASAR inventory, SEA-section parser and shared Binwalk carving/diff behavior specified above. Scan the real current artifacts and publish bounded reports. Use the shared package scanner for the entire two-distribution inventory. Do not add generated stand-ins.
 
