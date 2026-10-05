@@ -150,5 +150,8 @@ test("env vars and CLI commands are read structurally from the closure with exac
   assert.equal(run.text, "run opencode with a message");
   assert.equal(cli.find((record) => record.title === "opencode run --continue").text, "continue the last session");
   assert.equal(new Set(cli.map((record) => record.title)).size, cli.length);
-  for (const record of cli) assert.ok(files.get(record.provenance[0].file)[record.provenance[0].startLine - 1].includes(record.kind === "cli-command" ? "command:" : record.title.split(" ").at(-1).replace(/^--|^<|>$/g, "")), record.title);
+  for (const record of cli) {
+    const sourceName = record.kind === "cli-command" ? "command:" : record.title.replace(/ \(argument\)$/, "").split(" ").at(-1).replace(/^--|^<|>$/g, "");
+    assert.ok(files.get(record.provenance[0].file)[record.provenance[0].startLine - 1].includes(sourceName), record.title);
+  }
 });
