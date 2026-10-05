@@ -26,10 +26,11 @@ export function shapeDiscovered(discovered, curated) {
   for (const record of discovered) {
     // Nothing is left out: text a reviewed record also holds stays, noting that record.
     const also = covering(record.text, curated);
-    const same = byText.get(record.text);
+    const key = `${record.text}\0${roleOf(record)}`;
+    const same = byText.get(key);
     if (same) { same.provenance.push(...record.provenance); merged++; continue; }
     if (also) coveredByCurated++;
-    byText.set(record.text, { ...record, provenance: [...record.provenance], ...(also ? { also_in: { id: also.id, title: also.title } } : {}) });
+    byText.set(key, { ...record, provenance: [...record.provenance], ...(also ? { also_in: { id: also.id, title: also.title } } : {}) });
   }
   const items = [...byText.values()].map(record => ({ ...record, group: record.provenance[0].file, page: PAGE_OF_ROLE[roleOf(record)] }));
   items.sort((a, b) => a.page.localeCompare(b.page) || a.group.localeCompare(b.group) || a.provenance[0].byte_start - b.provenance[0].byte_start);
@@ -44,10 +45,10 @@ export function discoveredTags(items) {
   const surfaces = [["desktop", "Desktop app"], ["agent-cli", "Agent CLI"]];
   const tags = [
     ...ROLES.map(([id, label, definition]) => ({ id: `role-${id}`, label, kind: "topic", definition, count: items.filter(item => roleOf(item) === id).length })),
-    ...surfaces.map(([id, label]) => ({ id: `surface-${id}`, label, kind: "status", definition: `Shipped in the ${label}.`, count: items.filter(item => item.surface === id).length })),
+    ...surfaces.map(([id, label]) => ({ id: `surface-${id}`, label, kind: "status", definition: `Shipped in the ${label}.`, count: items.filter(item => item.provenance.some(p => (p.surface ?? item.surface) === id)).length })),
     { id: "several-places", label: "Shipped in several places", kind: "status", definition: "The same text appears in more than one bundle or offset.", count: items.filter(item => item.provenance.length > 1).length }
   ].filter(tag => tag.count);
-  return { tags, items: Object.fromEntries(items.map(item => [item.id, [`role-${roleOf(item)}`, `surface-${item.surface}`, ...(item.provenance.length > 1 ? ["several-places"] : [])]])) };
+  return { tags, items: Object.fromEntries(items.map(item => [item.id, [`role-${roleOf(item)}`, ...new Set(item.provenance.map(p => `surface-${p.surface ?? item.surface}`)), ...(item.provenance.length > 1 ? ["several-places"] : [])]])) };
 }
 
 const fence = text => "~".repeat(Math.max(4, ...[...text.matchAll(/~+/g)].map(match => match[0].length + 1)));

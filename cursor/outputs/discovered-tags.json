@@ -5,42 +5,42 @@
       "label": "Instructions",
       "kind": "topic",
       "definition": "Text that tells the model how to behave.",
-      "count": 1472
+      "count": 1482
     },
     {
       "id": "role-context",
       "label": "Context",
       "kind": "topic",
       "definition": "Text that hands the model information about its situation.",
-      "count": 23
+      "count": 26
     },
     {
       "id": "role-user_template",
       "label": "User-turn templates",
       "kind": "topic",
       "definition": "Text written into the user's turn on the user's behalf.",
-      "count": 22
+      "count": 24
     },
     {
       "id": "role-tool",
       "label": "Tool descriptions",
       "kind": "topic",
       "definition": "Text that describes a tool the model can call.",
-      "count": 270
+      "count": 280
     },
     {
       "id": "role-parameter",
       "label": "Parameter descriptions",
       "kind": "topic",
       "definition": "Text that describes one argument of a tool call.",
-      "count": 115
+      "count": 118
     },
     {
       "id": "surface-desktop",
       "label": "Desktop app",
       "kind": "status",
       "definition": "Shipped in the Desktop app.",
-      "count": 1895
+      "count": 1923
     },
     {
       "id": "surface-agent-cli",
@@ -54,7 +54,7 @@
       "label": "Shipped in several places",
       "kind": "status",
       "definition": "The same text appears in more than one bundle or offset.",
-      "count": 1067
+      "count": 1068
     }
   ],
   "items": {
@@ -103,8 +103,7 @@
     ],
     "jev-000766-f31bfb84e23d": [
       "role-context",
-      "surface-desktop",
-      "several-places"
+      "surface-desktop"
     ],
     "jev-000767-05fb4f57bdb4": [
       "role-context",
@@ -121,6 +120,10 @@
       "surface-desktop"
     ],
     "jev-001133-90d12c634212": [
+      "role-user_template",
+      "surface-desktop"
+    ],
+    "jev-001153-f8a4df4e7528": [
       "role-user_template",
       "surface-desktop"
     ],
@@ -156,6 +159,10 @@
       "role-context",
       "surface-desktop"
     ],
+    "jev-001787-16793313c707": [
+      "role-context",
+      "surface-desktop"
+    ],
     "jev-001788-3c89f8989d4c": [
       "role-context",
       "surface-desktop"
@@ -176,6 +183,10 @@
       "role-user_template",
       "surface-desktop"
     ],
+    "jev-002008-8685ca3f124d": [
+      "role-context",
+      "surface-desktop"
+    ],
     "jev-002195-50d5c27b54d7": [
       "role-user_template",
       "surface-desktop"
@@ -183,6 +194,11 @@
     "jev-002211-9c3da056a566": [
       "role-user_template",
       "surface-desktop"
+    ],
+    "jev-002618-0793ea8dedf9": [
+      "role-user_template",
+      "surface-desktop",
+      "several-places"
     ],
     "jev-002780-c40e9fada3d5": [
       "role-context",
@@ -193,6 +209,10 @@
       "surface-desktop"
     ],
     "jev-003305-f8c6c44c8ac4": [
+      "role-context",
+      "surface-desktop"
+    ],
+    "jev-003518-7796b9c35d7e": [
       "role-context",
       "surface-desktop"
     ],
@@ -2357,8 +2377,7 @@
     ],
     "jev-000471-0793ea8dedf9": [
       "role-instructions",
-      "surface-desktop",
-      "several-places"
+      "surface-desktop"
     ],
     "jev-000475-5c67ac94c61e": [
       "role-instructions",
@@ -2390,6 +2409,11 @@
       "several-places"
     ],
     "jev-000482-8c10ff7396c3": [
+      "role-instructions",
+      "surface-desktop",
+      "several-places"
+    ],
+    "jev-000483-47df6fcbdc60": [
       "role-instructions",
       "surface-desktop",
       "several-places"
@@ -4613,8 +4637,7 @@
     ],
     "jev-001376-7796b9c35d7e": [
       "role-instructions",
-      "surface-desktop",
-      "several-places"
+      "surface-desktop"
     ],
     "jev-001381-bac78cccc11b": [
       "role-instructions",
@@ -4667,6 +4690,10 @@
       "role-instructions",
       "surface-desktop"
     ],
+    "jev-001417-ba2033db0a4f": [
+      "role-instructions",
+      "surface-desktop"
+    ],
     "jev-001419-d880f7ee27bf": [
       "role-instructions",
       "surface-desktop",
@@ -4714,6 +4741,10 @@
       "role-instructions",
       "surface-desktop",
       "several-places"
+    ],
+    "jev-001459-5c73a4a320ed": [
+      "role-instructions",
+      "surface-desktop"
     ],
     "jev-001463-7b72d82c901d": [
       "role-instructions",
@@ -4907,6 +4938,10 @@
       "surface-desktop",
       "several-places"
     ],
+    "jev-001592-37fc128a927c": [
+      "role-instructions",
+      "surface-desktop"
+    ],
     "jev-001602-3dfcae685fac": [
       "role-instructions",
       "surface-desktop"
@@ -5080,6 +5115,10 @@
       "several-places"
     ],
     "jev-001767-8423c63c9c5a": [
+      "role-instructions",
+      "surface-desktop"
+    ],
+    "jev-001773-c1c4f7cc5946": [
       "role-instructions",
       "surface-desktop"
     ],
@@ -5600,6 +5639,11 @@
       "role-instructions",
       "surface-desktop"
     ],
+    "jev-002251-ed2edcb29e76": [
+      "role-instructions",
+      "surface-desktop",
+      "several-places"
+    ],
     "jev-002265-71a5585c5dd0": [
       "role-instructions",
       "surface-desktop"
@@ -5683,6 +5727,11 @@
     "jev-002453-cc07bc2f1f02": [
       "role-instructions",
       "surface-desktop"
+    ],
+    "jev-002459-aeb4ff86dd6b": [
+      "role-instructions",
+      "surface-desktop",
+      "several-places"
     ],
     "jev-002485-245b1b5e866d": [
       "role-instructions",
@@ -6236,6 +6285,10 @@
       "role-instructions",
       "surface-desktop"
     ],
+    "jev-003917-725a98598cf8": [
+      "role-instructions",
+      "surface-desktop"
+    ],
     "jev-003948-255bc178d8c2": [
       "role-instructions",
       "surface-desktop"
@@ -6280,6 +6333,10 @@
       "role-instructions",
       "surface-desktop"
     ],
+    "jev-004023-f31bfb84e23d": [
+      "role-instructions",
+      "surface-desktop"
+    ],
     "jev-004032-c2593f7dbd3f": [
       "role-instructions",
       "surface-desktop"
@@ -6293,6 +6350,10 @@
       "surface-desktop"
     ],
     "jev-004065-ce36b0d56d02": [
+      "role-instructions",
+      "surface-desktop"
+    ],
+    "jev-004075-ecde919cb919": [
       "role-instructions",
       "surface-desktop"
     ],
@@ -7246,8 +7307,7 @@
     ],
     "jev-000819-ecde919cb919": [
       "role-tool",
-      "surface-desktop",
-      "several-places"
+      "surface-desktop"
     ],
     "jev-000822-b69d9b0a3fca": [
       "role-tool",
@@ -7956,6 +8016,10 @@
       "role-tool",
       "surface-desktop"
     ],
+    "jev-001225-f85fab56d0c1": [
+      "role-tool",
+      "surface-desktop"
+    ],
     "jev-001243-f1423ebb6c0a": [
       "role-tool",
       "surface-desktop"
@@ -7965,6 +8029,10 @@
       "surface-desktop"
     ],
     "jev-001760-4b790a59af16": [
+      "role-tool",
+      "surface-desktop"
+    ],
+    "jev-001774-af5ced6b2541": [
       "role-tool",
       "surface-desktop"
     ],
@@ -7998,8 +8066,7 @@
     ],
     "jev-001937-00ed3a93260c": [
       "role-parameter",
-      "surface-desktop",
-      "several-places"
+      "surface-desktop"
     ],
     "jev-001940-c6d8e01e98b9": [
       "role-tool",
@@ -8014,6 +8081,27 @@
       "role-parameter",
       "surface-desktop",
       "several-places"
+    ],
+    "jev-001987-0f51b1bb919f": [
+      "role-parameter",
+      "surface-desktop",
+      "several-places"
+    ],
+    "jev-001988-692f51b36d04": [
+      "role-parameter",
+      "surface-desktop"
+    ],
+    "jev-001991-763d87ffa4bc": [
+      "role-parameter",
+      "surface-desktop"
+    ],
+    "jev-001996-3419e4720531": [
+      "role-tool",
+      "surface-desktop"
+    ],
+    "jev-001997-58e1a4d421fd": [
+      "role-tool",
+      "surface-desktop"
     ],
     "jev-001998-367ecae642db": [
       "role-tool",
@@ -8040,6 +8128,10 @@
       "surface-desktop"
     ],
     "jev-002028-d15c107fa406": [
+      "role-tool",
+      "surface-desktop"
+    ],
+    "jev-002037-9a872e5c0703": [
       "role-tool",
       "surface-desktop"
     ],
@@ -8147,6 +8239,11 @@
       "surface-desktop",
       "several-places"
     ],
+    "jev-002142-84dd74229d4a": [
+      "role-tool",
+      "surface-desktop",
+      "several-places"
+    ],
     "jev-002145-d2bb5dd1af69": [
       "role-tool",
       "surface-desktop",
@@ -8235,6 +8332,10 @@
       "surface-desktop"
     ],
     "jev-002923-7f6b4ad2a781": [
+      "role-tool",
+      "surface-desktop"
+    ],
+    "jev-002939-00ed3a93260c": [
       "role-tool",
       "surface-desktop"
     ],
@@ -8492,11 +8593,23 @@
       "role-tool",
       "surface-desktop"
     ],
+    "jev-003349-b7989b0d0ed9": [
+      "role-tool",
+      "surface-desktop"
+    ],
     "jev-003360-6287b51aac84": [
       "role-tool",
       "surface-desktop"
     ],
     "jev-003556-63a070fd2e04": [
+      "role-tool",
+      "surface-desktop"
+    ],
+    "jev-003745-cbd3bed3ea27": [
+      "role-tool",
+      "surface-desktop"
+    ],
+    "jev-003915-75a922c1f250": [
       "role-tool",
       "surface-desktop"
     ],

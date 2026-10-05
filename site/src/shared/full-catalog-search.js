@@ -11,9 +11,11 @@ if (form) {
     signal.throwIfAborted();return text;
   };
   form.addEventListener('submit',async event=>{
-    event.preventDefault(); active?.abort(); active=new AbortController();
-    const signal=active.signal, run=++generation, needle=query.value.trim().toLocaleLowerCase();
+    event.preventDefault();
+    const needle=query.value.trim().toLocaleLowerCase();
     if(!needle) return;
+    active?.abort(); active=new AbortController();
+    const signal=active.signal, run=++generation;
     results.replaceChildren(); stop.hidden=false;
     let matches=0, visited=0;
     try {

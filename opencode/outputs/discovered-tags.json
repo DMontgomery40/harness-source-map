@@ -61,7 +61,7 @@
       "label": "opencode",
       "kind": "package",
       "definition": "Source in packages/opencode.",
-      "count": 112
+      "count": 115
     },
     {
       "id": "pkg-plugin",
@@ -381,7 +381,8 @@
     ],
     "occ-c27b1b0e699f12ab8a621877": [
       "role-context",
-      "pkg-core"
+      "pkg-core",
+      "pkg-opencode"
     ],
     "occ-6772a23bbdd13b5a65e6a446": [
       "role-context",
@@ -437,7 +438,8 @@
     ],
     "occ-e341a4dbac5d10944ec368b8": [
       "role-tool",
-      "pkg-core"
+      "pkg-core",
+      "pkg-opencode"
     ],
     "occ-355527c6962dbe9e3d34a341": [
       "role-tool",
@@ -513,7 +515,8 @@
     ],
     "occ-930c5e3f8a5ae672645d0b65": [
       "role-parameter",
-      "pkg-core"
+      "pkg-core",
+      "pkg-opencode"
     ],
     "occ-7c293bc42ceee7d1a12848ab": [
       "role-parameter",

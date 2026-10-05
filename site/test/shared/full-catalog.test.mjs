@@ -101,3 +101,33 @@ test('email masking preserves real Git SSH syntax and placeholder addresses', as
   assert.equal(maskPersonalEmails('git@github.com'),'git@github.com');
   assert.equal(maskPersonalEmails('your@email.com'),'your@email.com');
 });
+
+test('Cursor presentation retains each saved semantic role for repeated shipped text', async () => {
+  const { gunzipSync } = await import('node:zlib');
+  const { shapeDiscovered } = await import('../../../cursor/extract/discovered-presentation.mjs');
+  const archive=path.join(root,'cursor/outputs/full-catalog');
+  const manifest=JSON.parse(fs.readFileSync(path.join(archive,'manifest.json')));
+  const positive=[];
+  for(const part of manifest.parts) {
+    const rows=gunzipSync(fs.readFileSync(path.join(archive,part.file))).toString().trimEnd().split('\n').map(JSON.parse);
+    for(const r of rows) if(r.status==='classified'&&r.model_facing.noul>=0.8&&['instructions','context','user_template','tool','parameter'].includes(r.role.choice)) positive.push({...r,title:r.text.slice(0,72),judgment:{semantic_role:r.role},provenance:[{file:r.file,byte_start:r.byte_start,line_start:r.line_start}]});
+    if(rows.some(r=>r.status==='not-selected')) break;
+  }
+  const shaped=shapeDiscovered(positive,[]).items;
+  const expected=new Set(positive.map(r=>r.text+'\0'+r.role.choice));
+  const actual=new Set(shaped.map(r=>r.text+'\0'+r.judgment.semantic_role.choice));
+  assert.deepEqual(actual,expected);
+});
+
+test('OpenCode package filters retain every merged source package', async () => {
+  const { discoveredTags }=await import('../../../opencode/extract/lib/presentation.mjs');
+  const items=['instructions','context-templates','tools-parameters'].flatMap(name=>JSON.parse(fs.readFileSync(path.join(root,'opencode/outputs',name+'.json'))).items);
+  const result=discoveredTags(items);
+  let multi=0;
+  for(const item of items) {
+    const packages=new Set(item.provenance.map(p=>'pkg-'+p.file.split('/')[1]));
+    if(packages.size>1) multi++;
+    for(const pkg of packages) assert.ok(result.items[item.id].includes(pkg),item.id+' lacks '+pkg);
+  }
+  assert.ok(multi>0,'pinned source has merged texts across packages');
+});

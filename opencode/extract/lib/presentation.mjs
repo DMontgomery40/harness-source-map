@@ -82,12 +82,12 @@ export function roleOf(item) {
 
 // Role (topic) and package (status-row) tags for every published entry.
 export function discoveredTags(items) {
-  const packages = [...new Set(items.map(item => item.provenance[0].file.split("/").slice(0, 2).join("/")))].sort();
+  const packages = [...new Set(items.flatMap(item => item.provenance.map(p => p.file.split("/").slice(0, 2).join("/"))))].sort();
   const tags = [
     ...ROLE_TAGS.map(([id, label, definition]) => ({ id: `role-${id}`, label, kind: "topic", definition, count: items.filter(item => roleOf(item) === id).length })),
-    ...packages.map(pkg => ({ id: `pkg-${pkg.split("/")[1]}`, label: pkg.replace(/^packages\//, ""), kind: "package", definition: `Source in ${pkg}.`, count: items.filter(item => item.provenance[0].file.startsWith(`${pkg}/`)).length }))
+    ...packages.map(pkg => ({ id: `pkg-${pkg.split("/")[1]}`, label: pkg.replace(/^packages\//, ""), kind: "package", definition: `Source in ${pkg}.`, count: items.filter(item => item.provenance.some(p => p.file.startsWith(`${pkg}/`))).length }))
   ].filter(tag => tag.count);
-  const byId = Object.fromEntries(items.map(item => [item.id, [`role-${roleOf(item)}`, `pkg-${item.provenance[0].file.split("/")[1]}`].filter(id => tags.some(tag => tag.id === id))]));
+  const byId = Object.fromEntries(items.map(item => [item.id, [`role-${roleOf(item)}`, ...new Set(item.provenance.map(p => `pkg-${p.file.split("/")[1]}`))].filter(id => tags.some(tag => tag.id === id))]));
   return { tags, items: byId };
 }
 

@@ -2095,17 +2095,6 @@
           "span_sha256": "a4421c133b74702b71d3dedc4c5386b4b2dd383d47cdadd5aa674b0b6a0101e6"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 20959826,
-          "byte_end": 20960958,
-          "line_start": 549781,
-          "line_end": 549810,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "37fc128a927ca7aa075312caa32f9a0ceafea753cefb9111d4cc11060c9f6e97"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
           "surface": "desktop",
           "byte_start": 6527014,
@@ -2600,17 +2589,6 @@
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "span_sha256": "f31bfb84e23dd4a6a043936f0d9b2fb0dee0acf47693d74759f48afb2f113000"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 3560073,
-          "byte_end": 3560121,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "span_sha256": "f31bfb84e23dd4a6a043936f0d9b2fb0dee0acf47693d74759f48afb2f113000"
         }
       ],
       "judgment": {
@@ -2959,6 +2937,74 @@
             "1": 0.03,
             "2": 0.18,
             "3": 0.78
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "context-templates"
+    },
+    {
+      "id": "jev-001153-f8a4df4e7528",
+      "title": "Apply the full diff from the remote branch below to the current local wo…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Apply the full diff from the remote branch below to the current local workspace.",
+      "text_sha256": "64538d6735a7543565bc91a9934f5c7a125e3910d6384db59993a7b9476951c0",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 19933632,
+          "byte_end": 19933714,
+          "line_start": 528988,
+          "line_end": 528988,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "f8a4df4e75285a85c00593f2fb1f397bb6a78543d66fa50d0701c26b69b26156"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "user_template",
+          "confidence": 0.41,
+          "probabilities": {
+            "tool": 0.01,
+            "documentation": 0.03,
+            "parameter": 0.01,
+            "unknown": 0.01,
+            "code_data": 0.23,
+            "instructions": 0.2,
+            "context": 0.01,
+            "user_template": 0.48,
+            "human": 0.02
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.74,
+          "confidence": 0.74,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.03,
+            "2": 0.17,
+            "3": 0.79
           }
         }
       },
@@ -3510,6 +3556,74 @@
       "page": "context-templates"
     },
     {
+      "id": "jev-001787-16793313c707",
+      "title": "cursor rules context Cursor Rules are extra documentation provided by…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "<cursor_rules_context>\nCursor Rules are extra documentation provided by the user to help the AI understand the codebase.\nUse them if they seem useful to the users most recent query, but do not use them if they seem unrelated.\n",
+      "text_sha256": "59bcbc8ec7a510e1c98f85074392a19a41ff280d461deed8addd829b2ebe2abb",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 21213725,
+          "byte_end": 21213953,
+          "line_start": 552703,
+          "line_end": 552706,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "16793313c707bcab442441e51c8fc762d1455268bdc200e0f4ad5e4a08bad743"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.34,
+          "probabilities": {
+            "unknown": 0,
+            "parameter": 0,
+            "tool": 0.01,
+            "user_template": 0.01,
+            "documentation": 0.14,
+            "human": 0,
+            "instructions": 0.29,
+            "context": 0.41,
+            "code_data": 0.14
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.66,
+          "confidence": 0.66,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.02,
+            "2": 0.25,
+            "3": 0.71
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "context-templates"
+    },
+    {
       "id": "jev-001788-3c89f8989d4c",
       "title": "recent agents context The user has other recent agent conversations av…",
       "kind": "prompt",
@@ -3850,6 +3964,74 @@
       "page": "context-templates"
     },
     {
+      "id": "jev-002008-8685ca3f124d",
+      "title": "Use to sleep and check shell progress. Never sleep using shell.",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Use to sleep and check shell progress. Never sleep using shell.",
+      "text_sha256": "e8facd18b24b41d44c495db1e443084852739a095c1c8b0ad2a9466a8633d58b",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 22716386,
+          "byte_end": 22716451,
+          "line_start": 583130,
+          "line_end": 583130,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "8685ca3f124d69df7164b41523bc2714a9f02b9ada623f0493b51ecdf82d785b"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.38,
+          "probabilities": {
+            "code_data": 0.06,
+            "user_template": 0,
+            "context": 0.46,
+            "human": 0,
+            "tool": 0.31,
+            "unknown": 0.01,
+            "documentation": 0.02,
+            "parameter": 0,
+            "instructions": 0.14
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.48,
+          "confidence": 0.48,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.05,
+            "1": 0.08,
+            "2": 0.21,
+            "3": 0.66
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "context-templates"
+    },
+    {
       "id": "jev-002195-50d5c27b54d7",
       "title": "Search the web for the following query and return a concise answer with…",
       "kind": "prompt",
@@ -3979,6 +4161,85 @@
             "1": 0.11,
             "2": 0.45,
             "3": 0.41
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "page": "context-templates"
+    },
+    {
+      "id": "jev-002618-0793ea8dedf9",
+      "title": "For each subagent, send the following prompt after replacing",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "For each subagent, send the following prompt after replacing",
+      "text_sha256": "5f86b42af2e1e35aca555a56949227097ad15e420dd1c54aa14332ae5035efb8",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 6526873,
+          "byte_end": 6526935,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "span_sha256": "0793ea8dedf9141252431453039607e68e315e84d43b8342f69ea8f32ef93052"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 3230104,
+          "byte_end": 3230166,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "0793ea8dedf9141252431453039607e68e315e84d43b8342f69ea8f32ef93052"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.89
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "user_template",
+          "confidence": 0.36,
+          "probabilities": {
+            "tool": 0.01,
+            "unknown": 0.01,
+            "human": 0.01,
+            "documentation": 0.06,
+            "parameter": 0,
+            "instructions": 0.26,
+            "code_data": 0.22,
+            "context": 0.01,
+            "user_template": 0.42
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.58,
+          "confidence": 0.58,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.04,
+            "2": 0.32,
+            "3": 0.63
           }
         }
       },
@@ -4183,6 +4444,74 @@
             "1": 0.02,
             "2": 0.13,
             "3": 0.83
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "page": "context-templates"
+    },
+    {
+      "id": "jev-003518-7796b9c35d7e",
+      "title": "You are running on a hosted Cursor virtual machine, not on the user's ma…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "You are running on a hosted Cursor virtual machine, not on the user's machine. This environment persists for the duration of the conversation: files, checkouts, branches, and running processes you leave behind remain available on later turns.",
+      "text_sha256": "b5715e44820db6672745f25cc1c259199c2958f5d07fc1bfadfdddcb577b8c00",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 2989111,
+          "byte_end": 2989355,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "7796b9c35d7eda58607d3eceabc50cfd73b9b770ef00dd4bc358979fed7d2630"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.81
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "context",
+          "confidence": 0.49,
+          "probabilities": {
+            "parameter": 0,
+            "instructions": 0.22,
+            "human": 0.03,
+            "documentation": 0.01,
+            "code_data": 0.17,
+            "user_template": 0,
+            "unknown": 0.01,
+            "tool": 0.01,
+            "context": 0.55
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.46,
+          "confidence": 0.46,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.06,
+            "2": 0.36,
+            "3": 0.56
           }
         }
       },
@@ -8061,17 +8390,6 @@
           "span_sha256": "f8a4df4e75285a85c00593f2fb1f397bb6a78543d66fa50d0701c26b69b26156"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 19933632,
-          "byte_end": 19933714,
-          "line_start": 528988,
-          "line_end": 528988,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "f8a4df4e75285a85c00593f2fb1f397bb6a78543d66fa50d0701c26b69b26156"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
           "surface": "desktop",
           "byte_start": 6039454,
@@ -10771,17 +11089,6 @@
           "line_end": 5,
           "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
           "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "b7989b0d0ed9020ee7cbccc51571a0e65109fd935824f3f595dd45e1df64bc95"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 2272494,
-          "byte_end": 2272860,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
           "span_sha256": "b7989b0d0ed9020ee7cbccc51571a0e65109fd935824f3f595dd45e1df64bc95"
         }
       ],
@@ -46585,28 +46892,6 @@
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "span_sha256": "0793ea8dedf9141252431453039607e68e315e84d43b8342f69ea8f32ef93052"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 6526873,
-          "byte_end": 6526935,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "0793ea8dedf9141252431453039607e68e315e84d43b8342f69ea8f32ef93052"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 3230104,
-          "byte_end": 3230166,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "span_sha256": "0793ea8dedf9141252431453039607e68e315e84d43b8342f69ea8f32ef93052"
         }
       ],
       "judgment": {
@@ -47079,17 +47364,6 @@
           "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
           "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
           "span_sha256": "cbd3bed3ea275c6b8574e319ae176ba0c7c88cb25f8a157f5daa2a1e543fd136"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 3238035,
-          "byte_end": 3238067,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "span_sha256": "cbd3bed3ea275c6b8574e319ae176ba0c7c88cb25f8a157f5daa2a1e543fd136"
         }
       ],
       "judgment": {
@@ -47346,6 +47620,129 @@
             "1": 0.15,
             "2": 0.32,
             "3": 0.47
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+      "page": "instructions"
+    },
+    {
+      "id": "jev-000483-47df6fcbdc60",
+      "title": "For problems that will require significant codebase exploration, make a…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "For problems that will require significant codebase exploration, make a todo list as your first tool call which includes this step. Do your best to make additional tasks based on the user's query, and feel free to add additional todos later if they come up in discovery.",
+      "text_sha256": "7b5f0840f60a0e815eed83ae15c4899b142492061502e4d5e121d7de3e258d59",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 6475310,
+          "byte_end": 6475582,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+          "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
+          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 20953451,
+          "byte_end": 20953723,
+          "line_start": 549708,
+          "line_end": 549708,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 20971956,
+          "byte_end": 20972228,
+          "line_start": 549832,
+          "line_end": 549832,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 6535204,
+          "byte_end": 6535476,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 3225554,
+          "byte_end": 3225826,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 3238449,
+          "byte_end": 3238721,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.83
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.71,
+          "probabilities": {
+            "context": 0.01,
+            "unknown": 0.02,
+            "instructions": 0.75,
+            "tool": 0.06,
+            "user_template": 0,
+            "parameter": 0,
+            "code_data": 0.14,
+            "documentation": 0.01,
+            "human": 0.01
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.11,
+          "confidence": 0.11,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.21,
+            "2": 0.36,
+            "3": 0.39
           }
         }
       },
@@ -60468,17 +60865,6 @@
           "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
           "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
           "span_sha256": "75a922c1f25063aa6901119a0ec044b60675b6b1939e3b155f1746f6c10ea00a"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 3371685,
-          "byte_end": 3372949,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "span_sha256": "75a922c1f25063aa6901119a0ec044b60675b6b1939e3b155f1746f6c10ea00a"
         }
       ],
       "judgment": {
@@ -60647,17 +61033,6 @@
           "line_end": 5,
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
-          "span_sha256": "f85fab56d0c17cba6fdc1c0735e257a14b6279f0e8c20ccacc45e84f46201fe6"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 20538982,
-          "byte_end": 20539638,
-          "line_start": 546998,
-          "line_end": 546998,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "f85fab56d0c17cba6fdc1c0735e257a14b6279f0e8c20ccacc45e84f46201fe6"
         },
         {
@@ -61055,17 +61430,6 @@
           "span_sha256": "af5ced6b2541dadfa8bfdd9ca5b8ac91128d502f0d85f094b2bc5e729229a268"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 21131980,
-          "byte_end": 21132651,
-          "line_start": 550752,
-          "line_end": 550752,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "af5ced6b2541dadfa8bfdd9ca5b8ac91128d502f0d85f094b2bc5e729229a268"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
           "surface": "desktop",
           "byte_start": 6674671,
@@ -61356,17 +61720,6 @@
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "span_sha256": "f8e4f22e704055757c8041136f45959d0be8fa436433f199a4487dd0d720288f"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 21213725,
-          "byte_end": 21213953,
-          "line_start": 552703,
-          "line_end": 552706,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "16793313c707bcab442441e51c8fc762d1455268bdc200e0f4ad5e4a08bad743"
         },
         {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
@@ -76794,28 +77147,6 @@
           "span_sha256": "0f51b1bb919f247cc90f275e6bb8a0a628c5276a3a2a896d01656dfd23e6399c"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 22626491,
-          "byte_end": 22627951,
-          "line_start": 581452,
-          "line_end": 581452,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "0f51b1bb919f247cc90f275e6bb8a0a628c5276a3a2a896d01656dfd23e6399c"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 7419408,
-          "byte_end": 7420868,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "0f51b1bb919f247cc90f275e6bb8a0a628c5276a3a2a896d01656dfd23e6399c"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
           "surface": "desktop",
           "byte_start": 4112632,
@@ -76892,17 +77223,6 @@
           "line_end": 5,
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
-          "span_sha256": "692f51b36d04dad6f95dafa80feeced4a109fcbe70017425d2b2b3687c3c0c81"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 22628225,
-          "byte_end": 22628641,
-          "line_start": 581454,
-          "line_end": 581454,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "692f51b36d04dad6f95dafa80feeced4a109fcbe70017425d2b2b3687c3c0c81"
         },
         {
@@ -77138,17 +77458,6 @@
           "line_end": 5,
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
-          "span_sha256": "763d87ffa4bccd22e0b3246e706b54a24458aebfa8b3db87bfedde888fa09838"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 22633438,
-          "byte_end": 22634830,
-          "line_start": 581566,
-          "line_end": 581566,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "763d87ffa4bccd22e0b3246e706b54a24458aebfa8b3db87bfedde888fa09838"
         },
         {
@@ -77545,17 +77854,6 @@
           "span_sha256": "3419e4720531be512bc427ae757c77c08e1f8c73c87ffe210dfd6b7acc67f5d6"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 22636462,
-          "byte_end": 22637254,
-          "line_start": 581572,
-          "line_end": 581572,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "3419e4720531be512bc427ae757c77c08e1f8c73c87ffe210dfd6b7acc67f5d6"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
           "surface": "desktop",
           "byte_start": 7426555,
@@ -77643,17 +77941,6 @@
           "line_end": 5,
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
-          "span_sha256": "58e1a4d421fdda59a673f2ec6e683f7cfc9578862e5d57ff73237ba1eee8f520"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 22659760,
-          "byte_end": 22661148,
-          "line_start": 581991,
-          "line_end": 581991,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "58e1a4d421fdda59a673f2ec6e683f7cfc9578862e5d57ff73237ba1eee8f520"
         },
         {
@@ -79273,17 +79560,6 @@
           "span_sha256": "89ac3d64097024808a422caae1a50589214192fb9efc9d8b20c97d94f0e0ad38"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 22955824,
-          "byte_end": 22955922,
-          "line_start": 588898,
-          "line_end": 588899,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "9a872e5c0703ddbe731032a79f95b3851a19db70657192d6d04a057d40bd692e"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
           "surface": "desktop",
           "byte_start": 7560537,
@@ -80662,17 +80938,6 @@
           "span_sha256": "455d5c410c334fb9727a4ec0b85d2468f73f5606984930c71ffeb729f7bb47ab"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 24780932,
-          "byte_end": 24781278,
-          "line_start": 635531,
-          "line_end": 635531,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "84dd74229d4a58eb6562f12325e09b48c4f126bd33859802755b880db516c77b"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
           "surface": "desktop",
           "byte_start": 7882816,
@@ -80681,17 +80946,6 @@
           "line_end": 5,
           "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
           "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "455d5c410c334fb9727a4ec0b85d2468f73f5606984930c71ffeb729f7bb47ab"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 4583242,
-          "byte_end": 4583585,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
           "span_sha256": "455d5c410c334fb9727a4ec0b85d2468f73f5606984930c71ffeb729f7bb47ab"
         }
       ],
@@ -89272,17 +89526,6 @@
           "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "7796b9c35d7eda58607d3eceabc50cfd73b9b770ef00dd4bc358979fed7d2630"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 2989111,
-          "byte_end": 2989355,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "span_sha256": "7796b9c35d7eda58607d3eceabc50cfd73b9b770ef00dd4bc358979fed7d2630"
         }
       ],
       "judgment": {
@@ -90182,6 +90425,74 @@
       "page": "instructions"
     },
     {
+      "id": "jev-001417-ba2033db0a4f",
+      "title": "You have access to the todo write tool to help you manage and plan tasks…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "You have access to the todo_write tool to help you manage and plan tasks. Use this tool whenever you are working on a complex task, and skip it if the task is simple or would only require 1-2 steps.",
+      "text_sha256": "37bfe2f4750aa909cf03afedfe2a12ec4175e0520a85a6f3a1589fa66d843c23",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 20705187,
+          "byte_end": 20705387,
+          "line_start": 548270,
+          "line_end": 548270,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "ba2033db0a4f71ae970c0a2513d3bfa57c0185d82e84afae148642d0807d88fa"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.91
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.51,
+          "probabilities": {
+            "instructions": 0.57,
+            "tool": 0.4,
+            "code_data": 0.02,
+            "documentation": 0,
+            "human": 0,
+            "unknown": 0.01,
+            "user_template": 0,
+            "parameter": 0,
+            "context": 0
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.72,
+          "confidence": 0.72,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.03,
+            "2": 0.21,
+            "3": 0.75
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "instructions"
+    },
+    {
       "id": "jev-001419-d880f7ee27bf",
       "title": "Keep todos high level, focused on functionality. Do NOT track granular t…",
       "kind": "prompt",
@@ -90971,6 +91282,74 @@
             "1": 0.22,
             "2": 0.44,
             "3": 0.31
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "instructions"
+    },
+    {
+      "id": "jev-001459-5c73a4a320ed",
+      "title": "The GitHub CLI ( gh ) may be installed on this self-hosted machine. If i…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "The GitHub CLI (`gh`) may be installed on this self-hosted machine. If it is, it uses the machine's own login, which may be missing or may allow writes, so run `gh auth status` before relying on it. Use `gh` only to view information, such as past PRs and CI job failure logs (for example `gh pr view`, `gh run list`, `gh run view --log`). Do NOT use `gh` for write operations like creating PRs or issues — use the dedicated tools (e.g., ManagePullRequest) for those actions.",
+      "text_sha256": "58a6aeb1074105ac8c814efced884609b80c3ff35feb1f7d24d82c86780ef19d",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 20755484,
+          "byte_end": 20755965,
+          "line_start": 548615,
+          "line_end": 548615,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "5c73a4a320ed6cebe7ca86f3004cc560549494de1af66b289e8c28620fe9dcdb"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.83
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.51,
+          "probabilities": {
+            "instructions": 0.56,
+            "user_template": 0,
+            "context": 0.05,
+            "tool": 0.11,
+            "code_data": 0.23,
+            "documentation": 0.02,
+            "parameter": 0.01,
+            "unknown": 0,
+            "human": 0.01
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.39,
+          "confidence": 0.39,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.06,
+            "1": 0.08,
+            "2": 0.28,
+            "3": 0.58
           }
         }
       },
@@ -94214,6 +94593,74 @@
       "page": "instructions"
     },
     {
+      "id": "jev-001592-37fc128a927c",
+      "title": "You are a subagent working as part of a parallel multi-agent synthesis r…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "You are a subagent working as part of a parallel multi-agent synthesis run.\n\nYou have been assigned a unique git branch name:\n<BRANCH_NAME>\n\n### Required setup: create a dedicated git worktree\nYou MUST do all your work inside a dedicated git worktree for your assigned branch.\n\n1) From the repository root, create a worktree directory (choose any path you like outside the repo; example shown):\n   WORKTREE_DIR=\"~/worktrees/<BRANCH_NAME>\"\n\n   Notes:\n   - The branch name is chosen to be filesystem-safe (no '/', spaces, etc.). Use it verbatim for the directory name.\n\n2) Create a new branch and worktree in one step (base it off the current HEAD unless instructed otherwise):\n   git worktree add -b \"<BRANCH_NAME>\" \"$WORKTREE_DIR\" HEAD\n\n3) Enter the worktree and do all edits there:\n   cd \"$WORKTREE_DIR\"\n\n4) Verify you are on the correct branch:\n   git rev-parse --abbrev-ref HEAD\n\n### Working rules\n- Make changes only within your worktree directory.\n- Do not switch branches; work only on your assigned branch.\n- At the end, report your branch name and a concise summary of changes.\n\n### Task (verbatim)\n<ORIGINAL_USER_REQUEST>",
+      "text_sha256": "d7a6dfe225c83d7c688be79df2545376498b69fa2f88612c3bea58966401be7c",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 20959826,
+          "byte_end": 20960958,
+          "line_start": 549781,
+          "line_end": 549810,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "37fc128a927ca7aa075312caa32f9a0ceafea753cefb9111d4cc11060c9f6e97"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.95
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.76,
+          "probabilities": {
+            "code_data": 0.09,
+            "unknown": 0,
+            "parameter": 0,
+            "documentation": 0.01,
+            "human": 0,
+            "user_template": 0.09,
+            "context": 0.01,
+            "tool": 0,
+            "instructions": 0.8
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.89,
+          "confidence": 0.89,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.01,
+            "2": 0.08,
+            "3": 0.91
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "instructions"
+    },
+    {
       "id": "jev-001602-3dfcae685fac",
       "title": "Bring a senior engineer's judgment to the work, but let it arrive throug…",
       "kind": "prompt",
@@ -97190,6 +97637,74 @@
             "1": 0.02,
             "2": 0.17,
             "3": 0.79
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "instructions"
+    },
+    {
+      "id": "jev-001773-c1c4f7cc5946",
+      "title": "Worker that implements a single task and reports back. Uses a shared wor…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Worker that implements a single task and reports back. Uses a shared workspace; do not run git commands unless explicitly requested. Use for concrete implementation work.",
+      "text_sha256": "32a0199cbf38d0bc0425901819c8dfd9caa9a17f1b0e15c702151982748fdcec",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 21130658,
+          "byte_end": 21130830,
+          "line_start": 550715,
+          "line_end": 550715,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "c1c4f7cc5946094e66fc45b05566773e01da7daa3cdea8d15275dab556e223c2"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.84
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.27,
+          "probabilities": {
+            "documentation": 0.03,
+            "tool": 0.32,
+            "context": 0.04,
+            "unknown": 0.01,
+            "code_data": 0.14,
+            "human": 0,
+            "instructions": 0.36,
+            "parameter": 0.1,
+            "user_template": 0
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.65,
+          "confidence": 0.65,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.06,
+            "2": 0.18,
+            "3": 0.74
           }
         }
       },
@@ -105873,6 +106388,85 @@
       "page": "instructions"
     },
     {
+      "id": "jev-002251-ed2edcb29e76",
+      "title": "Debug specialist that uses hypothesis-driven investigation with instrume…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Debug specialist that uses hypothesis-driven investigation with instrumentation logs. Use when investigating reproducible bugs with non-obvious root causes. The subagent will instrument code and provide reproduction steps. After reproduction, it will analyze logs, and repeat until the root cause is found and fixed. This subagent is stateful and auto-resumes from previous context.",
+      "text_sha256": "32848a0a3a5611b4026ff0b8f0c99935bd8e25010af2ea54de94cf766e38da3d",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 6090747,
+          "byte_end": 6091131,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "span_sha256": "ed2edcb29e76cc01517d6dfff6d9156f947ff7e8937191a1b3a26adc9e6859ea"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 2261325,
+          "byte_end": 2261709,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "ed2edcb29e76cc01517d6dfff6d9156f947ff7e8937191a1b3a26adc9e6859ea"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.83
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.32,
+          "probabilities": {
+            "user_template": 0,
+            "tool": 0.39,
+            "human": 0.01,
+            "parameter": 0.02,
+            "context": 0.04,
+            "documentation": 0.04,
+            "unknown": 0.01,
+            "instructions": 0.4,
+            "code_data": 0.09
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.8,
+          "confidence": 0.8,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.02,
+            "2": 0.13,
+            "3": 0.84
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "page": "instructions"
+    },
+    {
       "id": "jev-002265-71a5585c5dd0",
       "title": "system reminder ${il} tool call. Decide now between two paths: (1) if…",
       "kind": "prompt",
@@ -107270,6 +107864,85 @@
             "1": 0.02,
             "2": 0.14,
             "3": 0.83
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "page": "instructions"
+    },
+    {
+      "id": "jev-002459-aeb4ff86dd6b",
+      "title": "You have access to the Origin CLI ( origin ) which is already authentica…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "You have access to the Origin CLI (`origin`) which is already authenticated. Do NOT run `gh`; `origin` is the only authenticated forge CLI in Origin-backed repos. Do not run `origin --help` or `origin <cmd> --help`; the commands below are sufficient. For example: `origin pr view`, `origin pr view <number>`, `origin pr list --state merged --search \"<query>\" --limit N`, `origin pr checks <number>`, `origin pr view <number> --checks`, `origin pr view <number> --comments`, `origin pr diff <number>`, `origin pr comment <number> --body \"...\"`, `origin pr review <number> --comment -b \"...\"`, `origin pr thread resolve <thread-id> <number>`. `origin pr` mirrors a common subset of `gh pr` flags. CI status comes only from `origin pr checks` / `origin pr view --checks`; there is no `run` subcommand — an empty checks list is valid (run tests locally if you need failure logs). What `origin` may do depends on the permissions of the token in this session; if a command fails for auth or permission reasons, report the error rather than inventing a workaround or claiming a general policy.",
+      "text_sha256": "584e5ba234a2b130eca83fe16c97b6dd7272acfcdec7a2d6f4998a4196f3f962",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 6320592,
+          "byte_end": 6321682,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "span_sha256": "aeb4ff86dd6b3ed12db104cacced78a491c625deb952f5e08f59475b4ff209de"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 3023688,
+          "byte_end": 3024778,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "aeb4ff86dd6b3ed12db104cacced78a491c625deb952f5e08f59475b4ff209de"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.28,
+          "probabilities": {
+            "documentation": 0.07,
+            "tool": 0.32,
+            "unknown": 0.01,
+            "code_data": 0.2,
+            "context": 0.03,
+            "human": 0,
+            "instructions": 0.37,
+            "parameter": 0,
+            "user_template": 0
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 1.95,
+          "confidence": 0.46,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.05,
+            "1": 0.2,
+            "2": 0.51,
+            "3": 0.24
           }
         }
       },
@@ -116730,6 +117403,74 @@
       "page": "instructions"
     },
     {
+      "id": "jev-003917-725a98598cf8",
+      "title": "Use for Bugbot-like review of local code changes. Also use proactively n…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Use for Bugbot-like review of local code changes. Also use proactively near the end of substantial implementation or bug-fix work when local changes are ready for a final bug-finding pass; skip for trivial docs, comments, formatting, or config-only changes. When launching this subagent, set the Task description to exactly \"Bugbot\". Launch exactly one Bugbot subagent with `run_in_background: false` unless the user explicitly asks to run in background. Use this fixed prompt form: \"Full Repository Path: ...\\nDiff: <one of: \\\"branch changes\\\", \\\"uncommitted changes\\\">\\nCustom Instructions: ...\"; default to `Diff: branch changes`; include `Custom Instructions` only when the user gave specific review instructions. This subagent is single-shot and does not support `resume`; always launch a fresh subagent instead.",
+      "text_sha256": "9540ce7ac780da7a572296b0a188c67f6c7018fb441a328eb3d2e0497090733f",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 3374048,
+          "byte_end": 3374873,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "725a98598cf82c21daaeed1b5ee1d11bfd1e7e094245449afe900f6e03e630cf"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.86
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.4,
+          "probabilities": {
+            "user_template": 0,
+            "tool": 0.43,
+            "parameter": 0,
+            "human": 0,
+            "context": 0.01,
+            "documentation": 0.04,
+            "unknown": 0.01,
+            "instructions": 0.46,
+            "code_data": 0.05
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.35,
+          "confidence": 0.35,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.14,
+            "2": 0.28,
+            "3": 0.55
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "page": "instructions"
+    },
+    {
       "id": "jev-003948-255bc178d8c2",
       "title": "For particularly large tasks, first decide whether a single worker can o…",
       "kind": "prompt",
@@ -117478,6 +118219,74 @@
       "page": "instructions"
     },
     {
+      "id": "jev-004023-f31bfb84e23d",
+      "title": "Use the current branch as the working context.",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Use the current branch as the working context.",
+      "text_sha256": "5e2f44a7e69a58e5d8e4fa2b473bb3fb17062f58c05b08e5b63dc47091a2626c",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 3560073,
+          "byte_end": 3560121,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "f31bfb84e23dd4a6a043936f0d9b2fb0dee0acf47693d74759f48afb2f113000"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.8
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.25,
+          "probabilities": {
+            "user_template": 0.01,
+            "documentation": 0.02,
+            "context": 0.32,
+            "human": 0.02,
+            "parameter": 0,
+            "instructions": 0.33,
+            "unknown": 0.01,
+            "code_data": 0.28,
+            "tool": 0.01
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.13,
+          "confidence": 0.13,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.08,
+            "1": 0.21,
+            "2": 0.21,
+            "3": 0.5
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "page": "instructions"
+    },
+    {
       "id": "jev-004032-c2593f7dbd3f",
       "title": "system reminder The set of dynamic tools in this conversation has expa…",
       "kind": "prompt",
@@ -117743,6 +118552,74 @@
             "1": 0.04,
             "2": 0.29,
             "3": 0.64
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "page": "instructions"
+    },
+    {
+      "id": "jev-004075-ecde919cb919",
+      "title": "- If you are searching for a specific class definition like \"class Foo\",…",
+      "kind": "prompt",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "  - If you are searching for a specific class definition like \"class Foo\", use the ${p} tool instead, to find the match more quickly",
+      "text_sha256": "c42062be7e3ac11e826c0b181b653b9f10c2107499f71cab5217a2b28bd55d39",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 4009144,
+          "byte_end": 4009278,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "ecde919cb9199148c9325ac398dc15bb6d6a5f1d1ce36b19646ce27e94cd1310"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.83
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "instructions",
+          "confidence": 0.33,
+          "probabilities": {
+            "tool": 0.39,
+            "context": 0.01,
+            "user_template": 0.03,
+            "human": 0.01,
+            "instructions": 0.4,
+            "parameter": 0.01,
+            "documentation": 0.04,
+            "unknown": 0.01,
+            "code_data": 0.1
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.62,
+          "confidence": 0.62,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.07,
+            "2": 0.2,
+            "3": 0.71
           }
         }
       },
@@ -129711,28 +130588,6 @@
           "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "ed2edcb29e76cc01517d6dfff6d9156f947ff7e8937191a1b3a26adc9e6859ea"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 6090747,
-          "byte_end": 6091131,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "ed2edcb29e76cc01517d6dfff6d9156f947ff7e8937191a1b3a26adc9e6859ea"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 2261325,
-          "byte_end": 2261709,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "span_sha256": "ed2edcb29e76cc01517d6dfff6d9156f947ff7e8937191a1b3a26adc9e6859ea"
         }
       ],
       "judgment": {
@@ -130815,17 +131670,6 @@
           "span_sha256": "b688e61ed66b3c04ad6cc7fe424b9af3eb0ed6fa9b97d814590c27fe15143c6b"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 20755484,
-          "byte_end": 20755965,
-          "line_start": 548615,
-          "line_end": 548615,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "5c73a4a320ed6cebe7ca86f3004cc560549494de1af66b289e8c28620fe9dcdb"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
           "surface": "desktop",
           "byte_start": 6319491,
@@ -130925,28 +131769,6 @@
           "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "b06563056565da18814c3cfd4df0432b3b95e891fa423865edda434ebff5c16a"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 6320592,
-          "byte_end": 6321682,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "aeb4ff86dd6b3ed12db104cacced78a491c625deb952f5e08f59475b4ff209de"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 3023688,
-          "byte_end": 3024778,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "span_sha256": "aeb4ff86dd6b3ed12db104cacced78a491c625deb952f5e08f59475b4ff209de"
         }
       ],
       "judgment": {
@@ -131014,17 +131836,6 @@
           "line_end": 5,
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
-          "span_sha256": "ba2033db0a4f71ae970c0a2513d3bfa57c0185d82e84afae148642d0807d88fa"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 20705187,
-          "byte_end": 20705387,
-          "line_start": 548270,
-          "line_end": 548270,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "ba2033db0a4f71ae970c0a2513d3bfa57c0185d82e84afae148642d0807d88fa"
         },
         {
@@ -131647,39 +132458,6 @@
           "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 6475310,
-          "byte_end": 6475582,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
-          "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
-          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 20953451,
-          "byte_end": 20953723,
-          "line_start": 549708,
-          "line_end": 549708,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 20971956,
-          "byte_end": 20972228,
-          "line_start": 549832,
-          "line_end": 549832,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
           "surface": "desktop",
           "byte_start": 6522340,
@@ -131688,39 +132466,6 @@
           "line_end": 5,
           "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
           "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 6535204,
-          "byte_end": 6535476,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 3225554,
-          "byte_end": 3225826,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 3238449,
-          "byte_end": 3238721,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
           "span_sha256": "47df6fcbdc60fd3056c4445dcd7175cb89a27aae83cfdc89aa9ec612dfe0ff4f"
         }
       ],
@@ -133140,17 +133885,6 @@
           "span_sha256": "c1c4f7cc5946094e66fc45b05566773e01da7daa3cdea8d15275dab556e223c2"
         },
         {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 21130658,
-          "byte_end": 21130830,
-          "line_start": 550715,
-          "line_end": 550715,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "span_sha256": "c1c4f7cc5946094e66fc45b05566773e01da7daa3cdea8d15275dab556e223c2"
-        },
-        {
           "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
           "surface": "desktop",
           "byte_start": 6670573,
@@ -133260,17 +133994,6 @@
           "line_end": 5,
           "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
           "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "725a98598cf82c21daaeed1b5ee1d11bfd1e7e094245449afe900f6e03e630cf"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 3374048,
-          "byte_end": 3374873,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
           "span_sha256": "725a98598cf82c21daaeed1b5ee1d11bfd1e7e094245449afe900f6e03e630cf"
         }
       ],
@@ -134250,17 +134973,6 @@
           "line_end": 5,
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
-          "span_sha256": "ecde919cb9199148c9325ac398dc15bb6d6a5f1d1ce36b19646ce27e94cd1310"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 4009144,
-          "byte_end": 4009278,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
-          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
           "span_sha256": "ecde919cb9199148c9325ac398dc15bb6d6a5f1d1ce36b19646ce27e94cd1310"
         }
       ],
@@ -136524,17 +137236,6 @@
           "line_end": 5,
           "source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
           "decoded_source_sha256": "9703f940d08671ad79e14527bc28505a495d042314ac545ccd02a084ccc11e43",
-          "span_sha256": "8685ca3f124d69df7164b41523bc2714a9f02b9ada623f0493b51ecdf82d785b"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
-          "surface": "desktop",
-          "byte_start": 22716386,
-          "byte_end": 22716451,
-          "line_start": 583130,
-          "line_end": 583130,
-          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
-          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "8685ca3f124d69df7164b41523bc2714a9f02b9ada623f0493b51ecdf82d785b"
         },
         {
@@ -148000,6 +148701,74 @@
       "page": "tools-parameters"
     },
     {
+      "id": "jev-001225-f85fab56d0c1",
+      "title": "Use only when the user explicitly asks for a Bugbot-like review of loc…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Use only when the user *explicitly* asks for a Bugbot-like review of local code changes. When launching this subagent, set the Task description to exactly \"Bugbot\". Launch exactly one Bugbot subagent with `run_in_background: false` unless the user explicitly asks to run in background. Use this fixed prompt form: \"Full Repository Path: ...\\nDiff: <one of: \\\"branch changes\\\", \\\"uncommitted changes\\\">\\nCustom Instructions: ...\"; default to `Diff: branch changes`; include `Custom Instructions` only when the user gave specific review instructions. This subagent is single-shot and does not support `resume`; always launch a fresh subagent instead.",
+      "text_sha256": "7034f91a7296ac20bc9f01bd846849e9939aad3b59452ac900c40c989d1212bc",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 20538982,
+          "byte_end": 20539638,
+          "line_start": 546998,
+          "line_end": 546998,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "f85fab56d0c17cba6fdc1c0735e257a14b6279f0e8c20ccacc45e84f46201fe6"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.85
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.43,
+          "probabilities": {
+            "instructions": 0.38,
+            "documentation": 0.04,
+            "parameter": 0,
+            "unknown": 0,
+            "tool": 0.5,
+            "code_data": 0.08,
+            "context": 0,
+            "human": 0,
+            "user_template": 0
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.55,
+          "confidence": 0.55,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.08,
+            "2": 0.18,
+            "3": 0.7
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "tools-parameters"
+    },
+    {
       "id": "jev-001243-f1423ebb6c0a",
       "title": "MCP tool with",
       "kind": "tool",
@@ -148197,6 +148966,74 @@
             "1": 0.14,
             "2": 0.25,
             "3": 0.57
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-001774-af5ced6b2541",
+      "title": "Use only when the user explicitly asks for a security review of local…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Use only when the user *explicitly* asks for a security review of local code changes. When launching this subagent, set the Task description to exactly \"Security Review\". Launch exactly one security-review subagent with `run_in_background: false` unless the user explicitly asks to run in background. Use this fixed prompt form: \"Full Repository Path: ...\\nDiff: <one of: \\\"branch changes\\\", \\\"uncommitted changes\\\">\\nCustom Instructions: ...\"; default to `Diff: branch changes`; include `Custom Instructions` only when the user gave specific review instructions. This subagent is single-shot and does not support `resume`; always launch a fresh subagent instead.",
+      "text_sha256": "3461b66288e8b86df1dfbdad55f2c9d0f1b4fc75cdedf85b70a91ac35c4d9433",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 21131980,
+          "byte_end": 21132651,
+          "line_start": 550752,
+          "line_end": 550752,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "af5ced6b2541dadfa8bfdd9ca5b8ac91128d502f0d85f094b2bc5e729229a268"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.82
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.38,
+          "probabilities": {
+            "documentation": 0.02,
+            "tool": 0.44,
+            "context": 0.01,
+            "unknown": 0.01,
+            "code_data": 0.05,
+            "human": 0,
+            "instructions": 0.43,
+            "parameter": 0.02,
+            "user_template": 0.02
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.86,
+          "confidence": 0.86,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.02,
+            "2": 0.07,
+            "3": 0.9
           }
         }
       },
@@ -148698,17 +149535,6 @@
           "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
           "span_sha256": "00ed3a93260c9f7ed504823fc2d801567c4a2e2199d9a5c2c88d5f75b7111d41"
-        },
-        {
-          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
-          "surface": "desktop",
-          "byte_start": 7356408,
-          "byte_end": 7356524,
-          "line_start": 5,
-          "line_end": 5,
-          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
-          "span_sha256": "00ed3a93260c9f7ed504823fc2d801567c4a2e2199d9a5c2c88d5f75b7111d41"
         }
       ],
       "judgment": {
@@ -148978,6 +149804,357 @@
             "1": 0.13,
             "2": 0.13,
             "3": 0.5
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-001987-0f51b1bb919f",
+      "title": "(1-2 sentences) Look through each action you have tried so far, and iden…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "(1-2 sentences) Look through each action you have tried so far, and identify what changed from the screenshot before the action to the screenshot after the action, if anything. You must look at past screenshots yourself to determine what the results were. Then, in a few words, analyze each case where the action did *not* have the desired effect (e.g. a click or scroll that did not change the page at all). NEVER rely on past commentary, you MUST analyze the screenshots yourself. For each surprising observation, analyze why it might have happened, now that you are looking at it closely. Common cases: 1. Popups/models: If a step didn't produce the expected result, a common cause is that there was a popup or modal elsewhere on the page that blocked the action you were trying to take. 2. Scrolling in a page region: If a scroll step didn't work as intended, the most common cause (if a popup didn't block the action entirely) is that you were trying to scroll in a specific region of the page. To do that, you must position the cursor in that region (ideally on the scrollbar associated with that region) and then scroll an appropriate amount. For smaller regions, you usually want to scroll a smaller amount (1 or 2 mouse wheel units). 3. State already set: Sometimes clicking on an element has no effect because the page already is in the desired state. For instance, in Google Sheets, clicking a sheet that is already selected has no visible effect.",
+      "text_sha256": "d7003a24e81eb860f618206ac2849ba2e98a5ac8ee8ed2d3e3d9ef27e23e597d",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 22626491,
+          "byte_end": 22627951,
+          "line_start": 581452,
+          "line_end": 581452,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "0f51b1bb919f247cc90f275e6bb8a0a628c5276a3a2a896d01656dfd23e6399c"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 7419408,
+          "byte_end": 7420868,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "span_sha256": "0f51b1bb919f247cc90f275e6bb8a0a628c5276a3a2a896d01656dfd23e6399c"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "parameter",
+          "confidence": 0.63,
+          "probabilities": {
+            "user_template": 0.01,
+            "code_data": 0.01,
+            "context": 0.01,
+            "human": 0,
+            "tool": 0.03,
+            "unknown": 0,
+            "documentation": 0.01,
+            "parameter": 0.67,
+            "instructions": 0.26
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.67,
+          "confidence": 0.67,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.06,
+            "2": 0.19,
+            "3": 0.74
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-001988-692f51b36d04",
+      "title": "(1-2 sentences) Identify possible scenarios that you might be in. Start…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "(1-2 sentences) Identify possible scenarios that you might be in. Start with scenarios explicitly referenced in the instructions or memories, then go through any relevant general scenarios applicable to your current task (e.g. scenario where the next item cannot be found, or where the tab is not loading). For each scenario, briefly imagine the case where you are in that scenario, and the case where you are not.",
+      "text_sha256": "d4dcdb523034d3a7afef5af5f249d3351783b9fda273cbd00640af8fce600d1f",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 22628225,
+          "byte_end": 22628641,
+          "line_start": 581454,
+          "line_end": 581454,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "692f51b36d04dad6f95dafa80feeced4a109fcbe70017425d2b2b3687c3c0c81"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.83
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "parameter",
+          "confidence": 0.39,
+          "probabilities": {
+            "user_template": 0.02,
+            "code_data": 0.03,
+            "context": 0.01,
+            "tool": 0.12,
+            "human": 0,
+            "unknown": 0.01,
+            "documentation": 0.02,
+            "parameter": 0.46,
+            "instructions": 0.33
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.71,
+          "confidence": 0.71,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.04,
+            "2": 0.18,
+            "3": 0.77
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-001991-763d87ffa4bc",
+      "title": "(1-2 sentences) Look through each tool you have tried so far and identif…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "(1-2 sentences) Look through each tool you have tried so far and identify what changed in the command output, exit status, working directory state, filesystem state, or running processes, if anything. You must inspect the actual command results yourself to determine what happened. Then, in a few words, analyze each case where the command did *not* have the desired effect (e.g. it failed, produced no useful change, or changed the wrong thing). NEVER rely on past commentary alone; you MUST analyze the tool outputs yourself. Be precise about whether the observed results actually move you closer to satisfying the exact problem statement and submission criterion. For each surprising observation, analyze why it might have happened now that you are looking closely. Common cases: 1. Wrong tool/shell command inputs: you missed a flag, used the wrong flag, used the wrong command or tool, etc. 2. Wrong working directory or path: the tool/shell command ran but targeted the wrong repo, directory, or file. 3. Missing dependency, environment variable, or permission: the tool/shell command failed before doing the intended work. 4. State already set: the tool/shell command had no visible effect because the environment was already in the desired state. 5. Existing process or lock: a running server, watcher, pid, or lockfile prevented the tool/shell command from doing what you expected.",
+      "text_sha256": "5cc43dc930850070a41d7eb0737d6c4d4622f82e0ad23e2e7590ad1867ea1854",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 22633438,
+          "byte_end": 22634830,
+          "line_start": 581566,
+          "line_end": 581566,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "763d87ffa4bccd22e0b3246e706b54a24458aebfa8b3db87bfedde888fa09838"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.91
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "parameter",
+          "confidence": 0.3,
+          "probabilities": {
+            "user_template": 0.01,
+            "parameter": 0.37,
+            "code_data": 0.04,
+            "context": 0.01,
+            "documentation": 0.01,
+            "tool": 0.27,
+            "human": 0,
+            "instructions": 0.28,
+            "unknown": 0.01
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.7,
+          "confidence": 0.7,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.04,
+            "2": 0.19,
+            "3": 0.76
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-001996-3419e4720531",
+      "title": "Use the tool to troubleshoot when your tool usage or shell commands are…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Use the tool to troubleshoot when your tool usage or shell commands are not having the desired effect. Use it to check whether you are following the problem statement precisely, whether the submission criterion is truly met, whether you still need to test the code at the end, and whether you should explore an alternate approach if stuck. Be sure to make a decision about how to proceed using the `next_steps` field. The `Reflect` tool is expensive, so use it sparingly.\n(Critical Rules)\n* You must use the `next_steps` field to describe your decision for what to do next. \n* Before declaring completion, confirm pre-submission testing has been done and the submission criterion is actually satisfied. \n* Never use the `Reflect` tool if your previous message was a `Reflect` tool call.",
+      "text_sha256": "61b31286c76a79c6c0236ca0dcd8d057a716f4c71e539e73d84de67e992bfdef",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 22636462,
+          "byte_end": 22637254,
+          "line_start": 581572,
+          "line_end": 581572,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "3419e4720531be512bc427ae757c77c08e1f8c73c87ffe210dfd6b7acc67f5d6"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.93
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.62,
+          "probabilities": {
+            "parameter": 0.02,
+            "user_template": 0,
+            "code_data": 0.13,
+            "context": 0,
+            "documentation": 0.02,
+            "tool": 0.67,
+            "human": 0,
+            "instructions": 0.16,
+            "unknown": 0
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.79,
+          "confidence": 0.79,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.03,
+            "2": 0.12,
+            "3": 0.84
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-001997-58e1a4d421fd",
+      "title": "Suggest the update script to run on VM startup (after pulling the latest…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Suggest the update script to run on VM startup (after pulling the latest changes from the repository) before every cloud agent session to refresh dependencies for the user's project. Treat this as reliability-critical infrastructure: if this script breaks, future cloud agent pods may fail to start. Keep it super minimal and low-risk. For many simple codebases, the update script will simply be something like `npm install`, `pip install -r requirements.txt`, or `uv sync`. For more complex cases requiring multiple steps, provide a multiline script with each command on its own line (do NOT use && to chain commands - use newlines instead). The script should NOT include system dependencies that aren't part of the codebase, service startup logic, migrations, test commands, build commands, or other brittle steps (examples that MUST NOT be in the update script: `docker compose up`, `pnpm dev`, `npm run dev`, `python manage.py runserver`). Avoid shell-profile edits and ad-hoc environment-variable setup; put durable human/agent operating guidance in AGENTS.md instead. The update script MUST be idempotent and MUST be robust when users do not merge your previous code changes (do not assume files introduced only in an unmerged PR will exist on future runs). If unsure, prefer fewer commands. The user will be prompted to approve, edit, or reject this script before it is executed.",
+      "text_sha256": "f26b8680bcc902b954e0ec9fc9238591920c51ecb95c20db569468bd2dcab1e7",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 22659760,
+          "byte_end": 22661148,
+          "line_start": 581991,
+          "line_end": 581991,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "58e1a4d421fdda59a673f2ec6e683f7cfc9578862e5d57ff73237ba1eee8f520"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.38,
+          "probabilities": {
+            "context": 0.01,
+            "code_data": 0.04,
+            "parameter": 0.22,
+            "unknown": 0.01,
+            "user_template": 0.01,
+            "documentation": 0.01,
+            "human": 0,
+            "instructions": 0.26,
+            "tool": 0.44
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.47,
+          "confidence": 0.47,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.11,
+            "2": 0.18,
+            "3": 0.67
           }
         }
       },
@@ -149454,6 +150631,74 @@
             "1": 0.05,
             "2": 0.18,
             "3": 0.73
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-002037-9a872e5c0703",
+      "title": "- The edit will FAIL if path isn’t given as the first argument. Always p…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "\n- The edit will FAIL if path isn’t given as the first argument. Always provide path first.",
+      "text_sha256": "aa2dca0294c0fd506c39f85b441a562041209006c7efed0fa47a318093648d07",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 22955824,
+          "byte_end": 22955922,
+          "line_start": 588898,
+          "line_end": 588899,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "9a872e5c0703ddbe731032a79f95b3851a19db70657192d6d04a057d40bd692e"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.83
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.56,
+          "probabilities": {
+            "unknown": 0.01,
+            "tool": 0.62,
+            "parameter": 0.03,
+            "user_template": 0,
+            "documentation": 0.09,
+            "code_data": 0.08,
+            "human": 0,
+            "context": 0.01,
+            "instructions": 0.16
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.44,
+          "confidence": 0.44,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.12,
+            "2": 0.2,
+            "3": 0.64
           }
         }
       },
@@ -151216,6 +152461,85 @@
       "page": "tools-parameters"
     },
     {
+      "id": "jev-002142-84dd74229d4a",
+      "title": "Send a message to the user. This is the only channel the user sees; ordi…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Send a message to the user. This is the only channel the user sees; ordinary assistant text is hidden thinking. Send only when there is something the user needs — a result, a blocker, a question. Many turns (e.g. an irrelevant notification) end without any message. When you do send the turn's final message, make it the last thing you do.",
+      "text_sha256": "4b5718930152a099805926c08663355ae12744f3b43351f528796cfe9a4422c1",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+          "surface": "desktop",
+          "byte_start": 24780932,
+          "byte_end": 24781278,
+          "line_start": 635531,
+          "line_end": 635531,
+          "source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "decoded_source_sha256": "3c36ac2497eb7e8339c4a494986ac04269f28f929595f51120daa7a71fdfc1d4",
+          "span_sha256": "84dd74229d4a58eb6562f12325e09b48c4f126bd33859802755b880db516c77b"
+        },
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 4583242,
+          "byte_end": 4583585,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "455d5c410c334fb9727a4ec0b85d2468f73f5606984930c71ffeb729f7bb47ab"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.71,
+          "probabilities": {
+            "tool": 0.74,
+            "documentation": 0.02,
+            "parameter": 0.01,
+            "unknown": 0.01,
+            "code_data": 0.03,
+            "instructions": 0.19,
+            "context": 0,
+            "user_template": 0,
+            "human": 0
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.58,
+          "confidence": 0.58,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.09,
+            "2": 0.16,
+            "3": 0.72
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/agent-host-daemon/dist/bin/daemon.cjs",
+      "page": "tools-parameters"
+    },
+    {
       "id": "jev-002145-d2bb5dd1af69",
       "title": "Send a prompt to an existing asynchronous agent after it has completed.…",
       "kind": "tool",
@@ -152749,6 +154073,74 @@
             "1": 0.18,
             "2": 0.28,
             "3": 0.5
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-002939-00ed3a93260c",
+      "title": "Brief final summary of the work you have performed. When helpful, includ…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Brief final summary of the work you have performed. When helpful, include illustrative examples of completed work.",
+      "text_sha256": "42f38fabaeb312fca7a109ff3ab5e8840c0b4efe0362f7e48265ee3e5030f0ca",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 7356408,
+          "byte_end": 7356524,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "decoded_source_sha256": "7f21d5cc4cace3693586677323a0c6d8069b896a439241473c0e431fd8d47ee2",
+          "span_sha256": "00ed3a93260c9f7ed504823fc2d801567c4a2e2199d9a5c2c88d5f75b7111d41"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.85
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.48,
+          "probabilities": {
+            "context": 0.01,
+            "parameter": 0.36,
+            "documentation": 0.01,
+            "instructions": 0.02,
+            "human": 0,
+            "user_template": 0,
+            "unknown": 0,
+            "tool": 0.54,
+            "code_data": 0.06
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.53,
+          "confidence": 0.53,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.05,
+            "1": 0.11,
+            "2": 0.11,
+            "3": 0.73
           }
         }
       },
@@ -157106,6 +158498,74 @@
       "page": "tools-parameters"
     },
     {
+      "id": "jev-003349-b7989b0d0ed9",
+      "title": "Analyze videos with an expert visual video model. Pass file paths via th…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Analyze videos with an expert visual video model. Pass file paths via the `file_attachments` parameter. Use this to verify your understanding of video artifacts before referencing them in your response. For videos, always use the demo version (recording_demo.mp4), not raw. Your prompt should include: (1) what you believe is in the video, (2) questions to verify.",
+      "text_sha256": "0e518bf4388b4a139b21330b3eb52ad20247de70f4d39f95c11288182f61e537",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 2272494,
+          "byte_end": 2272860,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "b7989b0d0ed9020ee7cbccc51571a0e65109fd935824f3f595dd45e1df64bc95"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.42,
+          "probabilities": {
+            "documentation": 0.03,
+            "tool": 0.49,
+            "code_data": 0.05,
+            "context": 0.01,
+            "unknown": 0.01,
+            "human": 0,
+            "instructions": 0.36,
+            "parameter": 0.03,
+            "user_template": 0.02
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.51,
+          "confidence": 0.51,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.11,
+            "2": 0.22,
+            "3": 0.65
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "page": "tools-parameters"
+    },
+    {
       "id": "jev-003360-6287b51aac84",
       "title": "Call an MCP tool by server identifier and tool name with arbitrary JSON…",
       "kind": "tool",
@@ -157235,6 +158695,142 @@
             "1": 0.03,
             "2": 0.17,
             "3": 0.77
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-003745-cbd3bed3ea27",
+      "title": "When using the todo list tool:",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "When using the todo list tool:",
+      "text_sha256": "cfbcd5a853ccebf3417d083556468075f76f611f878e0c042f1f264850f89160",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 3238035,
+          "byte_end": 3238067,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "cbd3bed3ea275c6b8574e319ae176ba0c7c88cb25f8a157f5daa2a1e543fd136"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.82
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.29,
+          "probabilities": {
+            "parameter": 0,
+            "documentation": 0.03,
+            "context": 0.02,
+            "user_template": 0,
+            "unknown": 0.02,
+            "code_data": 0.22,
+            "instructions": 0.34,
+            "human": 0,
+            "tool": 0.37
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.34,
+          "confidence": 0.34,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.15,
+            "2": 0.26,
+            "3": 0.56
+          }
+        }
+      },
+      "group": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+      "page": "tools-parameters"
+    },
+    {
+      "id": "jev-003915-75a922c1f250",
+      "title": "Use for Bugbot-like review of local code changes. Also use proactively n…",
+      "kind": "tool",
+      "surface": "desktop",
+      "evidence_classification": "jev-discovered-shipped-source",
+      "text": "Use for Bugbot-like review of local code changes. Also use proactively near the end of substantial implementation or bug-fix work when local changes are ready for a final bug-finding pass; skip for trivial docs, comments, formatting, or config-only changes. When launching this subagent, set the Task description to exactly \"Bugbot\". Launch exactly one Bugbot subagent with `run_in_background: false` unless the user explicitly asks to run in background. Use this fixed prompt form: \"Full Repository Path: ...\\nDiff: <one of: \\\"branch changes\\\", \\\"uncommitted changes\\\", \\\"natural language\\\">\\nChange Description: ...\\nCustom Instructions: ...\"; default to `Diff: branch changes`; include `Change Description` only when `Diff` is `natural language`, formatting it as one block per changed file (a `<path> (added|modified|deleted|renamed)` header followed by bullets of what changed, mentioning line numbers or ranges inline where helpful), and only use `natural language` as a last resort after a regular diff-based review failed because the diff could not be computed; include `Custom Instructions` only when the user gave specific review instructions. This subagent is single-shot and does not support `resume`; always launch a fresh subagent instead.",
+      "text_sha256": "29b9f090b66b717ab9cb5247ff4d3ffa24b9c8451c9870f327688b0bfac38051",
+      "provenance": [
+        {
+          "file": "desktop/Cursor.app/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
+          "surface": "desktop",
+          "byte_start": 3371685,
+          "byte_end": 3372949,
+          "line_start": 5,
+          "line_end": 5,
+          "source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "decoded_source_sha256": "e424bc3d66434da72914b26703462bae07f154c3db05b782cfb8b0ba33857f77",
+          "span_sha256": "75a922c1f25063aa6901119a0ec044b60675b6b1939e3b155f1746f6c10ea00a"
+        }
+      ],
+      "judgment": {
+        "question_version": "discovery-v1",
+        "requested_model": "jev-1.13.0",
+        "served_models": [
+          "jev-1.13.0"
+        ],
+        "model_facing": {
+          "type": "noul",
+          "noul": 0.86
+        },
+        "semantic_role": {
+          "type": "choice",
+          "choice": "tool",
+          "confidence": 0.35,
+          "probabilities": {
+            "user_template": 0,
+            "tool": 0.43,
+            "human": 0,
+            "parameter": 0,
+            "context": 0.01,
+            "unknown": 0.01,
+            "documentation": 0.04,
+            "instructions": 0.39,
+            "code_data": 0.12
+          }
+        },
+        "source_directness": {
+          "type": "score",
+          "score": 2.58,
+          "confidence": 0.58,
+          "legend": {
+            "0": "No evidence of model delivery; human text, code or unrelated data.",
+            "1": "Prompt-like words only; usage is unknown or could be human documentation.",
+            "2": "A relevant source-role clue suggests a model payload, but the delivery path is incomplete.",
+            "3": "The supplied surrounding code or explicit tool/prompt schema identifies this text as a model payload."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.07,
+            "2": 0.21,
+            "3": 0.7
           }
         }
       },
