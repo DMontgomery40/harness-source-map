@@ -7,6 +7,7 @@
 import { readFirstLine, prepareIndex, indexFor } from "./model.js";
 import { isCodexFirstLine, parseCodexThread, buildCodexTrace, codexMeta } from "./adapters/codex.js";
 import { isClaudeRow, parseClaudeFile, buildClaudeTrace } from "./adapters/claude-code.js";
+import { isOpenCodeExport, parseOpenCodeExport, buildOpenCodeTrace } from "./adapters/opencode.js";
 
 const stem = (p) => p.split("/").pop().replace(/\.jsonl$/, "");
 // A Claude Code subagent file, recognised by its folder (a Workflow run's agents sit in
@@ -20,6 +21,10 @@ const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 // first line is not JSON. A read error is thrown.
 async function sniff(entry) {
   try {
+    if (/\.json$/i.test(entry.path)) {
+      const value = await readJson(entry.source);
+      return isOpenCodeExport(value) ? { product: 'opencode', meta: { id: value.info.id, parentID: value.info.parentID || null } } : null;
+    }
     const first = JSON.parse(await readFirstLine(entry.source));
     if (isCodexFirstLine(first)) return { product: "codex", meta: codexMeta(first.payload) };
     if (isClaudeRow(first) || SUB_PATH.test(entry.path)) return { product: "claude-code", row: first };
@@ -33,7 +38,7 @@ async function sniff(entry) {
 // the first such error is thrown, as it is the real reason. Files whose first line is not JSON are skipped
 // and listed as { path, error: null }.
 export async function findSessions(entries, skipped = []) {
-  const jsonl = entries.filter((e) => /\.jsonl$/.test(e.path));
+  const jsonl = entries.filter((e) => /\.(jsonl|json)$/i.test(e.path));
   const sniffed = [];
   for (const e of jsonl) {
     let s;
@@ -42,6 +47,16 @@ export async function findSessions(entries, skipped = []) {
     else if (s === undefined) skipped.push({ path: e.path, error: null });
   }
   const sessions = [];
+  // Native OpenCode exports: one JSON file per session, related by info.parentID.
+  const opencode = sniffed.filter(s => s.product === 'opencode');
+  const opencodeIds = new Set(opencode.map(s => s.meta.id));
+  for (const s of opencode) {
+    if (s.meta.parentID && opencodeIds.has(s.meta.parentID)) continue;
+    const family = [], seen = new Set();
+    const walk = member => { if (seen.has(member.meta.id)) return; seen.add(member.meta.id); family.push(member); for (const child of opencode.filter(x => x.meta.parentID === member.meta.id)) walk(child); };
+    walk(s);
+    sessions.push({ product: 'opencode', id: s.meta.id, name: s.path, entries: family, bytes: family.reduce((n, f) => n + f.source.size, 0) });
+  }
   // Codex: families by parent_thread_id.
   const codex = sniffed.filter((s) => s.product === "codex");
   const byId = new Map(codex.map((s) => [s.meta.id, s]));
@@ -245,7 +260,7 @@ export async function loadTrace(entries, { root = null, onProgress = () => {}, i
   } else {
     onProgress({ phase: "scan", done: 0, total: entries.length });
     sessions = await findSessions(entries, skipped);
-    if (!sessions.length) throw new Error("No Codex rollout or Claude Code transcript found in the dropped files.");
+    if (!sessions.length) throw new Error("No Codex/ChatGPT rollout, Claude Code transcript or native OpenCode export found in the dropped files.");
     pick = (root && sessions.find((s) => s.id === root || s.name.includes(root) || s.entries.some((e) => e.path.includes(root)))) || sessions.slice().sort((a, b) => b.bytes - a.bytes)[0];
   }
   // The picked session's product chooses its reference index (one site publishes both).
@@ -266,6 +281,8 @@ export async function loadTrace(entries, { root = null, onProgress = () => {}, i
     if (pick.product === "codex") {
       p = await parseCodexThread(e.source, fileIndex, { onProgress: onFile, index: ix });
       if (!p.meta) continue;
+    } else if (pick.product === 'opencode') {
+      p = await parseOpenCodeExport(e.source, fileIndex, { onProgress: onFile, index: ix });
     } else {
       const agentId = isSub(e) ? agentIdOf(e) : null;
       let meta = null;
@@ -281,7 +298,7 @@ export async function loadTrace(entries, { root = null, onProgress = () => {}, i
   }
   for (const tr of pick.toolResults || []) { files.push({ name: tr.path, size: tr.source.size, role: "tool-result" }); sources.push(tr.source); }
   onProgress({ phase: "build", done: total, total });
-  const trace = pick.product === "codex" ? buildCodexTrace(parsed, files) : buildClaudeTrace(parsed, files);
+  const trace = pick.product === "codex" ? buildCodexTrace(parsed, files) : pick.product === 'opencode' ? buildOpenCodeTrace(parsed, files) : buildClaudeTrace(parsed, files);
   // Tool results persisted under <session>/tool-results/: the block counts the
   // preview the model saw; `full` points at the whole file when it was dropped.
   const persisted = new Map(files.map((f, i) => [f, i]).filter(([f]) => f.role === "tool-result").map(([f, i]) => [f.name.split("/").pop(), i]));

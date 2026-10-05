@@ -571,7 +571,7 @@ export async function buildHarnessModel({ trace, readText, index, literals = nul
   for (const s of shelves) s.n = new Set(pieces.filter((p) => p.where && p.where.shelf === s.name).map((p) => p.where.key)).size;
 
   return {
-    product: product === "codex" ? "Codex/ChatGPT" : product === "claude-code" ? "Claude Code" : product,
+    product: product === "codex" ? "Codex/ChatGPT" : product === "claude-code" ? "Claude Code" : product === 'opencode' ? 'OpenCode' : product,
     libName: (ix && (ix.libName || ix.site)) || null,
     shelves,
     session: {

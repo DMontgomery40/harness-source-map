@@ -6,7 +6,7 @@ import { el, fmtInt, fmtWhen } from "../panels.js";
 import { readableOrStored, readableText, readableValue, recordList, splitCut, textKind } from "../readable.js";
 
 export const SOURCES_LENS = { key: "sources", q: "Everything on this machine", icon: "⌸" };
-const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT" };
+const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT", opencode: 'OpenCode' };
 const JOIN = {
   exact: "names this session",
   approximate: "by time or project",
