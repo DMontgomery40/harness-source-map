@@ -198,10 +198,20 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   const raw = [];
   const names = [];
   const voiceRecords=[];
+  const processDestinations=[];
   for (const f of files) {
     const har = parseHar(f.text);
     names.push(f.name);
     voiceRecords.push(...scopeVoice(har.log._traceVoice,sessionIdsOf(trace)));
+    const observed = har.log._traceProcessDestinations;
+    if (observed?.format === 'trace-cursor-process-destinations' && Array.isArray(observed.destinations))
+      processDestinations.push(...observed.destinations.filter(item => item && typeof item.process === 'string' &&
+        typeof item.transport === 'string' && typeof item.remote === 'string').map(item => ({
+          process: item.process, transport: item.transport, remote: item.remote,
+          firstObservedMs: Number.isFinite(item.firstObservedMs) ? item.firstObservedMs : null,
+          lastObservedMs: Number.isFinite(item.lastObservedMs) ? item.lastObservedMs : null,
+          samples: Number.isFinite(item.samples) ? item.samples : null,
+        })));
     const attachment = har.log._traceCaptureAttachment;
     const explicit = attachment?.association === "explicit" && attachment.product === trace.product && Array.isArray(attachment.sessionIds);
     if (explicit && !attachment.sessionIds.some(id => sessionIdsOf(trace).includes(String(id).toLowerCase()))) throw new Error("This explicitly attached capture doesn't hold the loaded session.");
@@ -233,7 +243,11 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   }
   const others = new Set(owner.filter((o) => o && o !== "mine"));
   const markedMine = owner.filter((o) => o === "mine").length;
-  if (!markedMine && others.size) {
+  // Cursor desktop can poll older chats in the same isolated process while the
+  // new transcript ID is absent from the protocol. Exclude those exact other
+  // owners below and retain only unowned traffic as unattributed; never reject
+  // the whole real capture or assign its remainder by time.
+  if (!markedMine && others.size && product !== 'cursor') {
     throw new Error(`This capture doesn't hold the loaded session. It holds ${others.size} other session${others.size === 1 ? "" : "s"} (${[...others].slice(0, 3).map((s) => `${short(s)}…`).join(", ")}). Load that session, or capture this one.`);
   }
   // Codex/ChatGPT unscoped traffic is visible but never assigned by timestamp.
@@ -464,10 +478,11 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   if (checkpoints) notes.push(`${checkpoints} captured request${checkpoints === 1 ? ' was' : 's were'} incomplete at the recorder checkpoint.`);
   const failures = calls.filter(c => (c.protocol === 'chat-completions' || c.protocol === 'connect-proto') && (c.status >= 400 || c.response.error)).length;
   if (failures) notes.push(`${failures} model call${failures === 1 ? '' : 's'} returned an HTTP/provider error. Read the captured response for details.`);
+  if (processDestinations.length) notes.push(`${processDestinations.length} remote IP/port observations came from the recorder-owned process tree. They are destination metadata only and are not associated to a request, session, hostname, or provider.`);
 
   const capture = {
     voice:summarizeVoice(voiceRecords), product, clientIdentified: !!observedProduct, files: names, total: infos.length, kept: kept.length, elsewhere, otherSessions: [...others].map((s) => `${short(s)}…`), notes,
-    entries, roles, calls, byRequest, join, betas: betaList, flags: flagList, attributes, bootstrap, handshake, catalog,
+    entries, processDestinations, roles, calls, byRequest, join, betas: betaList, flags: flagList, attributes, bootstrap, handshake, catalog,
     metrics: { names: metricNames, shadowSelectionMethods: shadow }, events, telemetryCounts, rateLimits: rateSeries.sort((a, b) => (a.t ?? 0) - (b.t ?? 0)),
     account: { facts, identityFields: [...identityFields] }, headerNames: [...headerNames.values()].sort((a, b) => a.name.localeCompare(b.name)), transit,
     ms: now() - t0,

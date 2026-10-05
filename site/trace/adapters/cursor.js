@@ -17,8 +17,9 @@ export function isCursorAgentRow(value) {
 }
 
 export function isCursorDesktopExport(value) {
-  return !!(value && value.format === 'trace-cursor-desktop-export' && value.version === 1 && value.product === 'cursor' &&
-    value.surface === 'desktop' && typeof value.info?.id === 'string' && Array.isArray(value.messages));
+  return !!(value && value.version === 1 && value.product === 'cursor' && value.surface === 'desktop' && typeof value.info?.id === 'string' && (
+    (value.format === 'trace-cursor-desktop-export' && Array.isArray(value.messages)) ||
+    (value.format === 'trace-cursor-desktop-transcript-export' && Array.isArray(value.rows))));
 }
 
 function lines(bytes) {
@@ -140,6 +141,8 @@ export async function parseCursorDesktopExport(source, fileIndex, { onProgress =
   let native;
   try { native = JSON.parse(decoder.decode(bytes)); } catch { throw new Error('The Cursor desktop export is incomplete or invalid JSON.'); }
   if (!isCursorDesktopExport(native)) throw new Error('That JSON is not a Cursor desktop session export.');
+  if (native.format === 'trace-cursor-desktop-transcript-export')
+    return parseCursorDesktopTranscript(native, bytes, fileIndex, { onProgress, index });
   const info = native.info, agent = newAgent({ id: info.id, file: fileIndex, harnessSource: 'logged', name: 'root' }, index);
   const span = { file: fileIndex, offset: 0, length: bytes.length };
   const notes = [], pending = new Map();
@@ -195,7 +198,69 @@ export async function parseCursorDesktopExport(source, fileIndex, { onProgress =
   finalizeAgent(agent);
   onProgress(bytes.length, bytes.length);
   if (info.opaqueBlobs) notes.push(`${info.opaqueBlobs} opaque native store blobs were counted by the exporter and not decoded or represented as messages.`);
+  notes.push(`Legacy SQLite chat-store adapter first observed in Cursor ${info.persistenceObservedIn || '3.17.8'}${info.desktopVersion ? `; artifact labeled ${info.desktopVersion}` : '; exact artifact version was not supplied'}.`);
   return { agent, meta: { id: info.id, surface: 'desktop', version: info.desktopVersion || null }, firstT: created, lastT: updated, bytesRead: bytes.length, notes };
+}
+
+function parseCursorDesktopTranscript(native, bytes, fileIndex, { onProgress, index }) {
+  const info = native.info, agent = newAgent({ id: info.id, file: fileIndex, harnessSource: 'logged', name: 'root' }, index);
+  const span = { file: fileIndex, offset: 0, length: bytes.length };
+  const notes = [
+    'Current Cursor desktop agent transcript adapter. Native row order is used because timestamps are not persisted in this format.',
+    'The native transcript does not persist request IDs, model identity, reasoning events, tool call IDs, or tool results; Trace leaves those fields empty.',
+  ];
+  const ref = path => ({ ...span, path });
+  const add = (t, kind, label, value, path) => addBlock(agent, { t, kind, label, text: partText(value), ref: ref(path) });
+  let requestStart = 0, actions = [], sawAssistant = false;
+  const finishRequest = (t, finish, complete) => {
+    if (!sawAssistant) return;
+    agent.requests.push({
+      i: agent.requests.length, t, model: null, provider: 'cursor', tokens: zeroTokens(), window: [0, requestStart - 1], strata: null,
+      action: actionGroup(actions), reasoning: null, requestId: null, messageId: null, finish: typeof finish === 'string' ? finish : null,
+      complete, evidence: 'Cursor desktop native agent transcript turn',
+      contextEvidence: 'persisted transcript rows; exact provider request unavailable without an associated network capture',
+    });
+    actions = []; sawAssistant = false; requestStart = agent.blocks.length;
+  };
+
+  for (let ri = 0; ri < native.rows.length; ri++) {
+    const row = native.rows[ri]?.value, base = ['rows', ri, 'value'];
+    if (!row || (typeof row.role !== 'string' && row.type !== 'turn_ended')) { notes.push('An unrecognized transcript row was skipped.'); continue; }
+    if (row.role === 'user') {
+      finishRequest(ri, null, false);
+      const content = row.message?.content;
+      if (typeof content === 'string') {
+        const block = add(ri, 'you', 'user', content, [...base, 'message', 'content']);
+        agent.asks.push({ t: ri, block: block.i, from: 'human' });
+      } else for (let ci = 0; ci < (content || []).length; ci++) {
+        const part = content[ci];
+        if (part?.type === 'text' && typeof part.text === 'string') {
+          const block = add(ri, 'you', 'user', part.text, [...base, 'message', 'content', ci, 'text']);
+          agent.asks.push({ t: ri, block: block.i, from: 'human' });
+        }
+      }
+      requestStart = agent.blocks.length;
+    } else if (row.role === 'assistant') {
+      sawAssistant = true;
+      const content = row.message?.content;
+      if (typeof content === 'string') add(ri, 'model', 'assistant', content, [...base, 'message', 'content']);
+      else for (let ci = 0; ci < (content || []).length; ci++) {
+        const part = content[ci], partBase = [...base, 'message', 'content', ci];
+        if (part?.type === 'text' && typeof part.text === 'string') add(ri, 'model', 'assistant', part.text, [...partBase, 'text']);
+        else if (part?.type === 'tool_use' && typeof part.name === 'string') {
+          const block = add(ri, 'model', `${part.name} call`, part.input, [...partBase, 'input']);
+          actions.push({ kind: 'tool', tool: part.name, class: actionClass(part.name, part.input), target: null,
+            args: block.ref, result: null, callId: null, modelCallId: null });
+        }
+      }
+    } else if (row.type === 'turn_ended') finishRequest(ri, row.status, row.status === 'success');
+    onProgress(Math.round(bytes.length * (ri + 1) / native.rows.length), bytes.length);
+  }
+  finishRequest(native.rows.length, null, false);
+  finalizeAgent(agent);
+  onProgress(bytes.length, bytes.length);
+  return { agent, meta: { id: info.id, surface: 'desktop', version: info.desktopVersion || null }, firstT: 0,
+    lastT: Math.max(0, native.rows.length - 1), bytesRead: bytes.length, notes };
 }
 
 export function buildCursorTrace(sessions, files) {

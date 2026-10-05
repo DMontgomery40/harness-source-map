@@ -6,11 +6,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { loadTrace } from '../loader.js';
 import { readRef } from '../model.js';
 import { analyzeCapture } from '../network/capture.js';
 import { header } from '../network/har.js';
-import { exportCursorDesktopSession } from '../../../tools/capture/cursor-desktop-export.mjs';
+import { exportCursorDesktopSession, exportCursorDesktopTranscript } from '../../../tools/capture/cursor-desktop-export.mjs';
 
 const bytesSource = (name, bytes) => ({ name, size: bytes.length, slice: async (a, b) => bytes.subarray(a, b) });
 
@@ -52,7 +53,7 @@ test('the real Cursor Agent CLI stream opens with exact identity, reasoning, too
 test('the real Cursor desktop store exports and opens without inventing opaque records', {
   skip: !process.env.TRACE_CURSOR_DESKTOP_DIR && 'set TRACE_CURSOR_DESKTOP_DIR to a private real Cursor chat directory',
 }, async () => {
-  const native = await exportCursorDesktopSession(process.env.TRACE_CURSOR_DESKTOP_DIR, { desktopVersion: process.env.TRACE_CURSOR_DESKTOP_VERSION || null });
+  const native = await exportCursorDesktopSession(process.env.TRACE_CURSOR_DESKTOP_DIR, { desktopVersion: process.env.TRACE_CURSOR_DESKTOP_LEGACY_VERSION || null });
   assert.equal(native.format, 'trace-cursor-desktop-export');
   assert.ok(native.messages.length && native.info.opaqueBlobs > 0, 'the actual v1 store has JSON messages and opaque companion blobs');
   const bytes = Buffer.from(JSON.stringify(native));
@@ -71,6 +72,39 @@ test('the real Cursor desktop store exports and opens without inventing opaque r
   assert.deepEqual(actions.map(action => action.callId), expectedCalls);
   assert.ok(actions.every(action => action.result), 'native tool-result messages join only by exact toolCallId');
   assert.match(trace.notes.join(' '), /opaque.*not decoded/i);
+  assert.match(trace.notes.join(' '), /legacy.*3\.17\.8/i);
+});
+
+test('the real current Cursor desktop transcript opens without inventing unavailable evidence', {
+  skip: !process.env.TRACE_CURSOR_DESKTOP_TRANSCRIPT && 'set TRACE_CURSOR_DESKTOP_TRANSCRIPT to a private real current Cursor root transcript',
+}, async () => {
+  const file = process.env.TRACE_CURSOR_DESKTOP_TRANSCRIPT;
+  const sourceRows = (await readFile(file, 'utf8')).split(/\r?\n/).filter(Boolean).map(JSON.parse);
+  const native = await exportCursorDesktopTranscript(file, { desktopVersion: process.env.TRACE_CURSOR_DESKTOP_VERSION || null });
+  assert.equal(native.format, 'trace-cursor-desktop-transcript-export');
+  assert.equal(native.info.persistence, 'agent-transcript-jsonl-v1');
+  assert.deepEqual(native.rows.map(row => row.value), sourceRows);
+
+  const bytes = Buffer.from(JSON.stringify(native));
+  const { trace, sources } = await loadTrace([{ path: 'cursor-desktop-transcript.json', source: bytesSource('cursor-desktop-transcript.json', bytes) }]);
+  assert.equal(trace.product, 'cursor');
+  assert.equal(trace.surface, 'desktop');
+  assert.equal(trace.agents[0].id, native.info.id);
+  assert.equal(trace.version, native.info.desktopVersion);
+
+  const expectedUser = sourceRows.filter(row => row.role === 'user').flatMap(row =>
+    typeof row.message?.content === 'string' ? [row.message.content] :
+      (row.message?.content || []).filter(part => part?.type === 'text' && typeof part.text === 'string').map(part => part.text));
+  const actualUser = trace.agents[0].blocks.filter(block => block.kind === 'you');
+  assert.deepEqual(await Promise.all(actualUser.map(block => readRef(sources[block.ref.file], block.ref))), expectedUser);
+
+  const expectedTools = sourceRows.filter(row => row.role === 'assistant').flatMap(row =>
+    (row.message?.content || []).filter(part => part?.type === 'tool_use').map(part => part.name));
+  const actions = trace.agents[0].requests.flatMap(request => request.action?.all || (request.action ? [request.action] : []));
+  assert.deepEqual(actions.map(action => action.tool), expectedTools);
+  assert.ok(actions.every(action => action.callId == null && action.result == null), 'current native transcript has no tool IDs or results to invent');
+  assert.ok(trace.agents[0].requests.every(request => request.requestId == null && request.reasoning == null), 'current native transcript has no request IDs or reasoning stream');
+  assert.match(trace.notes.join(' '), /timestamps.*not persisted/i);
 });
 
 test('Cursor capture commands expose non-recording help without requiring a model run', () => {
@@ -80,6 +114,34 @@ test('Cursor capture commands expose non-recording help without requiring a mode
     assert.match(run.stdout, /real Cursor/i);
     assert.match(run.stdout, /private/i);
   }
+});
+
+test('the real current Cursor desktop bundle keeps process destinations as unattributed metadata', {
+  skip: !process.env.TRACE_CURSOR_DESKTOP_BUNDLE && 'set TRACE_CURSOR_DESKTOP_BUNDLE to a private real current Cursor capture bundle',
+}, async () => {
+  const bundle = process.env.TRACE_CURSOR_DESKTOP_BUNDLE;
+  const manifest = JSON.parse(await readFile(path.join(bundle, 'manifest.json'), 'utf8'));
+  const sessionText = await readFile(path.join(bundle, manifest.session), 'utf8');
+  const har = JSON.parse(await readFile(path.join(bundle, manifest.capture), 'utf8'));
+  const destinations = JSON.parse(await readFile(path.join(bundle, manifest.destinations), 'utf8'));
+  assert.equal(manifest.status, 'complete');
+  assert.equal(manifest.desktopVersion, process.env.TRACE_CURSOR_DESKTOP_VERSION);
+  assert.equal(manifest.persistence, 'agent-transcript-jsonl-v1');
+  assert.ok(har.log.entries.length > 0);
+  assert.ok(destinations.destinations.length > 0);
+
+  // The completed real bundle predates embedding the concurrently recorded
+  // destination file in its HAR. Exercise the final adapter in memory without
+  // rewriting or copying either private recording.
+  har.log._traceProcessDestinations = destinations;
+  const sessionBytes = Buffer.from(sessionText), { trace } = await loadTrace([
+    { path: 'session.json', source: bytesSource('session.json', sessionBytes) },
+  ]);
+  const { capture } = await analyzeCapture([{ name: 'capture.har', text: JSON.stringify(har) }], trace);
+  assert.equal(capture.product, 'cursor');
+  assert.equal(capture.processDestinations.length, destinations.destinations.length);
+  assert.equal(capture.entries.filter(entry => entry.association !== 'unattributed').length, manifest.evidence.associated);
+  assert.match(capture.notes.join(' '), /destination metadata only.*not associated/i);
 });
 
 test('a real Cursor HAR joins only by an exact observed session or request identifier', {
