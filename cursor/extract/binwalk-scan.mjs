@@ -269,7 +269,8 @@ export async function main() {
         if (entry) payload.asar_entry = { path: entry.path, relative_offset: payload.offset - entry.absolute_offset };
       }
     }) });
-    const result = { ...base, ...scanned };
+    const { cached: _cacheHit, ...scanEvidence } = scanned;
+    const result = { ...base, ...scanEvidence };
     if (target.asar) result.asar = asar;
     if (target.sea) {
       const sea = seaContainer(target.file);
@@ -279,7 +280,8 @@ export async function main() {
       fs.writeFileSync(blobFile, whole.subarray(sea.offset, sea.offset + sea.size));
       const blobScan = cachedScan(blobFile, { workDir: cacheRoot, key: "sea-blob", scan: () => scanFile(blobFile, { workDir: cacheRoot, annotate: p => { p.executable_offset = sea.offset + p.offset; p.executable_offset_hex = hex(p.executable_offset); } }) });
       fs.rmSync(blobFile, { force: true });
-      result.sea = { ...sea, scan: blobScan };
+      const { cached: _blobCacheHit, ...blobEvidence } = blobScan;
+      result.sea = { ...sea, scan: blobEvidence };
     }
     targets.push(result);
   }

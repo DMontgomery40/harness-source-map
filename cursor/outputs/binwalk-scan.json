@@ -35,8 +35,7 @@
    "size": 6071,
    "sha256": "100abbaad0351d5fb1073f042de6e83c2181c98dce023a7d3f105b1aab7e6b65",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/1322.index.js",
@@ -47,8 +46,7 @@
    "size": 48513,
    "sha256": "6631cc52b70cd894144c671ffe6a9806ba7a6743f44f1cb015a6dde8300cd899",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/1326.index.js",
@@ -59,8 +57,7 @@
    "size": 37176,
    "sha256": "a54d41043f7452d58107b908c94d75916de1213bc3c37c059125536bcaee085f",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/1390.index.js",
@@ -71,8 +68,7 @@
    "size": 12522,
    "sha256": "814dd3ac12573ac68e2fa4ede22e64b47a21be92e604e76d8fbac1549737c966",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/1431.index.js",
@@ -83,8 +79,7 @@
    "size": 17226,
    "sha256": "bc8c7d898660406ee999d01a382e7d629d4fbc3fa061b823faae799ecd89ed96",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/1560.index.js",
@@ -95,8 +90,7 @@
    "size": 9305,
    "sha256": "3eacf67bc63249b3c9a303d3d75d0196003c8bc4f791b20f6b84aeb4a5152db9",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/159.index.js",
@@ -107,8 +101,7 @@
    "size": 342023,
    "sha256": "5cc7e76d9651b71094d7be32ea095c7c6ae2acc79266206b4cf9b12d30781a52",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/1602.index.js",
@@ -119,8 +112,7 @@
    "size": 6881,
    "sha256": "cf54a655399a4a5812a271573c40932067571ee46a8ef43fc68183b110392daf",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/1694.index.js",
@@ -131,8 +123,7 @@
    "size": 13974,
    "sha256": "cf464ae899482e50cb24f329d20669844cdec65e214343c16ee61fc262bbda41",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/190.index.js",
@@ -143,8 +134,7 @@
    "size": 115838,
    "sha256": "f7ddf1888eb035d26a9a145adc57226eb173a4804b1c8dacd4643288fdd56f6d",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/2037.index.js",
@@ -155,8 +145,7 @@
    "size": 234,
    "sha256": "59024c7a5938be71fa311ab1d84c6979716ca37241ca2f0564b775ddc0dcd9d8",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/2240.index.js",
@@ -167,8 +156,7 @@
    "size": 227613,
    "sha256": "9a32d7bb542acae32c57b292e15566422fa72f356f485c6d29bd8d453d90ac1e",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/2320.index.js",
@@ -179,8 +167,7 @@
    "size": 26873,
    "sha256": "14c1c9c5e3b1626c5e4e79e148f0d72ca354d49334870c90b8b9c43923e6f708",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/2350.index.js",
@@ -191,8 +178,7 @@
    "size": 6062,
    "sha256": "4e16043ebd47e48abb9ee7e931ce399b5fab5b4dcee5779663fd71a16ac67cfd",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/238.index.js",
@@ -203,8 +189,7 @@
    "size": 35707,
    "sha256": "38bd1600421459cc5495b3691360aa78c11bf9233ebb6db5c0427589592bfc74",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/2566.index.js",
@@ -215,8 +200,7 @@
    "size": 2131,
    "sha256": "8527164d540f046ed7e6864373179b6b2e336a910cf2533d4b2ecd40ba6a5fa5",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/2613.index.js",
@@ -227,8 +211,7 @@
    "size": 8870,
    "sha256": "33a5364f48e4fe38c307cc5051a020ff7d62e281804f4a2196564b6911e180b4",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/2657.index.js",
@@ -239,8 +222,7 @@
    "size": 7201,
    "sha256": "918ffd7f81327d019eda31525360956c0aa064a259e996bb475d8900eff89889",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/2898.index.js",
@@ -251,8 +233,7 @@
    "size": 5753,
    "sha256": "b4a2d6dcd5e7c9677b60954ef0cfebc0fbf234e11820f5fac9d95bdf3597741c",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/2994.index.js",
@@ -263,8 +244,7 @@
    "size": 9134,
    "sha256": "5750b2c4214dd29b10613b6ef36dbb89b650cd1735b3153a3d87b3fa5f9c63b6",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/3241.index.js",
@@ -275,8 +255,7 @@
    "size": 9840,
    "sha256": "0f3a83759cbd08c4a8b984453e07b97665858ea5ed84ca5b9be5e2d22232a529",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/3351.index.js",
@@ -287,8 +266,7 @@
    "size": 98692,
    "sha256": "9f99eb2b344aace7e5c67f7c07dc6d6b4bab3b85ba068e0cb9b1074ffb5eebf1",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/3637.index.js",
@@ -299,8 +277,7 @@
    "size": 7910,
    "sha256": "2198f7b44a13f32d8d45d94606c1e09eea55aac51f2c2a5ebefd3301038b79d7",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/3707.index.js",
@@ -311,8 +288,7 @@
    "size": 16244,
    "sha256": "f4f542b5ffcd8d030bffc9001a23ecc6f02fff54f9f3f21df5af961f8cb80fbf",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/3762.index.js",
@@ -323,8 +299,7 @@
    "size": 4628,
    "sha256": "41859515d10ecacd860ac4754eb55b592512ece1c07bb71ed1855864eefe555f",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/3826.index.js",
@@ -335,8 +310,7 @@
    "size": 340,
    "sha256": "57580b4601bdf7b6f076620d61bbec770a8838cdfd7729ec4afa0731434ba2bf",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/4271.index.js",
@@ -347,8 +321,7 @@
    "size": 5940,
    "sha256": "9f518b9c810a155cdf63d090eb4d94d199f79c26fcbacd6109165bbfb85e0e91",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/4343.index.js",
@@ -359,8 +332,7 @@
    "size": 665,
    "sha256": "b02e2b0971ed8ea980a1d311fa4b2d314c365daee468944c85328cc126e1298a",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/439.index.js",
@@ -371,8 +343,7 @@
    "size": 7587,
    "sha256": "d9e3e6d067c28670c17325c6c1892d885846115610ff47b854e12d683b06c808",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/4464.index.js",
@@ -383,8 +354,7 @@
    "size": 5370,
    "sha256": "6fc3baa4e7982e78ab6a2ef4970164e001813ae5672798ad8ae2e5fe7bf5ab20",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/4487.index.js",
@@ -395,8 +365,7 @@
    "size": 4382,
    "sha256": "97629317b71fa8dd19aa18d861483d95e252941c8eeba675e54a74e63112c8c7",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/5031.index.js",
@@ -407,8 +376,7 @@
    "size": 6017,
    "sha256": "146a44c5eb08c4e49a9c390a29bafd6d9e0d966161348e29dceac43d4a74ea2a",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/52.index.js",
@@ -419,8 +387,7 @@
    "size": 332,
    "sha256": "43391bef802aa8ed709cfac4a766b674bda7a422e996d0b8b880dad8f5b32a1d",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/5283.index.js",
@@ -431,8 +398,7 @@
    "size": 1467,
    "sha256": "b9a15bc93d628ab61f86a1ab5377249d4d78831b15d83635222a0d7aa7aa4c95",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/5380.index.js",
@@ -443,8 +409,7 @@
    "size": 59072,
    "sha256": "aa0fd58185c67e0931a50b846fffaa795c66810d1ce909da180febf086ab3094",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/5424.index.js",
@@ -455,8 +420,7 @@
    "size": 391870,
    "sha256": "dc4843d0a7a6c7e06924a0317b1b00d363bd8195d5f0605fb5732ebbe4f72dae",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/546.index.js",
@@ -467,8 +431,7 @@
    "size": 5985,
    "sha256": "d6d2ea4343907204ba97ea6940acbf3ed179794509da6531f8f910a9efce79a8",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/5460.index.js",
@@ -479,8 +442,7 @@
    "size": 1865,
    "sha256": "224c2adf810a8895ce59ca4aebf451333f3d1a0a56f169ff64edbc3a6594c2b7",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/5481.index.js",
@@ -491,8 +453,7 @@
    "size": 12453,
    "sha256": "7fe14614e976d4778290234ad73b0b90c9cced661fe056f3d6786f479bb74c42",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/5697.index.js",
@@ -503,8 +464,7 @@
    "size": 573,
    "sha256": "ee63723be3259728b2abb1a4246e6ddfcec39f197c7147dc8b583eb1fe03a3b0",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/5720.index.js",
@@ -515,8 +475,7 @@
    "size": 2578,
    "sha256": "51af1e78b52c8e2a6afa573bb4aa01d8c8a57c7ad739a092c8d69d3b3b9397b4",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/613.index.js",
@@ -527,8 +486,7 @@
    "size": 35556,
    "sha256": "d32bf5f386544efcfa51269d07a7ffa46a0136978e46f08b27297712bc830dea",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/620.index.js",
@@ -539,8 +497,7 @@
    "size": 1656,
    "sha256": "8bd866a965972f1a60b1294edb3876e7d4a54578a4fef3da2b4769ebb1bc8bef",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/6360.index.js",
@@ -551,8 +508,7 @@
    "size": 14699,
    "sha256": "b1316bdff0a26ddee54b07c7b57886b3537d2833dd7e5ac35dee9856e538484c",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/6481.index.js",
@@ -563,8 +519,7 @@
    "size": 5657,
    "sha256": "f41dad03b2064c54473df8d4d3c7df2e494fe172cdb89c2b2636f0df842a554f",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/684.index.js",
@@ -575,8 +530,7 @@
    "size": 3592,
    "sha256": "88f2e9ec1c1ef78885061431db54a6dcdc172cffd4bcbd4735b26eead77d06a4",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/6889.index.js",
@@ -587,8 +541,7 @@
    "size": 2438,
    "sha256": "75e8865dda807245ae606a8c78783f162b2bf00cff6f44c105cb31727bf16830",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/6973.index.js",
@@ -599,8 +552,7 @@
    "size": 5009,
    "sha256": "c754fcf076c5fcedc8efe71a7adee3635d67fd8f5c47e90c7c6b9a434eb167ff",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/6985.index.js",
@@ -611,8 +563,7 @@
    "size": 2258,
    "sha256": "f010e928c5656f176bfc72e006ca710ed21ccfa7abe6014c5ea6c993fcc4e621",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/6996.index.js",
@@ -623,8 +574,7 @@
    "size": 5825,
    "sha256": "b744cc5c003edd5db8646d6fa8d3f99bb4b4abfd184b1f1af65cfdf49e2360b3",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/7519.index.js",
@@ -635,8 +585,7 @@
    "size": 22793,
    "sha256": "68d1094798fec299f590c71cf2b533db097ed9d361e2e0bdf0b711c8c8b5e231",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/7567.index.js",
@@ -647,8 +596,7 @@
    "size": 16535,
    "sha256": "aec80d2ac2fafe18cd51cf3b3acaebc76f5c4e2e256ba93f903a086ccaa5f3d9",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/7923.index.js",
@@ -659,8 +607,7 @@
    "size": 15734,
    "sha256": "b5333ad5328c6aa394fd6631822b5caf63a67019c1b9521e861a522ddefbbc4a",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/7945.index.js",
@@ -671,8 +618,7 @@
    "size": 366965,
    "sha256": "30421504749a8dd8b9f2b4ed371933828b7ebde45503286ae0a894fc6b071ce6",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/7948.index.js",
@@ -683,8 +629,7 @@
    "size": 43809,
    "sha256": "a947f44fd469044b247dac60233334c50294e0a555a4948add5823ec27f92c5e",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/8078.index.js",
@@ -695,8 +640,7 @@
    "size": 9592,
    "sha256": "0e7ccd9db4134c73b78decb2da758fa564843615aaa231f09e68037a0b0147bd",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/8096.index.js",
@@ -718,8 +662,7 @@
      "size": 1363860,
      "sha256": "39804e433f16892eba65a04edc15cdd74531893b51fa8546c07a8604f2cf63b9"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "agent-cli/8134.index.js",
@@ -730,8 +673,7 @@
    "size": 73416,
    "sha256": "945ef06ace31b20cfa27d2a4d317fa7398488b2cbc6c1efdb6d52b21ce0cb329",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/8397.index.js",
@@ -742,8 +684,7 @@
    "size": 1085,
    "sha256": "d4715843b91c705c5165280a1e1763f2ae1d86f4d25ec395bf7ad64a10c00058",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/8585.index.js",
@@ -754,8 +695,7 @@
    "size": 899,
    "sha256": "7022acb8cbc9df7028273ad428ccc193ae36b20f6304a285ff9d43a883b0d11e",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/8657.index.js",
@@ -766,8 +706,7 @@
    "size": 2383,
    "sha256": "22466aadc443385b681b7f6446415b66443dff94fa28b873791bdbe146819ef3",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/8735.index.js",
@@ -778,8 +717,7 @@
    "size": 952,
    "sha256": "97509ef535dfc9caeb717b4ae97cb7c7210de470c7ff72c1c35b53f0ff0e66d8",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/8846.index.js",
@@ -790,8 +728,7 @@
    "size": 10447,
    "sha256": "64bb2fce9c49afec90f08223cf689b6dc6f594764efd00722cc19014a62bd41b",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/8891.index.js",
@@ -813,8 +750,7 @@
      "size": 3212770,
      "sha256": "6fd4f1dcb47571161e974b4cc68b1977a33db6ee6fd35ea1f28df114d7be3de4"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "agent-cli/8914.index.js",
@@ -825,8 +761,7 @@
    "size": 671,
    "sha256": "0e48ce732c3866c95e3956c52cad892a74a8e7aca9d65090edc6227aad604902",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/8983.index.js",
@@ -837,8 +772,7 @@
    "size": 1341,
    "sha256": "3682b254891adebf382e3f026fa9f2e7809c733e4a24f58489f8be51dffb658a",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/9101.index.js",
@@ -849,8 +783,7 @@
    "size": 1954,
    "sha256": "0c2afeee47eae7fb2304f710a5e326f3df5278a79b1e0f52251e3e3b141b1ebd",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/9153.index.js",
@@ -861,8 +794,7 @@
    "size": 86137,
    "sha256": "5460fa40873888613804e1f12908fad3f4831b43cf5140849504d891910a5b2e",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/9164.index.js",
@@ -873,8 +805,7 @@
    "size": 6282,
    "sha256": "8a2f1c777a037577596844c9759bd121970a33f1be482e9ecea1c8f0987dcbeb",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/9577.index.js",
@@ -885,8 +816,7 @@
    "size": 118852,
    "sha256": "11012c38e49eab1dae6e38c07729daa3c6987c629c6c1536588474c39914a317",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/9709.index.js",
@@ -897,8 +827,7 @@
    "size": 25190,
    "sha256": "a623e19a2c3f825e0b053cd26a210d82eda33c57533c03d1c59c877bb5fab000",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/9812.index.js",
@@ -909,8 +838,7 @@
    "size": 899,
    "sha256": "11248205fcc38de31c1010128044f915bce2fcf4c7577ece3950696795af66ad",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/9969.index.js",
@@ -921,8 +849,7 @@
    "size": 1023426,
    "sha256": "7d62ffa7d2ce4c39cd791a6f592f6bcf856f23533f51ff8e9b931e68f85816ad",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/a22718674812ee697cf3.js",
@@ -933,8 +860,7 @@
    "size": 2821,
    "sha256": "ba885e166fb261506969fab7703b665d96998e6f995c8c4e8172c696f58574d6",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/crepectl",
@@ -981,8 +907,7 @@
      "size": 16,
      "sha256": "4fbb2cefcba995684367cfc08799f26382167f273095e54fd4ac82f79d7df1b7"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "agent-cli/cursor-agent",
@@ -993,8 +918,7 @@
    "size": 1096,
    "sha256": "2ccc9a8e167797641448b5e5c936f006ba137a2555f117f38c5eb76a5238a233",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/cursor-agent-sea",
@@ -4431,7 +4355,6 @@
      "sha256": "e561c7c770fc888974f88ccba51224ee5c12f3cf4bb1df877a618b9699f320c0"
     }
    ],
-   "cached": true,
    "sea": {
     "segment": "NODE_SEA",
     "section": "__NODE_SEA_BLOB",
@@ -4473,8 +4396,7 @@
        "executable_offset": 103810083,
        "executable_offset_hex": "0x6300423"
       }
-     ],
-     "cached": true
+     ]
     }
    }
   },
@@ -7921,7 +7843,6 @@
      "sha256": "185a29b8728391d2d915c58a3879c647f5ff77ca5a088857873bc7a887961f2e"
     }
    ],
-   "cached": true,
    "sea": {
     "segment": "NODE_SEA",
     "section": "__NODE_SEA_BLOB",
@@ -7974,8 +7895,7 @@
        "executable_offset": 108179732,
        "executable_offset_hex": "0x672B114"
       }
-     ],
-     "cached": true
+     ]
     }
    }
   },
@@ -7988,8 +7908,7 @@
    "size": 5655,
    "sha256": "871da745d6c7fe000814950b7fac72823de3682231025d4949227318b068ffbb",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/cursorsandbox",
@@ -8000,8 +7919,7 @@
    "size": 3531088,
    "sha256": "80a54941d1af0f487fdb3f02132492a6813da504d93adaa464c05cb864033a0c",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/diff-patch-worker.js",
@@ -8012,8 +7930,7 @@
    "size": 6646,
    "sha256": "8de87d1ba7886c6135522679c5d29756afcefb0fe91bdec2023cd42c911a4d0d",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/diff-worker.js",
@@ -8024,8 +7941,7 @@
    "size": 5945,
    "sha256": "f8145d47eb97535413a4ae9426c2562801ec0cffa3a4734d3bf444f7a74ca994",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/file_service.darwin-arm64.node",
@@ -8105,8 +8021,7 @@
      "size": 16,
      "sha256": "681cf18ed98c88a25e6feedf7d8102df3b9a9147d90414b8cbc3f409f083821c"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "agent-cli/index.js",
@@ -8128,8 +8043,7 @@
      "size": 145,
      "sha256": "e561c7c770fc888974f88ccba51224ee5c12f3cf4bb1df877a618b9699f320c0"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "agent-cli/merkle-tree-napi.darwin-arm64.node",
@@ -8140,8 +8054,7 @@
    "size": 3638016,
    "sha256": "190ca674b57386600a9428983b8717c705afa44ebf0c7f6ab12904027f497726",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "agent-cli/pdf-worker.js",
@@ -8180,8 +8093,7 @@
      "size": 937,
      "sha256": "3fd38b2fe9a8df0a77f2c14795ba882906536e40141b1ea86a8fb423ea3d6941"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "agent-cli/unified-diff-worker.js",
@@ -8192,8 +8104,7 @@
    "size": 6786,
    "sha256": "0191e7623aab46a080eb5752018aeb209723645558a33203e31d98d419694188",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/MacOS/Cursor",
@@ -8204,8 +8115,7 @@
    "size": 53184,
    "sha256": "4a0af06e7537db1cea633f90954e509f419fb206b238e840b747ba428c5c4c53",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/**/*.map",
@@ -8263,8 +8173,7 @@
      "size": 2104284,
      "sha256": "4adc167961ea8ec8c66e7c28983eb421ede8918e096422287b07e78d3d2c45c6"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-agent-exec/dist/main.js",
@@ -8286,8 +8195,7 @@
      "size": 6111894,
      "sha256": "f4d58714e776bb728a6bc6bd5f6564076f0546d3ee71691a228f88aece6e10ae"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-agent-exec/dist/node_modules/@anysphere/tree-chunk-napi/tree-chunk-napi.darwin-universal.node",
@@ -8298,8 +8206,7 @@
    "size": 11155552,
    "sha256": "e4fbc0e3b021c285c2749d9ef121a3f4bc15d20c48c62b059595bdd374421e11",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-agent-host/dist/main.js",
@@ -8321,8 +8228,7 @@
      "size": 6087087,
      "sha256": "e002f27dd65c142a18b48c8d3323e1a3998e5ab9e92ababdee4191d4c60febeb"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-agent-worker/dist/main.js",
@@ -8333,8 +8239,7 @@
    "size": 1539107,
    "sha256": "29133bcbc1f264e4be87b3bd1dd720679d91cc4eb2578afdf4bf6c5bf870f10a",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-always-local/dist/main.js",
@@ -8345,8 +8250,7 @@
    "size": 4787605,
    "sha256": "afc9e8db72abf10fe8fc5f215c17a8c30222aac29979cf85387484438812f541",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-checkout/dist/main.js",
@@ -8357,8 +8261,7 @@
    "size": 12945,
    "sha256": "1bf7e8b364a73fe5a5aef5583360da8c15c0759d43c18343513e2ccac85ee087",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-commits/dist/main.js",
@@ -8369,8 +8272,7 @@
    "size": 1272225,
    "sha256": "b325fcc841c4199f51ad1bd788a9c100274fc1b4d44040198342d89bd106553f",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-commits/worker/dist/main.js",
@@ -8381,8 +8283,7 @@
    "size": 234349,
    "sha256": "eadbdd41ad3b3aee252e435ded7ad4faf9c0302adde18799b0ee7f577839d354",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-deeplink/dist/main.js",
@@ -8393,8 +8294,7 @@
    "size": 824610,
    "sha256": "1a4066d6ec9f11e366c31cbe309233c4f0fbf265a5fc992a2c1642d8ecf873b2",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-explorer/dist/main.js",
@@ -8405,8 +8305,7 @@
    "size": 14586,
    "sha256": "57245ba0d817592bf76e817778aa6bfc2bb7e849c4e76254fe932cbd3b82f5bf",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-file-service/dist/main.js",
@@ -8417,8 +8316,7 @@
    "size": 367,
    "sha256": "9bd7b74ed823ed84d36b7e73b70c8dcaf379f96f3f8125f6a25302b4e3e83e1e",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-local-agent-runtime/dist/main.js",
@@ -8440,8 +8338,7 @@
      "size": 4940785,
      "sha256": "b213c9c55c1cea9fe51b7df9e4db7c25f2e3250180c19961b46237d0fd1af639"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-mcp/dist/main.js",
@@ -8452,8 +8349,7 @@
    "size": 1277163,
    "sha256": "b19b28bc1536c6d692a81b1e90cc42ce67a824c0132ca0027a090c33358c41ab",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-ndjson-ingest/dist/main.js",
@@ -8464,8 +8360,7 @@
    "size": 15985,
    "sha256": "799ef58fa96d4b01427d6c000aee69980c03ef840d88833f4260fde8571d5233",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-polyfills-remote/dist/main.js",
@@ -8487,8 +8382,7 @@
      "size": 70219,
      "sha256": "ced99437dffa4ea313f5b3e8e5311d082c73a3280c475e58a4c850492fdb820a"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-resolver-helper/dist/main.js",
@@ -8499,8 +8393,7 @@
    "size": 853951,
    "sha256": "590a4672ac318f1e0454f4835608aa5efe52529c43475d14ba3f38f0791a2093",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-resolver/dist/browser/main.js",
@@ -8522,8 +8415,7 @@
      "size": 37235,
      "sha256": "73ef998be125802bd50474284b6d44a61d6c70a9375ce7148302d250552a8def"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-resolver/dist/main.js",
@@ -8534,8 +8426,7 @@
    "size": 261455,
    "sha256": "af0489f8092b6ccb5df7e133adbfdf85e3567bd3eb019d71621a1083053abd84",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-retrieval/dist/main.js",
@@ -8546,8 +8437,7 @@
    "size": 2554185,
    "sha256": "d0602935c0c6709c85d741a80ad1c54b75a16d599bb862d2eb6faab152a96b5e",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-retrieval/node_modules/@anysphere/file-service/file_service.darwin-universal.node",
@@ -8707,8 +8597,7 @@
      "size": 16,
      "sha256": "681cf18ed98c88a25e6feedf7d8102df3b9a9147d90414b8cbc3f409f083821c"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-retrieval/worker/dist/main.js",
@@ -8719,8 +8608,7 @@
    "size": 234351,
    "sha256": "d3ae88f1feaa3e178ef0aa652961ad10bf3bf0d0f10e237f34e9d27d7efaecf5",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/extensions/cursor-socket/dist/main.js",
@@ -8731,8 +8619,7 @@
    "size": 9119,
    "sha256": "71749c303c32c64519de03bf7f3d23fda9963397a0947e7b9db82690bdc5c02b",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/node_modules.asar",
@@ -8744,7 +8631,6 @@
    "sha256": "daf0b84ce274cb8dc423dc5e2a57a799d2c12c1d4793051716333beaade07982",
    "signature_counts": {},
    "payloads": [],
-   "cached": true,
    "asar": {
     "format": "asar",
     "size": 28,
@@ -8767,8 +8653,7 @@
    "size": 151472,
    "sha256": "f03199c7cddb5e6821e810dd0df5e480def382ff0df3927c7a39b5c900870c88",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/node_modules/cursor-proclist/build/Release/cursor_proclist.node",
@@ -8779,8 +8664,7 @@
    "size": 123232,
    "sha256": "84b7952736d6d6ebc6aefef1853b1ca0b86a209d8a6c46f2e82c468ce5df1104",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/out/main.js",
@@ -8802,8 +8686,7 @@
      "size": 2723364,
      "sha256": "3e64902210026eea7f93647244edf9e03c3372d684f4bb8ab13f1083bd5b1f3a"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/out/vs/workbench/workbench.anysphere-ui-automations.js",
@@ -8850,8 +8733,7 @@
      "size": 5201,
      "sha256": "634081634322ee44c373c470d9f1be57315f3a42106872186f88d5c037daa193"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/out/vs/workbench/workbench.desktop.main.js",
@@ -9010,8 +8892,7 @@
      "size": 499118,
      "sha256": "5dc85d8e4756315389d14f5d081f868a20a08f83a5b1fe6f1910922a1a53bff9"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/out/vs/workbench/workbench.glass.main.js",
@@ -9194,8 +9075,7 @@
      "size": 269245,
      "sha256": "8e52d18d68e24e54d0416b33a8f6db51418f1590dfacc51bbf215c764bb28be8"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/resources/helpers/crepectl",
@@ -9242,8 +9122,7 @@
      "size": 16,
      "sha256": "4fbb2cefcba995684367cfc08799f26382167f273095e54fd4ac82f79d7df1b7"
     }
-   ],
-   "cached": true
+   ]
   },
   {
    "path": "desktop/Contents/Resources/app/resources/helpers/cursor-update-supervisor",
@@ -9254,8 +9133,7 @@
    "size": 243008,
    "sha256": "9a489e21ff990dfc522def10091fcbe9f3583737097c1f1b7ce2fbff6e56bff0",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   },
   {
    "path": "desktop/Contents/Resources/app/resources/helpers/cursorsandbox",
@@ -9266,8 +9144,7 @@
    "size": 3532208,
    "sha256": "71c6fc7dd0c03385cc97e549f55ef90527fec49c1a3f248aa31aa97be601732f",
    "signature_counts": {},
-   "payloads": [],
-   "cached": true
+   "payloads": []
   }
  ]
 }
