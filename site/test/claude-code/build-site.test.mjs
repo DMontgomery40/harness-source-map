@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { gunzipSync } from "node:zlib";
 import { buildSite } from "../../src/claude-code/build-site.mjs";
 import { categories } from "../../src/claude-code/catalog.mjs";
 import { site } from "../../src/claude-code/config.mjs";
@@ -383,6 +384,29 @@ test("documents with structured records link to their JSON from the panel and th
     assert.match(index, /<p class="data-link"><a href="data\/current\.json">current\.json<\/a>/);
     assert.match(page, /<p class="data-link"><a href="\.\.\/data\/current\.json">current\.json<\/a>/);
   });
+});
+
+test("large structured inventories publish as complete gzip JSON", async () => {
+  await withFixture(async (root, outFile) => {
+    const body = '{"items":[{"id":"one","text":"complete source"}]}\n';
+    await writeFile(path.join(root, "outputs/current.json"), body);
+    const catalog = [{ label: "Evidence", files: [
+      { path: "outputs/current.md", format: "markdown", title: "Current", slug: "current", data: "outputs/current.json", dataDownload: "current.json.gz" }
+    ] }];
+    await buildSite({ sourceRoot: root, outFile, categories: catalog });
+    const index = await readFile(outFile, "utf8");
+    const compressed = await readFile(path.join(root, "dist/data/current.json.gz"));
+    assert.equal(gunzipSync(compressed).toString("utf8"), body);
+    assert.match(index, /href="data\/current\.json\.gz">current\.json\.gz<\/a>/);
+    await assert.rejects(readFile(path.join(root, "dist/data/current.json")));
+  });
+});
+
+test("every discovered model-facing record binds to a typed search result", async () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../claude-code");
+  const records = JSON.parse(await readFile(path.join(root, "outputs/other-model-text.json"), "utf8")).items;
+  const index = JSON.parse(await readFile(path.join(root, "../site/dist/claude-code/search-index.json"), "utf8"));
+  assert.equal(index.pages.find(page => page.s === "other-model-text")?.n, records.length);
 });
 
 test("production catalog pins every page path and every record carries binary provenance", async () => {

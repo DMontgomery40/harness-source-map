@@ -34,6 +34,17 @@ test('exactly indexed source text is still covered after a provider outage',asyn
   assert.deepEqual(result.results.map(r=>r.status),['unanswered','covered']);
   assert.equal(result.results[1].method,'exact-text');
 });
+test('a malformed coverage answer stays pending while exact local checks continue',async()=>{
+  const exact='Read the image attachment.';
+  const sources=[
+    {id:'bad',file:'app.js',text:'New image behavior with no indexed match.',role:{choice:'tool'}},
+    {id:'exact',file:'app.js',text:exact,role:{choice:'tool'}}
+  ];
+  const records=[{id:'image',kind:'tool',text:exact}];
+  const result=await auditCoverage(config,sources,records,{validationAttempts:1,fetchImpl:async()=>({ok:true,status:200,json:async()=>({model:'jev-1.13.0',answers:{}})})});
+  assert.deepEqual(result.results.map(r=>r.status),['unanswered','covered']);
+  assert.match(result.results[0].reason,/missing question/);
+});
 test('a complete source literal inside a longer indexed Prompt remains covered after an outage',async()=>{
   const text='Read the image attachment only after permission is granted.';
   const sources=[

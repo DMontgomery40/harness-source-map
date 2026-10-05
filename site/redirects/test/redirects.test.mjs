@@ -7,6 +7,7 @@ test("every retired Claude Code URL lands on the same page under /claude-code/",
   assert.equal(redirectTarget("https://ccprompts.dtmont.com/system-prompt/"), "https://harness.dtmont.com/claude-code/system-prompt/");
   assert.equal(redirectTarget("https://ccprompts.dtmont.com/what-wins/?scenario=abc"), "https://harness.dtmont.com/claude-code/what-wins/?scenario=abc");
   assert.equal(redirectTarget("https://ccprompts.dtmont.com/data/system-reminders.json"), "https://harness.dtmont.com/claude-code/data/system-reminders.json");
+  assert.equal(redirectTarget("https://ccprompts.dtmont.com/data/inventory.json"), "https://harness.dtmont.com/claude-code/data/inventory.json.gz");
   assert.equal(redirectTarget("https://ccprompts.dtmont.com/social-card.png"), "https://harness.dtmont.com/claude-code/social-card.png");
 });
 
@@ -47,6 +48,7 @@ const dist = path.resolve(here, "../../dist");
 const RETIRED = new Set(["trace/grains.js", "trace/grain-rules.js", "trace/block-text.js", "trace/block-text.css"]);
 
 test("every page and file the retired sites served redirects to something the one site serves", { skip: !existsSync(dist) && "build the site first (npm run build)" }, () => {
+  assert.match(readFileSync(path.join(dist, "_redirects"), "utf8"), /^\/claude-code\/data\/inventory\.json \/claude-code\/data\/inventory\.json\.gz 301$/m);
   let checked = 0, retired = 0;
   for (const file of readdirSync(path.join(here, "legacy"))) {
     const host = file.replace(/\.txt$/, "");

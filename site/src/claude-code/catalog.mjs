@@ -168,6 +168,7 @@ export const categories = [
         slug: "provenance",
         summary: "How this was extracted and how to verify it.",
         data: "outputs/inventory.json",
+        dataDownload: "inventory.json.gz",
         records: false,
         defaultOpen: false
       }

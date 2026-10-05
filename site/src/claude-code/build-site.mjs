@@ -1,5 +1,8 @@
 import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { createReadStream, createWriteStream } from "node:fs";
 import path from "node:path";
+import { pipeline } from "node:stream/promises";
+import { createGzip } from "node:zlib";
 import { expandFacts } from "../shared/facts.mjs";
 import { escapeHtml, renderSite } from "./render.mjs";
 import { headingSlug } from "./toc.mjs";
@@ -75,7 +78,10 @@ export async function buildSite({ sourceRoot, outFile, categories }) {
   await removeDocumentPages(outDir);
   await mkdir(path.join(outDir, "data"), { recursive: true });
   for (const file of documents.filter(document => document.data)) {
-    await copyFile(path.join(sourceRoot, file.data), path.join(outDir, "data", path.basename(file.data)));
+    const input = path.join(sourceRoot, file.data);
+    const output = path.join(outDir, "data", file.dataDownload ?? path.basename(file.data));
+    if (file.dataDownload?.endsWith(".json.gz")) await pipeline(createReadStream(input), createGzip(), createWriteStream(output));
+    else await copyFile(input, output);
   }
   const status = await readFile(path.join(sourceRoot, "outputs/status.json"), "utf8").then(JSON.parse, () => null);
   for (const page of renderSite({ categories, documents, status })) {

@@ -1,7 +1,7 @@
 // Typed discovery and coverage judgments. Source text stays complete; each question contains
 // its own target because System One does not expose question-map keys to the model.
 import { createHash } from 'node:crypto';
-import { ask, JevRequestError, JevUnavailableError } from './jev-provider.mjs';
+import { ask, JevAnswerShapeError, JevRequestError, JevUnavailableError } from './jev-provider.mjs';
 import { classificationState, MODEL_FACING_QUESTION } from './prompt-verdict.mjs';
 import { PrivacyError } from './privacy.mjs';
 
@@ -45,7 +45,9 @@ export function discoveryQuestions(source, { reverseRoles = false } = {}) {
 }
 
 const probability = x => typeof x === 'number' && Number.isFinite(x) && x >= 0 && x <= 1;
-export class JevAnswerError extends JevRequestError {}
+export class JevAnswerError extends JevRequestError {
+  constructor(message) { super(message); this.name = 'JevAnswerError'; }
+}
 export function validateAnswers(questions, answers) {
   if (!answers || Object.keys(answers).length !== Object.keys(questions).length || Object.keys(answers).some(k => !(k in questions))) throw new JevAnswerError('Jev returned a different question set');
   for (const [id,q] of Object.entries(questions)) {
@@ -57,10 +59,12 @@ export function validateAnswers(questions, answers) {
     }
     const keys = q.type === 'choice' ? Object.keys(q.criteria) : q.criteria.map((_,i) => String(i));
     const p = a.probabilities;
-    if (!p || Object.keys(p).length !== keys.length || keys.some(k => !probability(p[k])) || Math.abs(keys.reduce((n,k) => n+p[k],0)-1) > .02 || !probability(a.confidence)) throw new JevAnswerError(`Jev returned an invalid distribution for ${id}`);
+    // Two-decimal display rounding contributes up to .005 error per option.
+    const sumTolerance=.005*keys.length+1e-9;
+    if (!p || Object.keys(p).length !== keys.length || keys.some(k => !probability(p[k])) || Math.abs(keys.reduce((n,k) => n+p[k],0)-1) > sumTolerance || !probability(a.confidence)) throw new JevAnswerError(`Jev returned an invalid distribution for ${id}`);
     // Displayed probabilities can reverse a near tie after rounding; keep the returned
     // choice but reject a material conflict with the distribution.
-    if (q.type === 'choice' && (!keys.includes(a.choice) || keys.some(k => p[k] > p[a.choice] + .02 + 1e-9))) throw new JevAnswerError(`Jev returned an invalid Choice for ${id}: selected=${a.choice} selected_probability=${p[a.choice]} maximum_probability=${Math.max(...Object.values(p))}`);
+    if (q.type === 'choice' && (!keys.includes(a.choice) || keys.some(k => p[k] > p[a.choice] + .01 + 1e-9))) throw new JevAnswerError(`Jev returned an invalid Choice for ${id}: selected=${a.choice} selected_probability=${p[a.choice]} maximum_probability=${Math.max(...Object.values(p))}`);
     // The API rounds both the displayed Score and its level probabilities. A live
     // response returned score .2 for {.91,.03,.04,.02}, whose displayed mean is .17.
     // Allow one-decimal Score rounding plus two-decimal rounding at each level.
@@ -96,9 +100,14 @@ export async function evaluateBatch(config, payload, version, options, usage = {
     const attempts=options.validationAttempts??3;
     if(!Number.isSafeInteger(attempts)||attempts<1) throw new JevRequestError('Invalid answer-validation retry count');
     for(let attempt=0;attempt<attempts;attempt++) {
-      body=await ask(config,payload,options);
-      try { validateAnswers(payload.questions,body.answers); break; }
-      catch(error) { if(!(error instanceof JevAnswerError)||attempt===attempts-1) throw error; }
+      try {
+        body=await ask(config,payload,options);
+        validateAnswers(payload.questions,body.answers);
+        break;
+      } catch(error) {
+        if(!(error instanceof JevAnswerError || error instanceof JevAnswerShapeError)) throw error;
+        if(attempt===attempts-1) throw error instanceof JevAnswerError ? error : new JevAnswerError(error.message);
+      }
     }
     options.cache.set(key,body);
     const checkpoint=options.checkpoint??options;

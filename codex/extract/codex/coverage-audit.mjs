@@ -6,7 +6,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { categories } from '../../../site/src/codex/catalog.mjs';
 import { loadSearchRecords } from '../../../site/src/shared/search-index.mjs';
-import { localCoverage, verifyCoverage } from './lib/jev-discovery.mjs';
+import { JevAnswerError, localCoverage, verifyCoverage } from './lib/jev-discovery.mjs';
 import { decisionConfig, openCache, JevUnavailableError, JEV_TEMPFAIL_EXIT } from './lib/jev-provider.mjs';
 
 // Complete fenced payloads, with the heading that search exposes. No summary/prefix slicing.
@@ -65,6 +65,10 @@ export async function auditCoverage(config,sources,records,options={}) {
     }
     try {results.push({...identity,...await verifyCoverage(config,source,candidates,{...options,checkpoint:options})});}
     catch(error) {
+      if(error instanceof JevAnswerError) {
+        results.push({...identity,status:'unanswered',reason:error.message});
+        continue;
+      }
       if(!(error instanceof JevUnavailableError)) throw error;
       outage=error.reason;
       results.push({...identity,status:'unanswered',reason:error.reason});

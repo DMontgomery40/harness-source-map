@@ -52,4 +52,4 @@ await mkdir(path.join(dist, "search"), { recursive: true });
 for (const [from, to] of SEARCH_CLIENT_FILES) await copyFile(path.join(siteRoot, "src", "shared", from), path.join(dist, "search", to));
 await copyFile(path.join(siteRoot, "assets", "shared", "social-card.png"), path.join(dist, "social-card.png"));
 // The landing page's Trace screenshot (sRGB WebP, metadata stripped) at two widths, and the site's icon.
-for (const file of ["trace-landscape-1000.webp", "trace-landscape-2000.webp", "favicon.svg", "favicon.ico", "apple-touch-icon.png"]) await copyFile(path.join(siteRoot, "assets", "shared", file), path.join(dist, file));
+for (const file of ["trace-landscape-1000.webp", "trace-landscape-2000.webp", "favicon.svg", "favicon.ico", "apple-touch-icon.png", "_redirects"]) await copyFile(path.join(siteRoot, "assets", "shared", file), path.join(dist, file));

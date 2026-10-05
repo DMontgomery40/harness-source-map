@@ -64,9 +64,16 @@ for (const r of leftover) { const k = sha256(r.text); const e = byText.get(k) ??
 const other = [...byText.values()].sort((a, b) => a.file.localeCompare(b.file) || a.binary_offset - b.binary_offset);
 for (const r of rows) if (!r.published_in && modelFacing(r)) r.published_in = "other-model-text";
 
+// A record title is navigation text, not source evidence. Use the same plain title
+// in JSON and Markdown so Markdown syntax in the source cannot break typed search.
+const displayTitle = text => {
+  const excerpt = text.replace(/\s+/g, " ").trim().slice(0, 72);
+  const plain = excerpt.replace(/[\[\]#`*_~<>!&\\|]/g, " ").replace(/\s+/g, " ").trim();
+  return (plain || "Source text") + (text.length > 72 ? "…" : "");
+};
 const items = other.map((r, i) => ({
   id: `text-${String(i + 1).padStart(4, "0")}`,
-  title: r.text.replace(/\s+/g, " ").trim().slice(0, 72) + (r.text.length > 72 ? "…" : ""),
+  title: displayTitle(r.text),
   group: r.file,
   kind: broad&&(r.role==='tool'||r.role==='parameter')?'tool':'prompt',
   text: r.text,
@@ -90,7 +97,7 @@ const md = [
       const f = fence(item.text);
       const where=p.encoding==='zstd'?`compressed blob offset ${p.binary_offset} · decoded offset ${p.decompressed_offset}`:`offset ${p.binary_offset}`;
       const hashes=p.encoding==='zstd'?`blob sha256 \`${p.sha256.slice(0,12)}…\` · decoded sha256 \`${p.decompressed_sha256.slice(0,12)}…\``:`sha256 \`${p.sha256.slice(0,12)}…\``;
-      return [`### ${item.title.replace(/[#`]/g, "")}`, "", `Source: \`${p.file}\` · ${where} · ${hashes} · Jev confidence ${item.details.jev_confidence}${item.provenance.length > 1 ? ` · ${item.provenance.length} locations` : ""}`, "", `${f}text`, item.text, f, ""];
+      return [`### ${item.title}`, "", `Source: \`${p.file}\` · ${where} · ${hashes} · Jev confidence ${item.details.jev_confidence}${item.provenance.length > 1 ? ` · ${item.provenance.length} locations` : ""}`, "", `${f}text`, item.text, f, ""];
     })
   ])
 ].join("\n");

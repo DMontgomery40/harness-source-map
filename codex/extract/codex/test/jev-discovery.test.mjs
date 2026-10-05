@@ -34,7 +34,16 @@ test('Choice validation keeps near-tied provider selections but rejects a differ
   const questions={role:{type:'choice',criteria:{code_data:'code',tool:'tool',unknown:'unknown'}}};
   const close={type:'choice',choice:'code_data',probabilities:{code_data:.49,tool:.5,unknown:.01},confidence:.5};
   assert.doesNotThrow(()=>validateAnswers(questions,{role:close}));
+  assert.throws(()=>validateAnswers(questions,{role:{...close,probabilities:{code_data:.49,tool:.51,unknown:0}}}),JevRequestError);
   assert.throws(()=>validateAnswers(questions,{role:{...close,probabilities:{code_data:.2,tool:.79,unknown:.01}}}),JevRequestError);
+});
+
+test('large Choice menus allow cumulative display rounding without accepting a small invalid menu',()=>{
+  const keys=Array.from({length:254},(_,i)=>`record_${i}`);
+  const questions={route:{type:'choice',criteria:Object.fromEntries(keys.map(k=>[k,k]))}};
+  const zeroes=Object.fromEntries(keys.map(k=>[k,0]));
+  assert.doesNotThrow(()=>validateAnswers(questions,{route:{type:'choice',choice:keys[0],probabilities:zeroes,confidence:.5}}));
+  assert.throws(()=>validateAnswers({route:{type:'choice',criteria:{a:'a',b:'b'}}},{route:{type:'choice',choice:'a',probabilities:{a:0,b:0},confidence:.5}}),JevRequestError);
 });
 
 test('discovery processes every source, batches mixed judgments, and preserves source identity', async () => {
@@ -106,6 +115,19 @@ test('invalid typed responses stay unanswered while independent sources continue
   }});
   assert.deepEqual(result.records.map(r=>r.status),['unanswered','classified']);
   assert.equal(cacheEntries.size,1);
+});
+
+test('missing question answers retry, then leave only their batch unanswered', async () => {
+  const sources=[{id:'bad',file:'app.js',text:'Read an image attachment.'},{id:'good',file:'app.js',text:'View a local image file.'}];
+  let calls=0;
+  const result=await classifySources(config,sources,{batchSize:1,concurrency:1,validationAttempts:2,fetchImpl:async(_,opts)=>{
+    calls++;
+    const body=JSON.parse(opts.body);
+    return response(Object.values(body.questions)[0].instructions.source.text===sources[0].text?{}:reply(body.questions));
+  }});
+  assert.equal(calls,3);
+  assert.deepEqual(result.records.map(r=>r.status),['unanswered','classified']);
+  assert.match(result.records[0].reason,/missing question/);
 });
 
 test('outage keeps every source unresolved, and complete long sources are never truncated', async () => {
