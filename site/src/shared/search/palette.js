@@ -1,7 +1,7 @@
 // Docs search palette: ⌘K / Ctrl+K anywhere, "/" when not typing, the "Search" pill in the corner
 // links, or ?q=term in the URL. Searches this section's index (dist/<section>/search-index.json,
 // fetched on first use or when the pill is hovered) and then its full text (search-text.json,
-// fetched once the palette is open) and, with the toggle or on the landing page, both products'. The ranker and query language are query.js (pure, Node-tested); product paths and
+// fetched once the palette is open) and, with the toggle or on the landing page, all products'. The ranker and query language are query.js (pure, Node-tested); product paths and
 // labels come from site.js (a copy of site/src/shared/site.mjs). Every URL is resolved against this
 // module's own URL, so the site works from any mount point.
 //
@@ -13,6 +13,7 @@ import { SITE } from "./site.js";
 
 const ROOT = new URL("../", import.meta.url);
 const PRODUCTS = Object.entries(SITE.products).map(([id, p]) => ({ id, path: p.path, label: p.label }));
+const PRODUCT_NAMES = new Intl.ListFormat('en', { type: 'conjunction' }).format(PRODUCTS.map(p => p.label));
 const sectionUrl = id => new URL(`${SITE.products[id].path}/`, ROOT);
 const MAC = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || "");
 const MOD = MAC ? "⌘" : "Ctrl ";
@@ -104,9 +105,9 @@ function build() {
   const input = el("input", {
     class: "ds-input", type: "search", role: "combobox", "aria-expanded": "true", "aria-controls": "ds-list", "aria-autocomplete": "list",
     "aria-label": "Search the reference", autocomplete: "off", spellcheck: "false", enterkeyhint: "go",
-    placeholder: section === "all" ? "Search Claude Code and Codex/ChatGPT…" : `Search ${SITE.products[section].label}…`
+    placeholder: section === "all" ? "Search all products…" : `Search ${SITE.products[section].label}…`
   });
-  const bothBtn = el("button", { class: "ds-both", type: "button", "aria-pressed": String(both), title: `Search both products (${MAC ? "⌥" : "Alt+"}B)`, hidden: section === "all" }, `<span class="ds-both-box" aria-hidden="true"></span>Both products`);
+  const bothBtn = el("button", { class: "ds-both", type: "button", "aria-pressed": String(both), title: `Search all products (${MAC ? "⌥" : "Alt+"}B)`, hidden: section === "all" }, `<span class="ds-both-box" aria-hidden="true"></span>All products`);
   const closeBtn = el("button", { class: "ds-close", type: "button", "aria-label": "Close search" }, `<kbd>Esc</kbd>`);
   const tabs = el("div", { class: "ds-scopes", role: "tablist", "aria-label": "Show" });
   const hints = el("div", { class: "ds-hints", "aria-label": "Search syntax" },
@@ -115,7 +116,7 @@ function build() {
   const preview = el("aside", { class: "ds-preview", "aria-label": "Preview" });
   const status = el("div", { class: "ds-sr", role: "status", "aria-live": "polite" });
   const foot = el("div", { class: "ds-foot" },
-    `<span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>${MOD}Enter</kbd> new tab</span><span><kbd>⇧Enter</kbd> copy link</span><span><kbd>Tab</kbd> kind</span>${section === "all" ? "" : `<span><kbd>${MAC ? "⌥" : "Alt+"}B</kbd> both products</span>`}<span><kbd>Esc</kbd> clear, close</span>`);
+    `<span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>${MOD}Enter</kbd> new tab</span><span><kbd>⇧Enter</kbd> copy link</span><span><kbd>Tab</kbd> kind</span>${section === "all" ? "" : `<span><kbd>${MAC ? "⌥" : "Alt+"}B</kbd> all products</span>`}<span><kbd>Esc</kbd> clear, close</span>`);
   const dialog = el("div", { class: "ds-pal", role: "dialog", "aria-modal": "true", "aria-label": "Search the reference" });
   const top = el("div", { class: "ds-top" }, `<span class="ds-icon">${ICON}</span>`);
   top.append(input, bothBtn, closeBtn);
@@ -265,7 +266,7 @@ function commandItems() {
   const here = new URL(location.href);
   here.searchParams.delete("q");
   const cmds = [
-    { title: "Open Trace", sub: "Explore your own Claude Code or Codex/ChatGPT session log, in your browser", url: new URL("trace/", ROOT).href },
+    { title: "Open Trace", sub: `Explore your own ${PRODUCT_NAMES} session in your browser`, url: new URL("trace/", ROOT).href },
     ...PRODUCTS.filter(p => p.id !== section).map(p => ({ title: `Go to ${p.label}`, sub: `The ${p.label} reference`, url: sectionUrl(p.id).href })),
     ...(normPath(location.pathname) === normPath(ROOT.pathname) ? [] : [{ title: "Home", sub: SITE.name, url: ROOT.href }]),
     { title: "Copy link to this page", sub: here.href, copy: here.href }
@@ -374,7 +375,7 @@ function renderList(groups, q, multi, empty) {
     const head = g.title ? `<div class="ds-section" id="ds-g-${gi}" role="presentation"><span>${esc(g.title)}</span>${g.count != null ? `<span class="ds-note">${g.count.toLocaleString("en-US")}</span>` : ""}</div>` : "";
     html += `<div role="group"${g.title ? ` aria-labelledby="ds-g-${gi}"` : ""}>${head}${g.rows.map(r => rowHtml(r, i++, q, multi)).join("")}</div>`;
   });
-  if (empty) html = `<p class="ds-empty">Nothing matches <b>${esc(dom.input.value.trim())}</b>${scope !== "all" ? ` in ${esc(KIND[scope]?.label ?? scope)}` : ""}. Try fewer words, ${scope !== "all" ? "Everything, " : ""}or ${both || section === "all" ? "a shorter word" : `both products (${MAC ? "⌥" : "Alt+"}B)`}.</p>`;
+  if (empty) html = `<p class="ds-empty">Nothing matches <b>${esc(dom.input.value.trim())}</b>${scope !== "all" ? ` in ${esc(KIND[scope]?.label ?? scope)}` : ""}. Try fewer words, ${scope !== "all" ? "Everything, " : ""}or ${both || section === "all" ? "a shorter word" : `all products (${MAC ? "⌥" : "Alt+"}B)`}.</p>`;
   dom.list.innerHTML = html;
   setActive(active, false);
 }

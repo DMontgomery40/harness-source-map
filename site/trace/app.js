@@ -19,10 +19,10 @@ import { networkLens, wireCard, wireSummary, wireTokens, NETWORK_LENS, closeWire
 import { sourcesLens, SOURCES_LENS } from "./sources/panel.js";
 import { EXAMPLE_ID, loadPublicExample, createLoadOwnership } from "./example-loader.js";
 import { createHelp } from "./help/help.js";
+import { productLabel } from './products.js';
 
 const params = new URLSearchParams(location.search);
 const $ = s => document.querySelector(s);
-const productName = product => ({ codex: 'Codex/ChatGPT', 'claude-code': 'Claude Code', opencode: 'OpenCode' })[product] || product;
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const S = {
@@ -214,7 +214,7 @@ function getWorker() {
         if (data.final && f) {
           const kids = [f.subagents ? `${fmtInt(f.subagents)} subagent${f.subagents === 1 ? "" : "s"}` : null,
             f.guardians ? `${fmtInt(f.guardians)} guardian review${f.guardians === 1 ? "" : "s"}` : null].filter(Boolean);
-          setProgress(0.08, `Found the ${productName(f.product)} session${kids.length ? ` + ${kids.join(" and ")}` : ""}. Reading…`);
+          setProgress(0.08, `Found the ${productLabel(f.product)} session${kids.length ? ` + ${kids.join(" and ")}` : ""}. Reading…`);
         } else setProgress(data.total ? 0.08 * data.done / data.total : null, `Finding the session: ${fmtInt(data.done)} of ${fmtInt(data.total)} files checked`);
         return;
       }
@@ -359,7 +359,7 @@ async function attachCapture(files) {
     });
     S.network = capture;
     const n = capture.calls.length, matched = capture.join.matched;
-    netStatus(`Network capture attached: ${fmtInt(capture.kept)} requests, ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${fmtInt(matched)} in your log). Open “What went over the wire” (5).`, "ok");
+    netStatus(`Network capture attached: ${fmtInt(capture.kept)} requests, ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${networkMatchCount(matched)}). Open “What went over the wire” (5).`, "ok");
     palette?.setNetwork?.(capture);
     buildLenses();
     render(false);
@@ -374,13 +374,14 @@ function netButton() {
   btn.dataset.state = S.network ? "on" : "none";
   btn.textContent = S.network ? "Network capture ✓" : "+ Network capture";
 }
+const networkMatchCount = count => `${fmtInt(count)} ${S.trace?.product === 'opencode' ? `exact step match${count === 1 ? '' : 'es'}` : 'in your log'}`;
 function netHelp(open = $("#net-help").hidden) {
   const box = $("#net-help");
   $("#add-capture").setAttribute("aria-expanded", String(open));
   box.hidden = !open;
   if (!open) return;
   const n = S.network;
-  const cmd = S.trace?.product === 'opencode' ? 'node tools/capture/opencode-capture.mjs --open -- --model PROVIDER/MODEL "YOUR REAL TASK"' : `tools/capture/capture.sh -- ${S.trace?.product === "codex" ? "codex" : "claude"}`;
+  const cmd = S.trace?.product === 'opencode' ? 'npm run trace:opencode -- --open -- --model openrouter/deepseek/deepseek-v3.2 "YOUR REAL TASK"' : `tools/capture/capture.sh -- ${S.trace?.product === "codex" ? "codex" : "claude"}`;
   const copy = el("button", { class: "btn small", type: "button", text: "Copy" });
   copy.addEventListener("click", () => navigator.clipboard?.writeText(cmd).then(() => { copy.textContent = "Copied"; }, () => { copy.textContent = "Select and copy"; }));
   const choose = el("button", { class: "btn small", type: "button", text: n ? "Choose another .har…" : "Choose a .har file…" });
@@ -391,9 +392,9 @@ function netHelp(open = $("#net-help").hidden) {
   close.addEventListener("click", () => netHelp(false));
   const more = el("button", { class: "text-control", type: "button", text: S.trace?.product === "codex" ? "Desktop recorder and help" : "Recording help" });
   more.addEventListener("click", () => { netHelp(false); openHelp("capture"); });
-  box.replaceChildren(
+  box.replaceChildren(...[
     el("p", { class: "net-help-head", text: n
-      ? `Attached: ${fmtInt(n.kept)} requests, ${fmtInt(n.calls.length)} model call${n.calls.length === 1 ? "" : "s"} (${fmtInt(n.join.matched)} in your log).`
+      ? `Attached: ${fmtInt(n.kept)} requests, ${fmtInt(n.calls.length)} model call${n.calls.length === 1 ? "" : "s"} (${networkMatchCount(n.join.matched)}).`
       : "No network capture for this session." }),
     el("p", { text: "A capture keeps future traffic while the session runs: prompts, tools and flags the log can omit. Earlier traffic cannot be recovered." }),
     S.trace?.product === "codex" ? el("p", { text: "For the desktop app, open Desktop recorder and help below. It records a future app run through the local helper. The recorder never quits an already-running app." }) : null,
@@ -401,7 +402,8 @@ function netHelp(open = $("#net-help").hidden) {
     el("div", { class: "path" }, el("code", { text: cmd }), copy),
     el("p", { text: S.trace?.product === 'opencode' ? 'When the command exits, drop its private recording folder into Trace. The native export and capture.har open together.' : "When the command exits, the capture is saved beside that session's log, and Trace attaches it on its own every time the session opens (pasted id, folder or drop)." }),
     S.trace?.product === 'opencode' ? el('p', { class: 'net-help-note', text: 'Already have an export and HAR? Drop them together, or choose the HAR here for this visit.' }) : el("p", { class: "net-help-note" }, "A .har you already have: ", el("code", { text: "node tools/capture/file-capture.mjs capture.har" }), " files it beside its session, or choose it here for this visit."),
-    el("div", { class: "net-help-actions" }, open5, choose, more, close));
+    el("div", { class: "net-help-actions" }, open5, choose, more, close)
+  ].filter(child => child != null && child !== false));
 }
 function clearCapture() {
   S.network = null;
@@ -1032,14 +1034,14 @@ function setupResizer() {
 // The header's eyebrow names the product and the view: the landscape, or the harness layer over it.
 function setSessionKind() {
   if (!S.trace) return;
-  $("#session-kind").textContent = `${productName(S.trace.product)} / ${S.mode === "harness" ? "Harness layer" : "Session landscape"}`;
+  $("#session-kind").textContent = `${productLabel(S.trace.product)} / ${S.mode === "harness" ? "Harness layer" : "Session landscape"}`;
 }
 
 function buildHud() {
   const t = S.trace;
   const st = sessionStats(t);
   setSessionKind();
-  $("#title").textContent = t.title || `${productName(t.product)} session`;
+  $("#title").textContent = t.title || `${productLabel(t.product)} session`;
   // More than one session among the dropped files: offer the others.
   const cands = (t.candidates || []).filter(c => c && c.id);
   const old = $("#session-pick");
@@ -1047,7 +1049,7 @@ function buildHud() {
   if (cands.length > 1 && lastFiles) {
     const cur = cands.find(c => (t.agents[0]?.id || "") === c.id || (t.agents[0]?.id || "").includes(c.id) || c.id.includes(t.agents[0]?.id || "@")) || null;
     const sel = el("select", { id: "session-pick", class: "session-pick", "aria-label": `${cands.length} sessions in what you dropped` },
-      cands.map(c => el("option", { value: c.id, selected: cur === c ? true : null, text: `${productName(c.product)} · ${clipName(c.name || c.id)} · ${fmtInt(c.files)} files, ${(c.bytes / 1048576).toFixed(1)} MB` })));
+      cands.map(c => el("option", { value: c.id, selected: cur === c ? true : null, text: `${productLabel(c.product)} · ${clipName(c.name || c.id)} · ${fmtInt(c.files)} files, ${(c.bytes / 1048576).toFixed(1)} MB` })));
     sel.addEventListener("change", () => switchSession(sel.value));
     $(".hud-title").append(sel);
   }

@@ -6,7 +6,7 @@ import { el, fmtInt, fmtWhen } from "../panels.js";
 import { readableOrStored, readableText, readableValue, recordList, splitCut, textKind } from "../readable.js";
 
 export const SOURCES_LENS = { key: "sources", q: "Everything on this machine", icon: "⌸" };
-const PRODUCT = { "claude-code": "Claude Code", codex: "Codex/ChatGPT", opencode: 'OpenCode' };
+import { productLabel } from '../products.js';
 const JOIN = {
   exact: "names this session",
   approximate: "by time or project",
@@ -21,7 +21,7 @@ const size = (n) => (n == null ? "" : n < 1024 ? `${n} B` : n < 1048576 ? `${(n 
 export function sourcesLens(S, A) {
   const out = [el("h2", { text: SOURCES_LENS.q })];
   const rep = S.sources;
-  const product = PRODUCT[S.trace.product];
+  const product = productLabel(S.trace.product);
   if (!rep) { out.push(el("p", { class: "lede", text: `Asking the local resolver for every place ${product} keeps something about this session…` })); return out; }
   if (rep.unavailable) {
     out.push(el("p", { class: "lede", text: `Every place ${product} keeps something about a session, beyond the log: databases, its own logs, caches, file history, prompt history, captures. A web page can't read those; the local resolver reads them on this machine and sends this page only this session's part, redacted.` }),
