@@ -11,6 +11,7 @@ import { SEARCH_CLIENT_FILES } from "./src/shared/search-ui.mjs";
 import { writeSearchText } from "./src/shared/search-index.mjs";
 import { pruneEmptyPages } from "./src/shared/record-sections.mjs";
 import { renderRootIndex, writeProductDocs } from "./src/shared/llms.mjs";
+import { renderTraceGuide } from "./src/shared/trace-guide.mjs";
 import { buildSite as buildClaudeCode } from "./src/claude-code/build-site.mjs";
 import { categories as claudeCodeCategories } from "./src/claude-code/catalog.mjs";
 import { site as claudeCodeSite } from "./src/claude-code/config.mjs";
@@ -59,6 +60,7 @@ for (const [i, product] of PRODUCTS.entries()) {
   byProduct[product.id] = { ...built.index, libName: SITE.name, label: SITE.products[product.id].label };
 }
 await writeFile(path.join(dist, "trace", "reference-index.json"), JSON.stringify({ byProduct }));
+await writeFile(path.join(dist, "trace", "guide.md"), renderTraceGuide(), "utf8");
 
 await writeFile(path.join(dist, "index.html"), renderLanding({ cardFile: "social-card.png" }));
 await writeFile(path.join(dist, "llms.txt"), renderRootIndex(), "utf8");

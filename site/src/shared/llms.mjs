@@ -18,7 +18,7 @@ export function renderRootIndex() {
 
 > Reference documentation for the instructions, prompts, tools, configuration and request assembly of AI coding-agent harnesses, with source provenance.
 
-Start with the relevant harness index below. Each index follows the site's documentation sections and links to readable Markdown versions of the published reference pages. Read the pages relevant to the question, then follow their evidence and archive links for exact source records. The HTML reference remains available for navigation, search and downloadable evidence.
+Start with the relevant harness index below. Each index follows the site's documentation sections and links to readable Markdown versions of the published reference pages. Read the pages relevant to the question, then follow their evidence and archive links for exact source records. The HTML reference remains available for navigation, search and downloadable evidence. To inspect a session, operate Trace through computer use, or set up network recording, read the Trace operating guide below first.
 
 ${evidence}
 
@@ -28,6 +28,7 @@ ${Object.entries(SITE.products).map(([id, product]) => `- [${label(product.label
 
 ## Session evidence
 
+- [Trace operating guide for agents](${siteOrigin()}/trace/guide.md): Opening sessions, computer-use workflow, keyboard shortcuts, local resolver, network recording for all four harnesses, evidence interpretation and troubleshooting.
 - [Trace](${siteOrigin()}/trace/): Browser-based viewer for your own recorded sessions and optional network captures; use it to investigate an actual run.
 
 ## Optional
@@ -55,6 +56,7 @@ ${categories.map(category => {
 ## Optional
 
 - [HTML reference and search](${origin}/): Browse this harness's documentation and evidence downloads.
+- [Trace operating guide](${siteOrigin()}/trace/guide.md): Inspect a real session, use the UI and keyboard controls, and set up network recording.
 - [All harnesses](${siteOrigin()}/llms.txt): Agent entry points for the other harnesses and the shared Trace viewer.
 `;
 }
