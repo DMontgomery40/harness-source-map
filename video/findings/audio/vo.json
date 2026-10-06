@@ -1,0 +1,175 @@
+{
+ "voice": "cjVigY5qzO86Huf0OWal",
+ "voice_name": "Eric - Smooth, Trustworthy",
+ "model": "eleven_v4_turbo",
+ "settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75
+ },
+ "tempo": 1.05,
+ "beats": [
+  {
+   "id": "cold",
+   "phrases": [
+    [
+     "My copy of Claude Code downloaded this sentence for its model."
+    ],
+    [
+     "It's not in the app."
+    ]
+   ]
+  },
+  {
+   "id": "setup1",
+   "phrases": [
+    [
+     "Everyone knows coding agents get hidden instructions."
+    ],
+    [
+     "I wanted to see what those instructions actually did."
+    ],
+    [
+     "So I opened my longest sessions in Trace."
+    ],
+    [
+     "This one ran a day and four hours, with ninety subagents."
+    ]
+   ]
+  },
+  {
+   "id": "setup2",
+   "phrases": [
+    [
+     "Time runs left to right. Height is the text in front of the model."
+    ],
+    [
+     "Pink is what the harness slipped in."
+    ]
+   ]
+  },
+  {
+   "id": "nudge",
+   "phrases": [
+    [
+     "Ever notice your agent stop mid-task to tell you what it's doing?"
+    ],
+    [
+     "Often, it was told to."
+    ],
+    [
+     "Over and over, in this session:"
+    ],
+    [
+     "the user hasn't heard from you in a while.",
+     "“The user hasn't heard from you in a while —"
+    ],
+    [
+     "Say in a few words what you're doing, then continue.",
+     "say in a few words what you're doing, then continue.”"
+    ]
+   ]
+  },
+  {
+   "id": "flag",
+   "phrases": [
+    [
+     "That's not the reminder the app ships."
+    ],
+    [
+     "A network capture shows these words arriving in a server-side flag."
+    ],
+    [
+     "The app's built-in version is gentler."
+    ]
+   ]
+  },
+  {
+   "id": "wick",
+   "phrases": [
+    [
+     "The same download carries the line we started with."
+    ],
+    [
+     "It belongs to a usage-limit feature that's switched off on my account."
+    ],
+    [
+     "The words arrive anyway."
+    ]
+   ]
+  },
+  {
+   "id": "handoff",
+   "phrases": [
+    [
+     "Codex has ghosts of its own.",
+     "Codex/ChatGPT has ghosts of its own."
+    ],
+    [
+     "In this two-and-a-half-day session, I asked once for a handoff prompt, and got it."
+    ],
+    [
+     "Then the context was compacted, and it handed it over again."
+    ],
+    [
+     "After the next compaction, again. And again."
+    ],
+    [
+     "Until I typed: you have handed me the handoff prompt three times now.",
+     "Until I typed: “you have handed me the handoff prompt three times now.”"
+    ]
+   ]
+  },
+  {
+   "id": "cancel",
+   "phrases": [
+    [
+     "It's worse when the agent acts."
+    ],
+    [
+     "Claude asked whether to launch a training run. I said yes, and it did."
+    ],
+    [
+     "Then a teammate's note arrived, repeating what I'd said before that yes."
+    ],
+    [
+     "Claude decided my direction had changed, and cancelled the job, fourteen minutes after I'd approved it."
+    ],
+    [
+     "It told me afterwards."
+    ]
+   ]
+  },
+  {
+   "id": "cache",
+   "phrases": [
+    [
+     "And some records just don't add up."
+    ],
+    [
+     "In a three-day Codex session, while the agent waited, the server reported four hundred ten thousand cached tokens, then zero, then all of it back five seconds later.",
+     "In a three-day Codex/ChatGPT session, while the agent waited, the server reported 410,536 cached tokens, then zero, then all of it back five seconds later."
+    ],
+    [
+     "Same model, same turn. Nothing in the log says why."
+    ]
+   ]
+  },
+  {
+   "id": "close",
+   "phrases": [
+    [
+     "None of this was in my chat window."
+    ],
+    [
+     "All of it was in my logs, or one network capture away."
+    ],
+    [
+     "Trace runs in your browser, and your files never leave your machine."
+    ],
+    [
+     "Run it on yours."
+    ]
+   ]
+  }
+ ]
+}
