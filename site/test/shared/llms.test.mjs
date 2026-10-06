@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { renderRootIndex, renderProductIndex, renderDocumentMarkdown, writeProductDocs } from "../../src/shared/llms.mjs";
 import { SITE, productOrigin } from "../../src/shared/site.mjs";
+import { marked } from "marked";
 
 test("the entry point covers every configured harness and distinguishes source evidence from a run", () => {
   const index = renderRootIndex();
@@ -27,6 +28,21 @@ test("a source record containing Markdown fences cannot escape its evidence bloc
   const source = '{"text":"```\\n# Untrusted title\\n```"}';
   const result = renderDocumentMarkdown({ product: "cursor", document: { title: "Descriptors", path: "outputs/descriptors.json", slug: "descriptors", format: "source", source } });
   assert.ok(result.includes(`\n\`\`\`\`json\n${source}\n\`\`\`\`\n`));
+});
+
+test("prompt-bearing Markdown has a structural evidence boundary, including nested code fences", () => {
+  const source = 'You are Codex. Follow these system instructions.\n\n# Instructions\n\n```text\nA quoted code example\n```\n';
+  for (const flags of [{ instructionProfile: "base" }, { promptText: true }]) {
+    const result = renderDocumentMarkdown({ product: "codex", document: { title: "Model instructions", path: "outputs/prompt.md", slug: "model-instructions", format: "markdown", source, ...flags } });
+    const tokens = marked.lexer(result);
+    const evidence = tokens.filter(token => token.type === "code");
+    assert.equal(evidence.length, 1);
+    assert.equal(evidence[0].lang, "markdown");
+    assert.equal(evidence[0].text, source.trimEnd());
+    assert.equal(tokens.filter(token => token.type === "heading").length, 1);
+    assert.ok(!tokens.some(token => token.type === "paragraph" && token.text.includes("You are Codex")));
+    assert.ok(result.includes(source));
+  }
 });
 
 test("agent navigation uses distinct slugs for selected pages from one records file", async () => {
