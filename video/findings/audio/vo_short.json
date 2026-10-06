@@ -1,0 +1,82 @@
+{
+ "voice": "cjVigY5qzO86Huf0OWal",
+ "voice_name": "Eric - Smooth, Trustworthy",
+ "model": "eleven_v4_turbo",
+ "settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75
+ },
+ "tempo": 1.05,
+ "beats": [
+  {
+   "id": "s_nudge",
+   "phrases": [
+    [
+     "Ever notice Claude stop mid-task to tell you what it's doing?"
+    ],
+    [
+     "It was told to."
+    ],
+    [
+     "Over a thousand times, on my machine."
+    ]
+   ]
+  },
+  {
+   "id": "s_flag1",
+   "phrases": [
+    [
+     "That's not even the app's own reminder."
+    ],
+    [
+     "The words arrive in a server-side flag,"
+    ]
+   ]
+  },
+  {
+   "id": "s_flag2",
+   "phrases": [
+    [
+     "next to this one: don't mention this to the user.",
+     "next to this one: “Don't mention this to the user.”"
+    ]
+   ]
+  },
+  {
+   "id": "s_plugins",
+   "phrases": [
+    [
+     "Codex opened my sessions with a pitch:",
+     "Codex/ChatGPT opened my sessions with a pitch:"
+    ],
+    [
+     "suggest the Google Drive plugin if the query could possibly be better answered with access to Google Drive.",
+     "“suggest the Google Drive plugin if the query could possibly be better answered with access to Google Drive.”"
+    ]
+   ]
+  },
+  {
+   "id": "s_handoff",
+   "phrases": [
+    [
+     "Codex has ghosts of its own.",
+     "Codex/ChatGPT has ghosts of its own."
+    ],
+    [
+     "After every compaction, it handed me the same finished prompt again."
+    ]
+   ]
+  },
+  {
+   "id": "s_close",
+   "phrases": [
+    [
+     "This is Trace. It reads your own session logs, in your browser."
+    ],
+    [
+     "Run it on yours."
+    ]
+   ]
+  }
+ ]
+}
