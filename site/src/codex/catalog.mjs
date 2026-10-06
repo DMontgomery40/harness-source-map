@@ -331,6 +331,7 @@ export const categories = [
   {
     label: "Evidence and archive",
     files: [
+      { path: "outputs/pr-body-hidden-markers.md", anchor: "pr-body-hidden-markers-md", slug: "pr-body-hidden-markers", format: "markdown", title: "Hidden PR body markers", defaultOpen: false },
       { path: "outputs/security-review-map-2026-09-24.md", anchor: "security-review-map-2026-09-24-md", slug: "key-findings-2026-09-24", snapshot: "September 24, 2026", format: "markdown", title: "Key findings, September 24", defaultOpen: false },
       { path: "outputs/devday-surface-coverage.json", anchor: "devday-surface-coverage-json", slug: "devday-surface-coverage-records", format: "source", title: "Dev Day surface records", defaultOpen: false },
       {
