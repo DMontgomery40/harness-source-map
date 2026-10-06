@@ -334,11 +334,11 @@ export function createStandaloneRenderer({ categories, documents, status = null,
     const pageCategories = categories.map(category => category.label === "Evidence and archive"
       ? { ...category, files: [...category.files, document] }
       : category);
-    return renderPage({ categories: pageCategories, rendered, routes, current, status, profile });
+    return renderPage({ categories: pageCategories, rendered, routes, current, status, profile, markdown: false });
   };
 }
 
-function renderPage({ categories, rendered, routes, current = null, status = null, profile }) {
+function renderPage({ categories, rendered, routes, current = null, status = null, profile, markdown = true }) {
   const anchors = new Map(rendered.map(document => [document.path, document.anchor]));
   const outlines = current
     ? new Map([[current.path, current.tocOutline.map(item => ({ ...item, id: routes.localId(item.id, current.anchor) }))]])
@@ -362,7 +362,8 @@ function renderPage({ categories, rendered, routes, current = null, status = nul
   <title>${escapeHtml(pageTitle)}</title>
   <meta name="description" content="${escapeHtml(profile.description)}">
   <link rel="canonical" href="${pageUrl}">
-  <meta name="theme-color" content="#101710">
+  <link rel="describedby" href="${origin}/llms.txt" type="text/plain">
+${current && markdown ? `  <link rel="alternate" type="text/markdown" href="${origin}/${routes.slug(current.anchor)}.md">\n` : ""}  <meta name="theme-color" content="#101710">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="${escapeHtml(siteTitle)}">
   <meta property="og:url" content="${pageUrl}">

@@ -11,6 +11,7 @@ import { renderLanding } from "../../src/shared/landing.mjs";
 import { selectRecordSections } from "../../src/shared/record-sections.mjs";
 import { indexItems, parseQuery, search } from "../../src/shared/search/query.js";
 import { productOrigin } from "../../src/shared/site.mjs";
+import { writeProductDocs } from "../../src/shared/llms.mjs";
 
 const sourceRoot = fileURLToPath(new URL("../../../cursor/", import.meta.url));
 const viewer = fileURLToPath(new URL("../../trace/", import.meta.url));
@@ -19,7 +20,8 @@ test("every shipped Cursor record is published on exactly one reference page, wi
   const dir = await mkdtemp(path.join(os.tmpdir(), "cursor-site-"));
   try {
     await symlink(viewer, path.join(dir, "trace"), "dir");
-    await buildSite({ sourceRoot, outFile: path.join(dir, "dist/cursor/index.html"), categories });
+    const context = await buildSite({ sourceRoot, outFile: path.join(dir, "dist/cursor/index.html"), categories });
+    await writeProductDocs({ outDir: path.join(dir, "dist/cursor"), product: "cursor", categories, documents: context.documents });
     // The curated records and the Jev-classified discovered records, each on exactly one page.
     const curated = JSON.parse(await readFile(path.join(sourceRoot, "outputs/source-records.json"), "utf8")).items;
     const discovered = JSON.parse(await readFile(path.join(sourceRoot, "outputs/discovered-records.json"), "utf8")).items;
@@ -36,6 +38,11 @@ test("every shipped Cursor record is published on exactly one reference page, wi
     const instructions = await readFile(path.join(dir, "dist/cursor/model-instructions/index.html"), "utf8");
     assert.match(instructions, /Base agent instructions \(variant 1\)/);
     assert.doesNotMatch(instructions, /<h[1-6][^>]*>Agent run request schema</);
+    assert.ok(instructions.includes(`type="text/markdown" href="${productOrigin("cursor")}/model-instructions.md"`));
+    const markdown = await readFile(path.join(dir, "dist/cursor/model-instructions.md"), "utf8");
+    assert.match(markdown, /Base agent instructions \(variant 1\)/);
+    assert.doesNotMatch(markdown, /### Agent run request schema/);
+    assert.ok(markdown.endsWith(context.documents.find(document => document.slug === "model-instructions").source));
     assert.match(renderLanding(), /href="cursor\/"/);
     assert.deepEqual([...parseQuery("in:cursor approval").products], ["cursor"]);
     assert.ok(search(indexItems(index), parseQuery("in:cursor approval")).total > 0);

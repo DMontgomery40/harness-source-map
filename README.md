@@ -1,11 +1,11 @@
 # Harness Source Map
 
 **Live site: [harness.dtmont.com](https://harness.dtmont.com)** · [Claude Code](https://harness.dtmont.com/claude-code/) ·
-[Codex/ChatGPT](https://harness.dtmont.com/codex/) · [OpenCode](https://harness.dtmont.com/opencode/) · [Trace](https://harness.dtmont.com/trace/)
+[Codex/ChatGPT](https://harness.dtmont.com/codex/) · [OpenCode](https://harness.dtmont.com/opencode/) · [Cursor](https://harness.dtmont.com/cursor/) · [Trace](https://harness.dtmont.com/trace/)
 
 [![Harness Source Map: what the agent harness puts in front of the model](site/assets/shared/social-card.png)](https://harness.dtmont.com)
 
-What Claude Code, Codex/ChatGPT and OpenCode put in front of the model: prompts, reminders, tool descriptions,
+What Claude Code, Codex/ChatGPT, OpenCode and Cursor put in front of the model: prompts, reminders, tool descriptions,
 settings, flags and environment variables, read from shipped binaries, apps and pinned public source, each record with its
 provenance. Plus **Trace**, which opens your own session log in the browser and shows how those pieces
 actually arrive. One repo, one site: <https://harness.dtmont.com>.
@@ -14,7 +14,15 @@ actually arrive. One repo, one site: <https://harness.dtmont.com>.
 - `/claude-code/` is the Claude Code reference, including What wins.
 - `/codex/` is the Codex/ChatGPT reference.
 - `/opencode/` is the OpenCode reference, including request assembly and provider routing.
-- `/trace/` is Trace, which reads real sessions and optional network captures from all three products.
+- `/cursor/` is the Cursor reference, including shipped desktop and Agent CLI records and source-text archives.
+- `/trace/` is Trace, which reads real sessions and optional network captures from all four products.
+
+For agents, start at [`/llms.txt`](https://harness.dtmont.com/llms.txt). Each harness has its own
+`/<product>/llms.txt`, organized by the existing documentation sections. It links to `/<product>/<slug>.md`
+counterparts of the reference pages, generated from the same resolved content as the HTML. The indexes
+explain provenance and the distinction between a static source map and an observed session. Source-text
+archives remain accessible through the evidence pages; the entry point does not concatenate the full corpus.
+The indexes and Markdown pages regenerate with every site build, including watcher builds.
 
 The two older sites, `ccprompts.dtmont.com` and `gpt6aeon.dtmont.com`, redirect here path for path.
 

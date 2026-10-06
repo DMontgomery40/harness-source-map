@@ -10,6 +10,7 @@ import { renderLanding } from "./src/shared/landing.mjs";
 import { SEARCH_CLIENT_FILES } from "./src/shared/search-ui.mjs";
 import { writeSearchText } from "./src/shared/search-index.mjs";
 import { pruneEmptyPages } from "./src/shared/record-sections.mjs";
+import { renderRootIndex, writeProductDocs } from "./src/shared/llms.mjs";
 import { buildSite as buildClaudeCode } from "./src/claude-code/build-site.mjs";
 import { categories as claudeCodeCategories } from "./src/claude-code/catalog.mjs";
 import { site as claudeCodeSite } from "./src/claude-code/config.mjs";
@@ -41,6 +42,7 @@ for (const product of PRODUCTS) product.categories = await pruneEmptyPages(produ
 for (const product of PRODUCTS) {
   const section = SITE.products[product.id].path;
   const context = await product.build({ sourceRoot: path.join(repoRoot, product.id), outFile: path.join(dist, section, "index.html"), categories: product.categories });
+  await writeProductDocs({ outDir: path.join(dist, section), product: product.id, categories: product.categories, documents: context.documents });
   for (const file of product.assets) await copyFile(path.join(siteRoot, "assets", product.id, file), path.join(dist, section, file));
   if (["opencode", "cursor"].includes(product.id)) buildFullCatalog({ sourceRoot: path.join(repoRoot, product.id), outDir: path.join(dist, section), context });
   // The section's full text for the search palette, from the pages just built.
@@ -59,6 +61,7 @@ for (const [i, product] of PRODUCTS.entries()) {
 await writeFile(path.join(dist, "trace", "reference-index.json"), JSON.stringify({ byProduct }));
 
 await writeFile(path.join(dist, "index.html"), renderLanding({ cardFile: "social-card.png" }));
+await writeFile(path.join(dist, "llms.txt"), renderRootIndex(), "utf8");
 // The docs search palette (every section page and the landing load dist/search/palette.js).
 await mkdir(path.join(dist, "search"), { recursive: true });
 for (const [from, to] of SEARCH_CLIENT_FILES) await copyFile(path.join(siteRoot, "src", "shared", from), path.join(dist, "search", to));
