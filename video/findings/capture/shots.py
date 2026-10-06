@@ -11,6 +11,7 @@ Inputs (paths stay in the environment, never in this file):
   TRACE_NET_CC_HAR        its HAR (the flags shots)
   TRACE_CX_HANDOFF        the Codex/ChatGPT rollout of the handoff finding
   TRACE_CC_CANCEL         the Claude Code session of the cancelled-job finding
+  TRACE_CX_PLUGINS        a Codex/ChatGPT rollout that carries the plugin recommendation block
   TRACE_LEAK_VALUES       private JSON list: the tour's values plus this video's extras (blurred in the edit)
 
 Never press `h` or `c` and never click "Harness": the harness layer is not part of this video.
@@ -369,6 +370,50 @@ async def f_handoff():
         await s.run(at(16), plan.events(at(16)))
 
 
+# ------------------------------------------------------------------------------------- 8b. Codex/ChatGPT plugin list
+
+async def f_plugins():
+    """A Codex/ChatGPT session: `/` "Google Drive plugin": the recommended_plugins block; Enter: its text in the
+    reader (the uninstalled-plugin list and the instruction to suggest one). 11 s."""
+    files = [env("TRACE_CX_PLUGINS")]
+    async with rec() as r:
+        await open_session(r, files)
+        await r.page.add_style_tag(content=NO_TITLE)
+        await r.step(20)
+        s = Shot(r, "f_plugins")
+        ev = {}
+        ev[at(0.3)] = lambda i: s.key(i, "/")
+        t = await typed(s, 0.8, "Google Drive plugin", ev, rate=0.06)
+        async def results(i):
+            print("  count:", await search_done(r))
+            await s.elem("row", ".pal-row", "recommended_plugins", i)
+            s.mark("results", i)
+        ev[at(t + 0.6)] = results
+        async def enter(i): await s.key(i, "Enter"); s.mark("enter", i)
+        ev[at(t + 3.0)] = enter
+        # the reader opens at the bottom of the frame, under where the captions go: ease it up the panel
+        st = {}
+        async def scroll0(i):
+            v = await r.js(SCROLL_TO_TEXT_JS, [".side", "Here is a list of plugins", 0.22])
+            if v: st["v"] = (i, v)
+            else: print("  scroll miss: reader")
+        async def scrolling(i):
+            if "v" not in st: return
+            f0, (a, b) = st["v"]
+            await r.js(SET_TEXT_SCROLL_JS, a + (b - a) * ease(min(1, (i - f0) / at(0.5))))
+        ev[at(t + 3.6)] = scroll0
+        for k in range(1, at(0.55)): ev[at(t + 3.6) + k] = scrolling
+        async def reader(i):
+            await s.elem("side", ".side", None, i)
+            await s.rect("r_head", ".side", "Here is a list of plugins", None, i)
+            await s.rect("r_avail", ".side", "available but not installed", None, i)
+            await s.rect("r_end", ".side", "answered with access to Google Drive.", None, i)
+            await s.rect("r_gd", ".side", "Google Drive plugin", None, i)
+            s.mark("reader", i)
+        ev[at(t + 4.4)] = reader
+        await s.run(at(11), ev)
+
+
 # ------------------------------------------------------------------------------------- 8. the cancelled job
 
 async def f_cancel():
@@ -406,7 +451,7 @@ async def f_cancel():
         await s.run(at(12), plan.events(at(12)))
 
 
-SHOTS = {f.__name__: f for f in [f_loader, f_open, f_close, f_nudge, f_flag, f_wick, f_connectors, f_handoff, f_cancel]}
+SHOTS = {f.__name__: f for f in [f_loader, f_open, f_close, f_nudge, f_flag, f_wick, f_connectors, f_handoff, f_plugins, f_cancel]}
 
 if __name__ == "__main__":
     asyncio.run(main_of(SHOTS))

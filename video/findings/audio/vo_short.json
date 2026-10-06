@@ -43,6 +43,19 @@
    ]
   },
   {
+   "id": "s_plugins",
+   "phrases": [
+    [
+     "Codex opened my sessions with a pitch:",
+     "Codex/ChatGPT opened my sessions with a pitch:"
+    ],
+    [
+     "suggest the Google Drive plugin if the query could possibly be better answered with access to Google Drive.",
+     "“suggest the Google Drive plugin if the query could possibly be better answered with access to Google Drive.”"
+    ]
+   ]
+  },
+  {
    "id": "s_handoff",
    "phrases": [
     [

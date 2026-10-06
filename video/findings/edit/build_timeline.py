@@ -205,6 +205,14 @@ def rows_of(s, key):
     return out
 
 
+def pitch_box(rh, ra, re_):
+    """The reader's last three lines of the plugin block's instruction ("example, suggest the Google Drive plugin / if
+    the query could possibly be better / answered with access to Google Drive."): "available but not installed"
+    starts line 2, the end of the sentence is line 9, so the line pitch is their distance over seven."""
+    pitch = (re_[1] - ra[1]) / 7
+    return [rh[0] - 6, re_[1] - 2 * pitch - 8, 3744, re_[3] + 8]
+
+
 # ---------------------------------------------------------------------------------------------- the long cut
 
 def plan_long():
@@ -290,6 +298,22 @@ def plan_long():
     s.box(s.rect("done"), t_r + 0.45, color="lime", pad=4)
     S.append(s)
 
+    # 8b. Codex/ChatGPT: a list of plugins never installed, and for a while a pitch to suggest one.
+    s = Sec("plugins", "f_plugins", "plugins", lead=0.3, tail=0.9)
+    s.cap_top = True   # the reader sits at the bottom of the frame, where captions go
+    s.chip(TR_CX, 0)
+    t_r, t_e = 2.5, s.w("installed") - 0.5
+    s.anchor(0, 0.0); s.anchor("results", t_r); s.hold("results", t_r, t_e); s.cut("results", s.mark("enter") - 4, t_e)
+    s.anchor("enter", t_e + 0.05); s.anchor("reader", t_e + 1.05); s.hold("reader", t_e + 1.05, s.dur)
+    rh, re_, ra = s.rect("r_head"), s.rect("r_end"), s.rect("r_avail")
+    pitch = pitch_box(rh, ra, re_)
+    s.cam(0, FULL); s.cam(0.6, PAL_TOP, pad=1.04); s.cam(t_e + 0.1, PAL_TOP, pad=1.04)
+    s.cam(t_e + 0.9, [2964, rh[1] - 240, 3804, re_[3] + 520], pad=1.05)
+    s.box(s.rect("row"), t_r + 0.1, t_e - 0.1, color="pink", pad=4)
+    s.box(s.rect("r_avail"), t_e + 1.2, s.ph(2) - 0.2, color="amber", pad=4)
+    s.box(pitch, s.ph(2) + 0.1, color="pink", pad=4)
+    S.append(s)
+
     # 9. Claude Code: a newer yes loses to an older note.
     s = Sec("cancel", "f_cancel", "cancel", lead=0.3, tail=0.9)
     s.chip(TR_CC, 0)
@@ -348,6 +372,14 @@ def plan_short():
     s.head(0.0, s.dur, "“Don’t mention this to the user.”", "ALSO SERVED TO MY CLAUDE CODE", color="red")
     S.append(s)
 
+    s = Sec("s_plugins", "f_plugins", "s_plugins", lead=0.9, tail=1.8, src0=0)
+    s.cut(0, "reader", 0.0); s.hold("reader", 0.0, s.dur)
+    rh, re_, ra = s.rect("r_head"), s.rect("r_end"), s.rect("r_avail")
+    s.cam(0, [2964, rh[1] - 260, 3804, re_[3] + 420], pad=1.0)
+    s.box(pitch_box(rh, ra, re_), s.w("google") - 0.3, color="pink", pad=4)
+    s.head(0.0, s.dur, "A pitch for plugins I never installed.", "CODEX/CHATGPT · IN MY OWN SESSIONS", color="pink")
+    S.append(s)
+
     s = Sec("s_handoff", "f_handoff", "s_handoff", lead=1.0, tail=2.2, src0=0)
     s.cut(0, "results", 0.0); s.hold("results", 0.0, s.dur)
     s.cam(0, PAL_TWO, pad=1.0)
@@ -379,7 +411,8 @@ def compile_(S):
             for p in s.vo["phrases"]:
                 ws = [w for w in s.vo["words"] if w[1] >= p["t0"] - 1e-3 and w[2] <= p["t1"] + 1e-3]
                 caps.append({"t0": round(t_abs + s.lead + p["t0"], 3), "t1": round(t_abs + s.lead + p["t1"], 3), "text": p["show"],
-                             "words": [[w[0], round(t_abs + s.lead + w[1], 3), round(t_abs + s.lead + w[2], 3)] for w in ws]})
+                             "words": [[w[0], round(t_abs + s.lead + w[1], 3), round(t_abs + s.lead + w[2], 3)] for w in ws],
+                             **({"top": True} if getattr(s, "cap_top", False) else {})})
         for f, k in (s.foot.get("keys", []) if getattr(s, "keys", True) else []):
             if k not in SHOW_KEYS: continue
             t = s.tm(f)

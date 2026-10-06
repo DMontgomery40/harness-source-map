@@ -120,6 +120,22 @@
    ]
   },
   {
+   "id": "plugins",
+   "phrases": [
+    [
+     "Codex also opens my sessions with a list of plugins I never installed: Box, Figma, Notion, Slack.",
+     "Codex/ChatGPT also opens my sessions with a list of plugins I never installed: Box, Figma, Notion, Slack."
+    ],
+    [
+     "From July to late September, the list came with a pitch:"
+    ],
+    [
+     "suggest the Google Drive plugin if the query could possibly be better answered with access to Google Drive.",
+     "“suggest the Google Drive plugin if the query could possibly be better answered with access to Google Drive.”"
+    ]
+   ]
+  },
+  {
    "id": "cancel",
    "phrases": [
     [

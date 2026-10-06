@@ -19,7 +19,7 @@ export type Sec = {
 };
 export type TLT = {
   fps: number; duration: number; short?: boolean; sections: Sec[]; chips: [number, string][];
-  captions: { t0: number; t1: number; text: string; words: [string, number, number][] }[];
+  captions: { t0: number; t1: number; text: string; words: [string, number, number][]; top?: boolean }[];
   keys: { t: number; k: string }[]; frames: Record<string, string>; cardAt: number;
 };
 
@@ -321,10 +321,10 @@ const Captions: React.FC<{ short: boolean }> = ({ short }) => {
   const cur = Math.min(words.length - 1, Math.floor(Math.max(0, spoken) * words.length));
   return (
     <div style={{
-      position: "absolute", left: "50%", ...(short ? { top: WIN.y + WIN.h + 40 } : { bottom: 46 }), transform: `translateX(-50%) translateY(${(1 - a) * 8}px)`, opacity: a,
+      position: "absolute", left: "50%", ...(short ? { top: WIN.y + WIN.h + 40 } : c.top ? { top: 40 } : { bottom: 46 }), transform: `translateX(-50%) translateY(${(1 - a) * 8}px)`, opacity: a,
       maxWidth: short ? 1000 : 1560, width: "max-content", textAlign: "center",
       background: "rgba(6,8,12,0.84)", borderRadius: 18, padding: short ? "16px 26px" : "12px 28px",
-      fontFamily: SANS, fontWeight: 800, fontSize: short ? 52 : 44, lineHeight: 1.18, color: C.white,
+      fontFamily: SANS, fontWeight: 800, fontSize: short ? (c.text.length > 80 ? 40 : 52) : 44, lineHeight: 1.18, color: C.white,
       boxShadow: "0 10px 40px rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.08)",
     }}>
       {words.map((w, i) => (
