@@ -7,6 +7,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { indexKey, itemHref } from "../site/src/shared/search/query.js";
+import { siteOrigin } from "../site/src/shared/site.mjs";
 
 const dist = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../site/dist");
 if (!existsSync(dist)) { console.error("build the site first (npm run build)"); process.exit(1); }
@@ -17,14 +18,34 @@ let checked = 0;
 for (const file of walk(dist)) {
   if (!file.endsWith(".html")) continue;
   const html = readFileSync(file, "utf8").replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, s => (/\bsrc=/.test(s.slice(0, s.indexOf(">"))) ? s.slice(0, s.indexOf(">") + 1) : ""));
+  const agentRefs = new Set([...html.matchAll(/<link\b[^>]*>/g)].filter(([tag]) => /\brel="(?:describedby|alternate)"/.test(tag)).map(([tag]) => tag.match(/\bhref="([^"]+)"/)?.[1]));
   for (const m of html.matchAll(/\s(?:href|src)="([^"#]*)(?:#[^"]*)?"/g)) {
     const ref = m[1].replace(/&amp;/g, "&");
-    if (!ref || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(ref)) continue; // external, mailto:, data:
-    const clean = decodeURIComponent(ref.split("?")[0]);
+    // Check the new absolute agent-discovery links too. Other absolute HTML links retain their
+    // existing behavior (many are evidence about endpoints rather than links to local assets).
+    const local = agentRefs.has(ref) && ref.startsWith(`${siteOrigin()}/`) ? new URL(ref).pathname : ref;
+    if (!local || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(local)) continue; // external, mailto:, data:
+    const clean = decodeURIComponent(local.split("?")[0]);
     let target = clean.startsWith("/") ? path.join(dist, clean) : path.resolve(path.dirname(file), clean);
     if (clean.endsWith("/") || !path.extname(target)) target = path.join(target, "index.html");
     checked++;
     if (!existsSync(target)) broken.push(`${path.relative(dist, file)} -> ${ref}`);
+  }
+}
+
+// Only the generated agent indexes are a navigation contract. Quoted prompt/code examples in
+// Markdown pages can contain illustrative links and are not instructions or site navigation.
+let agentLinks = 0;
+for (const file of walk(dist)) {
+  if (path.basename(file) !== "llms.txt") continue;
+  const markdown = readFileSync(file, "utf8");
+  for (const match of markdown.matchAll(/^- \[[^\n]*?\]\((https?:\/\/[^\s)]+)\)/gm)) {
+    const url = new URL(match[1]);
+    if (url.origin !== siteOrigin()) continue;
+    let target = path.join(dist, decodeURIComponent(url.pathname));
+    if (url.pathname.endsWith("/") || !path.extname(target)) target = path.join(target, "index.html");
+    agentLinks++;
+    if (!existsSync(target)) broken.push(`${path.relative(dist, file)} -> ${match[1]}`);
   }
 }
 
@@ -56,4 +77,4 @@ for (const section of indexes) {
 if (!indexes.length) broken.push("no search-index.json in any section");
 
 if (broken.length) { console.error(`broken links (${broken.length}):\n${[...new Set(broken)].slice(0, 40).join("\n")}`); process.exit(1); }
-console.log(`links clean: ${checked} internal references; ${entries} search index entries in ${indexes.join(", ")}`);
+console.log(`links clean: ${checked} internal references; ${agentLinks} agent index links; ${entries} search index entries in ${indexes.join(", ")}`);

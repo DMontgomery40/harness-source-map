@@ -208,7 +208,8 @@ function renderPage({ categories, rendered, routes, current = null, status = nul
   <title>${escapeHtml(pageTitle)}</title>
   <meta name="description" content="${description}">
   <link rel="canonical" href="${pageUrl}">
-  <meta name="theme-color" content="${site.themeColor}">
+  <link rel="describedby" href="${site.origin}/llms.txt" type="text/plain">
+${current ? `  <link rel="alternate" type="text/markdown" href="${site.origin}/${routes.slug(current.anchor)}.md">\n` : ""}  <meta name="theme-color" content="${site.themeColor}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="${escapeHtml(site.name)}">
   <meta property="og:url" content="${pageUrl}">

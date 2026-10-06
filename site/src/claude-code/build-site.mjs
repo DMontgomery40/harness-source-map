@@ -90,4 +90,5 @@ export async function buildSite({ sourceRoot, outFile, categories }) {
     await writeFile(file, page.html, "utf8");
     if (page.stats) logSearchStats("claude-code", page.stats);
   }
+  return { categories, documents, status };
 }

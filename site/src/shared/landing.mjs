@@ -50,6 +50,7 @@ export function renderLanding({ cardFile = "social-card.png" } = {}) {
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
   <link rel="canonical" href="${origin}/">
+  <link rel="describedby" href="/llms.txt" type="text/plain">
   ${ICON_LINKS}
   <meta name="theme-color" content="#0b100e">
   <meta property="og:type" content="website">
@@ -114,6 +115,7 @@ export function renderLanding({ cardFile = "social-card.png" } = {}) {
     <footer>
       <a href="${esc(SITE.follow.url)}">Follow @${esc(SITE.follow.handle)} on X</a>
       <a href="${esc(SITE.repo)}">Source on GitHub</a>
+      <a href="llms.txt">For agents: llms.txt</a>
     </footer>
   </main>
   ${searchScript("")}
