@@ -23,6 +23,8 @@ counterparts of the reference pages, generated from the same resolved content as
 explain provenance and the distinction between a static source map and an observed session. Source-text
 archives remain accessible through the evidence pages; the entry point does not concatenate the full corpus.
 The indexes and Markdown pages regenerate with every site build, including watcher builds.
+The linked [Trace operating guide](https://harness.dtmont.com/trace/guide.md) covers computer use,
+shortcuts (generated from Trace's actual key map), session loading, local sources and network recording.
 
 The two older sites, `ccprompts.dtmont.com` and `gpt6aeon.dtmont.com`, redirect here path for path.
 
