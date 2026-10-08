@@ -6,14 +6,14 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { categories as codexCatalog } from '../site/src/codex/catalog.mjs';
 import { categories as claudeCatalog } from '../site/src/claude-code/catalog.mjs';
-import { loadSearchRecords } from '../site/src/shared/search-index.mjs';
+import { loadSearchRecords, recordSpec } from '../site/src/shared/search-index.mjs';
 import { fencedRecords } from '../codex/extract/codex/coverage-audit.mjs';
 import { JevAnswerError, providerSafeText, textHash, validateAnswers } from '../codex/extract/codex/lib/jev-discovery.mjs';
 import { JevRequestError, JevUnavailableError, JEV_TEMPFAIL_EXIT } from '../codex/extract/codex/lib/jev-provider.mjs';
 import { privacyScan, PrivacyError } from '../codex/extract/codex/lib/privacy.mjs';
-import { decisionsConfig, openDecisionsCache, adaptJevPayload, buildDecisionRequest, decisionsRequestKey, evaluateDecisionBatchAsJev, DecisionsRequestError, DecisionsAnswerError, DecisionsUnavailableError } from './decisions-provider.mjs';
+import { decisionsConfig, openDecisionsCache, adaptJevPayload, buildDecisionRequest, decisionsRequestKey, evaluateDecisionBatchAsJev, isReusableDecisionCacheEntry, DecisionsRequestError, DecisionsAnswerError, DecisionsUnavailableError } from './decisions-provider.mjs';
 
-export const AUDIT_VERSION = 'release-coverage-v1';
+export const AUDIT_VERSION = 'release-coverage-v2';
 const PRODUCT_NAMES = {codex:'Codex/ChatGPT','claude-code':'Claude Code'};
 const RELEVANCE_STATE = {task:'Independent public release relevance judgments. Every question includes its complete source.'};
 const VERIFY_STATE = {task:'Independent absolute coverage judgments. Every question includes both complete texts.'};
@@ -107,36 +107,59 @@ function pageExclusion(file) {
   return null;
 }
 function narrativeSections(markdown) {
-  const sections=[];let title='Page',lines=[],fence=null;
-  const flush=()=>{if(lines.some(l=>l.trim()&&!/^#{1,6}\s/.test(l)))sections.push({title,text:lines.join('\n').trim()});lines=[];};
-  for(const line of markdown.split('\n')) {
-    const marker=/^\s*(`{3,}|~{3,})/.exec(line);
-    if(marker) {if(!fence)fence=marker[1][0];else if(marker[1][0]===fence)fence=null;}
-    if(!fence&&/^#{1,6}\s/.test(line)) {flush();title=line.replace(/^#{1,6}\s+/,'');}
-    lines.push(line);
+  const lines=markdown.split(/\r?\n/),sections=[{title:'Page',level:0,start:0,bodyStart:0,end:lines.length,ancestors:[]}],trail=[];
+  let fence=null;
+  for(const [i,line]of lines.entries()) {
+    if(fence) {if(new RegExp(`^ {0,3}${fence[0]}{${fence.length},}\\s*$`).test(line))fence=null;continue;}
+    const marker=/^ {0,3}(`{3,}|~{3,})/.exec(line);
+    if(marker) {fence=marker[1];continue;}
+    const heading=/^ {0,3}(#{1,6})\s+(.+?)(?:\s+#+)?\s*$/.exec(line);
+    if(!heading)continue;
+    if(sections.length===1)sections[0].end=i;
+    while(trail.length&&trail.at(-1).level>=heading[1].length)trail.pop().end=i;
+    const section={title:heading[2],level:heading[1].length,start:i,bodyStart:i+1,end:lines.length,ancestors:trail.map(s=>s.title)};
+    sections.push(section);trail.push(section);
   }
-  flush();return sections;
+  return sections.map(section=>({...section,text:lines.slice(section.start,section.end).join('\n').trim(),hasBody:lines.slice(section.bodyStart,section.end).some(line=>line.trim()&&!/^ {0,3}#{1,6}\s/.test(line))}));
 }
+function rawPublishedRecords(sourceRoot,file) {
+  const spec=recordSpec(file);
+  if(!spec)return [];
+  let raw;
+  try {raw=JSON.parse(fs.readFileSync(path.join(sourceRoot,spec.file),'utf8'));}
+  catch(error) {if(error.code==='ENOENT'||error instanceof SyntaxError)return [];throw error;}
+  const lists=spec.lists??(spec.list?[spec.list]:null);
+  const rows=lists?lists.flatMap(name=>Array.isArray(raw?.[name])?raw[name]:[]):Array.isArray(raw)?raw:raw?.items;
+  return Array.isArray(rows)?rows.filter(r=>r&&typeof r==='object'&&(!r.document||r.document===path.basename(file.path))&&(!file.includeRecord||file.includeRecord(r))):[];
+}
+const headingKey=value=>String(value??'').replace(/`|\*\*|__/g,'').replace(/\s+/g,' ').trim();
 
-// Load the actual catalog, not a separate handpicked list. Structured records and fenced
-// payloads keep their complete text; narrative pages contribute complete heading sections.
+// Search normalization supplies stable typed identity, never the evidence body. Preserve all
+// fields of the raw published record and its complete Markdown entry, including child sections.
 export async function loadPublishedRecords(sourceRoot,catalog) {
   const records=[],excluded_pages=[];
   for(const file of catalog.flatMap(c=>c.files)) {
     const exclusion=pageExclusion(file);
     if(exclusion) {excluded_pages.push({file:file.path,reason:exclusion});continue;}
     const normalized=await loadSearchRecords({sourceRoot,file});
+    const raw=rawPublishedRecords(sourceRoot,file);
+    if(raw.length!==normalized.length)throw new JevRequestError(`Published record selection disagrees with typed search for ${file.path}`);
     const markdown=file.format==='markdown'?fs.readFileSync(path.join(sourceRoot,file.path),'utf8'):'';
-    const fences=markdown?fencedRecords(markdown):[];
+    const sections=markdown?narrativeSections(markdown):[],claimed=new Set();
     for(const [i,r]of normalized.entries()) {
-      const fence=fences.find(f=>f.title===r.title&&(!r.group||f.group===r.group));
-      const text=r.text??fence?.text;
-      if(text)records.push({id:`${file.slug}/${r.id??i}`,title:r.title,kind:r.kind,text,file:file.path,provenance:r.prov??null,origin:'catalog-record'});
+      const matches=sections.filter(s=>!claimed.has(s)&&headingKey(s.title)===headingKey(r.title));
+      const section=matches.find(s=>!r.group||s.ancestors.some(title=>headingKey(title)===headingKey(r.group)))??matches[0];
+      if(section)claimed.add(section);
+      const text=`Published record (${recordSpec(file).file}):\n${JSON.stringify(raw[i],null,2)}${section?`\n\nComplete published Markdown entry:\n${section.text}`:''}`;
+      records.push({id:`${file.slug}/${r.id??i}`,title:r.title,kind:r.kind,text,file:file.path,provenance:r.prov??null,origin:'catalog-record',archive:raw[i].archive,historical:raw[i].historical,current:raw[i].current});
     }
-    if(!normalized.length) {
-      const content=fences.length?fences:narrativeSections(markdown);
-      for(const [i,r]of content.entries())records.push({id:`${file.slug}/${fences.length?'fence':'section'}-${i}`,title:r.title,kind:fences.length?'prompt':'documentation',text:r.text,file:file.path,
-        provenance:r.source_file?{file:r.source_file,byte_offset:r.byte_offset,sha256:r.sha256}:null,origin:fences.length?'catalog-fence':'catalog-narrative'});
+    for(const [i,section]of sections.entries()) {
+      // Entries already include their descendants. Remaining page prose is evidence too,
+      // even when the same page has a structured record map.
+      if(!section.hasBody||[...claimed].some(entry=>section.start>=entry.start&&section.start<entry.end))continue;
+      const fence=fencedRecords(section.text).find(r=>r.source_file);
+      records.push({id:`${file.slug}/section-${i}`,title:section.title,kind:'documentation',text:section.text,file:file.path,
+        provenance:fence?{file:fence.source_file,byte_offset:fence.byte_offset,sha256:fence.sha256}:null,origin:'catalog-narrative'});
     }
   }
   return {records,excluded_pages};
@@ -204,7 +227,7 @@ export async function runReleaseAudit(config,sources,records,options={}) {
     ready.push({row,questions});
   }
   const evaluate=async payload=>{
-    const nativeRequest=buildDecisionRequest(config,adaptJevPayload(payload)),key=decisionsRequestKey(config,nativeRequest,AUDIT_VERSION),cached=options.cache.has(key);
+    const nativeRequest=buildDecisionRequest(config,adaptJevPayload(payload)),key=decisionsRequestKey(config,nativeRequest,AUDIT_VERSION),cached=options.cache.has(key)&&isReusableDecisionCacheEntry(options.cache.get(key),options);
     if(!cached&&(outage||options.prepare))throw new JevUnavailableError(outage??'Preparation only; no new provider judgments');
     let body;
     try {body=await (options.evaluateBatch??evaluateDecisionBatchAsJev)(config,payload,AUDIT_VERSION,options,usage);}

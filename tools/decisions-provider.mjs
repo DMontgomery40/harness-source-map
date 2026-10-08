@@ -117,8 +117,12 @@ export function openDecisionsCache(file) {
   let entries={};try {entries=JSON.parse(fs.readFileSync(file,'utf8'));}catch(error) {if(error.code!=='ENOENT'&&!(error instanceof SyntaxError))throw error;}
   return {has:key=>Object.hasOwn(entries,key),get:key=>entries[key],set:(key,value)=>entries[key]=value,save(){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(entries));}};
 }
+export function isReusableDecisionCacheEntry(entry,{prepare=false}={}) {
+  const answers=Array.isArray(entry?.answers)?entry.answers:Object.values(entry?.answers??{});
+  return prepare||!answers.some(answer=>answer?.type==='refusal');
+}
 export async function evaluateDecisionBatch(config,payload,version,options={},usage={}) {
-  const request=buildDecisionRequest(config,payload),key=decisionsRequestKey(config,request,version),cached=options.cache?.has(key)??false;
+  const request=buildDecisionRequest(config,payload),key=decisionsRequestKey(config,request,version),cached=(options.cache?.has(key)??false)&&isReusableDecisionCacheEntry(options.cache.get(key),options);
   scan(request);
   let result;
   if(cached)result=validateDecisionResponse(config,request,options.cache.get(key));

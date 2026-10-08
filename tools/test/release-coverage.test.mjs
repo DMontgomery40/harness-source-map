@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   parseChangelog, parsePullRequests, selectShortlist, relevanceQuestions,
-  requestKey, runReleaseAudit, loadPublishedRecords, auditMarkdown
+  requestKey, runReleaseAudit, loadPublishedRecords, auditMarkdown, AUDIT_VERSION
 } from '../release-coverage.mjs';
 
 const config = () => ({provider:'OpenAI',endpoint:'https://api.openai.com/v1/decisions',model:'gpt-6-luna',key:'fixture',servedModel:/^gpt-6-luna(?:-|$)/});
@@ -127,6 +127,50 @@ test('catalog loading excludes changelogs and audit pages while including comple
   } finally {fs.rmSync(dir,{recursive:true,force:true});}
 });
 
+test('verification receives complete raw decisions, hook fields, tool schemas and corresponding Markdown restrictions',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'release-complete-fixture-'));
+  try {
+    fs.mkdirSync(path.join(dir,'outputs'));
+    const provenance=[{file:'public-runtime.js',binary_offset:42,version:'1.2.3'}];
+    const published=[
+      {id:'decision',kind:'decision',title:'Approval decision',group:'Runtime',question:'Whether approval is required.',rungs:[{note:'DECISION_RUNG_ENDING: bypass only after explicit approval.'}],provenance},
+      {id:'hook',kind:'hook-event',title:'Before execution',group:'Runtime',text:'Run the hook before execution.',details:{fields:{permission:{description:'HOOK_FIELD_ENDING: defer blocks execution until resolved.'}}},provenance},
+      {id:'tool',kind:'tool',title:'Run tool',group:'Runtime',description:'Run a tool.',parameters:{schema:{type:'object',properties:{mode:{type:'string',description:'TOOL_SCHEMA_ENDING: elevated mode requires approval.'}},required:['mode']}},provenance},
+      {id:'other-document',kind:'prompt',title:'Different page',text:'Must not be indexed on this page.',document:'other.md'}
+    ];
+    fs.writeFileSync(path.join(dir,'outputs/feature.json'),JSON.stringify({items:published}));
+    const markdown='# Runtime feature\n\nIntroductory current behavior.\n\n## Runtime\n\n### Approval decision\nQuestion summary.\n\n### Before execution\n~~~text\nShort hook description.\n~~~\nHOOK_MARKDOWN_ENDING: preserve context after the hook.\n\n### Run tool\n```text\nShort tool description.\n```\n\n#### Parameter restrictions\nTOOL_MARKDOWN_ENDING: restrict the last parameter condition.\n\n## Additional guidance\nNARRATIVE_ENDING: stop only after all restrictions hold.\n\n## Descendant-only mechanism\n### Nested exception\nPARENT_CHILD_ENDING: the mechanism runs only after the nested exception is resolved.\n';
+    fs.writeFileSync(path.join(dir,'outputs/feature.md'),markdown);
+    const inventory=await loadPublishedRecords(dir,[{files:[{slug:'feature',title:'Runtime feature',path:'outputs/feature.md',format:'markdown',records:'outputs/feature.json'}]}]);
+    for(const raw of published.slice(0,3)) {
+      const record=inventory.records.find(r=>r.id===`feature/${raw.id}`);
+      assert.ok(record,`Typed record ID was lost: ${raw.id}`);
+      assert.ok(record.text.includes(JSON.stringify(raw,null,2)),`Complete raw record was lost: ${raw.id}`);
+      assert.deepEqual(record.provenance,{f:'public-runtime.js',o:42,r:'1.2.3'});
+    }
+    const hook=inventory.records.find(r=>r.id==='feature/hook'),tool=inventory.records.find(r=>r.id==='feature/tool');
+    assert.match(hook.text,/HOOK_MARKDOWN_ENDING/);
+    assert.match(tool.text,/TOOL_MARKDOWN_ENDING/);
+    assert.match(tool.text,/Short tool description/);
+    assert.ok(inventory.records.some(r=>r.origin==='catalog-narrative'&&r.text.includes('NARRATIVE_ENDING')));
+    const parent=inventory.records.find(r=>r.origin==='catalog-narrative'&&r.title==='Descendant-only mechanism');
+    assert.ok(parent,'A parent whose substantive text exists only in descendants must remain available');
+    assert.match(parent.text,/### Nested exception\nPARENT_CHILD_ENDING/);
+    assert.equal(inventory.records.some(r=>r.id==='feature/other-document'),false);
+    const verified=new Map();
+    await runReleaseAudit(config(),sources('Approval decision hook tool restrictions'),inventory.records,{shortlist:inventory.records.length,cache:memoryCache(),fetchImpl:async(_url,options)=>{
+      const payload=JSON.parse(options.body);
+      for(const q of payload.questions.filter(q=>q.name.endsWith('_covers'))) {
+        const candidate=JSON.parse(q.instructions).instructions.record;
+        verified.set(candidate.id,candidate.text);
+      }
+      return response(typedAnswers(payload));
+    }});
+    for(const record of inventory.records)assert.equal(verified.get(record.id),record.text,'Native verification must retain every complete evidence ending');
+    assert.equal(AUDIT_VERSION,'release-coverage-v2');
+  } finally {fs.rmSync(dir,{recursive:true,force:true});}
+});
+
 test('provider adapter injection uses the same typed policy with exact OpenAI model identities',async()=>{
   const cfg={provider:'OpenAI',model:'decisions-fixture',servedModel:/^decisions-fixture$/};
   const report=await runReleaseAudit(cfg,sources('Namespace guidance'),records,{cache:memoryCache(),evaluateBatch:async(_config,payload)=>({provider:'OpenAI',requested_model:'decisions-fixture',served_model:'decisions-fixture',model:'decisions-fixture',answers:typedAnswers(payload,{covers:.99,complete:true})})});
@@ -152,6 +196,27 @@ test('one refused relevance question leaves its source pending and preserves oth
   assert.deepEqual(report.rows.map(r=>r.status),['unanswered','non-relevant']);
   assert.equal(report.summary.unresolved,1);
   assert.deepEqual(report.requests[0].refusals,['0_relevant']);
+});
+
+test('audit preparation retains cached refusals while a later live audit retries and records a fresh request',async()=>{
+  const cache=memoryCache(),rows=sources('Namespace retry');let calls=0;
+  const fetchImpl=async(_url,options)=>{
+    calls++;const answers=typedAnswers(JSON.parse(options.body),{relevant:.01});
+    if(calls===1)answers[0]={type:'refusal',name:'0_relevant'};
+    return response(answers);
+  };
+  const first=await runReleaseAudit(config(),rows,records,{cache,fetchImpl});
+  assert.equal(first.rows[0].status,'unanswered');
+  const prepared=await runReleaseAudit(config(),rows,records,{cache,fetchImpl,prepare:true});
+  assert.equal(prepared.rows[0].status,'unanswered');
+  assert.equal(prepared.requests[0].cached,true);
+  assert.equal(calls,1);
+  const retried=await runReleaseAudit(config(),rows,records,{cache,fetchImpl});
+  assert.equal(calls,2);
+  assert.equal(retried.rows[0].status,'non-relevant');
+  assert.equal(retried.requests[0].cached,false);
+  assert.equal(retried.requests[0].key,first.requests[0].key);
+  assert.deepEqual(prepared.requests[0].raw_answers,first.requests[0].raw_answers);
 });
 
 test('batch byte limits apply to the exact native Decisions body after instruction serialization',async()=>{

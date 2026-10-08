@@ -78,6 +78,26 @@ test('cache hits revalidate response provenance and preparation never makes an u
   await assert.rejects(evaluateDecisionBatch(cfg,payload,'audit-v1',{cache,prepare:true}),DecisionsAnswerError);
 });
 
+test('refused cache entries preserve preparation evidence but live retries request unanswered judgments again',async()=>{
+  const entries=new Map(),cache={has:k=>entries.has(k),get:k=>entries.get(k),set:(k,v)=>entries.set(k,v)},cfg=config();
+  let calls=0;
+  const fetchImpl=async()=>{calls++;const body=result();if(calls===1)body.answers[1]={type:'refusal',name:'role'};return reply(body);};
+  const first=await evaluateDecisionBatch(cfg,payload,'refusal-policy-v1',{cache,fetchImpl});
+  assert.deepEqual(first.refusals,['role']);
+  assert.equal(first.raw_answers[1].type,'refusal');
+  const prepared=await evaluateDecisionBatch(cfg,payload,'refusal-policy-v1',{cache,prepare:true,fetchImpl});
+  assert.equal(calls,1);
+  assert.equal(prepared.cache_hit,true);
+  assert.deepEqual(prepared.raw_answers,first.raw_answers);
+  const retried=await evaluateDecisionBatch(cfg,payload,'refusal-policy-v1',{cache,fetchImpl});
+  assert.equal(calls,2,'A cached refusal must not block a later live retry');
+  assert.equal(retried.cache_hit,false);
+  assert.deepEqual(retried.refusals,[]);
+  assert.equal(retried.request_key,first.request_key);
+  assert.equal(retried.request_sha256,first.request_sha256);
+  assert.equal(retried.answers.role.choice,'harness');
+});
+
 test('a new credential file key replaces a stale process key without exposing credentials',()=>{
   const cfg=decisionsConfig({OPENAI_API_KEY:'stale-fixture'},()=>"export OPENAI_API_KEY='fresh-fixture'\n");
   assert.equal(cfg.key,'fresh-fixture');
