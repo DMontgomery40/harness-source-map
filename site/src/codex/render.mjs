@@ -211,7 +211,7 @@ function renderStructuredSource(document, anchor, ids) {
 function renderDocument(document, ids) {
   const name = fileName(document.path);
   const anchor = document.anchor ?? fileAnchor(document.path);
-  const source = !document.instructionProfile || document.instructionProfile === "voice"
+  const source = document.format === "markdown" && (!document.instructionProfile || document.instructionProfile === "voice")
     ? stripEditorialTitle(document.source)
     : document.source;
   ids.add(anchor).add(`${anchor}-title`);

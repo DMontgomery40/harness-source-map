@@ -8,6 +8,8 @@ import { isDerived } from "./decisions-lib.mjs";
 import { decisionConfig, openCache } from "../../codex/extract/codex/lib/jev-provider.mjs";
 import { occurrenceId, verdictKey } from './classify.mjs';
 import { broadVerdict } from './discovery-role.mjs';
+import { publicationContinuity } from './publication-continuity.mjs';
+import { privacyScan } from '../../codex/extract/codex/lib/privacy.mjs';
 
 const root = new URL("../", import.meta.url).pathname;
 const candidates = JSON.parse(readFileSync(`${root}work/candidates.json`, "utf8"));
@@ -82,13 +84,53 @@ const items = other.map((r, i) => ({
   details: { words: r.words, jev_confidence: r.confidence, collected: "automatic",...(broad?{jev_role:r.role,model_facing_probability:r.model_facing,evidence:r.evidence}: {}) },
   provenance: r.locations
 }));
-writeFileSync(`${root}outputs/other-model-text.json`, JSON.stringify({ area: "other-model-text", version: VERSION, items }, null, 1));
+// During a provider outage, preserve exact previously published strings as source continuity.
+// Old probabilities remain explicitly attached to their old release, never a current verdict.
+let continuity = [];
+if (broad && partial && process.env.CC_CARRY_PUBLISHED === '1') {
+  const previous = JSON.parse(readFileSync(`${root}work/outputs-before-${VERSION}/other-model-text.json`, 'utf8'));
+  continuity = publicationContinuity(previous, rows);
+  for (const entry of continuity.filter(r => r.matches.length)) {
+    const matches = entry.matches.filter(r => r.discovery_status === 'unanswered' && !r.published_in);
+    if (!matches.length) continue;
+    privacyScan(new Map([['previously published source', entry.item.text]]));
+    items.push({ ...entry.item, id: `previous-${entry.item.id}`, title: displayTitle(entry.item.text), group: matches[0].file,
+      when: 'Complete text re-located in this build. Its current source role awaits a new classifier judgment.',
+      details: { words: entry.item.details.words, collected: 'exact-publication-continuity', classification_status: 'current-role-review-pending',
+        previous_classification: { version: entry.source_version, ...entry.item.details } },
+      provenance: matches.map(locationOf) });
+    for (const row of matches) row.published_in = 'other-model-text';
+  }
+  if (process.env.CC_CARRY_REVIEWED === '1') {
+    const review = JSON.parse(readFileSync(`${root}work/review-other-model-text-${VERSION}.json`, 'utf8'));
+    if (review.version !== VERSION || review.previous_version !== previous.version) throw new Error('Publication continuity review belongs to a different build');
+    for (const reviewed of review.items) {
+      const candidate = candidates.find(c => c.file === reviewed.candidate.file && c.start === reviewed.candidate.start);
+      if (!candidate || candidate.text !== reviewed.text || reviewed.details.continuity_review !== 'complete-static-text-and-expression-ast-identifier-only') throw new Error('Publication continuity review does not match complete current source');
+      const matches = rows.filter(r => !r.published_in && r.discovery_status === 'unanswered' && r.text === reviewed.text);
+      if (!matches.length) continue;
+      privacyScan(new Map([['reviewed current template', reviewed.text]]));
+      const { candidate: _candidate, old_id: _oldId, ...record } = reviewed;
+      items.push({ ...record, title: displayTitle(record.text), provenance: matches.map(locationOf) });
+      for (const row of matches) row.published_in = 'other-model-text';
+    }
+  }
+  writeFileSync(`${root}work/publication-continuity.json`, JSON.stringify({ version: VERSION, previous_version: previous.version,
+    exact: continuity.filter(r => r.matches.length).map(r => r.item.id), changed_or_absent: continuity.filter(r => !r.matches.length).map(r => r.item.id) }, null, 1));
+  writeFileSync(`${root}outputs/other-model-text-${previous.version}.md`, readFileSync(`${root}work/outputs-before-${VERSION}/other-model-text.md`, 'utf8')
+    .replace('# Other model-facing text', `# Other model-facing text archive: ${previous.version}\n\nHistorical source and classifier judgments from Claude Code ${previous.version}. These are not current-build records.`));
+}
+const continuitySummary = continuity.length ? { previous_version: continuity[0].source_version,
+  exact_text_records: items.filter(i => i.details.collected === 'exact-publication-continuity').length,
+  identifier_only_template_records: items.filter(i => i.details.collected === 'template-identifier-publication-continuity').length,
+  current_role_status: 'pending' } : null;
+writeFileSync(`${root}outputs/other-model-text.json`, JSON.stringify({ area: "other-model-text", version: VERSION, ...(continuitySummary ? { publication_continuity: continuitySummary } : {}), items }, null, 1));
 
 const fence = text => { const run = Math.max(3, ...[...text.matchAll(/~+/g)].map(m => m[0].length + 1)); return "~".repeat(Math.max(run, 6)); };
 const md = [
   "# Other model-facing text",
   "",
-  `${items.length} strings that Jev judged to be written for the model and that no other page on this site covers: tool descriptions, tool results that carry instructions, error text returned to the model, and prompt fragments. They were collected automatically, so there are no titles or trigger notes. The text is exact, and each entry gives the embedded file, its offset in the binary, and Jev's confidence.`,
+  continuity.length ? `${continuitySummary.exact_text_records} previously published records match complete current strings exactly. Another ${continuitySummary.identifier_only_template_records} match complete template static text and expression AST after JavaScript identifier renaming. Each publishes its complete current text and exact current provenance; current source-role classification remains pending. Prior classifier probabilities remain in the JSON under previous_classification with the release they judged. Changed or absent strings remain in the [previous-release archive](../other-model-text-${continuity[0].source_version.replaceAll('.', '-')}/).` : `${items.length} strings that the classifier judged to be written for the model and that no other page on this site covers: tool descriptions, tool results that carry instructions, error text returned to the model, and prompt fragments. The text is exact, and each entry gives the embedded file, its offset in the binary, and the classifier's confidence.`,
   "",
   ...Object.entries(Object.groupBy(items, i => i.group)).flatMap(([file, list]) => [
     `## ${file}`, "",
@@ -97,7 +139,7 @@ const md = [
       const f = fence(item.text);
       const where=p.encoding==='zstd'?`compressed blob offset ${p.binary_offset} · decoded offset ${p.decompressed_offset}`:`offset ${p.binary_offset}`;
       const hashes=p.encoding==='zstd'?`blob sha256 \`${p.sha256.slice(0,12)}…\` · decoded sha256 \`${p.decompressed_sha256.slice(0,12)}…\``:`sha256 \`${p.sha256.slice(0,12)}…\``;
-      return [`### ${item.title}`, "", `Source: \`${p.file}\` · ${where} · ${hashes} · Jev confidence ${item.details.jev_confidence}${item.provenance.length > 1 ? ` · ${item.provenance.length} locations` : ""}`, "", `${f}text`, item.text, f, ""];
+      return [`### ${item.title}`, "", `Source: \`${p.file}\` · ${where} · ${hashes} · ${item.details.classification_status ? 'current source-role classification pending' : `classifier confidence ${item.details.jev_confidence}`}${item.provenance.length > 1 ? ` · ${item.provenance.length} locations` : ""}`, "", `${f}text`, item.text, f, ""];
     })
   ])
 ].join("\n");
@@ -119,7 +161,7 @@ const inventory = rows.map(({ text, ...r }) => ({ ...r, text_sha256: sha256(text
 writeFileSync(`${root}outputs/inventory.json`, JSON.stringify({ area: "inventory", version: VERSION, platform: PLATFORM, binary_sha256: BINARY_SHA256, summary, items: inventory.map((r, i) => ({ id: `candidate-${i + 1}`, title: r.preview.slice(0, 60), kind: "other", details: { audience: r.audience, jev_confidence: r.confidence, published_in: r.published_in, words: r.words, text_sha256: r.text_sha256, preview: r.preview,...(broad?{jev_role:r.role,model_facing_probability:r.model_facing,evidence:r.evidence,discovery_status:r.discovery_status}: {}) }, provenance: [locationOf(r)] })) }) + '\n');
 console.log(summary);
 
-const jevModel = broad?'jev-1.13.0':candidates.map(c => verdicts.get(verdictKey(c.text))?.model).find(Boolean) ?? "jev";
+const jevModel = broad ? [...new Set(broadLedger.records.filter(r => r.status === 'classified').map(r => r.model).filter(Boolean))].join(', ') || decisionConfig().model : candidates.map(c => verdicts.get(verdictKey(c.text))?.model).find(Boolean) ?? 'classifier';
 const inventoryScope=broad?'JavaScript string and template literal occurrences with at least two words, prompt-bearing fields with one word, and exact contiguous spans from embedded Markdown and text assets':'prose string and template literals of 200 characters or more';
 writeFileSync(`${root}outputs/provenance.md`, `# Method and inventory
 
@@ -137,13 +179,13 @@ The JavaScript is parsed with acorn rather than searched with regular expression
 
 ## Inventory
 
-The parser found ${summary.candidates} ${inventoryScope}. ${broad?`${candidateStats.assets} text assets contributed ${candidateStats.asset_segments} spans. `:''}${jevModel} (TypeSafe) judged ${summary.classified} occurrences; exceptions remain visible in the inventory. Of those occurrences:
+The parser found ${summary.candidates} ${inventoryScope}. ${broad?`${candidateStats.assets} text assets contributed ${candidateStats.asset_segments} spans. `:''}${jevModel} judged ${summary.classified} occurrences; exceptions remain visible in the inventory. ${continuity.length ? 'Exact previously published strings retain current byte provenance and explicitly pending current source-role judgments. Prior probabilities belong only to their previous release. ' : ''}Of those occurrences:
 
 - ${summary.published} are covered by a published document,
-- ${summary.other_model_text} were judged model-facing and are collected on [Other model-facing text](#other-model-text-md),
+- ${summary.other_model_text} ${continuity.length ? 'are collected as current-source publication continuity with pending current role judgments' : 'were judged model-facing and are collected'} on [Other model-facing text](#other-model-text-md),
 - ${summary.excluded.developer_docs} are developer documentation (SDK types and schema descriptions), ${summary.excluded.human_user} are text shown to the person using the CLI, ${summary.excluded.library} are third-party library text, and ${summary.excluded.other} are other text such as fixtures,
 - ${summary.uncertain_model} were judged model-facing but ${broad?'fell below the 0.8 publication threshold':'did not meet the confidence and text-shape publication rules'}; they are listed in \`inventory.json\` only.
-${broad?`- ${summary.provider_pending} await a provider judgment and are not classified or published as model-facing text,\n- ${summary.local_review} need local review because the privacy filter withheld their complete text or the request budget could not fit it. The public inventory retains source offsets and hashes without exposing withheld previews.\n- ${candidateStats.parse_failed} embedded JavaScript files did not parse; their filenames are recorded in the local candidate ledger.\n`:''}
+${broad?`- ${summary.provider_pending} await a current provider judgment. Reviewed named records and explicit publication continuity may cover their source text; those publications do not turn a pending classifier judgment into a current verdict.\n- ${summary.local_review} need local review because the privacy filter withheld their complete text or the request budget could not fit it. The public inventory retains source offsets and hashes without exposing withheld previews.\n- ${candidateStats.parse_failed} embedded JavaScript files did not parse; their filenames are recorded in the local candidate ledger.\n`:''}
 
 \`inventory.json\` lists every selected literal with its offset, hash, verdict, confidence, and where it is published. Jev's verdicts are probabilities, not proof. ${broad?'The local candidate ledger states which literals were excluded; dynamic text assembled at run time requires separate evidence.':'Shorter strings are covered only where a document includes them.'}
 

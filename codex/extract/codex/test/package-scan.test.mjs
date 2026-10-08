@@ -5,12 +5,19 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { asarDiff, isThirdParty } from "../package-scan.mjs";
-import { classifyString, diffInventories, diffIsEmpty, publishScan, renderPage, scanTree, stringFamilies, triage, triageItems, triageKey } from "../../../../tools/package-scan/core.mjs";
+import { classifyString, diffInventories, diffIsEmpty, publishScan, renderDiff, renderPage, scanTree, stringFamilies, triage, triageItems, triageKey } from "../../../../tools/package-scan/core.mjs";
 import { JevRequestError, decisionConfig } from "../lib/jev-provider.mjs";
 
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "package-scan-"));
 // A test key and no home environment file: nothing here reaches a real provider.
 const config = decisionConfig({ TYPESAFE_API_KEY: "test-key" }, () => "");
+
+test("package diff renders changes when privacy-withheld labels have no text", () => {
+  const diff = { entitlements: [], signing: [], plists: [], files: { added: [{ kind: "script", path: "app/new.js" }], removed: [], changed: [] }, noise: [], libs: [], strings: [], dependencies: [], extra: [] };
+  const markdown = renderDiff(diff, { title: "Package changes", labels: [{ where: "app/new.js", status: "withheld", text_sha256: "abc" }] });
+  assert.match(markdown, /added script: `app\/new\.js`/);
+  assert.doesNotMatch(markdown, /undefined|Flagged by Jev/);
+});
 
 // A small app bundle: a copied system Mach-O ad-hoc re-signed with the given entitlements, an
 // Info.plist, a config file and an image. Appending bytes would break the signature, so the

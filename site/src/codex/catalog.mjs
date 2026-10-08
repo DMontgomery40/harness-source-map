@@ -280,6 +280,16 @@ export const categories = [
         defaultOpen: true
       },
       {
+        path: "outputs/intelligent-ui.md",
+        anchor: "intelligent-ui-md",
+        slug: "intelligent-ui",
+        records: { file: "outputs/intelligent-ui.json", kind: "skill" },
+        format: "markdown",
+        title: "Intelligent UI and inline visualizations",
+        promptText: true,
+        defaultOpen: true
+      },
+      {
         path: "outputs/chatgpt-learning-blocks.md",
         anchor: "chatgpt-learning-blocks-md",
         slug: "chatgpt-learning-blocks",

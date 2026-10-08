@@ -136,6 +136,17 @@ test("build escapes markup-looking source while preserving visible text", async 
   });
 });
 
+test("large structured source is rendered as evidence without Markdown lexing", async () => {
+  await withFixture(async (root, outFile) => {
+    const text = JSON.stringify({ text: "public evidence ".repeat(750000) });
+    await writeFile(path.join(root, "outputs/evidence.json"), text);
+    await buildSite({ sourceRoot: root, outFile, categories: fixtureCatalog });
+    const html = await readFile(path.join(root, "dist/evidence-json/index.html"), "utf8");
+    assert.match(html, /public evidence/);
+    assert.match(html, /source-block/);
+  });
+});
+
 test("document headings appear once without exposing file labels while prompt headings remain intact", async () => {
   await withFixture(async (root, outFile) => {
     await writeFile(path.join(root, "outputs/current.md"), "# Key findings\n\n## Work\n\nEvidence.\n");

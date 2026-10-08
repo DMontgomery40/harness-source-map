@@ -1,5 +1,22 @@
 # Jev discovery and coverage
 
+## OpenAI Decisions release comparison
+
+The October 8 refresh uses the [OpenAI Decisions API](https://developers.openai.com/api/docs/guides/decisions) for the requested public PR/changelog comparison. Its [native request schema](https://developers.openai.com/api/reference/resources/decisions/methods/create) uses `POST /v1/decisions`, `gpt-6-luna`, shared text input, and named predicate, choice, and score questions. A predicate corresponds to the previous Noul judgment. The transport retains native distributions and served model identity; it does not treat a refusal, invalid key, malformed answer, or outage as a negative judgment.
+
+`tools/release-coverage.mjs` inventories every supplied source row, applies explicit date and version boundaries in code, and compares complete source text with complete published records. The lexical shortlist is bounded and cannot establish absence. Absolute predicate and score checks determine coverage; unresolved comparisons stay visible. Historical archives, copied release notes, and the audit itself cannot establish current coverage. Private sessions and complete extracted corpora are outside this bounded audit.
+
+`tools/decisions-provider.mjs` scans the exact native request before transfer, budgets serialized native bytes, and keys its cache by endpoint, requested model, complete wire body, and audit version. `OPENAI_API_KEY` is read as data; a configured home environment-file value can replace a stale desktop process value. Authentication failures do not fall back to another provider. Existing refresh classifiers can select this transport explicitly with `JEV_PROVIDER=openai`; their compatibility adapter preserves typed answer distributions and isolates caches from Jev verdicts. This switch does not grant a new broad-corpus transfer authorization.
+
+Run a local preparation with `--prepare`; remove that flag to request new decisions:
+
+```sh
+node tools/release-coverage.mjs --product codex --prs codex/work/upstream-prs-20261008.json --changelog codex/work/recent-changelog-20261008.md --after-version 0.160.0 --through-version 0.162.0 --since 2026-10-04 --until 2026-10-08 --output codex/work/release-audit-20261008 --prepare
+node tools/release-coverage.mjs --product claude-code --prs claude-code/work/upstream-prs-20261008.json --changelog claude-code/work/recent-changelog-20261008.md --after-version 2.1.289 --through-version 2.1.295 --since 2026-10-04 --until 2026-10-08 --output codex/work/release-audit-claude-20261008 --prepare
+```
+
+The installed desktop's bundled CLI and newer upstream releases are separate evidence scopes. A merged upstream PR does not prove that the installed app ships its implementation. Review a flagged comparison against the matching source version before adding a current-build claim.
+
 Research window: September 28–October 4, 2026, America/Denver. Repository commit dates below fall in that window; crawl dates are not publication dates. Undated official documentation supplies API semantics, not evidence of a recent release.
 
 ## Recent implementations examined

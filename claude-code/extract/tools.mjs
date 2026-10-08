@@ -1383,6 +1383,10 @@ function annotations() {
     ...Object.fromEntries(["get_pool", "list_sessions", "list_runners", "list_secrets", "read_health", "read_metrics", "requeue_session", "spawn_local", "tail_log"].map(n => [`self_hosted_runner_${n}`, { group: CLOUD, availableIn: "conditional",
       when: "In the built-in list only when the launch option wizardOperatorToolsEnabled is on. No isEnabled gate. Undocumented; read at @def." }])),
     // other
+    OfferChromeSetup: { group: OTHER, availableIn: "conditional (absent from both captures)",
+      when: "In the built-in list. isEnabled requires the first-party provider, the dialog-capability guard, the tengu_foamy_spring gate (default true), tool-search eligibility, no non-deferrable override for this tool, a host that declares rendersChromeSetupOffer, and a recorded disconnected Chrome answer. The experiment arm is pinned after a non-fallback flag answer: tengu_brass_kite or tengu_gentle_dijkstra (both default false), selected by a session-type check; mobile clients are excluded by that branch. Undocumented beyond code." },
+    PublishPlugin: { group: OTHER, availableIn: "conditional (absent from both captures)",
+      when: "In the built-in list. isEnabled: flag tengu_copper_gazette (default false). The tool always requires user interaction before sending files, including in bypass modes; the description and permission implementation require a review of the exact organization, folder and files. Undocumented beyond code." },
     Skill: { group: OTHER, availableIn: both, doc: ref(), when: "isEnabled: off when the session disables slash commands (launch option disableSlashCommands)." },
     ReportFindings: { group: OTHER, availableIn: both, doc: ref(), sdk: "ReportFindingsInput", when: "Always in the built-in list; no isEnabled gate." },
     StructuredOutput: { group: OTHER, availableIn: "conditional",

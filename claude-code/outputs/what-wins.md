@@ -18,7 +18,7 @@ Whether the advisor tool, which lets Claude consult a stronger reviewer model, c
 * After the ladder: Not on Anthropic's API. Only on Anthropic's API; a custom ANTHROPIC\_BASE\_URL still counts. With any other provider, including Claude Code's cloud gateway, there is no advisor, whatever is set in the ladder.
 * After the ladder: The API refused the advisor. When the API refuses the advisor during a session, Claude Code stops offering it, for this process or for that host.
 
-Source: `chunk-x6ax856p.js` · offset 186136100 · sha256 `8e364667…`
+Source: `chunk-exevr2hy.js` · offset 193328177 · sha256 `43ed2584…`
 
 ### Bash output limit
 
@@ -31,7 +31,7 @@ How many characters of a Bash or PowerShell command's output Claude receives in 
 
 * After the ladder: Inline size threshold. Output longer than what is read back, or longer than this threshold, is saved to a file, and Claude gets the first 2,000 characters plus the file's path instead. The threshold is the setting's value, at most 128,000, or 30,000 when the setting is not set, unless Anthropic's per-tool table replaces it; the environment variable does not change it.
 
-Source: `chunk-xq01d31g.js` · offset 186803854 · sha256 `1c3a91cb…`
+Source: `chunk-ndtggfhd.js` · offset 194124068 · sha256 `a78f2853…`
 
 ### MCP output limit
 
@@ -47,7 +47,7 @@ How many tokens of an MCP tool's result Claude receives in the tool result befor
 * After the ladder: Saved-file instructions wording. MCP\_TRUNCATION\_PROMPT\_OVERRIDE only changes the wording of the reading instructions for a saved file, not the limit: legacy picks the older wording and any other value the newer one. When it is unset, a flag Anthropic can change without a release decides, and the code's default is the older wording.
 * After the ladder: General tool-result size threshold. After this check, MCP results also pass the size check every tool uses. For a tool that does not declare its own size it is 50,000 characters, so a text result under the token limit but longer than that is still saved to a file with a short preview. Anthropic's per-tool table can set this threshold for a single MCP tool by name without a release.
 
-Source: `chunk-jy1gr8pn.js` · offset 207474836 · sha256 `ae034f15…`
+Source: `chunk-bdw2aat4.js` · offset 214438092 · sha256 `5e973538…`
 
 ### Stalled-stream watchdog
 
@@ -59,7 +59,7 @@ Whether Claude Code gives up on a streaming response that goes silent. On Anthro
 
 * After the ladder: Provider without the watchdog. Vertex, Foundry, Mantle, Anthropic on Google Cloud, and Bedrock without CLAUDE\_ENABLE\_BYTE\_WATCHDOG\_BEDROCK (1, true, yes or on) get no watchdog, whatever the ladder says.
 
-Source: `chunk-x6ax856p.js` · offset 186239391 · sha256 `fb93733e…`
+Source: `chunk-qbbnj0qn.js` · offset 190524177 · sha256 `13963cdb…`
 
 ### Workflow tool available
 
@@ -74,7 +74,7 @@ Whether the Workflow tool (multi-agent workflows) is offered to Claude. Settings
 4. **settings** `enableWorkflows`: From any settings file Claude Code loads, including managed settings. true turns the tool on, including on the Pro plan; false turns it off. Read from code.
 5. **default** Default by plan: When nothing above answers: off on the Claude Pro plan, on for every other sign-in, including API keys. Read from code.
 
-Source: `chunk-9dqs90d7.js` · offset 183120818 · sha256 `559d1e1b…`
+Source: `chunk-jn6cj5wp.js` · offset 190111174 · sha256 `b4ddaca2…`
 
 ## Permissions and security
 
@@ -100,7 +100,7 @@ Which credential Claude Code sends with requests to the Anthropic API: a subscri
 * After the ladder: `forceLoginMethod`. Checked when you sign in, not a rung: a claude.ai or Console sign-in of the other kind is refused. It does not reorder the ladder.
 * After the ladder: Allowed API providers (allowedProviders in managed settings). Checked at sign-in and before cloud sessions, ahead of the organization pin; not a rung. When managed settings list the API providers this machine may use, a provider that is not listed, or one pointed at an endpoint the list does not allow, is refused, and so is every provider while the policy file cannot be read. It does not reorder the ladder.
 
-Source: `chunk-tvry4e46.js` · offset 182315197 · sha256 `9cba1879…`
+Source: `chunk-3t8w43qz.js` · offset 189343055 · sha256 `a4ab7522…`
 
 ### Starting permission mode
 
@@ -111,17 +111,18 @@ Which permission mode a session starts in: default, acceptEdits, plan, auto, don
 1. **flag** `--dangerously-skip-permissions`: Asks for bypassPermissions. In a background session where the bypass disclaimer has not been accepted, it answers default instead. Read from code.
 2. **flag** `--permission-mode <mode>`: manual means default. Any other value stops Claude Code with an error. bypassPermissions in a background session without the disclaimer accepted answers default. Read from code.
 3. **agent** Agent frontmatter permissionMode: From the agent the session runs as, chosen with --agent or the agent setting. Passed over with a warning when it would widen a mode passed with --inherit-permission-mode. Read from code.
-4. **settings** `permissions.defaultMode`: manual means default. On the web only acceptEdits, plan, default and auto are honored. Project and local settings cannot grant auto or widen an inherited mode, and a bypassPermissions they ask for starts the session in default unless a mode is inherited. VS Code extension sessions ignore this setting unless Anthropic turns it on remotely. Read from code.
+4. **settings** `permissions.defaultMode`: manual means default. On the web only acceptEdits, plan, default and auto are honored. Project and local settings cannot grant auto or widen an inherited mode, and a bypassPermissions they ask for starts the session in default unless a mode is inherited. VS Code extension sessions ignore this setting unless Anthropic turns it on remotely. In VS Code, bypass mode from settings also requires the extension allow-bypass consent or an explicit bypass flag; without it the session starts in default with a notice. Read from code.
 5. **flag** `--inherit-permission-mode <mode>`: A hidden flag a parent session passes on. Used only when nothing above answers. manual means default, and bypassPermissions in a background session without the disclaimer accepted answers default. Read from code.
 6. **env** `CLAUDE_CODE_BRIDGE_CHILD_AUTO_DEFAULT`: Starts a Remote Control machine session in auto when nothing above answers, even while Anthropic's answer for your organization is still pending. Read from code.
 7. **remote** Anthropic's auto-by-default rollout: Two remote flags, both on by default in code, start a session in auto when nothing above answers: one for every session, and a second that print mode and the Agent SDK also need (the VS Code extension does not). Never on Claude Code on the web. While Anthropic's answer on whether auto can be your organization's default is still pending, the session starts in default; an organization seen under HIPAA starts in default with a notice. Anthropic can change both flags without a release. Read from code.
 8. **default** Built-in default: When nothing above answers, the session starts in default. Read from code.
 
 * After the ladder: `permissions.disableBypassPermissionsMode`. When set to disable, any rung that answers bypassPermissions is passed over with a warning and the next rung answers.
-* After the ladder: `permissions.disableAutoMode`. When set to disable, a session that would start in auto starts in default: an explicit auto from a flag, an agent or settings resolves to auto and is switched to default once Claude Code checks whether auto is available, and the fallback to auto is blocked. In a Remote Control machine session an auto from settings is passed over instead, so an inherited mode can still answer. The top-level disableAutoMode setting does the same.
+* After the ladder: `permissions.disableAutoMode`. When set to disable, a session that would start in auto starts in default: an explicit auto from a flag, an agent or settings resolves to auto and is switched to default once Claude Code checks whether auto is available, and the fallback to auto is blocked. In a Remote Control machine session an auto from settings is passed over instead, so an inherited mode can still answer. The top-level disableAutoMode setting does the same. A startup mode selected by proactive is recalculated when auto becomes unavailable and can fall back to acceptEdits.
 * After the ladder: Anthropic's auto-mode switch. A remote flag that leaves auto mode available by default in code. When Anthropic switches auto mode off, auto answers are passed over and the next rung answers, and a session already in auto is switched to default once Claude Code checks whether auto is available. Anthropic can change it without a release.
+* After the ladder: `--proactivity <level>`. Proactivity can replace the selected baseline mode. With a non-default proactivity level and no explicit --permission-mode, --dangerously-skip-permissions or agent permissionMode, startup replaces the baseline chosen above: ask chooses auto when available and default otherwise; proactive chooses auto when available and acceptEdits otherwise. Pending organization policy or a HIPAA restriction can hold the start in default. If auto is denied later, a start selected by proactive can fall back to acceptEdits instead of default. These adjustments are read from code; the card above shows the baseline ladder.
 
-Source: `chunk-pf4pcv7a.js` · offset 183138496 · sha256 `0396968b…`
+Source: `chunk-4zgsft74.js` · offset 190129550 · sha256 `abfe3fe8…`
 
 ### Which permission rules apply
 
@@ -141,12 +142,13 @@ Which allow, deny and ask rules are in force for a session: every source adds it
 12. **session** Approvals given during this session: Allow rules added when you answer a permission prompt with a don't-ask-again-this-session choice. They last only for this session. Under managed-only rules the prompt does not offer that choice, and reloading settings clears these rules. Read from code.
 13. **env** `CLAUDE_BG_SESSION_PERMISSION_RULES`: Background sessions only: the allow list from a JSON value that must carry both an allow and a deny list, or the whole value is skipped. Read from code.
 14. **env** `CLAUDE_BG_SESSION_PERMISSION_RULES`: Background sessions only: the deny list from the same JSON value. Read from code.
-15. **flag** `--tools <tools...>`: Built-in tools left out of --tools are withheld as deny rules. Read from code.
+15. **flag** `--tools <tools...>`: Built-in tools left out of --tools are withheld as deny rules. The launch tool list is frozen and also checked when tools are offered later, including family tools; MCP tools and exempt tool classes have their own rules. Read from code.
 
 * After the ladder: `allowManagedPermissionRulesOnly`. allowManagedPermissionRulesOnly, counted only when set in managed settings: rules from every other settings file, --allowedTools, session allow rules (background-session rules and in-session approvals), user or project skill frontmatter and the frontmatter of plugins no managed setting vouches for are ignored. Deny rules from the command line and the session still apply.
 * After the ladder: `CLAUDE_CODE_EVAL_CONFINED`. Drops every allow rule read from a settings file, managed policy included. Command-line and frontmatter allow rules are unaffected.
+* After the ladder: `CLAUDE_CODE_RESTRICT_PERSONAL_CONFIG`. Restricted personal configuration withholds personal skill grants. allowed-tools is withheld from user or unspecified sources, and from plugins classified as personal: personal claude.ai marketplaces, plugins without a known identity, unattested synced plugins, and plugins discovered in skill folders. Host-catalog entries bypass this personal-source restriction. The managed-only check still applies to them. Project sources are not classified as personal by this check.
 
-Source: `chunk-anbj3g87.js` · offset 183677258 · sha256 `0d55b4e6…`
+Source: `chunk-54hw721d.js` · offset 191123897 · sha256 `b721d77c…`
 
 ### Sandbox network proxy
 
@@ -159,7 +161,7 @@ Which proxy a sandboxed command's network traffic is sent to: none, a proxy you 
 3. **settings** `sandbox.network.socksProxyPort`: Sends SOCKS traffic to a proxy you already run on this localhost port. If the HTTP proxy port is not also set, the SOCKS proxy URLs still carry Claude Code's per-session credentials, so your proxy receives them. On Linux, commands inside the sandbox see localhost:1080, bridged to this port. Read from code.
 4. **default** Claude Code's built-in proxy: Otherwise Claude Code starts one proxy that serves both HTTP and SOCKS on a random localhost port. It adds per-session credentials to the proxy URLs unless the HTTP proxy port setting is set. Read from code.
 
-Source: `chunk-32kvd3ax.js` · offset 184711279 · sha256 `bdb64bfc…`
+Source: `chunk-4nf5xfe5.js` · offset 192126645 · sha256 `c25b0b1c…`
 
 ## Prompt caching and context
 
@@ -189,7 +191,7 @@ Whether Claude Code compacts the conversation automatically, and the window it c
 * After the ladder: The model's context window. A window larger than the model's context window is cut down to it.
 * After the ladder: `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`. Leaves the window alone but moves the trigger earlier: any percent above 0 and up to 100 of the window after the reply room, never later than the usual trigger. Other values are ignored. On Claude Code on the web a remote flag, off by default in code, makes side questions and memory extraction ignore the percent while they are under the usual trigger. Anthropic can change it without a release.
 
-Source: `chunk-x2pwb441.js` · offset 188236699 · sha256 `a7548717…`
+Source: `chunk-qbbnj0qn.js` · offset 190570080 · sha256 `05726ca5…`
 
 ### Automatic memory
 
@@ -212,7 +214,7 @@ Whether Claude Code keeps automatic memory for the session: loads the project's 
 - Memory stores are a separate decision: shared stores mounted next to your own memory, used when a remote flag (off by default in code) is on or CLAUDE\_MEMORY\_STORES is set. Whether Claude reaches memory through plain files or through memory tools is also decided separately, partly by another remote flag.
 - A session that the app launching Claude Code marks as restricted also has no auto memory, whatever is set on this ladder.
 
-Source: `chunk-tvry4e46.js` · offset 182204103 · sha256 `f064db24…`
+Source: `chunk-3t8w43qz.js` · offset 189229624 · sha256 `8e861975…`
 
 ### Prompt cache TTL
 
@@ -229,9 +231,10 @@ How long Claude Code asks the API to keep a cached prompt prefix: 5 minutes or 1
 7. **env** `ENABLE_PROMPT_CACHING_1H`: Asks for 1 hour. Tested.
 8. **env** `ENABLE_PROMPT_CACHING_1H_BEDROCK`: Bedrock only. Read from code.
 9. **default** Not a subscriber, or on extra usage: API-key and provider sign-ins, and subscribers using extra usage, stop here. Read from code.
-10. **remote** Anthropic's 1-hour allowlist: A remote flag lists which request kinds get 1 hour; by default, the main conversation. Read once per session. Anthropic can change it without a release. Read from code.
+10. **remote** Anthropic's live-cache retention flag: A remote flag, off by default in code, keeps the automatic subscriber choice at 5 minutes when the last main-conversation request used the same model and a 5-minute TTL, is still the latest request, and is less than 5 minutes old. Explicit TTL choices above still win. Anthropic can change the flag without a release. Read from code.
+11. **remote** Anthropic's 1-hour allowlist: A remote flag lists which request kinds get 1 hour; by default, the main conversation. Read once per session. Anthropic can change it without a release. Read from code.
 
-Source: `chunk-x2pwb441.js` · offset 189169924 · sha256 `925bc7de…`
+Source: `chunk-bc48hzhc.js` · offset 197064852 · sha256 `a7d8e90b…`
 
 ### Tokens-left reminder budget
 
@@ -243,22 +246,25 @@ The number of tokens the padded-countdown reminder starts from, decided once whe
 4. **remote** Anthropic's budget flag: A remote flag whose default in code is 15,000,000. A value that is not a number above zero also gives 15,000,000. Anthropic can change it without a release. Read from code.
 5. **default** Default: When nothing above answers, 15,000,000 tokens. Read from code.
 
-Source: `chunk-x2pwb441.js` · offset 188615002 · sha256 `c0a7aa53…`
+Source: `chunk-bc48hzhc.js` · offset 196399481 · sha256 `c4c2863b…`
 
 ### Total tokens reminder
 
-Whether Claude is shown a tokens-left reminder, and which number it shows, decided once when the session starts. It is on by default for every sign-in, including API keys.
+Whether Claude is shown a tokens-left reminder, and which number it shows. The session mode is cached at startup, but an explicit request task budget forces padded-countdown. It is on by default for every sign-in, including API keys.
 
 - Before the ladder: `CLAUDE_CODE_DISABLE_ATTACHMENTS`. Checked before the ladder: no reminder anywhere, neither in the system prompt nor after tool results or prompts. 1, true, yes and on count as set, in any case.
 - Before the ladder: `CLAUDE_CODE_SIMPLE`. Checked before the ladder: simple mode drops the reminder everywhere, whatever is set below. 1, true, yes and on count as set, in any case.
 
-1. **env** `CLAUDE_CODE_TOTAL_TOKENS_REMINDER`: Takes a mode name, not an on/off toggle: off, infinite, fixed, countdown or padded-countdown. Spaces around it are trimmed but case matters; 1, on, OFF or any other value counts as unset and the setting below decides. Read from code.
-2. **settings** `totalTokensReminder`: From any settings file Claude Code loads. Takes the same mode names as the environment variable, which wins when both are set. Read from code.
-3. **remote** Anthropic's per-account setting: Account data Claude Code downloads can pick a mode, or false to turn the reminder off. Nothing is set in the code, and any other value is ignored with a warning in the debug log. Anthropic can change it without a release. Read from code.
-4. **remote** Anthropic's reminder flag: A remote flag whose default in code is padded-countdown. A value that is not a mode name also gives padded-countdown. Anthropic can change it without a release. Read from code.
-5. **default** Default: When nothing above answers, padded-countdown: the system prompt shows the budget, and later reminders count down from it as tokens are used. The reminder appears in the system prompt, after each batch of tool results, and after each regular user prompt unless the after-user-turn switch is off. That switch is decided by its environment variable (1, true, yes or on; 0, false, no or off; anything else is unset), then its setting, then Anthropic's per-account data and remote flag, and is on by default. With it on, padded-countdown resets to the full budget at each user prompt; with it off, the count runs down across the whole session. Read from code.
+1. **session** Explicit task budget on the request: A task budget passed on this request forces padded-countdown, even when the session environment or settings say off. The request budget replaces the session budget for the count. Disabling attachments or using simple mode still suppresses the reminder. Read from code.
+2. **env** `CLAUDE_CODE_TOTAL_TOKENS_REMINDER`: Takes a mode name, not an on/off toggle: off, infinite, fixed, countdown or padded-countdown. Spaces around it are trimmed but case matters; 1, on, OFF or any other value counts as unset and the setting below decides. Read from code.
+3. **settings** `totalTokensReminder`: From any settings file Claude Code loads. Takes the same mode names as the environment variable, which wins when both are set. Read from code.
+4. **remote** Anthropic's per-account setting: Account data Claude Code downloads can pick a mode, or false to turn the reminder off. Nothing is set in the code, and any other value is ignored with a warning in the debug log. Anthropic can change it without a release. Read from code.
+5. **remote** Anthropic's reminder flag: A remote flag whose default in code is padded-countdown. A value that is not a mode name also gives padded-countdown. Anthropic can change it without a release. Read from code.
+6. **default** Default: When nothing above answers, padded-countdown: the system prompt shows the budget, and later reminders count down from it as tokens are used. The reminder appears in the system prompt, after each batch of tool results, and after each regular user prompt unless the after-user-turn switch is off. That switch is decided by its environment variable (1, true, yes or on; 0, false, no or off; anything else is unset), then its setting, then Anthropic's per-account data and remote flag, and is on by default. With it on, padded-countdown resets to the full budget at each user prompt; with it off, the count runs down across the whole session. Read from code.
 
-Source: `chunk-x2pwb441.js` · offset 188614610 · sha256 `987f2b96…`
+* After the ladder: `totalTokensReminderBudget`. Where the padded countdown budget comes from Without an explicit request budget, the positive budget comes from CLAUDE\_CODE\_TOTAL\_TOKENS\_REMINDER\_BUDGET, then totalTokensReminderBudget in settings, then a positive integer in account data, then an Anthropic remote value. The built-in fallback is 15,000,000. Anthropic can change account data and the remote value without a release.
+
+Source: `chunk-bc48hzhc.js` · offset 196399036 · sha256 `72d3f11e…`
 
 ## Models and reasoning
 
@@ -290,7 +296,7 @@ Whether fast mode is available in a session and, if so, whether requests go out 
 * After the ladder: Fast-mode cooldown running. While a fast-mode cooldown is running, requests go out at normal speed; fast mode comes back on its own when the cooldown ends.
 * After the ladder: The API refused fast mode for the fallback model. When the API refuses fast mode for the fallback model Claude Code switched to, requests to that model go out at normal speed for the rest of the session.
 
-Source: `chunk-tvry4e46.js` · offset 181948097 · sha256 `4e8f8cdc…`
+Source: `chunk-3t8w43qz.js` · offset 188963746 · sha256 `3f2e353f…`
 
 ### Main conversation model
 
@@ -309,7 +315,7 @@ Which model the main conversation sends its requests to.
 * After the ladder: Managed policy's deniedModels blocks models. Read from managed policy only. A chosen model it blocks is dropped like one missing from availableModels: an alias can become a version of that family that is not blocked; otherwise the default is used, and lower rungs are not tried.
 * After the ladder: `enforceAvailableModels`. With availableModels, the default is also kept on the list and ANTHROPIC\_DEFAULT\_MODEL is ignored. It is read from managed policy; when no managed policy exists, other settings files can set it. Set in policy without availableModels, it is turned off with a warning.
 
-Source: `chunk-pf4pcv7a.js` · offset 183146008 · sha256 `9ee5a543…`
+Source: `chunk-4zgsft74.js` · offset 190137956 · sha256 `8b946c9f…`
 
 ### Max output tokens
 
@@ -317,13 +323,13 @@ The max\_tokens a main-conversation request asks for: how many tokens the model 
 
 1. **env** `CLAUDE_CODE_MAX_OUTPUT_TOKENS`: Any whole number up to the model's limit. Zero, negatives and non-numbers fall back to the default, with only a debug-log line; a value above the limit is lowered to it. Text after the leading digits is ignored, and 64,000 or 6.4e4 also parse. Tested.
 2. **remote** Anthropic's served model list: On Anthropic's own API at its default address, a model list fetched from Anthropic can give each model a default output size. Nothing is set in the code, so the built-in table applies unless Anthropic sends one, which it can change without a release. Read from code.
-3. **remote** Anthropic's per-account table: Account data Claude Code downloads at startup can hold a default output size per model. Nothing is set in the code, so the built-in table applies unless Anthropic sends one, which it can change without a release. Read from code.
+3. **remote** Anthropic's per-account table: Account data can give a positive integer for this model. If it does not, Claude Code looks in the general account data's table by model name. The served model list still wins over both. Nothing is set in code, and Anthropic can change these values without a release. Read from code.
 4. **default** Built-in default for the model: Claude Code's own table: 128,000 for Opus 5.5 and Sonnet 5.5, 64,000 for other current models, 32,000 for older ones and for models it does not recognize. Claude 3.5 models get 8,192. Read from code.
 
 * After the ladder: Model's upper limit. Whatever the ladder picks is lowered to the model's limit: 128,000 for Opus 5.5, Sonnet 4.6 and later, Fable, Mythos and unrecognized models; 64,000 for Opus 4.5, Sonnet 4 and 4.5, Haiku 4.5 and Sonnet 3.7; 32,000 for Opus 4 and 4.1; 8,192 for Claude 3.5. On Anthropic's API the served model list can set a different limit.
 * After the ladder: Claude Code lowers it for its own reasons. Some internal requests ask for a smaller cap, and after a context-overflow error the request is retried with what still fits. These can only lower the value, never raise it.
 
-Source: `chunk-x2pwb441.js` · offset 189314611 · sha256 `ad985bf6…`
+Source: `chunk-bc48hzhc.js` · offset 197213484 · sha256 `32880992…`
 
 ### Model id for a family on each provider
 
@@ -338,37 +344,39 @@ Which model id Claude Code sends when it resolves a model family (Opus, Sonnet, 
 7. **default** Inference profile found in the AWS account: Bedrock only. Claude Code lists the account's inference profiles and uses the one for this model, preferring the region prefix from ANTHROPIC\_BEDROCK\_REGION\_PREFIX, otherwise your AWS region's prefix. us-gov regions always use us-gov. Read from code.
 8. **default** Built-in model for this provider: The bundled model catalog names a model for each family and provider, and Claude Code sends that provider's id for it. On Bedrock the id carries a region prefix, and requests made before the profile lookup finishes land here. Read from code.
 
-Source: `chunk-tvry4e46.js` · offset 182034887 · sha256 `d8cc8778…`
+Source: `chunk-3t8w43qz.js` · offset 189051931 · sha256 `86c57773…`
 
 ### Reasoning effort
 
 Which reasoning effort (low, medium, high, xhigh or max) Claude Code asks the API for, sent as output\_config.effort on each request.
 
 1. **env** `CLAUDE_CODE_EXTRA_BODY`: An output\_config.effort inside CLAUDE\_CODE\_EXTRA\_BODY is sent as written. It is not checked or capped by maxEffortLevel. Read from code.
-2. **env** `CLAUDE_CODE_EFFORT_LEVEL`: Case does not matter, and med means medium. Any other value is ignored without a warning. It wins over agent and skill effort, --effort and settings. Tested.
-3. **env** `CLAUDE_CODE_EFFORT_LEVEL=auto`: auto or unset sends no effort, so the API uses its own default. If a maxEffortLevel cap is set, the model's default is sent instead. It shares its variable with the rung above, so only one of them can be set. Read from code.
-4. **agent** Agent or skill effort: An agent's effort frontmatter applies to that agent's requests, and a skill's effort applies while the skill runs. Either wins over --effort and settings. Read from code.
-5. **flag** `--effort <level>`: For this session. Case does not matter, med means medium and ultracode means xhigh. Any other value prints a warning and is ignored. Tested.
-6. **settings** `effortLevel in a project, local, --settings or managed file`: The highest-priority file that sets it wins, and it replaces the user file's value. It beats a modelSettings entry in a lower-priority file, such as a per-model choice saved in your user file. max is not accepted: the model's default is used. Tested.
-7. **settings** `modelSettings.<model>.effortLevel`: An effortLevel for the model in use, keyed by its canonical name; Claude Code saves per-model effort choices here. Within one file it beats that file's effortLevel. max is not accepted; any other value means the model's default. Tested.
-8. **settings** `effortLevel in the user settings file`: An older form: it applies only to models from before Claude Code started saving effort per model under modelSettings, and never to Opus 5.5 or Sonnet 5.5. On some older installs it also skips Opus 4.7, Opus 4.8 and Fable 5. Read from code.
-9. **default** Your organization's default model: When your organization picks a default model with its own effort level and you are using that model. Anthropic provider only. Read from code.
-10. **remote** Anthropic's per-model default: A remote flag can set a default effort per model. In code it sets none. Anthropic can change it without a release. Read from code.
-11. **session** Effort carried to the refusal fallback model: After the API refuses a request and Claude Code switches to its fallback model, the effort sent with the refused request carries over to that model, unless it came from a hook or a per-turn effort. A remote flag, off by default in code, stops the carry-over; Anthropic can change it without a release. Read from code.
-12. **default** The model's default: The model's own default from Claude Code's model list: medium for Opus 5.5 and Sonnet 5.5, high for most others. A model with no listed default gets high. Read from code.
+2. **agent** Effort supplied by a hook request: An explicit effort supplied by the hook request wins over the effort environment variable, per-turn effort and session settings. The normal model support and effort caps still apply. Read from code.
+3. **env** `CLAUDE_CODE_EFFORT_LEVEL`: Case does not matter, and med means medium. Any other value is ignored without a warning. It wins over agent and skill effort, --effort and settings. Tested.
+4. **env** `CLAUDE_CODE_EFFORT_LEVEL=auto`: auto or unset sends no effort, so the API uses its own default. If a maxEffortLevel cap is set, the model's default is sent instead. It shares its variable with the rung above, so only one of them can be set. Read from code.
+5. **agent** Agent or skill effort: An agent's effort frontmatter applies to that agent's requests, and a skill's effort applies while the skill runs. Either wins over --effort and settings. Read from code.
+6. **flag** `--effort <level>`: For this session. Case does not matter, med means medium and ultracode means xhigh. Any other value prints a warning and is ignored. Tested.
+7. **session** Effort carried to the refusal fallback model: When a refusal switches the main conversation to its fallback model, carried effort holds inherited settings aside and wins over organization and model defaults. Explicit session, agent, skill or environment effort still wins. A per-model remote default disables the hold and the carry-over; a separate remote flag, off in code, also stops carry-over. Anthropic can change both flags without a release. Read from code.
+8. **settings** `effortLevel in a project, local, --settings or managed file`: The highest-priority file that sets it wins, and it replaces the user file's value. It beats a modelSettings entry in a lower-priority file, such as a per-model choice saved in your user file. max is not accepted: the model's default is used. Tested.
+9. **settings** `modelSettings.<model>.effortLevel`: An effortLevel for the model in use, keyed by its canonical name; Claude Code saves per-model effort choices here. Within one file it beats that file's effortLevel. max is not accepted; any other value means the model's default. Tested.
+10. **settings** `effortLevel in the user settings file`: An older form: it applies only to models from before Claude Code started saving effort per model under modelSettings, and never to Opus 5.5 or Sonnet 5.5. On some older installs it also skips Opus 4.7, Opus 4.8 and Fable 5. Read from code.
+11. **session** Carried fallback effort in an independent subagent: Independent subagents keep inherited effort settings ahead of carried fallback effort. If no explicit or inherited effort answers, carried effort wins over organization and model defaults. It is skipped when Anthropic sets a per-model remote default, or when Anthropic turns off carry-over remotely. Read from code.
+12. **default** Your organization's default model: When your organization picks a default model with its own effort level and you are using that model. Anthropic provider only. Read from code.
+13. **remote** Anthropic's per-model default: A remote flag can set a default effort per model. In code it sets none. Anthropic can change it without a release. Read from code.
+14. **default** The model's default: The model's own default from Claude Code's model list: medium for Opus 5.5 and Sonnet 5.5, high for most others. A model with no listed default gets high. Read from code.
 
 * After the ladder: Models without effort support get no effort at all. Models Claude Code does not treat as effort-capable, such as Claude 3, Opus 4.0 and 4.1, Sonnet 4.0 and 4.5 and Haiku 4.5, get no effort at all, even one put in CLAUDE\_CODE\_EXTRA\_BODY. CLAUDE\_CODE\_ALWAYS\_ENABLE\_EFFORT turns effort on for model IDs Claude Code does not recognize.
 * After the ladder: `maxEffortLevel`. maxEffortLevel caps the result: a higher level is lowered to it. Across settings files the lowest cap wins, modelSettings.<model>.maxEffortLevel replaces it for one model, and an organization's cap for the model counts too. A cap of max changes nothing. It does not apply to CLAUDE\_CODE\_EXTRA\_BODY.
 * After the ladder: max and xhigh become high on models that do not support them. Opus 5.5 and Sonnet 5.5 support both. Opus 4.6 and Sonnet 4.6 lack xhigh, and Opus 4.5 lacks both.
 * After the ladder: With thinking turned off, levels above high become high on models that require it. Opus 5 is such a model. This also applies to a value from CLAUDE\_CODE\_EXTRA\_BODY.
 
-Source: `chunk-pf4pcv7a.js` · offset 183135529 · sha256 `0056cfe0…`
+Source: `chunk-4zgsft74.js` · offset 190126385 · sha256 `86db4552…`
 
 ### Thinking mode
 
 Which thinking configuration Claude Code asks the API for on the main conversation's requests, sent as the thinking field: adaptive, budgeted (enabled with budget\_tokens), disabled, or no field at all.
 
-1. **env** `CLAUDE_CODE_EXTRA_BODY`: A thinking object inside CLAUDE\_CODE\_EXTRA\_BODY replaces the one Claude Code built and is sent as written, even on models that reject disabled thinking and even with CLAUDE\_CODE\_DISABLE\_THINKING set. It is ignored when your organization's policy turns off experimental betas. Tested.
+1. **env** `CLAUDE_CODE_EXTRA_BODY`: A thinking object inside CLAUDE\_CODE\_EXTRA\_BODY replaces the one Claude Code built, even on models that reject disabled thinking and even with CLAUDE\_CODE\_DISABLE\_THINKING set. Extra keys on a disabled thinking object are stripped, leaving only type: disabled. The extra body is ignored when your organization's policy turns off experimental betas. Tested.
 2. **env** `CLAUDE_CODE_DISABLE_THINKING`: Sends no thinking field at all, whatever --thinking, MAX\_THINKING\_TOKENS or settings say. The API then uses its own default for the model. Tested.
 3. **flag** `--thinking <mode>`: A hidden flag. enabled means the same as adaptive: adaptive on models that support it, a default token budget on older models. disabled is sent only to Anthropic's API and only for models that accept it; Opus 5.5 and Sonnet 5.5 reject disabled thinking, so the field is left out instead. Tested.
 4. **env** `MAX_THINKING_TOKENS`: A positive number turns thinking on. Models with adaptive thinking get adaptive and ignore the number; older models get it as budget\_tokens, kept between 1024 and one less than max\_tokens. 0, a negative number or anything that is not a number turns thinking off. Tested.
@@ -378,7 +386,7 @@ Which thinking configuration Claude Code asks the API for on the main conversati
 
 * After the ladder: Disabled thinking is sent only when the API and model accept it; otherwise no thinking field is sent. A disabled answer from --thinking, MAX\_THINKING\_TOKENS or alwaysThinkingEnabled becomes no field at all on Bedrock, Vertex or Foundry, on models without thinking, and on models that reject disabled thinking, such as Opus 5.5 and Sonnet 5.5. With thinking off, some models also lower a reasoning effort above high.
 
-Source: `chunk-a9s2hgdx.js` · offset 196568382 · sha256 `f975f2cf…`
+Source: `chunk-6nn5pbm0.js` · offset 204381062 · sha256 `d8ec8d60…`
 
 ## Privacy and interface
 
@@ -402,8 +410,9 @@ Whether Claude Code shows its session feedback survey and how often, checked aga
 - Anthropic can raise those chances remotely without a release.
 - It never asks, whatever those chances are, when CLAUDE\_CODE\_DISABLE\_NONESSENTIAL\_TRAFFIC is set (even with CLAUDE\_CODE\_ENABLE\_FEEDBACK\_SURVEY\_FOR\_OTEL), when your organization's policy denies product feedback, when DISABLE\_FEEDBACK\_COMMAND or DISABLE\_BUG\_COMMAND is set, or after you choose don't ask again.
 - Nothing is shared unless you answer yes.
+- After the survey is typed over, it does not ask to share the transcript for that appearance, even if Anthropic enables the transcript-sharing chance.
 
-Source: `chunk-r818x7rr.js` · offset 209247436 · sha256 `1ed03bc8…`
+Source: `chunk-bhz7hapx.js` · offset 216913438 · sha256 `861f6633…`
 
 ### Native terminal cursor
 
@@ -417,7 +426,7 @@ Whether Claude Code shows the terminal's own cursor at the input caret instead o
 6. **remote** Anthropic's native cursor flag turned on: A remote flag that is off by default in code. When Anthropic turns it on, you get the native cursor without setting anything. Anthropic can change it without a release. Read from code.
 7. **default** Default: When nothing above answers: the drawn block cursor. Read from code.
 
-Source: `chunk-3wzdp2vg.js` · offset 193398782 · sha256 `4bc5f3c1…`
+Source: `chunk-fg8psmve.js` · offset 201234771 · sha256 `98d9567c…`
 
 ### Prompt suggestions
 
@@ -431,7 +440,7 @@ Whether Claude Code suggests your next prompt after a reply, decided when the se
 6. **settings** `promptSuggestionEnabled`: Your preference, from any settings file Claude Code loads. Only false turns suggestions off; leaving it out keeps them on. Read from code.
 7. **default** Built-in default: Suggestions are on. Read from code.
 
-Source: `chunk-323hncy0.js` · offset 195285746 · sha256 `38e23007…`
+Source: `chunk-5w49bkzy.js` · offset 202899973 · sha256 `b570842a…`
 
 ## What the model is told
 
@@ -443,12 +452,14 @@ Whether Claude Code sends the model its built-in git commit and pull request ins
 2. **settings** `includeGitInstructions`: From any settings file Claude Code loads. false turns off both the instructions and the status snapshot. Read from code.
 3. **default** Built-in default: Both are included. The instructions go in the Bash tool's description; the status snapshot (branch, main branch, git user, status and recent commits) goes in the session context. Turning them off also stops the remote-session notice about commit and pull request attribution, unless that notice has something else to report, such as a session link. Read from code.
 
+- When the active directory is a different linked worktree of the main repository, the status collector pins its git commands to that worktree.
+
 * After the ladder: `CLAUDE_CODE_REMOTE`. Remote session A remote session gets no new status snapshot. The git instructions still follow the ladder. A snapshot already announced earlier in the conversation, for example before a compaction or on resume, is carried forward instead.
 * After the ladder: Custom system prompt. In non-interactive runs (claude -p and the SDK), a system prompt that replaces the default one gets no new status snapshot. A snapshot already announced earlier in the conversation, for example before a compaction or on resume, is carried forward instead.
 * After the ladder: Explore or Plan subagent. The built-in Explore and Plan subagents get no new status snapshot. A snapshot already announced earlier in the conversation, for example before a compaction or on resume, is carried forward instead.
 * After the ladder: Not a git repository. Outside a git repository, or when the git commands fail, there is no status snapshot.
 
-Source: `chunk-x2pwb441.js` · offset 187881470 · sha256 `dda88315…`
+Source: `chunk-bc48hzhc.js` · offset 195113008 · sha256 `e6b699b2…`
 
 ### To-do list reminders
 
@@ -458,7 +469,7 @@ Whether Claude Code reminds Claude about its to-do list or tasks when it has not
 2. **remote** Anthropic's reminder flag set to off: A remote flag that is baseline by default in code; only the value off turns reminders off. Anthropic can change it without a release. Read from code.
 3. **default** Default: When nothing above answers: reminders on. Read from code.
 
-Source: `chunk-x2pwb441.js` · offset 190613150 · sha256 `904d038d…`
+Source: `chunk-bc48hzhc.js` · offset 198047535 · sha256 `85eadbf7…`
 
 ### Workflow size guideline
 
@@ -468,7 +479,7 @@ Which size guideline Claude is given for the multi-agent workflows it writes, fi
 2. **settings** Dynamic workflow size in /config: Your choice in /config, saved in the global config file (~/.claude.json). Changing it, or the settings key, during a session reaches Claude as a short note with your next prompt. A hand-edited value outside the four names is ignored. Read from code.
 3. **default** Default by plan: When neither answers: small on the Claude Pro plan, medium for every other sign-in. Claude is told this is the default and that the user can raise or remove it in /config. Read from code.
 
-Source: `chunk-kr6qjn4e.js` · offset 187134660 · sha256 `23a38609…`
+Source: `chunk-8x7mtwfh.js` · offset 194420739 · sha256 `5255647d…`
 
 ## Settings and environment
 
@@ -484,10 +495,11 @@ Claude Code reads settings from five sources, over settings that plugins supply 
 
 - Credential-helper keys (apiKeyHelper, awsAuthRefresh, awsCredentialExport, gcpAuthRefresh, otelHeadersHelper, proxyAuthHelper) can be removed from a source before the merge, so for them the highest source that sets one does not always win.
 - Some keys are read from particular sources rather than from this combined value, and can ignore the project files. Permission rules are one: see their own ladder.
+- When managed policy requires managed read paths or managed domains, non-managed sandbox.allowRead and sandbox.network.allowedDomains entries trigger warnings. The warnings do not change the file precedence shown here.
 
 * After the ladder: Managed policy's availableModels, enforceAvailableModels and modelPicker replace every other source's values. deniedModels is read only from managed policy; a value in any other source is dropped.
 
-Source: `chunk-ey40d6gf.js` · offset 180141857 · sha256 `c1a11b5a…`
+Source: `chunk-8mqjkh8a.js` · offset 188102527 · sha256 `6142ed07…`
 
 ### Where an environment variable's value comes from
 
@@ -502,4 +514,6 @@ When the shell, settings files and managed settings set the same environment var
 7. **settings** Global config env (~/.claude.json): The env field in ~/.claude.json. Applied before any settings file, so it only overrides the shell. Read from code.
 8. **env** Shell environment: The environment Claude Code was started with. Any settings source that sets the same variable overwrites it. Tested.
 
-Source: `chunk-fmym5kwy.js` · offset 182952691 · sha256 `0718ec25…`
+- For child processes of the background daemon, its injected FORCE\_COLOR=3 is removed unless a settings env block explicitly supplies FORCE\_COLOR. Those settings values are overlaid on the child environment.
+
+Source: `chunk-5c0j5a0m.js` · offset 190201454 · sha256 `42d9f863…`

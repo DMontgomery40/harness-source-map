@@ -10,7 +10,8 @@ const generated = [
  ['extract/codex/chatgpt-prompts.mjs','outputs/chatgpt-conversation-prompts.json'],
  ['extract/codex/bundle-resources.mjs','outputs/chatgpt-bundled-plugins.json'],
  ['extract/codex/tool-manifest.mjs','outputs/desktop-tool-manifest.json'],
- ['extract/codex/learning-blocks.mjs','outputs/chatgpt-learning-blocks.json']
+ ['extract/codex/learning-blocks.mjs','outputs/chatgpt-learning-blocks.json'],
+ ['extract/codex/intelligent-ui.mjs','outputs/intelligent-ui.json']
 ];
 const fingerprint = {cli_sha256:'current-cli',app_build:'current-build'};
 async function fixture(check, {scripts=true}={}) {

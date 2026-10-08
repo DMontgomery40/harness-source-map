@@ -55,6 +55,7 @@ export const categories = [
   {
     label: "Tools and features",
     files: [
+      { path: "outputs/feature-notes-2.1.295.md", format: "markdown", title: "New and unnamed mechanisms (2.1.295)", slug: "feature-notes-2-1-295", summary: "Compaction variants, Chrome setup, plugin publishing, personal permissions, hook failures, and dormant HTTP MCP serving.", defaultOpen: true },
       {
         path: "outputs/tools.md",
         format: "markdown",
@@ -161,6 +162,7 @@ export const categories = [
   {
     label: "Evidence and archive",
     files: [
+      { path: "outputs/other-model-text-2.1.289.md", format: "markdown", title: "Other model-facing text archive (2.1.289)", slug: "other-model-text-2-1-289", summary: "Previous-release source and classifier judgments, retained with their original build provenance.", promptText: true, defaultOpen: false },
       {
         path: "outputs/provenance.md",
         format: "markdown",

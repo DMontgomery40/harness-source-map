@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { privacyScan } from './privacy.mjs';
+import { askDecisionsAsJev, decisionsConfig, DecisionsAnswerError, DecisionsRequestError, DecisionsUnavailableError } from '../../../../tools/decisions-provider.mjs';
 
 // The one Jev helper for every script in this repo: provider choice, the pinned model, retries,
 // and verdict caches tagged with the model version that produced them.
@@ -39,6 +40,7 @@ const selectProvider = (config, provider) => {
 // Automatic mode tries TypeSafe direct first, then the separately authorized OpenRouter route.
 // Explicit JEV_PROVIDER values stay single-provider so operators can require one destination.
 export function decisionConfig(env = process.env, read = () => fs.readFileSync(path.join(os.homedir(), '.env'), 'utf8')) {
+  if (env.JEV_PROVIDER === 'openai') return { ...decisionsConfig(env, read), version: 'openai-decisions-v1', mode: 'openai' };
   let text = '';
   try { text = read(); } catch { /* Environment variables can supply credentials. */ }
   const value = name => env[name] || text.match(new RegExp(`^\\s*(?:export\\s+)?${name}\\s*=\\s*["']?([^"'\\s]+)`, 'm'))?.[1];
@@ -66,6 +68,18 @@ const sleepMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 // Retries rate limits, server errors, timeouts and network failures with backoff; then throws
 // JevUnavailableError. A malformed request throws JevRequestError.
 export async function ask(config, { state, questions }, { fetchImpl = globalThis.fetch, attempts = 4, timeoutMs = 60_000, baseDelayMs = 1000, sleep = sleepMs } = {}) {
+  if (config?.provider === 'OpenAI') {
+    try {
+      const result = await askDecisionsAsJev(config, { state, questions }, { fetchImpl, attempts, timeoutMs, baseDelayMs, sleep });
+      if (result.refusals.length) throw new JevAnswerShapeError(`OpenAI refused ${result.refusals.length} question(s); judgments remain unanswered`);
+      return result;
+    } catch (error) {
+      if (error instanceof DecisionsUnavailableError) throw new JevUnavailableError(error.reason);
+      if (error instanceof DecisionsAnswerError) throw new JevAnswerShapeError(error.message);
+      if (error instanceof DecisionsRequestError) throw new JevRequestError(error.message);
+      throw error;
+    }
+  }
   const requestedModel=String(config?.model??'');
   const exactServedModel=new RegExp(`^${requestedModel.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?:-|$)`);
   const providers = config?.[PROVIDERS] ?? [{
@@ -141,7 +155,7 @@ export function openCache(file, { version = JEV_VERSION, config } = {}) {
   let raw = {};
   try { raw = JSON.parse(fs.readFileSync(file, 'utf8')); } catch { raw = {}; }
   const entries = {};
-  for (const [key, value] of Object.entries(raw)) entries[key.startsWith('jev-') ? key : `${LEGACY_VERSION}:${key}`] = value;
+  for (const [key, value] of Object.entries(raw)) entries[/^(?:jev-|openai-decisions-)/.test(key) ? key : `${LEGACY_VERSION}:${key}`] = value;
   const currentVersion = () => config?.cacheVersion ?? version;
   const full = key => `${currentVersion()}:${key}`;
   return {

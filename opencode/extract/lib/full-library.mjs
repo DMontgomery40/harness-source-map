@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { discoveryQuestions, packQuestions, textHash } from "../../../codex/extract/codex/lib/jev-discovery.mjs";
+import { requestByteLength } from '../../../tools/decisions-provider.mjs';
 import { PrivacyError, privacyScan } from "../../../codex/extract/codex/lib/privacy.mjs";
 import { decodeLiteral, literalsOf } from "./ts-literals.mjs";
 import { discoveredTags, libraryMarkdown, nameOf, unclassifiedMarkdown, uniqueTitles } from "./presentation.mjs";
@@ -282,14 +283,14 @@ export function prepareDiscovery(discovery, options = {}) {
     }
   }
   const state = { task: "Independent source judgments; each question supplies its complete source." };
-  const packed = packQuestions(ready, { batchSize: options.batchSize ?? 16, maxBytes: options.maxBytes ?? 96_000, state });
+  const packed = packQuestions(ready, { batchSize: options.batchSize ?? 16, maxBytes: options.maxBytes ?? 96_000, state, config:options.config });
   for (const item of packed.oversized) status.set(item.record.id, { status: "oversized", reason: "Complete source occurrence exceeds the Jev request budget" });
   let payloadBytes = 0;
   for (const batch of packed.batches) {
     const questions = Object.fromEntries(batch.flatMap((item, index) => Object.entries(item.questions).map(([name, question]) => [`${index}_${name}`, question])));
     const body = JSON.stringify({ state, questions });
     privacyScan(new Map([["OpenCode Jev request", body]]));
-    payloadBytes += Buffer.byteLength(body);
+    payloadBytes += requestByteLength(options.config,{state,questions});
     for (const item of batch) status.set(item.record.id, { status: "unanswered", reason: "Provider classification has not run" });
   }
   return { status, batches: packed.batches.length, payloadBytes, eligible: ready.length, oversized: packed.oversized.length, withheld: [...status.values()].filter((item) => item.status === "withheld").length };
