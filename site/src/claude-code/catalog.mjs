@@ -55,7 +55,7 @@ export const categories = [
   {
     label: "Tools and features",
     files: [
-      { path: "outputs/feature-notes-2.1.295.md", format: "markdown", title: "New and unnamed mechanisms (2.1.295)", slug: "feature-notes-2-1-295", summary: "Compaction variants, Chrome setup, plugin publishing, personal permissions, hook failures, and dormant HTTP MCP serving.", defaultOpen: true },
+      { path: "outputs/feature-notes-2.1.295.md", records: "outputs/feature-notes-2.1.295.json", format: "markdown", title: "New and unnamed mechanisms (2.1.295)", slug: "feature-notes-2-1-295", summary: "Compaction, tools, gateway policy, agent effort and skills, mods, hook failures, and tool-result delivery.", promptText: true, defaultOpen: true },
       {
         path: "outputs/tools.md",
         format: "markdown",

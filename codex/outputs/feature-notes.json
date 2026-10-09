@@ -1,0 +1,523 @@
+{
+  "title": "Installed harness mechanisms",
+  "source": {
+    "repository": "openai/codex",
+    "tag": "rust-v0.162.0-alpha.2",
+    "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+    "commit_date": "2026-10-02T00:51:46Z",
+    "cli_version": "codex-cli 0.162.0-alpha.2",
+    "binary_sha256": "cb4e4994627e770800a940b42969c77855a3fc09a6e60b02aa6319f670d6b6ab",
+    "app_version": "26.1002.52244",
+    "app_build": "13536"
+  },
+  "qualification": "Build-matched source and compiled literal bytes establish these mechanisms and gates. They do not establish account rollout, enabled configuration, live model delivery or a captured approval decision.",
+  "items": [
+    {
+      "id": "spawn-model-catalog-context",
+      "title": "Spawn model choices as append-only context",
+      "kind": "prompt",
+      "text": "With model_catalog_in_context enabled and the applicable spawn_agent tool exposed, the harness moves available spawn model choices from tool descriptions into a developer `<model_catalog>` context fragment. It appends a new fragment when the rendered catalog changes, leaves earlier messages intact, and emits an invalidation fragment when a retained catalog ceases to apply.",
+      "gate": {
+        "key": "features.model_catalog_in_context",
+        "default_enabled": false,
+        "stage": "UnderDevelopment",
+        "provenance": {
+          "file": "codex-rs/features/src/lib.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 1379,
+          "end_line": 1384,
+          "byte_offset": 50482,
+          "offset": 50482,
+          "line_start": 1379,
+          "byte_length": 177,
+          "sha256": "e715608ff9fe483fbc9b9070085c203efe0067599b0ceaee15ae1d42e3684b59",
+          "file_sha256": "1b6ad2351279c8d37ba30a26a1baf1f4da8a5884fa30b3da521497452a1fd31a",
+          "source_text": "FeatureSpec {\n        id: Feature::ModelCatalogInContext,\n        key: \"model_catalog_in_context\",\n        stage: Stage::UnderDevelopment,\n        default_enabled: false,\n    },",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/features/src/lib.rs#L1379"
+        }
+      },
+      "details": {
+        "conditions": "V1 requires its spawn tool to be exposed. V2 also requires expose_spawn_agent_model_overrides. Picker-hidden and backend-incompatible models are excluded. The first five eligible models are sorted by model ID; descriptions are capped at 250 characters and the complete marked fragment at 1,000 UTF-8 bytes. Whole entries are omitted rather than splitting identifiers, reasoning efforts or service tiers. An unchanged rendered catalog adds no fragment.",
+        "exact_text": [
+          {
+            "text": "Additional model choices omitted.\n",
+            "provenance": {
+              "file": "codex-rs/core/src/context/world_state/model_catalog.rs",
+              "version": "rust-v0.162.0-alpha.2",
+              "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+              "line": 20,
+              "end_line": 20,
+              "byte_offset": 955,
+              "offset": 955,
+              "line_start": 20,
+              "byte_length": 37,
+              "sha256": "0d23f3b9e98358106e05491f7477296031cae4857b130a658fab4aff18b0cfb2",
+              "file_sha256": "ac18a8cb15b2e6432ff8d55dcd3e429c3763d95fd4c3431562d8e2b5b46d8670",
+              "source_text": "\"Additional model choices omitted.\\n\"",
+              "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/context/world_state/model_catalog.rs#L20"
+            },
+            "binary_offset": 187515266,
+            "binary_byte_length": 34,
+            "text_sha256": "bfffcf5d7e35a7b9697fc173486c80936d29f49a01c82e755e50192fa5591871",
+            "source_byte_offset": 955,
+            "source_byte_length": 37,
+            "source_sha256": "0d23f3b9e98358106e05491f7477296031cae4857b130a658fab4aff18b0cfb2"
+          },
+          {
+            "text": "No picker-visible model overrides are currently loaded.\n",
+            "provenance": {
+              "file": "codex-rs/core/src/context/world_state/model_catalog.rs",
+              "version": "rust-v0.162.0-alpha.2",
+              "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+              "line": 40,
+              "end_line": 40,
+              "byte_offset": 1819,
+              "offset": 1819,
+              "line_start": 40,
+              "byte_length": 59,
+              "sha256": "58ffd809c7989d1d69c194f66c4ff4e08476dee69aee01307729e834dc2308d2",
+              "file_sha256": "ac18a8cb15b2e6432ff8d55dcd3e429c3763d95fd4c3431562d8e2b5b46d8670",
+              "source_text": "\"No picker-visible model overrides are currently loaded.\\n\"",
+              "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/context/world_state/model_catalog.rs#L40"
+            },
+            "binary_offset": 187515159,
+            "binary_byte_length": 56,
+            "text_sha256": "c897167058a42ed2b024e7fddc0fe331705ff0321de04ebe355edd3eba4b1cec",
+            "source_byte_offset": 1819,
+            "source_byte_length": 59,
+            "source_sha256": "58ffd809c7989d1d69c194f66c4ff4e08476dee69aee01307729e834dc2308d2"
+          },
+          {
+            "text": "\nThe previous spawn_agent model catalog no longer applies.\n",
+            "provenance": {
+              "file": "codex-rs/core/src/context/world_state/model_catalog.rs",
+              "version": "rust-v0.162.0-alpha.2",
+              "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+              "line": 107,
+              "end_line": 107,
+              "byte_offset": 4368,
+              "offset": 4368,
+              "line_start": 107,
+              "byte_length": 63,
+              "sha256": "9353a92f192a8268dffa1ccf3fdcda29ecb2fe88088cdf01ab89a33e96a037f3",
+              "file_sha256": "ac18a8cb15b2e6432ff8d55dcd3e429c3763d95fd4c3431562d8e2b5b46d8670",
+              "source_text": "\"\\nThe previous spawn_agent model catalog no longer applies.\\n\"",
+              "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/context/world_state/model_catalog.rs#L107"
+            },
+            "binary_offset": 187536921,
+            "binary_byte_length": 59,
+            "text_sha256": "91e62090eaf0ac855313e30ad4daea67236c660cdf7f7a6a7134bb9700fb0f43",
+            "source_byte_offset": 4368,
+            "source_byte_length": 63,
+            "source_sha256": "9353a92f192a8268dffa1ccf3fdcda29ecb2fe88088cdf01ab89a33e96a037f3"
+          },
+          {
+            "text": "Pick model overrides from the latest <model_catalog> listing.",
+            "provenance": {
+              "file": "codex-rs/core/src/tools/handlers/multi_agents_spec.rs",
+              "version": "rust-v0.162.0-alpha.2",
+              "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+              "line": 20,
+              "end_line": 20,
+              "byte_offset": 1097,
+              "offset": 1097,
+              "line_start": 20,
+              "byte_length": 63,
+              "sha256": "e623acf56573dedd2cd34d76ab3d725203c47863fb4768f68f1732d0e47b41aa",
+              "file_sha256": "e0dcb13b37284b2434b72503364c9f11d860ffd5cc83bf6ed35f4e2f23f6c033",
+              "source_text": "\"Pick model overrides from the latest <model_catalog> listing.\"",
+              "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/tools/handlers/multi_agents_spec.rs#L20"
+            },
+            "binary_offset": 187407388,
+            "binary_byte_length": 61,
+            "text_sha256": "caf52067a154fd2e77a81d59522c7db4a739fab5805e46d8e3f8b5baf99aee38",
+            "source_byte_offset": 1097,
+            "source_byte_length": 63,
+            "source_sha256": "e623acf56573dedd2cd34d76ab3d725203c47863fb4768f68f1732d0e47b41aa"
+          }
+        ]
+      },
+      "provenance": [
+        {
+          "file": "codex-rs/features/src/lib.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 1379,
+          "end_line": 1384,
+          "byte_offset": 50482,
+          "offset": 50482,
+          "line_start": 1379,
+          "byte_length": 177,
+          "sha256": "e715608ff9fe483fbc9b9070085c203efe0067599b0ceaee15ae1d42e3684b59",
+          "file_sha256": "1b6ad2351279c8d37ba30a26a1baf1f4da8a5884fa30b3da521497452a1fd31a",
+          "source_text": "FeatureSpec {\n        id: Feature::ModelCatalogInContext,\n        key: \"model_catalog_in_context\",\n        stage: Stage::UnderDevelopment,\n        default_enabled: false,\n    },",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/features/src/lib.rs#L1379"
+        },
+        {
+          "file": "codex-rs/core/src/session/world_state.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 331,
+          "end_line": 370,
+          "byte_offset": 15140,
+          "offset": 15140,
+          "line_start": 331,
+          "byte_length": 1567,
+          "sha256": "f48f50768060d0f9f9f9a948be24daeb5c08a86cbd57c1d786be7a5d94e657f7",
+          "file_sha256": "985d7f560f43033811c1edf8714799f13c3288ebd2b369a7dd083385d790cfb2",
+          "source_text": "        let spawn_tool = match turn_context.multi_agent_version {\n            MultiAgentVersion::Disabled => None,\n            MultiAgentVersion::V1 => Some(ToolName::new(\n                Some(MULTI_AGENT_V1_NAMESPACE.to_string()),\n                \"spawn_agent\",\n            )),\n            MultiAgentVersion::V2 => turn_context\n                .config\n                .multi_agent_v2\n                .expose_spawn_agent_model_overrides\n                .then(|| {\n                    ToolName::new(\n                        turn_context\n                            .provider\n                            .capabilities()\n                            .namespace_tools\n                            .then(|| turn_context.config.multi_agent_v2.tool_namespace.clone())\n                            .flatten(),\n                        \"spawn_agent\",\n                    )\n                }),\n        };\n        let model_overrides_available =\n            spawn_tool.is_some_and(|name| step_context.tool_router.exposes_tool(&name));\n        world_state.add_section(\n            if model_overrides_available\n                && turn_context\n                    .config\n                    .features\n                    .enabled(Feature::ModelCatalogInContext)\n            {\n                ModelCatalogState::new(\n                    &turn_context.available_models,\n                    turn_context.multi_agent_version,\n                )\n            } else {\n                ModelCatalogState::default()\n            },\n        );\n        if !crate::guardian::is_basic_session_source",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/session/world_state.rs#L331"
+        },
+        {
+          "file": "codex-rs/core/src/context/world_state/model_catalog.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 1,
+          "end_line": 143,
+          "byte_offset": 0,
+          "offset": 0,
+          "line_start": 1,
+          "byte_length": 5480,
+          "sha256": "ac18a8cb15b2e6432ff8d55dcd3e429c3763d95fd4c3431562d8e2b5b46d8670",
+          "file_sha256": "ac18a8cb15b2e6432ff8d55dcd3e429c3763d95fd4c3431562d8e2b5b46d8670",
+          "source_text": "//! Keeps spawn model choices in append-only context instead of the tool schema.\n//! Snapshots compare the bounded text actually shown to the model; catalog refreshes\n//! never rewrite earlier messages, and missing retained context gets a fresh catalog.\n\nuse super::PreviousSectionState;\nuse super::SectionTransition;\nuse super::WorldStateHash;\nuse super::WorldStateSection;\nuse crate::agent::child_config::MAX_SPAWN_AGENT_MODEL_OVERRIDES;\nuse crate::agent::child_config::model_supports_multi_agent_backend;\nuse crate::context::ContextualUserFragment;\nuse crate::context::environment_context::push_xml_escaped_text;\nuse codex_protocol::models::ContentItemKind;\nuse codex_protocol::openai_models::ModelPreset;\nuse codex_protocol::protocol::MultiAgentVersion;\n\n// Includes XML escaping and markers; at most 1,000 tokens even with byte fallback.\nconst MAX_RENDERED_BYTES: usize = 1_000;\nconst MAX_DESCRIPTION_CHARS: usize = 250;\nconst OMITTED_NOTICE: &str = \"Additional model choices omitted.\\n\";\n\n/// The current model choices, or an empty catalog to invalidate a retained listing.\n#[derive(Clone, Default)]\npub(crate) struct ModelCatalogState {\n    catalog: String,\n}\n\nimpl ModelCatalogState {\n    pub(crate) fn new(models: &[ModelPreset], multi_agent_version: MultiAgentVersion) -> Self {\n        let mut catalog = String::new();\n        let mut models = models\n            .iter()\n            .filter(|model| model.show_in_picker)\n            .filter(|model| model_supports_multi_agent_backend(model, multi_agent_version))\n            .take(MAX_SPAWN_AGENT_MODEL_OVERRIDES)\n            .collect::<Vec<_>>();\n        // Stabilize the selected choices independently of their picker ordering.\n        models.sort_by(|left, right| left.model.cmp(&right.model));\n        if models.is_empty() {\n            catalog.push_str(\"No picker-visible model overrides are currently loaded.\\n\");\n        }\n        let (open, close) = Self::type_markers();\n        let body_budget = MAX_RENDERED_BYTES - open.len() - close.len() - 2;\n        for model in models {\n            let mut line = format!(\"- `{}`: \", model.model);\n            line.extend(model.description.chars().take(MAX_DESCRIPTION_CHARS));\n            if model.description.chars().count() > MAX_DESCRIPTION_CHARS {\n                line.push('…');\n            }\n            if !model.supported_reasoning_efforts.is_empty() {\n                line.push_str(\" Reasoning efforts: \");\n                for (index, preset) in model.supported_reasoning_efforts.iter().enumerate() {\n                    if index > 0 {\n                        line.push_str(\", \");\n                    }\n                    line.push_str(preset.effort.as_str());\n                    if preset.effort == model.default_reasoning_effort {\n                        line.push_str(\" (default)\");\n                    }\n                }\n                line.push('.');\n            }\n            if !model.service_tiers.is_empty() {\n                line.push_str(\" Service tiers: \");\n                for (index, tier) in model.service_tiers.iter().enumerate() {\n                    if index > 0 {\n                        line.push_str(\", \");\n                    }\n                    line.push_str(tier.id.as_str());\n                }\n                line.push('.');\n            }\n            let mut escaped = String::new();\n            push_xml_escaped_text(&mut escaped, &line);\n            if catalog.len() + escaped.len() + 1 + OMITTED_NOTICE.len() > body_budget {\n                // Keep identifiers and capability lists intact instead of advertising\n                // a truncated model ID, reasoning effort, or service tier.\n                catalog.push_str(OMITTED_NOTICE);\n                break;\n            }\n            catalog.push_str(&escaped);\n            catalog.push('\\n');\n        }\n        Self { catalog }\n    }\n}\n\nimpl ContextualUserFragment for ModelCatalogState {\n    fn content_kind(&self) -> ContentItemKind {\n        ContentItemKind(\"multi_agent.model_catalog\".to_string())\n    }\n\n    fn role(&self) -> &'static str {\n        \"developer\"\n    }\n\n    fn markers(&self) -> (&'static str, &'static str) {\n        Self::type_markers()\n    }\n\n    fn type_markers() -> (&'static str, &'static str) {\n        (\"<model_catalog>\", \"</model_catalog>\")\n    }\n\n    fn body(&self) -> String {\n        if self.catalog.is_empty() {\n            \"\\nThe previous spawn_agent model catalog no longer applies.\\n\".to_string()\n        } else {\n            format!(\"\\n{}\", self.catalog)\n        }\n    }\n}\n\nimpl WorldStateSection for ModelCatalogState {\n    const ID: &'static str = \"model_catalog\";\n    type Snapshot = WorldStateHash;\n\n    fn matches_legacy_fragment(role: &str, text: &str) -> bool {\n        role == \"developer\" && Self::matches_text(text)\n    }\n\n    fn has_retained_fragment_matcher() -> bool {\n        true\n    }\n\n    fn matches_retained_fragment(role: &str, text: &str) -> bool {\n        Self::matches_legacy_fragment(role, text)\n    }\n\n    fn render_diff(\n        &self,\n        previous: PreviousSectionState<'_, Self::Snapshot>,\n    ) -> SectionTransition<Self::Snapshot> {\n        let current = WorldStateHash::from_fragment(self);\n        if matches!(previous, PreviousSectionState::Known(previous) if previous == &current)\n            || self.catalog.is_empty() && matches!(previous, PreviousSectionState::Absent)\n        {\n            return (Some(current), None);\n        }\n        (Some(current), Some(Box::new(self.clone())))\n    }\n}\n",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/context/world_state/model_catalog.rs#L1"
+        },
+        {
+          "file": "codex-rs/core/src/tools/handlers/multi_agents_spec.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 70,
+          "end_line": 125,
+          "byte_offset": 2970,
+          "offset": 2970,
+          "line_start": 70,
+          "byte_length": 2549,
+          "sha256": "686d1c6bb84c59939e49e7ed1380256002021e28630aeadd626126a014ba8f3c",
+          "file_sha256": "e0dcb13b37284b2434b72503364c9f11d860ffd5cc83bf6ed35f4e2f23f6c033",
+          "source_text": "pub fn create_spawn_agent_tool_v1(options: SpawnAgentToolOptions) -> ToolSpec {\n    let available_models_description = (!options.model_catalog_in_context\n        && !options.hide_agent_type_model_reasoning)\n        .then(|| {\n            spawn_agent_models_description(&options.available_models, options.multi_agent_version)\n        });\n    let inherited_model_guidance =\n        (!options.hide_agent_type_model_reasoning).then_some(SPAWN_AGENT_INHERITED_MODEL_GUIDANCE);\n    let return_value_description =\n        \"Returns the spawned agent id plus the user-facing nickname when available.\";\n    let mut properties = spawn_agent_common_properties_v1(&options.agent_type_description);\n    if !options.expose_agent_type {\n        properties.remove(\"agent_type\");\n    }\n    if options.hide_agent_type_model_reasoning {\n        hide_spawn_agent_metadata_options(&mut properties);\n    }\n\n    ToolSpec::Namespace(ResponsesApiNamespace {\n        name: MULTI_AGENT_V1_NAMESPACE.to_string(),\n        description: MULTI_AGENT_V1_NAMESPACE_DESCRIPTION.to_string(),\n        tools: vec![ResponsesApiNamespaceTool::Function(ResponsesApiTool {\n            name: \"spawn_agent\".to_string(),\n            description: spawn_agent_tool_description(\n                available_models_description.as_deref(),\n                options.model_catalog_in_context,\n                inherited_model_guidance,\n                return_value_description,\n                options.usage_hint_text,\n            ),\n            strict: false,\n            defer_loading: None,\n            parameters: JsonSchema::object(properties, /*required*/ None, Some(false.into())),\n            output_schema: Some(spawn_agent_output_schema_v1().into()),\n        })],\n    })\n}\n\npub fn create_spawn_agent_tool_v2(\n    options: SpawnAgentToolOptions,\n    description_override: Option<&str>,\n) -> ToolSpec {\n    let available_models_description = (!options.model_catalog_in_context\n        && options.expose_spawn_agent_model_overrides)\n        .then(|| {\n            spawn_agent_models_description(&options.available_models, options.multi_agent_version)\n        });\n    let inherited_model_guidance = if options.model_catalog_in_context {\n        options\n            .expose_spawn_agent_model_overrides\n            .then_some(SPAWN_AGENT_INHERITED_MODEL_GUIDANCE_V2)\n    } else {\n        (options.expose_spawn_agent_model_overrides && !options.hide_agent_type_model_reasoning)\n            .then_some(SPAWN_AGENT_INHERITED_MODEL_GUIDANCE)\n    };\n    let mut properties = spawn_agent_common_properties_v2",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/tools/handlers/multi_agents_spec.rs#L70"
+        },
+        {
+          "file": "codex-rs/core/src/agent/child_config.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 20,
+          "end_line": 20,
+          "byte_offset": 890,
+          "offset": 890,
+          "line_start": 20,
+          "byte_length": 60,
+          "sha256": "04adeb112ebdbc99c64bef20c86fef21278c37c9aba5ff8520ed468aa35b7852",
+          "file_sha256": "33d4dd6f70e6640af1059398272c48b88e16e0005105fbd1ef13e30456d39a39",
+          "source_text": "pub(crate) const MAX_SPAWN_AGENT_MODEL_OVERRIDES: usize = 5;",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/agent/child_config.rs#L20"
+        }
+      ]
+    },
+    {
+      "id": "fresh-v2-dynamic-tool-inheritance",
+      "title": "Dynamic tools in fresh V2 subagents",
+      "kind": "tool",
+      "text": "A fresh V2 subagent can inherit the parent session's client-defined dynamic tools without copying conversation history. The spawn path resolves parent_thread_id, reads the parent's dynamic_tools and passes them to the child startup call only when multi_agent_v2_dynamic_tools is enabled.",
+      "gate": {
+        "key": "features.multi_agent_v2_dynamic_tools",
+        "default_enabled": false,
+        "stage": "UnderDevelopment",
+        "provenance": {
+          "file": "codex-rs/features/src/lib.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 1385,
+          "end_line": 1390,
+          "byte_offset": 50664,
+          "offset": 50664,
+          "line_start": 1385,
+          "byte_length": 184,
+          "sha256": "a109befa938f43a8555f376ddadf893cbdb4556fa677dfe8d4b16d3718566355",
+          "file_sha256": "1b6ad2351279c8d37ba30a26a1baf1f4da8a5884fa30b3da521497452a1fd31a",
+          "source_text": "FeatureSpec {\n        id: Feature::MultiAgentV2DynamicTools,\n        key: \"multi_agent_v2_dynamic_tools\",\n        stage: Stage::UnderDevelopment,\n        default_enabled: false,\n    },",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/features/src/lib.rs#L1385"
+        }
+      },
+      "details": {
+        "conditions": "This branch requires a resolvable parent thread, a session source, no history-fork mode, MultiAgentVersion::V2 and the feature gate. It supplies an empty dynamic-tool list otherwise. Forked children follow a separate startup path. The capability inherited here is the client-defined tool list; this source does not establish the later upstream change to selected skills or disabled-plugin inheritance."
+      },
+      "provenance": [
+        {
+          "file": "codex-rs/features/src/lib.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 1385,
+          "end_line": 1390,
+          "byte_offset": 50664,
+          "offset": 50664,
+          "line_start": 1385,
+          "byte_length": 184,
+          "sha256": "a109befa938f43a8555f376ddadf893cbdb4556fa677dfe8d4b16d3718566355",
+          "file_sha256": "1b6ad2351279c8d37ba30a26a1baf1f4da8a5884fa30b3da521497452a1fd31a",
+          "source_text": "FeatureSpec {\n        id: Feature::MultiAgentV2DynamicTools,\n        key: \"multi_agent_v2_dynamic_tools\",\n        stage: Stage::UnderDevelopment,\n        default_enabled: false,\n    },",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/features/src/lib.rs#L1385"
+        },
+        {
+          "file": "codex-rs/core/src/agent/control/spawn.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 730,
+          "end_line": 775,
+          "byte_offset": 31251,
+          "offset": 31251,
+          "line_start": 730,
+          "byte_length": 2078,
+          "sha256": "ee27983e65448213b0e5ef0f91263242b18e2cd9cf6a711eaf0b87720a794844",
+          "file_sha256": "65101355eb1346605e3faa9109c5040194410d5847e2f769c865c0ee00e7c595",
+          "source_text": "        } = match (session_source, options.fork_mode.as_ref(), inheritance) {\n            (Some(session_source), Some(_), inheritance) => {\n                Box::pin(self.spawn_forked_thread(\n                    &state,\n                    config,\n                    session_source,\n                    &options,\n                    inheritance,\n                    multi_agent_version,\n                ))\n                .await?\n            }\n            (Some(session_source), None, inheritance) => {\n                let (history_mode, dynamic_tools) = if let Some(parent_thread_id) =\n                    options.parent_thread_id\n                    && let Ok(parent_thread) = state.get_thread(parent_thread_id).await\n                {\n                    let history_mode = matches!(\n                        parent_thread.config_snapshot().await.history_mode,\n                        ThreadHistoryMode::Paginated\n                    )\n                    .then_some(ThreadHistoryMode::Paginated);\n                    let dynamic_tools = if multi_agent_version == MultiAgentVersion::V2\n                        && config.features.enabled(Feature::MultiAgentV2DynamicTools)\n                    {\n                        parent_thread.session.dynamic_tools().await\n                    } else {\n                        Vec::new()\n                    };\n                    (history_mode, dynamic_tools)\n                } else {\n                    (None, Vec::new())\n                };\n                let environments = options\n                    .environments\n                    .as_ref()\n                    .map(TurnEnvironmentSnapshot::inheritable_selections);\n                let child_create_started_at = Instant::now();\n                let new_thread = Box::pin(state.spawn_new_thread_with_source(\n                    config.clone(),\n                    self.clone(),\n                    session_source,\n                    history_mode,\n                    dynamic_tools,\n                    options.parent_thread_id,\n                    /*forked_from_thread_id*/ None,",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/agent/control/spawn.rs#L730"
+        }
+      ]
+    },
+    {
+      "id": "guardian-decisions-comparison",
+      "title": "Guardian Decisions comparison without approval changes",
+      "kind": "decision",
+      "text": "The optional guardianv2_decisions_comparison path sends a second risk classification to OpenAI Decisions alongside Guardian V2 snapshot scoring. Guardian's existing sampler still publishes the approval score; the Decisions task records its outcome after that baseline path. Transport, setup and representability failures affect measurement rather than approvals.",
+      "gate": {
+        "key": "features.guardianv2_decisions_comparison",
+        "default_enabled": false,
+        "stage": "UnderDevelopment",
+        "provenance": {
+          "file": "codex-rs/features/src/lib.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 1757,
+          "end_line": 1762,
+          "byte_offset": 61108,
+          "offset": 61108,
+          "line_start": 1757,
+          "byte_length": 192,
+          "sha256": "789af15749d11b7d42bfec04e71038f592d2d38ff3d7fd5feea636e212cb0d92",
+          "file_sha256": "1b6ad2351279c8d37ba30a26a1baf1f4da8a5884fa30b3da521497452a1fd31a",
+          "source_text": "FeatureSpec {\n        id: Feature::GuardianV2DecisionsComparison,\n        key: \"guardianv2_decisions_comparison\",\n        stage: Stage::UnderDevelopment,\n        default_enabled: false,\n    },",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/features/src/lib.rs#L1757"
+        }
+      },
+      "details": {
+        "conditions": "The installed build reads CODEX_GUARDIAN_DECISIONS_API_KEY and uses gpt-6-luna at https://api.openai.com/v1/decisions. Conversation-backed evidence is skipped. Snapshot evidence must retain complete user-message boundaries and contain text or inline data images; parent compaction, other roles, audio and unsupported parts are rejected intact. The transport allows 16 requests in flight, cancels the oldest unfinished request at capacity, uses a six-second deadline, and caps image data at 8 MiB and responses at 16 KiB. A superseded classification aborts its comparison task."
+      },
+      "provenance": [
+        {
+          "file": "codex-rs/features/src/lib.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 1757,
+          "end_line": 1762,
+          "byte_offset": 61108,
+          "offset": 61108,
+          "line_start": 1757,
+          "byte_length": 192,
+          "sha256": "789af15749d11b7d42bfec04e71038f592d2d38ff3d7fd5feea636e212cb0d92",
+          "file_sha256": "1b6ad2351279c8d37ba30a26a1baf1f4da8a5884fa30b3da521497452a1fd31a",
+          "source_text": "FeatureSpec {\n        id: Feature::GuardianV2DecisionsComparison,\n        key: \"guardianv2_decisions_comparison\",\n        stage: Stage::UnderDevelopment,\n        default_enabled: false,\n    },",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/features/src/lib.rs#L1757"
+        },
+        {
+          "file": "codex-rs/ext/guardian-v2/src/async_scorer/extension.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 105,
+          "end_line": 116,
+          "byte_offset": 4102,
+          "offset": 4102,
+          "line_start": 105,
+          "byte_length": 485,
+          "sha256": "8678cd0e4511d01ef3b60f635bf609d118fb4a149e46af505f07f45f67bfac56",
+          "file_sha256": "9fe4a7172c1b13b4c78b0e51a95f08e7d7460b307a9413867ebe7771d6bc2ef7",
+          "source_text": "            input\n                .thread_store\n                .remove::<super::decisions::DecisionsSampler>();\n            if input\n                .config\n                .features\n                .enabled(Feature::GuardianV2DecisionsComparison)\n                && let Some(decisions_sampler) = super::startup::decisions_sampler(&input)\n            {\n                input.thread_store.insert(decisions_sampler);\n            }\n            input.thread_store.insert(guardian_config);",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/ext/guardian-v2/src/async_scorer/extension.rs#L105"
+        },
+        {
+          "file": "codex-rs/ext/guardian-v2/src/async_scorer/startup.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 18,
+          "end_line": 51,
+          "byte_offset": 540,
+          "offset": 540,
+          "line_start": 18,
+          "byte_length": 1310,
+          "sha256": "8ee7577e546cb742a6201e4c21cfa53f9fe6f82724fbe8532c4dce02b05d28b4",
+          "file_sha256": "49d0ce48b18667032b3a44f8954c991d69096e36078dcfaaaf4d4e9963d79c5a",
+          "source_text": "// Decisions setup failures are telemetry only; they never affect the baseline sampler.\npub(super) fn decisions_sampler(\n    input: &ThreadStartInput<'_, Config>,\n) -> Option<super::decisions::DecisionsSampler> {\n    use super::decisions::DecisionsError;\n    use super::decisions::DecisionsSampler;\n    use super::decisions::URL;\n    use codex_http_client::ClientRouteClass;\n    let result = std::env::var(\"CODEX_GUARDIAN_DECISIONS_API_KEY\")\n        .map_err(|_| DecisionsError::Credentials)\n        .and_then(|key| {\n            let client = input\n                .config\n                .http_client_factory()\n                .build_client_without_request_logging(URL, ClientRouteClass::Api)\n                .map_err(|_| DecisionsError::ClientSetup)?;\n            DecisionsSampler::new(client, key, URL.to_owned())\n        });\n    match result {\n        Ok(sampler) => Some(sampler),\n        Err(error) => {\n            if let Some(metrics) = input.extension_metrics.as_deref() {\n                metrics.counter(\n                    \"codex.guardian_v2.decisions_comparison.setup_failure\",\n                    /*inc*/ 1,\n                    &[(\"reason\", super::metrics::decisions_failure_reason(error))],\n                );\n            }\n            None\n        }\n    }\n}\n\npub(super) async fn sampler_config(",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/ext/guardian-v2/src/async_scorer/startup.rs#L18"
+        },
+        {
+          "file": "codex-rs/ext/guardian-v2/src/async_scorer/classification.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 310,
+          "end_line": 358,
+          "byte_offset": 12884,
+          "offset": 12884,
+          "line_start": 310,
+          "byte_length": 2290,
+          "sha256": "1880a2fdaf8414a5184360e48ab4d635d4b670a2f3ed05ce5c4d90b4ededa4ee",
+          "file_sha256": "bcf11b64cb18726fe7baf80e94d70cabb9d1330cbe2ee0fa3eddc01f71e103eb",
+          "source_text": "            let result = match transcript {\n                ClassificationContext::Snapshot(context) => {\n                    sampling.input = context.into_messages();\n                    if let Some(decisions_sampler) = decisions_sampler.as_ref() {\n                        decisions_task =\n                            Some(decisions_sampler.spawn(&sampling, sampler.max_input_tokens()));\n                    } else if config\n                        .features\n                        .enabled(codex_features::Feature::GuardianV2DecisionsComparison)\n                    {\n                        super::metrics::record_decisions_comparison_outcome(\n                            metrics.as_deref(),\n                            \"skipped\",\n                            \"not_initialized\",\n                        );\n                    }\n                    sampler.sample(sampling).await\n                }\n\n                ClassificationContext::Conversation {\n                    evidence,\n                    reservation,\n                } => {\n                    // The retained prefix is owned by the conversation backend, not this snapshot.\n                    if config\n                        .features\n                        .enabled(codex_features::Feature::GuardianV2DecisionsComparison)\n                    {\n                        super::metrics::record_decisions_comparison_outcome(\n                            metrics.as_deref(),\n                            \"skipped\",\n                            \"unsupported_evidence\",\n                        );\n                    }\n                    let (ready, score) = tokio::sync::oneshot::channel();\n                    reservation.submit(ConversationRequest {\n                        evidence,\n                        sampling,\n                        reset_token_limit: guardian_config\n                            .async_classifier_conversation_token_limit,\n                        ready,\n                        authorization: score_authorization.clone(),\n                        thread: Arc::clone(&thread),\n                        metrics: metrics.clone(),\n                    });\n                    score.await.unwrap_or(Err(LunaSamplerError::Superseded))\n                }\n            };\n            let output = match result {",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/ext/guardian-v2/src/async_scorer/classification.rs#L310"
+        },
+        {
+          "file": "codex-rs/ext/guardian-v2/src/async_scorer/classification.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 390,
+          "end_line": 392,
+          "byte_offset": 16572,
+          "offset": 16572,
+          "line_start": 390,
+          "byte_length": 147,
+          "sha256": "3b7838b03d62fce25f947332fa24bb118113aa82e08d02dc1c2c3ac12704f889",
+          "file_sha256": "bcf11b64cb18726fe7baf80e94d70cabb9d1330cbe2ee0fa3eddc01f71e103eb",
+          "source_text": "            let accepted =\n                score_progress.publish(score.clone(), score_authorization, tool_call_index);\n            tracing::info!(",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/ext/guardian-v2/src/async_scorer/classification.rs#L390"
+        },
+        {
+          "file": "codex-rs/ext/guardian-v2/src/async_scorer/classification.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 461,
+          "end_line": 481,
+          "byte_offset": 19503,
+          "offset": 19503,
+          "line_start": 461,
+          "byte_length": 769,
+          "sha256": "cf844a3164615441c1b1b2f48764e2a7b216aa47388ca432c656e0c37725332d",
+          "file_sha256": "bcf11b64cb18726fe7baf80e94d70cabb9d1330cbe2ee0fa3eddc01f71e103eb",
+          "source_text": "        if matches!(result, Ok(ClassificationOutcome::Superseded))\n            && let Some(task) = decisions_task.take()\n        {\n            drop(task);\n            super::metrics::record_decisions_comparison_outcome(\n                metrics.as_deref(),\n                \"skipped\",\n                \"superseded\",\n            );\n        }\n        if let Err(error) = result {\n            event_sink.emit_warning(ExtensionWarning {\n                thread_id,\n                turn_id: Some(turn_id),\n                message: format!(\"Guardian V2 risk scoring failed: {error}\"),\n            });\n        }\n        if let Some(decisions_task) = decisions_task {\n            decisions_task\n                .finish_and_record_outcome(metrics.as_deref())\n                .await;",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/ext/guardian-v2/src/async_scorer/classification.rs#L461"
+        },
+        {
+          "file": "codex-rs/ext/guardian-v2/src/async_scorer/decisions.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 30,
+          "end_line": 40,
+          "byte_offset": 1147,
+          "offset": 1147,
+          "line_start": 30,
+          "byte_length": 619,
+          "sha256": "28b8519eb0a0243cefdbe6da8431f33f4e940c882925a340aa9fdc48e70ad3a6",
+          "file_sha256": "ebdf1e2b8a9c5c8296491bc84d504522cb016b1350ab1f537d1fe303a6847e53",
+          "source_text": "const MAX_CONCURRENT_REQUESTS: usize = 16;\npub(super) const URL: &str = \"https://api.openai.com/v1/decisions\";\nconst MODEL: &str = \"gpt-6-luna\";\n// Provisional local rollout budgets, not Decisions API limits or model context limits.\n// Guardian owns the text/context budget; bound HTTP lifetime, image bytes and response buffering here.\n// Oversized images skip the complete request; transport failures never affect approvals.\nconst DEADLINE: Duration = Duration::from_secs(6);\nconst MAX_IMAGE_BYTES: usize = 8 * 1024 * 1024;\nconst MAX_RESPONSE_BYTES: usize = 16 * 1024;\n\n#[derive(Clone, Copy, Debug, Error, PartialEq)]",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/ext/guardian-v2/src/async_scorer/decisions.rs#L30"
+        },
+        {
+          "file": "codex-rs/ext/guardian-v2/src/async_scorer/decisions.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 143,
+          "end_line": 209,
+          "byte_offset": 5016,
+          "offset": 5016,
+          "line_start": 143,
+          "byte_length": 2404,
+          "sha256": "513913a5c2e85351013d239e101daf7da76f4a73446ac586a3334ee9dae187b9",
+          "file_sha256": "ebdf1e2b8a9c5c8296491bc84d504522cb016b1350ab1f537d1fe303a6847e53",
+          "source_text": "    /// Retain the newest requests; the caller joins after baseline publication.\n    pub(super) fn spawn(\n        self: &Arc<Self>,\n        request: &LunaSamplingRequest,\n        max_input_tokens: usize,\n    ) -> DecisionsTask {\n        let body = request_body(\n            &request.instructions,\n            &request.input,\n            request.parent_compaction.as_ref(),\n        )\n        .and_then(|body| {\n            // Reuse Guardian's complete budget without changing its sampling path.\n            // The temporary copy is dropped before admission; Responses prepares again.\n            let (_, tokens) = LunaSampler::prepare_input(\n                request,\n                /*history*/ None,\n                request\n                    .input\n                    .iter()\n                    .cloned()\n                    .map(ResponseItemEnvelope::new)\n                    .collect(),\n            );\n            if tokens > max_input_tokens.saturating_sub(/*rhs*/ 256) {\n                return Err(DecisionsError::InputTooLarge);\n            }\n            Ok(body)\n        });\n        let body = match body {\n            Ok(body) => body,\n            Err(error) => {\n                return DecisionsTask {\n                    handle: tokio::spawn(async move { (Err(error), Duration::ZERO) }),\n                    sampler: Weak::new(),\n                };\n            }\n        };\n        let mut active = self\n            .active_requests\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        active.retain(|task| !task.is_finished());\n        if active.len() == MAX_CONCURRENT_REQUESTS\n            && let Some(oldest) = active.pop_front()\n        {\n            oldest.abort();\n        }\n        let sampler = Arc::clone(self);\n        let handle = tokio::spawn(async move {\n            let Ok(_permit) = sampler.slots.acquire().await else {\n                return (Err(DecisionsError::Transport), Duration::ZERO);\n            };\n            let started = Instant::now();\n            let result = tokio::time::timeout(DEADLINE, sampler.request(body))\n                .await\n                .unwrap_or(Err(DecisionsError::Timeout));\n            (result, started.elapsed())\n        });\n        active.push_back(handle.abort_handle());\n        DecisionsTask {\n            handle,\n            sampler: Arc::downgrade(self),\n        }\n    }\n\n    async fn request(",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/ext/guardian-v2/src/async_scorer/decisions.rs#L143"
+        },
+        {
+          "file": "codex-rs/ext/guardian-v2/src/async_scorer/decisions.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 238,
+          "end_line": 299,
+          "byte_offset": 8399,
+          "offset": 8399,
+          "line_start": 238,
+          "byte_length": 2555,
+          "sha256": "009d7206449a9ec9ffd9bd0667734de717e05cbbd2876d9a2b4506ad60f82047",
+          "file_sha256": "ebdf1e2b8a9c5c8296491bc84d504522cb016b1350ab1f537d1fe303a6847e53",
+          "source_text": "fn request_body(\n    instructions: &RenderedFragment,\n    evidence: &[ResponseItem],\n    parent_compaction: Option<&ResponseItem>,\n) -> Result<Value, DecisionsError> {\n    if parent_compaction.is_some() {\n        return Err(DecisionsError::UnsupportedEvidence);\n    }\n    let ContentItem::InputText { text: rubric } = instructions.annotated_content().content() else {\n        return Err(DecisionsError::UnsupportedEvidence);\n    };\n    let mut image_bytes = 0usize;\n    let mut messages = Vec::new();\n    for item in evidence {\n        let ResponseItem::Message { role, content, .. } = item else {\n            return Err(DecisionsError::UnsupportedEvidence);\n        };\n        if role != \"user\" {\n            return Err(DecisionsError::UnsupportedEvidence);\n        }\n        let mut parts = Vec::new();\n        for part in content {\n            match part {\n                ContentItem::InputText { text } => {\n                    parts.push(json!({\"type\": \"input_text\", \"text\": text}));\n                }\n                ContentItem::InputImage {\n                    image: ImageReference::Inline { image_url },\n                    ..\n                } if image_url.starts_with(\"data:\") => {\n                    image_bytes = image_bytes.saturating_add(image_url.len());\n                    if image_bytes > MAX_IMAGE_BYTES {\n                        return Err(DecisionsError::InputTooLarge);\n                    }\n                    parts.push(\n                        // Luna also clears image detail before sending evidence.\n                        json!({\"type\": \"input_image\", \"image_url\": image_url, \"detail\": null}),\n                    );\n                }\n                ContentItem::InputImage { .. }\n                | ContentItem::InputAudio { .. }\n                | ContentItem::OutputText { .. } => {\n                    return Err(DecisionsError::UnsupportedEvidence);\n                }\n            }\n        }\n        // Harness annotations/IDs are not part of the Decisions contract. Preserve every\n        // model-visible content part and message boundary; never demote trusted developer text.\n        let mut message = json!({\"role\": \"user\"});\n        message[\"content\"] = Value::Array(parts);\n        messages.push(message);\n    }\n    let mut body = json!({\n        \"model\": MODEL,\n        \"questions\": [{\"type\": \"choice\", \"name\": \"guardian_risk\", \"instructions\": rubric,\n                       \"choices\": [{\"value\": \"low\"}, {\"value\": \"high\"}]}]\n    });\n    body[\"input\"] = Value::Array(messages);\n    Ok(body)\n}\n\nfn parse_answer(",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/ext/guardian-v2/src/async_scorer/decisions.rs#L238"
+        }
+      ]
+    },
+    {
+      "id": "login-shell-package-path",
+      "title": "Executor tools survive login-shell PATH resets",
+      "kind": "tool",
+      "text": "With login_shell_package_path enabled, unified_exec can restore executor-supplied tool directories inside a POSIX login shell after its startup scripts run. The setup uses the executor's prepend_path_dirs and leaves an explicit PATH override in control.",
+      "gate": {
+        "key": "features.login_shell_package_path",
+        "default_enabled": false,
+        "stage": "Experimental",
+        "provenance": {
+          "file": "codex-rs/features/src/lib.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 1041,
+          "end_line": 1050,
+          "byte_offset": 40728,
+          "offset": 40728,
+          "line_start": 1041,
+          "byte_length": 382,
+          "sha256": "156c73a90cbfb1be5c449d5031f66e8397ec8af12c2568e4fc0b49b3e1df4139",
+          "file_sha256": "1b6ad2351279c8d37ba30a26a1baf1f4da8a5884fa30b3da521497452a1fd31a",
+          "source_text": "FeatureSpec {\n        id: Feature::LoginShellPackagePath,\n        key: \"login_shell_package_path\",\n        stage: Stage::Experimental {\n            name: \"Bundled tools in login shells\",\n            menu_description: \"Keep bundled tools such as ripgrep available when login shell startup resets PATH.\",\n            announcement: \"\",\n        },\n        default_enabled: false,\n    },",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/features/src/lib.rs#L1041"
+        }
+      },
+      "details": {
+        "conditions": "Only login Bash, Zsh and Sh qualify. The executor must report usable POSIX directories; colon-containing directories and unsupported setup retain the original arguments. Directory order is preserved, existing entries are not duplicated, and an unset or read-only PATH does not prevent the user command from running. The requested login mode is retained. This mechanism is separate from shell snapshots."
+      },
+      "provenance": [
+        {
+          "file": "codex-rs/features/src/lib.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 1041,
+          "end_line": 1050,
+          "byte_offset": 40728,
+          "offset": 40728,
+          "line_start": 1041,
+          "byte_length": 382,
+          "sha256": "156c73a90cbfb1be5c449d5031f66e8397ec8af12c2568e4fc0b49b3e1df4139",
+          "file_sha256": "1b6ad2351279c8d37ba30a26a1baf1f4da8a5884fa30b3da521497452a1fd31a",
+          "source_text": "FeatureSpec {\n        id: Feature::LoginShellPackagePath,\n        key: \"login_shell_package_path\",\n        stage: Stage::Experimental {\n            name: \"Bundled tools in login shells\",\n            menu_description: \"Keep bundled tools such as ripgrep available when login shell startup resets PATH.\",\n            announcement: \"\",\n        },\n        default_enabled: false,\n    },",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/features/src/lib.rs#L1041"
+        },
+        {
+          "file": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 515,
+          "end_line": 530,
+          "byte_offset": 20631,
+          "offset": 20631,
+          "line_start": 515,
+          "byte_length": 952,
+          "sha256": "6d64d7f856bf8dc96395a2a40d1156129f68ca86060af92a03598748c9e6d2ed",
+          "file_sha256": "65830005a18698e7ca8d2cb8a5a1cf0cbb952fa42543b2b70d5a13d0f67cb42d",
+          "source_text": "        // Restore the executor's PATH directories inside the shell so nested commands can\n        // still find bundled tools even if login startup clears the inherited PATH.\n        // `base_command` already carries the requested login mode; keep it if setup is unavailable.\n        // `hook_command` is the raw script the helper needs to prepend setup inside that same shell.\n        let mut command = base_command.to_vec();\n        if ctx.session.enabled(Feature::LoginShellPackagePath)\n            && req.shell.is_posix_login()\n            && !explicit_env_overrides.contains_key(\"PATH\")\n            && let Ok(info) = req.turn_environment.environment.info().await\n            && let Some(command_with_path_prepends) = req\n                .shell\n                .derive_exec_args_with_path_prepends(&req.hook_command, &info.prepend_path_dirs)\n        {\n            command = command_with_path_prepends;\n        }\n        if !environment_is_remote {",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/tools/runtimes/unified_exec.rs#L515"
+        },
+        {
+          "file": "codex-rs/core/src/shell.rs",
+          "version": "rust-v0.162.0-alpha.2",
+          "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+          "line": 88,
+          "end_line": 153,
+          "byte_offset": 2732,
+          "offset": 2732,
+          "line_start": 88,
+          "byte_length": 3186,
+          "sha256": "6a13e7a7146a625191710d15cc33b2ca8ed9b33f6cb77101c4fb40af3070ccd2",
+          "file_sha256": "ffc7510c7ba0b38eca27c6bec8551104e90805184f6fa08ac045d5311e0027f5",
+          "source_text": "impl ShellInvocation {\n    pub(crate) fn is_posix_login(&self) -> bool {\n        self.use_login_shell\n            && matches!(\n                self.shell.shell_type,\n                ShellType::Bash | ShellType::Zsh | ShellType::Sh\n            )\n    }\n\n    /// Builds launch arguments that try to restore the executor's directories to `PATH`\n    /// after login startup, so `command` and its children can find them.\n    ///\n    /// Call this for the POSIX login shell started by Codex when the executor reports\n    /// directories and the user has not explicitly configured `PATH`. The request's login\n    /// mode is unchanged, even if startup makes `PATH` read-only. Returns `None` if no\n    /// directories are reported or the shell or any path cannot use this setup; keep the\n    /// original arguments in that case.\n    pub(crate) fn derive_exec_args_with_path_prepends(\n        &self,\n        command: &str,\n        paths: &[PathUri],\n    ) -> Option<Vec<String>> {\n        if !self.is_posix_login() || paths.is_empty() {\n            return None;\n        }\n        let mut setup = Vec::with_capacity(paths.len());\n        // Prepend backwards so newly added directories retain the executor's order.\n        for path in paths.iter().rev() {\n            if path.infer_path_convention() != Some(PathConvention::Posix) {\n                return None;\n            }\n            let path = path.inferred_native_path_string();\n            // POSIX PATH has no way to escape a colon inside a single directory.\n            if path.contains(':') {\n                return None;\n            }\n            let path = shlex::try_quote(&path).ok()?;\n            // Padding `${PATH-}` with colons makes `case` match whole entries, even at the ends;\n            // `-` also handles an unset PATH. Re-export a match so child commands inherit it;\n            // otherwise probe in a subshell: assigning a read-only PATH can exit the login shell\n            // before the user's command runs. `${PATH:+...}` adds `:` only when PATH is nonempty,\n            // so we don't make the shell search the current directory.\n            setup.push(format!(\n                \"case \\\":${{PATH-}}:\\\" in *:{path}:*) export PATH ;; \\\n                 *) if (export PATH=) 2>/dev/null; then \\\n                 export PATH={path}${{PATH:+:\\\"$PATH\\\"}}; fi ;; esac\"\n            ));\n        }\n        let setup = setup.join(\"; \");\n        // Keep setup on the first input line so shell diagnostics and $LINENO still refer to\n        // the original script. If the quoted path contains literal newlines, decode only the\n        // setup with eval in the current shell; the trailing `esac` keeps command substitution\n        // from trimming any newlines in the path.\n        let setup = if setup.contains('\\n') {\n            let escaped = setup.replace('\\\\', \"\\\\\\\\\").replace('\\n', \"\\\\n\");\n            let escaped = shlex::try_quote(&escaped).ok()?;\n            format!(\"eval \\\"$(command -p printf '%b' {escaped})\\\"\")\n        } else {\n            setup\n        };\n        let command = format!(\"{setup}; {command}\");\n        Some(self.shell.derive_exec_args(&command, self.use_login_shell))\n    }\n}\n\n#[cfg(all(test, unix))]",
+          "url": "https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/shell.rs#L88"
+        }
+      ]
+    }
+  ]
+}

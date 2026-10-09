@@ -20,7 +20,9 @@ const GENERATED = [
   { script: "extract/codex/learning-blocks.mjs", diff: "work/learning-blocks-diff.md",
     outputs: ["outputs/chatgpt-learning-blocks.md", "outputs/chatgpt-learning-blocks.json"] },
   { script: "extract/codex/intelligent-ui.mjs", diff: "work/intelligent-ui-diff.md",
-    outputs: ["outputs/intelligent-ui.md", "outputs/intelligent-ui.json"] }
+    outputs: ["outputs/intelligent-ui.md", "outputs/intelligent-ui.json"] },
+  { script: "extract/codex/feature-notes.mjs", diff: "work/feature-notes-diff.md",
+    outputs: ["outputs/feature-notes.md", "outputs/feature-notes.json"] }
 ];
 // Early-warning scans (run after the generators and the sweep). A script not yet on main is skipped.
 const SCANS = [

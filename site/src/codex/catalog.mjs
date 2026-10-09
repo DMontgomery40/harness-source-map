@@ -206,6 +206,16 @@ export const categories = [
     label: "Tools and features",
     files: [
       {
+        path: "outputs/feature-notes.md",
+        anchor: "feature-notes-md",
+        slug: "feature-notes",
+        records: "outputs/feature-notes.json",
+        format: "markdown",
+        title: "Installed harness mechanisms",
+        promptText: true,
+        defaultOpen: false
+      },
+      {
         path: "outputs/desktop-tool-manifest.md",
         anchor: "desktop-tool-manifest-md",
         slug: "tool-manifest",

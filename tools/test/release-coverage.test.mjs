@@ -3,9 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
+import { zstdCompressSync } from 'node:zlib';
+import { PrivacyError } from '../../codex/extract/codex/lib/privacy.mjs';
+import { decisionsRequestKey } from '../decisions-provider.mjs';
 import {
   parseChangelog, parsePullRequests, selectShortlist, relevanceQuestions,
-  requestKey, runReleaseAudit, loadPublishedRecords, auditMarkdown, AUDIT_VERSION
+  requestKey, runReleaseAudit, loadPublishedRecords, attachSourceReview, auditMarkdown, AUDIT_VERSION, AUDIT_QUESTION_VERSION, SOURCE_REVIEW_QUESTION_VERSION, releaseDecisionConfig, providerRequestKey
 } from '../release-coverage.mjs';
 
 const config = () => ({provider:'OpenAI',endpoint:'https://api.openai.com/v1/decisions',model:'gpt-6-luna',key:'fixture',servedModel:/^gpt-6-luna(?:-|$)/});
@@ -18,6 +22,145 @@ const typedAnswers = (payload,{relevant=.99,covers=.01,complete=false}={}) => {
   return native?answers.map(([,a])=>a):Object.fromEntries(answers);
 };
 const response = answers => ({ok:true,status:200,json:async()=>({model:'gpt-6-luna',answers,usage:{input_tokens:123}})});
+const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+function sourceReviewFixture({privateSource=false}={}) {
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'release-source-review-')),work=path.join(dir,'work'),extracted=path.join(work,'extracted');
+  fs.mkdirSync(extracted,{recursive:true});fs.mkdirSync(path.join(dir,'outputs'));
+  const version='2.1.295',prose='Execution requires approval; denial blocks the call.',reads=[],files=[],parts=[Buffer.from('BINARY')];let offset=parts[0].length;
+  for(const [name,text,encoding,compressed]of [
+    ['execution.js',privateSource?'function execute(){return {"api_key":"withheld-fixture"}}':'function execute(){if(!approved)throw new Error("denied");if(readOnly)throw new Error("source-only restriction");}', 'utf8',false],
+    ['wide.txt','Permission is required. FINAL_UTF16_RESTRICTION','utf16le',false],
+    ['reference.zst','Approval rejects denied calls. FINAL_DECODED_RESTRICTION','utf16le',true],
+    ['runtime.js','function validate(){return "FINAL_SUFFIXLESS_RESTRICTION"}','utf8',true]
+  ]) {
+    const decoded=Buffer.from(text,encoding),raw=compressed?zstdCompressSync(decoded):decoded;
+    const file={name:`/$bunfs/root/${name}`,file_offset:offset,length:raw.length,sha256:sha(raw),...(compressed?{compression:'zstd',decompressed:name.endsWith('.zst')?'reference.txt':name}:{})};files.push(file);parts.push(raw);
+    fs.writeFileSync(path.join(extracted,compressed&&!name.endsWith('.zst')?`${name}.zst`:name),raw);if(compressed)fs.writeFileSync(path.join(extracted,file.decompressed),decoded);
+    const provenance={file:name,binary_offset:offset,length:raw.length,sha256:sha(raw),version,platform:'darwin-arm64',...(compressed?{encoding:'zstd',...(encoding==='utf16le'?{decoded_encoding:'utf-16le'}:{}),decompressed_offset:0,decompressed_length:decoded.length,decompressed_sha256:sha(decoded)}:encoding==='utf16le'?{encoding:'utf-16le'}:{})};
+    reads.push({provenance,source_text:text});offset+=raw.length;
+  }
+  const binary=Buffer.concat(parts),binaryHash=sha(binary),binaryDir=path.join(work,'releases',version,'package');fs.mkdirSync(binaryDir,{recursive:true});fs.writeFileSync(path.join(binaryDir,'claude'),binary);
+  fs.writeFileSync(path.join(work,'current.json'),JSON.stringify({version,binary_sha256:binaryHash}));fs.writeFileSync(path.join(work,'embedded-manifest.json'),JSON.stringify({binary:'claude',binary_sha256:binaryHash,files}));
+  const item={id:'execution',title:'Execution approval',text:prose,provenance:reads.map(r=>r.provenance),details:{release:version,binary_sha256:binaryHash,current:true}};
+  fs.writeFileSync(path.join(dir,'outputs','feature.json'),JSON.stringify({version,binary_sha256:binaryHash,items:[item]}));fs.writeFileSync(path.join(dir,'outputs','feature.md'),`# Features\n\n## ${item.title}\n\n${prose}`);
+  const packet={version,binary_sha256:binaryHash,scope:'complete current public source review',items:[{id:item.id,title:item.title,text:item.text,source_reads:reads}]},packetFile=path.join(work,'source-review.json');fs.writeFileSync(packetFile,JSON.stringify(packet));
+  return {dir,work,packet,packetFile,reads,catalog:[{files:[{slug:'feature',title:'Features',path:'outputs/feature.md',format:'markdown',records:'outputs/feature.json'}]}]};
+}
+
+test('source review binds exact published IDs and prose to current binary bytes, UTF-16 and decoded zstd spans',async()=>{
+  const fixture=sourceReviewFixture();try {
+    const inventory=await loadPublishedRecords(fixture.dir,fixture.catalog);
+    await attachSourceReview(fixture.dir,inventory,fixture.packetFile);
+    const evidence=inventory.records.find(r=>r.id==='feature/execution').source_evidence;
+    assert.equal(evidence.publication_status,'verification-only; source bodies are not published documentation');
+    assert.deepEqual(evidence.source_reads.map(r=>r.source_text),fixture.reads.map(r=>r.source_text));
+    assert.equal(evidence.published_text_sha256,sha(fixture.packet.items[0].text));
+    assert.equal(evidence.packet_sha256,sha(fs.readFileSync(fixture.packetFile)));
+    assert.equal(inventory.source_review.items[0].status,'verified');
+    assert.equal(inventory.source_review.items[0].source_reads.length,4);
+    assert.ok(inventory.source_review.items[0].source_reads.every(r=>r.body_sha256.length===64&&!Object.hasOwn(r,'source_text')));
+    assert.equal(JSON.stringify(inventory.source_review).includes('function execute'),false);
+  }finally {fs.rmSync(fixture.dir,{recursive:true,force:true});}
+});
+
+test('source review rejects stale binaries, prose changes, unmatched locators and altered complete source endings',async()=>{
+  for(const mutate of [
+    f=>{f.packet.binary_sha256='0'.repeat(64);},
+    f=>{f.packet.items[0].text+=' unpublished claim';},
+    f=>{f.packet.items[0].source_reads[0].provenance.binary_offset++;},
+    f=>{f.packet.items[0].source_reads[1].source_text+=' changed ending';},
+    f=>{fs.appendFileSync(path.join(f.work,'releases','2.1.295','package','claude'),'changed binary');},
+    f=>{fs.appendFileSync(path.join(f.work,'extracted','reference.txt'),'changed decoded asset');}
+  ]) {
+    const fixture=sourceReviewFixture();try {
+      mutate(fixture);fs.writeFileSync(fixture.packetFile,JSON.stringify(fixture.packet));
+      const inventory=await loadPublishedRecords(fixture.dir,fixture.catalog);
+      await assert.rejects(attachSourceReview(fixture.dir,inventory,fixture.packetFile),/source review/i);
+      assert.ok(inventory.records.every(r=>!r.source_evidence));
+    }finally {fs.rmSync(fixture.dir,{recursive:true,force:true});}
+  }
+});
+
+test('source evidence is independently privacy withheld without removing safe published prose or leaking raw fields',async()=>{
+  const fixture=sourceReviewFixture({privateSource:true});try {
+    const inventory=await loadPublishedRecords(fixture.dir,fixture.catalog);await attachSourceReview(fixture.dir,inventory,fixture.packetFile);
+    assert.equal(inventory.source_review.items[0].status,'withheld');
+    assert.ok(inventory.records.every(r=>!r.source_evidence));
+    assert.equal(JSON.stringify(inventory).includes('withheld-fixture'),false);
+    assert.ok(inventory.records.find(r=>r.id==='feature/execution').text.includes(fixture.packet.items[0].text));
+  }finally {fs.rmSync(fixture.dir,{recursive:true,force:true});}
+});
+
+test('native verification uses complete separately bound source evidence without promoting source-only restrictions',async()=>{
+  const fixture=sourceReviewFixture();try {
+    const inventory=await loadPublishedRecords(fixture.dir,fixture.catalog);await attachSourceReview(fixture.dir,inventory,fixture.packetFile);
+    const row=sources('Execution approval')[0];row.text=fixture.packet.items[0].text;
+    const second={...row,id:'source-only',text:'Execution blocks read-only calls, even with approval.'},seen=[];
+    const report=await runReleaseAudit(config(),[row,second],inventory.records.filter(r=>r.id==='feature/execution'),{sourceReview:inventory.source_review,fetchImpl:async(_url,options)=>{
+      const native=JSON.parse(options.body);seen.push(native);const q=native.questions.find(q=>q.name.endsWith('_covers'));
+      if(!q)return response(typedAnswers(native));
+      const instructions=JSON.parse(q.instructions).instructions;
+      assert.match(instructions.task,/source.only.*cannot|cannot.*source.only/i);
+      assert.deepEqual(instructions.record.source_evidence.source_reads.map(r=>r.source_text),fixture.reads.map(r=>r.source_text));
+      assert.equal(instructions.record.text.includes('function execute'),false);
+      return response(typedAnswers(native,{covers:instructions.source.id===row.id?.99:.01,complete:instructions.source.id===row.id}));
+    }});
+    assert.deepEqual(report.rows.map(r=>r.status),['covered','unverified-gap']);
+    assert.equal(report.rows[0].coverage.matches[0].source_evidence.packet_sha256,sha(fs.readFileSync(fixture.packetFile)));
+    assert.equal(JSON.stringify(report).includes('function execute'),false);
+    assert.equal(report.requests[0].question_version,AUDIT_QUESTION_VERSION);
+    assert.ok(report.requests.filter(r=>r.question_ids.some(id=>id.endsWith('_covers'))).every(r=>r.question_version===SOURCE_REVIEW_QUESTION_VERSION));
+    const relevance=seen.find(r=>r.questions.some(q=>q.name.endsWith('_relevant'))),verification=seen.find(r=>r.questions.some(q=>q.name.endsWith('_covers')));
+    assert.equal(report.requests[0].key,decisionsRequestKey(config(),relevance,AUDIT_QUESTION_VERSION));
+    assert.equal(report.requests.find(r=>r.question_ids.some(id=>id.endsWith('_covers'))).key,decisionsRequestKey(config(),verification,SOURCE_REVIEW_QUESTION_VERSION));
+    assert.ok(seen.every(r=>Buffer.byteLength(JSON.stringify(r))<=96_000));
+  }finally {fs.rmSync(fixture.dir,{recursive:true,force:true});}
+});
+
+test('Jev verification carries complete source evidence and uses an isolated source-review cache policy',async()=>{
+  const fixture=sourceReviewFixture();try {
+    const inventory=await loadPublishedRecords(fixture.dir,fixture.catalog);await attachSourceReview(fixture.dir,inventory,fixture.packetFile);
+    const cfg=releaseDecisionConfig('openrouter',{OPENROUTER_API_KEY:'fixture'},()=>''),row=sources('Execution approval')[0];row.text=fixture.packet.items[0].text;
+    const report=await runReleaseAudit(cfg,[row],inventory.records.filter(r=>r.id==='feature/execution'),{sourceReview:inventory.source_review,fetchImpl:async(_url,options)=>{
+      const native=JSON.parse(options.body);
+      for(const q of Object.values(native.questions).filter(q=>q.instructions.record))assert.deepEqual(q.instructions.record.source_evidence.source_reads.map(r=>r.source_text),fixture.reads.map(r=>r.source_text));
+      return {ok:true,status:200,json:async()=>({model:'typesafe/jev-1.13-20260917',answers:typedAnswers(native,{covers:.99,complete:true}),usage:{}})};
+    }});
+    assert.equal(report.rows[0].status,'covered');
+    assert.equal(report.requests[0].question_version,AUDIT_QUESTION_VERSION);
+    assert.equal(report.requests.at(-1).question_version,SOURCE_REVIEW_QUESTION_VERSION);
+    assert.match(report.requests.at(-1).key,new RegExp(`^${SOURCE_REVIEW_QUESTION_VERSION}@OpenRouter/`));
+    assert.equal(report.rows[0].coverage.matches[0].served_model,'typesafe/jev-1.13-20260917');
+  }finally {fs.rmSync(fixture.dir,{recursive:true,force:true});}
+});
+
+test('oversized verification pairs split into complete requests and retain partial judgments on failure',async()=>{
+  const fixture=sourceReviewFixture();try {
+    const inventory=await loadPublishedRecords(fixture.dir,fixture.catalog);await attachSourceReview(fixture.dir,inventory,fixture.packetFile);
+    const candidate=inventory.records.filter(r=>r.id==='feature/execution'),row=sources('Execution approval')[0];row.text=fixture.packet.items[0].text;
+    let fullPair;
+    await runReleaseAudit(config(),[row],candidate,{fetchImpl:async(_url,options)=>{const native=JSON.parse(options.body);if(native.questions.some(q=>q.name.endsWith('_covers')))fullPair=native;return response(typedAnswers(native,{covers:.99,complete:true}));}});
+    const maxBytes=Math.floor(Buffer.byteLength(JSON.stringify(fullPair))*.7),seen=[];
+    const report=await runReleaseAudit(config(),[row],candidate,{maxBytes,fetchImpl:async(_url,options)=>{
+      assert.ok(Buffer.byteLength(options.body)<=maxBytes);const native=JSON.parse(options.body);seen.push(native);
+      for(const q of native.questions.filter(q=>!q.name.endsWith('_relevant')&&!q.name.endsWith('_role')))assert.deepEqual(JSON.parse(q.instructions).instructions.record.source_evidence.source_reads.map(r=>r.source_text),fixture.reads.map(r=>r.source_text));
+      return response(typedAnswers(native,{covers:.99,complete:true}));
+    }});
+    const checks=seen.filter(r=>r.questions.some(q=>q.name.endsWith('_covers')||q.name.endsWith('_completeness')));
+    assert.equal(checks.length,2);assert.ok(checks.every(r=>r.questions.length===1));
+    assert.equal(report.rows[0].status,'covered');assert.equal(report.rows[0].coverage.matches[0].request_keys.length,2);
+    assert.deepEqual(report.rows[0].coverage.pending_judgments,[]);
+    const failed=await runReleaseAudit(config(),[row],candidate,{maxBytes,attempts:1,fetchImpl:async(_url,options)=>{
+      const native=JSON.parse(options.body);if(native.questions.some(q=>q.name.endsWith('_completeness')))return {ok:false,status:401};
+      return response(typedAnswers(native,{covers:.99,complete:true}));
+    }});
+    assert.equal(failed.rows[0].status,'unanswered');assert.equal(failed.rows[0].coverage.matches.length,0);
+    assert.equal(failed.rows[0].coverage.pending_judgments[0].answers.covers.noul,.99);
+    assert.equal(failed.rows[0].coverage.pending_judgments[0].answers.completeness,undefined);
+    assert.equal(failed.rows[0].coverage.pending_judgments[0].request_keys.length,1);
+    assert.deepEqual(failed.rows[0].coverage.unsearched[0].questions,['completeness']);
+  }finally {fs.rmSync(fixture.dir,{recursive:true,force:true});}
+});
 
 test('changelog version boundaries use numeric components and preserve multiline bullet endings',()=>{
   const rows=parseChangelog('## 2.1.11\n\n- Added a hook\n  with its final restriction.\n\n## 2.1.10\n- Fixed permissions\n## 2.1.9\n- Older change\n',{product:'claude-code',afterVersion:'2.1.9',throughVersion:'2.1.10',url:'https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md'});
@@ -50,11 +193,25 @@ test('pull request date bounds include the complete UTC end day and preserve com
 
 test('bounded lexical shortlist retains complete record text and reports omitted records',()=>{
   const full='Namespace developer guidance '.repeat(2000)+'ENDING_RESTRICTION';
-  const selected=selectShortlist(sources('Namespace developer guidance ENDING_RESTRICTION')[0],[{...records[0],title:'Partial namespace',text:'Partial namespace guidance'},{id:'feature/two',title:'Namespace developer guidance',kind:'prompt',text:full,file:'outputs/two.md'},{id:'other',title:'A different topic',text:'unrelated'}],{limit:1});
-  assert.equal(selected.records.length,1);
-  assert.equal(selected.records[0].text,full);
-  assert.equal(selected.omitted,2);
+  const selected=selectShortlist(sources('Namespace developer guidance ENDING_RESTRICTION')[0],[{...records[0],title:'Partial namespace',text:'Partial namespace guidance'},{id:'feature/two',title:'Namespace developer guidance',kind:'prompt',text:full,file:'outputs/two.md'},{id:'other',title:'A different topic',text:'unrelated'}],{limit:2});
+  assert.equal(selected.records.length,2);
+  assert.equal(selected.records.find(r=>r.id==='feature/two').text,full);
+  assert.equal(selected.omitted,1);
   assert.equal(selected.exhaustive,false);
+});
+
+test('length-normalized retrieval scans past oversized candidates without consuming the eight comparison slots',()=>{
+  const rows=Array.from({length:9},(_,i)=>({id:`oversized-${i}`,title:'Namespace developer guidance',text:'Namespace developer guidance '.repeat(800)}));
+  rows.push(...Array.from({length:9},(_,i)=>({id:`small-${i}`,title:'A compact entry',text:'Namespace guidance: keep the final developer restriction.'})));
+  const selected=selectShortlist(sources('Namespace developer guidance')[0],rows,{limit:8,maxBytes:100,requestBytes:r=>Buffer.byteLength(r.text)});
+  assert.equal(selected.records.length,8);
+  assert.ok(selected.records.every(r=>r.id.startsWith('small-')));
+  assert.equal(selected.omitted+selected.oversized.length+selected.records.length,rows.length);
+  assert.ok(selected.records[0].lexical_score>0);
+  const noFits=selectShortlist(sources('Namespace guidance')[0],rows.slice(0,9),{limit:8,maxBytes:100,requestBytes:r=>Buffer.byteLength(r.text)});
+  assert.equal(noFits.records.length,0);
+  assert.deepEqual(noFits.oversized.map(r=>r.id).sort(),rows.slice(0,9).map(r=>r.id).sort());
+  assert.equal(noFits.exhaustive,false);
 });
 
 test('every relevance question includes complete source text and complete-request cache keys change on endings',()=>{
@@ -75,6 +232,30 @@ test('preparation accounts for all rows without provider calls, including exclus
   assert.equal(report.summary.unresolved,4);
   assert.match(auditMarkdown(report),/not proof of absence/i);
   assert.equal(JSON.stringify(report).includes('person@example.test'),false);
+});
+
+test('raw encoded auth fields are withheld before batching and cannot contaminate independent safe sources',async()=>{
+  const rows=sources('JSON auth fixture','Safe unrelated fixture');
+  rows[0].text='Public fixture containing {"api_key":"withheld-fixture"}';
+  let calls=0;
+  const report=await runReleaseAudit(config(),rows,records,{cache:memoryCache(),fetchImpl:async(_url,options)=>{calls++;return response(typedAnswers(JSON.parse(options.body),{relevant:.01}));}});
+  assert.deepEqual(report.rows.map(r=>r.status),['withheld','non-relevant']);
+  assert.equal(calls,1);
+  assert.equal(Object.hasOwn(report.rows[0],'text'),false);
+  assert.equal(Object.hasOwn(report.rows[0],'title'),false);
+  assert.equal(Object.hasOwn(report.rows[0],'provenance'),false);
+  assert.equal(report.rows[0].source_sha256,rows[0].source_sha256);
+  assert.equal(JSON.stringify(report).includes('withheld-fixture'),false);
+});
+
+test('a late privacy rejection scrubs source material while retaining hashes and unresolved accounting',async()=>{
+  const rows=sources('Late privacy fixture');
+  const report=await runReleaseAudit(config(),rows,records,{evaluateBatch:async()=>{throw new PrivacyError('Native request failed the privacy boundary');}});
+  assert.equal(report.rows[0].status,'withheld');
+  for(const key of ['text','title','provenance'])assert.equal(Object.hasOwn(report.rows[0],key),false);
+  assert.equal(report.rows[0].source_sha256,rows[0].source_sha256);
+  assert.equal(report.rows[0].text_sha256,rows[0].text_sha256);
+  assert.equal(report.summary.unresolved,1);
 });
 
 test('absolute verification keeps distributions, complete texts, and exact model provenance for unverified gaps',async()=>{
@@ -167,8 +348,32 @@ test('verification receives complete raw decisions, hook fields, tool schemas an
       return response(typedAnswers(payload));
     }});
     for(const record of inventory.records)assert.equal(verified.get(record.id),record.text,'Native verification must retain every complete evidence ending');
-    assert.equal(AUDIT_VERSION,'release-coverage-v2');
+    assert.equal(AUDIT_VERSION,'release-coverage-v4');
+    assert.equal(AUDIT_QUESTION_VERSION,'release-coverage-v2');
   } finally {fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('a complete known-positive tool schema is compared natively despite oversized page competitors',async()=>{
+  const source=sources('Execution schema approval requirement')[0];
+  source.text='The execution tool mode parameter accepts safe mode only after approval; denial blocks the call.';
+  const schema={id:'execution-schema',kind:'tool',title:'Execution schema',parameters:{mode:{type:'string',description:'Accept safe mode only after approval; denial blocks the call.'}},provenance:[{file:'public-execution.js',binary_offset:42,version:'1.2.3'}]};
+  const candidates=[...Array.from({length:9},(_,i)=>({id:`page-${i}`,title:'Execution schema approval requirement',kind:'documentation',text:'Execution schema approval requirement mode parameter safe denial blocks call '.repeat(2000),file:'outputs/full-page.md'})),{id:'tool/execution-schema',title:schema.title,kind:'tool',text:JSON.stringify(schema,null,2),file:'outputs/tools.json',provenance:{f:'public-execution.js',o:42,r:'1.2.3'}}];
+  const seen=[];
+  const report=await runReleaseAudit(config(),[source],candidates,{cache:memoryCache(),maxBytes:12_000,fetchImpl:async(_url,options)=>{
+    assert.ok(Buffer.byteLength(options.body)<=12_000);
+    const native=JSON.parse(options.body);seen.push(native);
+    return response(typedAnswers(native,{covers:.99,complete:true}));
+  }});
+  assert.equal(report.rows[0].status,'covered');
+  assert.equal(report.rows[0].coverage.matches[0].id,'tool/execution-schema');
+  assert.equal(report.rows[0].coverage.matches[0].covers.noul,.99);
+  assert.equal(report.rows[0].coverage.matches[0].completeness.probabilities[3],1);
+  assert.equal(report.rows[0].coverage.unsearched.length,9);
+  const verification=seen.find(native=>native.questions[0].name.endsWith('_covers'));
+  assert.equal(JSON.parse(verification.questions[0].instructions).instructions.record.text,JSON.stringify(schema,null,2));
+  assert.equal(report.version,AUDIT_VERSION);
+  assert.equal(report.question_version,AUDIT_QUESTION_VERSION);
+  assert.equal(report.requests[0].key,decisionsRequestKey(config(),seen[0],AUDIT_QUESTION_VERSION));
 });
 
 test('provider adapter injection uses the same typed policy with exact OpenAI model identities',async()=>{
@@ -176,6 +381,41 @@ test('provider adapter injection uses the same typed policy with exact OpenAI mo
   const report=await runReleaseAudit(cfg,sources('Namespace guidance'),records,{cache:memoryCache(),evaluateBatch:async(_config,payload)=>({provider:'OpenAI',requested_model:'decisions-fixture',served_model:'decisions-fixture',model:'decisions-fixture',answers:typedAnswers(payload,{covers:.99,complete:true})})});
   assert.equal(report.rows[0].status,'covered');
   assert.deepEqual(report.providers,[{provider:'OpenAI',requested_model:'decisions-fixture',served_model:'decisions-fixture'}]);
+});
+
+test('explicit Jev/OpenRouter uses native complete question maps, pinned provenance and destination-bound cache identity',async()=>{
+  const cfg=releaseDecisionConfig('openrouter',{OPENROUTER_API_KEY:'fixture',TYPESAFE_API_KEY:'direct-fixture',JEV_PROVIDER:'typesafe'},()=>''),cache=memoryCache(),seen=[];
+  assert.equal(cfg.provider,'OpenRouter');
+  assert.equal(cfg.model,'typesafe/jev-1.13');
+  assert.equal(cfg.mode,'openrouter');
+  const fetchImpl=async(url,options)=>{
+    const payload=JSON.parse(options.body);seen.push(payload);
+    assert.equal(url,'https://openrouter.ai/api/v1/systemone');
+    assert.equal(payload.model,'typesafe/jev-1.13');
+    assert.ok(Buffer.byteLength(options.body)<=12_000);
+    assert.equal(payload.input,undefined);
+    assert.ok(Object.values(payload.questions).every(q=>['noul','choice','score'].includes(q.type)));
+    return {ok:true,status:200,json:async()=>({model:'typesafe/jev-1.13-20260917',answers:typedAnswers(payload,{covers:.99,complete:true}),usage:{input_tokens:42}})};
+  };
+  const report=await runReleaseAudit(cfg,sources('Namespace developer guidance'),records,{cache,maxBytes:12_000,fetchImpl});
+  assert.equal(report.rows[0].status,'covered');
+  assert.equal(report.provider_policy.automatic_fallback,false);
+  assert.deepEqual(report.providers,[{provider:'OpenRouter',requested_model:'typesafe/jev-1.13',served_model:'typesafe/jev-1.13-20260917'}]);
+  assert.equal(Object.values(seen.at(-1).questions)[0].instructions.record.text,records[0].text);
+  assert.equal(Object.values(report.requests.at(-1).raw_answers)[0].type,'noul');
+  assert.notEqual(providerRequestKey(cfg,{state:seen[0].state,questions:seen[0].questions}),providerRequestKey({...cfg,endpoint:'https://example.invalid/systemone'},{state:seen[0].state,questions:seen[0].questions}));
+  const count=seen.length;
+  const prepared=await runReleaseAudit(cfg,sources('Namespace developer guidance'),records,{cache,maxBytes:12_000,prepare:true,fetchImpl});
+  assert.equal(seen.length,count);
+  assert.equal(prepared.rows[0].status,'covered');
+  const openai=releaseDecisionConfig('openai',{OPENAI_API_KEY:'fixture'},()=>''),source=sources('Namespace developer guidance')[0];
+  assert.equal(openai.provider,'OpenAI');
+  assert.notEqual(providerRequestKey(cfg,{state:{task:'fixture'},questions:relevanceQuestions(source)}),providerRequestKey(openai,{state:{task:'fixture'},questions:relevanceQuestions(source)}));
+  let failures=0;
+  const failed=await runReleaseAudit(cfg,sources('Namespace unavailable'),records,{attempts:1,fetchImpl:async()=>{failures++;return {ok:false,status:402};}});
+  assert.equal(failures,1);
+  assert.equal(failed.rows[0].status,'unanswered');
+  assert.match(failed.rows[0].reason,/OpenRouter 402/);
 });
 
 test('copied upstream changelog text cannot become coverage when placed on another page',async()=>{
