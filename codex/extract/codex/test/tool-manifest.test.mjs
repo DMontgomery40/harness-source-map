@@ -138,7 +138,7 @@ test("anchors missing from a changed app are listed under Not found in this buil
   assert.match(page, /^# Tool manifest \(live\)\n\nSource: `ChatGPT\.app` ChatGPT desktop 1\.2\.3 \(build 42\)/);
   assert.match(page, /## codex_app\n\n### fire_confetti\n\nSource: `app\.asar › webview\/assets\/app-initial-aaaaaaaaaaaa\.js`, offset \d+, SHA-256 `[0-9a-f]{64}`\.\n\nDescription: exact\./);
   const notFound = page.slice(page.indexOf("## Not found in this build"));
-  assert.ok(page.indexOf("## Seen in the September 24 capture") < page.indexOf("## Not found in this build"));
+  assert.ok(page.indexOf("## Seen in the archived capture") < page.indexOf("## Not found in this build"));
   for (const id of ["chunk/app-shared", "codex_app/list_hosts", "voice/capture_screen_context", "node_repl", "plugins"]) assert.match(notFound, new RegExp(`- \`${id}\`: `));
   assert.doesNotMatch(page, new RegExp(root.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   const coverage = JSON.parse(fs.readFileSync(path.join(root, "outputs", "desktop-tool-manifest.json"), "utf8"));

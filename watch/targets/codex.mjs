@@ -8,6 +8,8 @@ import { JEV_TEMPFAIL_EXIT, JevUnavailableError } from "../../codex/extract/code
 import { runAgent } from "../lib/agent.mjs";
 import { appendChangelog, writeStatus } from "../lib/publish.mjs";
 import { log as defaultLog, notify as defaultNotify, run as defaultRun } from "../lib/run.mjs";
+import { categories } from "../../site/src/codex/catalog.mjs";
+import { updateReleaseTags } from "../../site/src/shared/release-tags.mjs";
 
 const repo = path.resolve(import.meta.dirname, "../../codex");
 const GENERATED = [
@@ -213,6 +215,8 @@ export const codex = {
     const dirty = run("git", ["status", "--porcelain", "--", "outputs", ":(exclude)outputs/sources.json", ":(exclude)outputs/status.json"], { cwd: repo }).stdout.trim();
     if (!diff && !labelChanged && !dirty) { promoteSnapshot(); return { summary, afterAgent: agents, publish: null }; }
     if (!dryRun) writeStatus(repo, { checked: this.checkedLabel(now), sources: summary.sources, changed: Boolean(diff) || !previousLabel });
+    // Stage tags before producedSince, including dry runs whose outputs are restored.
+    await (runtime.updateReleaseTags ?? updateReleaseTags)({ product: "codex", sourceRoot: repo, categories });
     if (diff && !dryRun) appendChangelog(repo, `ChatGPT desktop ${summary.sources.app_version} (${summary.sources.app_build}), Codex CLI ${summary.sources.cli_version}`, diff);
     const title = diff
       ? `Codex/ChatGPT refresh: ${summary.changed.length ? `${summary.changed.length} documents changed upstream` : "model settings or CLI prompts changed"}`

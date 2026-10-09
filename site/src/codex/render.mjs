@@ -5,6 +5,7 @@ import { createRoutes } from "./routes.mjs";
 import { SITE, productOrigin, ICON_LINKS } from "../shared/site.mjs";
 import { buildSearchIndex } from "../shared/search-index.mjs";
 import { searchScript, searchTrigger, searchTriggerStyles } from "../shared/search-ui.mjs";
+import { cleanCaptureHeadings, decorateNewRecords, releaseBadge, releaseStyles } from "../shared/release-tags.mjs";
 
 import { anchorOutline, renderToc, tocNoscriptStyles, tocScript, tocStyles } from "./toc.mjs";
 
@@ -239,7 +240,7 @@ function renderDocument(document, ids) {
     ? stripEditorialTitle(document.source)
     : document.source;
   ids.add(anchor).add(`${anchor}-title`);
-  const { html: content, outline } =
+  let { html: content, outline } =
     document.format === "markdown"
       ? anchorOutline(`<div class="markdown-body">${document.instructionProfile
         ? renderInstructionMarkdown(source, document.instructionProfile, anchor)
@@ -248,6 +249,7 @@ function renderDocument(document, ids) {
         ? renderStructuredSource(document, anchor, ids)
         : { html: `<pre class="source-block"><code>${escapeHtml(document.source)}</code></pre>`, outline: [] };
 
+  if (document.snapshot && document.format === "markdown") ({ html: content, outline } = cleanCaptureHeadings(content, outline));
   let body = content;
   if (document.filter) {
     const inner = content.replace(/^<div class="markdown-body">/, "").replace(/<\/div>$/, "");
@@ -255,6 +257,7 @@ function renderDocument(document, ids) {
     if (wrapped.matched !== document.filter.records.length) throw new Error(`${document.path}: tagged ${wrapped.matched} of ${document.filter.records.length} entries`);
     body = `${filterBar(document.filter, wrapped.matched)}<div class="markdown-body">${wrapped.html}</div>`;
   }
+  if (!document.filter) body = decorateNewRecords(body, outline, document.searchRecords, source => (document.promptText ? promptMarkdown : markdown).parseInline(source));
   const compactSource = document.format === "source" && !document.searchRecords?.length
     ? compactJsonWhitespace(document.source) : document.source;
   return {
@@ -269,6 +272,7 @@ function renderDocument(document, ids) {
     defaultOpen: document.defaultOpen,
     promptText: document.promptText === true,
     records: document.searchRecords,
+    isNew: document.isNew,
     content: body,
     indexContent: compactSource === document.source ? body
       : `<pre class="source-block"><code>${escapeHtml(compactSource)}</code></pre>`,
@@ -279,10 +283,9 @@ function renderDocument(document, ids) {
   };
 }
 
-// One-time observations are labeled with their date; everything else is regenerated
-// from the current sources.
+// Capture dates stay in the evidence metadata, not in navigation labels.
 function kicker(document) {
-  return document.snapshot ? `${document.category} · Snapshot from ${document.snapshot}` : document.category;
+  return document.snapshot ? `${document.category} · Captured evidence` : document.category;
 }
 
 function documentPanel(document, routes) {
@@ -290,7 +293,7 @@ function documentPanel(document, routes) {
     <details class="document" id="${document.anchor}" aria-labelledby="${document.anchor}-title"${document.defaultOpen ? " open" : ""}>
       <summary class="document-summary">
         <div class="document-kicker">${escapeHtml(kicker(document))}</div>
-        <h2 id="${document.anchor}-title">${escapeHtml(document.title)}</h2>
+        <h2 id="${document.anchor}-title">${escapeHtml(document.title)}${document.isNew ? releaseBadge() : ""}</h2>
       </summary>
       <div class="document-content">${document.indexContent !== document.content ? `<p class="source-raw"><a href="${escapeHtml(routes.slug(document.anchor))}/">Open formatted source</a></p>` : ""}${document.indexContent}</div>
     </details>`;
@@ -301,7 +304,7 @@ function documentArticle(document, routes) {
       <article class="document-page" id="${document.anchor}" aria-labelledby="${document.anchor}-title">
         <header class="document-page-header">
           <div class="document-kicker">${escapeHtml(kicker(document))}</div>
-          <h1 class="page-title" id="${document.anchor}-title">${escapeHtml(document.title)}</h1>
+          <h1 class="page-title" id="${document.anchor}-title">${escapeHtml(document.title)}${document.isNew ? releaseBadge() : ""}</h1>
           <a class="full-reference-link" href="../">Full reference</a>
         </header>
         <div class="document-content">${routes.localize(document.content, document.anchor)}</div>
@@ -326,6 +329,7 @@ export function searchIndex(rendered, routes, profile = CODEX_PROFILE) {
       slug: routes.slug(document.anchor),
       title: document.title,
       category: document.category,
+      isNew: document.isNew,
       html: routes.localize(document.content, document.anchor),
       outline: document.outline.map(item => ({ ...item, id: routes.localId(item.id, document.anchor) })),
       records: document.records,
@@ -339,6 +343,7 @@ export function searchIndex(rendered, routes, profile = CODEX_PROFILE) {
 export function renderSite({ categories, documents, status = null, profile = CODEX_PROFILE }) {
   const ids = new Set();
   const rendered = documents.map(document => renderDocument(document, ids));
+  categories = categories.map(category => ({ ...category, files: category.files.map(file => ({ ...file, isNew: documents.find(d => d.path === file.path && d.navKey === file.navKey)?.isNew })) }));
   const routes = createRoutes(rendered);
   const { index, stats } = searchIndex(rendered, routes, profile);
   return [
@@ -431,6 +436,7 @@ ${card ? `  <meta name="twitter:image" content="${origin}/${card.file}">
     .main{padding:0 60px 0 370px}
     .content{width:min(768px,100%);margin:0 auto;padding:100px 0 80px}
     .date{color:var(--muted);font-size:14px;text-align:center}
+    ${releaseStyles}
     .page-title{margin:26px 0 24px;font-size:48px;line-height:1.16;font-weight:500;letter-spacing:-.025em;text-align:center}
     .dek{max-width:650px;margin:0 auto;color:#d3d5cf;font-size:18px;line-height:1.48;text-align:center}
     .document{scroll-margin-top:36px;margin-top:112px;padding-top:34px;border-top:1px solid var(--line)}

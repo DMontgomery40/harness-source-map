@@ -1,4 +1,4 @@
-# New and unnamed mechanisms in 2.1.295
+# Installed harness mechanisms in 2.1.295
 
 This review describes the shipped macOS Apple-silicon binary for Claude Code 2.1.295. A compiled definition establishes source presence. Its gate and default determine whether the harness can expose it; remote flag values and account rollout remain unknown. This page is immutable release evidence for 2.1.295. Each record has the complete reviewed body and exact source locators; authored text is identified separately from the review prose.
 

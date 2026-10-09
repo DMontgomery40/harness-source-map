@@ -11,6 +11,8 @@ import { runAgent } from "../lib/agent.mjs";
 import { appendChangelog, writeStatus } from "../lib/publish.mjs";
 import { log, notify, run } from "../lib/run.mjs";
 import { compareVersions, describedVersion, newestTracked } from "../../claude-code/extract/versions.mjs";
+import { categories } from "../../site/src/claude-code/catalog.mjs";
+import { updateReleaseTags } from "../../site/src/shared/release-tags.mjs";
 
 const repo = path.resolve(import.meta.dirname, "../../claude-code");
 
@@ -158,6 +160,8 @@ export const cc = {
     const diffFile = path.join(repo, "work/cc-diff.md");
     const diff = [existsSync(diffFile) ? readFileSync(diffFile, "utf8").trim() : "", ...scanDiffs].filter(Boolean).join("\n\n");
     if (!dryRun) writeStatus(repo, { checked: this.checkedLabel(now), sources: { ...summary.sources, version: fingerprint.version, integrity: fingerprint.integrity }, changed: Boolean(diff) });
+    // Stage tags before producedSince, including dry runs whose outputs are restored.
+    await updateReleaseTags({ product: "claude-code", sourceRoot: repo, categories });
     if (diff && !dryRun) appendChangelog(repo, `Claude Code ${fingerprint.version}`, diff);
     return { summary, afterAgent: agents, publish: { message: `Claude Code refresh for ${fingerprint.version}\n\n${diff.slice(0, 3000) || "No prompt or reference changes; provenance moved to the new build."}` } };
   }

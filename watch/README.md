@@ -33,6 +33,18 @@ old file is kept as `.bak-<time>`.
    headless `claude -p` repair agent with a spending cap; it can't run git, deploy or fetch.
    A target whose refresh changed nothing (or only byte-level provenance such as fetch times) has
    its files put back.
+   After extraction, code updates `outputs/release-history.json`. The site uses this inventory
+   to tag entries first seen within the last three captured source releases as **New**. The first
+   inventory is a baseline. Text edits, shifted offsets and repeated checks do not reset a tag;
+   removed entries retain their original first appearance if they return. Archived captures are
+   excluded. Readers can filter tagged reference pages with **New**, or search for `is:new`.
+   For Codex/ChatGPT, a release is an app version/build and bundled CLI version; a model
+   catalog fetch alone does not advance the window. These tags describe new map entries, not
+   proof of a feature's runtime activation. No model or classifier is called for this step.
+   A manual `npm run build` updates the same inventory. To update it without building, run
+   `node tools/update-release-tags.mjs`. Builders reject stale inventories. The one-time
+   `--seed-from-git` option bootstraps first appearances from committed release inventories and
+   refuses to replace an existing history.
 4. **Gate, once:** `npm run check` at the repo root (build, all tests, link check, leak check), plus
    the local-identity scan and the Jev narrative lint for each product being published. If a check
    fails, a repair agent gets the failing output (failing tests first), fixes the cause and the gate

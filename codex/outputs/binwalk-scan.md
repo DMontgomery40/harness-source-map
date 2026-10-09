@@ -1,6 +1,6 @@
 # Binwalk scan of the ChatGPT desktop app (this build)
 
-Every embedded payload binwalk 3.1.0 reports in the OpenAI executables of ChatGPT desktop 26.1002.52244 (build 13536) and its `app.asar`, regenerated for each build. Each payload is carved at binwalk's offset and size, hashed, decompressed when it is compressed, and identified by its structure. A change between builds (a new, removed or changed payload, or a protocol method added or removed) is reported by the watcher. The September 24, 2026 hand run of the same method is kept as an archive: [Binwalk report, September 24](binwalk-report/).
+Every embedded payload binwalk 3.1.0 reports in the OpenAI executables of ChatGPT desktop 26.1002.52244 (build 13536) and its `app.asar`, regenerated for each build. Each payload is carved at binwalk's offset and size, hashed, decompressed when it is compressed, and identified by its structure. A change between builds (a new, removed or changed payload, or a protocol method added or removed) is reported by the watcher. The earlier hand run of the same method is kept as an archive: [Archived Binwalk report](binwalk-report/).
 
 ## Scanned files
 
@@ -60,7 +60,7 @@ The experimental catalog has 173 client methods, the standard one 108; 65 are ex
 
 `account/bedrock/checkGovCloudRequirements`, `account/bedrock/discover`, `account/bedrock/setup`, `collaborationMode/list`, `environment/add`, `environment/info`, `environment/status`, `fuzzyFileSearch/sessionStart`, `fuzzyFileSearch/sessionStop`, `fuzzyFileSearch/sessionUpdate`, `mcpServer/event/stream/start`, `mcpServer/event/stream/stop`, `memory/reset`, `memory/status`, `mock/experimentalMethod`, `plugin/search`, `process/kill`, `process/resizePty`, `process/spawn`, `process/writeStdin`, `project/create`, `project/delete`, `project/import`, `project/list`, `project/move`, `project/read`, `project/update`, `remoteControl/client/list`, `remoteControl/client/revoke`, `remoteControl/disable`, `remoteControl/enable`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/status/read`, `rollout/compress`, `server/diagnostics`, `thread/backgroundTerminals/clean`, `thread/backgroundTerminals/list`, `thread/backgroundTerminals/terminate`, `thread/decrement_elicitation`, `thread/increment_elicitation`, `thread/memoryMode/set`, `thread/prediction/request`, `thread/queue/add`, `thread/queue/delete`, `thread/queue/list`, `thread/queue/reorder`, `thread/queue/start`, `thread/queue/update`, `thread/realtime/appendAudio`, `thread/realtime/appendSpeech`, `thread/realtime/appendText`, `thread/realtime/listVoices`, `thread/realtime/start`, `thread/realtime/stop`, `thread/search`, `thread/searchOccurrences`, `thread/settings/update`, `thread/timeline/list`, `turn/settings/update`, `userVerification/cancel`, `userVerification/delete`, `userVerification/enroll`, `userVerification/status`, `userVerification/verify`
 
-Since the September 24 hand run (104 standard, 167 experimental client methods): experimental-only methods added: `account/bedrock/checkGovCloudRequirements`, `thread/prediction/request`; none removed.
+Since the archived hand run (104 standard, 167 experimental client methods): experimental-only methods added: `account/bedrock/checkGovCloudRequirements`, `thread/prediction/request`; none removed.
 
 ## Reproduce
 

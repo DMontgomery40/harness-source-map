@@ -25,7 +25,8 @@ test('Page scope and dated Work observations preserve authority and capture boun
  const md=renderKeyFindings(fixture());
  assert.match(md,/Page-scoped/);
  assert.match(md,/cannot override the live request or grant permissions/);
- assert.match(md,/September 24, 2026/);
+ assert.match(md,/Archived Work and voice observations/);
+ assert.doesNotMatch(md,/September 24/);
  assert.match(md,/not a completed microphone call/);
  assert.match(md,/does not reveal ChatGPT Work/);
  assert.match(md,/harness\.dtmont\.com\/codex\/chatgpt-work\//);

@@ -2,7 +2,7 @@
 
 Source: `ChatGPT.app` ChatGPT desktop 26.1002.52244 (build 13536), `app.asar` SHA-256 `40efd7acdf03a24817fcd7f35684fc2173b154df06774243cb4ab227e36fa915`.
 
-Every tool the Codex/ChatGPT desktop app defines for models, read from the installed app on each update. Each entry gives the tool's description as shipped and its parameters, says how each was recovered, and compares the tool with the [2026-09-24 host tool capture](#current-host-tool-manifest-2026-09-24-json). Parameters marked as evaluated come from running the app's own zod and toJSONSchema code; approximate parameters are reconstructed without the app's run-time values and shown as a table only.
+Every tool the Codex/ChatGPT desktop app defines for models, read from the installed app on each update. Each entry gives the tool's description as shipped and its parameters, says how each was recovered, and compares the tool with the [archived host tool capture](#current-host-tool-manifest-2026-09-24-json). Parameters marked as evaluated come from running the app's own zod and toJSONSchema code; approximate parameters are reconstructed without the app's run-time values and shown as a table only.
 
 ## codex_app
 
@@ -23,7 +23,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `root` | required | string | Exact worktree identityKey returned by list_artifacts on this task. |
 | `pullRequestIdentityKeys` | optional | array of string | For archive only: attached PR identity keys belonging to this worktree. They are retained for restore; GitHub PRs are not changed. |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### attach_artifact
 
@@ -42,7 +42,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `artifact_type` | required | "pull_request" |  |
 | `url` | required | string |  |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### automation_update
 
@@ -56,7 +56,7 @@ Create, update, view, or delete recurring automations in the Codex app. The auto
 
 Parameters: not recovered (Cannot read properties of undefined (reading 'ref')).
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### check_app_update
 
@@ -72,7 +72,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 
 No parameters were read.
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### compile_latex_document
 
@@ -90,7 +90,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `path` | required | string | Absolute path to the saved .tex file on the calling task's host. |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### complete_conversational_onboarding_task
 
@@ -106,7 +106,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 
 No parameters were read.
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### complete_sidebar_onboarding_checklist_task
 
@@ -122,7 +122,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 
 No parameters were read.
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### consume_usage_reset
 
@@ -140,7 +140,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `idempotencyKey` | required | string | Unique ID for this logical reset attempt. A UUID is recommended. Reuse exactly the same ID when retrying an uncertain or failed response. |
 
-Changed since the 2026-09-24 capture:
+Changed since the archived capture:
 
 ```diff
 - Redeem one existing Codex reset credit for the ChatGPT account signed in on this task's host.
@@ -235,7 +235,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### create_sidebar_section
 
@@ -253,7 +253,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `name` | required | string | Name of the new custom sidebar section. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### create_thread
 
@@ -457,7 +457,7 @@ Parameters, evaluated with the app's own schema code:
 
 At run time the description of `model` is extended with `<…>` text built from live data.
 
-Changed since the 2026-09-24 capture:
+Changed since the archived capture:
 
 ```diff
   Use project for repository work, projectless for work without a repository, or chatgptWorkCloud only when the user explicitly asks for a cloud work task in ChatGPT.
@@ -487,7 +487,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `name` | optional | any | Optional short name describing the work, such as worktree-lifecycle or composer-input. Use lowercase hyphenated names up to 64 characters. Hex-only names of 4+ characters and Windows device names are reserved. Omit for a random ID. |
 | `ref` | optional | string | Branch, tag, commit SHA, or other Git commit-ish. Omit to start from the repository's remote default branch (for example origin/main or origin/master). Specify a ref when intentionally continuing existing branch or PR work. |
 
-Changed since the 2026-09-24 capture:
+Changed since the archived capture:
 
 ```diff
 - Create a managed Git worktree from the current task's repository and attach it to this task. ref selects a branch, tag, commit SHA, or other Git commit-ish; omit it to start at HEAD. name optionally replaces the random directory ID with a lowercase hyphenated name such as split-like-this (maximum 64 characters).
@@ -528,7 +528,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `sectionId` | required | string | Section id returned by list_threads. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### finalize_environment
 
@@ -542,7 +542,7 @@ Finalize the simulated cloud environment setup and add it to the prototype envir
 
 Parameters: not recovered (Cannot read properties of undefined (reading 'ref')).
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### fire_confetti
 
@@ -560,7 +560,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `emojis` | optional | array of string | Custom emojis to mix with paper confetti. Omit for the default emoji mix, or pass [] for paper only. |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### fork_thread
 
@@ -622,7 +622,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Changed since the 2026-09-24 capture:
+Changed since the archived capture:
 
 ```diff
 - Fork a Codex thread.
@@ -673,7 +673,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### get_thread_emoji
 
@@ -691,7 +691,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `threadId` | optional | string |  |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### get_usage_limits
 
@@ -707,7 +707,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 
 No parameters were read.
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### get_worktree_creation_status
 
@@ -725,7 +725,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `operationId` | required | string |  |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### handoff_thread
 
@@ -745,7 +745,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `destinationHostId` | optional | string | Optional host that should run the thread after handoff. Omit to move between the source thread's checkout and Codex worktree on its current host. Choose another host to move to a matching saved-project worktree. Available hosts: [stub opaque:e]. |
 | `followUpPrompt` | optional | string | Optional prompt to send to the destination thread after handoff succeeds. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### list_archived_threads
 
@@ -790,7 +790,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### list_artifacts
 
@@ -806,7 +806,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 
 No parameters were read.
 
-Changed since the 2026-09-24 capture:
+Changed since the archived capture:
 
 ```diff
 - List all attachments explicitly saved on the current task, including pull requests, worktrees, and other attachment types.
@@ -832,7 +832,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 
 No parameters were read.
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### list_projects
 
@@ -854,7 +854,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Changed since the 2026-09-24 capture:
+Changed since the archived capture:
 
 ```diff
   List local, remote, and ChatGPT projects available for task creation, including whether each project is a Git repository.
@@ -889,7 +889,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### load_workspace_dependencies
 
@@ -911,7 +911,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### move_project_to_sidebar_section
 
@@ -930,7 +930,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `projectId` | required | string | Project id returned by list_projects. |
 | `sectionId` | required | string or null | Destination section id returned by list_threads. Use "pinned" to pin the project, or "threads" or null to return it to unpinned projects. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### move_thread_to_sidebar_section
 
@@ -951,7 +951,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `sectionId` | required | string or null | Destination section id returned by list_threads. Use "pinned" to pin the task, or "chats", "threads", or null to move it back outside custom sections. |
 | `hostId` | optional | string | Optional host id returned by list_threads. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### navigate_to_codex_page
 
@@ -969,7 +969,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `threadId` | required | string | Thread or chat id to show. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### open_in_codex
 
@@ -989,7 +989,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `target` | required | array of any |  |
 | `placement` | optional | "right" \| "bottom" |  |
 
-Changed since the 2026-09-24 capture:
+Changed since the archived capture:
 
 ```diff
 - Show a workspace file, browser tab, terminal, or review in a Codex panel.
@@ -1038,7 +1038,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### read_thread
 
@@ -1092,7 +1092,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### read_thread_terminal
 
@@ -1114,7 +1114,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### remove_artifact
 
@@ -1133,7 +1133,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `artifact_type` | required | "pull_request" |  |
 | `url` | required | string |  |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### rename_sidebar_section
 
@@ -1152,7 +1152,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `sectionId` | required | string | Section id returned by list_threads. |
 | `name` | required | string | New section name. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### reorder_section
 
@@ -1171,7 +1171,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `sectionId` | required | string | Custom section id returned by list_threads, or "pinned". |
 | `threadIds` | required | array of string | Every Codex task and ChatGPT conversation id in this section, listed exactly once in the desired order. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### reorder_sidebar_projects
 
@@ -1189,7 +1189,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `projectIds` | required | array of string | Unpinned Codex or ChatGPT project ids from the default Projects sidebar section, in their desired display order. Projects not included keep their current positions. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### reorder_sidebar_sections
 
@@ -1207,7 +1207,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `sectionIds` | required | array of string | Every custom section id, plus any built-in headings to move: "pinned" (Pinned), "orbit" (Your dot), "[stub DCe]" (Agents), "chats" (Tasks), or "projects" (Projects). List them in the desired order; omitted built-in headings keep their positions. |
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### request_environment_input
 
@@ -1221,7 +1221,7 @@ Request a user-approved environment configuration decision. This tool blocks unt
 
 Parameters: not recovered (Cannot read properties of undefined (reading 'ref')).
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### restore_worktree
 
@@ -1239,7 +1239,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `root` | required | string | Exact worktree identityKey returned by list_artifacts on this task. |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### send_message_to_thread
 
@@ -1298,7 +1298,7 @@ Parameters, evaluated with the app's own schema code:
 
 At run time the description of `model` is extended with `<…>` text built from live data.
 
-Changed since the 2026-09-24 capture:
+Changed since the archived capture:
 
 ```diff
 - Send a follow-up prompt to an existing thread or chat.
@@ -1357,7 +1357,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### set_thread_emoji
 
@@ -1376,7 +1376,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `threadId` | optional | string |  |
 | `emoji` | required | string or null |  |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### set_thread_pinned
 
@@ -1419,7 +1419,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### set_thread_read_state
 
@@ -1468,7 +1468,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### set_thread_title
 
@@ -1510,7 +1510,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### share_thread
 
@@ -1541,7 +1541,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### uninstall_plugin
 
@@ -1571,7 +1571,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### update_running_summary
 
@@ -1602,7 +1602,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### update_sidebar_preferences
 
@@ -1621,7 +1621,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `sorting` | optional | object | Sort orders shared across Codex and Work. manual uses saved order; updated_at uses most recently updated first. |
 | `grouping` | optional | object | Update how the sidebar groups chats. |
 
-Changed since the 2026-09-24 capture:
+Changed since the archived capture:
 
 ```diff
 - Change sidebar sorting for chats, project chats, or pinned items across Codex and Work, or change grouping for one surface.
@@ -1691,7 +1691,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### write_settings
 
@@ -1786,7 +1786,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ## codex_app: voice calls
 
@@ -1802,7 +1802,7 @@ Only use this tool during an active voice chat for the current task. Never load 
 
 Parameters: not recovered (Cannot read properties of undefined (reading 'ref')).
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### end_realtime_voice_call
 
@@ -1816,7 +1816,7 @@ End the current voice chat. Only call this tool if the user explicitly asks to e
 
 Parameters: not recovered (Cannot read properties of undefined (reading 'ref')).
 
-Unchanged since the 2026-09-24 capture.
+Unchanged since the archived capture.
 
 ### transfer_voice_call
 
@@ -1830,7 +1830,7 @@ Transfer the active voice call to another Codex task, or return it to the task t
 
 Parameters: not recovered (Cannot read properties of undefined (reading 'ref')).
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ## Onboarding interactive tools
 
@@ -1902,7 +1902,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### request_option_picker
 
@@ -1959,7 +1959,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### setup_codex_step
 
@@ -1993,7 +1993,7 @@ Parameters, evaluated with the app's own schema code:
 }
 ```
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ## Chrome tab context
 
@@ -2025,7 +2025,7 @@ Parameters, exact (the JSON Schema literal, evaluated):
 }
 ```
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ## node_repl
 
@@ -2035,7 +2035,7 @@ Source: `cua_node/bin/node_repl`.
 
 Description: name only; the Rust binary's string pool has no delimiters, so a description cannot be cut out of it exactly.
 
-In the 2026-09-24 capture as `mcp__node_repl__js`; its description there, on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page, is still present byte for byte in the binary.
+In the archived capture as `mcp__node_repl__js`; its description there, on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page, is still present byte for byte in the binary.
 
 ### js_add_node_module_dir
 
@@ -2043,7 +2043,7 @@ Source: `cua_node/bin/node_repl`.
 
 Description: name only; the Rust binary's string pool has no delimiters, so a description cannot be cut out of it exactly.
 
-In the 2026-09-24 capture as `mcp__node_repl__js_add_node_module_dir`; its description there, on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page, is still present byte for byte in the binary.
+In the archived capture as `mcp__node_repl__js_add_node_module_dir`; its description there, on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page, is still present byte for byte in the binary.
 
 ### js_reset
 
@@ -2051,7 +2051,7 @@ Source: `cua_node/bin/node_repl`.
 
 Description: name only; the Rust binary's string pool has no delimiters, so a description cannot be cut out of it exactly.
 
-In the 2026-09-24 capture as `mcp__node_repl__js_reset`; its description there, on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page, is still present byte for byte in the binary.
+In the archived capture as `mcp__node_repl__js_reset`; its description there, on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page, is still present byte for byte in the binary.
 
 ## cua_repl
 
@@ -2061,7 +2061,7 @@ Source: `plugins/openai-bundled/plugins/unified-computer-use/.mcp.json`.
 
 Description: name only; listed in `enabled_tools` of the bundled `.mcp.json`; the server is started with arguments supplied at run time, so its description is not in a bundled file.
 
-In the 2026-09-24 capture as `mcp__cua_repl.js` (a direct tool); there is no bundled description to compare.
+In the archived capture as `mcp__cua_repl.js` (a direct tool); there is no bundled description to compare.
 
 ### js_reset
 
@@ -2069,7 +2069,7 @@ Source: `plugins/openai-bundled/plugins/unified-computer-use/.mcp.json`.
 
 Description: name only; listed in `enabled_tools` of the bundled `.mcp.json`; the server is started with arguments supplied at run time, so its description is not in a bundled file.
 
-In the 2026-09-24 capture as `mcp__cua_repl.js_reset` (a direct tool); there is no bundled description to compare.
+In the archived capture as `mcp__cua_repl.js_reset` (a direct tool); there is no bundled description to compare.
 
 ### turn_ended
 
@@ -2077,7 +2077,7 @@ Source: `plugins/openai-bundled/plugins/unified-computer-use/.mcp.json`.
 
 Description: name only; listed in `enabled_tools` of the bundled `.mcp.json`; the server is started with arguments supplied at run time, so its description is not in a bundled file.
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ## Other tools defined in the app bundle
 
@@ -2097,7 +2097,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `path` | required | string | Absolute path to an existing managed worktree or its workspace directory. |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### connect_spaces_artifact
 
@@ -2115,7 +2115,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 |---|---|---|---|
 | `page_id` | required | string |  |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### create_spaces_artifact
 
@@ -2136,7 +2136,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `idempotency_key` | required | any |  |
 | `destination` | optional | object or object |  |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### read_page_reference
 
@@ -2155,7 +2155,7 @@ Parameters, approximate (reconstructed without the app's run-time values; not th
 | `page_id` | required | string |  |
 | `reference` | required | string | The project-file:, library-file:, or visualize: reference returned by a Page read, without Markdown syntax. |
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
 ### record_private_review
 
@@ -2169,11 +2169,11 @@ Only call from this pull request's dedicated review chat. Call begin with the ex
 
 Parameters: not recovered (Cannot read properties of undefined (reading 'ref')).
 
-Not in the 2026-09-24 capture.
+Not in the archived capture.
 
-## Seen in the September 24 capture, not defined in this bundle
+## Seen in the archived capture, not defined in this bundle
 
-These names are in the 2026-09-24 capture, in namespaces served by bundled tools, but no definition for them is in the app bundle. Their text is on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page.
+These names are in the archived capture, in namespaces served by bundled tools, but no definition for them is in the app bundle. Their text is on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page.
 
 - `mcp__computer_history__computer_history_get_settings`
 - `mcp__computer_history__computer_history_pause`

@@ -71,11 +71,11 @@ The additional ${link('model-facing text sweep', 'desktop-model-facing-text.md')
 
 The structural ledger contains ${count(candidates.length)} structural candidates; ${count(positive.length)} classified positive, including ${count(endpoints)} endpoints. A shipped endpoint, label, enum or feature flag does not establish a launched or enabled feature. ${link('Complete coverage and unresolved surfaces', 'devday-surface-coverage.md')} preserves these limits.
 
-## Historical Work and voice observations — September 24, 2026
+## Archived Work and voice observations
 
-Authenticated browser test turns on September 24 selected \`gpt-6-astra-wm\`, \`gpt-6-sol-wm\` and \`gpt-6-luna-wm\`. Each observed request contained one user message and the model selection, with no client-visible system, developer or prompt field. Those dated observations do not capture the Work service’s instruction stack and are not refreshed by a new CLI catalog. ${link('Dated Work evidence', 'chatgpt-work-source-check-2026-09-24.md')} · ${link('Sanitized browser trace', 'chatgpt-work-gpt6-client-trace-2026-09-24.json')}.
+Archived authenticated browser test turns selected \`gpt-6-astra-wm\`, \`gpt-6-sol-wm\` and \`gpt-6-luna-wm\`. Each observed request contained one user message and the model selection, with no client-visible system, developer or prompt field. Those archived observations do not capture the Work service’s instruction stack and are not refreshed by a new CLI catalog. ${link('Archived Work evidence', 'chatgpt-work-source-check-2026-09-24.md')} · ${link('Sanitized browser trace', 'chatgpt-work-gpt6-client-trace-2026-09-24.json')}.
 
-The September 24 automatic voice prefetch selected Luna and advertised an empty client tool list, but it was not a completed microphone call. The completed-call Work voice tool surface remains unobserved in that evidence. ${link('Dated voice observation', 'voice-tool-surface-2026-09-24.md')}. The current ${link('bundled Codex/ChatGPT voice prompts', 'voice-prompts.md')} are a separate static source; their presence does not establish Work voice tools or runtime activation.
+The archived automatic voice prefetch selected Luna and advertised an empty client tool list, but it was not a completed microphone call. The completed-call Work voice tool surface remains unobserved in that evidence. ${link('Archived voice observation', 'voice-tool-surface-2026-09-24.md')}. The current ${link('bundled Codex/ChatGPT voice prompts', 'voice-prompts.md')} are a separate static source; their presence does not establish Work voice tools or runtime activation.
 `;
 }
 export function generate(root = path.resolve(import.meta.dirname,'../..')) {
