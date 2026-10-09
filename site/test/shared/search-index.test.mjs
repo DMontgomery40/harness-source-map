@@ -216,7 +216,8 @@ test("production: every Codex/ChatGPT page with a records file gets its records"
     const cliItems = indexItems(index, { product: "codex" }).filter(i => i.page === "CLI prompt templates");
     const cliSource = JSON.parse(await readFile(path.join(root, "outputs/codex-cli-prompts.json"), "utf8"));
     const cliSourceItems = indexItems(index, { product: "codex" }).filter(i => i.prov?.file && /^(?:codex-cli-prompts|codex-cli-bundled-skills)\/#/.test(i.href));
-    assert(cliSourceItems.length >= 124);
+    assert.equal(cliSourceItems.length, cliSource.items.length, "every current executable-verified CLI source record is indexed");
+    assert.deepEqual(cliSourceItems.map(i => i.title).sort(), cliSource.items.map(i => i.title).sort());
     for (const item of cliSourceItems) assert.equal(item.prov.version, cliSource.source.tag, item.title);
     for (const title of ["Realtime v2 background agent tool description", "History description", "Multi agent v1 namespace description", "Request user input async description"]) {
       assert.equal(cliItems.find(i => i.title === title)?.kind, "tool", title);

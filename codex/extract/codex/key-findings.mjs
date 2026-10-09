@@ -57,6 +57,10 @@ ${pageScope ? `The shipped Page editing and visualization wrappers recognize com
 
 Team Space UI text separately describes shared agent instructions used by scheduled runs. ${link('Surface coverage ledger', 'devday-surface-coverage.md')} retains the source text and unresolved dispatch details. Page-scoped guidance, scheduled-run composition and ordinary document content have distinct evidence boundaries.
 
+## Intelligent UI has separate instruction and delivery paths
+
+${link('Intelligent UI and inline visualizations', 'intelligent-ui.md')} publishes the complete Visualize skill, design-controls reference and Page-precedence notice from the shipped desktop app. It distinguishes registered learning blocks, generative-UI widget refresh and inline HTML, and records widget-state handling and the Sites handoff. Client source establishes those instruction contents and assembly paths; account rollout and server-side delivery require separate evidence.
+
 ## Shipped prompts and tools show what the client can assemble
 
 ${link('Plan mode and Default mode', 'collaboration-modes.md')} documents mode selection, developer-message assembly and the exact executable-verified templates. Null catalog mode fields mean no catalog override; selected mode settings can still supply the instructions. Plan mode is distinct from the \`update_plan\` progress tool.

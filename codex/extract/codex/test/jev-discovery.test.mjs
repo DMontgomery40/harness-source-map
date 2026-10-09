@@ -23,6 +23,34 @@ test('byte packing measures the actual state and question keys sent to Jev',()=>
   assert.equal(packQuestions([item],{state,keyOf:i=>`route_${i}`,maxBytes:bytes}).batches.length,1);
 });
 
+test('provider-aware byte packing splits OpenAI instruction escaping and retains oversized items',()=>{
+  const cfg=decisionConfig({JEV_PROVIDER:'openai',OPENAI_API_KEY:'fixture'},()=>'');
+  const item={questions:{route:{type:'choice',instructions:{source:'Quoted source '+String.fromCharCode(34,92).repeat(600)},criteria:{a:'A complete candidate',none:'None'}}}};
+  const packed=packQuestions([item,item],{config:cfg,state:{task:'Route independent evidence'},maxBytes:6000});
+  assert.deepEqual(packed.batches.map(b=>b.length),[1,1]);
+  const large={questions:{route:{...item.questions.route,instructions:{source:String.fromCharCode(34,92).repeat(1200)}}}};
+  assert.equal(packQuestions([large],{config:cfg,maxBytes:6000}).oversized.length,1);
+});
+
+test('OpenAI discovery and coverage stay within native byte budgets without truncating evidence',async()=>{
+  const cfg=decisionConfig({JEV_PROVIDER:'openai',OPENAI_API_KEY:'fixture'},()=>'');
+  const requests=[];
+  const fetchImpl=async(_url,opts)=>{
+    assert.ok(Buffer.byteLength(opts.body)<=12000,'Serialized native request exceeded its budget');
+    const body=JSON.parse(opts.body);requests.push(body);
+    const answers=body.questions.map(q=>q.type==='predicate'?{type:'predicate',name:q.name,probability:1}:q.type==='choice'?{type:'choice',name:q.name,choice:q.choices.find(c=>c.value!=='none').value,confidence:1,probabilities:q.choices.map((c,i)=>({value:c.value,probability:i===0?1:0}))}:{type:'score',name:q.name,score:q.levels.length-1,confidence:1,probabilities:q.levels.map((l,i)=>({label:l.label,value:i,probability:i===q.levels.length-1?1:0}))});
+    return {ok:true,status:200,json:async()=>({model:'gpt-6-luna',answers})};
+  };
+  const text='Read an image '+String.fromCharCode(34,92).repeat(250)+' FINAL_RESTRICTION';
+  const result=await classifySources(cfg,[{id:'a',file:'app.js',text},{id:'b',file:'app.js',text}],{maxBytes:12000,fetchImpl,attempts:1});
+  assert.deepEqual(result.records.map(r=>r.status),['classified','classified']);
+  const coverage=await verifyCoverage(cfg,{id:'source',text:'Read an image only after complete approval.'},Array.from({length:12},(_,i)=>({id:`record${i}`,text:`Public source ${i} `+String.fromCharCode(34,92).repeat(250)+' END_RESTRICTION'})),{maxBytes:12000,fetchImpl,attempts:1});
+  assert.equal(coverage.status,'covered');
+  assert.ok(coverage.routes.length>=2);
+  assert.ok(requests.every(r=>r.model==='gpt-6-luna'));
+  assert.ok(requests.some(r=>r.questions.some(q=>q.instructions.includes('FINAL_RESTRICTION'))));
+});
+
 test('Score validation accepts provider rounding but rejects a materially different value',()=>{
   const questions={evidence:{type:'score',criteria:['none','weak','suggestive','direct']}};
   const rounded={type:'score',score:.2,probabilities:{'0':.91,'1':.03,'2':.04,'3':.02},confidence:.9};

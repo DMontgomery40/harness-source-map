@@ -6,7 +6,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { buildSite } from "../../src/codex/build-site.mjs";
 import { categories } from "../../src/codex/catalog.mjs";
-import { renderInstructionMarkdown } from "../../src/codex/render.mjs";
+import { escapeHtml, renderInstructionMarkdown } from "../../src/codex/render.mjs";
 
 const fixtureCatalog = [
   {
@@ -133,6 +133,33 @@ test("build escapes markup-looking source while preserving visible text", async 
     assert.doesNotMatch(html, /&amp;lt;checkpoint&amp;gt;/);
     assert.doesNotMatch(html, /<checkpoint>/);
     assert.doesNotMatch(html, /<ready>/);
+  });
+});
+
+test("large structured source is rendered as evidence without Markdown lexing", async () => {
+  await withFixture(async (root, outFile) => {
+    const text = JSON.stringify({ text: "public evidence ".repeat(750000) });
+    await writeFile(path.join(root, "outputs/evidence.json"), text);
+    await buildSite({ sourceRoot: root, outFile, categories: fixtureCatalog });
+    const html = await readFile(path.join(root, "dist/evidence-json/index.html"), "utf8");
+    assert.match(html, /public evidence/);
+    assert.match(html, /source-block/);
+  });
+});
+
+test("combined JSON keeps every string and numeric lexeme while the dedicated page retains original formatting", async () => {
+  await withFixture(async (root, outFile) => {
+    const source = '{\n  "integer": 9007199254740993,\n  "negativeZero": -0,\n  "exponent": 2e+01,\n  "text": "雪  spaced \\n \\"quoted\\" \\\\ slash",\n  "end": [true, null]\n}\n';
+    const compact = '{"integer":9007199254740993,"negativeZero":-0,"exponent":2e+01,"text":"雪  spaced \\n \\"quoted\\" \\\\ slash","end":[true,null]}';
+    JSON.parse(source);
+    await writeFile(path.join(root, "outputs/evidence.json"), source);
+    await buildSite({ sourceRoot: root, outFile, categories: fixtureCatalog });
+    const index = await readFile(outFile, "utf8");
+    const dedicated = await readFile(path.join(root, "dist/evidence-json/index.html"), "utf8");
+    assert(index.includes(`<code>${escapeHtml(compact)}</code>`));
+    assert(index.includes('href="evidence-json/">Open formatted source</a>'));
+    assert(dedicated.includes(`<code>${escapeHtml(source)}</code>`));
+    assert(!dedicated.includes("Open formatted source"));
   });
 });
 

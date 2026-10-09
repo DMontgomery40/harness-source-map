@@ -28,6 +28,7 @@ import { execFileSync } from "node:child_process";
 import { JevUnavailableError, JEV_TEMPFAIL_EXIT, decisionConfig, openCache } from "./lib/jev-provider.mjs";
 import { classifySources, discoveryQuestions, DISCOVERY_VERSION, packQuestions } from "./lib/jev-discovery.mjs";
 import { modelFacing, verdictKey, classificationState, QUESTION_VERSION } from "./lib/prompt-verdict.mjs";
+import { requestByteLength } from '../../../tools/decisions-provider.mjs';
 import { candidateDecision, localReviewFor, publishDecision } from "./prompt-reviews.mjs";
 
 const repo = path.resolve(import.meta.dirname, "..", "..");
@@ -57,6 +58,7 @@ const prepared=process.env.PROMPT_DISCOVERY_PREPARE==='1';
 const discovery= broadExport||prepared ? discoverPromptCandidates(asar,{known}) : null;
 const candidates=discovery?.candidates??promptCandidates(asar,{known});
 const discoveryStats=discovery?.stats??{mode:'legacy',selected:candidates.length};
+const config = decisionConfig();
 
 if(prepared) {
   const safe=[],withheld=[];
@@ -64,15 +66,16 @@ if(prepared) {
     try {safe.push({record:{id:`${c.file}:${c.offset}:${c.hash}`},questions:discoveryQuestions(c)});}
     catch(error) {if(!(error instanceof PrivacyError)) throw error;withheld.push({file:c.file,offset:c.offset,reason:'Privacy boundary'});}
   }
-  const packed=packQuestions(safe,{batchSize:16});
-  const summary={source:{asar_sha256:asar.sha256},discovery:discoveryStats,privacy_withheld:withheld.length,eligible:safe.length,oversized:packed.oversized.length,payload_bytes:safe.reduce((n,v)=>n+Buffer.byteLength(JSON.stringify(v)),0),batches:packed.batches.length};
+  const state={task:'Independent source judgments; each question supplies its complete source.'};
+  const packed=packQuestions(safe,{batchSize:16,state,config});
+  const payloadBytes=packed.batches.reduce((sum,batch)=>sum+requestByteLength(config,{state,questions:Object.fromEntries(batch.flatMap((v,i)=>Object.entries(v.questions).map(([k,q])=>[`${i}_${k}`,q])))}),0);
+  const summary={source:{asar_sha256:asar.sha256},discovery:discoveryStats,privacy_withheld:withheld.length,eligible:safe.length,oversized:packed.oversized.length,payload_bytes:payloadBytes,batches:packed.batches.length};
   fs.mkdirSync(work,{recursive:true});
   fs.writeFileSync(path.join(work,'prompt-discovery-prepared.json'),JSON.stringify({summary,withheld,oversized:packed.oversized.map(v=>v.record)},null,1)+'\n');
   console.log(JSON.stringify(summary));
   process.exit(0);
 }
 
-const config = decisionConfig();
 const cacheFile = path.join(work, broadExport ? "prompt-discovery-verdicts.json" : "prompt-candidate-verdicts.json");
 const cache = openCache(cacheFile,{config});
 const options={cache,batchSize:16,concurrency:6,offline:process.env.JEV_OFFLINE==='1'};

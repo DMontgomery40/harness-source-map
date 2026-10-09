@@ -269,7 +269,7 @@ export function jevLabeller(config, { cache = memoryCache(), fetchImpl = globalT
       catch(error) {if(!(error instanceof PrivacyError)) throw error;answers.set(v.item,{p:null,status:'withheld',reason:'Privacy boundary'});return false;}
     });
     const requestState={task:'Independent surface judgments; each question includes its own source.'};
-    const {batches,oversized}=packQuestions(safe,{batchSize:16,state:requestState});
+    const {batches,oversized}=packQuestions(safe,{batchSize:16,state:requestState,config});
     oversized.forEach(v=>answers.set(v.item,{p:null,status:'needs-local-review',reason:'Complete surface evidence exceeds request budget'}));
     for(const batch of batches) {
       const questions=Object.fromEntries(batch.flatMap((v,i)=>Object.entries(v.questions).map(([k,q])=>[`${i}_${k}`,q])));

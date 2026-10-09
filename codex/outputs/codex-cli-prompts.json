@@ -1,9 +1,9 @@
 {
   "source": {
     "repository": "openai/codex",
-    "tag": "rust-v0.160.0",
-    "commit": "a956835d020762cb2b570053af06f643a11c0ecc",
-    "cli_version": "codex-cli 0.160.0"
+    "tag": "rust-v0.162.0-alpha.2",
+    "commit": "74e804deeb1241d5fe699b31fb319f7d46454c42",
+    "cli_version": "codex-cli 0.162.0-alpha.2"
   },
   "items": [
     {
@@ -797,52 +797,6 @@
       "also_at": []
     },
     {
-      "id": "code-mode-protocol-src-description-rs-wait-description-template",
-      "document": "codex-cli-prompts.md",
-      "area": "Code-mode tools",
-      "title": "Wait description template",
-      "kind": "constant",
-      "search_kind": "tool",
-      "source": "code-mode-protocol/src/description.rs::WAIT_DESCRIPTION_TEMPLATE",
-      "executable": "codex",
-      "bytes": 700,
-      "sha256": "b87a941906aa8bc91bb3d7e4cee211a5d55899192942d26802b2b1814dd8a557",
-      "line": 45,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "code-mode-protocol/src/description.rs::WAIT_DESCRIPTION_TEMPLATE",
-        "sha256": "b87a941906aa8bc91bb3d7e4cee211a5d55899192942d26802b2b1814dd8a557",
-        "source_context_sha256": "6ee0194a2945a1f3cb52ce009b9c272833c693c38eaf661b207f09d5b13b06d3",
-        "model_facing": true,
-        "reason": "build_wait_tool_description returns this text as the model-facing wait tool description.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
-      "id": "code-mode-protocol-src-description-rs-mcp-typescript-preamble",
-      "document": "codex-cli-prompts.md",
-      "area": "Code-mode tools",
-      "title": "Mcp typescript preamble",
-      "kind": "constant",
-      "search_kind": "tool",
-      "source": "code-mode-protocol/src/description.rs::MCP_TYPESCRIPT_PREAMBLE",
-      "executable": "codex",
-      "bytes": 1543,
-      "sha256": "e02beca462bb4b3941298aed6c22cf2d58a0fc8fb3e4ddec1a8c11d55f371f37",
-      "line": 54,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "code-mode-protocol/src/description.rs::MCP_TYPESCRIPT_PREAMBLE",
-        "sha256": "e02beca462bb4b3941298aed6c22cf2d58a0fc8fb3e4ddec1a8c11d55f371f37",
-        "source_context_sha256": "1cf984852b1f2518a875f01d868766ecc0481ded36117fad2978a5068a3789ff",
-        "model_facing": true,
-        "reason": "build_exec_tool_description inserts this code as Shared MCP Types in the model-facing tool description when MCP schemas are present.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
       "id": "codex-api-src-endpoint-realtime-websocket-methods-v2-rs-realtime-v2-background-agent-tool-description",
       "document": "codex-cli-prompts.md",
       "area": "Realtime voice",
@@ -899,94 +853,6 @@
       "also_at": []
     },
     {
-      "id": "core-src-context-turn-aborted-rs-interrupted-guidance",
-      "document": "codex-cli-prompts.md",
-      "area": "Other",
-      "title": "Interrupted guidance",
-      "kind": "constant",
-      "source": "core/src/context/turn_aborted.rs::INTERRUPTED_GUIDANCE",
-      "executable": "codex",
-      "bytes": 195,
-      "sha256": "1202140aaa5ec1dde20bb65eff0bb613d34e51e9f27352dfd624871def3d5300",
-      "line": 10,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "core/src/context/turn_aborted.rs::INTERRUPTED_GUIDANCE",
-        "sha256": "1202140aaa5ec1dde20bb65eff0bb613d34e51e9f27352dfd624871def3d5300",
-        "source_context_sha256": "a1cf5f819e46e3e3a2dab38ee2d1135b7f3e603063f22077750e8090ebde66d6",
-        "model_facing": true,
-        "reason": "tasks/mod.rs constructs TurnAborted with this guidance and records its contextual user fragment in conversation history.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
-      "id": "core-src-context-turn-aborted-rs-interrupted-developer-guidance",
-      "document": "codex-cli-prompts.md",
-      "area": "Other",
-      "title": "Interrupted developer guidance",
-      "kind": "constant",
-      "source": "core/src/context/turn_aborted.rs::INTERRUPTED_DEVELOPER_GUIDANCE",
-      "executable": "codex",
-      "bytes": 190,
-      "sha256": "6affeaeb74b0f13b6081fc2fccd2cfe59a644d9634762ff692572235d8b81f75",
-      "line": 11,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "core/src/context/turn_aborted.rs::INTERRUPTED_DEVELOPER_GUIDANCE",
-        "sha256": "6affeaeb74b0f13b6081fc2fccd2cfe59a644d9634762ff692572235d8b81f75",
-        "source_context_sha256": "677576d573c6e7826dcc05641a7c886596cd822424bd62a18328c1530230c880",
-        "model_facing": true,
-        "reason": "tasks/mod.rs inserts this guidance into a developer-role RenderedFragment when an interrupted turn is recorded.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
-      "id": "core-src-plugins-render-rs-truncated-plugin-instructions-suffix",
-      "document": "codex-cli-prompts.md",
-      "area": "Other",
-      "title": "Truncated plugin instructions suffix",
-      "kind": "constant",
-      "source": "core/src/plugins/render.rs::TRUNCATED_PLUGIN_INSTRUCTIONS_SUFFIX",
-      "executable": "codex",
-      "bytes": 67,
-      "sha256": "d370204d2a38d20332839a56e89a32a89839a19b7066232a7398d75ae244ead7",
-      "line": 9,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "core/src/plugins/render.rs::TRUNCATED_PLUGIN_INSTRUCTIONS_SUFFIX",
-        "sha256": "d370204d2a38d20332839a56e89a32a89839a19b7066232a7398d75ae244ead7",
-        "source_context_sha256": "c7c468139271bdfc0476a5c07eec930798e9caeea8adbc88a597ab47701629fe",
-        "model_facing": true,
-        "reason": "render_explicit_plugin_instructions appends this suffix to truncated model-visible plugin instructions.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
-      "id": "core-src-realtime-context-rs-startup-context-header",
-      "document": "codex-cli-prompts.md",
-      "area": "Realtime voice",
-      "title": "Startup context header",
-      "kind": "constant",
-      "source": "core/src/realtime_context.rs::STARTUP_CONTEXT_HEADER",
-      "executable": "codex",
-      "bytes": 204,
-      "sha256": "07b33de1029fedd761635c048ce0039aa2789214df4b84fac193e132cfbee6c8",
-      "line": 30,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "core/src/realtime_context.rs::STARTUP_CONTEXT_HEADER",
-        "sha256": "07b33de1029fedd761635c048ce0039aa2789214df4b84fac193e132cfbee6c8",
-        "source_context_sha256": "656ae15027ad7a8e7ccc33483c42e3a0be30d39d0ee077a2fb25db929c3c8378",
-        "model_facing": true,
-        "reason": "Startup context assembly starts the model-facing realtime background context with this header.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
       "id": "core-src-realtime-conversation-rs-realtime-session-ended-handoff-instruction",
       "document": "codex-cli-prompts.md",
       "area": "Realtime voice",
@@ -1016,18 +882,12 @@
       "bytes": 43,
       "sha256": "c839c56b2b6f5cb73c8848275df7124cec42c27ca110192fb53cfc39b886b8ff",
       "line": 15,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "core/src/tools/handlers/multi_agents_spec.rs::MULTI_AGENT_V1_NAMESPACE_DESCRIPTION",
-        "sha256": "c839c56b2b6f5cb73c8848275df7124cec42c27ca110192fb53cfc39b886b8ff",
-        "source_context_sha256": "348660bad6d7f9a993c0df827306bb41facf0a8907e549ca651d936c0062b0d0",
-        "model_facing": true,
-        "reason": "ResponsesApiNamespace descriptions use this string in the exposed model tool schema.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": [
-        "core/src/tools/multi_agent_tool.rs::MULTI_AGENT_V2_NAMESPACE_DESCRIPTION"
-      ]
+      "model_facing": 0.82,
+      "classification_state_sha256": "c5e38dacc82508b2f9382fbab5af0a4a289e046cb7358c6db1a6f1b9f68829f5",
+      "classification_question_version": "v2",
+      "classification_model_version": "jev-1.13",
+      "decision_origin": "jev",
+      "also_at": []
     },
     {
       "id": "core-src-tools-handlers-multi-agents-spec-rs-spawn-agent-inherited-model-guidance",
@@ -1044,6 +904,25 @@
       "also_at": []
     },
     {
+      "id": "core-src-tools-handlers-multi-agents-spec-rs-spawn-agent-inherited-model-guidance-v2",
+      "document": "codex-cli-prompts.md",
+      "area": "Multi-agent",
+      "title": "Spawn agent inherited model guidance v2",
+      "kind": "constant",
+      "search_kind": "tool",
+      "source": "core/src/tools/handlers/multi_agents_spec.rs::SPAWN_AGENT_INHERITED_MODEL_GUIDANCE_V2",
+      "executable": "codex",
+      "bytes": 137,
+      "sha256": "7549e3524e20761eec1d6a2b64a3ec15deb5cf46962f40ee39ad2a14422fe4a2",
+      "line": 18,
+      "model_facing": 0.83,
+      "classification_state_sha256": "76b846e731a72cc2010429e4e3ed7df56361a8f12ed57e9b6bf4b2d53bef9fb4",
+      "classification_question_version": "v2",
+      "classification_model_version": "jev-1.13",
+      "decision_origin": "jev",
+      "also_at": []
+    },
+    {
       "id": "core-src-tools-handlers-multi-agents-spec-rs-spawn-agent-type-override-description-v1",
       "document": "codex-cli-prompts.md",
       "area": "Multi-agent",
@@ -1054,16 +933,12 @@
       "executable": "codex",
       "bytes": 132,
       "sha256": "071cfcea212f078e6b18c28b6015d405f64e72dfe2e3b7e2200a98670650a0a3",
-      "line": 18,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "core/src/tools/handlers/multi_agents_spec.rs::SPAWN_AGENT_TYPE_OVERRIDE_DESCRIPTION_V1",
-        "sha256": "071cfcea212f078e6b18c28b6015d405f64e72dfe2e3b7e2200a98670650a0a3",
-        "source_context_sha256": "e1f9888b719f196d27b084ba8f4340e810073f0a1f2e361e509237a619c6cdf0",
-        "model_facing": true,
-        "reason": "spawn_agent parameter schema inserts this guidance into its agent_type description.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
+      "line": 21,
+      "model_facing": 0.84,
+      "classification_state_sha256": "cbe37943642eeb72d2d24e4bbffb59d3e193e4b0fa9b3b056c70b2cfffa9b8a8",
+      "classification_question_version": "v2",
+      "classification_model_version": "jev-1.13",
+      "decision_origin": "jev",
       "also_at": []
     },
     {
@@ -1077,16 +952,12 @@
       "executable": "codex",
       "bytes": 77,
       "sha256": "18dda5c69e419a858ccd1dc05160ca90642674d4985b85575aa27c736cd12f45",
-      "line": 19,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "core/src/tools/handlers/multi_agents_spec.rs::SPAWN_AGENT_MODEL_OVERRIDE_DESCRIPTION",
-        "sha256": "18dda5c69e419a858ccd1dc05160ca90642674d4985b85575aa27c736cd12f45",
-        "source_context_sha256": "db082f619095004dc5c17c39ea829f347cd5e6782e4c6b9eec108bde3e1173d9",
-        "model_facing": true,
-        "reason": "spawn_agent parameter schemas use this string as the model override description.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
+      "line": 22,
+      "model_facing": 0.81,
+      "classification_state_sha256": "e082212920f57c9f0baa8c0411bbcaa31e8e1acb4299428c136fa9e82296e6eb",
+      "classification_question_version": "v2",
+      "classification_model_version": "jev-1.13",
+      "decision_origin": "jev",
       "also_at": []
     },
     {
@@ -1190,9 +1061,9 @@
       "executable": "codex",
       "bytes": 145,
       "sha256": "47b235b0feb64ba4f984289c0bdc81172cff35b029c6a8f46951ff6412fab1a1",
-      "line": 31,
+      "line": 32,
       "model_facing": 0.95,
-      "classification_state_sha256": "9d71cf7538404bed2f582591b5a1c708f940c4ab811c9933a0a8a6fd6827632e",
+      "classification_state_sha256": "5d1697832f1ec883ae857755f606d8ffa9d20b3273ffd5f1710616e78abaa8ae",
       "classification_question_version": "v2",
       "classification_model_version": "jev-1.13",
       "decision_origin": "jev",
@@ -1356,56 +1227,12 @@
       "executable": "codex",
       "bytes": 365,
       "sha256": "8104e4c49956cfb41b83d3d610a9079c6110f9dca8d20322a858eb88a23552fd",
-      "line": 30,
-      "model_facing": 0.84,
-      "classification_state_sha256": "5f87b87ce1ad77a4044e0a679e37cff65157e6bfe3956a6bb91e7ac48312d3b7",
+      "line": 31,
+      "model_facing": 0.82,
+      "classification_state_sha256": "8a0085a401c6aeb734553a48b8b931e629c8e5b63f0f5a28d0a86a18106dd67f",
       "classification_question_version": "v2",
       "classification_model_version": "jev-1.13",
       "decision_origin": "jev",
-      "also_at": []
-    },
-    {
-      "id": "guardian-context-src-retained-instructions-rs-legacy-start",
-      "document": "codex-cli-prompts.md",
-      "area": "Auto-review (guardian)",
-      "title": "Legacy start",
-      "kind": "constant",
-      "source": "guardian-context/src/retained_instructions.rs::LEGACY_START",
-      "executable": "codex",
-      "bytes": 324,
-      "sha256": "567c842a52bf4a277bb0d63830fa20928dcb56f217f7f07bddc00c43df4b2253",
-      "line": 31,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "guardian-context/src/retained_instructions.rs::LEGACY_START",
-        "sha256": "567c842a52bf4a277bb0d63830fa20928dcb56f217f7f07bddc00c43df4b2253",
-        "source_context_sha256": "604c79e7d0ff795d60efc1d76088e2a0141c904e003728e88e850b902b17a625",
-        "model_facing": true,
-        "reason": "Retained user instructions renderer emits this legacy header in user content when legacy order is detected.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
-      "id": "guardian-context-src-trusted-tool-rs-trusted-tool-prefix",
-      "document": "codex-cli-prompts.md",
-      "area": "Auto-review (guardian)",
-      "title": "Trusted tool prefix",
-      "kind": "constant",
-      "source": "guardian-context/src/trusted_tool.rs::TRUSTED_TOOL_PREFIX",
-      "executable": "codex",
-      "bytes": 287,
-      "sha256": "cd66b9bcf6ddf3a087e4382ad740c79a8743692c267fef5fcdb9191e7177a0c7",
-      "line": 17,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "guardian-context/src/trusted_tool.rs::TRUSTED_TOOL_PREFIX",
-        "sha256": "cd66b9bcf6ddf3a087e4382ad740c79a8743692c267fef5fcdb9191e7177a0c7",
-        "source_context_sha256": "5b4ed6263d039df803fd1b2b47b82c18e3643ce927aecdaffdbf93f2fd6c015e",
-        "model_facing": true,
-        "reason": "TrustedTool renders host-attested configuration context with this prefix for the guardian model.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
       "also_at": []
     },
     {
@@ -1437,15 +1264,11 @@
       "bytes": 412,
       "sha256": "c09dfe0c976b421ae93f52db1c36023ced6e5bbc2d69bd4b11eb45ea6f2885eb",
       "line": 67,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "memories/write/src/lib.rs::EXTENSIONS_PRIMARY_INPUTS",
-        "sha256": "c09dfe0c976b421ae93f52db1c36023ced6e5bbc2d69bd4b11eb45ea6f2885eb",
-        "source_context_sha256": "05d7ff692d8263f0893dfa2e0bae08bb30f9ee00e0f7b704e87d0ac10bed2aec",
-        "model_facing": true,
-        "reason": "memories/write/src/prompts.rs creates and renders a memory-writing prompt block from these instructions.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
+      "model_facing": 0.8,
+      "classification_state_sha256": "40025d7682994b1bf7e0ce343388afa3dbef1966b73f224670e3392faa7cd9bc",
+      "classification_question_version": "v2",
+      "classification_model_version": "jev-1.13",
+      "decision_origin": "jev",
       "also_at": []
     },
     {
@@ -1580,28 +1403,6 @@
       "also_at": []
     },
     {
-      "id": "prompts-src-permissions-instructions-rs-granular-prompted-categories",
-      "document": "codex-cli-prompts.md",
-      "area": "Permissions and sandbox",
-      "title": "Granular prompted categories",
-      "kind": "constant",
-      "source": "prompts/src/permissions_instructions.rs::GRANULAR_PROMPTED_CATEGORIES",
-      "executable": "codex",
-      "bytes": 64,
-      "sha256": "16fbef7ac328d074d33a7dce9d5a1380df1ed5619e3bea8e727556e110f1e32b",
-      "line": 36,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "prompts/src/permissions_instructions.rs::GRANULAR_PROMPTED_CATEGORIES",
-        "sha256": "16fbef7ac328d074d33a7dce9d5a1380df1ed5619e3bea8e727556e110f1e32b",
-        "source_context_sha256": "57d6d8d57a524453114a1b83dae6401c5af0c1d417b131a4eef9fad980a07b2c",
-        "model_facing": true,
-        "reason": "PermissionsInstructions rendering inserts this header before the permitted approval-category list.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
       "id": "prompts-src-permissions-instructions-rs-omitted-permission-paths",
       "document": "codex-cli-prompts.md",
       "area": "Permissions and sandbox",
@@ -1695,94 +1496,6 @@
       "also_at": []
     },
     {
-      "id": "protocol-src-protocol-rs-environments-instructions-open-tag",
-      "document": "codex-cli-prompts.md",
-      "area": "Other",
-      "title": "Environments instructions open tag",
-      "kind": "constant",
-      "source": "protocol/src/protocol.rs::ENVIRONMENTS_INSTRUCTIONS_OPEN_TAG",
-      "executable": "codex",
-      "bytes": 27,
-      "sha256": "eb63ed7acd4f9f3723440d0d033675bf849309acd42453e29172dc5ff0cb83c3",
-      "line": 122,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "protocol/src/protocol.rs::ENVIRONMENTS_INSTRUCTIONS_OPEN_TAG",
-        "sha256": "eb63ed7acd4f9f3723440d0d033675bf849309acd42453e29172dc5ff0cb83c3",
-        "source_context_sha256": "33235616b266637730a50ef7969a6be87aeed78a81ac8373f21f74c2206f60ab",
-        "model_facing": true,
-        "reason": "core/src/context/environments_instructions.rs renders model context with this opening marker.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
-      "id": "protocol-src-protocol-rs-environments-instructions-close-tag",
-      "document": "codex-cli-prompts.md",
-      "area": "Other",
-      "title": "Environments instructions close tag",
-      "kind": "constant",
-      "source": "protocol/src/protocol.rs::ENVIRONMENTS_INSTRUCTIONS_CLOSE_TAG",
-      "executable": "codex",
-      "bytes": 28,
-      "sha256": "66409347e33c4508183656959f49cca78ffd59c46371af4993ba6d9fdeb1158b",
-      "line": 123,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "protocol/src/protocol.rs::ENVIRONMENTS_INSTRUCTIONS_CLOSE_TAG",
-        "sha256": "66409347e33c4508183656959f49cca78ffd59c46371af4993ba6d9fdeb1158b",
-        "source_context_sha256": "52713fbdc033a7f53a8813d4d2ba4c08705c6f8826a870e95ebdb5e3740acf10",
-        "model_facing": true,
-        "reason": "core/src/context/environments_instructions.rs renders model context with this closing marker.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
-      "id": "protocol-src-protocol-rs-context-window-guidance-open-tag",
-      "document": "codex-cli-prompts.md",
-      "area": "Other",
-      "title": "Context window guidance open tag",
-      "kind": "constant",
-      "source": "protocol/src/protocol.rs::CONTEXT_WINDOW_GUIDANCE_OPEN_TAG",
-      "executable": "codex",
-      "bytes": 25,
-      "sha256": "3c555845a87dea709242365c42769f11bf0f2b3a2c06e4b8bbfdcef9c832cf4c",
-      "line": 140,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "protocol/src/protocol.rs::CONTEXT_WINDOW_GUIDANCE_OPEN_TAG",
-        "sha256": "3c555845a87dea709242365c42769f11bf0f2b3a2c06e4b8bbfdcef9c832cf4c",
-        "source_context_sha256": "f6914280fd1768babec3e749a4ed4b2f58d22b0f4bf16d08a21e4f45b5533473",
-        "model_facing": true,
-        "reason": "core/src/context/token_budget_context.rs renders model context with this opening marker.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
-      "id": "protocol-src-protocol-rs-context-window-guidance-close-tag",
-      "document": "codex-cli-prompts.md",
-      "area": "Other",
-      "title": "Context window guidance close tag",
-      "kind": "constant",
-      "source": "protocol/src/protocol.rs::CONTEXT_WINDOW_GUIDANCE_CLOSE_TAG",
-      "executable": "codex",
-      "bytes": 26,
-      "sha256": "eb752cc47a6f8f77242442dbe24f569623bd1252cb37325ab586abe3fa9a3ac1",
-      "line": 141,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "protocol/src/protocol.rs::CONTEXT_WINDOW_GUIDANCE_CLOSE_TAG",
-        "sha256": "eb752cc47a6f8f77242442dbe24f569623bd1252cb37325ab586abe3fa9a3ac1",
-        "source_context_sha256": "6355d52ab79eecf485af72e248ea6e738db9cc904124734ff0aece58e04dce50",
-        "model_facing": true,
-        "reason": "core/src/context/token_budget_context.rs renders model context with this closing marker.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
-      "also_at": []
-    },
-    {
       "id": "tui-src-app-side-rs-side-boundary-prompt",
       "document": "codex-cli-prompts.md",
       "area": "Side conversations",
@@ -1816,28 +1529,6 @@
       "classification_question_version": "v2",
       "classification_model_version": "jev-1.13",
       "decision_origin": "jev",
-      "also_at": []
-    },
-    {
-      "id": "tui-src-ide-context-prompt-rs-prompt-request-begin",
-      "document": "codex-cli-prompts.md",
-      "area": "Other",
-      "title": "Prompt request begin",
-      "kind": "constant",
-      "source": "tui/src/ide_context/prompt.rs::PROMPT_REQUEST_BEGIN",
-      "executable": "codex",
-      "bytes": 24,
-      "sha256": "d0a7e1134b4b1b3950b60d4dfe4035d165bb8e231e80705d379aa4f338e25c23",
-      "line": 16,
-      "decision_origin": "local-source-review",
-      "source_review": {
-        "source": "tui/src/ide_context/prompt.rs::PROMPT_REQUEST_BEGIN",
-        "sha256": "d0a7e1134b4b1b3950b60d4dfe4035d165bb8e231e80705d379aa4f338e25c23",
-        "source_context_sha256": "f5e72d34b51d56133f748d4598fc1c9dd898a2147acffdd2a0ea7e62f7d930e8",
-        "model_facing": true,
-        "reason": "IDE context assembly prepends this request boundary to the user message sent to the model.",
-        "source_commit": "a956835d020762cb2b570053af06f643a11c0ecc"
-      },
       "also_at": []
     },
     {
@@ -1885,8 +1576,8 @@
     "windows-sandbox-rs/src/wfp.rs::SUBLAYER_DESCRIPTION"
   ],
   "discovery": {
-    "rust_constants": 123,
-    "shipped_classified_constants": 70,
+    "rust_constants": 127,
+    "shipped_classified_constants": 93,
     "pending_source_review": [
       {
         "source": "app-server/src/log_write_warning.rs::LOG_WRITE_WARNING_WITH_FEEDBACK",
@@ -1903,6 +1594,20 @@
         "status": "pending-source-review"
       },
       {
+        "source": "code-mode-protocol/src/description.rs::WAIT_DESCRIPTION_TEMPLATE",
+        "line": 45,
+        "sha256": "b87a941906aa8bc91bb3d7e4cee211a5d55899192942d26802b2b1814dd8a557",
+        "model_facing": 0.78,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "code-mode-protocol/src/description.rs::MCP_TYPESCRIPT_PREAMBLE",
+        "line": 54,
+        "sha256": "e02beca462bb4b3941298aed6c22cf2d58a0fc8fb3e4ddec1a8c11d55f371f37",
+        "model_facing": 0.25,
+        "status": "pending-source-review"
+      },
+      {
         "source": "codex-api/src/api_bridge.rs::CYBER_POLICY_FALLBACK_MESSAGE",
         "line": 284,
         "sha256": "d37351e8fd776a06bad1513c09639b83c146727bbd8a3f862536987ad4af5b13",
@@ -1913,14 +1618,14 @@
         "source": "codex-api/src/api_bridge.rs::BIO_POLICY_FALLBACK_MESSAGE",
         "line": 287,
         "sha256": "bdfda9bd5ed3621b848c05cb1d6e590ec73a410826a1fb60fcf4cd00c44d76b7",
-        "model_facing": 0.04,
+        "model_facing": 0.03,
         "status": "pending-source-review"
       },
       {
         "source": "codex-api/src/api_bridge.rs::MISALIGNMENT_POLICY_VIOLATION_ERROR_CODE",
         "line": 288,
         "sha256": "20d185742030769e204b0af5dec6cf566f958b656807f0469bf28a3d274ba19a",
-        "model_facing": 0.03,
+        "model_facing": 0.04,
         "status": "pending-source-review"
       },
       {
@@ -1928,6 +1633,20 @@
         "line": 289,
         "sha256": "1cb30948179ae90785ebb7228e25b86175862a5496867fce35dea2922d68c67e",
         "model_facing": 0.02,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "core/src/context/turn_aborted.rs::INTERRUPTED_GUIDANCE",
+        "line": 10,
+        "sha256": "1202140aaa5ec1dde20bb65eff0bb613d34e51e9f27352dfd624871def3d5300",
+        "model_facing": 0.56,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "core/src/context/turn_aborted.rs::INTERRUPTED_DEVELOPER_GUIDANCE",
+        "line": 11,
+        "sha256": "6affeaeb74b0f13b6081fc2fccd2cfe59a644d9634762ff692572235d8b81f75",
+        "model_facing": 0.52,
         "status": "pending-source-review"
       },
       {
@@ -1941,21 +1660,56 @@
         "source": "core/src/mcp_skill_dependencies.rs::SKILL_MCP_DEPENDENCY_PROMPT_ID",
         "line": 36,
         "sha256": "3bfc66a4a086f678e0169f6f69ece8e99870ee0ff395aa72ae91fd1fd961864d",
-        "model_facing": 0.16,
+        "model_facing": 0.15,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "core/src/plugins/render.rs::TRUNCATED_PLUGIN_INSTRUCTIONS_SUFFIX",
+        "line": 9,
+        "sha256": "d370204d2a38d20332839a56e89a32a89839a19b7066232a7398d75ae244ead7",
+        "model_facing": 0.33,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "core/src/realtime_context.rs::STARTUP_CONTEXT_HEADER",
+        "line": 30,
+        "sha256": "07b33de1029fedd761635c048ce0039aa2789214df4b84fac193e132cfbee6c8",
+        "model_facing": 0.78,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "core/src/session_prefix.rs::GUARDIAN_NEXT_ACTION",
+        "line": 14,
+        "sha256": "7be566285379ec1596ae42af1fed610d621bb64b4347eba872e715fa24e78ab2",
+        "model_facing": 0.7,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "core/src/tools/handlers/multi_agents_spec.rs::SPAWN_AGENT_MODEL_CATALOG_GUIDANCE",
+        "line": 19,
+        "sha256": "caf52067a154fd2e77a81d59522c7db4a739fab5805e46d8e3f8b5baf99aee38",
+        "model_facing": 0.77,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "core/src/tools/multi_agent_tool.rs::MULTI_AGENT_V2_NAMESPACE_DESCRIPTION",
+        "line": 18,
+        "sha256": "c839c56b2b6f5cb73c8848275df7124cec42c27ca110192fb53cfc39b886b8ff",
+        "model_facing": 0.74,
         "status": "pending-source-review"
       },
       {
         "source": "core/src/tools/runtimes/zsh_fork/unix_escalation.rs::PROMPT_CONFLICT_REASON",
         "line": 64,
         "sha256": "7e0d0e5b949876cec689aaf6c446875dcdd78e26d61d5b66270c8e762a3bb493",
-        "model_facing": 0.05,
+        "model_facing": 0.04,
         "status": "pending-source-review"
       },
       {
         "source": "exec-server/src/telemetry.rs::CONNECTIONS_ACTIVE_DESCRIPTION",
         "line": 31,
         "sha256": "dedd021da0bd56c1c2d5f31f68584889a9109d65671fc89c2ea0484221eefec0",
-        "model_facing": 0.03,
+        "model_facing": 0.02,
         "status": "pending-source-review"
       },
       {
@@ -1990,7 +1744,7 @@
         "source": "exec-server/src/telemetry.rs::REQUEST_QUEUE_DURATION_DESCRIPTION",
         "line": 41,
         "sha256": "3f3d320dbfc10de0c01ba1b25e7f4ea3160debd3be0fe88310530a9011ca44c5",
-        "model_facing": 0.02,
+        "model_facing": 0.03,
         "status": "pending-source-review"
       },
       {
@@ -2025,14 +1779,35 @@
         "source": "ext/history-notes/src/backend.rs::TOOL_OUTPUT_TRUNCATION_POLICY_HEADER",
         "line": 17,
         "sha256": "58b62cd354abd939119de8dad673ee4dffa048190f21990c5bf1ba9eefb9a6f0",
-        "model_facing": 0.12,
+        "model_facing": 0.11,
         "status": "pending-source-review"
       },
       {
         "source": "ext/skills/src/render.rs::SKILL_DESCRIPTIONS_REMOVED_WARNING_PREFIX",
         "line": 26,
         "sha256": "446ef223d429392af45cb1d206e504734235b01b96776bdbb6950f7b5a88ada5",
-        "model_facing": 0.18,
+        "model_facing": 0.16,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "guardian-context/src/retained_instructions.rs::LEGACY_START",
+        "line": 32,
+        "sha256": "567c842a52bf4a277bb0d63830fa20928dcb56f217f7f07bddc00c43df4b2253",
+        "model_facing": 0.75,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "guardian-context/src/retained_instructions.rs::AVAILABILITY_CHANGED",
+        "line": 34,
+        "sha256": "94134da187fbf844302587273022ef13d926b4f468953653255b68caeaa5e64f",
+        "model_facing": 0.58,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "guardian-context/src/trusted_tool.rs::TRUSTED_TOOL_PREFIX",
+        "line": 17,
+        "sha256": "cd66b9bcf6ddf3a087e4382ad740c79a8743692c267fef5fcdb9191e7177a0c7",
+        "model_facing": 0.77,
         "status": "pending-source-review"
       },
       {
@@ -2060,14 +1835,14 @@
         "source": "models-manager/src/model_presets.rs::HIDE_GPT5_1_MIGRATION_PROMPT_CONFIG",
         "line": 4,
         "sha256": "0fefe42fc10242dce19b8701365a73019da85f0eab638bea32af10c4df9c93e5",
-        "model_facing": 0.09,
+        "model_facing": 0.08,
         "status": "pending-source-review"
       },
       {
         "source": "models-manager/src/model_presets.rs::HIDE_GPT_5_1_CODEX_MAX_MIGRATION_PROMPT_CONFIG",
         "line": 5,
         "sha256": "3e56cf6d7f1318c454bfab5eef61d1c5cb42ed4afea6e59899eef6eb77806b1f",
-        "model_facing": 0.07,
+        "model_facing": 0.08,
         "status": "pending-source-review"
       },
       {
@@ -2102,14 +1877,49 @@
         "source": "otel/src/metrics/names.rs::THREAD_SKILLS_DESCRIPTION_TRUNCATED_CHARS_METRIC",
         "line": 73,
         "sha256": "0b4233971089df7d84c4713c83320f0262ecd7aec01e01ab64e804dc985a6ba4",
-        "model_facing": 0.02,
+        "model_facing": 0.03,
         "status": "pending-source-review"
       },
       {
         "source": "prompts/src/guardian_instructions.rs::TENANT_POLICY_CONFIG_PLACEHOLDER",
         "line": 8,
         "sha256": "9b9006446c10b19df3beefec55122487f9f9d751457a89cd083114c8a3c07369",
-        "model_facing": 0.36,
+        "model_facing": 0.37,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "prompts/src/permissions_instructions.rs::GRANULAR_PROMPTED_CATEGORIES",
+        "line": 36,
+        "sha256": "16fbef7ac328d074d33a7dce9d5a1380df1ed5619e3bea8e727556e110f1e32b",
+        "model_facing": 0.66,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "protocol/src/protocol.rs::ENVIRONMENTS_INSTRUCTIONS_OPEN_TAG",
+        "line": 122,
+        "sha256": "eb63ed7acd4f9f3723440d0d033675bf849309acd42453e29172dc5ff0cb83c3",
+        "model_facing": 0.06,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "protocol/src/protocol.rs::ENVIRONMENTS_INSTRUCTIONS_CLOSE_TAG",
+        "line": 123,
+        "sha256": "66409347e33c4508183656959f49cca78ffd59c46371af4993ba6d9fdeb1158b",
+        "model_facing": 0.06,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "protocol/src/protocol.rs::CONTEXT_WINDOW_GUIDANCE_OPEN_TAG",
+        "line": 140,
+        "sha256": "3c555845a87dea709242365c42769f11bf0f2b3a2c06e4b8bbfdcef9c832cf4c",
+        "model_facing": 0.16,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "protocol/src/protocol.rs::CONTEXT_WINDOW_GUIDANCE_CLOSE_TAG",
+        "line": 141,
+        "sha256": "eb752cc47a6f8f77242442dbe24f569623bd1252cb37325ab586abe3fa9a3ac1",
+        "model_facing": 0.08,
         "status": "pending-source-review"
       },
       {
@@ -2193,7 +2003,14 @@
         "source": "tui/src/chatwidget.rs::AUTO_REVIEW_DESCRIPTION",
         "line": 461,
         "sha256": "b42f3ce713f16f00b70f58bfdd5e129a8898ca1da3a000437b9ae846158f6b0c",
-        "model_facing": 0.48,
+        "model_facing": 0.5,
+        "status": "pending-source-review"
+      },
+      {
+        "source": "tui/src/ide_context/prompt.rs::PROMPT_REQUEST_BEGIN",
+        "line": 16,
+        "sha256": "d0a7e1134b4b1b3950b60d4dfe4035d165bb8e231e80705d379aa4f338e25c23",
+        "model_facing": 0.43,
         "status": "pending-source-review"
       },
       {
@@ -2207,7 +2024,7 @@
         "source": "tui/src/inline_visualization/viewer.rs::SHELL_STYLE",
         "line": 17,
         "sha256": "ad82482344f7f36a72de3902ce8ac9df91c621bcf028d67ce5a15b640367af7c",
-        "model_facing": 0.02,
+        "model_facing": 0.03,
         "status": "pending-source-review"
       },
       {

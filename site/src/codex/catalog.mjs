@@ -206,6 +206,16 @@ export const categories = [
     label: "Tools and features",
     files: [
       {
+        path: "outputs/feature-notes.md",
+        anchor: "feature-notes-md",
+        slug: "feature-notes",
+        records: "outputs/feature-notes.json",
+        format: "markdown",
+        title: "Installed harness mechanisms",
+        promptText: true,
+        defaultOpen: false
+      },
+      {
         path: "outputs/desktop-tool-manifest.md",
         anchor: "desktop-tool-manifest-md",
         slug: "tool-manifest",
@@ -277,6 +287,16 @@ export const categories = [
         snapshot: "September 24, 2026",
         format: "markdown",
         title: "Voice tools",
+        defaultOpen: true
+      },
+      {
+        path: "outputs/intelligent-ui.md",
+        anchor: "intelligent-ui-md",
+        slug: "intelligent-ui",
+        records: { file: "outputs/intelligent-ui.json", kind: "skill" },
+        format: "markdown",
+        title: "Intelligent UI and inline visualizations",
+        promptText: true,
         defaultOpen: true
       },
       {

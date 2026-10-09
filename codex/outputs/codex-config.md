@@ -1,6 +1,6 @@
 # Codex/ChatGPT `config.toml` reference
 
-This reference covers every `config.toml` key accepted by the Codex CLI bundled in the ChatGPT desktop app (com.openai.codex 26.930.31730; `codex-cli 0.160.0`, binary sha256 `6b582e8813ce7e8e…`). Keys come from the generated `ConfigToml` JSON Schema and config structs in openai/codex at tag `rust-v0.160.0` (the exact release tag for this binary), the feature registry, and probes of the shipped binary with a throwaway `CODEX_HOME`. It lists 981 `config.toml` entries. 502 appear in the official Codex docs, and 479 are undocumented. The entries include 154 feature flags (60 under development, 47 stable, 40 removed, 4 deprecated, 3 experimental), 12 hidden, legacy, or alias keys that the generated schema leaves out, and 6 keys that the official reference lists but this build rejects. The last section lists 171 `requirements.toml` keys for admin-managed policy. Labels: **documented** means the key is in the official config reference or another Codex docs page; **undocumented** means it is only in source and the binary; **hidden** means the schema generator skips it, but the deserializer still recognizes it (sometimes only to raise a targeted error). Descriptions quote the docs where they exist, and the Rust doc comment otherwise. Defaults are shown only where a source states them.
+This reference covers every `config.toml` key accepted by the Codex CLI bundled in the ChatGPT desktop app (com.openai.codex 26.1002.52244; `codex-cli 0.162.0-alpha.2`, binary sha256 `cb4e4994627e7708…`). Keys come from the generated `ConfigToml` JSON Schema and config structs in openai/codex at tag `rust-v0.162.0-alpha.2` (the exact release tag for this binary), the feature registry, and probes of the shipped binary with a throwaway `CODEX_HOME`. It lists 992 `config.toml` entries. 505 appear in the official Codex docs, and 487 are undocumented. The entries include 161 feature flags (62 under development, 51 stable, 40 removed, 4 experimental, 4 deprecated), 13 hidden, legacy, or alias keys that the generated schema leaves out, and 6 keys that the official reference lists but this build rejects. The last section lists 177 `requirements.toml` keys for admin-managed policy. Labels: **documented** means the key is in the official config reference or another Codex docs page; **undocumented** means it is only in source and the binary; **hidden** means the schema generator skips it, but the deserializer still recognizes it (sometimes only to raise a targeted error). Descriptions quote the docs where they exist, and the Rust doc comment otherwise. Defaults are shown only where a source states them.
 
 Placeholders: `<id>`, `<name>`, `<key>` and similar stand for any table key you choose; `[]` marks an array of tables. Profiles (`profiles.<name>`) accept a subset of the top-level keys, listed under that entry rather than repeated.
 
@@ -10,20 +10,20 @@ Placeholders: `<id>`, `<name>`, `<key>` and similar stand for any table key you 
 - [Instructions and prompt assembly](#instructions-and-prompt-assembly) (12)
 - [Sandbox, permissions and approvals](#sandbox-permissions-and-approvals) (58)
 - [MCP servers](#mcp-servers) (52)
-- [Feature flags](#feature-flags) (264)
+- [Feature flags](#feature-flags) (277)
 - [Tools, web search, browser and computer use](#tools-web-search-browser-and-computer-use) (50)
-- [Agents, skills, plugins and apps](#agents-skills-plugins-and-apps) (93)
+- [Agents, skills, plugins and apps](#agents-skills-plugins-and-apps) (87)
 - [Hooks and notifications](#hooks-and-notifications) (19)
 - [Profiles and projects](#profiles-and-projects) (6)
 - [Authentication and login](#authentication-and-login) (3)
-- [Realtime voice and audio](#realtime-voice-and-audio) (14)
+- [Realtime voice and audio](#realtime-voice-and-audio) (15)
 - [Telemetry, history and storage](#telemetry-history-and-storage) (84)
 - [Desktop and terminal UI](#desktop-and-terminal-ui) (69)
-- [Other settings](#other-settings) (4)
-- [Terminal UI keymap](#terminal-ui-keymap) (167)
-- [Hidden, legacy and alias keys (not in the generated schema)](#hidden-legacy-and-alias-keys-not-in-the-generated-schema) (12)
+- [Other settings](#other-settings) (5)
+- [Terminal UI keymap](#terminal-ui-keymap) (168)
+- [Hidden, legacy and alias keys (not in the generated schema)](#hidden-legacy-and-alias-keys-not-in-the-generated-schema) (13)
 - [Documented but not accepted by this build](#documented-but-not-accepted-by-this-build) (6)
-- [Managed requirements (requirements.toml)](#managed-requirements-requirementstoml) (171)
+- [Managed requirements (requirements.toml)](#managed-requirements-requirementstoml) (177)
 
 ## Model and provider selection
 
@@ -35,7 +35,7 @@ Type: `string` · Default: `"https://chatgpt.com/backend-api/"` · Status: docum
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:410`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:412`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `model`
 
@@ -55,7 +55,7 @@ Type: `integer (int64)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:179`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:181`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `model_auto_compact_token_limit_scope`
 
@@ -69,7 +69,7 @@ Values:
 - `total`: Count the full active context against the limit.
 - `body_after_prefix`: Count sampled output and later growth after the carried window prefix.
 
-Source: `codex-rs/config/src/config_toml.rs:183`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:185`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `model_catalog_json`
 
@@ -79,7 +79,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:400`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:402`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `model_context_window`
 
@@ -89,7 +89,7 @@ Type: `integer (int64)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:176`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:178`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `model_provider`
 
@@ -99,7 +99,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:173`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:175`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `model_providers`
 
@@ -107,9 +107,9 @@ Type: `map<string, table>` · Default: `{}` · Status: documented
 
 > User-defined provider entries that extend the built-in list. Built-in IDs cannot be overridden.
 >
-> — `codex-rs/config/src/config_toml.rs:327`
+> — `codex-rs/config/src/config_toml.rs:329`
 
-Source: `codex-rs/config/src/config_toml.rs:327`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [web-search](https://developers.openai.com/codex/web-search) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:329`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [web-search](https://developers.openai.com/codex/web-search) · In binary: yes (distinctive match)
 
 ### `model_providers.<id>`
 
@@ -562,7 +562,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:392`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:394`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `model_reasoning_summary`
 
@@ -578,7 +578,7 @@ Values:
 - `detailed`
 - `none`: Option to disable reasoning summaries.
 
-Source: `codex-rs/config/src/config_toml.rs:394`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:396`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `model_verbosity`
 
@@ -590,7 +590,7 @@ Type: `"low" | "medium" | "high"` · Default: `used` · Status: documented
 
 Values: `low`, `medium`, `high`
 
-Source: `codex-rs/config/src/config_toml.rs:396`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:398`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `openai_base_url`
 
@@ -600,7 +600,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:425`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:427`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `oss_provider`
 
@@ -610,7 +610,7 @@ Type: `string` · Default: `prompting if unset` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:558`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:560`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `personality`
 
@@ -622,7 +622,7 @@ Type: `"none" | "friendly" | "pragmatic"` · Status: deprecated or legacy (per s
 
 Values: `none`, `friendly`, `pragmatic`
 
-Source: `codex-rs/config/src/config_toml.rs:403`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:405`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `plan_mode_reasoning_effort`
 
@@ -632,7 +632,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:393`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:395`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `responses_api_metadata`
 
@@ -640,9 +640,9 @@ Type: `map<string, string>` · Status: undocumented
 
 > Bounded, product-owned metadata attached to every Responses API request.
 >
-> — `codex-rs/config/src/config_toml.rs:416`
+> — `codex-rs/config/src/config_toml.rs:418`
 
-Source: `codex-rs/config/src/config_toml.rs:416`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:418`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `responses_api_metadata.<key>`
 
@@ -658,7 +658,7 @@ Type: `string` · Default: `the current session model` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:170`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:172`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `service_tier`
 
@@ -668,7 +668,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:407`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:409`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ## Instructions and prompt assembly
 
@@ -680,7 +680,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:273`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:275`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `developer_instructions`
 
@@ -690,7 +690,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:252`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:254`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `experimental_compact_prompt_file`
 
@@ -700,7 +700,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:555`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:557`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `include_apps_instructions`
 
@@ -708,9 +708,9 @@ Type: `boolean` · Default: `true` · Status: undocumented
 
 > Whether to inject the `<apps_instructions>` developer block.
 >
-> — `codex-rs/config/src/config_toml.rs:258`
+> — `codex-rs/config/src/config_toml.rs:260`
 
-Source: `codex-rs/config/src/config_toml.rs:258`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:260`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `include_collaboration_mode_instructions`
 
@@ -718,9 +718,9 @@ Type: `boolean` · Default: `true` · Status: undocumented
 
 > Whether to inject the `<collaboration_mode>` developer block.
 >
-> — `codex-rs/config/src/config_toml.rs:261`
+> — `codex-rs/config/src/config_toml.rs:263`
 
-Source: `codex-rs/config/src/config_toml.rs:261`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:263`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `include_environment_context`
 
@@ -728,9 +728,9 @@ Type: `boolean` · Default: `true` · Status: undocumented
 
 > Whether to inject the `<environment_context>` user block.
 >
-> — `codex-rs/config/src/config_toml.rs:264`
+> — `codex-rs/config/src/config_toml.rs:266`
 
-Source: `codex-rs/config/src/config_toml.rs:264`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:266`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `include_permissions_instructions`
 
@@ -738,9 +738,9 @@ Type: `boolean` · Default: `true` · Status: undocumented
 
 > Whether to inject the `<permissions instructions>` developer block.
 >
-> — `codex-rs/config/src/config_toml.rs:255`
+> — `codex-rs/config/src/config_toml.rs:257`
 
-Source: `codex-rs/config/src/config_toml.rs:255`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:257`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `instructions`
 
@@ -750,7 +750,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:248`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:250`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `model_instructions_file`
 
@@ -760,7 +760,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:270`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:272`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `project_doc_fallback_filenames`
 
@@ -770,7 +770,7 @@ Type: `array<string>` · Default: `[]` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:335`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:337`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `project_doc_max_bytes`
 
@@ -780,7 +780,7 @@ Type: `integer (uint)` · Default: `32768` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:331`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:333`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `project_root_markers`
 
@@ -792,7 +792,7 @@ Type: `array<string>` · Default: `[".git"]` · Status: documented
 
 Default sources: `[".git"]` (embedded packaged-defaults layer (lowest-precedence config layer, include_str! in codex-rs/config/src/loader/mod.rs)); `["` (stated in source doc comment)
 
-Source: `codex-rs/config/src/config_toml.rs:518`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:520`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ## Sandbox, permissions and approvals
 
@@ -804,7 +804,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:219`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:221`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `approval_policy`
 
@@ -819,7 +819,7 @@ Values:
 - `{ granular = … }`: Fine-grained controls for individual approval flows. When a field is `true`, commands in that category are allowed. When it is `false`, those requests are automatically rejected instead of shown to the user.
 - `never`: Never ask the user to approve commands. Failures are immediately returned to the model, and never escalated to the user for approval.
 
-Source: `codex-rs/config/src/config_toml.rs:193`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:195`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `approval_policy.granular`
 
@@ -887,7 +887,7 @@ Type: `"user" | "auto_review" | "guardian_subagent"` · Default: `user` · Statu
 
 Values: `user`, `auto_review`, `guardian_subagent`
 
-Source: `codex-rs/config/src/config_toml.rs:198`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:200`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `auto_review`
 
@@ -895,9 +895,9 @@ Type: `table` · Status: documented
 
 > Optional policy instructions for the guardian auto-reviewer.
 >
-> — `codex-rs/config/src/config_toml.rs:202`
+> — `codex-rs/config/src/config_toml.rs:204`
 
-Source: `codex-rs/config/src/config_toml.rs:202`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:204`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
 
 ### `auto_review.circuit_break_action`
 
@@ -905,13 +905,13 @@ Type: `"default" | "strict"` · Default: `default` · Status: undocumented
 
 > Controls whether circuit-breaker interruptions include a structured error. Strict mode writes structured errors that older clients may not recognize when reading shared history. Defaults to `default`.
 >
-> — `codex-rs/config/src/config_toml.rs:576`
+> — `codex-rs/config/src/config_toml.rs:578`
 
 Values:
 - `default`: Emit the warning and interrupt without structured error details.
 - `strict`: Emit the same warning and interruption, with structured error details.
 
-Source: `codex-rs/config/src/config_toml.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:578`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `auto_review.conversation_history_max_output_tokens`
 
@@ -919,9 +919,9 @@ Type: `integer (uint)` · Default: `4,000` · Status: undocumented
 
 > Maximum estimated tokens per Guardian history-tool response, before the standard serialization allowance. Defaults to 4,000; stricter parent tool limits still apply.
 >
-> — `codex-rs/config/src/config_toml.rs:588`
+> — `codex-rs/config/src/config_toml.rs:590`
 
-Source: `codex-rs/config/src/config_toml.rs:588`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:590`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `auto_review.experimental_conversation_history_prompt`
 
@@ -929,9 +929,9 @@ Type: `string` · Status: undocumented
 
 > Experimental replacement for the history-retrieval instructions when history tools and Apps are enabled. Omitted or blank values use the built-in prompt.
 >
-> — `codex-rs/config/src/config_toml.rs:585`
+> — `codex-rs/config/src/config_toml.rs:587`
 
-Source: `codex-rs/config/src/config_toml.rs:585`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:587`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `auto_review.experimental_policy_template`
 
@@ -939,9 +939,9 @@ Type: `string` · Status: undocumented
 
 > Experimental full Guardian prompt template containing the tenant policy placeholder.
 >
-> — `codex-rs/config/src/config_toml.rs:582`
+> — `codex-rs/config/src/config_toml.rs:584`
 
-Source: `codex-rs/config/src/config_toml.rs:582`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:584`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `auto_review.extra_policy`
 
@@ -951,7 +951,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:580`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:582`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `auto_review.policy`
 
@@ -961,7 +961,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:578`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:580`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `default_permissions`
 
@@ -971,7 +971,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:237`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:239`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `permissions`
 
@@ -979,9 +979,9 @@ Type: `table` · Status: documented
 
 > Named permissions profiles.
 >
-> — `codex-rs/config/src/config_toml.rs:241`
+> — `codex-rs/config/src/config_toml.rs:243`
 
-Source: `codex-rs/config/src/config_toml.rs:241`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:243`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
 
 ### `permissions.<name>.description`
 
@@ -1201,11 +1201,11 @@ Type: `limited | full` · Status: documented; schema leaves `permissions` opaque
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Config struct field with this name: `codex-rs/config/src/config_toml.rs:799`
+Config struct field with this name: `codex-rs/config/src/config_toml.rs:822`
 
 Binary check (`--strict-config`): inconclusive: permission profiles accept unknown keys, so a probe cannot confirm this field
 
-Source: `codex-rs/config/src/config_toml.rs:799`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:822`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `permissions.<name>.network.proxy_url`
 
@@ -1301,7 +1301,7 @@ Type: `"read-only" | "workspace-write" | "danger-full-access"` · Status: docume
 
 Values: `read-only`, `workspace-write`, `danger-full-access`
 
-Source: `codex-rs/config/src/config_toml.rs:222`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:224`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `sandbox_workspace_write`
 
@@ -1309,9 +1309,9 @@ Type: `table` · Status: documented
 
 > Sandbox configuration to apply if `sandbox` is `WorkspaceWrite`.
 >
-> — `codex-rs/config/src/config_toml.rs:232`
+> — `codex-rs/config/src/config_toml.rs:234`
 
-Source: `codex-rs/config/src/config_toml.rs:232`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:234`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
 
 ### `sandbox_workspace_write.exclude_slash_tmp`
 
@@ -1321,7 +1321,7 @@ Type: `boolean` · Default: `false` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1140`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1112`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `sandbox_workspace_write.exclude_tmpdir_env_var`
 
@@ -1331,7 +1331,7 @@ Type: `boolean` · Default: `false` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1138`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1110`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `sandbox_workspace_write.network_access`
 
@@ -1341,7 +1341,7 @@ Type: `boolean` · Default: `false` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1136`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1108`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `sandbox_workspace_write.writable_roots`
 
@@ -1351,7 +1351,7 @@ Type: `array<string>` · Default: `[]` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1134`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1106`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `shell_environment_policy`
 
@@ -1359,9 +1359,9 @@ Type: `table` · Default: `{"exclude": null, "experimental_use_profile": null, "
 
 > Policy for building the `env` when spawning a process via shell-like tools.
 >
-> — `codex-rs/config/src/config_toml.rs:209`
+> — `codex-rs/config/src/config_toml.rs:211`
 
-Source: `codex-rs/config/src/config_toml.rs:209`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:211`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
 
 ### `shell_environment_policy.exclude`
 
@@ -1462,21 +1462,21 @@ Type: `table` · Status: documented · When: Windows only
 
 > Windows-specific configuration.
 >
-> — `codex-rs/config/src/config_toml.rs:549`
+> — `codex-rs/config/src/config_toml.rs:551`
 
-Source: `codex-rs/config/src/config_toml.rs:549`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [windows/windows-sandbox](https://developers.openai.com/codex/windows/windows-sandbox) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:551`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [windows/windows-sandbox](https://developers.openai.com/codex/windows/windows-sandbox) · In binary: yes (generic match)
 
 ### `windows.sandbox`
 
 Type: `"elevated" | "unelevated" | "mxc"` · Status: documented · When: Windows only
 
-> Windows-only native sandbox mode when running Codex natively on Windows.
+> Native Windows sandbox implementation. Explicit `mxc` selection fails when MXC is unavailable or prohibited by managed requirements. Use `features.prefer_mxc` with a legacy selection for automatic MXC selection with fallback.
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
 Values: `elevated`, `unelevated`, `mxc`
 
-Source: `codex-rs/config/src/types.rs:175`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:176`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ## MCP servers
 
@@ -1486,9 +1486,9 @@ Type: `table` · Status: undocumented
 
 > Trusted enterprise IdP shared by EMA-enabled MCP servers and plugins.
 >
-> — `codex-rs/config/src/config_toml.rs:298`
+> — `codex-rs/config/src/config_toml.rs:300`
 
-Source: `codex-rs/config/src/config_toml.rs:298`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:300`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_enterprise_managed_auth.idp`
 
@@ -1496,9 +1496,9 @@ Type: `table` · Status: undocumented
 
 > Shared enterprise authorization, independent of Codex account credentials.
 >
-> — `codex-rs/config/src/mcp_ema.rs:33`
+> — `codex-rs/config/src/mcp_ema.rs:36`
 
-Source: `codex-rs/config/src/mcp_ema.rs:33`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_ema.rs:36`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `mcp_enterprise_managed_auth.idp.client_id`
 
@@ -1506,9 +1506,9 @@ Type: `string` · Status: undocumented
 
 > Public OAuth client registered with that enterprise IdP.
 >
-> — `codex-rs/config/src/mcp_ema.rs:26`
+> — `codex-rs/config/src/mcp_ema.rs:29`
 
-Source: `codex-rs/config/src/mcp_ema.rs:26`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_ema.rs:29`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_enterprise_managed_auth.idp.issuer`
 
@@ -1516,9 +1516,9 @@ Type: `string` · Status: undocumented
 
 > Issuer used for enterprise OAuth discovery and identity validation.
 >
-> — `codex-rs/config/src/mcp_ema.rs:24`
+> — `codex-rs/config/src/mcp_ema.rs:27`
 
-Source: `codex-rs/config/src/mcp_ema.rs:24`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_ema.rs:27`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `mcp_oauth_callback_port`
 
@@ -1528,7 +1528,7 @@ Type: `integer (uint16)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:310`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:312`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_oauth_callback_url`
 
@@ -1538,7 +1538,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:316`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:318`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_oauth_credentials_store`
 
@@ -1553,7 +1553,7 @@ Values:
 - `file`: CODEX_HOME/.credentials.json This file will be readable to Codex and other applications running as the same user.
 - `keyring`: Keyring when available, otherwise fail.
 
-Source: `codex-rs/config/src/config_toml.rs:306`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:308`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_optional_startup_grace_ms`
 
@@ -1563,7 +1563,7 @@ Type: `integer (uint64)` · Default: `1000` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:322`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:324`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers`
 
@@ -1571,9 +1571,9 @@ Type: `map<string, table>` · Default: `{}` · Status: documented
 
 > Definition for MCP servers that Codex can reach out to for tool calls.
 >
-> — `codex-rs/config/src/config_toml.rs:294`
+> — `codex-rs/config/src/config_toml.rs:296`
 
-Source: `codex-rs/config/src/config_toml.rs:294`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:296`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>`
 
@@ -1593,7 +1593,7 @@ Type: `array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:381`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:371`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.auth`
 
@@ -1608,7 +1608,7 @@ Values:
 - `chatgpt`: Use the current ChatGPT session for servers on the trusted first-party ChatGPT origin. If no ChatGPT session provider is available, startup can still fall back to stored OAuth credentials.
 - `ema_auth`: Exchange an enterprise IdP refresh token for resource-specific authorization. Alternate credentials and ordinary OAuth fallback are not permitted.
 
-Source: `codex-rs/config/src/mcp_types.rs:403`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:393`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.bearer_token_env_var`
 
@@ -1618,7 +1618,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:396`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:386`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.command`
 
@@ -1628,7 +1628,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:379`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:369`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.cwd`
 
@@ -1638,7 +1638,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:387`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:377`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.default_tools_approval_mode`
 
@@ -1650,7 +1650,7 @@ Type: `"auto" | "prompt" | "writes" | "approve"` · Status: documented
 
 Values: `auto`, `prompt`, `writes`, `approve`
 
-Source: `codex-rs/config/src/mcp_types.rs:429`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:419`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.disabled_tools`
 
@@ -1660,7 +1660,7 @@ Type: `array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:433`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:423`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.enabled`
 
@@ -1670,7 +1670,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:412`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:402`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.enabled_tools`
 
@@ -1680,7 +1680,7 @@ Type: `array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:431`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:421`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.env`
 
@@ -1690,13 +1690,13 @@ Type: `map<string, string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:383`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:373`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.env.<VAR>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/mcp_types.rs:377`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:367`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.env_http_headers`
 
@@ -1706,13 +1706,13 @@ Type: `map<string, string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:390`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:380`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.env_http_headers.<header>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/mcp_types.rs:377`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:367`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.env_vars`
 
@@ -1722,25 +1722,25 @@ Type: `array<string | table>` · Default: `source = "local"` · Status: document
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:385`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:375`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.env_vars[].name`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/mcp_types.rs:107`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:102`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.env_vars[].source`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/mcp_types.rs:109`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:104`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.environment_id`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/mcp_types.rs:401`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:391`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.http_headers`
 
@@ -1750,13 +1750,13 @@ Type: `map<string, string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:388`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:378`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.http_headers.<header>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/mcp_types.rs:377`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:367`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.http_headers_helper`
 
@@ -1766,7 +1766,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:397`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:387`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.name`
 
@@ -1774,9 +1774,9 @@ Type: `string` · Status: deprecated or legacy (per source comment)
 
 > Legacy display-name field accepted for backward compatibility.
 >
-> — `codex-rs/config/src/mcp_types.rs:442`
+> — `codex-rs/config/src/mcp_types.rs:432`
 
-Source: `codex-rs/config/src/mcp_types.rs:442`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:432`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.oauth`
 
@@ -1784,9 +1784,9 @@ Type: `table` · Status: undocumented
 
 > Client settings for MCP OAuth login or enterprise token exchange.
 >
-> — `codex-rs/config/src/mcp_types.rs:437`
+> — `codex-rs/config/src/mcp_types.rs:427`
 
-Source: `codex-rs/config/src/mcp_types.rs:437`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:427`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.oauth.authorization_server_issuer`
 
@@ -1794,9 +1794,9 @@ Type: `string` · Status: undocumented
 
 > Expected resource authorization server issuer for EMA token exchange.
 >
-> — `codex-rs/config/src/mcp_types.rs:182`
+> — `codex-rs/config/src/mcp_types.rs:177`
 
-Source: `codex-rs/config/src/mcp_types.rs:182`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:177`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.oauth.callback_port`
 
@@ -1806,7 +1806,7 @@ Type: `integer (uint16)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:178`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:173`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.oauth.callback_url`
 
@@ -1816,7 +1816,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:174`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:169`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.oauth.client_id`
 
@@ -1826,7 +1826,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:166`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:161`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.oauth.client_secret`
 
@@ -1834,9 +1834,9 @@ Type: `string` · Status: undocumented
 
 > OAuth client secret used for token exchange with a pre-registered client.
 >
-> — `codex-rs/config/src/mcp_types.rs:170`
+> — `codex-rs/config/src/mcp_types.rs:165`
 
-Source: `codex-rs/config/src/mcp_types.rs:170`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:165`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.oauth_resource`
 
@@ -1846,13 +1846,13 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:439`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:429`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.omit_tools_from`
 
 Type: `array<"code_mode" | "deferred" | "direct">` · Status: undocumented
 
-Source: `codex-rs/config/src/mcp_types.rs:427`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:417`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.required`
 
@@ -1862,7 +1862,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:414`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:404`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.scopes`
 
@@ -1872,7 +1872,7 @@ Type: `array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:435`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:425`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.startup_readiness`
 
@@ -1880,13 +1880,13 @@ Type: `"connection" | "catalog"` · Status: undocumented
 
 > Whether startup requires a live connection or can use a valid cached tool catalog.
 >
-> — `codex-rs/config/src/mcp_types.rs:417`
+> — `codex-rs/config/src/mcp_types.rs:407`
 
 Values:
 - `connection`: Use the live connection to determine startup readiness.
 - `catalog`: Allow a valid cached tool catalog while the live connection starts. Tool execution still requires the current connection.
 
-Source: `codex-rs/config/src/mcp_types.rs:417`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:407`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.startup_timeout_ms`
 
@@ -1896,7 +1896,7 @@ Type: `integer (uint64)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:407`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:397`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.startup_timeout_sec`
 
@@ -1906,13 +1906,13 @@ Type: `number` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:405`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:395`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.supports_parallel_tool_calls`
 
 Type: `boolean` · Status: undocumented
 
-Source: `codex-rs/config/src/mcp_types.rs:419`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:409`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.tool_input_schema_max_bytes`
 
@@ -1920,9 +1920,9 @@ Type: `integer (uint)` · Default: `5,000 bytes` · Status: undocumented
 
 > UTF-8 byte threshold for compacting each ordinary MCP tool input schema. Defaults to 5,000 bytes. Code Mode also uses an explicitly configured limit when rendering each tool's input type. Larger limits preserve more parameter descriptions.
 >
-> — `codex-rs/config/src/mcp_types.rs:425`
+> — `codex-rs/config/src/mcp_types.rs:415`
 
-Source: `codex-rs/config/src/mcp_types.rs:425`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:415`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.tool_timeout_sec`
 
@@ -1932,13 +1932,13 @@ Type: `number` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:410`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:400`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.tools`
 
 Type: `map<string, table>` · Status: undocumented
 
-Source: `codex-rs/config/src/mcp_types.rs:444`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:434`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.tools.<tool>`
 
@@ -1946,9 +1946,9 @@ Type: `table` · Status: undocumented
 
 > Per-tool settings for a single MCP server tool.
 >
-> — `codex-rs/config/src/mcp_types.rs:377`
+> — `codex-rs/config/src/mcp_types.rs:367`
 
-Source: `codex-rs/config/src/mcp_types.rs:377`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:367`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `mcp_servers.<id>.tools.<tool>.approval_mode`
 
@@ -1960,7 +1960,7 @@ Type: `"auto" | "prompt" | "writes" | "approve"` · Status: documented
 
 Values: `auto`, `prompt`, `writes`, `approve`
 
-Source: `codex-rs/config/src/mcp_types.rs:88`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:83`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.tools.<tool>.output_token_limit`
 
@@ -1970,7 +1970,7 @@ Type: `integer (uint)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:92`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:87`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.url`
 
@@ -1980,7 +1980,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/mcp_types.rs:393`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:383`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ## Feature flags
 
@@ -1992,9 +1992,9 @@ Type: `table` · Status: documented
 
 > Centralized feature flags (new). Prefer this over individual toggles.
 >
-> — `codex-rs/config/src/config_toml.rs:505`
+> — `codex-rs/config/src/config_toml.rs:507`
 
-Source: `codex-rs/config/src/config_toml.rs:505`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:507`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
 
 ### `features.agent_message_board`
 
@@ -2002,9 +2002,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable shared discussion tools for an agent tree.
 >
-> — `codex-rs/features/src/lib.rs:1348`
+> — `codex-rs/features/src/lib.rs:1397`
 
-Source: `codex-rs/features/src/lib.rs:1348` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1397` · In binary: yes (distinctive match)
 
 ### `features.analytics_plan_history`
 
@@ -2012,21 +2012,31 @@ Type: `boolean` · Stage: experimental · Default: `false` · On here: no · Sta
 
 > Preview five-hour and weekly allowance history for consumer accounts in /analytics.
 >
-> — `codex-rs/features/src/lib.rs:937`
+> — `codex-rs/features/src/lib.rs:958`
 
 Experimental menu: "Analytics plan history"
 
-Source: `codex-rs/features/src/lib.rs:937` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:958` · In binary: yes (distinctive match)
+
+### `features.api_key_cyber_access_programs`
+
+Type: `boolean` · Stage: stable · Default: `false` · On here: no · Status: undocumented
+
+> Forward explicit programs with builtin OpenAI API keys.
+>
+> — `codex-rs/features/src/lib.rs:1321`
+
+Source: `codex-rs/features/src/lib.rs:1321` · In binary: yes (distinctive match)
 
 ### `features.api_key_model_discovery`
 
-Type: `boolean` · Stage: under development · Default: `false` · On here: no · Status: undocumented
+Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: undocumented
 
 > Discover model catalogs for OpenAI API-key authentication.
 >
-> — `codex-rs/features/src/lib.rs:1284`
+> — `codex-rs/features/src/lib.rs:1315`
 
-Source: `codex-rs/features/src/lib.rs:1284` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1315` · In binary: yes (distinctive match)
 
 ### `features.apply_patch_freeform`
 
@@ -2034,9 +2044,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for the deleted apply_patch fallback feature.
 >
-> — `codex-rs/features/src/lib.rs:1194`
+> — `codex-rs/features/src/lib.rs:1225`
 
-Source: `codex-rs/features/src/lib.rs:1194` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1225` · In binary: yes (distinctive match)
 
 ### `features.apply_patch_preserve_line_endings`
 
@@ -2044,9 +2054,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Preserve existing line endings when apply_patch updates files.
 >
-> — `codex-rs/features/src/lib.rs:1206`
+> — `codex-rs/features/src/lib.rs:1237`
 
-Source: `codex-rs/features/src/lib.rs:1206` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1237` · In binary: yes (distinctive match)
 
 ### `features.apply_patch_streaming_events`
 
@@ -2054,9 +2064,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Stream structured progress while apply_patch input is being generated.
 >
-> — `codex-rs/features/src/lib.rs:1200`
+> — `codex-rs/features/src/lib.rs:1231`
 
-Source: `codex-rs/features/src/lib.rs:1200` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1231` · In binary: yes (distinctive match)
 
 ### `features.apps`
 
@@ -2068,7 +2078,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 
 Legacy aliases: `features.connectors`
 
-Source: `codex-rs/features/src/lib.rs:1366` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1415` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `features.apps_mcp_path_override`
 
@@ -2076,9 +2086,9 @@ Type: `boolean | table` · Stage: removed · Default: `false` · On here: no · 
 
 > Removed compatibility flag for the legacy Apps MCP path override.
 >
-> — `codex-rs/features/src/lib.rs:1408`
+> — `codex-rs/features/src/lib.rs:1457`
 
-Source: `codex-rs/features/src/lib.rs:1408` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1457` · In binary: yes (distinctive match)
 
 ### `features.apps_mcp_path_override.enabled`
 
@@ -2098,11 +2108,11 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable native artifact tools.
 >
-> — `codex-rs/features/src/lib.rs:1774`
+> — `codex-rs/features/src/lib.rs:1841`
 
 Note: not listed in generated schema (accepted via the flattened boolean map)
 
-Source: `codex-rs/features/src/lib.rs:1774` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1841` · In binary: yes (generic match)
 
 ### `features.auth_elicitation`
 
@@ -2110,9 +2120,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Prompt Codex Apps connector auth failures through MCP URL elicitations.
 >
-> — `codex-rs/features/src/lib.rs:1756`
+> — `codex-rs/features/src/lib.rs:1823`
 
-Source: `codex-rs/features/src/lib.rs:1756` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1823` · In binary: yes (distinctive match)
 
 ### `features.background_paginated_rollout_migration`
 
@@ -2120,9 +2130,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Migrate legacy local rollout files to paginated history in the background.
 >
-> — `codex-rs/features/src/lib.rs:1182`
+> — `codex-rs/features/src/lib.rs:1213`
 
-Source: `codex-rs/features/src/lib.rs:1182` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1213` · In binary: yes (distinctive match)
 
 ### `features.bedrock_setup_wizard`
 
@@ -2130,9 +2140,19 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Offer Amazon Bedrock setup during TUI sign-in onboarding.
 >
-> — `codex-rs/features/src/lib.rs:1762`
+> — `codex-rs/features/src/lib.rs:1829`
 
-Source: `codex-rs/features/src/lib.rs:1762` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1829` · In binary: yes (distinctive match)
+
+### `features.browser_annotation_api`
+
+Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: undocumented
+
+> Allow websites to open and customize annotation tools in desktop apps. Ordinary user-driven annotation is independent of this gate. Requirements-only gate: this should be set from requirements, not user config.
+>
+> — `codex-rs/features/src/lib.rs:1535`
+
+Source: `codex-rs/features/src/lib.rs:1535` · In binary: yes (distinctive match)
 
 ### `features.browser_use`
 
@@ -2140,9 +2160,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow Browser Use agent integration in desktop apps. Requirements-only gate: this should be set from requirements, not user config.
 >
-> — `codex-rs/features/src/lib.rs:1510`
+> — `codex-rs/features/src/lib.rs:1571`
 
-Source: `codex-rs/features/src/lib.rs:1510` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1571` · In binary: yes (distinctive match)
 
 ### `features.browser_use_external`
 
@@ -2150,9 +2170,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow Browser Use integration with external browsers. Requirements-only gate: this should be set from requirements, not user config.
 >
-> — `codex-rs/features/src/lib.rs:1522`
+> — `codex-rs/features/src/lib.rs:1583`
 
-Source: `codex-rs/features/src/lib.rs:1522` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1583` · In binary: yes (distinctive match)
 
 ### `features.browser_use_full_cdp_access`
 
@@ -2160,9 +2180,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow Browser Use integration to access the full Chrome DevTools Protocol surface. Requirements-only gate: this should be set from requirements, not user config.
 >
-> — `codex-rs/features/src/lib.rs:1516`
+> — `codex-rs/features/src/lib.rs:1577`
 
-Source: `codex-rs/features/src/lib.rs:1516` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1577` · In binary: yes (distinctive match)
 
 ### `features.chronicle`
 
@@ -2170,11 +2190,11 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable the Chronicle sidecar for passive screen-context memories.
 >
-> — `codex-rs/features/src/lib.rs:1188`
+> — `codex-rs/features/src/lib.rs:1219`
 
 Legacy aliases: `features.telepathy`
 
-Source: `codex-rs/features/src/lib.rs:1188` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1219` · In binary: yes (generic match)
 
 ### `features.code_mode`
 
@@ -2182,9 +2202,9 @@ Type: `boolean | table` · Stage: under development · Default: `false` · On he
 
 > Enable JavaScript code mode backed by the standalone host process.
 >
-> — `codex-rs/features/src/lib.rs:1062`
+> — `codex-rs/features/src/lib.rs:1093`
 
-Source: `codex-rs/features/src/lib.rs:1062` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1093` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
 
 ### `features.code_mode.default_exec_yield_time_ms`
 
@@ -2192,9 +2212,9 @@ Type: `integer (uint64)` · Status: undocumented · When: read when features.cod
 
 > Default yield timeout for code-mode exec calls, in milliseconds.
 >
-> — `codex-rs/features/src/feature_configs.rs:29`
+> — `codex-rs/features/src/feature_configs.rs:43`
 
-Source: `codex-rs/features/src/feature_configs.rs:29`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:43`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.code_mode.direct_only_tool_namespaces`
 
@@ -2204,7 +2224,7 @@ Type: `array<string>` · Status: documented · When: read when features.code_mod
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:46`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:60`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.code_mode.enabled`
 
@@ -2214,7 +2234,7 @@ Type: `boolean` · Status: documented · When: read when features.code_mode is e
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:26`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:40`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `features.code_mode.excluded_tool_namespaces`
 
@@ -2224,7 +2244,7 @@ Type: `array<string>` · Status: documented · When: read when features.code_mod
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:41`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:55`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.code_mode.experimental_show_cell_overhead`
 
@@ -2232,9 +2252,9 @@ Type: `boolean` · Status: undocumented · When: read when features.code_mode is
 
 > Show handler duration, code-mode host duration, and harness overhead in each code-mode cell response. Experimental: this option and the response format may change or be removed.
 >
-> — `codex-rs/features/src/feature_configs.rs:34`
+> — `codex-rs/features/src/feature_configs.rs:48`
 
-Source: `codex-rs/features/src/feature_configs.rs:34`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:48`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.code_mode.tool_input_schema_max_bytes`
 
@@ -2242,9 +2262,9 @@ Type: `integer (uint)` · Status: undocumented · When: read when features.code_
 
 > Maximum UTF-8 bytes per rendered tool input type, with a 16,000-byte minimum and default. For ordinary MCP tools, this is also at least their server's explicitly configured input limit.
 >
-> — `codex-rs/features/src/feature_configs.rs:38`
+> — `codex-rs/features/src/feature_configs.rs:52`
 
-Source: `codex-rs/features/src/feature_configs.rs:38`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:52`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.code_mode_buffered_exec`
 
@@ -2252,9 +2272,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for the configurable code-mode exec yield timeout.
 >
-> — `codex-rs/features/src/lib.rs:1068`
+> — `codex-rs/features/src/lib.rs:1099`
 
-Source: `codex-rs/features/src/lib.rs:1068` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1099` · In binary: yes (distinctive match)
 
 ### `features.code_mode_host`
 
@@ -2262,9 +2282,9 @@ Type: `boolean | table` · Stage: stable · Default: `true` · On here: yes · S
 
 > Run JavaScript code mode in the standalone host process.
 >
-> — `codex-rs/features/src/lib.rs:1074`
+> — `codex-rs/features/src/lib.rs:1105`
 
-Source: `codex-rs/features/src/lib.rs:1074` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1105` · In binary: yes (distinctive match)
 
 ### `features.code_mode_host.disable_in_process_fallback`
 
@@ -2272,15 +2292,15 @@ Type: `boolean` · Status: undocumented · When: read when features.code_mode_ho
 
 > Keep code mode fail-closed when the standalone host is unavailable.
 >
-> — `codex-rs/features/src/feature_configs.rs:62`
+> — `codex-rs/features/src/feature_configs.rs:76`
 
-Source: `codex-rs/features/src/feature_configs.rs:62`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:76`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.code_mode_host.enabled`
 
 Type: `boolean` · Status: undocumented · When: read when features.code_mode_host is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:59`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:73`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.code_mode_interrupt`
 
@@ -2288,9 +2308,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Terminate active code mode cells when their turn is interrupted.
 >
-> — `codex-rs/features/src/lib.rs:1086`
+> — `codex-rs/features/src/lib.rs:1117`
 
-Source: `codex-rs/features/src/lib.rs:1086` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1117` · In binary: yes (distinctive match)
 
 ### `features.code_mode_only`
 
@@ -2298,9 +2318,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Restrict model-visible tools to code mode entrypoints (`exec`, `wait`).
 >
-> — `codex-rs/features/src/lib.rs:1098`
+> — `codex-rs/features/src/lib.rs:1129`
 
-Source: `codex-rs/features/src/lib.rs:1098` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1129` · In binary: yes (distinctive match)
 
 ### `features.code_mode_prewarm`
 
@@ -2308,9 +2328,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Establish the code-mode host connection during session startup.
 >
-> — `codex-rs/features/src/lib.rs:1080`
+> — `codex-rs/features/src/lib.rs:1111`
 
-Source: `codex-rs/features/src/lib.rs:1080` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1111` · In binary: yes (distinctive match)
 
 ### `features.codex_apps_mcp_2026_07_28`
 
@@ -2318,9 +2338,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable MCP protocol version 2026-07-28 for the host-owned Codex Apps server.
 >
-> — `codex-rs/features/src/lib.rs:1390`
+> — `codex-rs/features/src/lib.rs:1439`
 
-Source: `codex-rs/features/src/lib.rs:1390` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1439` · In binary: yes (distinctive match)
 
 ### `features.codex_git_commit`
 
@@ -2328,9 +2348,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed legacy git commit attribution guidance flag.
 >
-> — `codex-rs/features/src/lib.rs:1140`
+> — `codex-rs/features/src/lib.rs:1171`
 
-Source: `codex-rs/features/src/lib.rs:1140` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1171` · In binary: yes (distinctive match)
 
 ### `features.codex_hooks`
 
@@ -2362,9 +2382,9 @@ Type: `boolean` · Stage: removed · Default: `true` · On here: yes · Status: 
 
 > Enable collaboration modes (Plan, Default). Kept for config backward compatibility; behavior is always collaboration-modes-enabled.
 >
-> — `codex-rs/features/src/lib.rs:1744`
+> — `codex-rs/features/src/lib.rs:1811`
 
-Source: `codex-rs/features/src/lib.rs:1744` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1811` · In binary: yes (distinctive match)
 
 ### `features.compaction_image_budget`
 
@@ -2372,9 +2392,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Include retained images in the remote compaction context budget.
 >
-> — `codex-rs/features/src/lib.rs:1858`
+> — `codex-rs/features/src/lib.rs:1925`
 
-Source: `codex-rs/features/src/lib.rs:1858` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1925` · In binary: yes (distinctive match)
 
 ### `features.computer_use`
 
@@ -2382,9 +2402,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow Codex Computer Use. Requirements-only gate: this should be set from requirements, not user config.
 >
-> — `codex-rs/features/src/lib.rs:1528`
+> — `codex-rs/features/src/lib.rs:1589`
 
-Source: `codex-rs/features/src/lib.rs:1528` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1589` · In binary: yes (distinctive match)
 
 ### `features.concurrent_reasoning_summaries`
 
@@ -2392,9 +2412,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Request sequential cutoff reasoning summary delivery.
 >
-> — `codex-rs/features/src/lib.rs:1588`
+> — `codex-rs/features/src/lib.rs:1649`
 
-Source: `codex-rs/features/src/lib.rs:1588` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1649` · In binary: yes (distinctive match)
 
 ### `features.connectors`
 
@@ -2414,9 +2434,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Send per-content-entry classifications in internal Responses metadata.
 >
-> — `codex-rs/features/src/lib.rs:1050`
+> — `codex-rs/features/src/lib.rs:1081`
 
-Source: `codex-rs/features/src/lib.rs:1050` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1081` · In binary: yes (distinctive match)
 
 ### `features.context_management`
 
@@ -2424,9 +2444,9 @@ Type: `boolean | table` · Stage: under development · Default: `false` · On he
 
 > Enables experimental context management.
 >
-> — `codex-rs/features/src/lib.rs:1714`
+> — `codex-rs/features/src/lib.rs:1781`
 
-Source: `codex-rs/features/src/lib.rs:1714` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1781` · In binary: yes (distinctive match)
 
 ### `features.context_management.experimental_mode`
 
@@ -2436,7 +2456,7 @@ Type: `boolean` · Status: documented · When: read when features.context_manage
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:321`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:351`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.current_time_reminder`
 
@@ -2444,9 +2464,9 @@ Type: `boolean | table` · Stage: under development · Default: `false` · On he
 
 > Add current-time reminders to model-visible context.
 >
-> — `codex-rs/features/src/lib.rs:1732`
+> — `codex-rs/features/src/lib.rs:1799`
 
-Source: `codex-rs/features/src/lib.rs:1732` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1799` · In binary: yes (distinctive match)
 
 ### `features.current_time_reminder.clock_source`
 
@@ -2454,7 +2474,7 @@ Type: `"system" | "external"` · Status: undocumented · When: read when feature
 
 Values: `system`, `external`
 
-Source: `codex-rs/features/src/feature_configs.rs:419`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:449`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.current_time_reminder.delivery_mode`
 
@@ -2462,25 +2482,25 @@ Type: `"any_inference" | "after_user_or_tool_output"` · Status: undocumented ·
 
 > Which inference boundaries may receive current-time reminders.
 >
-> — `codex-rs/features/src/feature_configs.rs:421`
+> — `codex-rs/features/src/feature_configs.rs:451`
 
 Values:
 - `any_inference`: Allow a reminder before any inference request once the interval is due.
 - `after_user_or_tool_output`: Allow reminders after user input or tool output; new context windows still force one.
 
-Source: `codex-rs/features/src/feature_configs.rs:421`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:451`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.current_time_reminder.enabled`
 
 Type: `boolean` · Status: undocumented · When: read when features.current_time_reminder is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:415`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:445`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.current_time_reminder.reminder_interval_seconds`
 
 Type: `integer (uint64)` · Status: undocumented · When: read when features.current_time_reminder is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:417`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:447`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.current_time_reminder.sleep_tool`
 
@@ -2488,9 +2508,9 @@ Type: `boolean` · Status: undocumented · When: read when features.current_time
 
 > Expose the input-interruptible `clock.sleep` tool.
 >
-> — `codex-rs/features/src/feature_configs.rs:424`
+> — `codex-rs/features/src/feature_configs.rs:454`
 
-Source: `codex-rs/features/src/feature_configs.rs:424`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:454`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.cwd_relative_turn_diffs`
 
@@ -2498,9 +2518,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Use the current working directory for turn diff display paths.
 >
-> — `codex-rs/features/src/lib.rs:1038`
+> — `codex-rs/features/src/lib.rs:1069`
 
-Source: `codex-rs/features/src/lib.rs:1038` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1069` · In binary: yes (distinctive match)
 
 ### `features.daemon_auto_start`
 
@@ -2508,9 +2528,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Automatically start the shared local daemon for eligible interactive launches.
 >
-> — `codex-rs/features/src/lib.rs:947`
+> — `codex-rs/features/src/lib.rs:968`
 
-Source: `codex-rs/features/src/lib.rs:947` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:968` · In binary: yes (distinctive match)
 
 ### `features.default_mode_request_user_input`
 
@@ -2518,9 +2538,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Allow request_user_input in Default collaboration mode.
 >
-> — `codex-rs/features/src/lib.rs:1624`
+> — `codex-rs/features/src/lib.rs:1685`
 
-Source: `codex-rs/features/src/lib.rs:1624` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1685` · In binary: yes (distinctive match)
 
 ### `features.defer_mailbox_preemption`
 
@@ -2528,9 +2548,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Keep sampling through reasoning and commentary boundaries when agent mail arrives. Pending mail is delivered at the next normal input boundary instead.
 >
-> — `codex-rs/features/src/lib.rs:1342`
+> — `codex-rs/features/src/lib.rs:1391`
 
-Source: `codex-rs/features/src/lib.rs:1342` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1391` · In binary: yes (distinctive match)
 
 ### `features.deferred_executor`
 
@@ -2538,9 +2558,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Allow turns to start while selected executors are still starting.
 >
-> — `codex-rs/features/src/lib.rs:1032`
+> — `codex-rs/features/src/lib.rs:1063`
 
-Source: `codex-rs/features/src/lib.rs:1032` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1063` · In binary: yes (distinctive match)
 
 ### `features.deferred_tool_world_state`
 
@@ -2548,9 +2568,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Describe deferred tool namespaces in the model-visible world state.
 >
-> — `codex-rs/features/src/lib.rs:1426`
+> — `codex-rs/features/src/lib.rs:1475`
 
-Source: `codex-rs/features/src/lib.rs:1426` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1475` · In binary: yes (distinctive match)
 
 ### `features.elevated_windows_sandbox`
 
@@ -2558,9 +2578,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Use the elevated Windows sandbox pipeline (setup + runner).
 >
-> — `codex-rs/features/src/lib.rs:1260`
+> — `codex-rs/features/src/lib.rs:1291`
 
-Source: `codex-rs/features/src/lib.rs:1260` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1291` · In binary: yes (distinctive match)
 
 ### `features.enable_experimental_windows_sandbox`
 
@@ -2580,9 +2600,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for the deleted agent-job tools.
 >
-> — `codex-rs/features/src/lib.rs:1360`
+> — `codex-rs/features/src/lib.rs:1409`
 
-Source: `codex-rs/features/src/lib.rs:1360` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1409` · In binary: yes (distinctive match)
 
 ### `features.enable_mcp_apps`
 
@@ -2590,9 +2610,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable MCP apps.
 >
-> — `codex-rs/features/src/lib.rs:1378`
+> — `codex-rs/features/src/lib.rs:1427`
 
-Source: `codex-rs/features/src/lib.rs:1378` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1427` · In binary: yes (distinctive match)
 
 ### `features.enable_request_compression`
 
@@ -2602,7 +2622,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:1290` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1327` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.exec_permission_approvals`
 
@@ -2610,11 +2630,11 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Allow exec tools to request additional permissions while staying sandboxed.
 >
-> — `codex-rs/features/src/lib.rs:1212`
+> — `codex-rs/features/src/lib.rs:1243`
 
 Legacy aliases: `features.request_permissions`
 
-Source: `codex-rs/features/src/lib.rs:1212` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1243` · In binary: yes (distinctive match)
 
 ### `features.executed_tool_call_metadata`
 
@@ -2622,9 +2642,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Record model-attempted tool calls in internal Responses metadata.
 >
-> — `codex-rs/features/src/lib.rs:1056`
+> — `codex-rs/features/src/lib.rs:1087`
 
-Source: `codex-rs/features/src/lib.rs:1056` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1087` · In binary: yes (distinctive match)
 
 ### `features.executor_capability_discovery`
 
@@ -2632,9 +2652,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Discover selected-root plugin and skill manifests through one high-level exec-server RPC.
 >
-> — `codex-rs/features/src/lib.rs:1462`
+> — `codex-rs/features/src/lib.rs:1511`
 
-Source: `codex-rs/features/src/lib.rs:1462` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1511` · In binary: yes (distinctive match)
 
 ### `features.experimental_use_unified_exec_tool`
 
@@ -2646,7 +2666,7 @@ Type: `boolean` · Status: alias
 
 Canonical key: `features.unified_exec`
 
-Source: `codex-rs/features/src/legacy.rs:21`, `codex-rs/config/src/config_toml.rs:556` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/legacy.rs:21`, `codex-rs/config/src/config_toml.rs:558` · In binary: yes (distinctive match)
 
 ### `features.experimental_windows_sandbox`
 
@@ -2654,11 +2674,11 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Enable Windows sandbox (restricted token) on Windows.
 >
-> — `codex-rs/features/src/lib.rs:1254`
+> — `codex-rs/features/src/lib.rs:1285`
 
 Legacy aliases: `features.enable_experimental_windows_sandbox`
 
-Source: `codex-rs/features/src/lib.rs:1254` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1285` · In binary: yes (distinctive match)
 
 ### `features.external_agent_memory_import`
 
@@ -2666,9 +2686,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable importing project-scoped memory from external agents.
 >
-> — `codex-rs/features/src/lib.rs:1164`
+> — `codex-rs/features/src/lib.rs:1195`
 
-Source: `codex-rs/features/src/lib.rs:1164` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1195` · In binary: yes (distinctive match)
 
 ### `features.external_migration`
 
@@ -2676,9 +2696,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag retained as a no-op.
 >
-> — `codex-rs/features/src/lib.rs:1546`
+> — `codex-rs/features/src/lib.rs:1607`
 
-Source: `codex-rs/features/src/lib.rs:1546` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1607` · In binary: yes (distinctive match)
 
 ### `features.fast_mode`
 
@@ -2688,7 +2708,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:1780` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1847` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.goals`
 
@@ -2698,17 +2718,17 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:1702` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1769` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `features.guardian_approval`
 
-Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: undocumented
+Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: documented
 
 > Enable automatic review for approval prompts.
 >
-> — `codex-rs/features/src/lib.rs:1648`
+> — `codex-rs/features/src/lib.rs:1709`
 
-Source: `codex-rs/features/src/lib.rs:1648` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1709` · Docs: [reference/troubleshooting](https://developers.openai.com/codex/reference/troubleshooting) · In binary: yes (distinctive match)
 
 ### `features.guardian_conversation_history_tools`
 
@@ -2716,9 +2736,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Give Guardian access to the root conversation's message history tools.
 >
-> — `codex-rs/features/src/lib.rs:1684`
+> — `codex-rs/features/src/lib.rs:1745`
 
-Source: `codex-rs/features/src/lib.rs:1684` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1745` · In binary: yes (distinctive match)
 
 ### `features.guardian_enhanced_node_repl_transcripts`
 
@@ -2726,9 +2746,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Include completed node_repl or cua_repl Code Mode responses in Guardian reviews.
 >
-> — `codex-rs/features/src/lib.rs:1672`
+> — `codex-rs/features/src/lib.rs:1733`
 
-Source: `codex-rs/features/src/lib.rs:1672` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1733` · In binary: yes (distinctive match)
 
 ### `features.guardian_ext`
 
@@ -2736,9 +2756,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for the unused Guardian extension prototype.
 >
-> — `codex-rs/features/src/lib.rs:1696`
+> — `codex-rs/features/src/lib.rs:1763`
 
-Source: `codex-rs/features/src/lib.rs:1696` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1763` · In binary: yes (distinctive match)
 
 ### `features.guardian_node_repl_transcript_images`
 
@@ -2746,9 +2766,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Include completed node_repl or cua_repl Code Mode response images in Guardian reviews.
 >
-> — `codex-rs/features/src/lib.rs:1678`
+> — `codex-rs/features/src/lib.rs:1739`
 
-Source: `codex-rs/features/src/lib.rs:1678` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1739` · In binary: yes (distinctive match)
 
 ### `features.guardian_reuse_parent_compaction`
 
@@ -2756,9 +2776,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Reuse encrypted parent compaction when restarting Guardian review sessions. When disabled, retain an independent review transcript across parent compaction.
 >
-> — `codex-rs/features/src/lib.rs:1660`
+> — `codex-rs/features/src/lib.rs:1721`
 
-Source: `codex-rs/features/src/lib.rs:1660` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1721` · In binary: yes (distinctive match)
 
 ### `features.guardian_root_handoff_context`
 
@@ -2766,9 +2786,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Limit worker Guardian root evidence to preceding root communication windows.
 >
-> — `codex-rs/features/src/lib.rs:1666`
+> — `codex-rs/features/src/lib.rs:1727`
 
-Source: `codex-rs/features/src/lib.rs:1666` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1727` · In binary: yes (distinctive match)
 
 ### `features.guardianv2`
 
@@ -2776,21 +2796,43 @@ Type: `boolean | table` · Stage: under development · Default: `false` · On he
 
 > Enable Guardian V2 automatic approval reviews.
 >
-> — `codex-rs/features/src/lib.rs:1690`
+> — `codex-rs/features/src/lib.rs:1751`
 
-Source: `codex-rs/features/src/lib.rs:1690` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1751` · In binary: yes (generic match)
+
+### `features.guardianv2.async_classifier_conversation_token_limit`
+
+Type: `integer (uint)` · Default: `100,000` · Status: undocumented · When: read when features.guardianv2 is enabled
+
+> Reset retained async history when the next request exceeds this token estimate. Defaults to 100,000. Fresh requests remain subject to the model's input limit.
+>
+> — `codex-rs/features/src/feature_configs.rs:159`
+
+Source: `codex-rs/features/src/feature_configs.rs:159`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+
+### `features.guardianv2.async_classifier_mode`
+
+Type: `"snapshot" | "conversation"` · Status: undocumented · When: read when features.guardianv2 is enabled
+
+> Classifier experiment override. Otherwise use the model default, then snapshots.
+>
+> — `codex-rs/features/src/feature_configs.rs:154`
+
+Values: `snapshot`, `conversation`
+
+Source: `codex-rs/features/src/feature_configs.rs:154`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.classifier_instructions`
 
 Type: `string` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:150`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:172`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.enabled`
 
 Type: `boolean` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:139`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:161`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.guardianv2.free_guardian`
 
@@ -2798,33 +2840,33 @@ Type: `boolean` · Status: deprecated or legacy (per source comment) · When: re
 
 > Legacy setting retained for config compatibility; the backend now controls Guardian billing.
 >
-> — `codex-rs/features/src/feature_configs.rs:142`
+> — `codex-rs/features/src/feature_configs.rs:164`
 
-Source: `codex-rs/features/src/feature_configs.rs:142`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:164`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.max_action_tokens`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:160`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:182`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.max_classifier_instruction_tokens`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:163`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:185`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.max_parent_compaction_tokens`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:168`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:190`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.max_tool_call_lag`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:155`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:177`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.persist_scores`
 
@@ -2832,9 +2874,9 @@ Type: `boolean` · Status: undocumented · When: read when features.guardianv2 i
 
 > Persist reviewed actions and risk scores to rollout files for debugging.
 >
-> — `codex-rs/features/src/feature_configs.rs:148`
+> — `codex-rs/features/src/feature_configs.rs:170`
 
-Source: `codex-rs/features/src/feature_configs.rs:148`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:170`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.reasoning_effort`
 
@@ -2842,15 +2884,15 @@ Type: `string` · Status: undocumented · When: read when features.guardianv2 is
 
 > A non-empty reasoning effort value advertised by the model.
 >
-> — `codex-rs/features/src/feature_configs.rs:157`
+> — `codex-rs/features/src/feature_configs.rs:179`
 
-Source: `codex-rs/features/src/feature_configs.rs:157`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:179`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.reuse_parent_compaction`
 
 Type: `boolean` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:165`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:187`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.review_scope`
 
@@ -2858,9 +2900,9 @@ Type: `table` · Status: undocumented · When: read when features.guardianv2 is 
 
 > Optional tool-call categories available to the Guardian v2 classifier.
 >
-> — `codex-rs/features/src/feature_configs.rs:170`
+> — `codex-rs/features/src/feature_configs.rs:192`
 
-Source: `codex-rs/features/src/feature_configs.rs:170`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:192`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.review_scope.computer_use_only`
 
@@ -2868,9 +2910,9 @@ Type: `boolean` · Status: undocumented · When: read when features.guardianv2 i
 
 > Restrict asynchronous classification and fast approvals to browser and computer-use tools.
 >
-> — `codex-rs/features/src/feature_configs.rs:128`
+> — `codex-rs/features/src/feature_configs.rs:142`
 
-Source: `codex-rs/features/src/feature_configs.rs:128`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:142`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.review_scope.sandboxed_exec_commands`
 
@@ -2878,15 +2920,15 @@ Type: `boolean` · Status: undocumented · When: read when features.guardianv2 i
 
 > Include sandboxed shell command calls in Guardian v2 classification.
 >
-> — `codex-rs/features/src/feature_configs.rs:131`
+> — `codex-rs/features/src/feature_configs.rs:145`
 
-Source: `codex-rs/features/src/feature_configs.rs:131`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:145`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.review_threshold`
 
 Type: `number` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:153`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:175`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.thread_context`
 
@@ -2894,11 +2936,11 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for always-on thread-owned Guardian context.
 >
-> — `codex-rs/features/src/lib.rs:1654`
+> — `codex-rs/features/src/lib.rs:1715`
 
 Note: not listed in generated schema (accepted via the flattened boolean map)
 
-Source: `codex-rs/features/src/lib.rs:1654` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1715` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.transcript`
 
@@ -2906,9 +2948,9 @@ Type: `table` · Status: undocumented · When: read when features.guardianv2 is 
 
 > Bounds and optional sources for the Guardian v2 conversation transcript.
 >
-> — `codex-rs/features/src/feature_configs.rs:172`
+> — `codex-rs/features/src/feature_configs.rs:194`
 
-Source: `codex-rs/features/src/feature_configs.rs:172`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:194`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.guardianv2.transcript.include_images`
 
@@ -2916,45 +2958,55 @@ Type: `boolean` · Status: undocumented · When: read when features.guardianv2 i
 
 > Include recent screenshots from messages and configured tool outputs.
 >
-> — `codex-rs/features/src/feature_configs.rs:104`
+> — `codex-rs/features/src/feature_configs.rs:118`
 
-Source: `codex-rs/features/src/feature_configs.rs:104`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:118`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.transcript.max_message_entry_tokens`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:107`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:121`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.transcript.max_message_transcript_tokens`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:113`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:127`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.transcript.max_recent_non_user_entries`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:119`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:133`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.transcript.max_tool_entry_tokens`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:110`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:124`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.transcript.max_tool_transcript_tokens`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:116`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:130`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.guardianv2.transcript.sources`
 
 Type: `array<"tool_calls" | "tool_outputs" | "reasoning">` · Status: undocumented · When: read when features.guardianv2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:101`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:115`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+
+### `features.guardianv2_decisions_comparison`
+
+Type: `boolean` · Stage: under development · Default: `false` · On here: no · Status: undocumented
+
+> Run Decisions alongside Guardian V2 for measurement without changing approvals.
+>
+> — `codex-rs/features/src/lib.rs:1757`
+
+Source: `codex-rs/features/src/lib.rs:1757` · In binary: yes (distinctive match)
 
 ### `features.hooks`
 
@@ -2966,7 +3018,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 
 Legacy aliases: `features.codex_hooks`
 
-Source: `codex-rs/features/src/lib.rs:1224` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1255` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `features.image_detail_original`
 
@@ -2974,9 +3026,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag retained as a no-op so old wrappers can still pass `--enable image_detail_original`.
 >
-> — `codex-rs/features/src/lib.rs:1804`
+> — `codex-rs/features/src/lib.rs:1871`
 
-Source: `codex-rs/features/src/lib.rs:1804` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1871` · In binary: yes (distinctive match)
 
 ### `features.image_generation`
 
@@ -2984,11 +3036,11 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Enable extension-backed image generation.
 >
-> — `codex-rs/features/src/lib.rs:1552`
+> — `codex-rs/features/src/lib.rs:1613`
 
 Legacy aliases: `features.imagegenext`
 
-Source: `codex-rs/features/src/lib.rs:1552` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1613` · In binary: yes (distinctive match)
 
 ### `features.image_resize_notice`
 
@@ -2996,9 +3048,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Tell the model when a prompt image was resized and include its dimensions.
 >
-> — `codex-rs/features/src/lib.rs:1564`
+> — `codex-rs/features/src/lib.rs:1625`
 
-Source: `codex-rs/features/src/lib.rs:1564` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1625` · In binary: yes (distinctive match)
 
 ### `features.imagegenext`
 
@@ -3018,9 +3070,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow the in-app browser pane in desktop apps. Requirements-only gate: this should be set from requirements, not user config.
 >
-> — `codex-rs/features/src/lib.rs:1480`
+> — `codex-rs/features/src/lib.rs:1529`
 
-Source: `codex-rs/features/src/lib.rs:1480` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1529` · In binary: yes (distinctive match)
 
 ### `features.in_app_chat`
 
@@ -3028,9 +3080,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow the in-app chat pane in desktop apps. Requirements-only gate: this should be set from requirements, not user config.
 >
-> — `codex-rs/features/src/lib.rs:1486`
+> — `codex-rs/features/src/lib.rs:1541`
 
-Source: `codex-rs/features/src/lib.rs:1486` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1541` · In binary: yes (distinctive match)
 
 ### `features.in_app_dictation`
 
@@ -3038,9 +3090,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow in-app dictation in desktop apps. Requirements-only gate: this should be set from requirements, not user config.
 >
-> — `codex-rs/features/src/lib.rs:1492`
+> — `codex-rs/features/src/lib.rs:1547`
 
-Source: `codex-rs/features/src/lib.rs:1492` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1547` · In binary: yes (distinctive match)
 
 ### `features.in_app_local_automation`
 
@@ -3048,9 +3100,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow desktop apps to run local automations. Requirements-only gate: this should be set from requirements, not user config.
 >
-> — `codex-rs/features/src/lib.rs:1498`
+> — `codex-rs/features/src/lib.rs:1559`
 
-Source: `codex-rs/features/src/lib.rs:1498` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1559` · In binary: yes (distinctive match)
 
 ### `features.in_app_updates`
 
@@ -3058,9 +3110,19 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow desktop apps to perform in-app updates. Requirements-only gate: this should be set from requirements, not user config.
 >
-> — `codex-rs/features/src/lib.rs:1504`
+> — `codex-rs/features/src/lib.rs:1565`
 
-Source: `codex-rs/features/src/lib.rs:1504` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1565` · In binary: yes (distinctive match)
+
+### `features.in_app_voice`
+
+Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: undocumented
+
+> Allow in-app Voice in desktop apps. Requirements-only gate: this should be set from requirements, not user config. Permission does not establish Voice availability or provider support.
+>
+> — `codex-rs/features/src/lib.rs:1553`
+
+Source: `codex-rs/features/src/lib.rs:1553` · In binary: yes (distinctive match)
 
 ### `features.instant_interrupt`
 
@@ -3068,9 +3130,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Preempt responses and yield foreground code-mode observations on new user input.
 >
-> — `codex-rs/features/src/lib.rs:1092`
+> — `codex-rs/features/src/lib.rs:1123`
 
-Source: `codex-rs/features/src/lib.rs:1092` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1123` · In binary: yes (distinctive match)
 
 ### `features.item_ids`
 
@@ -3078,9 +3140,9 @@ Type: `boolean` · Stage: removed · Default: `true` · On here: yes · Status: 
 
 > Removed compatibility flag for always-on response item IDs.
 >
-> — `codex-rs/features/src/lib.rs:1582`
+> — `codex-rs/features/src/lib.rs:1643`
 
-Source: `codex-rs/features/src/lib.rs:1582` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1643` · In binary: yes (distinctive match)
 
 ### `features.js_repl`
 
@@ -3088,9 +3150,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for the deleted JavaScript REPL feature.
 >
-> — `codex-rs/features/src/lib.rs:1044`
+> — `codex-rs/features/src/lib.rs:1075`
 
-Source: `codex-rs/features/src/lib.rs:1044` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1075` · In binary: yes (generic match)
 
 ### `features.js_repl_tools_only`
 
@@ -3098,9 +3160,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for the deleted JavaScript REPL tool-only mode.
 >
-> — `codex-rs/features/src/lib.rs:1104`
+> — `codex-rs/features/src/lib.rs:1135`
 
-Source: `codex-rs/features/src/lib.rs:1104` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1135` · In binary: yes (distinctive match)
 
 ### `features.local_thread_store_compression`
 
@@ -3108,9 +3170,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Compress cold local thread-store rollout files, including shared histories. Requires every reader of the Codex home to support compressed shared histories.
 >
-> — `codex-rs/features/src/lib.rs:1170`
+> — `codex-rs/features/src/lib.rs:1201`
 
-Source: `codex-rs/features/src/lib.rs:1170` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1201` · In binary: yes (distinctive match)
 
 ### `features.local_thread_store_shared_compression`
 
@@ -3118,9 +3180,21 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag; local_thread_store_compression controls all rollout files.
 >
-> — `codex-rs/features/src/lib.rs:1176`
+> — `codex-rs/features/src/lib.rs:1207`
 
-Source: `codex-rs/features/src/lib.rs:1176` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1207` · In binary: yes (distinctive match)
+
+### `features.login_shell_package_path`
+
+Type: `boolean` · Stage: experimental · Default: `false` · On here: no · Status: undocumented
+
+> Keep bundled tools such as ripgrep available when login shell startup resets PATH.
+>
+> — `codex-rs/features/src/lib.rs:1041`
+
+Experimental menu: "Bundled tools in login shells"
+
+Source: `codex-rs/features/src/lib.rs:1041` · In binary: yes (distinctive match)
 
 ### `features.mcp_2026_07_28`
 
@@ -3128,9 +3202,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable MCP protocol version 2026-07-28 support.
 >
-> — `codex-rs/features/src/lib.rs:1384`
+> — `codex-rs/features/src/lib.rs:1433`
 
-Source: `codex-rs/features/src/lib.rs:1384` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1433` · In binary: yes (distinctive match)
 
 ### `features.mcp_oauth_refresh_coordination`
 
@@ -3138,9 +3212,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Let RMCP coordinate OAuth refresh through the configured credential store.
 >
-> — `codex-rs/features/src/lib.rs:1396`
+> — `codex-rs/features/src/lib.rs:1445`
 
-Source: `codex-rs/features/src/lib.rs:1396` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1445` · In binary: yes (distinctive match)
 
 ### `features.memories`
 
@@ -3152,7 +3226,7 @@ Type: `boolean` · Stage: stable · Default: `false` · On here: no · Status: d
 
 Legacy aliases: `features.memory_tool`
 
-Source: `codex-rs/features/src/lib.rs:1158` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1189` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `features.memory_tool`
 
@@ -3172,9 +3246,19 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Enable the unified mention popup used by default in the TUI.
 >
-> — `codex-rs/features/src/lib.rs:1612`
+> — `codex-rs/features/src/lib.rs:1673`
 
-Source: `codex-rs/features/src/lib.rs:1612` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1673` · In binary: yes (distinctive match)
+
+### `features.model_catalog_in_context`
+
+Type: `boolean` · Stage: under development · Default: `false` · On here: no · Status: undocumented
+
+> Keep spawn model choices in append-only context instead of tool descriptions.
+>
+> — `codex-rs/features/src/lib.rs:1379`
+
+Source: `codex-rs/features/src/lib.rs:1379` · In binary: yes (distinctive match)
 
 ### `features.multi_agent`
 
@@ -3186,7 +3270,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 
 Legacy aliases: `features.collab`
 
-Source: `codex-rs/features/src/lib.rs:1330` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1367` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.multi_agent_mode`
 
@@ -3194,9 +3278,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag retained as a no-op.
 >
-> — `codex-rs/features/src/lib.rs:1354`
+> — `codex-rs/features/src/lib.rs:1403`
 
-Source: `codex-rs/features/src/lib.rs:1354` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1403` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2`
 
@@ -3204,15 +3288,15 @@ Type: `boolean | table` · Stage: stable · Default: `false` · On here: no · S
 
 > Enable task-path-based multi-agent routing.
 >
-> — `codex-rs/features/src/lib.rs:1336`
+> — `codex-rs/features/src/lib.rs:1373`
 
-Source: `codex-rs/features/src/lib.rs:1336` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1373` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.default_wait_timeout_ms`
 
 Type: `integer (int64)` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:273`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:300`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.disable_direct_message`
 
@@ -3220,15 +3304,15 @@ Type: `boolean` · Status: undocumented · When: read when features.multi_agent_
 
 > Disable the model's direct-message tools; spawning and automatic child results remain available.
 >
-> — `codex-rs/features/src/feature_configs.rs:302`
+> — `codex-rs/features/src/feature_configs.rs:329`
 
-Source: `codex-rs/features/src/feature_configs.rs:302`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:329`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.enabled`
 
 Type: `boolean` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:261`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:288`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.multi_agent_v2.expose_spawn_agent_model_overrides`
 
@@ -3236,27 +3320,27 @@ Type: `boolean` · Status: undocumented · When: read when features.multi_agent_
 
 > Exposes `model` and `reasoning_effort` on the multi-agent v2 spawn tool and adds corresponding guidance to root and subagent usage hints.
 >
-> — `codex-rs/features/src/feature_configs.rs:296`
+> — `codex-rs/features/src/feature_configs.rs:323`
 
-Source: `codex-rs/features/src/feature_configs.rs:296`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:323`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.hide_spawn_agent_metadata`
 
 Type: `boolean` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:292`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:319`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.max_concurrent_threads_per_session`
 
 Type: `integer (uint)` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:264`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:291`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.max_wait_timeout_ms`
 
 Type: `integer (int64)` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:270`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:297`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.message_board_in_memory`
 
@@ -3264,33 +3348,69 @@ Type: `boolean` · Status: undocumented · When: read when features.multi_agent_
 
 > Keep the message board in memory for a training session, including ephemeral sessions.
 >
-> — `codex-rs/features/src/feature_configs.rs:305`
+> — `codex-rs/features/src/feature_configs.rs:332`
 
-Source: `codex-rs/features/src/feature_configs.rs:305`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:332`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+
+### `features.multi_agent_v2.message_board_remote`
+
+Type: `table` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
+
+> Use a session-scoped remote board instead of local storage.
+>
+> — `codex-rs/features/src/feature_configs.rs:335`
+
+Source: `codex-rs/features/src/feature_configs.rs:335`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+
+### `features.multi_agent_v2.message_board_remote.bearer_token`
+
+Type: `string` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
+
+> Board credential supplied directly by a runtime config override.
+>
+> — `codex-rs/features/src/feature_configs.rs:19`
+
+Source: `codex-rs/features/src/feature_configs.rs:19`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+
+### `features.multi_agent_v2.message_board_remote.bearer_token_env_var`
+
+Type: `string` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
+
+> Read the credential from this environment variable instead of bearer_token.
+>
+> — `codex-rs/features/src/feature_configs.rs:22`
+
+Source: `codex-rs/features/src/feature_configs.rs:22`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+
+### `features.multi_agent_v2.message_board_remote.url`
+
+Type: `string` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
+
+Source: `codex-rs/features/src/feature_configs.rs:16`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.multi_agent_v2.min_wait_timeout_ms`
 
 Type: `integer (int64)` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:267`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:294`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.multi_agent_mode_hint_text`
 
 Type: `string` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:287`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:314`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.non_code_mode_only`
 
 Type: `boolean` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:307`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:337`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.root_agent_usage_hint_text`
 
 Type: `string` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:280`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:307`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.subagent_developer_instructions`
 
@@ -3298,21 +3418,21 @@ Type: `string` · Status: undocumented · When: read when features.multi_agent_v
 
 > Overrides inherited developer instructions for subagents without role-specific instructions.
 >
-> — `codex-rs/features/src/feature_configs.rs:285`
+> — `codex-rs/features/src/feature_configs.rs:312`
 
-Source: `codex-rs/features/src/feature_configs.rs:285`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:312`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.subagent_usage_hint_text`
 
 Type: `string` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:282`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:309`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.tool_namespace`
 
 Type: `string` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:290`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:317`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.usage_hint_enabled`
 
@@ -3320,15 +3440,15 @@ Type: `boolean` · Status: deprecated or legacy (per source comment) · When: re
 
 > Deprecated compatibility field. Its value is ignored.
 >
-> — `codex-rs/features/src/feature_configs.rs:276`
+> — `codex-rs/features/src/feature_configs.rs:303`
 
-Source: `codex-rs/features/src/feature_configs.rs:276`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:303`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.usage_hint_text`
 
 Type: `string` · Status: undocumented · When: read when features.multi_agent_v2 is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:278`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:305`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.multi_agent_v2.wait_agent_enabled`
 
@@ -3336,9 +3456,19 @@ Type: `boolean` · Status: undocumented · When: read when features.multi_agent_
 
 > Expose the multi-agent v2 `wait_agent` tool.
 >
-> — `codex-rs/features/src/feature_configs.rs:299`
+> — `codex-rs/features/src/feature_configs.rs:326`
 
-Source: `codex-rs/features/src/feature_configs.rs:299`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:326`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+
+### `features.multi_agent_v2_dynamic_tools`
+
+Type: `boolean` · Stage: under development · Default: `false` · On here: no · Status: undocumented
+
+> Inherit client-defined dynamic tools in fresh V2 subagents.
+>
+> — `codex-rs/features/src/lib.rs:1385`
+
+Source: `codex-rs/features/src/lib.rs:1385` · In binary: yes (distinctive match)
 
 ### `features.network_proxy`
 
@@ -3350,7 +3480,7 @@ Type: `boolean | table` · Stage: experimental · Default: `false` · On here: n
 
 Experimental menu: "Network proxy"
 
-Source: `codex-rs/features/src/lib.rs:1302` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1339` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.allow_local_binding`
 
@@ -3362,7 +3492,7 @@ Type: `boolean` · Default: `false` · Status: documented · When: read when fea
 
 Default sources: `false` (stated in docs); `true for MXC, which cannot enforce false` (stated in source doc comment)
 
-Source: `codex-rs/features/src/feature_configs.rs:497`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:527`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.allow_upstream_proxy`
 
@@ -3372,19 +3502,19 @@ Type: `boolean` · Default: `true` · Status: documented · When: read when feat
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:482`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:512`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.credential_broker`
 
 Type: `boolean` · Status: undocumented · When: read when features.network_proxy is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:499`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:529`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.network_proxy.credentials`
 
 Type: `map<string, table>` · Status: undocumented · When: read when features.network_proxy is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:501`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:531`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.network_proxy.credentials.<key>`
 
@@ -3392,9 +3522,9 @@ Type: `table` · Status: undocumented · When: read when features.network_proxy 
 
 > Declarative description of an environment-backed credential family.
 >
-> — `codex-rs/features/src/feature_configs.rs:470`
+> — `codex-rs/features/src/feature_configs.rs:500`
 
-Source: `codex-rs/features/src/feature_configs.rs:470`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:500`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.network_proxy.credentials.<key>.auth`
 
@@ -3454,7 +3584,7 @@ Type: `boolean` · Default: `false` · Status: documented · When: read when fea
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:486`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:516`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.dangerously_allow_non_loopback_proxy`
 
@@ -3464,7 +3594,7 @@ Type: `boolean` · Default: `false` · Status: documented · When: read when fea
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:484`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:514`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.domains`
 
@@ -3474,7 +3604,7 @@ Type: `map<string, "allow" | "deny">` · Status: documented · When: read when f
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:490`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:520`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `features.network_proxy.domains.<domain>`
 
@@ -3482,7 +3612,7 @@ Type: `"allow" | "deny"` · Status: undocumented · When: read when features.net
 
 Values: `allow`, `deny`
 
-Source: `codex-rs/features/src/feature_configs.rs:470`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:500`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.network_proxy.enable_socks5`
 
@@ -3492,7 +3622,7 @@ Type: `boolean` · Default: `true` · Status: documented · When: read when feat
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:476`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:506`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.enable_socks5_udp`
 
@@ -3502,7 +3632,7 @@ Type: `boolean` · Default: `true` · Status: documented · When: read when feat
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:480`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:510`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.enabled`
 
@@ -3512,7 +3642,7 @@ Type: `boolean` · Default: `false` · Status: documented · When: read when fea
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:472`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:502`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `features.network_proxy.mode`
 
@@ -3520,7 +3650,7 @@ Type: `"limited" | "full"` · Status: undocumented · When: read when features.n
 
 Values: `limited`, `full`
 
-Source: `codex-rs/features/src/feature_configs.rs:488`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:518`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.network_proxy.proxy_url`
 
@@ -3530,7 +3660,7 @@ Type: `string` · Default: `"http://127` · Status: documented · When: read whe
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:474`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:504`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.socks_url`
 
@@ -3540,7 +3670,7 @@ Type: `string` · Default: `"http://127` · Status: documented · When: read whe
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:478`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:508`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.unix_sockets`
 
@@ -3550,7 +3680,7 @@ Type: `map<string, "allow" | "deny">` · Status: documented · When: read when f
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:492`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:522`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.network_proxy.unix_sockets.<path>`
 
@@ -3558,7 +3688,7 @@ Type: `"allow" | "deny"` · Status: undocumented · When: read when features.net
 
 Values: `allow`, `deny`
 
-Source: `codex-rs/features/src/feature_configs.rs:470`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:500`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.non_prefixed_mcp_tool_names`
 
@@ -3566,15 +3696,15 @@ Type: `boolean | table` · Stage: under development · Default: `false` · On he
 
 > Expose MCP model-visible namespaces without the legacy `mcp__` prefix.
 >
-> — `codex-rs/features/src/lib.rs:1432`
+> — `codex-rs/features/src/lib.rs:1481`
 
-Source: `codex-rs/features/src/lib.rs:1432` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1481` · In binary: yes (distinctive match)
 
 ### `features.non_prefixed_mcp_tool_names.enabled`
 
 Type: `boolean` · Status: undocumented · When: read when features.non_prefixed_mcp_tool_names is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:75`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:89`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.non_prefixed_mcp_tool_names.server_names`
 
@@ -3582,9 +3712,9 @@ Type: `array<string>` · Status: undocumented · When: read when features.non_pr
 
 > MCP servers whose tools should omit the legacy `mcp__` namespace prefix.
 >
-> — `codex-rs/features/src/feature_configs.rs:78`
+> — `codex-rs/features/src/feature_configs.rs:92`
 
-Source: `codex-rs/features/src/feature_configs.rs:78`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:92`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.nonfatal_clock_read_errors`
 
@@ -3592,9 +3722,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Report failed clock reads to the model without failing the turn.
 >
-> — `codex-rs/features/src/lib.rs:1738`
+> — `codex-rs/features/src/lib.rs:1805`
 
-Source: `codex-rs/features/src/lib.rs:1738` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1805` · In binary: yes (distinctive match)
 
 ### `features.omit_app_server_notification_media`
 
@@ -3602,9 +3732,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Omit inline image and audio content from app-server item notifications.
 >
-> — `codex-rs/features/src/lib.rs:1558`
+> — `codex-rs/features/src/lib.rs:1619`
 
-Source: `codex-rs/features/src/lib.rs:1558` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1619` · In binary: yes (distinctive match)
 
 ### `features.personality`
 
@@ -3614,7 +3744,7 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:1768` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1835` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `features.plugin_hooks`
 
@@ -3622,9 +3752,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for plugin-bundled lifecycle hooks.
 >
-> — `codex-rs/features/src/lib.rs:1474`
+> — `codex-rs/features/src/lib.rs:1523`
 
-Source: `codex-rs/features/src/lib.rs:1474` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1523` · In binary: yes (distinctive match)
 
 ### `features.plugin_sharing`
 
@@ -3632,9 +3762,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Enable remote plugin sharing flows.
 >
-> — `codex-rs/features/src/lib.rs:1540`
+> — `codex-rs/features/src/lib.rs:1601`
 
-Source: `codex-rs/features/src/lib.rs:1540` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1601` · In binary: yes (distinctive match)
 
 ### `features.plugins`
 
@@ -3642,9 +3772,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 
 > Enable plugins.
 >
-> — `codex-rs/features/src/lib.rs:1456`
+> — `codex-rs/features/src/lib.rs:1505`
 
-Source: `codex-rs/features/src/lib.rs:1456` · Docs: [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1505` · Docs: [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
 
 ### `features.powershell_shell_version`
 
@@ -3652,19 +3782,19 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Expose the selected PowerShell execution host's bounded major/minor version.
 >
-> — `codex-rs/features/src/lib.rs:1020`
+> — `codex-rs/features/src/lib.rs:1051`
 
-Source: `codex-rs/features/src/lib.rs:1020` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1051` · In binary: yes (distinctive match)
 
 ### `features.prefer_mxc`
 
-Type: `boolean` · Stage: under development · Default: `false` · On here: no · Status: undocumented
+Type: `boolean` · Stage: under development · Default: `false` · On here: no · Status: documented
 
-> Prefer the local native Windows sandbox when available, retaining legacy fallback.
+> Prefer MXC for local Windows execution when native capabilities and policy allow it; otherwise retain the configured legacy sandbox and setup. Disabled by default in the standalone CLI; the desktop app can enable it through rollout configuration. Command failures don't trigger fallback.
 >
-> — `codex-rs/features/src/lib.rs:1272`
+> — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:1272` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1303` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.prevent_idle_sleep`
 
@@ -3676,7 +3806,7 @@ Type: `boolean` · Stage: experimental · Default: `false` · On here: no · Sta
 
 Experimental menu: "Prevent sleep while running"
 
-Source: `codex-rs/features/src/lib.rs:1816` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1883` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.psp`
 
@@ -3684,9 +3814,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Route first-party ChatGPT requests through PSP.
 >
-> — `codex-rs/features/src/lib.rs:1372`
+> — `codex-rs/features/src/lib.rs:1421`
 
-Source: `codex-rs/features/src/lib.rs:1372` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1421` · In binary: yes (generic match)
 
 ### `features.realtime_conversation`
 
@@ -3694,9 +3824,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Enable voice conversations in the TUI.
 >
-> — `codex-rs/features/src/lib.rs:1792`
+> — `codex-rs/features/src/lib.rs:1859`
 
-Source: `codex-rs/features/src/lib.rs:1792` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1859` · In binary: yes (distinctive match)
 
 ### `features.reasoning_effort_override`
 
@@ -3704,9 +3834,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Append trusted response configuration items when the selected reasoning effort changes.
 >
-> — `codex-rs/features/src/lib.rs:1726`
+> — `codex-rs/features/src/lib.rs:1793`
 
-Source: `codex-rs/features/src/lib.rs:1726` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1793` · In binary: yes (distinctive match)
 
 ### `features.recommended_plugins`
 
@@ -3714,9 +3844,9 @@ Type: `boolean` · Stage: stable · Default: `false` · On here: no · Status: u
 
 > Include recommended plugins in model-visible context.
 >
-> — `codex-rs/features/src/lib.rs:1450`
+> — `codex-rs/features/src/lib.rs:1499`
 
-Source: `codex-rs/features/src/lib.rs:1450` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1499` · In binary: yes (distinctive match)
 
 ### `features.remote_compaction_v2`
 
@@ -3724,9 +3854,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility key, still advertised to the Responses API.
 >
-> — `codex-rs/features/src/lib.rs:1852`
+> — `codex-rs/features/src/lib.rs:1919`
 
-Source: `codex-rs/features/src/lib.rs:1852` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1919` · In binary: yes (distinctive match)
 
 ### `features.remote_control`
 
@@ -3734,9 +3864,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for the deleted remote control feature.
 >
-> — `codex-rs/features/src/lib.rs:1798`
+> — `codex-rs/features/src/lib.rs:1865`
 
-Source: `codex-rs/features/src/lib.rs:1798` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1865` · In binary: yes (distinctive match)
 
 ### `features.remote_models`
 
@@ -3744,9 +3874,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Legacy remote models flag kept for backward compatibility.
 >
-> — `codex-rs/features/src/lib.rs:1278`
+> — `codex-rs/features/src/lib.rs:1309`
 
-Source: `codex-rs/features/src/lib.rs:1278` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1309` · In binary: yes (distinctive match)
 
 ### `features.remote_plugin`
 
@@ -3756,7 +3886,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:1534` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1595` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.request_permissions`
 
@@ -3776,9 +3906,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Expose the built-in request_permissions tool.
 >
-> — `codex-rs/features/src/lib.rs:1230`
+> — `codex-rs/features/src/lib.rs:1261`
 
-Source: `codex-rs/features/src/lib.rs:1230` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1261` · In binary: yes (distinctive match)
 
 ### `features.request_rule`
 
@@ -3786,9 +3916,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Allow the model to request approval and propose exec rules.
 >
-> — `codex-rs/features/src/lib.rs:1248`
+> — `codex-rs/features/src/lib.rs:1279`
 
-Source: `codex-rs/features/src/lib.rs:1248` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1279` · In binary: yes (distinctive match)
 
 ### `features.resize_all_images`
 
@@ -3796,9 +3926,9 @@ Type: `boolean` · Stage: removed · Default: `true` · On here: yes · Status: 
 
 > Removed compatibility flag for always-on centralized image preparation.
 >
-> — `codex-rs/features/src/lib.rs:1576`
+> — `codex-rs/features/src/lib.rs:1637`
 
-Source: `codex-rs/features/src/lib.rs:1576` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1637` · In binary: yes (distinctive match)
 
 ### `features.respect_system_proxy`
 
@@ -3806,9 +3936,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Respect host system proxy settings for Codex-owned network clients.
 >
-> — `codex-rs/features/src/lib.rs:1318`
+> — `codex-rs/features/src/lib.rs:1355`
 
-Source: `codex-rs/features/src/lib.rs:1318` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1355` · In binary: yes (distinctive match)
 
 ### `features.responses_websockets`
 
@@ -3816,9 +3946,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Legacy rollout flag for Responses API WebSocket transport experiments.
 >
-> — `codex-rs/features/src/lib.rs:1840`
+> — `codex-rs/features/src/lib.rs:1907`
 
-Source: `codex-rs/features/src/lib.rs:1840` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1907` · In binary: yes (distinctive match)
 
 ### `features.responses_websockets_v2`
 
@@ -3826,9 +3956,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Legacy rollout flag for Responses API WebSocket transport v2 experiments.
 >
-> — `codex-rs/features/src/lib.rs:1846`
+> — `codex-rs/features/src/lib.rs:1913`
 
-Source: `codex-rs/features/src/lib.rs:1846` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1913` · In binary: yes (distinctive match)
 
 ### `features.retain_client_developer_messages`
 
@@ -3836,9 +3966,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Retain client-authored developer messages across compacted context windows.
 >
-> — `codex-rs/features/src/lib.rs:1864`
+> — `codex-rs/features/src/lib.rs:1931`
 
-Source: `codex-rs/features/src/lib.rs:1864` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1931` · In binary: yes (distinctive match)
 
 ### `features.rollout_budget`
 
@@ -3846,9 +3976,9 @@ Type: `boolean | table` · Stage: under development · Default: `false` · On he
 
 > Track and report a shared token budget across a session's agent threads.
 >
-> — `codex-rs/features/src/lib.rs:1720`
+> — `codex-rs/features/src/lib.rs:1787`
 
-Source: `codex-rs/features/src/lib.rs:1720` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1787` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
 
 ### `features.rollout_budget.enabled`
 
@@ -3858,7 +3988,7 @@ Type: `boolean` · Status: documented · When: read when features.rollout_budget
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:371`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:401`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `features.rollout_budget.limit_tokens`
 
@@ -3868,7 +3998,7 @@ Type: `integer (int64)` · Status: documented · When: read when features.rollou
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:374`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:404`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.rollout_budget.prefill_token_weight`
 
@@ -3878,7 +4008,7 @@ Type: `number` · Default: `1` · Status: documented · When: read when features
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:383`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:413`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.rollout_budget.reminder_at_remaining_tokens`
 
@@ -3886,9 +4016,9 @@ Type: `array<integer (int64)>` · Status: undocumented · When: read when featur
 
 > Remaining weighted-token values that trigger reminders when crossed.
 >
-> — `codex-rs/features/src/feature_configs.rs:377`
+> — `codex-rs/features/src/feature_configs.rs:407`
 
-Source: `codex-rs/features/src/feature_configs.rs:377`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:407`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.rollout_budget.sampling_token_weight`
 
@@ -3898,7 +4028,7 @@ Type: `number` · Default: `1` · Status: documented · When: read when features
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/feature_configs.rs:380`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:410`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.runtime_metrics`
 
@@ -3906,9 +4036,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable runtime metrics snapshots via a manual reader.
 >
-> — `codex-rs/features/src/lib.rs:1146`
+> — `codex-rs/features/src/lib.rs:1177`
 
-Source: `codex-rs/features/src/lib.rs:1146` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1177` · In binary: yes (distinctive match)
 
 ### `features.search_tool`
 
@@ -3916,9 +4046,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Legacy search-tool feature flag kept for backward compatibility.
 >
-> — `codex-rs/features/src/lib.rs:1134`
+> — `codex-rs/features/src/lib.rs:1165`
 
-Source: `codex-rs/features/src/lib.rs:1134` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1165` · In binary: yes (distinctive match)
 
 ### `features.secret_auth_storage`
 
@@ -3926,9 +4056,9 @@ Type: `boolean` · Stage: stable · Default: `` `cfg!(windows)` `` · On here: n
 
 > Store CLI auth in the encrypted local secrets backend when keyring storage is selected.
 >
-> — `codex-rs/features/src/lib.rs:984`
+> — `codex-rs/features/src/lib.rs:1005`
 
-Source: `codex-rs/features/src/lib.rs:984` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1005` · In binary: yes (distinctive match)
 
 ### `features.send_async_message`
 
@@ -3936,9 +4066,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for model-enabled async user messaging.
 >
-> — `codex-rs/features/src/lib.rs:1630`
+> — `codex-rs/features/src/lib.rs:1691`
 
-Source: `codex-rs/features/src/lib.rs:1630` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1691` · In binary: yes (distinctive match)
 
 ### `features.send_message_to_user_async`
 
@@ -3946,9 +4076,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Allow root agents to send async user messages without model catalog support.
 >
-> — `codex-rs/features/src/lib.rs:1636`
+> — `codex-rs/features/src/lib.rs:1697`
 
-Source: `codex-rs/features/src/lib.rs:1636` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1697` · In binary: yes (distinctive match)
 
 ### `features.shell_snapshot`
 
@@ -3958,7 +4088,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:1014` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1035` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.shell_snapshot_v2`
 
@@ -3966,9 +4096,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Keep policy-filtered shell snapshots entirely in executor memory.
 >
-> — `codex-rs/features/src/lib.rs:1026`
+> — `codex-rs/features/src/lib.rs:1057`
 
-Source: `codex-rs/features/src/lib.rs:1026` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1057` · In binary: yes (distinctive match)
 
 ### `features.shell_tool`
 
@@ -3978,7 +4108,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:966` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:987` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.shell_zsh_fork`
 
@@ -3986,9 +4116,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Route shell tool execution through the zsh exec bridge.
 >
-> — `codex-rs/features/src/lib.rs:1002`
+> — `codex-rs/features/src/lib.rs:1023`
 
-Source: `codex-rs/features/src/lib.rs:1002` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1023` · In binary: yes (distinctive match)
 
 ### `features.skill_env_var_dependency_prompt`
 
@@ -3996,9 +4126,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for deleted skill env var dependency prompting.
 >
-> — `codex-rs/features/src/lib.rs:1606`
+> — `codex-rs/features/src/lib.rs:1667`
 
-Source: `codex-rs/features/src/lib.rs:1606` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1667` · In binary: yes (distinctive match)
 
 ### `features.skill_mcp_dependency_install`
 
@@ -4008,7 +4138,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:1594` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1655` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.skill_search`
 
@@ -4016,9 +4146,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Run cheap skill-search methods in shadow mode and emit experiment metrics.
 >
-> — `codex-rs/features/src/lib.rs:1600`
+> — `codex-rs/features/src/lib.rs:1661`
 
-Source: `codex-rs/features/src/lib.rs:1600` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1661` · In binary: yes (distinctive match)
 
 ### `features.skip_host_skill_discovery`
 
@@ -4026,9 +4156,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Skip host skill snapshots when no registered contributor requires them.
 >
-> — `codex-rs/features/src/lib.rs:1468`
+> — `codex-rs/features/src/lib.rs:1517`
 
-Source: `codex-rs/features/src/lib.rs:1468` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1517` · In binary: yes (distinctive match)
 
 ### `features.sleep_tool`
 
@@ -4036,15 +4166,15 @@ Type: `boolean | table` · Stage: stable · Default: `true` · On here: yes · S
 
 > Allow registration of the built-in sleep tool.
 >
-> — `codex-rs/features/src/lib.rs:978`
+> — `codex-rs/features/src/lib.rs:999`
 
-Source: `codex-rs/features/src/lib.rs:978` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:999` · In binary: yes (distinctive match)
 
 ### `features.sleep_tool.enabled`
 
 Type: `boolean` · Status: undocumented · When: read when features.sleep_tool is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:448`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:478`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.sleep_tool.mode`
 
@@ -4052,13 +4182,13 @@ Type: `"model_driven" | "always_on"` · Status: undocumented · When: read when 
 
 > How the sleep tool is selected when its feature gate is enabled.
 >
-> — `codex-rs/features/src/feature_configs.rs:450`
+> — `codex-rs/features/src/feature_configs.rs:480`
 
 Values:
 - `model_driven`: Preserve the existing model and legacy clock configuration defaults.
 - `always_on`: Register sleep regardless of the model or legacy clock configuration.
 
-Source: `codex-rs/features/src/feature_configs.rs:450`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:480`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.sqlite`
 
@@ -4066,9 +4196,9 @@ Type: `boolean` · Stage: removed · Default: `true` · On here: yes · Status: 
 
 > Persist rollout metadata to a local SQLite database.
 >
-> — `codex-rs/features/src/lib.rs:1152`
+> — `codex-rs/features/src/lib.rs:1183`
 
-Source: `codex-rs/features/src/lib.rs:1152` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1183` · In binary: yes (generic match)
 
 ### `features.standalone_web_search`
 
@@ -4076,9 +4206,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Expose the extension-backed standalone web search tool.
 >
-> — `codex-rs/features/src/lib.rs:1128`
+> — `codex-rs/features/src/lib.rs:1159`
 
-Source: `codex-rs/features/src/lib.rs:1128` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1159` · In binary: yes (distinctive match)
 
 ### `features.steer`
 
@@ -4086,9 +4216,9 @@ Type: `boolean` · Stage: removed · Default: `true` · On here: yes · Status: 
 
 > Steer feature flag - when enabled, Enter submits immediately instead of queuing. Kept for config backward compatibility; behavior is always steer-enabled.
 >
-> — `codex-rs/features/src/lib.rs:1618`
+> — `codex-rs/features/src/lib.rs:1679`
 
-Source: `codex-rs/features/src/lib.rs:1618` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1679` · In binary: yes (generic match)
 
 ### `features.step_model_switching`
 
@@ -4096,9 +4226,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable explicitly requested model changes for later step captures.
 >
-> — `codex-rs/features/src/lib.rs:1786`
+> — `codex-rs/features/src/lib.rs:1853`
 
-Source: `codex-rs/features/src/lib.rs:1786` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1853` · In binary: yes (distinctive match)
 
 ### `features.system_proxy_fallback`
 
@@ -4106,9 +4236,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Retry eligible bootstrap requests through the system proxy after normal routing fails.
 >
-> — `codex-rs/features/src/lib.rs:1324`
+> — `codex-rs/features/src/lib.rs:1361`
 
-Source: `codex-rs/features/src/lib.rs:1324` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1361` · In binary: yes (distinctive match)
 
 ### `features.telepathy`
 
@@ -4128,9 +4258,9 @@ Type: `boolean` · Stage: removed · Default: `true` · On here: yes · Status: 
 
 > Removed compatibility flag. Transcript scrollback reflow on terminal resize is always on.
 >
-> — `codex-rs/features/src/lib.rs:1110`
+> — `codex-rs/features/src/lib.rs:1141`
 
-Source: `codex-rs/features/src/lib.rs:1110` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1141` · In binary: yes (distinctive match)
 
 ### `features.terminal_visualization_instructions`
 
@@ -4138,9 +4268,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Add terminal-specific visualization guidance to TUI developer instructions.
 >
-> — `codex-rs/features/src/lib.rs:1642`
+> — `codex-rs/features/src/lib.rs:1703`
 
-Source: `codex-rs/features/src/lib.rs:1642` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1703` · In binary: yes (distinctive match)
 
 ### `features.token_budget`
 
@@ -4148,9 +4278,9 @@ Type: `boolean | table` · Stage: under development · Default: `false` · On he
 
 > Add current context-window metadata to model-visible context.
 >
-> — `codex-rs/features/src/lib.rs:1708`
+> — `codex-rs/features/src/lib.rs:1775`
 
-Source: `codex-rs/features/src/lib.rs:1708` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1775` · In binary: yes (distinctive match)
 
 ### `features.token_budget.auto_compact_fallback_buffer_tokens`
 
@@ -4158,9 +4288,9 @@ Type: `integer (int64)` · Status: undocumented · When: read when features.toke
 
 > Additional tokens available after the compaction threshold for fallback note-taking.
 >
-> — `codex-rs/features/src/feature_configs.rs:358`
+> — `codex-rs/features/src/feature_configs.rs:388`
 
-Source: `codex-rs/features/src/feature_configs.rs:358`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:388`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.token_budget.auto_compact_fallback_prompt`
 
@@ -4168,15 +4298,15 @@ Type: `string` · Status: undocumented · When: read when features.token_budget 
 
 > Developer message sampled before an automatic context-window rollover.
 >
-> — `codex-rs/features/src/feature_configs.rs:354`
+> — `codex-rs/features/src/feature_configs.rs:384`
 
-Source: `codex-rs/features/src/feature_configs.rs:354`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:384`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.token_budget.enabled`
 
 Type: `boolean` · Status: undocumented · When: read when features.token_budget is enabled
 
-Source: `codex-rs/features/src/feature_configs.rs:334`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/features/src/feature_configs.rs:364`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `features.token_budget.guidance_message`
 
@@ -4184,9 +4314,9 @@ Type: `string` · Status: undocumented · When: read when features.token_budget 
 
 > Guidance appended to the context-window metadata in a developer message.
 >
-> — `codex-rs/features/src/feature_configs.rs:350`
+> — `codex-rs/features/src/feature_configs.rs:380`
 
-Source: `codex-rs/features/src/feature_configs.rs:350`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:380`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.token_budget.reminder_message_template`
 
@@ -4194,9 +4324,9 @@ Type: `string` · Status: undocumented · When: read when features.token_budget 
 
 > Reminder template. `{n_remaining}` is replaced with the tokens remaining before auto-compaction.
 >
-> — `codex-rs/features/src/feature_configs.rs:346`
+> — `codex-rs/features/src/feature_configs.rs:376`
 
-Source: `codex-rs/features/src/feature_configs.rs:346`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:376`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.token_budget.reminder_threshold_tokens`
 
@@ -4204,9 +4334,9 @@ Type: `integer (int64)` · Status: undocumented · When: read when features.toke
 
 > Number of tokens remaining before auto-compaction when the wrap-up reminder is emitted.
 >
-> — `codex-rs/features/src/feature_configs.rs:341`
+> — `codex-rs/features/src/feature_configs.rs:371`
 
-Source: `codex-rs/features/src/feature_configs.rs:341`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:371`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.token_budget.use_history_notes_extension`
 
@@ -4214,9 +4344,9 @@ Type: `boolean` · Status: undocumented · When: read when features.token_budget
 
 > Whether to expose the built-in history and notes extension.
 >
-> — `codex-rs/features/src/feature_configs.rs:337`
+> — `codex-rs/features/src/feature_configs.rs:367`
 
-Source: `codex-rs/features/src/feature_configs.rs:337`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:367`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.tool_call_mcp_elicitation`
 
@@ -4224,9 +4354,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Route MCP tool approval prompts through the MCP elicitation request path.
 >
-> — `codex-rs/features/src/lib.rs:1750`
+> — `codex-rs/features/src/lib.rs:1817`
 
-Source: `codex-rs/features/src/lib.rs:1750` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1817` · In binary: yes (distinctive match)
 
 ### `features.tool_registry`
 
@@ -4240,9 +4370,9 @@ Type: `boolean` · Status: undocumented · When: read when features.tool_registr
 
 > Fail the turn when multiple tools share the same effective name.
 >
-> — `codex-rs/features/src/feature_configs.rs:16`
+> — `codex-rs/features/src/feature_configs.rs:30`
 
-Source: `codex-rs/features/src/feature_configs.rs:16`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:30`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.tool_registry.turn_metadata_includes_tool_info`
 
@@ -4250,9 +4380,9 @@ Type: `boolean` · Status: undocumented · When: read when features.tool_registr
 
 > Include authoritative tool information in per-turn request metadata.
 >
-> — `codex-rs/features/src/feature_configs.rs:19`
+> — `codex-rs/features/src/feature_configs.rs:33`
 
-Source: `codex-rs/features/src/feature_configs.rs:19`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/feature_configs.rs:33`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `features.tool_search`
 
@@ -4260,9 +4390,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag retained as a no-op now that tool_search is always enabled.
 >
-> — `codex-rs/features/src/lib.rs:1414`
+> — `codex-rs/features/src/lib.rs:1463`
 
-Source: `codex-rs/features/src/lib.rs:1414` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1463` · In binary: yes (distinctive match)
 
 ### `features.tool_search_always_defer_mcp_tools`
 
@@ -4270,9 +4400,9 @@ Type: `boolean` · Stage: removed · Default: `true` · On here: yes · Status: 
 
 > Removed compatibility flag. MCP tools are always deferred when tool_search is available.
 >
-> — `codex-rs/features/src/lib.rs:1420`
+> — `codex-rs/features/src/lib.rs:1469`
 
-Source: `codex-rs/features/src/lib.rs:1420` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1469` · In binary: yes (distinctive match)
 
 ### `features.tool_suggest`
 
@@ -4280,9 +4410,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Enable discoverable tool suggestions for apps.
 >
-> — `codex-rs/features/src/lib.rs:1444`
+> — `codex-rs/features/src/lib.rs:1493`
 
-Source: `codex-rs/features/src/lib.rs:1444` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1493` · In binary: yes (distinctive match)
 
 ### `features.transcript_v2`
 
@@ -4290,9 +4420,9 @@ Type: `boolean` · Stage: deprecated · Default: `false` · On here: no · Statu
 
 > Deprecated no-op; use `tui.fullscreen_transcript` instead.
 >
-> — `codex-rs/features/src/lib.rs:953`
+> — `codex-rs/features/src/lib.rs:974`
 
-Source: `codex-rs/features/src/lib.rs:953` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:974` · In binary: yes (distinctive match)
 
 ### `features.tui_app_server`
 
@@ -4300,9 +4430,9 @@ Type: `boolean` · Stage: removed · Default: `true` · On here: yes · Status: 
 
 > Removed compatibility flag. The TUI now always uses the app-server implementation.
 >
-> — `codex-rs/features/src/lib.rs:1810`
+> — `codex-rs/features/src/lib.rs:1877`
 
-Source: `codex-rs/features/src/lib.rs:1810` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1877` · In binary: yes (distinctive match)
 
 ### `features.unavailable_dummy_tools`
 
@@ -4310,9 +4440,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag for the deleted unavailable-tool placeholder backfill.
 >
-> — `codex-rs/features/src/lib.rs:1438`
+> — `codex-rs/features/src/lib.rs:1487`
 
-Source: `codex-rs/features/src/lib.rs:1438` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1487` · In binary: yes (distinctive match)
 
 ### `features.unbounded_connection_retries`
 
@@ -4320,9 +4450,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Keep active sampling turns alive until a failed network connection recovers.
 >
-> — `codex-rs/features/src/lib.rs:1296`
+> — `codex-rs/features/src/lib.rs:1333`
 
-Source: `codex-rs/features/src/lib.rs:1296` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1333` · In binary: yes (distinctive match)
 
 ### `features.undo`
 
@@ -4330,9 +4460,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag retained as a no-op so old configs can still parse `undo`.
 >
-> — `codex-rs/features/src/lib.rs:960`
+> — `codex-rs/features/src/lib.rs:981`
 
-Source: `codex-rs/features/src/lib.rs:960` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:981` · In binary: yes (generic match)
 
 ### `features.unified_exec`
 
@@ -4344,7 +4474,7 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: d
 
 Legacy aliases: `features.experimental_use_unified_exec_tool`
 
-Source: `codex-rs/features/src/lib.rs:990` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1011` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.unified_exec_tty`
 
@@ -4352,9 +4482,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Allow unified exec commands to allocate an interactive terminal.
 >
-> — `codex-rs/features/src/lib.rs:996`
+> — `codex-rs/features/src/lib.rs:1017`
 
-Source: `codex-rs/features/src/lib.rs:996` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1017` · In binary: yes (distinctive match)
 
 ### `features.unified_exec_zsh_fork`
 
@@ -4362,9 +4492,9 @@ Type: `boolean` · Stage: removed · Default: `true` · On here: yes · Status: 
 
 > Allow unified exec to compose with the zsh exec bridge. This flag is only a composition gate. Enabling it by itself must not turn on either `unified_exec` or `shell_zsh_fork` because those features have separate rollout and enterprise controls.
 >
-> — `codex-rs/features/src/lib.rs:1008`
+> — `codex-rs/features/src/lib.rs:1029`
 
-Source: `codex-rs/features/src/lib.rs:1008` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1029` · In binary: yes (distinctive match)
 
 ### `features.unified_image_budget`
 
@@ -4372,9 +4502,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Apply one shared pixel and token budget to every image, regardless of legacy detail hints.
 >
-> — `codex-rs/features/src/lib.rs:1570`
+> — `codex-rs/features/src/lib.rs:1631`
 
-Source: `codex-rs/features/src/lib.rs:1570` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1631` · In binary: yes (distinctive match)
 
 ### `features.use_agent_identity`
 
@@ -4382,9 +4512,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Use Agent Identity for ChatGPT-authenticated sessions.
 >
-> — `codex-rs/features/src/lib.rs:1870`
+> — `codex-rs/features/src/lib.rs:1937`
 
-Source: `codex-rs/features/src/lib.rs:1870` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1937` · In binary: yes (distinctive match)
 
 ### `features.use_legacy_landlock`
 
@@ -4392,9 +4522,9 @@ Type: `boolean` · Stage: deprecated · Default: `false` · On here: no · Statu
 
 > Use the legacy Landlock Linux sandbox fallback instead of the default bubblewrap pipeline.
 >
-> — `codex-rs/features/src/lib.rs:1242`
+> — `codex-rs/features/src/lib.rs:1273`
 
-Source: `codex-rs/features/src/lib.rs:1242` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1273` · In binary: yes (distinctive match)
 
 ### `features.use_linux_sandbox_bwrap`
 
@@ -4402,9 +4532,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed legacy Linux bubblewrap opt-in flag retained as a no-op so old wrappers and config can still parse it.
 >
-> — `codex-rs/features/src/lib.rs:1236`
+> — `codex-rs/features/src/lib.rs:1267`
 
-Source: `codex-rs/features/src/lib.rs:1236` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1267` · In binary: yes (distinctive match)
 
 ### `features.use_xaa`
 
@@ -4412,9 +4542,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Enable enterprise refresh-token authorization for configured MCP resources.
 >
-> — `codex-rs/features/src/lib.rs:1402`
+> — `codex-rs/features/src/lib.rs:1451`
 
-Source: `codex-rs/features/src/lib.rs:1402` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1451` · In binary: yes (generic match)
 
 ### `features.view_image`
 
@@ -4422,9 +4552,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Enable the built-in local image viewer.
 >
-> — `codex-rs/features/src/lib.rs:972`
+> — `codex-rs/features/src/lib.rs:993`
 
-Source: `codex-rs/features/src/lib.rs:972` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:993` · In binary: yes (distinctive match)
 
 ### `features.web_search`
 
@@ -4436,7 +4566,7 @@ Type: `boolean` · Status: alias
 
 Canonical key: `features.web_search_request`
 
-Source: `codex-rs/features/src/legacy.rs:29`, `codex-rs/config/src/config_toml.rs:470` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/legacy.rs:29`, `codex-rs/config/src/config_toml.rs:472` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.web_search_cached`
 
@@ -4446,7 +4576,7 @@ Type: `boolean` · Stage: deprecated · Default: `false` · On here: no · Statu
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/features/src/lib.rs:1122` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1153` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.web_search_request`
 
@@ -4458,7 +4588,7 @@ Type: `boolean` · Stage: deprecated · Default: `false` · On here: no · Statu
 
 Legacy aliases: `features.web_search`
 
-Source: `codex-rs/features/src/lib.rs:1116` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1147` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `features.windows_sandbox_service`
 
@@ -4466,9 +4596,9 @@ Type: `boolean` · Stage: under development · Default: `false` · On here: no �
 
 > Attempt elevated Windows sandbox provisioning through the installed service.
 >
-> — `codex-rs/features/src/lib.rs:1266`
+> — `codex-rs/features/src/lib.rs:1297`
 
-Source: `codex-rs/features/src/lib.rs:1266` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1297` · In binary: yes (distinctive match)
 
 ### `features.workspace_dependencies`
 
@@ -4476,9 +4606,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Enable workspace dependency support.
 >
-> — `codex-rs/features/src/lib.rs:1876`
+> — `codex-rs/features/src/lib.rs:1943`
 
-Source: `codex-rs/features/src/lib.rs:1876` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1943` · In binary: yes (distinctive match)
 
 ### `features.workspace_owner_usage_nudge`
 
@@ -4486,9 +4616,9 @@ Type: `boolean` · Stage: removed · Default: `false` · On here: no · Status: 
 
 > Removed compatibility flag retained as a no-op now that workspace owner usage nudges are always enabled.
 >
-> — `codex-rs/features/src/lib.rs:1834`
+> — `codex-rs/features/src/lib.rs:1901`
 
-Source: `codex-rs/features/src/lib.rs:1834` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1901` · In binary: yes (distinctive match)
 
 ### `features.worktrees`
 
@@ -4496,9 +4626,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Enable managed worktree creation and repository-aware sessions.
 >
-> — `codex-rs/features/src/lib.rs:1312`
+> — `codex-rs/features/src/lib.rs:1349`
 
-Source: `codex-rs/features/src/lib.rs:1312` · In binary: yes (generic match)
+Source: `codex-rs/features/src/lib.rs:1349` · In binary: yes (generic match)
 
 ### `features.write_stdin_approval`
 
@@ -4506,9 +4636,9 @@ Type: `boolean` · Stage: stable · Default: `true` · On here: yes · Status: u
 
 > Require approval before writing input to escalated unified-exec terminals.
 >
-> — `codex-rs/features/src/lib.rs:1218`
+> — `codex-rs/features/src/lib.rs:1249`
 
-Source: `codex-rs/features/src/lib.rs:1218` · In binary: yes (distinctive match)
+Source: `codex-rs/features/src/lib.rs:1249` · In binary: yes (distinctive match)
 
 ## Tools, web search, browser and computer use
 
@@ -4520,13 +4650,13 @@ Type: `integer (uint64)` · Default: `300000` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:342`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:344`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `browser_use`
 
 Type: `table` · Status: documented
 
-Source: `codex-rs/config/src/config_toml.rs:204`, `codex-rs/core/config.schema.json` · Docs: [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:206`, `codex-rs/core/config.schema.json` · Docs: [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
 
 ### `browser_use.allow_history_access`
 
@@ -4632,7 +4762,7 @@ Source: `codex-rs/config/src/browser_use.rs:20`, `codex-rs/core/config.schema.js
 
 Type: `table` · Status: documented
 
-Source: `codex-rs/config/src/config_toml.rs:206`, `codex-rs/core/config.schema.json` · Docs: [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:208`, `codex-rs/core/config.schema.json` · Docs: [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (distinctive match)
 
 ### `computer_use.default_app_access`
 
@@ -4738,7 +4868,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:556`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:558`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tool_output_token_limit`
 
@@ -4748,7 +4878,7 @@ Type: `integer (uint)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:338`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:340`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tool_suggest`
 
@@ -4756,9 +4886,9 @@ Type: `table` · Status: documented
 
 > Additional discoverable tools that can be suggested for installation.
 >
-> — `codex-rs/config/src/config_toml.rs:476`
+> — `codex-rs/config/src/config_toml.rs:478`
 
-Source: `codex-rs/config/src/config_toml.rs:476`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:478`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
 
 ### `tool_suggest.disabled_tools`
 
@@ -4768,13 +4898,13 @@ Type: `array<table>` · Default: `[]` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:290`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:291`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tool_suggest.disabled_tools[].id`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:257`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:258`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tool_suggest.disabled_tools[].type`
 
@@ -4782,7 +4912,7 @@ Type: `"connector" | "plugin"` · Status: undocumented
 
 Values: `connector`, `plugin`
 
-Source: `codex-rs/config/src/types.rs:256`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:257`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tool_suggest.discoverables`
 
@@ -4792,13 +4922,13 @@ Type: `array<table>` · Default: `[]` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:288`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:289`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tool_suggest.discoverables[].id`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:249`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:250`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tool_suggest.discoverables[].type`
 
@@ -4806,7 +4936,7 @@ Type: `"connector" | "plugin"` · Status: undocumented
 
 Values: `connector`, `plugin`
 
-Source: `codex-rs/config/src/types.rs:248`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:249`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tools`
 
@@ -4814,33 +4944,33 @@ Type: `table` · Status: documented
 
 > Nested tools section for feature toggles
 >
-> — `codex-rs/config/src/config_toml.rs:473`
+> — `codex-rs/config/src/config_toml.rs:475`
 
-Source: `codex-rs/config/src/config_toml.rs:473`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:475`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `tools.experimental_request_user_input`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/config_toml.rs:678`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:701`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tools.experimental_request_user_input.enabled`
 
 Type: `boolean` · Default: `true` · Status: undocumented
 
-Source: `codex-rs/config/src/config_toml.rs:686`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:709`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tools.update_plan`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/config_toml.rs:679`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:702`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tools.update_plan.enabled`
 
 Type: `boolean` · Default: `false` · Status: undocumented
 
-Source: `codex-rs/config/src/config_toml.rs:693`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:716`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tools.web_search`
 
@@ -4850,7 +4980,7 @@ Type: `table` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:677`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:700`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tools.web_search.allowed_domains`
 
@@ -4906,7 +5036,7 @@ Type: `"disabled" | "cached" | "indexed" | "live"` · Default: `"live"` · Statu
 
 Values: `disabled`, `cached`, `indexed`, `live`
 
-Source: `codex-rs/config/src/config_toml.rs:470`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:472`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ## Agents, skills, plugins and apps
 
@@ -4918,7 +5048,7 @@ Type: `table` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:479`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:481`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `agents.<role>`
 
@@ -4928,7 +5058,7 @@ Type: `table` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:730`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:753`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `agents.<role>.config_file`
 
@@ -4938,7 +5068,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:774`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:797`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `agents.<role>.description`
 
@@ -4948,7 +5078,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:770`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:793`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `agents.<role>.nickname_candidates`
 
@@ -4956,9 +5086,9 @@ Type: `array<string>` · Status: undocumented
 
 > Candidate nicknames for agents spawned with this role.
 >
-> — `codex-rs/config/src/config_toml.rs:777`
+> — `codex-rs/config/src/config_toml.rs:800`
 
-Source: `codex-rs/config/src/config_toml.rs:777`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:800`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `agents.default_subagent_model`
 
@@ -4968,7 +5098,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:742`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:765`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `agents.default_subagent_reasoning_effort`
 
@@ -4978,7 +5108,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:744`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:767`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `agents.enabled`
 
@@ -4988,7 +5118,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:733`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:756`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `agents.interrupt_message`
 
@@ -4998,7 +5128,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:750`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:773`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `agents.max_concurrent_threads_per_session`
 
@@ -5008,7 +5138,7 @@ Type: `integer (uint)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:738`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:761`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `agents.max_depth`
 
@@ -5016,9 +5146,9 @@ Type: `integer (int32)` · Status: undocumented
 
 > Maximum nesting depth for V1 agent threads. Ignored by V2.
 >
-> — `codex-rs/config/src/config_toml.rs:740`
+> — `codex-rs/config/src/config_toml.rs:763`
 
-Source: `codex-rs/config/src/config_toml.rs:740`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:763`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `apps`
 
@@ -5026,9 +5156,9 @@ Type: `table` · Status: documented
 
 > Settings for app-specific controls.
 >
-> — `codex-rs/config/src/config_toml.rs:538`
+> — `codex-rs/config/src/config_toml.rs:540`
 
-Source: `codex-rs/config/src/config_toml.rs:538`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [hipaa-configuration](https://developers.openai.com/codex/hipaa-configuration) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:540`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [hipaa-configuration](https://developers.openai.com/codex/hipaa-configuration) · In binary: yes (generic match)
 
 ### `apps.<id>`
 
@@ -5036,9 +5166,9 @@ Type: `table` · Status: undocumented
 
 > Config values for a single app/connector.
 >
-> — `codex-rs/config/src/types.rs:542`
+> — `codex-rs/config/src/types.rs:543`
 
-Source: `codex-rs/config/src/types.rs:542`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:543`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `apps.<id>.approvals_reviewer`
 
@@ -5050,7 +5180,7 @@ Type: `"user" | "auto_review" | "guardian_subagent"` · Status: documented
 
 Values: `user`, `auto_review`, `guardian_subagent`
 
-Source: `codex-rs/config/src/types.rs:512`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:513`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps.<id>.default_tools_approval_mode`
 
@@ -5062,7 +5192,7 @@ Type: `"auto" | "prompt" | "writes" | "approve"` · Status: documented
 
 Values: `auto`, `prompt`, `writes`, `approve`
 
-Source: `codex-rs/config/src/types.rs:524`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:525`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps.<id>.default_tools_enabled`
 
@@ -5072,7 +5202,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:528`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:529`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps.<id>.destructive_enabled`
 
@@ -5082,7 +5212,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:516`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:517`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps.<id>.enabled`
 
@@ -5092,7 +5222,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:502`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:503`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `apps.<id>.links`
 
@@ -5100,9 +5230,9 @@ Type: `map<string, table>` · Status: undocumented
 
 > Per-account approval settings keyed by link ID.
 >
-> — `codex-rs/config/src/types.rs:536`
+> — `codex-rs/config/src/types.rs:537`
 
-Source: `codex-rs/config/src/types.rs:536`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:537`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `apps.<id>.links.<key>`
 
@@ -5110,9 +5240,9 @@ Type: `table` · Status: undocumented
 
 > Approval settings for a connected account within an app.
 >
-> — `codex-rs/config/src/types.rs:490`
+> — `codex-rs/config/src/types.rs:491`
 
-Source: `codex-rs/config/src/types.rs:490`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:491`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `apps.<id>.links.<key>.approvals_reviewer`
 
@@ -5120,11 +5250,11 @@ Type: `"user" | "auto_review" | "guardian_subagent"` · Status: undocumented
 
 > Reviewer for approval prompts from this account, overriding the app default.
 >
-> — `codex-rs/config/src/types.rs:480`
+> — `codex-rs/config/src/types.rs:481`
 
 Values: `user`, `auto_review`, `guardian_subagent`
 
-Source: `codex-rs/config/src/types.rs:480`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:481`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `apps.<id>.links.<key>.default_tools_approval_mode`
 
@@ -5132,11 +5262,11 @@ Type: `"auto" | "prompt" | "writes" | "approve"` · Status: undocumented
 
 > Approval mode for this account unless a tool override exists.
 >
-> — `codex-rs/config/src/types.rs:484`
+> — `codex-rs/config/src/types.rs:485`
 
 Values: `auto`, `prompt`, `writes`, `approve`
 
-Source: `codex-rs/config/src/types.rs:484`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:485`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `apps.<id>.omit_tools_from`
 
@@ -5144,9 +5274,9 @@ Type: `array<"code_mode" | "deferred" | "direct">` · Status: undocumented
 
 > Model-facing surfaces from which this connector's tools must be omitted, in addition to any server-level omissions. `None` leaves lower-priority configuration unchanged; an empty list clears connector-level omissions.
 >
-> — `codex-rs/config/src/types.rs:508`
+> — `codex-rs/config/src/types.rs:509`
 
-Source: `codex-rs/config/src/types.rs:508`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:509`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `apps.<id>.open_world_enabled`
 
@@ -5156,7 +5286,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:520`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:521`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps.<id>.tools`
 
@@ -5164,9 +5294,9 @@ Type: `map<string, table>` · Status: undocumented
 
 > Per-tool settings for this app.
 >
-> — `codex-rs/config/src/types.rs:532`
+> — `codex-rs/config/src/types.rs:533`
 
-Source: `codex-rs/config/src/types.rs:532`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:533`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `apps.<id>.tools.<tool>`
 
@@ -5174,9 +5304,9 @@ Type: `table` · Status: undocumented
 
 > Per-tool settings for a single app tool.
 >
-> — `codex-rs/config/src/types.rs:468`
+> — `codex-rs/config/src/types.rs:469`
 
-Source: `codex-rs/config/src/types.rs:468`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:469`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `apps.<id>.tools.<tool>.approval_mode`
 
@@ -5188,7 +5318,7 @@ Type: `"auto" | "prompt" | "writes" | "approve"` · Status: documented
 
 Values: `auto`, `prompt`, `writes`, `approve`
 
-Source: `codex-rs/config/src/types.rs:462`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:463`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps.<id>.tools.<tool>.enabled`
 
@@ -5198,7 +5328,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:458`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:459`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `apps._default`
 
@@ -5206,9 +5336,9 @@ Type: `table` · Status: documented
 
 > Default settings for all apps.
 >
-> — `codex-rs/config/src/types.rs:545`
+> — `codex-rs/config/src/types.rs:546`
 
-Source: `codex-rs/config/src/types.rs:545`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [app-server](https://developers.openai.com/codex/app-server) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:546`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [app-server](https://developers.openai.com/codex/app-server) · In binary: yes (distinctive match)
 
 ### `apps._default.approvals_reviewer`
 
@@ -5220,7 +5350,7 @@ Type: `"user" | "auto_review" | "guardian_subagent"` · Status: documented
 
 Values: `user`, `auto_review`, `guardian_subagent`
 
-Source: `codex-rs/config/src/types.rs:431`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:432`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps._default.default_tools_approval_mode`
 
@@ -5232,7 +5362,7 @@ Type: `"auto" | "prompt" | "writes" | "approve"` · Status: documented
 
 Values: `auto`, `prompt`, `writes`, `approve`
 
-Source: `codex-rs/config/src/types.rs:449`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:450`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps._default.destructive_enabled`
 
@@ -5242,7 +5372,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:438`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:439`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps._default.enabled`
 
@@ -5252,7 +5382,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:427`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:428`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `apps._default.open_world_enabled`
 
@@ -5262,7 +5392,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:445`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:446`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `apps_mcp_product_sku`
 
@@ -5270,9 +5400,9 @@ Type: `string` · Status: documented
 
 > Optional product SKU forwarded on host-owned Codex Apps MCP requests.
 >
-> — `codex-rs/config/src/config_toml.rs:413`
+> — `codex-rs/config/src/config_toml.rs:415`
 
-Source: `codex-rs/config/src/config_toml.rs:413`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:415`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced) · In binary: yes (distinctive match)
 
 ### `goals`
 
@@ -5280,9 +5410,9 @@ Type: `table` · Status: undocumented
 
 > Goal-related settings.
 >
-> — `codex-rs/config/src/config_toml.rs:482`
+> — `codex-rs/config/src/config_toml.rs:484`
 
-Source: `codex-rs/config/src/config_toml.rs:482`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:484`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `goals.max_goal_token_budget`
 
@@ -5290,9 +5420,9 @@ Type: `integer (uint64)` · Status: undocumented
 
 > Maximum token budget allowed for a goal and default budget for new goals.
 >
-> — `codex-rs/config/src/config_toml.rs:725`
+> — `codex-rs/config/src/config_toml.rs:748`
 
-Source: `codex-rs/config/src/config_toml.rs:725`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:748`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `marketplaces`
 
@@ -5300,9 +5430,9 @@ Type: `map<string, table>` · Default: `{}` · Status: documented
 
 > User-level marketplace entries keyed by marketplace name.
 >
-> — `codex-rs/config/src/config_toml.rs:499`
+> — `codex-rs/config/src/config_toml.rs:501`
 
-Source: `codex-rs/config/src/config_toml.rs:499`, `codex-rs/core/config.schema.json` · Docs: [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:501`, `codex-rs/core/config.schema.json` · Docs: [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
 
 ### `marketplaces.<name>`
 
@@ -5316,9 +5446,9 @@ Type: `string` · Status: undocumented
 
 > Git revision Codex last successfully activated for this marketplace.
 >
-> — `codex-rs/config/src/types.rs:1108`
+> — `codex-rs/config/src/types.rs:1080`
 
-Source: `codex-rs/config/src/types.rs:1108`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1080`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `marketplaces.<name>.last_updated`
 
@@ -5326,9 +5456,9 @@ Type: `string` · Status: undocumented
 
 > Last time Codex successfully added or refreshed this marketplace.
 >
-> — `codex-rs/config/src/types.rs:1105`
+> — `codex-rs/config/src/types.rs:1077`
 
-Source: `codex-rs/config/src/types.rs:1105`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1077`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `marketplaces.<name>.ref`
 
@@ -5338,7 +5468,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1117`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:1089`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `marketplaces.<name>.source`
 
@@ -5348,7 +5478,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1114`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:1086`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `marketplaces.<name>.source_type`
 
@@ -5360,7 +5490,7 @@ Type: `"git" | "local"` · Status: documented
 
 Values: `git`, `local`
 
-Source: `codex-rs/config/src/types.rs:1111`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1083`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `marketplaces.<name>.sparse_paths`
 
@@ -5370,7 +5500,7 @@ Type: `array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1120`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1092`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories`
 
@@ -5378,9 +5508,9 @@ Type: `table` · Status: documented
 
 > Memories subsystem settings.
 >
-> — `codex-rs/config/src/config_toml.rs:485`
+> — `codex-rs/config/src/config_toml.rs:487`
 
-Source: `codex-rs/config/src/config_toml.rs:485`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [customization/memories](https://developers.openai.com/codex/customization/memories) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:487`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [customization/memories](https://developers.openai.com/codex/customization/memories) · In binary: yes (generic match)
 
 ### `memories.consolidation_model`
 
@@ -5390,7 +5520,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:330`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:331`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.dedicated_tools`
 
@@ -5398,9 +5528,9 @@ Type: `boolean` · Status: undocumented
 
 > When `true`, expose dedicated memory tools through the extension tool surface.
 >
-> — `codex-rs/config/src/types.rs:311`
+> — `codex-rs/config/src/types.rs:312`
 
-Source: `codex-rs/config/src/types.rs:311`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:312`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `memories.disable_on_external_context`
 
@@ -5410,7 +5540,7 @@ Type: `boolean` · Default: `false` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:305`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:306`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.dual_write`
 
@@ -5418,9 +5548,9 @@ Type: `boolean` · Status: undocumented
 
 > Generate both versions while the selected version supplies context.
 >
-> — `codex-rs/config/src/types.rs:302`
+> — `codex-rs/config/src/types.rs:303`
 
-Source: `codex-rs/config/src/types.rs:302`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:303`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `memories.extract_model`
 
@@ -5430,7 +5560,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:328`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:329`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.generate_memories`
 
@@ -5440,7 +5570,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:307`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:308`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.max_raw_memories_for_consolidation`
 
@@ -5450,7 +5580,7 @@ Type: `integer (uint)` · Default: ``256` and is capped at `4096`` · Status: do
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:314`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:315`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.max_rollout_age_days`
 
@@ -5460,7 +5590,7 @@ Type: `integer (int64)` · Default: ``30` and is clamped to `0`-`90`` · Status:
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:318`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:319`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.max_rollouts_per_startup`
 
@@ -5470,7 +5600,7 @@ Type: `integer (uint)` · Default: ``16` and is capped at `128`` · Status: docu
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:321`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:322`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.max_unused_days`
 
@@ -5480,7 +5610,7 @@ Type: `integer (int64)` · Default: ``30` and is clamped to `0`-`365`` · Status
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:316`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:317`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.min_rate_limit_remaining_percent`
 
@@ -5490,7 +5620,7 @@ Type: `integer (int64)` · Default: ``25` and is clamped to `0`-`100`` · Status
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:326`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:327`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.min_rollout_idle_hours`
 
@@ -5500,7 +5630,7 @@ Type: `integer (int64)` · Default: ``6` and is clamped to `1`-`48`` · Status: 
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:323`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:324`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.use_memories`
 
@@ -5510,7 +5640,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:309`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:310`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `memories.version`
 
@@ -5518,11 +5648,11 @@ Type: `"v1" | "v2"` · Status: undocumented
 
 > Selects the memory pipeline; v1 remains the default.
 >
-> — `codex-rs/config/src/types.rs:300`
+> — `codex-rs/config/src/types.rs:301`
 
 Values: `v1`, `v2`
 
-Source: `codex-rs/config/src/types.rs:300`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:301`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `orchestrator`
 
@@ -5530,9 +5660,9 @@ Type: `table` · Status: undocumented
 
 > Orchestrator-owned feature settings.
 >
-> — `codex-rs/config/src/config_toml.rs:419`
+> — `codex-rs/config/src/config_toml.rs:421`
 
-Source: `codex-rs/config/src/config_toml.rs:419`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:421`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `orchestrator.mcp`
 
@@ -5572,9 +5702,9 @@ Type: `map<string, table>` · Default: `{}` · Status: documented
 
 > User-level plugin config entries keyed by plugin name.
 >
-> — `codex-rs/config/src/config_toml.rs:495`
+> — `codex-rs/config/src/config_toml.rs:497`
 
-Source: `codex-rs/config/src/config_toml.rs:495`, `codex-rs/core/config.schema.json` · Docs: [extend/mcp](https://developers.openai.com/codex/extend/mcp) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:497`, `codex-rs/core/config.schema.json` · Docs: [extend/mcp](https://developers.openai.com/codex/extend/mcp) · In binary: yes (generic match)
 
 ### `plugins.<plugin>`
 
@@ -5590,7 +5720,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1006`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:1007`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `plugins.<plugin>.mcp_servers`
 
@@ -5598,9 +5728,9 @@ Type: `map<string, table>` · Status: undocumented
 
 > Per-MCP-server policy overlays for MCP servers contributed by this plugin.
 >
-> — `codex-rs/config/src/types.rs:1010`
+> — `codex-rs/config/src/types.rs:1011`
 
-Source: `codex-rs/config/src/types.rs:1010`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1011`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `plugins.<plugin>.mcp_servers.<id>`
 
@@ -5608,9 +5738,9 @@ Type: `table` · Status: undocumented
 
 > Policy settings for a plugin-provided MCP server. This intentionally excludes transport settings: plugin manifests own how the MCP server is launched, while host config owns enablement, auth, and tool policy.
 >
-> — `codex-rs/config/src/types.rs:1004`
+> — `codex-rs/config/src/types.rs:1005`
 
-Source: `codex-rs/config/src/types.rs:1004`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1005`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `plugins.<plugin>.mcp_servers.<id>.default_tools_approval_mode`
 
@@ -5622,7 +5752,7 @@ Type: `"auto" | "prompt" | "writes" | "approve"` · Status: documented
 
 Values: `auto`, `prompt`, `writes`, `approve`
 
-Source: `codex-rs/config/src/types.rs:1030`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1037`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `plugins.<plugin>.mcp_servers.<id>.disabled_tools`
 
@@ -5632,51 +5762,7 @@ Type: `array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1038`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
-
-### `plugins.<plugin>.mcp_servers.<id>.ema_auth`
-
-Type: `table` · Status: undocumented
-
-> Host-configured EMA registration; the plugin still owns its endpoint.
->
-> — `codex-rs/config/src/types.rs:1026`
-
-Source: `codex-rs/config/src/types.rs:1026`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
-
-### `plugins.<plugin>.mcp_servers.<id>.ema_auth.authorization_server_issuer`
-
-Type: `string` · Status: undocumented
-
-Source: `codex-rs/config/src/types.rs:1066`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
-
-### `plugins.<plugin>.mcp_servers.<id>.ema_auth.client_id`
-
-Type: `string` · Status: undocumented
-
-Source: `codex-rs/config/src/types.rs:1065`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
-
-### `plugins.<plugin>.mcp_servers.<id>.ema_auth.resource`
-
-Type: `string` · Status: undocumented
-
-Source: `codex-rs/config/src/types.rs:1069`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
-
-### `plugins.<plugin>.mcp_servers.<id>.ema_auth.scopes`
-
-Type: `array<string>` · Default: `[]` · Status: undocumented
-
-Source: `codex-rs/config/src/types.rs:1068`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
-
-### `plugins.<plugin>.mcp_servers.<id>.ema_auth.url`
-
-Type: `string` · Status: undocumented
-
-> Exact plugin endpoint approved by the host; never overrides the declaration.
->
-> — `codex-rs/config/src/types.rs:1064`
-
-Source: `codex-rs/config/src/types.rs:1064`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:1045`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `plugins.<plugin>.mcp_servers.<id>.enabled`
 
@@ -5686,7 +5772,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1022`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:1023`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `plugins.<plugin>.mcp_servers.<id>.enabled_tools`
 
@@ -5696,7 +5782,7 @@ Type: `array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:1034`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:1041`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `plugins.<plugin>.mcp_servers.<id>.tools`
 
@@ -5704,9 +5790,9 @@ Type: `map<string, table>` · Status: undocumented
 
 > Per-tool policy settings keyed by tool name.
 >
-> — `codex-rs/config/src/types.rs:1042`
+> — `codex-rs/config/src/types.rs:1049`
 
-Source: `codex-rs/config/src/types.rs:1042`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:1049`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `plugins.<plugin>.mcp_servers.<id>.tools.<tool>`
 
@@ -5714,9 +5800,9 @@ Type: `table` · Status: undocumented
 
 > Per-tool settings for a single MCP server tool.
 >
-> — `codex-rs/config/src/types.rs:1019`
+> — `codex-rs/config/src/types.rs:1020`
 
-Source: `codex-rs/config/src/types.rs:1019`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:1020`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `plugins.<plugin>.mcp_servers.<id>.tools.<tool>.approval_mode`
 
@@ -5728,7 +5814,7 @@ Type: `"auto" | "prompt" | "writes" | "approve"` · Status: documented
 
 Values: `auto`, `prompt`, `writes`, `approve`
 
-Source: `codex-rs/config/src/mcp_types.rs:88`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:83`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `plugins.<plugin>.mcp_servers.<id>.tools.<tool>.output_token_limit`
 
@@ -5736,9 +5822,9 @@ Type: `integer (uint)` · Status: undocumented
 
 > Token budget for this tool's output, before the standard 20% serialization allowance.
 >
-> — `codex-rs/config/src/mcp_types.rs:92`
+> — `codex-rs/config/src/mcp_types.rs:87`
 
-Source: `codex-rs/config/src/mcp_types.rs:92`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:87`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `skills`
 
@@ -5746,9 +5832,9 @@ Type: `table` · Status: documented
 
 > User-level skill config entries keyed by SKILL.md path.
 >
-> — `codex-rs/config/src/config_toml.rs:488`
+> — `codex-rs/config/src/config_toml.rs:490`
 
-Source: `codex-rs/config/src/config_toml.rs:488`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:490`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `skills.bundled`
 
@@ -5834,7 +5920,7 @@ Type: `table` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:491`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:493`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `hooks.<Event>`
 
@@ -5974,7 +6060,7 @@ Type: `array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:245`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:247`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ## Profiles and projects
 
@@ -5984,9 +6070,9 @@ Type: `string` · Status: documented
 
 > Profile to use from the `profiles` map.
 >
-> — `codex-rs/config/src/config_toml.rs:357`
+> — `codex-rs/config/src/config_toml.rs:359`
 
-Source: `codex-rs/config/src/config_toml.rs:357`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:359`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `profiles`
 
@@ -5994,9 +6080,9 @@ Type: `map<string, table>` · Default: `{}` · Status: documented
 
 > Named profiles to facilitate switching between different configurations.
 >
-> — `codex-rs/config/src/config_toml.rs:361`
+> — `codex-rs/config/src/config_toml.rs:363`
 
-Source: `codex-rs/config/src/config_toml.rs:361`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:363`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced) · In binary: yes (generic match)
 
 ### `profiles.<name>`
 
@@ -6014,7 +6100,7 @@ Source: `codex-rs/config/src/profile_toml.rs:24`, `codex-rs/core/config.schema.j
 
 Type: `map<string, table>` · Status: documented
 
-Source: `codex-rs/config/src/config_toml.rs:467`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [agent-approvals-security](https://developers.openai.com/codex/agent-approvals-security) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:469`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [agent-approvals-security](https://developers.openai.com/codex/agent-approvals-security) · In binary: yes (generic match)
 
 ### `projects.<path>`
 
@@ -6032,7 +6118,7 @@ Type: `"trusted" | "untrusted"` · Status: documented
 
 Values: `trusted`, `untrusted`
 
-Source: `codex-rs/config/src/config_toml.rs:604`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:606`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ## Authentication and login
 
@@ -6050,7 +6136,7 @@ Values:
 - `auto`: Use keyring when available; otherwise, fall back to a file in CODEX_HOME.
 - `ephemeral`: Store credentials in memory only for the current process.
 
-Source: `codex-rs/config/src/config_toml.rs:288`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:290`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `forced_chatgpt_workspace_id`
 
@@ -6060,7 +6146,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:277`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:279`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `forced_login_method`
 
@@ -6072,7 +6158,7 @@ Type: `"chatgpt" | "api"` · Status: documented
 
 Values: `chatgpt`, `api`
 
-Source: `codex-rs/config/src/config_toml.rs:281`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:283`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ## Realtime voice and audio
 
@@ -6084,21 +6170,31 @@ Type: `table` · Status: undocumented
 
 > Machine-local realtime audio device preferences used by realtime voice.
 >
-> — `codex-rs/config/src/config_toml.rs:429`
+> — `codex-rs/config/src/config_toml.rs:431`
 
-Source: `codex-rs/config/src/config_toml.rs:429`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:431`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `audio.microphone`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/config_toml.rs:666`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:689`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+
+### `audio.microphone_channel`
+
+Type: `integer (uint16) | array<integer (uint16)>` · Status: undocumented
+
+> One-based microphone channels to mix; unset mixes all input channels.
+>
+> — `codex-rs/config/src/config_toml.rs:688`
+
+Source: `codex-rs/config/src/config_toml.rs:688`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `audio.speaker`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/config_toml.rs:667`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:690`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `experimental_realtime_start_instructions`
 
@@ -6106,9 +6202,9 @@ Type: `string` · Status: undocumented
 
 > Experimental / do not use. Replaces the built-in realtime start instructions inserted into developer messages when realtime becomes active.
 >
-> — `codex-rs/config/src/config_toml.rs:458`
+> — `codex-rs/config/src/config_toml.rs:460`
 
-Source: `codex-rs/config/src/config_toml.rs:458`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:460`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `experimental_realtime_webrtc_call_base_url`
 
@@ -6116,9 +6212,9 @@ Type: `string` · Status: undocumented
 
 > Experimental / do not use. Overrides only the WebRTC realtime call creation base URL. This is separate from `experimental_realtime_ws_base_url` because WebRTC call creation is HTTP, while sideband control is websocket.
 >
-> — `codex-rs/config/src/config_toml.rs:439`
+> — `codex-rs/config/src/config_toml.rs:441`
 
-Source: `codex-rs/config/src/config_toml.rs:439`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:441`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `experimental_realtime_ws_backend_prompt`
 
@@ -6126,9 +6222,9 @@ Type: `string` · Status: undocumented
 
 > Experimental / do not use. Overrides only the realtime conversation websocket transport instructions (the `Op::RealtimeConversation` `/ws` session.update instructions) without changing normal prompts.
 >
-> — `codex-rs/config/src/config_toml.rs:450`
+> — `codex-rs/config/src/config_toml.rs:452`
 
-Source: `codex-rs/config/src/config_toml.rs:450`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:452`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `experimental_realtime_ws_base_url`
 
@@ -6136,9 +6232,9 @@ Type: `string` · Status: documented
 
 > Experimental / do not use. Overrides only the realtime conversation websocket transport base URL (the `Op::RealtimeConversation` `/v1/realtime` connection) without changing normal provider HTTP requests.
 >
-> — `codex-rs/config/src/config_toml.rs:435`
+> — `codex-rs/config/src/config_toml.rs:437`
 
-Source: `codex-rs/config/src/config_toml.rs:435`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:437`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced) · In binary: yes (distinctive match)
 
 ### `experimental_realtime_ws_model`
 
@@ -6146,9 +6242,9 @@ Type: `string` · Status: undocumented
 
 > Experimental / do not use. Selects the realtime websocket model/snapshot used for the `Op::RealtimeConversation` connection.
 >
-> — `codex-rs/config/src/config_toml.rs:442`
+> — `codex-rs/config/src/config_toml.rs:444`
 
-Source: `codex-rs/config/src/config_toml.rs:442`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:444`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `experimental_realtime_ws_startup_context`
 
@@ -6156,9 +6252,9 @@ Type: `string` · Status: undocumented
 
 > Experimental / do not use. Replaces the synthesized realtime startup context appended to websocket session instructions. An empty string disables startup context injection entirely.
 >
-> — `codex-rs/config/src/config_toml.rs:454`
+> — `codex-rs/config/src/config_toml.rs:456`
 
-Source: `codex-rs/config/src/config_toml.rs:454`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:456`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `realtime`
 
@@ -6166,9 +6262,9 @@ Type: `table` · Status: undocumented
 
 > Experimental / do not use. Realtime websocket session selection. `version` controls v1/v2 and `type` controls conversational/transcription.
 >
-> — `codex-rs/config/src/config_toml.rs:446`
+> — `codex-rs/config/src/config_toml.rs:448`
 
-Source: `codex-rs/config/src/config_toml.rs:446`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:448`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 For phone calls, see [GPT-Live telephony and SIP](gpt-live-telephony/). SIP is an API connection path, not a value of Codex's `realtime.transport` setting.
 
@@ -6178,7 +6274,7 @@ Type: `"webrtc" | "websocket"` · Status: undocumented
 
 Values: `webrtc`, `websocket`
 
-Source: `codex-rs/config/src/config_toml.rs:659`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:680`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `realtime.type`
 
@@ -6186,7 +6282,7 @@ Type: `"conversational" | "transcription"` · Status: undocumented
 
 Values: `conversational`, `transcription`
 
-Source: `codex-rs/config/src/config_toml.rs:658`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:679`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `realtime.version`
 
@@ -6194,7 +6290,7 @@ Type: `"v1" | "v2" | "v3"` · Status: undocumented
 
 Values: `v1`, `v2`, `v3`
 
-Source: `codex-rs/config/src/config_toml.rs:656`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:677`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `realtime.voice`
 
@@ -6202,7 +6298,7 @@ Type: `"alloy" | "arbor" | "ash" | "ballad" | "breeze" | "cedar" | "coral" | "co
 
 Values: `alloy`, `arbor`, `ash`, `ballad`, `breeze`, `cedar`, `coral`, `cove`, `echo`, `ember`, `juniper`, `maple`, `marin`, `sage`, `shimmer`, `sol`, `spruce`, `vale`, `verse`
 
-Source: `codex-rs/config/src/config_toml.rs:660`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:681`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ## Telemetry, history and storage
 
@@ -6212,9 +6308,9 @@ Type: `boolean` · Default: `false` · Status: undocumented
 
 > Allow macOS sandbox writable roots at or beneath CODEX_HOME to traverse symlinks. Read only from the host's user config at startup; defaults to false. This grants no write access by itself, but trusts symlink targets even if they change between commands or lie outside CODEX_HOME. This setting has no effect on Linux or Windows.
 >
-> — `codex-rs/config/src/config_toml.rs:229`
+> — `codex-rs/config/src/config_toml.rs:231`
 
-Source: `codex-rs/config/src/config_toml.rs:229`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:231`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `analytics`
 
@@ -6222,9 +6318,9 @@ Type: `table` · Default: `true` · Status: documented
 
 > When `false`, disables analytics across Codex product surfaces in this machine. Defaults to `true`.
 >
-> — `codex-rs/config/src/config_toml.rs:530`
+> — `codex-rs/config/src/config_toml.rs:532`
 
-Source: `codex-rs/config/src/config_toml.rs:530`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:532`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `analytics.enabled`
 
@@ -6234,7 +6330,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:227`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:228`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `check_for_update_on_startup`
 
@@ -6244,7 +6340,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:523`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:525`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `experimental_thread_store`
 
@@ -6252,11 +6348,11 @@ Type: `table` · Status: undocumented
 
 > Experimental / do not use. Selects the thread store implementation.
 >
-> — `codex-rs/config/src/config_toml.rs:466`
+> — `codex-rs/config/src/config_toml.rs:468`
 
 Values: `{ type = … }`
 
-Source: `codex-rs/config/src/config_toml.rs:466`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:468`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `experimental_thread_store.type`
 
@@ -6264,7 +6360,7 @@ Type: `"local"` · Status: undocumented
 
 Values: `local`
 
-Source: `codex-rs/config/src/config_toml.rs:563`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:565`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `feedback`
 
@@ -6272,9 +6368,9 @@ Type: `table` · Default: `true` · Status: documented
 
 > When `false`, disables feedback collection across Codex product surfaces. Defaults to `true`.
 >
-> — `codex-rs/config/src/config_toml.rs:534`
+> — `codex-rs/config/src/config_toml.rs:536`
 
-Source: `codex-rs/config/src/config_toml.rs:534`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:536`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `feedback.enabled`
 
@@ -6284,7 +6380,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:234`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:235`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `ghost_snapshot`
 
@@ -6292,9 +6388,9 @@ Type: `table` · Status: undocumented
 
 > Compatibility-only settings retained so legacy `ghost_snapshot` config still loads.
 >
-> — `codex-rs/config/src/config_toml.rs:513`
+> — `codex-rs/config/src/config_toml.rs:515`
 
-Source: `codex-rs/config/src/config_toml.rs:513`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:515`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `ghost_snapshot.disable_warnings`
 
@@ -6302,9 +6398,9 @@ Type: `boolean` · Status: deprecated or legacy (per source comment)
 
 > Legacy no-op setting retained for compatibility.
 >
-> — `codex-rs/config/src/config_toml.rs:790`
+> — `codex-rs/config/src/config_toml.rs:813`
 
-Source: `codex-rs/config/src/config_toml.rs:790`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:813`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `ghost_snapshot.ignore_large_untracked_dirs`
 
@@ -6312,9 +6408,9 @@ Type: `integer (int64)` · Status: deprecated or legacy (per source comment)
 
 > Legacy no-op setting retained for compatibility.
 >
-> — `codex-rs/config/src/config_toml.rs:788`
+> — `codex-rs/config/src/config_toml.rs:811`
 
-Source: `codex-rs/config/src/config_toml.rs:788`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:811`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `ghost_snapshot.ignore_large_untracked_files`
 
@@ -6322,9 +6418,9 @@ Type: `integer (int64)` · Status: deprecated or legacy (per source comment)
 
 > Legacy no-op setting retained for compatibility.
 >
-> — `codex-rs/config/src/config_toml.rs:785`
+> — `codex-rs/config/src/config_toml.rs:808`
 
-Source: `codex-rs/config/src/config_toml.rs:785`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:808`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `history`
 
@@ -6332,9 +6428,9 @@ Type: `table` · Default: `{"max_bytes": null, "persistence": "save-all"}` · St
 
 > Settings that govern if and what will be written to `~/.codex/history.jsonl`.
 >
-> — `codex-rs/config/src/config_toml.rs:365`
+> — `codex-rs/config/src/config_toml.rs:367`
 
-Source: `codex-rs/config/src/config_toml.rs:365`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:367`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `history.max_bytes`
 
@@ -6344,7 +6440,7 @@ Type: `integer (uint)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:207`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:208`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `history.persistence`
 
@@ -6358,7 +6454,7 @@ Values:
 - `save-all`: Save all history entries to disk.
 - `none`: Do not write history to disk.
 
-Source: `codex-rs/config/src/types.rs:203`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:204`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `log_dir`
 
@@ -6368,7 +6464,7 @@ Type: `string` · Default: `$CODEX_HOME/log` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:374`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:376`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel`
 
@@ -6376,9 +6472,9 @@ Type: `table` · Status: documented
 
 > OTEL configuration.
 >
-> — `codex-rs/config/src/config_toml.rs:545`
+> — `codex-rs/config/src/config_toml.rs:547`
 
-Source: `codex-rs/config/src/config_toml.rs:545`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:547`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample), [enterprise/managed-configuration](https://developers.openai.com/codex/enterprise/managed-configuration) · In binary: yes (generic match)
 
 ### `otel.environment`
 
@@ -6388,7 +6484,7 @@ Type: `string` · Default: `dev` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:613`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:614`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.exporter`
 
@@ -6400,13 +6496,13 @@ Type: `"none" | "statsig" | table` · Status: documented
 
 Values: `none`, `statsig`, `{ otlp-http = … }`, `{ otlp-grpc = … }`
 
-Source: `codex-rs/config/src/types.rs:616`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:617`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-grpc`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.exporter.otlp-grpc.endpoint`
 
@@ -6416,7 +6512,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:580`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:581`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-grpc.headers`
 
@@ -6426,19 +6522,19 @@ Type: `map<string, string>` · Default: `{}` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:582`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:583`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-grpc.headers.<key>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-grpc.tls`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:585`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:586`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-grpc.tls.ca-certificate`
 
@@ -6448,7 +6544,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:567`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.exporter.otlp-grpc.tls.client-certificate`
 
@@ -6458,7 +6554,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.exporter.otlp-grpc.tls.client-private-key`
 
@@ -6468,13 +6564,13 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:570`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.exporter.otlp-http`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.exporter.otlp-http.endpoint`
 
@@ -6484,7 +6580,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:580`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:581`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-http.headers`
 
@@ -6494,13 +6590,13 @@ Type: `map<string, string>` · Default: `{}` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:582`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:583`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-http.headers.<key>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-http.protocol`
 
@@ -6514,13 +6610,13 @@ Values:
 - `binary`: Binary payload
 - `json`: JSON payload
 
-Source: `codex-rs/config/src/types.rs:583`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:584`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-http.tls`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:585`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:586`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.exporter.otlp-http.tls.ca-certificate`
 
@@ -6530,7 +6626,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:567`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.exporter.otlp-http.tls.client-certificate`
 
@@ -6540,7 +6636,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.exporter.otlp-http.tls.client-private-key`
 
@@ -6550,7 +6646,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:570`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.log_agent_responses`
 
@@ -6558,9 +6654,9 @@ Type: `boolean` · Default: `false` · Status: undocumented
 
 > Opt in to logging final main-agent and spawned-subagent responses to an OTLP log exporter. Defaults to false. Response text can be sensitive and is capped at 64 KiB.
 >
-> — `codex-rs/config/src/types.rs:607`
+> — `codex-rs/config/src/types.rs:608`
 
-Source: `codex-rs/config/src/types.rs:607`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:608`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.log_guardian_assessments`
 
@@ -6568,9 +6664,9 @@ Type: `boolean` · Default: `false` · Status: undocumented
 
 > Opt in to logging completed Guardian assessments to an OTLP log exporter. Defaults to false. Rationales can be sensitive and are capped at 64 KiB.
 >
-> — `codex-rs/config/src/types.rs:610`
+> — `codex-rs/config/src/types.rs:611`
 
-Source: `codex-rs/config/src/types.rs:610`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:611`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.log_user_prompt`
 
@@ -6580,7 +6676,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:604`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:605`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.metrics_exporter`
 
@@ -6592,49 +6688,39 @@ Type: `"none" | "statsig" | table` · Default: `statsig` · Status: documented
 
 Values: `none`, `statsig`, `{ otlp-http = … }`, `{ otlp-grpc = … }`
 
-Source: `codex-rs/config/src/types.rs:622`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:623`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.metrics_exporter.otlp-grpc`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.metrics_exporter.otlp-grpc.endpoint`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:580`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:581`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.metrics_exporter.otlp-grpc.headers`
 
 Type: `map<string, string>` · Default: `{}` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:582`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:583`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.metrics_exporter.otlp-grpc.headers.<key>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.metrics_exporter.otlp-grpc.tls`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:585`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:586`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.metrics_exporter.otlp-grpc.tls.ca-certificate`
-
-Type: `string` · Status: undocumented
-
-> A path that is guaranteed to be absolute and normalized (though it is not guaranteed to be canonicalized or exist on the filesystem). IMPORTANT: When deserializing an `AbsolutePathBuf`, a base path must be set using [AbsolutePathBufGuard::new]. If no base path is set, the deserialization will fail unless the path being deserialized is already absolute.
->
-> — `codex-rs/config/src/types.rs:567`
-
-Source: `codex-rs/config/src/types.rs:567`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
-
-### `otel.metrics_exporter.otlp-grpc.tls.client-certificate`
 
 Type: `string` · Status: undocumented
 
@@ -6644,7 +6730,7 @@ Type: `string` · Status: undocumented
 
 Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
-### `otel.metrics_exporter.otlp-grpc.tls.client-private-key`
+### `otel.metrics_exporter.otlp-grpc.tls.client-certificate`
 
 Type: `string` · Status: undocumented
 
@@ -6654,29 +6740,39 @@ Type: `string` · Status: undocumented
 
 Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
+### `otel.metrics_exporter.otlp-grpc.tls.client-private-key`
+
+Type: `string` · Status: undocumented
+
+> A path that is guaranteed to be absolute and normalized (though it is not guaranteed to be canonicalized or exist on the filesystem). IMPORTANT: When deserializing an `AbsolutePathBuf`, a base path must be set using [AbsolutePathBufGuard::new]. If no base path is set, the deserialization will fail unless the path being deserialized is already absolute.
+>
+> — `codex-rs/config/src/types.rs:570`
+
+Source: `codex-rs/config/src/types.rs:570`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+
 ### `otel.metrics_exporter.otlp-http`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.metrics_exporter.otlp-http.endpoint`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:580`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:581`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.metrics_exporter.otlp-http.headers`
 
 Type: `map<string, string>` · Default: `{}` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:582`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:583`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.metrics_exporter.otlp-http.headers.<key>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.metrics_exporter.otlp-http.protocol`
 
@@ -6686,25 +6782,15 @@ Values:
 - `binary`: Binary payload
 - `json`: JSON payload
 
-Source: `codex-rs/config/src/types.rs:583`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:584`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.metrics_exporter.otlp-http.tls`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:585`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:586`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.metrics_exporter.otlp-http.tls.ca-certificate`
-
-Type: `string` · Status: undocumented
-
-> A path that is guaranteed to be absolute and normalized (though it is not guaranteed to be canonicalized or exist on the filesystem). IMPORTANT: When deserializing an `AbsolutePathBuf`, a base path must be set using [AbsolutePathBufGuard::new]. If no base path is set, the deserialization will fail unless the path being deserialized is already absolute.
->
-> — `codex-rs/config/src/types.rs:567`
-
-Source: `codex-rs/config/src/types.rs:567`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
-
-### `otel.metrics_exporter.otlp-http.tls.client-certificate`
 
 Type: `string` · Status: undocumented
 
@@ -6714,7 +6800,7 @@ Type: `string` · Status: undocumented
 
 Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
-### `otel.metrics_exporter.otlp-http.tls.client-private-key`
+### `otel.metrics_exporter.otlp-http.tls.client-certificate`
 
 Type: `string` · Status: undocumented
 
@@ -6724,21 +6810,31 @@ Type: `string` · Status: undocumented
 
 Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
+### `otel.metrics_exporter.otlp-http.tls.client-private-key`
+
+Type: `string` · Status: undocumented
+
+> A path that is guaranteed to be absolute and normalized (though it is not guaranteed to be canonicalized or exist on the filesystem). IMPORTANT: When deserializing an `AbsolutePathBuf`, a base path must be set using [AbsolutePathBufGuard::new]. If no base path is set, the deserialization will fail unless the path being deserialized is already absolute.
+>
+> — `codex-rs/config/src/types.rs:570`
+
+Source: `codex-rs/config/src/types.rs:570`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+
 ### `otel.span_attributes`
 
 Type: `map<string, string>` · Status: undocumented
 
 > Attributes to add to every exported trace span.
 >
-> — `codex-rs/config/src/types.rs:625`
+> — `codex-rs/config/src/types.rs:626`
 
-Source: `codex-rs/config/src/types.rs:625`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:626`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.span_attributes.<key>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:599`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:600`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.tool_result`
 
@@ -6746,9 +6842,9 @@ Type: `table` · Default: `{"max_bytes": 2048}` · Status: undocumented
 
 > Byte limit for tool-result log output; independent of model-visible output.
 >
-> — `codex-rs/config/src/types.rs:602`
+> — `codex-rs/config/src/types.rs:603`
 
-Source: `codex-rs/config/src/types.rs:602`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:603`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.tool_result.max_bytes`
 
@@ -6770,13 +6866,13 @@ Type: `"none" | "statsig" | table` · Status: documented
 
 Values: `none`, `statsig`, `{ otlp-http = … }`, `{ otlp-grpc = … }`
 
-Source: `codex-rs/config/src/types.rs:619`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:620`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.trace_exporter.otlp-grpc`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.trace_exporter.otlp-grpc.endpoint`
 
@@ -6786,7 +6882,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:580`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:581`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.trace_exporter.otlp-grpc.headers`
 
@@ -6796,19 +6892,19 @@ Type: `map<string, string>` · Default: `{}` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:582`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:583`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.trace_exporter.otlp-grpc.headers.<key>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.trace_exporter.otlp-grpc.tls`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:585`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:586`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.trace_exporter.otlp-grpc.tls.ca-certificate`
 
@@ -6818,7 +6914,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:567`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.trace_exporter.otlp-grpc.tls.client-certificate`
 
@@ -6828,7 +6924,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.trace_exporter.otlp-grpc.tls.client-private-key`
 
@@ -6838,13 +6934,13 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:570`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.trace_exporter.otlp-http`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `otel.trace_exporter.otlp-http.endpoint`
 
@@ -6854,7 +6950,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:580`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:581`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.trace_exporter.otlp-http.headers`
 
@@ -6864,13 +6960,13 @@ Type: `map<string, string>` · Default: `{}` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:582`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:583`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.trace_exporter.otlp-http.headers.<key>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:576`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:577`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.trace_exporter.otlp-http.protocol`
 
@@ -6884,13 +6980,13 @@ Values:
 - `binary`: Binary payload
 - `json`: JSON payload
 
-Source: `codex-rs/config/src/types.rs:583`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:584`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `otel.trace_exporter.otlp-http.tls`
 
 Type: `table` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:585`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:586`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.trace_exporter.otlp-http.tls.ca-certificate`
 
@@ -6900,7 +6996,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:567`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.trace_exporter.otlp-http.tls.client-certificate`
 
@@ -6910,7 +7006,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:568`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.trace_exporter.otlp-http.tls.client-private-key`
 
@@ -6920,7 +7016,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:569`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:570`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `otel.tracestate`
 
@@ -6928,21 +7024,21 @@ Type: `map<string, map<string, string>>` · Status: undocumented
 
 > Semicolon-separated `key:value` fields to upsert into W3C tracestate members.
 >
-> — `codex-rs/config/src/types.rs:628`
+> — `codex-rs/config/src/types.rs:629`
 
-Source: `codex-rs/config/src/types.rs:628`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:629`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.tracestate.<key>`
 
 Type: `map<string, string>` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:599`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:600`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `otel.tracestate.<key>.<key>`
 
 Type: `string` · Status: undocumented
 
-Source: `codex-rs/config/src/types.rs:599`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:600`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `sqlite_home`
 
@@ -6952,7 +7048,7 @@ Type: `string` · Default: ``$CODEX_SQLITE_HOME` when set`` · Status: documente
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:369`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:371`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `thread_unload_delay_secs`
 
@@ -6960,9 +7056,9 @@ Type: `integer (uint64)` · Default: `60` · Status: undocumented
 
 > Seconds a thread must have no subscribers and no activity before app-server unloads it. Defaults to 60; zero unloads immediately. Changes require a server restart.
 >
-> — `codex-rs/config/src/config_toml.rs:346`
+> — `codex-rs/config/src/config_toml.rs:348`
 
-Source: `codex-rs/config/src/config_toml.rs:346`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:348`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ## Desktop and terminal UI
 
@@ -6972,9 +7068,9 @@ Type: `table` · Status: documented
 
 > Opaque desktop settings stored alongside the rest of config.toml.
 >
-> — `codex-rs/config/src/config_toml.rs:542`
+> — `codex-rs/config/src/config_toml.rs:544`
 
-Source: `codex-rs/config/src/config_toml.rs:542`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:544`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-advanced](https://developers.openai.com/codex/config-file/config-advanced) · In binary: yes (generic match)
 
 ### `desktop.custom_file_handlers.<id>`
 
@@ -6998,11 +7094,11 @@ Type: `array<string>` · Status: documented; CLI schema leaves `desktop` opaque 
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Config struct field with this name: `codex-rs/config/src/mcp_types.rs:381`
+Config struct field with this name: `codex-rs/config/src/mcp_types.rs:371`
 
 Binary check (`--strict-config`): inconclusive: `desktop` is an opaque table in this build, so any key loads
 
-Source: `codex-rs/config/src/mcp_types.rs:381`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/mcp_types.rs:371`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `desktop.custom_file_handlers.<id>.command`
 
@@ -7082,7 +7178,7 @@ Type: `boolean` · Status: deprecated or legacy (per source comment)
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:526`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:528`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `file_opener`
 
@@ -7099,7 +7195,7 @@ Values:
 - `cursor`
 - `none`: Option to disable the URI-based file opener.
 
-Source: `codex-rs/config/src/config_toml.rs:378`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:380`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `hide_agent_reasoning`
 
@@ -7109,7 +7205,7 @@ Type: `boolean` · Default: `false` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:386`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:388`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `notice`
 
@@ -7117,9 +7213,9 @@ Type: `table` · Status: documented
 
 > Collection of in-product notices (different from notifications) See [`crate::types::Notice`] for more details
 >
-> — `codex-rs/config/src/config_toml.rs:553`
+> — `codex-rs/config/src/config_toml.rs:555`
 
-Source: `codex-rs/config/src/config_toml.rs:553`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:555`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `notice.external_config_migration_prompts`
 
@@ -7127,9 +7223,9 @@ Type: `table` · Default: `{"home": null, "home_last_prompted_at": null, "projec
 
 > Tracks scopes where external config migration prompts should be suppressed.
 >
-> — `codex-rs/config/src/types.rs:995`
+> — `codex-rs/config/src/types.rs:996`
 
-Source: `codex-rs/config/src/types.rs:995`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:996`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `notice.external_config_migration_prompts.home`
 
@@ -7137,9 +7233,9 @@ Type: `boolean` · Status: internal state · When: internal state written by Cod
 
 > Tracks whether home-level external config migration prompts are hidden.
 >
-> — `codex-rs/config/src/types.rs:963`
+> — `codex-rs/config/src/types.rs:964`
 
-Source: `codex-rs/config/src/types.rs:963`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:964`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `notice.external_config_migration_prompts.home_last_prompted_at`
 
@@ -7147,9 +7243,9 @@ Type: `integer (int64)` · Status: internal state · When: internal state writte
 
 > Tracks the last time the home-level external config migration prompt was shown.
 >
-> — `codex-rs/config/src/types.rs:965`
+> — `codex-rs/config/src/types.rs:966`
 
-Source: `codex-rs/config/src/types.rs:965`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:966`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `notice.external_config_migration_prompts.project_last_prompted_at`
 
@@ -7157,15 +7253,15 @@ Type: `map<string, integer (int64)>` · Default: `{}` · Status: internal state 
 
 > Tracks the last time a project-level external config migration prompt was shown.
 >
-> — `codex-rs/config/src/types.rs:971`
+> — `codex-rs/config/src/types.rs:972`
 
-Source: `codex-rs/config/src/types.rs:971`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:972`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `notice.external_config_migration_prompts.project_last_prompted_at.<key>`
 
 Type: `integer (int64)` · Status: internal state · When: internal state written by Codex/ChatGPT
 
-Source: `codex-rs/config/src/types.rs:961`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:962`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `notice.external_config_migration_prompts.projects`
 
@@ -7173,15 +7269,15 @@ Type: `map<string, boolean>` · Default: `{}` · Status: internal state · When:
 
 > Tracks which project paths have opted out of external config migration prompts.
 >
-> — `codex-rs/config/src/types.rs:968`
+> — `codex-rs/config/src/types.rs:969`
 
-Source: `codex-rs/config/src/types.rs:968`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:969`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `notice.external_config_migration_prompts.projects.<path>`
 
 Type: `boolean` · Status: internal state · When: internal state written by Codex/ChatGPT
 
-Source: `codex-rs/config/src/types.rs:961`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:962`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `notice.fast_default_opt_out`
 
@@ -7189,9 +7285,9 @@ Type: `boolean` · Status: internal state · When: internal state written by Cod
 
 > Tracks whether the user opted out of Codex-managed fast defaults.
 >
-> — `codex-rs/config/src/types.rs:982`
+> — `codex-rs/config/src/types.rs:983`
 
-Source: `codex-rs/config/src/types.rs:982`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:983`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `notice.hide_full_access_warning`
 
@@ -7201,7 +7297,7 @@ Type: `boolean` · Status: internal state · When: internal state written by Cod
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:978`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:979`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `notice.hide_gpt-5.1-codex-max_migration_prompt`
 
@@ -7211,7 +7307,7 @@ Type: `boolean` · Status: internal state · When: internal state written by Cod
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:989`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:990`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `notice.hide_gpt5_1_migration_prompt`
 
@@ -7221,7 +7317,7 @@ Type: `boolean` · Status: internal state · When: internal state written by Cod
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:986`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:987`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `notice.hide_rate_limit_model_nudge`
 
@@ -7231,7 +7327,7 @@ Type: `boolean` · Status: internal state · When: internal state written by Cod
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:984`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:985`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `notice.hide_world_writable_warning`
 
@@ -7241,7 +7337,7 @@ Type: `boolean` · Status: internal state · When: internal state written by Cod
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:980`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:981`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `notice.model_migrations`
 
@@ -7251,13 +7347,13 @@ Type: `map<string, string>` · Default: `{}` · Status: internal state · When: 
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:992`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:993`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `notice.model_migrations.<key>`
 
 Type: `string` · Status: internal state · When: internal state written by Codex/ChatGPT
 
-Source: `codex-rs/config/src/types.rs:976`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:977`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `show_raw_agent_reasoning`
 
@@ -7267,7 +7363,7 @@ Type: `boolean` · Default: `false` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:390`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:392`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `suppress_unstable_features_warning`
 
@@ -7277,7 +7373,7 @@ Type: `boolean` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:508`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:510`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui`
 
@@ -7287,7 +7383,7 @@ Type: `table` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_toml.rs:381`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:383`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.alternate_screen`
 
@@ -7302,7 +7398,7 @@ Values:
 - `always`: Always use alternate screen mode.
 - `never`: Never use alternate screen (inline mode only).
 
-Source: `codex-rs/config/src/types.rs:882`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:883`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.animations`
 
@@ -7312,7 +7408,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:810`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:811`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.auto_recap`
 
@@ -7320,9 +7416,9 @@ Type: `boolean` · Default: `true` · Status: undocumented
 
 > Generate automatic conversation recaps when the terminal is unfocused. Defaults to `true`. Disabling this leaves `/recap` available on demand.
 >
-> — `codex-rs/config/src/types.rs:836`
+> — `codex-rs/config/src/types.rs:837`
 
-Source: `codex-rs/config/src/types.rs:836`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:837`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.copy_on_select`
 
@@ -7330,7 +7426,7 @@ Type: `"auto" | "always" | "never"` · Default: `"auto"` · Status: undocumented
 
 > Copy selected transcript text when the mouse button is released. Defaults to `auto`: enabled except in direct terminals known to forward their native copy shortcut (Ghostty 1.2+, Kitty on macOS, Windows Terminal, and VS Code on Windows). Unknown terminals, Ghostty without a recognized version, and tmux/Zellij default to copying.
 >
-> — `codex-rs/config/src/types.rs:868`
+> — `codex-rs/config/src/types.rs:869`
 
 Values:
 - `auto`: Use the terminal-specific default.
@@ -7339,7 +7435,7 @@ Values:
 
 Default sources: `"auto"` (schema default); ``auto`: enabled except in direct terminals known to forward their native copy sho`` (stated in source doc comment)
 
-Source: `codex-rs/config/src/types.rs:868`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:869`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.disable_paste_burst`
 
@@ -7347,9 +7443,9 @@ Type: `boolean` · Default: `false` · Status: undocumented
 
 > When true, disables burst-paste detection for typed input entirely. All characters are inserted as they are received, and no buffering or placeholder replacement will occur for fast keypress bursts. Overrides the legacy top-level `disable_paste_burst` setting. Defaults to `false`.
 >
-> — `codex-rs/config/src/types.rs:842`
+> — `codex-rs/config/src/types.rs:843`
 
-Source: `codex-rs/config/src/types.rs:842`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:843`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.effects`
 
@@ -7357,9 +7453,9 @@ Type: `table` · Default: `{"effort": true, "progress": true, "shimmer": true, "
 
 > Individual visual effects. Each also requires animations to be enabled.
 >
-> — `codex-rs/config/src/types.rs:817`
+> — `codex-rs/config/src/types.rs:818`
 
-Source: `codex-rs/config/src/types.rs:817`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:818`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tui.effects.effort`
 
@@ -7427,9 +7523,9 @@ Type: `boolean` · Default: `true` · Status: undocumented
 
 > Own the fullscreen transcript, including scrolling, selection, and search. Defaults to `true`; alternate-screen restrictions take precedence.
 >
-> — `codex-rs/config/src/types.rs:861`
+> — `codex-rs/config/src/types.rs:862`
 
-Source: `codex-rs/config/src/types.rs:861`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:862`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.model_availability_nux`
 
@@ -7437,9 +7533,9 @@ Type: `map<string, integer (uint32)>` · Default: `{}` · Status: documented
 
 > Startup tooltip availability NUX state persisted by the TUI.
 >
-> — `codex-rs/config/src/types.rs:942`
+> — `codex-rs/config/src/types.rs:943`
 
-Source: `codex-rs/config/src/types.rs:942`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:943`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (distinctive match)
 
 ### `tui.model_availability_nux.<key>`
 
@@ -7449,7 +7545,7 @@ Type: `integer (uint32)` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:791`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:792`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.notification_condition`
 
@@ -7465,7 +7561,7 @@ Values:
 
 Default sources: `"unfocused"` (schema default); `unfocused` (stated in docs); `unfocused` (stated in source doc comment)
 
-Source: `codex-rs/config/src/types.rs:803`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:804`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.notification_method`
 
@@ -7479,7 +7575,7 @@ Values: `auto`, `osc9`, `bel`
 
 Default sources: `"auto"` (schema default); `auto` (stated in source doc comment)
 
-Source: `codex-rs/config/src/types.rs:803`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:804`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.notifications`
 
@@ -7489,7 +7585,7 @@ Type: `boolean | array<string>` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:803`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:804`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.pet`
 
@@ -7497,9 +7593,9 @@ Type: `string` · Status: undocumented
 
 > Pet id to preselect in the terminal pet picker. Custom pet ids resolve against CODEX_HOME/pets/<pet-id>/pet.json.
 >
-> — `codex-rs/config/src/types.rs:916`
+> — `codex-rs/config/src/types.rs:917`
 
-Source: `codex-rs/config/src/types.rs:916`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:917`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tui.pet_anchor`
 
@@ -7507,7 +7603,7 @@ Type: `"composer" | "screen-bottom"` · Default: `"composer"` · Status: undocum
 
 > Where the terminal pet should anchor vertically. Defaults to `composer`, which follows the current TUI composer viewport.
 >
-> — `codex-rs/config/src/types.rs:922`
+> — `codex-rs/config/src/types.rs:923`
 
 Values:
 - `composer`: Anchor the pet to the bottom of the current TUI composer viewport.
@@ -7515,7 +7611,7 @@ Values:
 
 Default sources: `"composer"` (schema default); ``composer`, which follows the current TUI composer viewport`` (stated in source doc comment)
 
-Source: `codex-rs/config/src/types.rs:922`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:923`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.question_esc_back`
 
@@ -7523,9 +7619,9 @@ Type: `boolean` · Default: `true` · Status: undocumented
 
 > Escape returns from async questions to the composer, preserving the answer draft.
 >
-> — `codex-rs/config/src/types.rs:851`
+> — `codex-rs/config/src/types.rs:852`
 
-Source: `codex-rs/config/src/types.rs:851`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:852`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.raw_output_mode`
 
@@ -7535,7 +7631,7 @@ Type: `boolean` · Default: `false` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:856`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:857`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.rendering`
 
@@ -7543,9 +7639,9 @@ Type: `table` · Default: `{"lists": true, "math": true, "mermaid": true, "table
 
 > Rich content rendering. Independent of animations and visual effects.
 >
-> — `codex-rs/config/src/types.rs:821`
+> — `codex-rs/config/src/types.rs:822`
 
-Source: `codex-rs/config/src/types.rs:821`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:822`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tui.rendering.lists`
 
@@ -7599,7 +7695,7 @@ Values:
 - `current`: Use the directory where Codex was launched.
 - `session`: Use the latest working directory recorded in the selected session.
 
-Source: `codex-rs/config/src/types.rs:931`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:932`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.right_click_paste`
 
@@ -7607,7 +7703,7 @@ Type: `"auto" | "on" | "off"` · Default: `"auto"` · Status: undocumented
 
 > Right-click text paste fallback. Defaults to `auto` (Windows/WSL/Linux). `on` also enables macOS; neither mode reads over SSH or in recognized VS Code terminals. This controls the fullscreen fallback, not the terminal's own paste binding.
 >
-> — `codex-rs/config/src/types.rs:874`
+> — `codex-rs/config/src/types.rs:875`
 
 Values:
 - `auto`: Enable on Windows/WSL/Linux, except recognized terminal-owned paste paths.
@@ -7616,7 +7712,7 @@ Values:
 
 Default sources: `"auto"` (schema default); ``auto` (Windows/WSL/Linux`` (stated in source doc comment)
 
-Source: `codex-rs/config/src/types.rs:874`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:875`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.screen_reader_detection_done`
 
@@ -7624,9 +7720,9 @@ Type: `boolean` · Status: undocumented
 
 > Records the one-time screen-reader detection attempt. Either value skips detection.
 >
-> — `codex-rs/config/src/types.rs:813`
+> — `codex-rs/config/src/types.rs:814`
 
-Source: `codex-rs/config/src/types.rs:813`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:814`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.session_picker_view`
 
@@ -7634,11 +7730,11 @@ Type: `"comfortable" | "dense"` · Status: undocumented
 
 > Preferred layout for resume/fork session picker results.
 >
-> — `codex-rs/config/src/types.rs:926`
+> — `codex-rs/config/src/types.rs:927`
 
 Values: `comfortable`, `dense`
 
-Source: `codex-rs/config/src/types.rs:926`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:927`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.show_server_version_notice`
 
@@ -7646,9 +7742,9 @@ Type: `boolean` · Default: `true` · Status: undocumented
 
 > Show informational notices about connected app server version differences. Defaults to `true`; this does not control compatibility errors or version status.
 >
-> — `codex-rs/config/src/types.rs:831`
+> — `codex-rs/config/src/types.rs:832`
 
-Source: `codex-rs/config/src/types.rs:831`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:832`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.show_tooltips`
 
@@ -7658,7 +7754,7 @@ Type: `boolean` · Default: `true` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:826`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:827`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.status_line`
 
@@ -7668,7 +7764,7 @@ Type: `array<string>` · Default: ``model-with-reasoning`, `current-dir`, and `t
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:889`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:890`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.status_line_use_colors`
 
@@ -7676,9 +7772,9 @@ Type: `boolean` · Default: `true` · Status: undocumented
 
 > Color status line items with colors derived from the active syntax theme. Defaults to `true`.
 >
-> — `codex-rs/config/src/types.rs:894`
+> — `codex-rs/config/src/types.rs:895`
 
-Source: `codex-rs/config/src/types.rs:894`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:895`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.terminal_resize_reflow_max_rows`
 
@@ -7686,9 +7782,9 @@ Type: `integer (uint)` · Status: undocumented
 
 > Trim terminal resize-reflow replay to the most recent rendered terminal rows when the transcript exceeds this cap. Omit to use Codex's terminal-specific default. Set to `0` to keep all rendered rows.
 >
-> — `codex-rs/config/src/types.rs:949`
+> — `codex-rs/config/src/types.rs:950`
 
-Source: `codex-rs/config/src/types.rs:949`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:950`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.terminal_title`
 
@@ -7700,7 +7796,7 @@ Type: `array<string>` · Default: `["spinner", "project"]` · Status: documented
 
 Default sources: `["spinner", "project"]` (stated in docs); ``activity`, `thread-name`, and `project-name`` (stated in source doc comment)
 
-Source: `codex-rs/config/src/types.rs:903`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:904`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.theme`
 
@@ -7710,7 +7806,7 @@ Type: `string` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:910`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:911`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.vim_mode_default`
 
@@ -7720,7 +7816,7 @@ Type: `boolean` · Default: `false` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/types.rs:847`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:848`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ## Other settings
 
@@ -7730,9 +7826,9 @@ Type: `table` · Status: undocumented
 
 > Cloud-owned feature settings.
 >
-> — `codex-rs/config/src/config_toml.rs:422`
+> — `codex-rs/config/src/config_toml.rs:424`
 
-Source: `codex-rs/config/src/config_toml.rs:422`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:424`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `cloud.skills`
 
@@ -7750,37 +7846,47 @@ Type: `boolean` · Status: undocumented
 
 Source: `codex-rs/config/src/config_toml.rs:160`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
+### `daybreak`
+
+Type: `boolean` · Status: undocumented
+
+> Default Daybreak preference for new threads and non-interactive turns.
+>
+> — `codex-rs/config/src/config_toml.rs:170`
+
+Source: `codex-rs/config/src/config_toml.rs:170`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+
 ### `model_post_turn_compact_threshold_percent`
 
 Type: `integer (uint8)` · Status: undocumented
 
 > Percentage of the usable context window that triggers compaction after a final response. Existing auto-compaction limits still apply. Omitted or zero disables turn-end compaction; valid values are 0–100.
 >
-> — `codex-rs/config/src/config_toml.rs:189`
+> — `codex-rs/config/src/config_toml.rs:191`
 
-Source: `codex-rs/config/src/config_toml.rs:189`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:191`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ## Terminal UI keymap
 
 ### `tui.keymap`
 
-Type: `table` · Default: `{"agents": {"archive": null, "delete": null, "hide": null, "new_task": null, "new_worktree": null, "rename": null, "resume": null, "search": null, "stop": null, "toggle_grouping": null}, "approval": {"approve": null, "approve_for_prefix": null, "approve_for_session": null, "cancel": null, "decline": null, "deny": null, "open_fullscreen": null, "open_thread": null}, "chat": {"decrease_reasoning_effort": null, "edit_queued_message": null, "increase_reasoning_effort": null, "interrupt_turn": null, "next_permission_mode": null, "previous_permission_mode": null, "prompt_stack_back": null, "skip_question": null, "toggle_voice": null, "toggle_voice_mute": null}, "composer": {"history_search_next": null, "history_search_previous": null, "queue": null, "submit": null, "toggle_shortcuts": null}, "editor": {"delete_backward": null, "delete_backward_word": null, "delete_forward": null, "delete_forward_word": null, "insert_newline": null, "kill_line_end": null, "kill_line_start": null, "kill_whole_line": null, "move_down": null, "move_left": null, "move_line_end": null, "move_line_start": null, "move_right": null, "move_up": null, "move_word_left": null, "move_word_right": null, "yank": null}, "global": {"clear_terminal": null, "copy": null, "find_transcript": null, "focus_activity": null, "open_agents": null, "open_external_editor": null, "open_transcript": null, "queue": null, "submit": null, "toggle_fast_mode": null, "toggle_raw_output": null, "toggle_shortcuts": null, "toggle_side_conversation": null, "toggle_vim_mode": null}, "list": {"accept": null, "cancel": null, "jump_bottom": null, "jump_top": null, "move_down": null, "move_left": null, "move_right": null, "move_up": null, "page_down": null, "page_up": null}, "pager": {"close": null, "close_transcript": null, "find": null, "half_page_down": null, "half_page_up": null, "jump_bottom": null, "jump_top": null, "page_down": null, "page_up": null, "scroll_down": null, "scroll_up": null}, "vim_normal": {"append_after_cursor": null, "append_line_end": null, "cancel_operator": null, "change_to_line_end": null, "delete_char": null, "delete_to_line_end": null, "enter_insert": null, "enter_replace_mode": null, "find_backward": null, "find_forward": null, "insert_line_start": null, "jump_bottom": null, "jump_top": null, "move_down": null, "move_left": null, "move_line_end": null, "move_line_start": null, "move_right": null, "move_up": null, "move_word_backward": null, "move_word_end": null, "move_word_forward": null, "open_line_above": null, "open_line_below": null, "paste_after": null, "redo": null, "repeat_last_change": null, "replace_char": null, "start_change_operator": null, "start_delete_operator": null, "start_yank_operator": null, "substitute_char": null, "till_backward": null, "till_forward": null, "undo": null, "yank_line": null}, "vim_operator": {"cancel": null, "delete_line": null, "motion_down": null, "motion_find_backward": null, "motion_find_forward": null, "motion_jump_bottom": null, "motion_jump_top": null, "motion_left": null, "motion_line_end": null, "motion_line_start": null, "motion_right": null, "motion_till_backward": null, "motion_till_forward": null, "motion_up": null, "motion_word_backward": null, "motion_word_end": null, "motion_word_forward": null, "select_around_text_object": null, "select_inner_text_object": null, "yank_line": null}, "vim_search": {"backward": null, "forward": null, "next": null, "previous": null}, "vim_text_object": {"backtick": null, "big_word": null, "braces": null, "brackets": null, "cancel": null, "double_quote": null, "parentheses": null, "single_quote": null, "word": null}}` · Status: documented
+Type: `table` · Default: `{"agents": {"archive": null, "delete": null, "fork": null, "hide": null, "new_task": null, "new_worktree": null, "rename": null, "resume": null, "search": null, "stop": null, "toggle_grouping": null}, "approval": {"approve": null, "approve_for_prefix": null, "approve_for_session": null, "cancel": null, "decline": null, "deny": null, "open_fullscreen": null, "open_thread": null}, "chat": {"decrease_reasoning_effort": null, "edit_queued_message": null, "increase_reasoning_effort": null, "interrupt_turn": null, "next_permission_mode": null, "previous_permission_mode": null, "prompt_stack_back": null, "skip_question": null, "toggle_voice": null, "toggle_voice_mute": null}, "composer": {"history_search_next": null, "history_search_previous": null, "queue": null, "submit": null, "toggle_shortcuts": null}, "editor": {"delete_backward": null, "delete_backward_word": null, "delete_forward": null, "delete_forward_word": null, "insert_newline": null, "kill_line_end": null, "kill_line_start": null, "kill_whole_line": null, "move_down": null, "move_left": null, "move_line_end": null, "move_line_start": null, "move_right": null, "move_up": null, "move_word_left": null, "move_word_right": null, "yank": null}, "global": {"clear_terminal": null, "copy": null, "find_transcript": null, "focus_activity": null, "open_agents": null, "open_external_editor": null, "open_transcript": null, "queue": null, "submit": null, "toggle_fast_mode": null, "toggle_raw_output": null, "toggle_shortcuts": null, "toggle_side_conversation": null, "toggle_vim_mode": null}, "list": {"accept": null, "cancel": null, "jump_bottom": null, "jump_top": null, "move_down": null, "move_left": null, "move_right": null, "move_up": null, "page_down": null, "page_up": null}, "pager": {"close": null, "close_transcript": null, "find": null, "half_page_down": null, "half_page_up": null, "jump_bottom": null, "jump_top": null, "page_down": null, "page_up": null, "scroll_down": null, "scroll_up": null}, "vim_normal": {"append_after_cursor": null, "append_line_end": null, "cancel_operator": null, "change_to_line_end": null, "delete_char": null, "delete_to_line_end": null, "enter_insert": null, "enter_replace_mode": null, "find_backward": null, "find_forward": null, "insert_line_start": null, "jump_bottom": null, "jump_top": null, "move_down": null, "move_left": null, "move_line_end": null, "move_line_start": null, "move_right": null, "move_up": null, "move_word_backward": null, "move_word_end": null, "move_word_forward": null, "open_line_above": null, "open_line_below": null, "paste_after": null, "redo": null, "repeat_last_change": null, "replace_char": null, "start_change_operator": null, "start_delete_operator": null, "start_yank_operator": null, "substitute_char": null, "till_backward": null, "till_forward": null, "undo": null, "yank_line": null}, "vim_operator": {"cancel": null, "delete_line": null, "motion_down": null, "motion_find_backward": null, "motion_find_forward": null, "motion_jump_bottom": null, "motion_jump_top": null, "motion_left": null, "motion_line_end": null, "motion_line_start": null, "motion_right": null, "motion_till_backward": null, "motion_till_forward": null, "motion_up": null, "motion_word_backward": null, "motion_word_end": null, "motion_word_forward": null, "select_around_text_object": null, "select_inner_text_object": null, "yank_line": null}, "vim_search": {"backward": null, "forward": null, "next": null, "previous": null}, "vim_text_object": {"backtick": null, "big_word": null, "braces": null, "brackets": null, "cancel": null, "double_quote": null, "parentheses": null, "single_quote": null, "word": null}}` · Status: documented
 
 > Keybinding overrides for the TUI. This supports rebinding selected actions globally and by context. Context bindings take precedence over `global` bindings.
 >
-> — `codex-rs/config/src/types.rs:938`
+> — `codex-rs/config/src/types.rs:939`
 
-Source: `codex-rs/config/src/types.rs:938`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/types.rs:939`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `tui.keymap.agents`
 
-Type: `table` · Default: `{"archive": null, "delete": null, "hide": null, "new_task": null, "new_worktree": null, "rename": null, "resume": null, "search": null, "stop": null, "toggle_grouping": null}` · Status: undocumented
+Type: `table` · Default: `{"archive": null, "delete": null, "fork": null, "hide": null, "new_task": null, "new_worktree": null, "rename": null, "resume": null, "search": null, "stop": null, "toggle_grouping": null}` · Status: undocumented
 
 > Shortcuts specific to the shared agents overview.
 >
-> — `codex-rs/config/src/tui_keymap.rs:524`
+> — `codex-rs/config/src/tui_keymap.rs:568`
 
-Source: `codex-rs/config/src/tui_keymap.rs:524`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:568`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tui.keymap.agents.archive`
 
@@ -7790,7 +7896,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:457`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:501`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.agents.delete`
 
@@ -7800,7 +7906,17 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:459`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:503`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+
+### `tui.keymap.agents.fork`
+
+Type: `string | array<string>` · Status: documented
+
+> Keyboard shortcut binding for a TUI action. Supported contexts include `global`, `chat`, `composer`, `editor`, `vim_normal`, `vim_operator`, `vim_text_object`, `pager`, `list`, and `approval`. Selected composer actions fall back to matching `tui.keymap.global` bindings; context-specific bindings take precedence when supported.
+>
+> — [docs](https://developers.openai.com/codex/config-file/config-reference)
+
+Source: `codex-rs/config/src/tui_keymap.rs:495`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.agents.hide`
 
@@ -7810,7 +7926,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:461`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:505`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.agents.new_task`
 
@@ -7820,7 +7936,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:449`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:491`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.agents.new_worktree`
 
@@ -7830,7 +7946,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:451`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:493`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.agents.rename`
 
@@ -7840,7 +7956,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:453`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:497`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.agents.resume`
 
@@ -7850,7 +7966,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:445`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:487`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.agents.search`
 
@@ -7860,7 +7976,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:447`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:489`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.agents.stop`
 
@@ -7870,7 +7986,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:455`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:499`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.agents.toggle_grouping`
 
@@ -7880,7 +7996,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:463`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:507`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.approval`
 
@@ -7888,9 +8004,9 @@ Type: `table` · Default: `{"approve": null, "approve_for_prefix": null, "approv
 
 > Approval overlay keybindings.
 >
-> — `codex-rs/config/src/tui_keymap.rs:526`
+> — `codex-rs/config/src/tui_keymap.rs:570`
 
-Source: `codex-rs/config/src/tui_keymap.rs:526`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:570`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tui.keymap.approval.approve`
 
@@ -7900,7 +8016,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:476`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:520`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.approval.approve_for_prefix`
 
@@ -7910,7 +8026,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:480`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:524`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.approval.approve_for_session`
 
@@ -7920,7 +8036,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:478`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:522`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.approval.cancel`
 
@@ -7930,7 +8046,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:486`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:530`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.approval.decline`
 
@@ -7940,7 +8056,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:484`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:528`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.approval.deny`
 
@@ -7950,7 +8066,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:482`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:526`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.approval.open_fullscreen`
 
@@ -7960,7 +8076,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:472`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:516`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.approval.open_thread`
 
@@ -7970,7 +8086,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:474`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:518`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat`
 
@@ -7978,9 +8094,9 @@ Type: `table` · Default: `{"decrease_reasoning_effort": null, "edit_queued_mess
 
 > Chat context keybindings.
 >
-> — `codex-rs/config/src/tui_keymap.rs:506`
+> — `codex-rs/config/src/tui_keymap.rs:550`
 
-Source: `codex-rs/config/src/tui_keymap.rs:506`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:550`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `tui.keymap.chat.decrease_reasoning_effort`
 
@@ -7990,7 +8106,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:137`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:179`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat.edit_queued_message`
 
@@ -8000,7 +8116,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:145`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:187`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat.increase_reasoning_effort`
 
@@ -8010,7 +8126,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:139`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:181`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat.interrupt_turn`
 
@@ -8020,7 +8136,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:135`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:177`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat.next_permission_mode`
 
@@ -8030,7 +8146,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:143`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:185`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat.previous_permission_mode`
 
@@ -8040,7 +8156,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:141`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:183`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat.prompt_stack_back`
 
@@ -8050,7 +8166,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:147`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:189`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat.skip_question`
 
@@ -8060,7 +8176,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:149`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:191`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat.toggle_voice`
 
@@ -8070,7 +8186,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:131`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:173`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.chat.toggle_voice_mute`
 
@@ -8080,7 +8196,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:133`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:175`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.composer`
 
@@ -8088,9 +8204,9 @@ Type: `table` · Default: `{"history_search_next": null, "history_search_previou
 
 > Composer context keybindings. These override corresponding `global` actions.
 >
-> — `codex-rs/config/src/tui_keymap.rs:508`
+> — `codex-rs/config/src/tui_keymap.rs:552`
 
-Source: `codex-rs/config/src/tui_keymap.rs:508`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:552`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `tui.keymap.composer.history_search_next`
 
@@ -8100,7 +8216,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:166`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:208`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.composer.history_search_previous`
 
@@ -8110,7 +8226,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:164`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:206`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.composer.queue`
 
@@ -8120,7 +8236,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:160`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:202`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.composer.submit`
 
@@ -8130,7 +8246,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:158`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:200`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.composer.toggle_shortcuts`
 
@@ -8140,7 +8256,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:162`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:204`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor`
 
@@ -8148,9 +8264,9 @@ Type: `table` · Default: `{"delete_backward": null, "delete_backward_word": nul
 
 > Editor context keybindings for text editing inside text areas.
 >
-> — `codex-rs/config/src/tui_keymap.rs:510`
+> — `codex-rs/config/src/tui_keymap.rs:554`
 
-Source: `codex-rs/config/src/tui_keymap.rs:510`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:554`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tui.keymap.editor.delete_backward`
 
@@ -8160,7 +8276,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:193`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:235`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.delete_backward_word`
 
@@ -8170,7 +8286,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:197`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:239`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.delete_forward`
 
@@ -8180,7 +8296,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:195`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:237`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.delete_forward_word`
 
@@ -8190,7 +8306,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:199`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:241`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.insert_newline`
 
@@ -8200,7 +8316,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:175`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:217`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.kill_line_end`
 
@@ -8210,7 +8326,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:205`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:247`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.kill_line_start`
 
@@ -8220,7 +8336,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:201`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:243`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.kill_whole_line`
 
@@ -8230,7 +8346,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:203`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:245`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.move_down`
 
@@ -8240,7 +8356,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:183`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:225`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.move_left`
 
@@ -8250,7 +8366,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:177`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:219`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.move_line_end`
 
@@ -8260,7 +8376,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:191`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:233`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.move_line_start`
 
@@ -8270,7 +8386,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:189`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:231`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.move_right`
 
@@ -8280,7 +8396,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:179`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:221`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.move_up`
 
@@ -8290,7 +8406,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:181`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:223`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.editor.move_word_left`
 
@@ -8300,7 +8416,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:185`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:227`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.move_word_right`
 
@@ -8310,7 +8426,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:187`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:229`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.editor.yank`
 
@@ -8320,7 +8436,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:207`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:249`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.global`
 
@@ -8328,9 +8444,9 @@ Type: `table` · Default: `{"clear_terminal": null, "copy": null, "find_transcri
 
 > Global keybindings. These are used when a context does not define an override.
 >
-> — `codex-rs/config/src/tui_keymap.rs:504`
+> — `codex-rs/config/src/tui_keymap.rs:548`
 
-Source: `codex-rs/config/src/tui_keymap.rs:504`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:548`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-basic](https://developers.openai.com/codex/config-file/config-basic), [config-file/config-sample](https://developers.openai.com/codex/config-file/config-sample) · In binary: yes (generic match)
 
 ### `tui.keymap.global.clear_terminal`
 
@@ -8340,7 +8456,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:108`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:150`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.copy`
 
@@ -8350,7 +8466,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:106`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:148`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.global.find_transcript`
 
@@ -8360,7 +8476,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:100`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:142`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.focus_activity`
 
@@ -8370,7 +8486,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:102`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:144`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.open_agents`
 
@@ -8380,7 +8496,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:96`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:138`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.open_external_editor`
 
@@ -8390,7 +8506,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:104`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:146`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.open_transcript`
 
@@ -8400,7 +8516,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:98`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:140`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.queue`
 
@@ -8410,7 +8526,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:112`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:154`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.global.submit`
 
@@ -8420,7 +8536,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:110`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:152`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.global.toggle_fast_mode`
 
@@ -8430,7 +8546,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:118`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:160`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.toggle_raw_output`
 
@@ -8440,7 +8556,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:120`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:162`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.toggle_shortcuts`
 
@@ -8450,7 +8566,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:114`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:156`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.toggle_side_conversation`
 
@@ -8460,7 +8576,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:122`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:164`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.global.toggle_vim_mode`
 
@@ -8470,7 +8586,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:116`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:158`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.list`
 
@@ -8478,9 +8594,9 @@ Type: `table` · Default: `{"accept": null, "cancel": null, "jump_bottom": null,
 
 > List selection context keybindings for popup-style selectable lists.
 >
-> — `codex-rs/config/src/tui_keymap.rs:522`
+> — `codex-rs/config/src/tui_keymap.rs:566`
 
-Source: `codex-rs/config/src/tui_keymap.rs:522`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:566`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tui.keymap.list.accept`
 
@@ -8490,7 +8606,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:434`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:476`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.list.cancel`
 
@@ -8500,7 +8616,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:436`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:478`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.list.jump_bottom`
 
@@ -8510,7 +8626,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:432`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:474`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.list.jump_top`
 
@@ -8520,7 +8636,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:430`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:472`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.list.move_down`
 
@@ -8530,7 +8646,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:420`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:462`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.list.move_left`
 
@@ -8540,7 +8656,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:422`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:464`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.list.move_right`
 
@@ -8550,7 +8666,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:424`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:466`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.list.move_up`
 
@@ -8560,7 +8676,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:418`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:460`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.list.page_down`
 
@@ -8570,7 +8686,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:428`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:470`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.list.page_up`
 
@@ -8580,7 +8696,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:426`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:468`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.pager`
 
@@ -8588,9 +8704,9 @@ Type: `table` · Default: `{"close": null, "close_transcript": null, "find": nul
 
 > Pager context keybindings for transcript and static overlays.
 >
-> — `codex-rs/config/src/tui_keymap.rs:520`
+> — `codex-rs/config/src/tui_keymap.rs:564`
 
-Source: `codex-rs/config/src/tui_keymap.rs:520`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:564`, `codex-rs/core/config.schema.json` · In binary: yes (generic match)
 
 ### `tui.keymap.pager.close`
 
@@ -8600,7 +8716,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:405`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:447`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.pager.close_transcript`
 
@@ -8610,7 +8726,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:407`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:449`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.pager.find`
 
@@ -8620,7 +8736,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:409`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:451`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.pager.half_page_down`
 
@@ -8630,7 +8746,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:399`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:441`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.pager.half_page_up`
 
@@ -8640,7 +8756,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:397`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:439`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.pager.jump_bottom`
 
@@ -8650,7 +8766,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:403`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:445`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.pager.jump_top`
 
@@ -8660,7 +8776,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:401`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:443`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.pager.page_down`
 
@@ -8670,7 +8786,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:395`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:437`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.pager.page_up`
 
@@ -8680,7 +8796,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:393`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:435`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.pager.scroll_down`
 
@@ -8690,7 +8806,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:391`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:433`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.pager.scroll_up`
 
@@ -8700,7 +8816,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:389`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:431`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal`
 
@@ -8708,9 +8824,9 @@ Type: `table` · Default: `{"append_after_cursor": null, "append_line_end": null
 
 > Vim normal-mode keybindings for modal editing inside text areas. Actions that use uppercase letters (like `A` for append-line-end) should be specified as `shift-a` in config; the runtime matcher handles cross-terminal shift-reporting differences automatically.
 >
-> — `codex-rs/config/src/tui_keymap.rs:512`
+> — `codex-rs/config/src/tui_keymap.rs:556`
 
-Source: `codex-rs/config/src/tui_keymap.rs:512`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:556`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.append_after_cursor`
 
@@ -8720,7 +8836,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:221`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:263`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.append_line_end`
 
@@ -8730,7 +8846,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:223`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:265`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.cancel_operator`
 
@@ -8740,7 +8856,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:289`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:331`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.change_to_line_end`
 
@@ -8750,7 +8866,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:273`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:315`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.delete_char`
 
@@ -8760,7 +8876,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:263`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:305`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.delete_to_line_end`
 
@@ -8770,7 +8886,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:271`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:313`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.enter_insert`
 
@@ -8780,7 +8896,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:219`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:261`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.enter_replace_mode`
 
@@ -8790,7 +8906,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:231`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:273`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.find_backward`
 
@@ -8800,7 +8916,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:253`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:295`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.find_forward`
 
@@ -8810,7 +8926,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:251`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:293`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.insert_line_start`
 
@@ -8820,7 +8936,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:225`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:267`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.jump_bottom`
 
@@ -8830,7 +8946,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:261`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:303`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.jump_top`
 
@@ -8840,7 +8956,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:259`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:301`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.move_down`
 
@@ -8850,7 +8966,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:239`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:281`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.move_left`
 
@@ -8860,7 +8976,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:233`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:275`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.move_line_end`
 
@@ -8870,7 +8986,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:249`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:291`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.move_line_start`
 
@@ -8880,7 +8996,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:247`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:289`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.move_right`
 
@@ -8890,7 +9006,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:235`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:277`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.move_up`
 
@@ -8900,7 +9016,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:237`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:279`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_normal.move_word_backward`
 
@@ -8910,7 +9026,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:243`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:285`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.move_word_end`
 
@@ -8920,7 +9036,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:245`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:287`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.move_word_forward`
 
@@ -8930,7 +9046,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:241`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:283`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.open_line_above`
 
@@ -8940,7 +9056,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:229`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:271`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.open_line_below`
 
@@ -8950,7 +9066,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:227`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:269`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.paste_after`
 
@@ -8960,7 +9076,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:277`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:319`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.redo`
 
@@ -8970,7 +9086,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:287`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:329`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_normal.repeat_last_change`
 
@@ -8980,7 +9096,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:267`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:309`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.replace_char`
 
@@ -8990,7 +9106,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:265`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:307`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.start_change_operator`
 
@@ -9000,7 +9116,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:283`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:325`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.start_delete_operator`
 
@@ -9010,7 +9126,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:279`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:321`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.start_yank_operator`
 
@@ -9020,7 +9136,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:281`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:323`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.substitute_char`
 
@@ -9030,7 +9146,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:269`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:311`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.till_backward`
 
@@ -9040,7 +9156,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:257`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:299`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.till_forward`
 
@@ -9050,7 +9166,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:255`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:297`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_normal.undo`
 
@@ -9060,7 +9176,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:285`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:327`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_normal.yank_line`
 
@@ -9070,7 +9186,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:275`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:317`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator`
 
@@ -9078,9 +9194,9 @@ Type: `table` · Default: `{"cancel": null, "delete_line": null, "motion_down": 
 
 > Vim operator-pending keybindings for modal editing inside text areas. This context is active only while waiting for a motion after `d` or `y`. Repeating the operator key (`dd`, `yy`) targets the entire line. Pressing `Esc` cancels the pending operator and returns to normal mode without modifying text.
 >
-> — `codex-rs/config/src/tui_keymap.rs:514`
+> — `codex-rs/config/src/tui_keymap.rs:558`
 
-Source: `codex-rs/config/src/tui_keymap.rs:514`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:558`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.cancel`
 
@@ -9090,7 +9206,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:340`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:382`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_operator.delete_line`
 
@@ -9100,7 +9216,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:302`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:344`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_down`
 
@@ -9110,7 +9226,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:312`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:354`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_find_backward`
 
@@ -9120,7 +9236,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:326`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:368`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_find_forward`
 
@@ -9130,7 +9246,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:324`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:366`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_jump_bottom`
 
@@ -9140,7 +9256,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:334`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:376`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_jump_top`
 
@@ -9150,7 +9266,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:332`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:374`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_left`
 
@@ -9160,7 +9276,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:306`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:348`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_line_end`
 
@@ -9170,7 +9286,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:322`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:364`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_line_start`
 
@@ -9180,7 +9296,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:320`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:362`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_right`
 
@@ -9190,7 +9306,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:308`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:350`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_till_backward`
 
@@ -9200,7 +9316,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:330`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:372`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_till_forward`
 
@@ -9210,7 +9326,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:328`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:370`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_up`
 
@@ -9220,7 +9336,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:310`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:352`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_word_backward`
 
@@ -9230,7 +9346,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:316`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:358`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_word_end`
 
@@ -9240,7 +9356,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:318`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:360`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.motion_word_forward`
 
@@ -9250,7 +9366,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:314`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:356`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.select_around_text_object`
 
@@ -9260,7 +9376,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:338`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:380`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.select_inner_text_object`
 
@@ -9270,7 +9386,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:336`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:378`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_operator.yank_line`
 
@@ -9280,7 +9396,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:304`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:346`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_search`
 
@@ -9288,9 +9404,9 @@ Type: `table` · Default: `{"backward": null, "forward": null, "next": null, "pr
 
 > Search motions shared by Vim normal and operator-pending input.
 >
-> — `codex-rs/config/src/tui_keymap.rs:516`
+> — `codex-rs/config/src/tui_keymap.rs:560`
 
-Source: `codex-rs/config/src/tui_keymap.rs:516`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:560`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_search.backward`
 
@@ -9300,7 +9416,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:351`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:393`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_search.forward`
 
@@ -9310,7 +9426,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:349`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:391`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_search.next`
 
@@ -9320,7 +9436,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:353`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:395`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_search.previous`
 
@@ -9330,7 +9446,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:355`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:397`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_text_object`
 
@@ -9338,9 +9454,9 @@ Type: `table` · Default: `{"backtick": null, "big_word": null, "braces": null, 
 
 > Vim text-object keybindings for modal editing inside text areas.
 >
-> — `codex-rs/config/src/tui_keymap.rs:518`
+> — `codex-rs/config/src/tui_keymap.rs:562`
 
-Source: `codex-rs/config/src/tui_keymap.rs:518`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:562`, `codex-rs/core/config.schema.json` · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_text_object.backtick`
 
@@ -9350,7 +9466,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:378`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:420`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_text_object.big_word`
 
@@ -9360,7 +9476,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:366`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:408`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_text_object.braces`
 
@@ -9370,7 +9486,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:372`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:414`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_text_object.brackets`
 
@@ -9380,7 +9496,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:370`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:412`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_text_object.cancel`
 
@@ -9390,7 +9506,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:380`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:422`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_text_object.double_quote`
 
@@ -9400,7 +9516,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:374`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:416`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_text_object.parentheses`
 
@@ -9410,7 +9526,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:368`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:410`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ### `tui.keymap.vim_text_object.single_quote`
 
@@ -9420,7 +9536,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:376`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/tui_keymap.rs:418`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `tui.keymap.vim_text_object.word`
 
@@ -9430,7 +9546,7 @@ Type: `string | array<string>` · Status: documented
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/tui_keymap.rs:364`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
+Source: `codex-rs/config/src/tui_keymap.rs:406`, `codex-rs/core/config.schema.json` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (generic match)
 
 ## Hidden, legacy and alias keys (not in the generated schema)
 
@@ -9442,11 +9558,11 @@ Status: hidden (schemars(skip))
 
 > Removed agent-job setting retained as a no-op for compatibility.
 >
-> — `codex-rs/config/src/config_toml.rs:747`
+> — `codex-rs/config/src/config_toml.rs:770`
 
 Binary check (`--strict-config`): accepted (config loaded)
 
-Source: `codex-rs/config/src/config_toml.rs:747` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:770` · In binary: yes (distinctive match)
 
 ### `agents.max_threads`
 
@@ -9454,13 +9570,13 @@ Status: alias
 
 > Legacy alias for `agents.max_concurrent_threads_per_session`.
 >
-> — `codex-rs/config/src/config_toml.rs:738`
+> — `codex-rs/config/src/config_toml.rs:761`
 
 Canonical key: `agents.max_concurrent_threads_per_session`
 
 Binary check (`--strict-config`): accepted (config loaded)
 
-Source: `codex-rs/config/src/config_toml.rs:738` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:761` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference) · In binary: yes (distinctive match)
 
 ### `experimental_thread_store.type = "in_memory"`
 
@@ -9468,7 +9584,7 @@ Status: hidden enum variant (schemars(skip))
 
 Binary check (`--strict-config`): accepted (config loaded)
 
-Source: `codex-rs/config/src/config_toml.rs:566` · In binary: yes (generic match)
+Source: `codex-rs/config/src/config_toml.rs:568` · In binary: yes (generic match)
 
 ### `experimental_thread_store_endpoint`
 
@@ -9476,11 +9592,11 @@ Status: hidden (schemars(skip))
 
 > Removed. Former remote thread-store endpoint setting kept only so we can fail fast instead of silently falling back to local persistence.
 >
-> — `codex-rs/config/src/config_toml.rs:463`
+> — `codex-rs/config/src/config_toml.rs:465`
 
 Binary check (`--strict-config`): parsed, then rejected by later config validation
 
-Source: `codex-rs/config/src/config_toml.rs:463` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:465` · In binary: yes (distinctive match)
 
 ### `ghost_snapshot.ignore_untracked_files_over_bytes`
 
@@ -9488,13 +9604,13 @@ Status: alias
 
 > Legacy alias for `ghost_snapshot.ignore_large_untracked_files`.
 >
-> — `codex-rs/config/src/config_toml.rs:785`
+> — `codex-rs/config/src/config_toml.rs:808`
 
 Canonical key: `ghost_snapshot.ignore_large_untracked_files`
 
 Binary check (`--strict-config`): accepted (config loaded)
 
-Source: `codex-rs/config/src/config_toml.rs:785` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:808` · In binary: yes (distinctive match)
 
 ### `ghost_snapshot.large_untracked_dir_warning_threshold`
 
@@ -9502,13 +9618,13 @@ Status: alias
 
 > Legacy alias for `ghost_snapshot.ignore_large_untracked_dirs`.
 >
-> — `codex-rs/config/src/config_toml.rs:788`
+> — `codex-rs/config/src/config_toml.rs:811`
 
 Canonical key: `ghost_snapshot.ignore_large_untracked_dirs`
 
 Binary check (`--strict-config`): accepted (config loaded)
 
-Source: `codex-rs/config/src/config_toml.rs:788` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:811` · In binary: yes (distinctive match)
 
 ### `js_repl_node_module_dirs`
 
@@ -9516,11 +9632,11 @@ Status: hidden (schemars(skip))
 
 > Deprecated: ignored.
 >
-> — `codex-rs/config/src/config_toml.rs:354`
+> — `codex-rs/config/src/config_toml.rs:356`
 
 Binary check (`--strict-config`): accepted (config loaded)
 
-Source: `codex-rs/config/src/config_toml.rs:354` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:356` · In binary: yes (distinctive match)
 
 ### `js_repl_node_path`
 
@@ -9528,11 +9644,11 @@ Status: hidden (schemars(skip))
 
 > Deprecated: ignored.
 >
-> — `codex-rs/config/src/config_toml.rs:350`
+> — `codex-rs/config/src/config_toml.rs:352`
 
 Binary check (`--strict-config`): accepted (config loaded)
 
-Source: `codex-rs/config/src/config_toml.rs:350` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/config_toml.rs:352` · In binary: yes (distinctive match)
 
 ### `mcp_servers.<id>.bearer_token`
 
@@ -9540,7 +9656,7 @@ Status: hidden (schemars(skip))
 
 Binary check (`--strict-config`): rejected while parsing config.toml (unknown field or wrong type)
 
-Source: `codex-rs/config/src/mcp_types.rs:395` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/mcp_types.rs:385` · In binary: yes (distinctive match)
 
 ### `memories.no_memories_if_mcp_or_web_search`
 
@@ -9548,13 +9664,21 @@ Status: alias
 
 > Legacy alias for `memories.disable_on_external_context`.
 >
-> — `codex-rs/config/src/types.rs:305`
+> — `codex-rs/config/src/types.rs:306`
 
 Canonical key: `memories.disable_on_external_context`
 
 Binary check (`--strict-config`): accepted (config loaded)
 
-Source: `codex-rs/config/src/types.rs:305` · In binary: yes (distinctive match)
+Source: `codex-rs/config/src/types.rs:306` · In binary: yes (distinctive match)
+
+### `plugins.<plugin>.mcp_servers.<id>.has_unsupported_ema_auth`
+
+Status: hidden (schemars(skip))
+
+Binary check (`--strict-config`): rejected while parsing config.toml (unknown field or wrong type)
+
+Source: `codex-rs/config/src/types.rs:1033` · In binary: string not found
 
 ### `profiles.<name>.js_repl_node_module_dirs`
 
@@ -9700,7 +9824,7 @@ Type: `boolean` · Status: documented (requirements.toml) · When: requirements.
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1052` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1054` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `allow_login_shell`
 
@@ -9740,7 +9864,7 @@ Type: `array<string>` · Status: documented (requirements.toml) · When: require
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1044` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1046` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `allowed_approvals_reviewers`
 
@@ -9750,7 +9874,7 @@ Type: `array<string>` · Status: documented (requirements.toml) · When: require
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1045` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1047` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `allowed_chatgpt_workspaces`
 
@@ -9780,7 +9904,7 @@ Type: `table<boolean>` · Status: documented (requirements.toml) · When: requir
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1047` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1049` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `allowed_permission_profiles.<name>`
 
@@ -9790,7 +9914,7 @@ Type: `boolean` · Status: documented (requirements.toml) · When: requirements.
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1047` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1049` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `allowed_sandbox_modes`
 
@@ -9800,7 +9924,7 @@ Type: `array<string>` · Status: documented (requirements.toml) · When: require
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1046` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1048` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `allowed_web_search_modes`
 
@@ -9810,7 +9934,57 @@ Type: `array<string>` · Status: documented (requirements.toml) · When: require
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1050` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1052` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+
+### `application`
+
+Type: `table` · Status: documented (requirements.toml) · When: requirements.toml (admin-managed), not config.toml
+
+> Managed desktop application requirements.
+>
+> — [docs](https://developers.openai.com/codex/config-file/config-reference)
+
+Source: `codex-rs/config/src/config_requirements.rs:195` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+
+### `application.network`
+
+Type: `table` · Status: documented (requirements.toml) · When: requirements.toml (admin-managed), not config.toml
+
+> Destination restrictions for desktop app network requests, separate from command networking and browser origin rules. This doesn't impose destination restrictions on native modules or spawned processes.
+>
+> — [docs](https://developers.openai.com/codex/config-file/config-reference)
+
+Source: `codex-rs/config/src/config_requirements.rs:194` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+
+### `application.network.domains`
+
+Type: `table<allow | deny>` · Status: documented (requirements.toml) · When: requirements.toml (admin-managed), not config.toml
+
+> Exact domain rules for desktop app requests. Enabled policies allow HTTPS and WSS requests only to explicitly allowed domains; subdomains aren't implicitly allowed.
+>
+> — [docs](https://developers.openai.com/codex/config-file/config-reference)
+
+Source: `codex-rs/config/src/config_requirements.rs:434` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+
+### `application.network.domains.<domain>`
+
+Type: `allow | deny` · Status: documented (requirements.toml) · When: requirements.toml (admin-managed), not config.toml
+
+> Allow or deny an exact domain. Use domain names without URL schemes, ports, or wildcards.
+>
+> — [docs](https://developers.openai.com/codex/config-file/config-reference)
+
+Source: `codex-rs/config/src/config_requirements.rs:434` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+
+### `application.network.enabled`
+
+Type: `boolean` · Status: documented (requirements.toml) · When: requirements.toml (admin-managed), not config.toml
+
+> Defaults to true when the table is present. When true, external desktop app requests require an explicitly allowed domain. An empty domain map allows no external destinations. An absent application network policy or false value doesn't restrict destinations through this policy.
+>
+> — [docs](https://developers.openai.com/codex/config-file/config-reference)
+
+Source: `codex-rs/config/src/config_requirements.rs:428` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `apps`
 
@@ -9820,7 +9994,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:984` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:986` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `apps.<id>.enabled`
 
@@ -9840,7 +10014,7 @@ Type: `auto | prompt | writes | approve` · Status: documented (requirements.tom
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:902` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:904` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `auto_review`
 
@@ -9850,7 +10024,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1072` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1074` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `auto_review.ignore_rules`
 
@@ -9860,7 +10034,7 @@ Type: `array<string>` · Status: documented (requirements.toml) · When: require
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1082` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1084` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `auto_review.required_on_models`
 
@@ -9870,7 +10044,7 @@ Type: `array<string>` · Status: documented (requirements.toml) · When: require
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1081` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1083` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `browser_use`
 
@@ -9880,7 +10054,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1056` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1058` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `browser_use.allow_global_persistent_approval`
 
@@ -9940,7 +10114,7 @@ Type: `allow | deny` · Status: documented (requirements.toml) · When: requirem
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1072` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1074` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `browser_use.default_origin_policy.downloads`
 
@@ -10040,7 +10214,7 @@ Type: `allow | deny` · Status: documented (requirements.toml) · When: requirem
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1072` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1074` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `browser_use.origins.<pattern>.downloads`
 
@@ -10190,7 +10364,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1058` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1060` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `computer_use.windows.aumids`
 
@@ -10270,7 +10444,7 @@ Type: `string` · Status: documented (requirements.toml) · When: requirements.t
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1048` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1050` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `enforce_residency`
 
@@ -10460,7 +10634,7 @@ Type: `boolean` · Status: documented (requirements.toml) · When: requirements.
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:984` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:986` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `features.browser_use`
 
@@ -10470,7 +10644,7 @@ Type: `boolean` · Status: documented (requirements.toml) · When: requirements.
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1056` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1058` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `features.browser_use_external`
 
@@ -10530,7 +10704,7 @@ Type: `boolean` · Status: documented (requirements.toml) · When: requirements.
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1057` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1059` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `features.in_app_chat`
 
@@ -10670,7 +10844,7 @@ Type: `string` · Status: documented (requirements.toml) · When: requirements.t
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1076` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1078` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `guardian_policy_config`
 
@@ -10680,7 +10854,7 @@ Type: `string` · Status: documented (requirements.toml) · When: requirements.t
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1075` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1077` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `hooks`
 
@@ -10690,7 +10864,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1061` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1063` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `hooks.<Event>`
 
@@ -10700,7 +10874,7 @@ Type: `array<table>` · Status: documented (requirements.toml) · When: requirem
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1061` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1063` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `hooks.<Event>[].hooks`
 
@@ -10710,7 +10884,7 @@ Type: `array<table>` · Status: documented (requirements.toml) · When: requirem
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1061` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1063` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `hooks.<Event>[].hooks[].additionalContextLimit`
 
@@ -10770,7 +10944,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1057` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1059` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `in_app_browser.allow_external_browser_settings_import`
 
@@ -11050,7 +11224,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1073` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1075` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `models.new_thread`
 
@@ -11060,7 +11234,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1087` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1089` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `models.new_thread.model`
 
@@ -11070,7 +11244,7 @@ Type: `string` · Status: documented (requirements.toml) · When: requirements.t
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1100` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1102` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `models.new_thread.model_reasoning_effort`
 
@@ -11080,7 +11254,7 @@ Type: `string` · Status: documented (requirements.toml) · When: requirements.t
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1101` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1103` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `models.new_thread.service_tier`
 
@@ -11090,7 +11264,7 @@ Type: `string` · Status: documented (requirements.toml) · When: requirements.t
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1102` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1104` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `permissions`
 
@@ -11100,7 +11274,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1071` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1073` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `permissions.<name>`
 
@@ -11110,7 +11284,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1071` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1073` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `permissions.filesystem.deny_read`
 
@@ -11260,7 +11434,7 @@ Type: `array<table>` · Status: documented (requirements.toml) · When: requirem
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1049` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1051` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `remote_sandbox_config[].allowed_sandbox_modes`
 
@@ -11270,7 +11444,7 @@ Type: `array<string>` · Status: documented (requirements.toml) · When: require
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1046` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1048` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `remote_sandbox_config[].hostname_patterns`
 
@@ -11280,7 +11454,7 @@ Type: `array<string>` · Status: documented (requirements.toml) · When: require
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1113` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1115` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `rules`
 
@@ -11290,7 +11464,7 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1066` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1068` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `rules.prefix_rules`
 
@@ -11370,7 +11544,17 @@ Type: `table` · Status: documented (requirements.toml) · When: requirements.to
 >
 > — [docs](https://developers.openai.com/codex/config-file/config-reference)
 
-Source: `codex-rs/config/src/config_requirements.rs:1058` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+Source: `codex-rs/config/src/config_requirements.rs:1060` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
+
+### `windows.allow_mxc`
+
+Type: `boolean` · Status: documented (requirements.toml) · When: requirements.toml (admin-managed), not config.toml
+
+> Set to `false` to prohibit both explicit MXC selection and automatic selection through `features.prefer_mxc`. Omitting this requirement or setting it to `true` permits MXC but doesn't enable it or require it. Legacy implementation restrictions still apply to fallback.
+>
+> — [docs](https://developers.openai.com/codex/config-file/config-reference)
+
+Source: `codex-rs/config/src/config_requirements.rs:874` · Docs: [config-file/config-reference](https://developers.openai.com/codex/config-file/config-reference)
 
 ### `windows.allowed_sandbox_implementations`
 

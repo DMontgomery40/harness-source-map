@@ -8,7 +8,7 @@
    "kind": "topic",
    "definition": "Settings that turn on Codex persistent mode, gate the tools it relies on, or tune its long-running follow-up behavior. Counts: the main thread's reasoning-effort key and its managed new-thread default (the value `persistent` enables the mode); model catalogs that supply persistent-mode instructions or tools; async user-message tools (send_user_message_async, send_message_to_user_async); clock, clock.sleep and current-time reminder settings; automatic idle continuation and goals; automations; keeping the machine awake during a running turn. Applies in any group, including features.* flags and requirements: variants. Does NOT include reasoning effort for guardian or reviewer sessions, sub-agents or plan mode; other model, verbosity, provider or service-tier settings; settings that merely say persistent or persistence (saved approvals, transcript history); async hooks; or keybindings.",
    "feature": true,
-   "count": 22
+   "count": 23
   },
   {
    "id": "prompt-instructions",
@@ -22,49 +22,49 @@
    "label": "Model and reasoning",
    "kind": "topic",
    "definition": "Settings that choose which model runs or how it thinks and answers: model slug, reasoning effort and summaries, verbosity, context window and auto-compaction limit, service tier, model catalogs, and per-role or managed defaults for these. It applies in any group, including features.* flags and requirements: variants. It does not cover provider endpoints, credentials or keybindings that change effort.",
-   "count": 37
+   "count": 38
   },
   {
    "id": "auth-providers",
    "label": "Auth, providers and network",
    "kind": "topic",
    "definition": "Settings and environment variables for signing in and reaching model backends: login method and credential storage, API keys and access tokens, model provider definitions and base URLs, cloud-provider credentials (such as AWS/Bedrock), HTTP proxies, CA certificates and request headers. It applies in any group, including requirements: variants. It does not cover the sandbox's network allowlist for commands the agent runs, or MCP-server-specific auth.",
-   "count": 104
+   "count": 108
   },
   {
    "id": "sandbox-approvals",
    "label": "Sandbox and approvals",
    "kind": "topic",
    "definition": "Settings that limit or approve what the agent may execute or touch: sandbox mode and permission profiles, filesystem and network access for commands, approval policy and approvals reviewer (including guardian auto-review), exec-policy / prefix rules, shell environment policy, and variables Codex sets to mark or escalate sandboxed processes. It applies in any group, including features.* flags and requirements: variants. It does not cover keybindings in approval dialogs or generic terminal-detection variables.",
-   "count": 173
+   "count": 177
   },
   {
    "id": "built-in-tools",
    "label": "Built-in tools",
    "kind": "topic",
    "definition": "Settings for tools that ship with Codex and that the model calls directly: shell / unified exec and background terminals, apply_patch, plan updates, web search, browser use, computer use, image generation and viewing, JS REPL and code mode, clock/sleep and async user-message tools, and tool discovery or suggestion. It applies in any group, including features.* flags and requirements: variants. It does not cover external MCP servers or approval policy in general.",
-   "count": 169
+   "count": 168
   },
   {
    "id": "mcp-plugins",
    "label": "MCP, plugins and skills",
    "kind": "topic",
    "definition": "Settings for extending Codex with external or packaged capabilities: MCP server definitions (command, URL, auth, timeouts, per-tool limits), plugins and marketplaces, skills, and connected apps. It applies in any group, including features.* flags and requirements: variants. It does not cover tools built into Codex such as web search or shell, or sub-agent coordination.",
-   "count": 175
+   "count": 171
   },
   {
    "id": "multi-agent",
    "label": "Multi-agent",
    "kind": "topic",
    "definition": "Settings for spawning and coordinating sub-agents: multi-agent features, agent roles and nicknames, thread and depth limits, default sub-agent model or effort, and orchestrator behavior. It applies in any group, including features.* flags and requirements: variants. It does not cover skills or plugins by themselves, or IDs Codex exports to child processes.",
-   "count": 34
+   "count": 36
   },
   {
    "id": "memory-context",
    "label": "Memory, context and compaction",
    "kind": "topic",
    "definition": "Settings that decide what the model remembers across turns and sessions: generated memories, context-window budgets and reminders, automatic compaction and context rollover, and history/notes carried across windows. It applies in any group, including features.* flags and requirements: variants. It does not cover saving transcripts to disk for the user, telemetry, or clock and current-time reminder settings.",
-   "count": 50
+   "count": 51
   },
   {
    "id": "hooks-notifications",
@@ -78,39 +78,39 @@
    "label": "Realtime voice",
    "kind": "topic",
    "definition": "Settings for realtime speech sessions and audio devices: realtime transport, model, voice, startup instructions or context, and microphone or speaker selection. It applies in any group, including features.* flags. It does not cover ordinary streaming timeouts or terminal sounds.",
-   "count": 16
+   "count": 18
   },
   {
    "id": "telemetry-storage",
    "label": "Telemetry, logs and storage",
    "kind": "topic",
    "definition": "Settings and environment variables for observability and local state: OpenTelemetry exporters and trace context, analytics and feedback, log levels and formats, transcript/history persistence, rollout and session files, and Codex home or database paths. It applies in any group, including features.* flags and requirements: variants. It does not cover the model's memory of past sessions or lifecycle hooks.",
-   "count": 109
+   "count": 108
   },
   {
    "id": "ui",
    "label": "Terminal and desktop UI",
    "kind": "topic",
    "definition": "Settings and environment variables that change how the terminal UI or desktop app looks and behaves for the user: TUI options, keymaps and vim mode, themes and rendering, notices and prompts, desktop-app window or runtime behavior, and terminal detection. It applies in any group. It does not cover what the model can do, or third-party library variables that only happen to be read by the desktop bundle.",
-   "count": 242
+   "count": 243
   },
   {
    "id": "documented",
    "label": "Documented",
    "kind": "status",
-   "count": 673
+   "count": 682
   },
   {
    "id": "undocumented",
    "label": "Undocumented",
    "kind": "status",
-   "count": 479
+   "count": 487
   },
   {
    "id": "hidden",
    "label": "Hidden or internal",
    "kind": "status",
-   "count": 27
+   "count": 28
   },
   {
    "id": "legacy",
@@ -134,25 +134,25 @@
    "id": "requirements",
    "label": "requirements.toml",
    "kind": "status",
-   "count": 171
+   "count": 177
   },
   {
    "id": "stage-under-development",
    "label": "Feature: under development",
    "kind": "status",
-   "count": 60
+   "count": 62
   },
   {
    "id": "stage-experimental",
    "label": "Feature: experimental",
    "kind": "status",
-   "count": 3
+   "count": 4
   },
   {
    "id": "stage-stable",
    "label": "Feature: stable",
    "kind": "status",
-   "count": 47
+   "count": 51
   }
  ],
  "items": {
@@ -954,9 +954,14 @@
    "stage-experimental",
    "telemetry-storage"
   ],
+  "config:features.api_key_cyber_access_programs": [
+   "undocumented",
+   "stage-stable",
+   "auth-providers"
+  ],
   "config:features.api_key_model_discovery": [
    "undocumented",
-   "stage-under-development",
+   "stage-stable",
    "auth-providers"
   ],
   "config:features.apply_patch_freeform": [
@@ -1008,7 +1013,12 @@
   ],
   "config:features.bedrock_setup_wizard": [
    "undocumented",
-   "stage-under-development"
+   "stage-under-development",
+   "auth-providers"
+  ],
+  "config:features.browser_annotation_api": [
+   "undocumented",
+   "stage-stable"
   ],
   "config:features.browser_use": [
    "undocumented",
@@ -1057,7 +1067,6 @@
   ],
   "config:features.code_mode.tool_input_schema_max_bytes": [
    "undocumented",
-   "built-in-tools",
    "mcp-plugins"
   ],
   "config:features.code_mode_buffered_exec": [
@@ -1152,8 +1161,7 @@
    "undocumented",
    "stage-under-development",
    "persistent-mode",
-   "prompt-instructions",
-   "built-in-tools"
+   "prompt-instructions"
   ],
   "config:features.current_time_reminder.clock_source": [
    "undocumented",
@@ -1180,7 +1188,8 @@
   ],
   "config:features.cwd_relative_turn_diffs": [
    "undocumented",
-   "stage-under-development"
+   "stage-under-development",
+   "built-in-tools"
   ],
   "config:features.daemon_auto_start": [
    "undocumented",
@@ -1273,7 +1282,7 @@
    "persistent-mode"
   ],
   "config:features.guardian_approval": [
-   "undocumented",
+   "documented",
    "stage-stable",
    "sandbox-approvals"
   ],
@@ -1297,8 +1306,7 @@
   "config:features.guardian_reuse_parent_compaction": [
    "undocumented",
    "stage-stable",
-   "memory-context",
-   "telemetry-storage"
+   "memory-context"
   ],
   "config:features.guardian_root_handoff_context": [
    "undocumented",
@@ -1308,6 +1316,14 @@
    "undocumented",
    "stage-under-development",
    "sandbox-approvals"
+  ],
+  "config:features.guardianv2.async_classifier_conversation_token_limit": [
+   "undocumented",
+   "model-reasoning",
+   "memory-context"
+  ],
+  "config:features.guardianv2.async_classifier_mode": [
+   "undocumented"
   ],
   "config:features.guardianv2.classifier_instructions": [
    "undocumented",
@@ -1376,8 +1392,7 @@
    "undocumented"
   ],
   "config:features.guardianv2.transcript.max_message_entry_tokens": [
-   "undocumented",
-   "telemetry-storage"
+   "undocumented"
   ],
   "config:features.guardianv2.transcript.max_message_transcript_tokens": [
    "undocumented",
@@ -1392,11 +1407,15 @@
   ],
   "config:features.guardianv2.transcript.max_tool_transcript_tokens": [
    "undocumented",
-   "memory-context",
    "telemetry-storage"
   ],
   "config:features.guardianv2.transcript.sources": [
    "undocumented"
+  ],
+  "config:features.guardianv2_decisions_comparison": [
+   "undocumented",
+   "stage-under-development",
+   "sandbox-approvals"
   ],
   "config:features.hooks": [
    "documented",
@@ -1444,10 +1463,14 @@
    "undocumented",
    "stage-stable"
   ],
+  "config:features.in_app_voice": [
+   "undocumented",
+   "stage-stable",
+   "realtime-voice"
+  ],
   "config:features.instant_interrupt": [
    "undocumented",
-   "stage-under-development",
-   "built-in-tools"
+   "stage-under-development"
   ],
   "config:features.item_ids": [
    "undocumented",
@@ -1473,6 +1496,11 @@
    "removed",
    "telemetry-storage"
   ],
+  "config:features.login_shell_package_path": [
+   "undocumented",
+   "stage-experimental",
+   "built-in-tools"
+  ],
   "config:features.mcp_2026_07_28": [
    "undocumented",
    "stage-under-development",
@@ -1497,6 +1525,12 @@
    "undocumented",
    "stage-stable",
    "ui"
+  ],
+  "config:features.model_catalog_in_context": [
+   "undocumented",
+   "stage-under-development",
+   "model-reasoning",
+   "memory-context"
   ],
   "config:features.multi_agent": [
    "documented",
@@ -1547,6 +1581,23 @@
    "multi-agent",
    "telemetry-storage"
   ],
+  "config:features.multi_agent_v2.message_board_remote": [
+   "undocumented",
+   "multi-agent",
+   "telemetry-storage"
+  ],
+  "config:features.multi_agent_v2.message_board_remote.bearer_token": [
+   "undocumented",
+   "auth-providers"
+  ],
+  "config:features.multi_agent_v2.message_board_remote.bearer_token_env_var": [
+   "undocumented",
+   "auth-providers"
+  ],
+  "config:features.multi_agent_v2.message_board_remote.url": [
+   "undocumented",
+   "multi-agent"
+  ],
   "config:features.multi_agent_v2.min_wait_timeout_ms": [
    "undocumented",
    "multi-agent"
@@ -1558,11 +1609,11 @@
   ],
   "config:features.multi_agent_v2.non_code_mode_only": [
    "undocumented",
+   "built-in-tools",
    "multi-agent"
   ],
   "config:features.multi_agent_v2.root_agent_usage_hint_text": [
    "undocumented",
-   "prompt-instructions",
    "multi-agent"
   ],
   "config:features.multi_agent_v2.subagent_developer_instructions": [
@@ -1591,6 +1642,11 @@
   "config:features.multi_agent_v2.wait_agent_enabled": [
    "undocumented",
    "built-in-tools",
+   "multi-agent"
+  ],
+  "config:features.multi_agent_v2_dynamic_tools": [
+   "undocumented",
+   "stage-under-development",
    "multi-agent"
   ],
   "config:features.network_proxy": [
@@ -1745,9 +1801,10 @@
    "built-in-tools"
   ],
   "config:features.prefer_mxc": [
-   "undocumented",
+   "documented",
    "stage-under-development",
-   "sandbox-approvals"
+   "sandbox-approvals",
+   "built-in-tools"
   ],
   "config:features.prevent_idle_sleep": [
    "documented",
@@ -1778,7 +1835,8 @@
   ],
   "config:features.remote_compaction_v2": [
    "undocumented",
-   "removed"
+   "removed",
+   "memory-context"
   ],
   "config:features.remote_control": [
    "undocumented",
@@ -1975,8 +2033,7 @@
   "config:features.terminal_visualization_instructions": [
    "undocumented",
    "stage-under-development",
-   "prompt-instructions",
-   "ui"
+   "prompt-instructions"
   ],
   "config:features.token_budget": [
    "undocumented",
@@ -2007,6 +2064,7 @@
   ],
   "config:features.token_budget.reminder_message_template": [
    "undocumented",
+   "prompt-instructions",
    "memory-context"
   ],
   "config:features.token_budget.reminder_threshold_tokens": [
@@ -2364,8 +2422,7 @@
    "multi-agent"
   ],
   "config:agents.<role>": [
-   "documented",
-   "multi-agent"
+   "documented"
   ],
   "config:agents.<role>.config_file": [
    "documented"
@@ -2469,7 +2526,8 @@
    "documented"
   ],
   "config:apps._default": [
-   "documented"
+   "documented",
+   "mcp-plugins"
   ],
   "config:apps._default.approvals_reviewer": [
    "documented",
@@ -2481,7 +2539,6 @@
   ],
   "config:apps._default.destructive_enabled": [
    "documented",
-   "sandbox-approvals",
    "mcp-plugins"
   ],
   "config:apps._default.enabled": [
@@ -2537,8 +2594,7 @@
    "mcp-plugins"
   ],
   "config:memories": [
-   "documented",
-   "memory-context"
+   "documented"
   ],
   "config:memories.consolidation_model": [
    "documented",
@@ -2646,30 +2702,6 @@
   ],
   "config:plugins.<plugin>.mcp_servers.<id>.disabled_tools": [
    "documented",
-   "mcp-plugins"
-  ],
-  "config:plugins.<plugin>.mcp_servers.<id>.ema_auth": [
-   "undocumented",
-   "mcp-plugins"
-  ],
-  "config:plugins.<plugin>.mcp_servers.<id>.ema_auth.authorization_server_issuer": [
-   "undocumented",
-   "mcp-plugins"
-  ],
-  "config:plugins.<plugin>.mcp_servers.<id>.ema_auth.client_id": [
-   "undocumented",
-   "mcp-plugins"
-  ],
-  "config:plugins.<plugin>.mcp_servers.<id>.ema_auth.resource": [
-   "undocumented",
-   "mcp-plugins"
-  ],
-  "config:plugins.<plugin>.mcp_servers.<id>.ema_auth.scopes": [
-   "undocumented",
-   "mcp-plugins"
-  ],
-  "config:plugins.<plugin>.mcp_servers.<id>.ema_auth.url": [
-   "undocumented",
    "mcp-plugins"
   ],
   "config:plugins.<plugin>.mcp_servers.<id>.enabled": [
@@ -2831,8 +2863,7 @@
   ],
   "config:cli_auth_credentials_store": [
    "documented",
-   "auth-providers",
-   "telemetry-storage"
+   "auth-providers"
   ],
   "config:forced_chatgpt_workspace_id": [
    "documented",
@@ -2847,6 +2878,10 @@
    "realtime-voice"
   ],
   "config:audio.microphone": [
+   "undocumented",
+   "realtime-voice"
+  ],
+  "config:audio.microphone_channel": [
    "undocumented",
    "realtime-voice"
   ],
@@ -2875,7 +2910,6 @@
   ],
   "config:experimental_realtime_ws_model": [
    "undocumented",
-   "model-reasoning",
    "realtime-voice"
   ],
   "config:experimental_realtime_ws_startup_context": [
@@ -3257,14 +3291,16 @@
    "telemetry-storage"
   ],
   "config:thread_unload_delay_secs": [
-   "undocumented"
+   "undocumented",
+   "telemetry-storage"
   ],
   "config:desktop": [
    "documented",
    "ui"
   ],
   "config:desktop.custom_file_handlers.<id>": [
-   "documented"
+   "documented",
+   "ui"
   ],
   "config:desktop.custom_file_handlers.<id>.args": [
    "documented"
@@ -3537,7 +3573,6 @@
   ],
   "config:tui.terminal_resize_reflow_max_rows": [
    "undocumented",
-   "built-in-tools",
    "ui"
   ],
   "config:tui.terminal_title": [
@@ -3563,6 +3598,9 @@
    "undocumented",
    "mcp-plugins"
   ],
+  "config:daybreak": [
+   "undocumented"
+  ],
   "config:model_post_turn_compact_threshold_percent": [
    "undocumented",
    "model-reasoning",
@@ -3581,6 +3619,10 @@
    "ui"
   ],
   "config:tui.keymap.agents.delete": [
+   "documented",
+   "ui"
+  ],
+  "config:tui.keymap.agents.fork": [
    "documented",
    "ui"
   ],
@@ -4287,6 +4329,11 @@
    "legacy",
    "memory-context"
   ],
+  "config:plugins.<plugin>.mcp_servers.<id>.has_unsupported_ema_auth": [
+   "undocumented",
+   "hidden",
+   "mcp-plugins"
+  ],
   "config:profiles.<name>.js_repl_node_module_dirs": [
    "undocumented",
    "hidden",
@@ -4300,8 +4347,7 @@
   "config:computer_use.windows.always_allowed_app_ids": [
    "documented",
    "rejected",
-   "sandbox-approvals",
-   "built-in-tools"
+   "sandbox-approvals"
   ],
   "config:features.rollout_budget.reminder_interval_tokens": [
    "documented",
@@ -4397,9 +4443,33 @@
    "requirements",
    "built-in-tools"
   ],
-  "config:requirements:apps": [
+  "config:requirements:application": [
    "documented",
    "requirements"
+  ],
+  "config:requirements:application.network": [
+   "documented",
+   "requirements"
+  ],
+  "config:requirements:application.network.domains": [
+   "documented",
+   "requirements",
+   "sandbox-approvals"
+  ],
+  "config:requirements:application.network.domains.<domain>": [
+   "documented",
+   "requirements",
+   "sandbox-approvals"
+  ],
+  "config:requirements:application.network.enabled": [
+   "documented",
+   "requirements",
+   "sandbox-approvals"
+  ],
+  "config:requirements:apps": [
+   "documented",
+   "requirements",
+   "sandbox-approvals"
   ],
   "config:requirements:apps.<id>.enabled": [
    "documented",
@@ -4484,6 +4554,7 @@
   "config:requirements:browser_use.default_origin_policy.uploads": [
    "documented",
    "requirements",
+   "sandbox-approvals",
    "built-in-tools"
   ],
   "config:requirements:browser_use.disable_auto_review": [
@@ -4562,7 +4633,6 @@
   "config:requirements:computer_use": [
    "documented",
    "requirements",
-   "sandbox-approvals",
    "built-in-tools"
   ],
   "config:requirements:computer_use.allow_locked_computer_use": [
@@ -5031,6 +5101,7 @@
   "config:requirements:models.new_thread": [
    "documented",
    "requirements",
+   "persistent-mode",
    "model-reasoning"
   ],
   "config:requirements:models.new_thread.model": [
@@ -5189,6 +5260,10 @@
    "documented",
    "requirements",
    "sandbox-approvals"
+  ],
+  "config:requirements:windows.allow_mxc": [
+   "documented",
+   "requirements"
   ],
   "config:requirements:windows.allowed_sandbox_implementations": [
    "documented",

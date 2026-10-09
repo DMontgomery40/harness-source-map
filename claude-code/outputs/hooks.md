@@ -6,7 +6,7 @@
 
 ### PreToolUse
 
-Source: `chunk-nyc4mmse.js` · offset 206021448 · sha256 `73538c8e…`
+Source: `chunk-3ak8hnaq.js` · offset 214179832 · sha256 `73538c8e…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#pretooluse
 
@@ -33,7 +33,7 @@ Other exit codes - show stderr to user only but continue with tool call
 
 ### PostToolUse
 
-Source: `chunk-nyc4mmse.js` · offset 206021773 · sha256 `4d158142…`
+Source: `chunk-3ak8hnaq.js` · offset 214180157 · sha256 `4d158142…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#posttooluse
 
@@ -60,7 +60,7 @@ Other exit codes - show stderr to user only
 
 ### PostToolUseFailure
 
-Source: `chunk-nyc4mmse.js` · offset 206022148 · sha256 `134dcd9d…`
+Source: `chunk-3ak8hnaq.js` · offset 214180532 · sha256 `134dcd9d…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#posttoolusefailure
 
@@ -87,7 +87,7 @@ Other exit codes - show stderr to user only
 
 ### PostToolBatch
 
-Source: `chunk-nyc4mmse.js` · offset 206022538 · sha256 `cfcc9c8d…`
+Source: `chunk-3ak8hnaq.js` · offset 214180922 · sha256 `cfcc9c8d…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#posttoolbatch
 
@@ -114,7 +114,7 @@ Other exit codes - show stderr to user only
 
 ### Notification
 
-Source: `chunk-nyc4mmse.js` · offset 206023414 · sha256 `7d7621b8…`
+Source: `chunk-3ak8hnaq.js` · offset 214181798 · sha256 `7d7621b8…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#notification
 
@@ -140,7 +140,7 @@ Other exit codes - show stderr to user only
 
 ### UserPromptSubmit
 
-Source: `chunk-nyc4mmse.js` · offset 206023744 · sha256 `c6a6bb39…`
+Source: `chunk-3ak8hnaq.js` · offset 214182128 · sha256 `c6a6bb39…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#userpromptsubmit
 
@@ -167,7 +167,7 @@ Other exit codes - show stderr to user only
 
 ### UserPromptExpansion
 
-Source: `chunk-nyc4mmse.js` · offset 206024066 · sha256 `e5532096…`
+Source: `chunk-3ak8hnaq.js` · offset 214182450 · sha256 `e5532096…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#userpromptexpansion
 
@@ -194,7 +194,7 @@ Other exit codes - show stderr to user only
 
 ### SessionStart
 
-Source: `chunk-nyc4mmse.js` · offset 206024442 · sha256 `3bfa5101…`
+Source: `chunk-3ak8hnaq.js` · offset 214182826 · sha256 `3bfa5101…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#sessionstart
 
@@ -221,7 +221,7 @@ Other exit codes - show stderr to user only
 
 ### SessionEnd
 
-Source: `chunk-nyc4mmse.js` · offset 206027707 · sha256 `487473dd…`
+Source: `chunk-3ak8hnaq.js` · offset 214186091 · sha256 `487473dd…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#sessionend
 
@@ -245,7 +245,7 @@ Other exit codes - show stderr to user only
 
 ### Stop
 
-Source: `chunk-nyc4mmse.js` · offset 206024781 · sha256 `7510886e…`
+Source: `chunk-3ak8hnaq.js` · offset 214183165 · sha256 `7510886e…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#stop
 
@@ -271,7 +271,7 @@ Other exit codes - show stderr to user only
 
 ### StopFailure
 
-Source: `chunk-nyc4mmse.js` · offset 206025001 · sha256 `91c9a01e…`
+Source: `chunk-3ak8hnaq.js` · offset 214183385 · sha256 `91c9a01e…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#stopfailure
 
@@ -293,7 +293,7 @@ Fires instead of Stop when an API error (rate limit, auth failure, etc.) ended t
 
 ### SubagentStart
 
-Source: `chunk-nyc4mmse.js` · offset 206025538 · sha256 `9136568b…`
+Source: `chunk-3ak8hnaq.js` · offset 214183922 · sha256 `9136568b…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#subagentstart
 
@@ -320,7 +320,7 @@ Other exit codes - show stderr to user only
 
 ### SubagentStop
 
-Source: `chunk-nyc4mmse.js` · offset 206025889 · sha256 `8d6b6694…`
+Source: `chunk-3ak8hnaq.js` · offset 214184273 · sha256 `8d6b6694…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#subagentstop
 
@@ -347,7 +347,7 @@ Other exit codes - show stderr to user only
 
 ### PreCompact
 
-Source: `chunk-nyc4mmse.js` · offset 206026237 · sha256 `e5ebe813…`
+Source: `chunk-3ak8hnaq.js` · offset 214184621 · sha256 `e5ebe813…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#precompact
 
@@ -372,7 +372,7 @@ Other exit codes - show stderr to user only but continue with compaction
 
 ### PostCompact
 
-Source: `chunk-nyc4mmse.js` · offset 206026586 · sha256 `00b08406…`
+Source: `chunk-3ak8hnaq.js` · offset 214184970 · sha256 `00b08406…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#postcompact
 
@@ -396,7 +396,7 @@ Other exit codes - show stderr to user only
 
 ### PreModelSwitch
 
-Source: `chunk-nyc4mmse.js` · offset 206026904 · sha256 `d4c9310e…`
+Source: `chunk-3ak8hnaq.js` · offset 214185288 · sha256 `d4c9310e…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#premodelswitch
 
@@ -423,7 +423,7 @@ Other exit codes - show stderr to user only and continue
 
 ### PostModelSwitch
 
-Source: `chunk-nyc4mmse.js` · offset 206027367 · sha256 `ba636219…`
+Source: `chunk-3ak8hnaq.js` · offset 214185751 · sha256 `ba636219…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#postmodelswitch
 
@@ -449,7 +449,7 @@ Other exit codes - show stderr to user only
 
 ### PermissionRequest
 
-Source: `chunk-nyc4mmse.js` · offset 206027984 · sha256 `5273aa44…`
+Source: `chunk-3ak8hnaq.js` · offset 214186368 · sha256 `5273aa44…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#permissionrequest
 
@@ -476,7 +476,7 @@ Other exit codes - show stderr to user only
 
 ### PermissionDenied
 
-Source: `chunk-nyc4mmse.js` · offset 206023006 · sha256 `621bd495…`
+Source: `chunk-3ak8hnaq.js` · offset 214181390 · sha256 `621bd495…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#permissiondenied
 
@@ -503,7 +503,7 @@ Other exit codes - show stderr to user only
 
 ### Setup
 
-Source: `chunk-nyc4mmse.js` · offset 206028342 · sha256 `c1e52a7a…`
+Source: `chunk-3ak8hnaq.js` · offset 214186726 · sha256 `c1e52a7a…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#setup
 
@@ -530,7 +530,7 @@ Other exit codes - show stderr to user only
 
 ### TeammateIdle
 
-Source: `chunk-nyc4mmse.js` · offset 206028685 · sha256 `50951a92…`
+Source: `chunk-3ak8hnaq.js` · offset 214187069 · sha256 `50951a92…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#teammateidle
 
@@ -555,7 +555,7 @@ Other exit codes - show stderr to user only
 
 ### TaskCreated
 
-Source: `chunk-nyc4mmse.js` · offset 206028977 · sha256 `15885caa…`
+Source: `chunk-3ak8hnaq.js` · offset 214187361 · sha256 `15885caa…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#taskcreated
 
@@ -580,7 +580,7 @@ Other exit codes - show stderr to user only
 
 ### TaskCompleted
 
-Source: `chunk-nyc4mmse.js` · offset 206029302 · sha256 `c5c38393…`
+Source: `chunk-3ak8hnaq.js` · offset 214187686 · sha256 `c5c38393…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#taskcompleted
 
@@ -605,7 +605,7 @@ Other exit codes - show stderr to user only
 
 ### Elicitation
 
-Source: `chunk-nyc4mmse.js` · offset 206029639 · sha256 `8e5c88f4…`
+Source: `chunk-3ak8hnaq.js` · offset 214188023 · sha256 `8e5c88f4…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#elicitation
 
@@ -633,7 +633,7 @@ Other exit codes - show stderr to user only
 
 ### ElicitationResult
 
-Source: `chunk-nyc4mmse.js` · offset 206030087 · sha256 `feda6eee…`
+Source: `chunk-3ak8hnaq.js` · offset 214188471 · sha256 `feda6eee…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#elicitationresult
 
@@ -661,7 +661,7 @@ Other exit codes - show stderr to user only
 
 ### ConfigChange
 
-Source: `chunk-nyc4mmse.js` · offset 206030571 · sha256 `2f6536a0…`
+Source: `chunk-3ak8hnaq.js` · offset 214188955 · sha256 `2f6536a0…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#configchange
 
@@ -686,7 +686,7 @@ Other exit codes - show stderr to user only
 
 ### WorktreeCreate
 
-Source: `chunk-nyc4mmse.js` · offset 206031835 · sha256 `15bd16da…`
+Source: `chunk-3ak8hnaq.js` · offset 214190219 · sha256 `15bd16da…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#worktreecreate
 
@@ -713,7 +713,7 @@ Other exit codes - worktree creation failed
 
 ### WorktreeRemove
 
-Source: `chunk-nyc4mmse.js` · offset 206032138 · sha256 `0d5a6e0a…`
+Source: `chunk-3ak8hnaq.js` · offset 214190522 · sha256 `0d5a6e0a…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#worktreeremove
 
@@ -737,7 +737,7 @@ Other exit codes - show stderr to user only
 
 ### InstructionsLoaded
 
-Source: `chunk-nyc4mmse.js` · offset 206031066 · sha256 `670752ef…`
+Source: `chunk-3ak8hnaq.js` · offset 214189450 · sha256 `670752ef…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#instructionsloaded
 
@@ -762,7 +762,7 @@ This hook is observability-only and does not support blocking.
 
 ### CwdChanged
 
-Source: `chunk-nyc4mmse.js` · offset 206032372 · sha256 `aa434ac8…`
+Source: `chunk-3ak8hnaq.js` · offset 214190756 · sha256 `aa434ac8…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#cwdchanged
 
@@ -790,7 +790,7 @@ Other exit codes - show stderr to user only
 
 ### FileChanged
 
-Source: `chunk-nyc4mmse.js` · offset 206032801 · sha256 `564f4da1…`
+Source: `chunk-3ak8hnaq.js` · offset 214191185 · sha256 `564f4da1…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#filechanged
 
@@ -819,7 +819,7 @@ Other exit codes - show stderr to user only
 
 ### DirectoryAdded
 
-Source: `chunk-nyc4mmse.js` · offset 206033364 · sha256 `27780e0b…`
+Source: `chunk-3ak8hnaq.js` · offset 214191748 · sha256 `27780e0b…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#directoryadded
 
@@ -844,7 +844,7 @@ Other exit codes - stderr is debug-logged on both paths; for /add-dir, a failure
 
 ### MessageDisplay
 
-Source: `chunk-nyc4mmse.js` · offset 206034194 · sha256 `b0267654…`
+Source: `chunk-3ak8hnaq.js` · offset 214192578 · sha256 `b0267654…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#messagedisplay
 
@@ -874,7 +874,7 @@ Other exit codes - display the original delta
 
 ### Common input fields
 
-Source: `chunk-7h50ka43.js` · offset 180707335 · sha256 `76978e66…`
+Source: `chunk-pm56fyce.js` · offset 187125158 · sha256 `229c0311…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#common-input-fields
 
@@ -891,7 +891,7 @@ Fields every hook input carries: the typed base schema that each event's input s
 
 ### JSON output fields
 
-Source: `chunk-x6ax856p.js` · offset 186250135 · sha256 `28d357d8…`
+Source: `chunk-exevr2hy.js` · offset 193381120 · sha256 `943e8002…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#json-output
 
@@ -909,7 +909,7 @@ Top-level fields a hook may print as JSON on stdout; per-event fields go in `hoo
 
 ### type: "command"
 
-Source: `chunk-ey40d6gf.js` · offset 179814387 · sha256 `0cc68a76…`
+Source: `chunk-8mqjkh8a.js` · offset 187774028 · sha256 `0cc68a76…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#command-hook-fields
 
@@ -920,6 +920,7 @@ Hook handler entry in a matcher's `hooks` array, selected by `type` (settings sc
 - `if`: string, optional — Permission rule syntax to filter when this hook runs (e.g., "Bash(git *)"). Only runs if the tool call matches the pattern. Avoids spawning hooks for non-matching commands.
 - `shell`: "bash" | "powershell", optional — Shell interpreter. 'bash' uses your $SHELL (bash/zsh/sh); 'powershell' uses pwsh. Defaults to bash (powershell on Windows without Git Bash).
 - `timeout`: number (> 0), optional — Timeout in seconds for this specific command
+- `onFailure`: "continue" | "block", optional — What a failure of this hook does: it could not start (a missing script or plugin directory), timed out, exited with a code other than 0 or 2, or printed JSON that is invalid or fails validation. 'continue' (default): the failure is reported and the action goes ahead. 'block': the failure counts as exit code 2, so the action the event guards (a tool call, a permission request, a prompt) is blocked. Ignored for async hooks and on Stop, SubagentStop, TaskCompleted and TeammateIdle.
 - `statusMessage`: string, optional — Custom status message to display in spinner while hook runs
 - `once`: boolean, optional — If true, hook runs once and is removed after execution
 - `async`: boolean, optional — If true, hook runs in background without blocking
@@ -934,7 +935,7 @@ Shell command hook type
 
 ### type: "prompt"
 
-Source: `chunk-ey40d6gf.js` · offset 179816813 · sha256 `e6bbff9e…`
+Source: `chunk-8mqjkh8a.js` · offset 187776469 · sha256 `e6bbff9e…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#prompt-and-agent-hook-fields
 
@@ -954,7 +955,7 @@ LLM prompt hook type
 
 ### type: "agent"
 
-Source: `chunk-ey40d6gf.js` · offset 179819681 · sha256 `5c0c1dc8…`
+Source: `chunk-8mqjkh8a.js` · offset 187779352 · sha256 `5c0c1dc8…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#prompt-and-agent-hook-fields
 
@@ -973,7 +974,7 @@ Agentic verifier hook type
 
 ### type: "http"
 
-Source: `chunk-ey40d6gf.js` · offset 179818386 · sha256 `30ff3ee9…`
+Source: `chunk-8mqjkh8a.js` · offset 187778042 · sha256 `30ff3ee9…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#http-hook-fields
 
@@ -982,6 +983,7 @@ Hook handler entry in a matcher's `hooks` array, selected by `type` (settings sc
 - `url`: string (URL) — URL to POST the hook input JSON to
 - `if`: string, optional — Permission rule syntax to filter when this hook runs (e.g., "Bash(git *)"). Only runs if the tool call matches the pattern. Avoids spawning hooks for non-matching commands.
 - `timeout`: number (> 0), optional — Timeout in seconds for this specific request
+- `onFailure`: "continue" | "block", optional — What a failure of this hook does: it could not start (a missing script or plugin directory), timed out, exited with a code other than 0 or 2, or printed JSON that is invalid or fails validation. 'continue' (default): the failure is reported and the action goes ahead. 'block': the failure counts as exit code 2, so the action the event guards (a tool call, a permission request, a prompt) is blocked. Ignored for async hooks and on Stop, SubagentStop, TaskCompleted and TeammateIdle.
 - `headers`: record<string, string>, optional — Additional headers to include in the request. Values may reference environment variables using $VAR_NAME or ${VAR_NAME} syntax (e.g., "Authorization": "Bearer $MY_TOKEN"). Only variables listed in allowedEnvVars will be interpolated.
 - `allowedEnvVars`: array of string, optional — Explicit list of environment variable names that may be interpolated in header values. Only variables listed here will be resolved; all other $VAR references are left as empty strings. Required for env var interpolation to work.
 - `statusMessage`: string, optional — Custom status message to display in spinner while hook runs
@@ -994,7 +996,7 @@ HTTP hook type
 
 ### type: "mcp_tool"
 
-Source: `chunk-ey40d6gf.js` · offset 179817730 · sha256 `980e5a44…`
+Source: `chunk-8mqjkh8a.js` · offset 187777386 · sha256 `980e5a44…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#mcp-tool-hook-fields
 
@@ -1014,7 +1016,7 @@ MCP tool hook type
 
 ### Matcher entry
 
-Source: `chunk-ey40d6gf.js` · offset 179820559 · sha256 `097bcb64…`
+Source: `chunk-8mqjkh8a.js` · offset 187780230 · sha256 `bfd6a04e…`
 
 Status: documented at https://code.claude.com/docs/en/hooks#matcher-patterns
 
