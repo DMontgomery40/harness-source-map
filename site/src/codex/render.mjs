@@ -194,6 +194,30 @@ function stripEditorialTitle(source) {
     : source;
 }
 
+// The combined reference need not repeat JSON indentation from every source page.
+// Remove only insignificant whitespace: retain string escapes and numeric lexemes,
+// including integers that cannot be represented exactly by JavaScript numbers.
+function compactJsonWhitespace(source) {
+  try { JSON.parse(source); } catch { return source; }
+  const parts = [];
+  let start = 0, quoted = false, escaped = false;
+  for (let i = 0; i < source.length; i++) {
+    const char = source[i];
+    if (quoted) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === '"') quoted = false;
+    } else if (char === '"') quoted = true;
+    else if (char === " " || char === "\t" || char === "\r" || char === "\n") {
+      parts.push(source.slice(start, i));
+      while (i + 1 < source.length && /[ \t\r\n]/.test(source[i + 1])) i++;
+      start = i + 1;
+    }
+  }
+  parts.push(source.slice(start));
+  return parts.join("");
+}
+
 function renderStructuredSource(document, anchor, ids) {
   const metadata = JSON.parse(document.source);
   const groups = new Map();
@@ -231,6 +255,8 @@ function renderDocument(document, ids) {
     if (wrapped.matched !== document.filter.records.length) throw new Error(`${document.path}: tagged ${wrapped.matched} of ${document.filter.records.length} entries`);
     body = `${filterBar(document.filter, wrapped.matched)}<div class="markdown-body">${wrapped.html}</div>`;
   }
+  const compactSource = document.format === "source" && !document.searchRecords?.length
+    ? compactJsonWhitespace(document.source) : document.source;
   return {
     path: document.navKey ?? document.path,
     anchor,
@@ -244,6 +270,8 @@ function renderDocument(document, ids) {
     promptText: document.promptText === true,
     records: document.searchRecords,
     content: body,
+    indexContent: compactSource === document.source ? body
+      : `<pre class="source-block"><code>${escapeHtml(compactSource)}</code></pre>`,
     filterVocabulary: document.filter?.vocabulary,
     outline,
     // A long page (`outlineDepth`) lists only its groups in the sidebar, not every entry.
@@ -257,14 +285,14 @@ function kicker(document) {
   return document.snapshot ? `${document.category} · Snapshot from ${document.snapshot}` : document.category;
 }
 
-function documentPanel(document) {
+function documentPanel(document, routes) {
   return `
     <details class="document" id="${document.anchor}" aria-labelledby="${document.anchor}-title"${document.defaultOpen ? " open" : ""}>
       <summary class="document-summary">
         <div class="document-kicker">${escapeHtml(kicker(document))}</div>
         <h2 id="${document.anchor}-title">${escapeHtml(document.title)}</h2>
       </summary>
-      <div class="document-content">${document.content}</div>
+      <div class="document-content">${document.indexContent !== document.content ? `<p class="source-raw"><a href="${escapeHtml(routes.slug(document.anchor))}/">Open formatted source</a></p>` : ""}${document.indexContent}</div>
     </details>`;
 }
 
@@ -513,7 +541,7 @@ ${current ? documentArticle(current, routes) : `      <header>
         <p class="dek">${escapeHtml(profile.dek)}</p>
 ${profile.front(rendered)}${profile.guide ? profile.guide(rendered) : ""}
       </header>
-${rendered.map(documentPanel).join("\n")}`}
+${rendered.map(document => documentPanel(document, routes)).join("\n")}`}
     </div>
   </main>
   <script>
