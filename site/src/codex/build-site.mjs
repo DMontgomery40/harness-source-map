@@ -4,6 +4,7 @@ import { expandFacts } from "../shared/facts.mjs";
 import { CODEX_PROFILE, renderSite } from "./render.mjs";
 import { selectRecordSections } from "../shared/record-sections.mjs";
 import { assertStructuredInventoryCoverage, loadSearchRecords, logSearchStats } from "../shared/search-index.mjs";
+import { loadReleaseTags, tagDocument } from "../shared/release-tags.mjs";
 
 const displayReplacements = [
   ["token-gremlin-https-x-com-tokengremlin", "aeon-daybreak-binwalk-extraction"]
@@ -27,8 +28,9 @@ async function removeDocumentPages(outDir) {
 
 // Builds one product's reference section with the shared renderer; `profile` names the product
 // (render.mjs CODEX_PROFILE is the Codex/ChatGPT section's).
-export async function buildSite({ sourceRoot, outFile, categories, profile = CODEX_PROFILE }) {
+export async function buildSite({ sourceRoot, outFile, categories, profile = CODEX_PROFILE, fullInventory = false }) {
   const documents = [];
+  const release = await loadReleaseTags({ product: profile.product, sourceRoot, categories, fullInventory });
 
   for (const category of categories) {
     for (const file of category.files) {
@@ -43,13 +45,14 @@ export async function buildSite({ sourceRoot, outFile, categories, profile = COD
         if (file.filters) {
           const records = JSON.parse(await readFile(path.join(sourceRoot, file.filters.records), "utf8")).items.filter(r => !file.includeRecord || file.includeRecord(r));
           const tags = JSON.parse(await readFile(path.join(sourceRoot, file.filters.tags), "utf8"));
-          filter = { vocabulary: tags.tags, records: records.map(r => ({ group: r.group, title: r.title, tags: tags.items[r.id] ?? [] })) };
+          filter = { vocabulary: tags.tags, records: records.map(r => ({ id: r.id, group: r.group, title: r.title, tags: tags.items[r.id] ?? [] })) };
           // Chips count this page's entries; a tag no entry here carries is not offered.
           filter.vocabulary = filter.vocabulary.map(tag => ({ ...tag, count: filter.records.filter(r => r.tags.includes(tag.id)).length })).filter(tag => tag.count);
         }
         // The search index's records say what the pages say: the same display-path rewrite.
         const searchRecords = await loadSearchRecords({ sourceRoot, file, transform: rewriteDisplayPaths });
-        documents.push({ ...file, category: category.label, source, filter, searchRecords });
+        const tagged = tagDocument(file, category.label, searchRecords, filter, release);
+        documents.push({ ...file, category: category.label, source, filter: tagged.filter, searchRecords: tagged.records, isNew: tagged.isNew });
       } catch (error) {
         throw new Error(`Unable to read ${file.path}: ${error.message}`, {
           cause: error

@@ -1,4 +1,5 @@
 import { escapeHtml, fileAnchor } from "./render.mjs";
+import { releaseBadge } from "../shared/release-tags.mjs";
 
 // Sidebar navigation modeled on the OpenAI Model Spec: every document is always listed,
 // and a document's headings (two levels deep) appear only while that part of the page
@@ -114,7 +115,7 @@ export function renderToc(categories, outlines, href, siteName, feature) {
             ${category.files
               .map(file => {
                 const anchor = fileAnchor(file.path);
-                const title = escapeHtml(file.title ?? file.path.split("/").at(-1));
+                const title = escapeHtml(file.title ?? file.path.split("/").at(-1)) + (file.isNew ? releaseBadge() : "");
                 const children = renderItems(outlineTree(outlines.get(file.path) ?? []), 1, id => href(file.path, id));
                 return `<li data-document="${anchor}"><a href="${href(file.path)}" data-depth="0">${title}</a>${children}</li>`;
               })

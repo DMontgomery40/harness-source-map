@@ -36,9 +36,9 @@ const PRODUCT_ALIASES = new Map([
 const low = s => String(s ?? "").toLowerCase();
 
 // The query language: words (AND), "exact phrases", -exclusions, kind:env or the env: shorthand,
-// in:codex / in:claude-code, is:documented / is:undocumented. An unknown `word:` stays a word.
+// in:codex / in:claude-code, is:documented / is:undocumented / is:new. An unknown `word:` stays a word.
 export function parseQuery(input) {
-  const q = { terms: [], excludes: [], kinds: new Set(), products: new Set(), documented: null, raw: String(input ?? "") };
+  const q = { terms: [], excludes: [], kinds: new Set(), products: new Set(), documented: null, isNew: null, raw: String(input ?? "") };
   const s = q.raw;
   let i = 0;
   const readPhrase = () => {
@@ -74,6 +74,7 @@ export function parseQuery(input) {
         else if (key === "is") {
           if (/^(?:un|not-?)doc(?:umented)?$/.test(v)) q.documented = false;
           else if (/^doc(?:umented)?$/.test(v)) q.documented = true;
+          else if (v === "new") q.isNew = true;
           else if (v) q.terms.push({ text: `is:${v}`, phrase: false });
         } else {
           q.kinds.add(KIND_BY_PREFIX.get(key));
@@ -91,7 +92,7 @@ export function parseQuery(input) {
 }
 
 // True when the query asks for anything (words or filters).
-export const hasQuery = q => q.terms.length > 0 || q.kinds.size > 0 || q.products.size > 0 || q.documented !== null;
+export const hasQuery = q => q.terms.length > 0 || q.kinds.size > 0 || q.products.size > 0 || q.documented !== null || q.isNew === true;
 
 // Where the words of an identifier or a title start: after a separator, at a camelCase hump,
 // at a letter/digit change. OTEL_LOG_RAW_API_BODIES → 0,5,9,13,17; promptCacheTtl → 0,6,11.
@@ -202,6 +203,7 @@ export function passes(item, q, { kinds = q.kinds } = {}) {
   if (kinds.size && !kinds.has(item.kind)) return false;
   if (q.products.size && item.product && !q.products.has(item.product)) return false;
   if (q.documented !== null && item.documented !== q.documented) return false;
+  if (q.isNew === true && !item.tags?.includes("New")) return false;
   for (const x of q.excludes) if (item.tl.includes(x.text) || item.cl.includes(x.text) || item.bl?.includes(x.text)) return false;
   return true;
 }
@@ -380,6 +382,7 @@ export function indexItems(index, { product, label } = {}) {
     out.push(prepare({
       kind: "page", title: page.t, product, productLabel: label, page: page.t, category: page.c, excerpt: page.d ?? "",
       count: page.n ?? 0, featured: !!page.f, href: itemHref(index, { p }),
+      tags: page.nw ? ["New"] : [],
       context: [page.c, page.d, page.s].filter(Boolean).join(" · ")
     }));
   });

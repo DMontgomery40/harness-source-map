@@ -231,7 +231,7 @@ export const categories = [
         records: { file: "outputs/host-tool-registry-2026-10-04.json", lists: ["tools"], kind: "tool" },
         snapshot: "October 4, 2026",
         format: "source",
-        title: "Host tool capture (October 4)",
+        title: "Host tool capture",
         defaultOpen: false
       },
       {
@@ -241,7 +241,7 @@ export const categories = [
         records: { file: "outputs/current-host-tool-manifest-2026-09-24.json", lists: ["tools", "direct_tools"], kind: "tool" },
         snapshot: "September 24, 2026",
         format: "source",
-        title: "Host tool capture (September 24)",
+        title: "Earlier host tool capture",
         defaultOpen: false
       },
       {
@@ -351,7 +351,7 @@ export const categories = [
   {
     label: "Evidence and archive",
     files: [
-      { path: "outputs/security-review-map-2026-09-24.md", anchor: "security-review-map-2026-09-24-md", slug: "key-findings-2026-09-24", snapshot: "September 24, 2026", format: "markdown", title: "Key findings, September 24", defaultOpen: false },
+      { path: "outputs/security-review-map-2026-09-24.md", anchor: "security-review-map-2026-09-24-md", slug: "key-findings-2026-09-24", snapshot: "September 24, 2026", format: "markdown", title: "Earlier key findings", defaultOpen: false },
       { path: "outputs/devday-surface-coverage.json", anchor: "devday-surface-coverage-json", slug: "devday-surface-coverage-records", format: "source", title: "Dev Day surface records", defaultOpen: false },
       {
         path: "outputs/prompt-provenance-inventory.json",
@@ -451,7 +451,7 @@ export const categories = [
         slug: "binwalk-report",
         snapshot: "September 24, 2026",
         format: "markdown",
-        title: "Binwalk report, September 24 (archive)",
+        title: "Binwalk report (archive)",
         defaultOpen: false
       },
       {
@@ -493,3 +493,13 @@ export const categories = [
     ]
   }
 ];
+
+// One-time captures belong to the archive. The current reference and its default
+// open panels follow the installed release; capture metadata and shared URLs remain.
+const archive = categories.find(category => category.label === "Evidence and archive");
+const captures = [];
+for (const category of categories.filter(category => category !== archive)) {
+  captures.push(...category.files.filter(file => file.snapshot).map(file => ({ ...file, defaultOpen: false })));
+  category.files = category.files.filter(file => !file.snapshot);
+}
+archive.files.unshift(...captures);
