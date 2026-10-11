@@ -1,7 +1,7 @@
 {
   "product": "claude-code",
   "extractedVersion": "2.1.295",
-  "generated": "2026-10-08",
+  "generated": "2026-10-11",
   "sources": [
     {
       "id": "claude-code.transcript",
@@ -2410,8 +2410,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 7632019,
-          "literal": "mwt=\"claude-code-sessions\",gwt=\"local_\""
+          "offset": 10220465,
+          "literal": "lb=\"claude-code-sessions\",ub=\"local_\""
         }
       ],
       "credential": false,
@@ -2454,8 +2454,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 7142503,
-          "literal": "ZS=\"local-agent-mode-sessions\""
+          "offset": 10451227,
+          "literal": "uC=\"local-agent-mode-sessions\""
         }
       ],
       "credential": false,
@@ -2483,8 +2483,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 3181874,
-          "literal": "const t=S.join(r,\"audit.jsonl\")"
+          "offset": 18891397,
+          "literal": "let i=r.default.join(e,\"audit.jsonl\")"
         }
       ],
       "credential": false,
@@ -2505,8 +2505,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 7142503,
-          "literal": "ZS=\"local-agent-mode-sessions\""
+          "offset": 10451227,
+          "literal": "uC=\"local-agent-mode-sessions\""
         }
       ],
       "credential": false,
@@ -2527,8 +2527,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 7652255,
-          "literal": "\"claude-code-vm\");const t=khe()"
+          "offset": 12119856,
+          "literal": "this.vmStorageDir=n.default.join(a.app.getPath(\"userData\"),\"claude-code-vm\")"
         }
       ],
       "credential": false,

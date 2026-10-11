@@ -35,6 +35,7 @@
     "page:intelligent-ui": "ChatGPT 26.1002.52244 (13536) / codex-cli 0.162.0-alpha.2",
     "page:key-findings": null,
     "page:luna-base-instructions": null,
+    "page:memory-pipeline": "ChatGPT 26.1002.52244 (13536) / codex-cli 0.162.0-alpha.2",
     "page:other-catalog-models": null,
     "page:package-scan": null,
     "page:persistent-mode-instructions": null,
@@ -2294,5 +2295,5 @@
     "record:outputs/intelligent-ui.json:tweak": "ChatGPT 26.1002.52244 (13536) / codex-cli 0.162.0-alpha.2",
     "record:outputs/intelligent-ui.json:visualize": "ChatGPT 26.1002.52244 (13536) / codex-cli 0.162.0-alpha.2"
   },
-  "inventory_sha256": "1900c5e3e0cb9269e0cb455a1c09d464cfbd23b126f5d1b8982d7270a2a7089b"
+  "inventory_sha256": "a8a8e214223542725822e63d2bbfe2c1fa1676c238fa1e32d1268cd928479b33"
 }

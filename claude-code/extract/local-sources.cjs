@@ -280,21 +280,21 @@ addD({id:'desktop-code-session',path:DS+'/claude-code-sessions/<account id>/<org
  what:'Claude desktop app record of a Claude Code session it launched: the CLI session id, folder, model, title, permission mode, plan path and enabled MCP tools.',
  fields:['sessionId','cliSessionId','cwd','originCwd','createdAt','lastActivityAt','model','isArchived','title','permissionMode','planPath','enabledMcpTools','remoteMcpServersConfig'],
  join:'exact',joinKey:'cliSessionId equals the CLI session id. Unverified: for none of the 10 records on this machine was a matching transcript found under ~/.claude/projects (cleaned up, or kept elsewhere)',retention:'desktopSessionCleanupPeriodDays (setting in the CLI schema); desktop policy not traced',writer:'Claude desktop app',
- aevidence:['mwt="claude-code-sessions",gwt="local_"'],notes:'Desktop app store (evidence from app.asar, not the CLI bundle).'});
+ aevidence:['lb="claude-code-sessions",ub="local_"'],notes:'Desktop app store (evidence from app.asar, not the CLI bundle).'});
 addD({id:'desktop-agent-session',path:DS+'/local-agent-mode-sessions/<account id>/<org id>/local_<id>.json',kind:'json',
  what:'Desktop local agent-mode session record, including the system prompt, first message, slash commands, approved tools, egress and Chrome permissions it ran with.',
  fields:['sessionId','processName','cliSessionId','cwd','userSelectedFolders','createdAt','lastActivityAt','model','title','vmProcessName','initialMessage','slashCommands','enabledMcpTools','remoteMcpServersConfig','chromePermissionMode','chromeAllowedDomains','approvedToolNames','egressAllowedDomains','systemPrompt','accountName','emailAddress'],
- join:'exact',joinKey:'cliSessionId; verified: all 16 records on this machine have that transcript in their own .claude/projects',retention:'not traced',writer:'Claude desktop app',aevidence:['ZS="local-agent-mode-sessions"'],notes:'Holds the systemPrompt the desktop passed in; account fields are personal data.'});
+ join:'exact',joinKey:'cliSessionId; verified: all 16 records on this machine have that transcript in their own .claude/projects',retention:'not traced',writer:'Claude desktop app',aevidence:['uC="local-agent-mode-sessions"'],notes:'Holds the systemPrompt the desktop passed in; account fields are personal data.'});
 addD({id:'desktop-agent-audit',path:DS+'/local-agent-mode-sessions/<account id>/<org id>/local_<id>/audit.jsonl',kind:'jsonl',
  what:'Signed audit log of every SDK message in a desktop agent-mode session.',fields:['type','uuid','session_id','parent_tool_use_id','message','_audit_timestamp'],
- join:'exact',joinKey:'session_id field',retention:'not traced',writer:'Claude desktop app (optionally signs each line)',aevidence:['const t=S.join(r,"audit.jsonl")']});
+ join:'exact',joinKey:'session_id field',retention:'not traced',writer:'Claude desktop app (optionally signs each line)',aevidence:['let i=r.default.join(e,"audit.jsonl")']});
 addD({id:'desktop-agent-config-dir',path:DS+'/local-agent-mode-sessions/<account id>/<org id>/local_<id>/{.claude/,uploads/,outputs/}',kind:'dir',
  what:'Per-session config dir for desktop agent-mode sessions, holding the session\'s own projects/<project>/<session id>.jsonl transcript, memory, session-env, shell-snapshots, plans and backups, plus uploaded and output files.',
- join:'exact',joinKey:'transcript file name is the CLI session id',retention:'not traced',writer:'Claude Code run by the desktop app',aevidence:['ZS="local-agent-mode-sessions"'],
+ join:'exact',joinKey:'transcript file name is the CLI session id',retention:'not traced',writer:'Claude Code run by the desktop app',aevidence:['uC="local-agent-mode-sessions"'],
  notes:'Found on disk: these sessions do not write to ~/.claude, so a ~/.claude-only scan misses them. How the app points CLAUDE_CONFIG_DIR here was not traced.'});
 addD({id:'desktop-bundled-cli',path:DS+'/{claude-code/<version>/claude.app,claude-code-vm/<version>/claude}',kind:'binary',
  what:'Claude Code builds the desktop app ships and runs its sessions with (host and VM).',join:'snapshot',joinKey:'version folder; the transcript version field',retention:'replaced on update',writer:'Claude desktop app',
- aevidence:['"claude-code-vm");const t=khe()'],notes:'Version-dependent: desktop sessions may run a different Claude Code version than the terminal CLI.'});
+ aevidence:['this.vmStorageDir=n.default.join(a.app.getPath("userData"),"claude-code-vm")'],notes:'Version-dependent: desktop sessions may run a different Claude Code version than the terminal CLI.'});
 
 // --check: write nothing; fail when evidence is gone from the build, or when the committed list differs from what
 // the build it names gives. work/extracted can hold a newer build than the committed list (a Claude Code refresh

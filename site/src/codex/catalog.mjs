@@ -206,6 +206,14 @@ export const categories = [
     label: "Tools and features",
     files: [
       {
+        path: "outputs/memory-pipeline.md",
+        anchor: "memory-pipeline-md",
+        slug: "memory-pipeline",
+        format: "markdown",
+        title: "Memory pipeline",
+        defaultOpen: false
+      },
+      {
         path: "outputs/feature-notes.md",
         anchor: "feature-notes-md",
         slug: "feature-notes",

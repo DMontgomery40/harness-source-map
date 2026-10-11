@@ -21,7 +21,7 @@ export const CODEX_PROFILE = {
   shareDescription: "ChatGPT Work evidence, Codex/ChatGPT GPT-6 instruction texts, desktop helper prompts, and voice tool evidence.",
   dek: "ChatGPT Work, Codex/ChatGPT GPT-6 instructions, desktop helpers, and voice evidence in one reference.",
   socialCard: { file: "prompt-map-social-card.png", alt: "Dark GPT-6 prompt source map card with a lime green winking face and Good takes detected stamp." },
-  featured: ["key-findings", "devday-update", "gpt-6-1-sol-base-instructions", "persistent-mode-instructions", "codex-config", "codex-env-vars", "codex-cli-prompts", "tool-manifest"],
+  featured: ["key-findings", "devday-update", "memory-pipeline", "gpt-6-1-sol-base-instructions", "persistent-mode-instructions", "codex-config", "codex-env-vars", "codex-cli-prompts", "tool-manifest"],
   intro: true,
   guide: renderGuide,
   front: () => ""
