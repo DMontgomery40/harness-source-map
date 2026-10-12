@@ -132,5 +132,6 @@ test("a record's title is its time, its telling fields and the start of its text
   const grepRow = { file: "a.log", line: 3, text: "2026-01-02T03:04:05.678Z info [Conn] routed id=1" };
   assert.match(R.recordTitle(grepRow, 0), /· routed · Conn · info$/);
   assert.ok(R.recordTitle({ name: "fork_thread", description: "Fork" }, 0).startsWith("1. fork_thread"));
+  assert.equal(R.recordTitle({ plugin: "example@fixture", status: "Files not found" }, 0), "1. example@fixture · Files not found");
   assert.equal(R.recordTitle([0.5, "o", "x"], 0), '1. [0.5,"o","x"]');
 });

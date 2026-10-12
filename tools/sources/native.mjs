@@ -88,14 +88,17 @@ export async function nativeContext(session, { home = homedir() } = {}) {
 // Allow root aliases such as /tmp -> /private/tmp, but reject symlinks at and below each
 // explicit discovery boundary. Read revalidates and uses O_NOFOLLOW for the final component.
 async function safeStat(root, file) {
-  if (!inside(root, file)) return null;
+  return (await inspectPath(root, file)).stat || null;
+}
+async function inspectPath(root, file) {
+  if (!inside(root, file)) return { status: 'Custom location' };
   try {
     let cur = root;
-    if ((await lstat(cur)).isSymbolicLink()) return null;
-    for (const bit of relative(root, file).split('/').filter(Boolean)) { cur = join(cur, bit); if ((await lstat(cur)).isSymbolicLink()) return null; }
+    if ((await lstat(cur)).isSymbolicLink()) return { status: 'Linked folder' };
+    for (const bit of relative(root, file).split('/').filter(Boolean)) { cur = join(cur, bit); if ((await lstat(cur)).isSymbolicLink()) return { status: 'Linked folder' }; }
     const [r, f] = await Promise.all([realpath(root), realpath(file)]);
-    return inside(r, f) ? await lstat(file) : null;
-  } catch { return null; }
+    return inside(r, f) ? { stat: await lstat(file) } : { status: 'Custom location' };
+  } catch (error) { return { status: ['ENOENT', 'ENOTDIR'].includes(error.code) ? 'Files not found' : 'Folder unreadable' }; }
 }
 async function ancestors(cwd, product) {
   if (!cwd) return [];
@@ -169,8 +172,11 @@ async function cursorPluginSpecs(ctx) {
       || (global?.enabledPlugins?.[id] === true ? entries.find(e => e?.scope === 'user') : null);
     if (!selected) continue;
     const p = absolute(selected.installPath);
-    const allowed = p && cacheRoots.some(root => p !== root && inside(root, p)) && (await safeStat(h, p))?.isDirectory();
-    rows.push({ plugin: id, scope: selected.scope, version: typeof selected.version === 'string' ? selected.version : null, source: 'compatibility registry', status: allowed ? 'currently enabled in settings' : 'blocked: outside fixed caches, missing or symlinked', ...(allowed ? { path: displayFile(p, ctx) } : {}) });
+    const location = !p ? { status: 'No install path' }
+      : !cacheRoots.some(root => p !== root && inside(root, p)) ? { status: 'Custom location' }
+      : await inspectPath(h, p);
+    const allowed = location.stat?.isDirectory();
+    rows.push({ plugin: id, scope: selected.scope, version: typeof selected.version === 'string' ? selected.version : null, source: 'compatibility registry', status: allowed ? 'Available' : location.status || 'Not a folder', ...(allowed ? { path: displayFile(p, ctx) } : {}) });
     if (allowed) roots.push({ path: p, plugin: id });
   }
   if (Object.keys(registry?.plugins || {}).length > PLUGIN_LIMIT) rows.push({ status: 'registry limited to 100 plugin identifiers' });

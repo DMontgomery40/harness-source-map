@@ -17,6 +17,19 @@ async function setup(t) {
 }
 const by = report => Object.fromEntries(report.sources.map(s => [s.id, s]));
 
+test('plugin lookup reports missing files separately from custom and linked locations', async t => {
+ const { home, put, cursor } = await setup(t);
+ const cache = '.claude/plugins/cache/fixture';
+ await put(`${cache}/present/1/skills/example/SKILL.md`, 'Local instruction');
+ await symlink(join(home, cache, 'present/1'), join(home, cache, 'linked'));
+ const paths = { present: `${cache}/present/1`, missing: `${cache}/missing/unknown`, linked: `${cache}/linked`, custom: 'other-plugin' };
+ await put('.claude/plugins/installed_plugins.json', JSON.stringify({ plugins: Object.fromEntries(Object.entries(paths).map(([id, path]) => [id, [{ scope: 'user', installPath: join(home, path) }]])) }));
+ await put('.claude/settings.json', JSON.stringify({ enabledPlugins: Object.fromEntries(Object.keys(paths).map(id => [id, true])) }));
+ const { rows } = await readSource(cursor(), 'cursor.plugin-registry', { home });
+ assert.deepEqual(Object.fromEntries(rows.map(r => [r.plugin, r.status])), { present: 'Available', missing: 'Files not found', linked: 'Linked folder', custom: 'Custom location' });
+ assert.equal(by(await sourcesReport(cursor(), { home }))['cursor.plugin-instructions'].count, 1);
+});
+
 test('OpenCode in-memory native metadata drives bounded ancestor instruction, skill and config snapshots', async t => {
  const { home, cwd, put, oc } = await setup(t);
  await put('AGENTS.md', 'Outside the repository boundary');
@@ -201,7 +214,7 @@ test('Cursor plugin roots, escaped manifest paths, symlinked files and unselecte
  const report = await sourcesReport(cursor(), { home }); assert.equal(by(report)['cursor.plugin-instructions'].count, 1);
  const skill = await readSource(cursor(), 'cursor.plugin-instructions', { home }); assert.equal(skill.text, 'Allowed skill');
  const denied = await readSource(cursor(), 'cursor.plugin-instructions', { home, part: secret }); assert.equal(denied.kind, 'note');
- const registry = await readSource(cursor(), 'cursor.plugin-registry', { home }); assert.ok(registry.rows.some(row => /outside fixed caches/.test(row.status))); assert.ok(registry.rows.some(row => /unsafe/.test(row.status)));
+ const registry = await readSource(cursor(), 'cursor.plugin-registry', { home }); assert.ok(registry.rows.some(row => row.status === 'Custom location')); assert.ok(registry.rows.some(row => /unsafe/.test(row.status)));
  // A symlinked manifest invalidates discovery rather than falling back to default directories.
  await rm(join(home, inside, '.claude-plugin/plugin.json'));
  await symlink(secret, join(home, inside, '.claude-plugin/plugin.json'));
