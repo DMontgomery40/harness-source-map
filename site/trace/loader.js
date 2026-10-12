@@ -4,6 +4,7 @@
 //
 // entries: [{ path, source }] where path is the dropped relative path (or an
 // absolute path in Node) and source is { name, size, slice(a, b) }.
+import { sessionId, OPENCODE_ID } from "./paste.js";
 import { readFirstLine, prepareIndex, indexFor } from "./model.js";
 import { isCodexFirstLine, parseCodexThread, buildCodexTrace, codexMeta } from "./adapters/codex.js";
 import { isClaudeRow, parseClaudeFile, buildClaudeTrace } from "./adapters/claude-code.js";
@@ -154,8 +155,26 @@ async function codexHead(source) {
 
 // Returns { session, found } for the hinted id, or null when the hint names no file.
 export async function narrowByHint(entries, hint, onProgress = () => {}) {
-  const id = ((String(hint).match(UUID) || [])[0] || "").toLowerCase();
+  const id = sessionId(String(hint)) || ((String(hint).match(UUID) || [])[0] || "").toLowerCase();
   if (!id) return null;
+  // Avoid scanning unrelated transcripts when a legacy filename already identifies the root.
+  const named = entries.find(e => /\.jsonl$/.test(e.path) && baseName(e.path).toLowerCase().includes(id));
+  const namedProduct = named ? (await sniff(named))?.product : null;
+  if (!['codex','claude-code'].includes(namedProduct) && !entries.some(e=>e.path.includes(`${id}/subagents/`))) {
+    const candidates = entries.filter(e => /\.jsonl?$/i.test(e.path) && !/(?:^|\/)rollout-|\/subagents\//.test(e.path));
+    const native = (await findSessions(candidates)).filter(s => ['opencode','cursor'].includes(s.product));
+    let nativeSession = native.find(s => s.id === id);
+    if (!nativeSession && OPENCODE_ID.test(id)) {
+      const family = native.find(s => s.entries.some(e => e.meta?.id === id));
+      if (family) {
+        const ids = new Set([id]);
+        for(let previous=-1;previous!==ids.size;){previous=ids.size;for(const e of family.entries)if(ids.has(e.meta?.parentID))ids.add(e.meta.id);}
+        nativeSession = (await findSessions(family.entries.filter(e => ids.has(e.meta?.id))))[0];
+      }
+    }
+    if (nativeSession) return {session:nativeSession,found:{product:nativeSession.product,id,files:nativeSession.entries.length,subagents:nativeSession.entries.length-1}};
+  }
+  if (OPENCODE_ID.test(id)) return null;
   const jsonl = entries.filter((e) => /\.jsonl$/.test(e.path));
   const bytes = (list) => list.reduce((n, f) => n + f.source.size, 0);
   const inFolder = (e, kind) => new RegExp(`(^|/)${id}/${kind}/`, "i").test(e.path);
@@ -165,7 +184,7 @@ export async function narrowByHint(entries, hint, onProgress = () => {}) {
   const ccRoot = jsonl.find((e) => baseName(e.path).toLowerCase() === `${id}.jsonl`);
   // agent-*.jsonl only: a Workflow run folder also holds its journal.jsonl, which is no transcript.
   const ccSubs = jsonl.filter((e) => inFolder(e, "subagents") && /^agent-[^/]+\.jsonl$/.test(baseName(e.path)));
-  if (ccRoot || ccSubs.length) {
+  if ((ccRoot && (await sniff(ccRoot))?.product === "claude-code") || ccSubs.length) {
     const loose = jsonl.filter((e) => /^agent-[^/]+\.jsonl$/.test(baseName(e.path)) && !/\/subagents\//.test(e.path) && !e.path.startsWith("subagents/"));
     report(0, loose.length + (ccRoot ? 1 : 0));
     const root = ccRoot ? { ...ccRoot, row: await sniff(ccRoot).then((s) => (s && s.row) || null) } : null;
@@ -187,7 +206,7 @@ export async function narrowByHint(entries, hint, onProgress = () => {}) {
 
   // Codex: the rollout named with the id, then its descendants in the time window.
   const cxRoot = jsonl.find((e) => /^rollout-/.test(baseName(e.path)) && baseName(e.path).toLowerCase().includes(id)) || jsonl.find((e) => baseName(e.path).toLowerCase().includes(id));
-  if (!cxRoot) return null;
+  if (!cxRoot || (await sniff(cxRoot))?.product !== "codex") return null;
   const start = uuid7Time(id) ?? (folderDay(cxRoot.path) != null ? folderDay(cxRoot.path) : null);
   const end = await lastTimestamp(cxRoot.source);
   const lo = start == null ? -Infinity : start - DAY;
@@ -256,10 +275,10 @@ async function readJson(source) {
 export async function loadTrace(entries, { root = null, onProgress = () => {}, index = null } = {}) {
   let sessions, pick;
   const skipped = []; // unhinted loads: files findSessions could not read or recognise
-  if (root && UUID.test(String(root))) {
+  if (root && (UUID.test(String(root)) || OPENCODE_ID.test(String(root)))) {
     // A hinted id: take its files by path, never sniffing unrelated sessions.
     const hit = await narrowByHint(entries, root, onProgress);
-    if (!hit) throw new Error(`Session ${root} isn't in the picked folder. Pick ~/.codex/sessions (or ~/.claude/projects)`);
+    if (!hit) throw new Error(`Session ${root} isn't in the picked folder. Pick ~/.codex/sessions, ~/.claude/projects, or the matching OpenCode/Cursor export folder; native stores need the local resolver`);
     pick = hit.session;
     sessions = [pick];
   } else {

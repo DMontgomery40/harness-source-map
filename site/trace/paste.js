@@ -1,7 +1,16 @@
-// Parse a pasted Codex thread link or Claude Code session identifier.
+// Parse a session identifier; bare UUIDs retain legacy folder hints, while the resolver checks content.
+export const OPENCODE_ID = /^ses_[A-Za-z0-9_-]{1,160}$/;
+export const SESSION_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export function sessionId(value) {
+  if (typeof value !== "string") return null;
+  return OPENCODE_ID.test(value) ? value : SESSION_UUID.test(value) ? value.toLowerCase() : null;
+}
 export function parsePaste(value) {
   const v = value.trim();
   if (!v) return null;
+  if (OPENCODE_ID.test(v)) return { product: "opencode", id: v };
+  const cursor = /^cursor:(?:\/\/(?:chat|session|composer)\/)?([0-9a-f-]+)$/i.exec(v);
+  if (cursor && SESSION_UUID.test(cursor[1])) return { product: "cursor", id: cursor[1].toLowerCase() };
   const candidate = (v.match(/[0-9a-f]{1,9}(?:-[0-9a-f]{1,5}){3}-[0-9a-f]{1,13}/i) || [])[0];
   if (candidate) {
     const sizes = [8, 4, 4, 4, 12];
@@ -20,5 +29,5 @@ export function parsePaste(value) {
     return { product: "codex", id: uuid, ms };
   }
   if (uuid) return { product: "claude-code", id: uuid, path: /\.jsonl$/.test(v) ? v : null };
-  return { error: "Paste a codex://threads/… link, a thread id, or a Claude Code session id or path." };
+  return { error: "Paste an OpenCode ses_… ID, Cursor or Claude Code session UUID, or Codex/ChatGPT thread link or ID." };
 }

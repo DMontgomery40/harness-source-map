@@ -36,3 +36,11 @@ test("unrelated text and empty input never offer a session open action", () => {
   assert.equal(result?.product, undefined);
   assert.match(result?.error || "", /paste/i);
 });
+
+
+test("OpenCode IDs preserve case and Cursor IDs can be explicitly qualified", () => {
+  assert.deepEqual(parsePaste("ses_TestMixedCase123"), { product: "opencode", id: "ses_TestMixedCase123" });
+  assert.deepEqual(parsePaste(`cursor:${cc}`), { product: "cursor", id: cc });
+  assert.deepEqual(parsePaste(`cursor://chat/${cc}`), { product: "cursor", id: cc });
+  assert.ok(parsePaste("ses_../../secret").error);
+});

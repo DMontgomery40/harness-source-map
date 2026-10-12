@@ -179,7 +179,7 @@ export function networkLens(S, A) {
     el("p", { class: "lede", text: `A network capture loaded with this ${productLabel(product)} session. Exact identifiers join traffic to the log; other requests remain unattributed. Credentials and identity were redacted in your browser as the capture was read; nothing is saved.` }));
   const readerSlot = el("div", { class: "net-reader-slot" });
   const unattributed = cap.entries.filter(e => e.association === 'unattributed').length;
-  out.push(el("p", { class: "meta net-source" }, `${cap.files.join(", ")} · ${fmtInt(cap.kept)} of ${fmtInt(cap.total)} requests displayed · ${fmtInt(cap.entries.length - unattributed)} associated · ${fmtInt(unattributed)} unattributed`,
+  out.push(el("p", { class: "meta net-source" }, `${cap.files.length > 3 ? "Network captures" : cap.files.join(", ")} · ${fmtInt(cap.kept)} of ${fmtInt(cap.total)} requests displayed · ${fmtInt(cap.entries.length - unattributed)} associated · ${fmtInt(unattributed)} unattributed`,
     cap.elsewhere ? ` · ${fmtInt(cap.elsewhere)} belonged to ${cap.otherSessions.length ? `other sessions (${cap.otherSessions.join(", ")})` : "other sessions"} and are left out` : "",
     " · ", el("button", { class: "linkbtn", type: "button", text: "Replace the capture", onclick: () => A.addCapture && A.addCapture() })), readerSlot);
   if (cap.notes.length) out.push(fold([plural(cap.notes.length, "note about this capture", "notes about this capture")], false, "net:notes", el("ul", { class: "net-notes" }, cap.notes.map((n) => el("li", { class: "note", text: n })))));

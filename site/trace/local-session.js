@@ -12,11 +12,12 @@ export async function openLocalSession(id, {fetcher=fetch,base=BASE}={}) {
   const result=await fetcher(base+'/v1/session',{method:'POST',credentials:'omit',redirect:'error',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({id,captures:true})});
   if(!result.ok){const error=await result.json().catch(()=>({}));throw new Error(error.error||'Could not open the local session');}
   const manifest=await result.json();
-  return manifest.files.map(file=>{
+  const files = manifest.files.map(file=>{
     const url=new URL(file.url,base);
     if(url.origin!==new URL(base).origin || !url.pathname.startsWith('/v1/file/'))throw new Error('Invalid local session file');
-    return {path:file.path,local:{path:file.path,size:file.size,url:url.href}};
+    return {path:file.path,kind:file.kind,local:{path:file.path,size:file.size,url:url.href}};
   });
+  return Object.assign(files,{warnings:Array.isArray(manifest.warnings)?manifest.warnings:[]});
 }
 
 // Whether the resolver answers this page: { ok: true, version } | { ok: false, blocked, prompt }. `blocked`
