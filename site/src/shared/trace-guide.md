@@ -22,6 +22,10 @@ The resolver searches `~/.harness-source-map/captures` and this checkout's priva
 
 ## A reliable computer-use workflow
 
+OpenCode and Cursor sessions expose **Local rules, skills & hooks** from the landscape. This opens recorded instruction evidence and current instruction files through the local resolver without needing a network capture. Current files are labeled as snapshots: their presence does not prove historical selection or execution. Recorded Cursor reminder envelopes and completed OpenCode skill loads enter the Injected layer directly. When a matching capture is available, decoded Cursor client context and OpenCode provider instructions add readable blocks to exactly joined requests; captured Cursor context is not a reconstruction of the downstream provider prompt.
+
+Each request with readable recorded reasoning has a **Show reasoning** action, including GLM reasoning from OpenCode. The network view also exposes received reasoning fields when the captured protocol contains them. Encrypted or unrecorded reasoning is labeled unavailable rather than reconstructed.
+
 Use the visible controls, labels and keyboard shortcuts. The canvas contains geometry; DOM text is usually more useful in the sidebar and reader. Prefer selecting a search result or request through those controls to guessing which tiny feature in a screenshot is the target.
 
 1. Start with the session overview. Press **Enter** with focus on the page to enter the main thread, then select the request of interest. **Escape** backs out one level; **o** returns to the overview.

@@ -199,7 +199,6 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
      const body=await readBody(req);if(body===null)return reply(413,{error:'Request too large'});if(!body)return reply(400,{error:'Invalid request'});
      const id=sessionId(body.id);if(!id)return reply(400,{error:'Invalid session ID'});
      const hit=await findSession(id);if(!hit)return reply(404,{error:'Session not found on this machine'});
-     if(!['codex','claude-code'].includes(hit.session.product))return reply(200,{unavailable:true,reason:'Additional local sources are not indexed for this product yet.'});
      if(url.pathname==='/v1/sources')return reply(200,await sourcesReport(hit.session,{home}));
      if(typeof body.source!=='string'||!/^[a-z0-9.-]{1,80}$/.test(body.source))return reply(400,{error:'Invalid source'});
      const offset=Number.isSafeInteger(body.offset)&&body.offset>=0?body.offset:0;const part=typeof body.part==='string'?body.part:null;

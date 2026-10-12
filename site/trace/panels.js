@@ -306,6 +306,8 @@ function lensPanel(S, A) {
     }
     const setup = setupSection(trace, root, A, peak);
     if (setup) out.push(disclosure("setup", "setup-disclosure", "Your instructions, skills & memory", false, setup));
+    if(['cursor','opencode'].includes(trace.product)&&A.openInstructions)
+      out.push(btn('Local rules, skills & hooks →',A.openInstructions,'linkbtn'));
     const shr = unloggedShrinks(root);
     const marks = [
       ...root.compactions.map(c => ({ t: c.t, text: `Compacted ${fmtTok(c.pre)} → ${fmtTok(c.post)}`, req: nearestRequest(root, c.t) })),
@@ -612,6 +614,7 @@ function requestPanel(trace, agent, req, S, A, callOffered = false) {
       ["Fresh", fmtInt(freshTokens(req)), "uncached + cache write + output"]]))
   ];
   const act = req.action;
+  if(req.contextEvidence)out.push(disclosure('request-evidence','source-evidence','Source details',false,el('p',{class:'note',text:req.contextEvidence})));
   if (act) {
     out.push(section("Action", el("div", { class: `action ${act.class}` },
       chip(STATUS[act.class]?.color || "#a9b4c2"),
@@ -626,7 +629,18 @@ function requestPanel(trace, agent, req, S, A, callOffered = false) {
     if (act.kind === "tool" && act.class !== "internal") out.push(custodySection(trace, agent, req, S, A));
   }
   if (wire) out.push(wire);
-  if (req.reasoning) out.push(el("p", { class: "note", text: req.reasoning.encrypted ? "Reasoning happened; the log keeps it encrypted." : "Reasoning happened for this request." }));
+  if (req.reasoning) {
+    const reasoning = req.reasoning;
+    // These are this response's output blocks, which need not be in its input window.
+    const blocks = [...new Set([...(reasoning.blocks || []), reasoning.block])]
+      .filter(i => Number.isInteger(i) && i >= 0).map(i => agent.blocks[i])
+      .filter(b => b?.ref && b.chars !== 0);
+    const readable = reasoning.readable !== false && !reasoning.encrypted ? blocks : [];
+    out.push(section("Reasoning", reasoning.encrypted || !(readable.length || reasoning.summary)
+      ? el("p", { class: "note", text: reasoning.encrypted ? "Encrypted" : "Text unavailable" }) : null,
+    readable.map((b, i) => refToggle(agent, b.ref, readable.length > 1 ? `reasoning ${i + 1}` : "reasoning", A, Infinity)),
+    reasoning.summary ? refToggle(agent, reasoning.summary, "reasoning summary", A, Infinity) : null));
+  }
   return out;
 }
 
@@ -717,7 +731,7 @@ function custodySection(trace, agent, req, S, A) {
 }
 
 // Expands a BlockRef's literal text in place (a tool call's input or its result).
-function refToggle(agent, ref, what, A) {
+function refToggle(agent, ref, what, A, maxChars = 200000) {
   const key = `ref:${what}`; // per view (panel-memory.js): this request's call or result
   const box = el("div", { class: "refbox", hidden: true });
   const show = () => {
@@ -728,7 +742,7 @@ function refToggle(agent, ref, what, A) {
     box.append(holder);
     A.getText(agent.id, ref).then(r => {
       const t = r?.text ?? "";
-      pre.textContent = t.length > 200000 ? `${t.slice(0, 200000)}\n\n[… ${fmtInt(t.length - 200000)} more characters]` : (t || "(empty)");
+      pre.textContent = t.length > maxChars ? `${t.slice(0, maxChars)}\n\n[… ${fmtInt(t.length - maxChars)} more characters]` : (t || "(empty)");
       readableIn(holder, pre, pre.textContent, { key: `ref|${agent.id}|${ref.file}|${ref.offset}` });
     }).catch(e => { pre.textContent = `Text unavailable: ${e?.message || e}`; });
   };
@@ -756,6 +770,7 @@ function stratumPanel(trace, agent, req, S, A) {
     el("h2", {}, chip(s.color), ` ${s.name}: ≈ ${fmtTok(req.strata?.[s.key] || 0)}`),
     el("p", { class: "lede", text: s.long })
   ];
+  if(rows.some(row=>row.b.capture)&&req.contextEvidence)out.push(disclosure('layer-evidence','source-evidence','Source details',false,el('p',{class:'note',text:req.contextEvidence})));
   // The block reader opens under the row that opened it (blockGroups); a block no group lists reads here.
   const claim = { done: false };
   const top = out.length;

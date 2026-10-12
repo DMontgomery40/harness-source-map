@@ -237,11 +237,14 @@ function getWorker() {
     } else if (data.type === "harness-error") {
       pendingHarness?.reject(new Error(data.message)); pendingHarness = null;
     } else if (data.type === "network-progress") {
+      if(data.id!==pendingNetwork?.id)return;
       const mb = n => `${(n / 1048576).toFixed(1)} MB`;
       netStatus(data.phase === "read" ? `Reading the capture: ${mb(data.done)} of ${mb(data.total)}…` : "Reading the requests, redacting identity and joining them to the log…", "busy");
     } else if (data.type === "network") {
-      pendingNetwork?.resolve(data.capture); pendingNetwork = null;
+      if(data.id!==pendingNetwork?.id)return;
+      pendingNetwork?.resolve({capture:data.capture,trace:data.trace}); pendingNetwork = null;
     } else if (data.type === "network-error") {
+      if(data.id!==pendingNetwork?.id)return;
       pendingNetwork?.reject(new Error(data.message)); pendingNetwork = null;
     } else if (data.type === "network-body") {
       const p = pendingBody.get(data.id);
@@ -318,6 +321,7 @@ async function parseInWorker(files, root, current=()=>true) {
 // Parsed, filtered, redacted and joined in the worker; the page keeps only the redacted summary in S.network
 // (never saved: not in history entries, IndexedDB or localStorage). Bodies are read from the worker on demand.
 let pendingNetwork = null;
+let networkSeq = 0;
 const pendingBody = new Map();
 let bodySeq = 0;
 const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode or Cursor desktop .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
@@ -350,25 +354,37 @@ function netStatus(msg, kind = "info") {
 }
 async function attachCapture(files) {
   if (!S.trace) return showError(HAR_ALONE);
+  const seq=++networkSeq;
   const btn = $("#add-capture");
   btn.disabled = true;
   netStatus("Reading the capture…", "busy");
   try {
-    const capture = await new Promise((resolve, reject) => {
+    const {capture,trace} = await new Promise((resolve, reject) => {
       pendingNetwork?.reject(new Error("replaced by another capture"));
-      pendingNetwork = { resolve, reject };
+      pendingNetwork = { resolve, reject, id:seq };
       // A session parsed here (the synthetic or developer load) goes along; the worker has no copy.
-      getWorker().postMessage({ type: "network", files, ...(text === workerText ? {} : { trace: S.trace }) });
+      getWorker().postMessage({ type: "network", id:seq, files, ...(text === workerText ? {} : { trace: S.trace }) });
     });
+    if(seq!==networkSeq)return;
     S.network = capture;
+    if(trace){
+      const camera=scene?.getView(),mode=S.mode;
+      trace.sourceWarnings=S.trace.sourceWarnings;
+      S.trace=normalize(trace);S.layout=buildLayout(S.trace);S.agent=S.agentId?agentById(S.agentId):null;S.block=null;
+      palette?.setTrace(S.trace);harness?.reset();
+      scene?.dispose();scene=null;shownKey=null;forgetPanels();
+      transport?.load(playbackFor(S.layout));buildHud();
+      await setMode(mode,()=>seq===networkSeq);if(seq!==networkSeq)return;if(camera)scene?.restoreView(camera);
+    }
     const n = capture.calls.length, matched = capture.join.matched;
     netStatus(`Network capture attached: ${fmtInt(capture.kept)} requests, ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${networkMatchCount(matched)}). Open “What went over the wire” (5).`, "ok");
     palette?.setNetwork?.(capture);
     buildLenses();
     render(false);
   } catch (e) {
+    if(seq!==networkSeq)return;
     netStatus(e.message || String(e), "error");
-  } finally { btn.disabled = false; netButton(); if (!$("#net-help").hidden) netHelp(true); helpUI?.refresh(); }
+  } finally { if(seq===networkSeq){btn.disabled = false; netButton(); if (!$("#net-help").hidden) netHelp(true); helpUI?.refresh();} }
 }
 // The capture button says whether this session has one; the card it opens says what a capture is, how
 // to record one and where Trace finds it, and offers the file picker for a .har already made.
@@ -415,6 +431,8 @@ function netHelp(open = $("#net-help").hidden) {
   ].filter(child => child != null && child !== false));
 }
 function clearCapture() {
+  networkSeq++;
+  $("#add-capture").disabled=false;
   S.network = null;
   S.netFocus = null;
   closeWireReader();
@@ -487,15 +505,15 @@ function openHelp(topic = null) {
 // when the lens opens, so a page from elsewhere never reaches for 127.0.0.1 unasked (a console error, and in
 // Chrome a local-network permission prompt). Without a resolver the lens says how to start one.
 let sourcesSeq = 0, sourcesAsked = -1;
-function sessionRootId() { return String((S.trace?.agents.find(a => a.kind === "root") || S.trace?.agents[0])?.id || "").toLowerCase(); }
+function sessionRootId() { return String((S.trace?.agents.find(a => a.kind === "root") || S.trace?.agents[0])?.id || ""); }
 const resolverInPlay = () => !publicExample && (location.origin === "http://127.0.0.1:8766" || !!lastFiles?.some(f => f.local));
 function loadSources() {
   if (sourcesAsked === sourcesSeq) return;
   sourcesAsked = sourcesSeq;
   const seq = sourcesSeq, id = sessionRootId();
-  const done = v => { if (seq !== sourcesSeq) return; S.sources = v; if (S.lens === SOURCES_LENS.key) render(false); helpUI?.refresh(); };
+  const done = v => { if (seq !== sourcesSeq) return; S.sources = v; if ([SOURCES_LENS.key,'context'].includes(S.lens)) render(false); helpUI?.refresh(); };
   if(publicExample) return done({unavailable:true,reason:"This public example uses published source logs only. Local machine sources are not requested."});
-  if (!/^[0-9a-f-]{36}$/.test(id)) return done({ unavailable: true, reason: "This session has no session id to look up." });
+  if (!/^(?:[0-9a-f-]{36}|ses_[A-Za-z0-9_-]{1,160})$/i.test(id)) return done({ unavailable: true, reason: "This session has no session id to look up." });
   localSources(id).then(r => done(r || { unavailable: true, reason: "The local resolver didn't answer this page: it isn't running, or this page isn't one it serves." }),
     e => done({ unavailable: true, reason: e.message || String(e) }));
 }
@@ -1357,6 +1375,7 @@ const A = {
   help: topic => openHelp(topic),
   // Everything on this machine (sources/panel.js): the report comes with the session; content on request.
   sourcesLens: view => sourcesLens({ ...view, sources: S.sources, sourceOpen: S.sourceOpen }, A),
+  openInstructions: () => selectLens(SOURCES_LENS.key),
   openSource(sourceId, opts = {}) {
     const id = sessionRootId(), seq = sourcesSeq;
     S.sourceOpen.set(sourceId, { loading: true, part: opts.part || null });

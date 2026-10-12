@@ -64,10 +64,13 @@ import { readRef, readRefLine, extractText, indexFor } from "./model.js";
 import { findText } from "./find.js";
 import { buildHarnessModel } from "./harness/pieces.js";
 import { analyzeCapture } from "./network/capture.js";
+import { projectInstructions } from './network/instructions.js';
 
 let sources = [];
 let index = null;
 let loaded = null; // the Trace the sources belong to, for find
+let nativeLoaded = null, nativeSources = [];
+let networkGeneration = 0;
 let findGen = 0;
 let harness = null; // { trace, promise, ms } for the loaded session
 let network = null; // { trace, store } for the attached capture
@@ -92,6 +95,7 @@ self.onmessage = async (e) => {
     index = m.index || null;
     self.postMessage({ type: "index", ok: !!index, pages: index && index.pages ? index.pages.length : 0 });
   } else if (m.type === "load") {
+    networkGeneration++;
     try {
       const entries = (m.files || []).map((f) => {
         const file = f instanceof Blob ? f : f.file;
@@ -110,6 +114,7 @@ self.onmessage = async (e) => {
       });
       sources = s;
       loaded = trace;
+      nativeLoaded = trace; nativeSources = s;
       harness = null;
       network = null;
       findGen++;
@@ -152,8 +157,10 @@ self.onmessage = async (e) => {
       self.postMessage({ type: "harness-error", message: String((err && err.message) || err) });
     }
   } else if (m.type === "network") {
+    const generation=++networkGeneration,baseSources=nativeSources;
+    const current=()=>generation===networkGeneration;
     try {
-      const trace = m.trace || loaded;
+      const trace = m.trace || nativeLoaded;
       if (!trace) throw new Error("Load a session first: a network capture is attached to a session log.");
       const list = m.files || [];
       const files = [];
@@ -163,16 +170,25 @@ self.onmessage = async (e) => {
       const textOf = async (f) => (f instanceof Blob ? f.text() : f.local ? new TextDecoder().decode(await localFileSource(f.local).slice(0, f.local.size)) : f.file.text());
       const total = list.reduce((s, f) => s + sizeOf(f), 0);
       for (const f of list) {
-        self.postMessage({ type: "network-progress", phase: "read", done, total });
+        if(!current())return;
+        self.postMessage({ type: "network-progress", id:m.id, phase: "read", done, total });
         files.push({ name: (f.path || f.name || "capture.har").split("/").pop(), text: await textOf(f) });
         done += sizeOf(f);
       }
-      self.postMessage({ type: "network-progress", phase: "analyze", done: total, total });
+      if(!current())return;
+      self.postMessage({ type: "network-progress", id:m.id, phase: "analyze", done: total, total });
       const { capture, store } = await analyzeCapture(files, trace);
+      if(!current())return;
+      let projected=null;
+      if(!m.trace && ['cursor','opencode'].includes(trace.product)){
+        const result=await projectInstructions(trace,baseSources,store.instructionEvidence(),index);
+        if(!current())return;
+        loaded=result.trace;sources=result.sources;projected=loaded;harness=null;findGen++;
+      }
       network = { trace, store };
-      self.postMessage({ type: "network", capture });
+      self.postMessage({ type: "network", id:m.id, capture, trace:projected });
     } catch (err) {
-      self.postMessage({ type: "network-error", message: String((err && err.message) || err) });
+      if(current())self.postMessage({ type: "network-error", id:m.id, message: String((err && err.message) || err) });
     }
   } else if (m.type === "network-body") {
     try {
@@ -183,7 +199,9 @@ self.onmessage = async (e) => {
       self.postMessage({ type: "network-body", id: m.id, error: String((err && err.message) || err) });
     }
   } else if (m.type === "network-clear") {
+    networkGeneration++;
     network = null;
+    loaded=nativeLoaded;sources=nativeSources;harness=null;
   } else if (m.type === "find-cancel") {
     findGen++;
   } else if (m.type === "text") {
