@@ -1,4 +1,4 @@
-// Render still frames of the tour for review: node stills.mjs <Wide|Tall> <out dir> <frame> [frame ...]
+// Render still frames of the findings cut for review: node stills.mjs <Wide|Short> <out dir> <frame> [frame ...]
 import { bundle } from "@remotion/bundler";
 import { renderStill, selectComposition } from "@remotion/renderer";
 import path from "node:path";

@@ -58,6 +58,16 @@ class Sec:
         else:
             self.dir, self.n, self.foot = None, 0, {"marks": {}, "rects": {}, "keys": []}
         self.vo = json.load(open(f"{VOD}/{beat}.json")) if beat else None
+        # Apply display-only corrections even when reusing previously generated takes.
+        if self.vo:
+            script = json.load(open(os.path.join(HERE, "..", "audio", "vo_short.json" if SHORT else "vo.json")))
+            phrases = next(b["phrases"] for b in script["beats"] if b["id"] == beat)
+            if len(phrases) != len(self.vo["phrases"]):
+                raise ValueError(f"{beat}: narration phrases changed; regenerate the take")
+            for recorded, phrase in zip(self.vo["phrases"], phrases):
+                if recorded["say"] != phrase[0]:
+                    raise ValueError(f"{beat}: spoken text changed; regenerate the take")
+                recorded["show"] = phrase[1] if len(phrase) > 1 else phrase[0]
         self.anchors, self.cams, self.boxes, self._map, self.cuts = [], [], [], None, set()
         vo_end = (lead + self.vo["phrases"][-1]["t1"]) if self.vo else 0
         self.dur = max(min_dur, vo_end + tail)
@@ -301,7 +311,7 @@ def plan_long():
     # 8b. Codex/ChatGPT: a list of plugins never installed, and for a while a pitch to suggest one.
     s = Sec("plugins", "f_plugins", "plugins", lead=0.3, tail=0.9)
     s.cap_top = True   # the reader sits at the bottom of the frame, where captions go
-    s.chip(TR_CX, 0)
+    s.chip("", 0)      # keep the top caption clear of the source chip
     t_r, t_e = 2.5, s.w("installed") - 0.5
     s.anchor(0, 0.0); s.anchor("results", t_r); s.hold("results", t_r, t_e); s.cut("results", s.mark("enter") - 4, t_e)
     s.anchor("enter", t_e + 0.05); s.anchor("reader", t_e + 1.05); s.hold("reader", t_e + 1.05, s.dur)
@@ -355,7 +365,7 @@ def plan_short():
     s.cam(0, PAL_TOP, pad=1.0)
     s.box(s.rect("row"), t_res + 0.2, color="pink", pad=4)
     s.badge(s.w("thousand") - 0.2, s.dur, *CARDS["badges"]["s_nudge"])
-    s.head(0.0, s.dur, "“The user hasn’t heard from you in a while — say in a few words what you’re doing, then continue.”", "INJECTED INTO MY CLAUDE CODE SESSIONS", color="pink")
+    s.head(0.0, s.dur, "“The user hasn’t heard from you in a while - say in a few words what you’re doing, then continue.”", "INJECTED INTO MY CLAUDE CODE SESSIONS", color="pink")
     S.append(s)
 
     s = Sec("s_flag1", "f_flag", "s_flag1", lead=1.0, tail=0.6)

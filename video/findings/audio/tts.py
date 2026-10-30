@@ -16,14 +16,18 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CFG = sys.argv[sys.argv.index("--cfg") + 1] if "--cfg" in sys.argv else "vo.json"
 if "--cfg" in sys.argv: del sys.argv[sys.argv.index("--cfg"):sys.argv.index("--cfg") + 2]
 OUT = private_dir("video", "findings", "audio", os.path.splitext(CFG)[0])
-cfg = json.load(open(os.path.join(HERE, CFG)))
-key = elevenlabs_key()
-if not key: raise SystemExit("set ELEVENLABS_API_KEY (environment or the repo's .env)")
-H = {"xi-api-key": key}
+with open(os.path.join(HERE, CFG)) as script:
+    cfg = json.load(script)
+
+
+def api_headers():
+    key = elevenlabs_key()
+    if not key: raise SystemExit("set ELEVENLABS_API_KEY (environment or the repo's .env)")
+    return {"xi-api-key": key}
 
 
 def models():
-    r = requests.get("https://api.elevenlabs.io/v1/models", headers=H, timeout=60); r.raise_for_status()
+    r = requests.get("https://api.elevenlabs.io/v1/models", headers=api_headers(), timeout=60); r.raise_for_status()
     return r.json()
 
 
@@ -76,7 +80,8 @@ def main():
     if "--retempo" in sys.argv:   # re-apply vo.json "tempo" to the raw takes: no API calls
         for i, b in enumerate(cfg["beats"]):
             if only and b["id"] not in only: continue
-            write_beat(i, b, json.load(open(os.path.join(OUT, b["id"] + ".raw.json"))))
+            with open(os.path.join(OUT, b["id"] + ".raw.json")) as take:
+                write_beat(i, b, json.load(take))
         return
     model = pick_model(cfg["model"])
     print("model:", model)
@@ -86,7 +91,7 @@ def main():
         ctx = {"previous_text": texts[i - 1] if i else None, "next_text": texts[i + 1] if i + 1 < len(texts) else None}
         for attempt in (dict(body, **{k: v for k, v in ctx.items() if v}), body):
             r = requests.post(f"https://api.elevenlabs.io/v1/text-to-speech/{cfg['voice']}/with-timestamps",
-                              params={"output_format": "mp3_44100_192"}, headers=H, json=attempt, timeout=180)
+                              params={"output_format": "mp3_44100_192"}, headers=api_headers(), json=attempt, timeout=180)
             if r.ok: break
             print("  retry without context:", r.status_code, r.text[:160])
         r.raise_for_status(); d = r.json()

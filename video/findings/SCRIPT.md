@@ -40,7 +40,7 @@ reading hold on each headline before the voice starts and on each boxed end stat
 | s_flag1 | Not the app's own reminder. A remote flag's. | That's not even the app's own reminder. The words arrive in a server-side flag, |
 | s_flag2 | "Don't mention this to the user." | next to this one: don't mention this to the user. |
 | s_plugins | A pitch for plugins I never installed. | Codex opened my sessions with a pitch: suggest the Google Drive plugin if the query could possibly be better answered with access to Google Drive. |
-| s_handoff | Asked once. Delivered after every compaction. | Codex isn't spared. After every compaction, it handed me the same finished prompt again. |
+| s_handoff | Asked once. Delivered after every compaction. | Codex has ghosts of its own. After every compaction, it handed me the same finished prompt again. |
 | s_close | end card | This is Trace. It reads your own session logs, in your browser. Run it on yours. |
 
 ## Claim boundaries (checked before recording)
@@ -63,3 +63,10 @@ reading hold on each headline before the voice starts and on each boxed end stat
 
 Dropped: a connectors beat (claude.ai Robinhood tools offered in every session). David, 2026-10-06: a connector he
 added on purpose is the point of the connector, not a surprise. The in-app-browser URL finding fails the same test.
+
+## Outstanding audio correction
+
+The existing short take says "It was told to." Its caption now says "Often, it was told to."
+This display correction does not repair the audio overclaim. A paid re-record is still needed
+for that phrase and for the standalone spoken "Codex" naming in both cuts (use "Codex/ChatGPT").
+No voiceover was re-recorded in this review fix. Existing published videos remain unchanged.

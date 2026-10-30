@@ -33,5 +33,10 @@ npx remotion render src/index.ts Wide out/wide.mp4 --codec h264 --crf 16
 npx remotion render src/index.ts Short out/short.mp4 --codec h264 --crf 16
 ./mux.sh
 ```
-`edit/node_modules` is a link to the tour's (`npm ci` in `video/tour/edit`). `node stills.mjs <Wide|Short> <dir> <frame>…`
+Install the edit dependencies with `npm ci` in `video/findings/edit`. `node stills.mjs <Wide|Short> <dir> <frame>…`
 renders review stills.
+
+The existing voiceover still needs a paid re-record; see SCRIPT.md, "Outstanding audio correction".
+Caption corrections are applied when rebuilding timelines from existing takes; they do not change audio or published videos.
+
+Offline regression checks: `python3 -m unittest discover -s video/findings/test -v`.

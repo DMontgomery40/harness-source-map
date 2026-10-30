@@ -128,7 +128,6 @@ async def f_close(): await _named(tour.t_close, "f_close")
 
 async def _named(fn, name):
     """Run a tour shot under this video's name (the tour shot names its own take; rename it after)."""
-    old = fn.__name__.replace("f_", "t_")
     await fn()
     tag = lambda n: n if _shot.DPR == 2 else f"{n}_p"
     for ext in (".mp4", ".json"):
@@ -275,57 +274,13 @@ async def f_wick():
         await s.run(at(8), ev)
 
 
-# ------------------------------------------------------------------------------------- 6. connectors
-
-async def f_connectors():
-    """`/` "place_option_order": the match count; Enter: the deferred-tool list; it scrolls to the Robinhood
-    order tools. 12 s."""
-    async with rec() as r:
-        await session(r, cc_files())
-        await r.step(20)
-        s = Shot(r, "f_connectors")
-        plan = net.Plan(r, s)
-        ev = {}
-        plan.do(0.3, lambda i: s.key(i, "/"))
-        t = await typed(s, 0.8, "place_option_order", ev, rate=0.06)
-        for f, fn in ev.items(): plan.acts.setdefault(f, []).append(fn)
-        async def results(i):
-            print("  count:", await search_done(r))
-            await s.rect("count", "body", "94 matches", None, i)
-            await s.elem("row", ".pal-row", "deferred_tools_delta", i)
-            s.mark("results", i)
-        async def enter(i): await s.key(i, "Enter"); s.mark("enter", i)
-        st = {}
-        async def scroll0(i):
-            v = await r.js(SCROLL_TO_TEXT_JS, [".side", "mcp__claude_ai_Robinhood__place_equity_order", 0.35])
-            if not v: print("  scroll miss: Robinhood"); return
-            st["v"] = (i, v)
-        async def scrolling(i):
-            if "v" not in st: return
-            f0, (a, b) = st["v"]
-            u = ease(min(1, (i - f0) / at(1.2)))
-            await r.js(SET_TEXT_SCROLL_JS, a + (b - a) * u)
-        async def tools(i):
-            for n in ["place_equity_order", "place_option_order", "place_crypto_order", "place_advanced_order", "exercise_option"]:
-                await s.rect(n, ".side", "mcp__claude_ai_Robinhood__" + n, None, i)
-            await s.elem("side", ".side", None, i)
-            await s.rect("trail", "body", "1 of 94", None, i)
-            s.mark("tools", i)
-        plan.do(t + 0.6, results)
-        plan.do(t + 3.0, enter)
-        plan.do(t + 4.0, scroll0)
-        for k in range(at(1.25)): plan.acts.setdefault(at(t + 4.0) + 1 + k, []).append(scrolling)
-        plan.do(t + 5.6, tools)
-        await s.run(at(12), plan.events(at(12)))
-
-
 # ------------------------------------------------------------------------------------- 7. Codex handoff
 
 H_ASK, H_DONE = 5359, 5537   # the ask and the complaint (request numbers in Trace)
 
 
 async def f_handoff():
-    """A Codex/ChatGPT session: the overview (HUD), Landmarks on, a flight to the stretch between my ask and my
+    """A Codex/ChatGPT session: the overview (HUD), a flight to the stretch between my ask and my
     complaint (three compaction drops), then `/` "handoff prompt": both of my messages. 16 s."""
     files = [env("TRACE_CX_HANDOFF")]
     async with rec() as r:
@@ -340,7 +295,6 @@ async def f_handoff():
             for tag, needle in [("dur", "2 d 13 h"), ("reqs", "10,840")]:
                 await s.rect(tag, ".hud, body", needle, None, i)
             s.mark("hud", i)
-        async def landmarks(i): await s.key(i, "l", "l")
         async def pan(i): await r.js(PAN_JS, [rid, (H_ASK + H_DONE) // 2])
         async def plus(i): await kb.press("+")
         plan.do(0.2, hud)
@@ -438,7 +392,6 @@ async def f_cancel():
             await s.key(i, "Escape", "Esc")
         ev2 = {}
         t2 = await typed(s, t + 4.2, "jobs cancel", ev2, rate=0.07)
-        async def slash(i): await s.key(i, "/")
         async def r2(i):
             print("  count:", await search_done(r))
             await s.elem("cancel_row", ".pal-row", "cancel the off-direction", i)
@@ -451,7 +404,7 @@ async def f_cancel():
         await s.run(at(12), plan.events(at(12)))
 
 
-SHOTS = {f.__name__: f for f in [f_loader, f_open, f_close, f_nudge, f_flag, f_wick, f_connectors, f_handoff, f_plugins, f_cancel]}
+SHOTS = {f.__name__: f for f in [f_loader, f_open, f_close, f_nudge, f_flag, f_wick, f_handoff, f_plugins, f_cancel]}
 
 if __name__ == "__main__":
     asyncio.run(main_of(SHOTS))
