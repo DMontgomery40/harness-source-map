@@ -21,7 +21,7 @@ the export private.
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 
 function query(db, sql) {
-  const run = spawnSync('sqlite3', ['-json', db, sql], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+  const run = spawnSync('sqlite3', ['-readonly', '-json', db, sql], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
   if (run.status !== 0) throw new Error('The Cursor chat store could not be read with sqlite3.');
   try { return JSON.parse(run.stdout || '[]'); } catch { throw new Error('sqlite3 returned an unreadable Cursor chat store result.'); }
 }

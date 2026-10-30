@@ -10,6 +10,7 @@ import { escapeHtml } from "../shared/html.mjs";
 import { ICON_LINKS } from "../shared/site.mjs";
 import { buildSearchIndex } from "../shared/search-index.mjs";
 import { searchScript, searchTrigger, searchTriggerStyles } from "../shared/search-ui.mjs";
+import { decorateNewRecords, releaseBadge, releaseStyles } from "../shared/release-tags.mjs";
 
 export function fileAnchor(filePath) {
   return filePath
@@ -79,6 +80,7 @@ function renderDocument(document, ids) {
     body = `${filterBar(document.filter, wrapped.matched)}<div class="markdown-body">${wrapped.html}</div>`;
   }
   if (document.ladders) body = enhanceLadders(body, document.ladders);
+  if (!document.filter) body = decorateNewRecords(body, outline, document.searchRecords, source => (document.promptText ? promptMarkdown : markdown).parseInline(source));
   return {
     path: document.path,
     anchor,
@@ -92,6 +94,7 @@ function renderDocument(document, ids) {
     defaultOpen: document.defaultOpen,
     promptText: document.promptText === true,
     records: document.searchRecords,
+    isNew: document.isNew,
     content: body,
     outline
   };
@@ -103,7 +106,7 @@ function documentIndex(categories, rendered, routes) {
   const groups = categories.map(category => {
     const docs = category.files.map(file => byPath.get(file.path)).filter(document => document?.summary);
     if (!docs.length) return "";
-    return `<section class="doc-index-group"><h2 class="doc-index-label">${escapeHtml(category.label)}</h2><ul class="doc-index">${docs.map(document => `<li><a href="${routes.slug(document.anchor)}/"><span class="doc-index-title">${escapeHtml(document.title)}</span><span class="doc-index-summary">${escapeHtml(document.summary)}</span>${document.count ? `<span class="doc-index-count">${document.count.toLocaleString("en-US")} records</span>` : ""}</a></li>`).join("")}</ul></section>`;
+    return `<section class="doc-index-group"><h2 class="doc-index-label">${escapeHtml(category.label)}</h2><ul class="doc-index">${docs.map(document => `<li><a href="${routes.slug(document.anchor)}/"><span class="doc-index-title">${escapeHtml(document.title)}${document.isNew ? releaseBadge() : ""}</span><span class="doc-index-summary">${escapeHtml(document.summary)}</span>${document.count ? `<span class="doc-index-count">${document.count.toLocaleString("en-US")} records</span>` : ""}</a></li>`).join("")}</ul></section>`;
   }).join("");
   return `<nav class="doc-index-wrap" aria-label="Reference pages">${groups}</nav>`;
 }
@@ -120,7 +123,7 @@ function documentPanel(document) {
     <details class="document" id="${document.anchor}" aria-labelledby="${document.anchor}-title"${document.defaultOpen ? " open" : ""}>
       <summary class="document-summary">
         <div class="document-kicker">${escapeHtml(document.category)}</div>
-        <h2 id="${document.anchor}-title">${escapeHtml(document.title)}</h2>
+        <h2 id="${document.anchor}-title">${escapeHtml(document.title)}${document.isNew ? releaseBadge() : ""}</h2>
       </summary>
       <div class="document-content">${dataLink(document, "")}${document.content}</div>
     </details>`;
@@ -131,7 +134,7 @@ function documentArticle(document, routes) {
       <article class="document-page" id="${document.anchor}" aria-labelledby="${document.anchor}-title">
         <header class="document-page-header">
           <div class="document-kicker">${escapeHtml(document.category)}</div>
-          <h1 class="page-title" id="${document.anchor}-title">${escapeHtml(document.title)}</h1>
+          <h1 class="page-title" id="${document.anchor}-title">${escapeHtml(document.title)}${document.isNew ? releaseBadge() : ""}</h1>
           <a class="full-reference-link" href="../">${site.homeMode === "index" ? "All reference pages" : "Full reference"}</a>
         </header>
         ${dataLink(document, "../")}
@@ -157,6 +160,7 @@ export function searchIndex(rendered, routes) {
       title: document.title,
       category: document.category,
       summary: document.summary,
+      isNew: document.isNew,
       html: routes.localize(document.content, document.anchor),
       outline: document.outline.map(item => ({ ...item, id: routes.localId(item.id, document.anchor) })),
       records: document.records,
@@ -170,6 +174,7 @@ export function searchIndex(rendered, routes) {
 export function renderSite({ categories, documents, status = null }) {
   const ids = new Set();
   const rendered = documents.map(document => renderDocument(document, ids));
+  categories = categories.map(category => ({ ...category, files: category.files.map(file => ({ ...file, isNew: documents.find(d => d.path === file.path)?.isNew })) }));
   const routes = createRoutes(rendered);
   const { index, stats } = searchIndex(rendered, routes);
   return [
@@ -249,6 +254,7 @@ ${current ? `  <link rel="alternate" type="text/markdown" href="${site.origin}/$
     .main{padding:0 60px 0 370px}
     .content{width:min(768px,100%);margin:0 auto;padding:100px 0 80px}
     .date{color:var(--muted);font-size:14px;text-align:center}
+    ${releaseStyles}
     .page-title{margin:26px 0 24px;font-size:48px;line-height:1.16;font-weight:500;letter-spacing:-.025em;text-align:center}
     .dek{max-width:650px;margin:0 auto;color:#d3d5cf;font-size:18px;line-height:1.48;text-align:center}
     .home-feature{display:grid;gap:6px;max-width:620px;margin:34px auto 0;padding:20px 24px 21px;border:1px solid #3a4a30;border-left:3px solid #c8f784;border-radius:3px;background:#161d14;color:#d6d9d0;text-align:left;text-decoration:none;transition:background .2s,border-color .2s,transform .2s}

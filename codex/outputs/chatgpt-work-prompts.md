@@ -1,6 +1,6 @@
 # ChatGPT Work prompts
 
-Source: `app.asar` of the Codex/ChatGPT desktop app 26.930.31730 (build 12947), SHA-256 `87a934de9a00a04d2e534693db87756321ca4f3413f6caa55d3a0d32a5543836`.
+Source: `app.asar` of the Codex/ChatGPT desktop app 26.1002.52244 (build 13536), SHA-256 `40efd7acdf03a24817fcd7f35684fc2173b154df06774243cb4ab227e36fa915`.
 
 Messages ChatGPT Work sends or prefills during onboarding: starter tasks, the daily-briefing next step, the writing-style skill setup, the grounded writing-style demonstration, private code review helpers and the browser-extension Side Chat samples.
 
@@ -12,7 +12,7 @@ Each entry says whether its text is exact (one literal in the bundle) or assembl
 
 ### Starter: personal website
 
-Source: `webview/assets/fallback-cards-c9ecd9782ce9.js`, offset 1083, SHA-256 `99a1ec242ca96dc22fd75f70ba95c3f4cdbddc07efd98e83feab5d998c263b47`.
+Source: `webview/assets/fallback-cards-597cab755d8d.js`, offset 1083, SHA-256 `99a1ec242ca96dc22fd75f70ba95c3f4cdbddc07efd98e83feab5d998c263b47`.
 
 Exact text from the bundle. Message id `chatgpt.tpp.onboarding.starter.personal_website.prompt`.
 
@@ -24,7 +24,7 @@ Based on everything you know about me and what we’ve discussed in past convers
 
 ### Starter: manage inbox
 
-Source: `webview/assets/fallback-cards-c9ecd9782ce9.js`, offset 2812, SHA-256 `c6996d589e9368ca25ca3b6a5807521ce92f75c663ed419ea0b502632818fa78`.
+Source: `webview/assets/fallback-cards-597cab755d8d.js`, offset 2812, SHA-256 `c6996d589e9368ca25ca3b6a5807521ce92f75c663ed419ea0b502632818fa78`.
 
 Exact text from the bundle. Message id `chatgpt.tpp.onboarding.starter.manage_inbox.prompt`.
 
@@ -36,7 +36,7 @@ Use my connected email app. If I haven’t connected one, ask which email provid
 
 ### Starter: personalized presentation
 
-Source: `webview/assets/fallback-cards-c9ecd9782ce9.js`, offset 6291, SHA-256 `3aee7ed7c77e6936ab095df4862457c3088b46716121eb3436edbe6e0f9a2f80`.
+Source: `webview/assets/fallback-cards-597cab755d8d.js`, offset 6291, SHA-256 `3aee7ed7c77e6936ab095df4862457c3088b46716121eb3436edbe6e0f9a2f80`.
 
 Exact text from the bundle. Message id `chatgpt.tpp.onboarding.starter.personalized_presentation.prompt`.
 
@@ -48,7 +48,7 @@ Review our past conversations and choose the topic that would be most useful to 
 
 ### Starter: repeatable-work skill
 
-Source: `webview/assets/fallback-cards-c9ecd9782ce9.js`, offset 7906, SHA-256 `70c95b76c0daf513a45e3e80b3415b9df59146bb6791b797cde5784537f1cf14`.
+Source: `webview/assets/fallback-cards-597cab755d8d.js`, offset 7906, SHA-256 `70c95b76c0daf513a45e3e80b3415b9df59146bb6791b797cde5784537f1cf14`.
 
 Exact text from the bundle.
 
@@ -60,7 +60,7 @@ Only after I explicitly confirm, create it as a reusable skill. Give it a descri
 
 ### Starter selection context
 
-Source: `webview/assets/home-ambient-suggestions-content-52d3c3d06519.js`, offset 18724, SHA-256 `2fca00df9c58d896f7410a511bbdbd087c417d368a57ea14d46dd7835bf04424`.
+Source: `webview/assets/home-ambient-suggestions-content-38a1e8c60a3e.js`, offset 19715, SHA-256 `2fca00df9c58d896f7410a511bbdbd087c417d368a57ea14d46dd7835bf04424`.
 
 Assembled from literal pieces in the bundle, joined as the app joins them; `<…>` marks a value filled in at run time.
 
@@ -74,7 +74,7 @@ This instruction applies only to the initial request. Later user messages may re
 
 ### Next step: daily briefing
 
-Source: `webview/assets/home-f7f8584d4748.js`, offset 47324, SHA-256 `1da19cc520de9aa4f0533e6f5808078f8893f9d356d0881069abee7b6e715c96`.
+Source: `webview/assets/home-3d30693f7481.js`, offset 47375, SHA-256 `1da19cc520de9aa4f0533e6f5808078f8893f9d356d0881069abee7b6e715c96`.
 
 Exact text from the bundle. Message id `chatgpt.tpp.onboarding.personalize.next_steps.daily_briefing.prompt.user_request`. The same text ships at 2 places in the bundle; the first is shown.
 
@@ -88,7 +88,7 @@ Create a daily automation that prepares a concise briefing focused on my connect
 
 ### Writing-style skill: connected apps to check
 
-Source: `webview/assets/home-ambient-suggestions-content-52d3c3d06519.js`, offset 5449, SHA-256 `5081b54dffd7ba85ef9e8d49c1bc45417e5af50973d76932fa7eb5625896d922`.
+Source: `webview/assets/home-ambient-suggestions-content-38a1e8c60a3e.js`, offset 6439, SHA-256 `5081b54dffd7ba85ef9e8d49c1bc45417e5af50973d76932fa7eb5625896d922`.
 
 Exact text from the bundle. Message id `home.ambientSuggestions.learnWritingStyle.prompt.connectionUnknown.v15`.
 
@@ -100,7 +100,7 @@ Use $skill-creator to create a personal writing-style skill for each selected wr
 
 ### Writing-style skill: no app connected
 
-Source: `webview/assets/home-ambient-suggestions-content-52d3c3d06519.js`, offset 10566, SHA-256 `ae1ad24dbfdbc9d903f709eeb4da72e032dc1c2f60d052d741b2511c7a5d2728`.
+Source: `webview/assets/home-ambient-suggestions-content-38a1e8c60a3e.js`, offset 11557, SHA-256 `ae1ad24dbfdbc9d903f709eeb4da72e032dc1c2f60d052d741b2511c7a5d2728`.
 
 Exact text from the bundle. Message id `home.ambientSuggestions.learnWritingStyle.prompt.noConnections.v15`.
 
@@ -112,7 +112,7 @@ Use $skill-creator to create a personal writing-style skill for each selected wr
 
 ### Writing-style skill: connected apps
 
-Source: `webview/assets/home-ambient-suggestions-content-52d3c3d06519.js`, offset 15498, SHA-256 `1804cf5c6acbe3474003d4a081af3ef7d16239c79467decb6e1e41990ee988cd`.
+Source: `webview/assets/home-ambient-suggestions-content-38a1e8c60a3e.js`, offset 16489, SHA-256 `1804cf5c6acbe3474003d4a081af3ef7d16239c79467decb6e1e41990ee988cd`.
 
 Exact text from the bundle. Message id `home.ambientSuggestions.learnWritingStyle.prompt.connectedApps.v14`.
 
@@ -138,7 +138,7 @@ Look through my chats, Library files, and any connected apps for a new and real 
 
 ### Private review user request
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8284202, SHA-256 `d2aa9106353fb03e20c216d109e5755fddff78549b36b03ef552be95713c1c84`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6250051, SHA-256 `d2aa9106353fb03e20c216d109e5755fddff78549b36b03ef552be95713c1c84`.
 
 Exact text from the bundle. Message id `codeReviewPlugin.manualReview.request`.
 
@@ -150,7 +150,7 @@ Please run a private review of {url}. Look for actionable bugs and assess the ov
 
 ### Private review fresh reviewer isolation
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8283604, SHA-256 `5919441cc703925eb7de2b3840de9bc8ad4a41dfe418d512efd7e79dc378e2ca`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6249453, SHA-256 `5919441cc703925eb7de2b3840de9bc8ad4a41dfe418d512efd7e79dc378e2ca`.
 
 Exact text from the bundle.
 
@@ -160,7 +160,7 @@ When starting a new review, call the collaboration spawn tool exactly once with 
 
 ### Private review GitLab source verification
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8285310, SHA-256 `9ca78015d64860e49fce3a4fecd5cebfded2449d66acac4a250a84ac8cc4d1c0`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6251158, SHA-256 `9ca78015d64860e49fce3a4fecd5cebfded2449d66acac4a250a84ac8cc4d1c0`.
 
 Assembled from literal pieces in the bundle, joined as the app joins them; `<…>` marks a value filled in at run time.
 
@@ -170,7 +170,7 @@ Review the snapshot's complete diff pinned to mergeBaseRevision and headRevision
 
 ### Private review source-control verification
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8286694, SHA-256 `cdca7a528b11725f17656b36eedf5da66051b59b272bb6fa01b7207cbe0a160e`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6252542, SHA-256 `cdca7a528b11725f17656b36eedf5da66051b59b272bb6fa01b7207cbe0a160e`.
 
 Assembled from literal pieces in the bundle, joined as the app joins them; `<…>` marks a value filled in at run time.
 
@@ -180,7 +180,7 @@ Prefer the connected source-control tools. Before reading repository content, ve
 
 ### Private review coordinator and begin
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8288086, SHA-256 `5b2f2838ac5ac770f0c66f098e729bf9fa95f5d73ce95fface2b44f1399f3862`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6253934, SHA-256 `5b2f2838ac5ac770f0c66f098e729bf9fa95f5d73ce95fface2b44f1399f3862`.
 
 Assembled from literal pieces in the bundle, joined as the app joins them; `<…>` marks a value filled in at run time.
 
@@ -190,7 +190,7 @@ You coordinate this private review; do not inspect code or review it yourself. D
 
 ### Private review finish and reporting
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8289048, SHA-256 `51c80438b2bbe72650c8c59b32bd0d24a505255b28d117d3d8892875d7eb273d`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6254897, SHA-256 `51c80438b2bbe72650c8c59b32bd0d24a505255b28d117d3d8892875d7eb273d`.
 
 Assembled from literal pieces in the bundle, joined as the app joins them; `<…>` marks a value filled in at run time.
 
@@ -200,7 +200,7 @@ After a successful begin, call <…> with action: finish, the snapshot's runId a
 
 ### Private review chat-only fallback
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8289818, SHA-256 `b0f1f509621490ab3802e3cb37001ba29dbc4a2a445b75e3e115a3cf7651721c`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6255668, SHA-256 `b0f1f509621490ab3802e3cb37001ba29dbc4a2a445b75e3e115a3cf7651721c`.
 
 Assembled from literal pieces in the bundle, joined as the app joins them; `<…>` marks a value filled in at run time.
 
@@ -210,7 +210,7 @@ Chat-only fallback: Give the fresh reviewer the exact request above and the shar
 
 ### Private review shared execution instructions
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8290816, SHA-256 `c89ae7ca5a8223d24df55a00034a6924758e1029301d5ba82d5e70be949fdd87`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6256666, SHA-256 `c89ae7ca5a8223d24df55a00034a6924758e1029301d5ba82d5e70be949fdd87`.
 
 Assembled from literal pieces in the bundle, joined as the app joins them; `<…>` marks a value filled in at run time.
 
@@ -220,7 +220,7 @@ Shared review execution instructions: <…> Do not edit, commit, or push code, a
 
 ### Private review personal-instruction boundaries
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8291430, SHA-256 `60f0f493558e3dee93049b3e370ca266e60719267e9f6faa8c29507f352ff82c`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6257280, SHA-256 `60f0f493558e3dee93049b3e370ca266e60719267e9f6faa8c29507f352ff82c`.
 
 Exact text from the bundle.
 
@@ -230,7 +230,7 @@ The final section of the user's request contains their personal review instructi
 
 ### Repair selected review comments
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8305676, SHA-256 `594def07e4110765b444a7d229770142803a754ee559cf7adb115433fdbcd119`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6271515, SHA-256 `594def07e4110765b444a7d229770142803a754ee559cf7adb115433fdbcd119`.
 
 Exact text from the bundle. Message id `codeReviewPlugin.reviewChat.fixCommentsPrompt`.
 
@@ -242,7 +242,7 @@ Address the attached review comments for {url} ({headBranch} → {baseBranch}). 
 
 ### Repair GitLab merge conflicts
 
-Source: `webview/assets/app-initial-576fc7ca620e.js`, offset 8302404, SHA-256 `401dfcbb15fc8a9ac1430dc41aae43417148e99f7adb7d2a08989ee413860357`.
+Source: `webview/assets/app-initial-61c077dcc1af.js`, offset 6268246, SHA-256 `401dfcbb15fc8a9ac1430dc41aae43417148e99f7adb7d2a08989ee413860357`.
 
 Exact text from the bundle. Message id `codeReviewPlugin.reviewChat.gitlabConflictFixPrompt`.
 
@@ -256,7 +256,7 @@ Resolve the attached merge conflicts for {url} ({headBranch} → {baseBranch}). 
 
 ### Side Chat sample: email reply
 
-Source: `webview/assets/onboarding-c386e6777ffc.js`, offset 3085, SHA-256 `fc6808d0a1ede37f8c4eea117854deaa47730e2128089c43593a6c42d75516f4`.
+Source: `webview/assets/onboarding-feb9a2cda671.js`, offset 3087, SHA-256 `fc6808d0a1ede37f8c4eea117854deaa47730e2128089c43593a6c42d75516f4`.
 
 Exact text from the bundle. Message id `chatgpt.work.chrome.installed.sample_work.email.prompt.sender_name`.
 
@@ -268,7 +268,7 @@ Reply to {senderName}'s message on this page
 
 ### Side Chat sample: report
 
-Source: `webview/assets/onboarding-c386e6777ffc.js`, offset 4353, SHA-256 `beec832532f316788ec57b4a9f925c6820c214aa8d1c2de5e006a472f1b09b09`.
+Source: `webview/assets/onboarding-feb9a2cda671.js`, offset 4355, SHA-256 `beec832532f316788ec57b4a9f925c6820c214aa8d1c2de5e006a472f1b09b09`.
 
 Exact text from the bundle. Message id `chatgpt.work.extension.installed.sample_work.report.prompt`.
 
@@ -280,7 +280,7 @@ Summarize this report
 
 ### Side Chat sample: inventory
 
-Source: `webview/assets/onboarding-c386e6777ffc.js`, offset 5562, SHA-256 `ceeb81cd1c48b64bf99f3b60a7082057cefd0285fbab89f9c6111ec94aa598a6`.
+Source: `webview/assets/onboarding-feb9a2cda671.js`, offset 5564, SHA-256 `ceeb81cd1c48b64bf99f3b60a7082057cefd0285fbab89f9c6111ec94aa598a6`.
 
 Exact text from the bundle. Message id `chatgpt.work.extension.installed.sample_work.inventory.prompt`.
 

@@ -36,6 +36,7 @@ const entryGroups = [
     ["chatgpt-finance-health-prompts", null, "Domain-specific app prompts"]
   ] },
   { title: "Tools, plugins and computer use", entries: [
+    ["memory-pipeline", null, "Memory extraction, consolidation, retrieval and model defaults"],
     ["tool-manifest", null, "Shipped tool descriptions and parameters"],
     ["chatgpt-bundled-plugins", null, "Bundled plugin instructions and surfaces"],
     ["computer-use-prompts", null, "Browser and desktop interaction instructions"],

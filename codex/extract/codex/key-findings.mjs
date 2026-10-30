@@ -57,6 +57,10 @@ ${pageScope ? `The shipped Page editing and visualization wrappers recognize com
 
 Team Space UI text separately describes shared agent instructions used by scheduled runs. ${link('Surface coverage ledger', 'devday-surface-coverage.md')} retains the source text and unresolved dispatch details. Page-scoped guidance, scheduled-run composition and ordinary document content have distinct evidence boundaries.
 
+## Intelligent UI has separate instruction and delivery paths
+
+${link('Intelligent UI and inline visualizations', 'intelligent-ui.md')} publishes the complete Visualize skill, design-controls reference and Page-precedence notice from the shipped desktop app. It distinguishes registered learning blocks, generative-UI widget refresh and inline HTML, and records widget-state handling and the Sites handoff. Client source establishes those instruction contents and assembly paths; account rollout and server-side delivery require separate evidence.
+
 ## Shipped prompts and tools show what the client can assemble
 
 ${link('Plan mode and Default mode', 'collaboration-modes.md')} documents mode selection, developer-message assembly and the exact executable-verified templates. Null catalog mode fields mean no catalog override; selected mode settings can still supply the instructions. Plan mode is distinct from the \`update_plan\` progress tool.
@@ -67,11 +71,11 @@ The additional ${link('model-facing text sweep', 'desktop-model-facing-text.md')
 
 The structural ledger contains ${count(candidates.length)} structural candidates; ${count(positive.length)} classified positive, including ${count(endpoints)} endpoints. A shipped endpoint, label, enum or feature flag does not establish a launched or enabled feature. ${link('Complete coverage and unresolved surfaces', 'devday-surface-coverage.md')} preserves these limits.
 
-## Historical Work and voice observations — September 24, 2026
+## Archived Work and voice observations
 
-Authenticated browser test turns on September 24 selected \`gpt-6-astra-wm\`, \`gpt-6-sol-wm\` and \`gpt-6-luna-wm\`. Each observed request contained one user message and the model selection, with no client-visible system, developer or prompt field. Those dated observations do not capture the Work service’s instruction stack and are not refreshed by a new CLI catalog. ${link('Dated Work evidence', 'chatgpt-work-source-check-2026-09-24.md')} · ${link('Sanitized browser trace', 'chatgpt-work-gpt6-client-trace-2026-09-24.json')}.
+Archived authenticated browser test turns selected \`gpt-6-astra-wm\`, \`gpt-6-sol-wm\` and \`gpt-6-luna-wm\`. Each observed request contained one user message and the model selection, with no client-visible system, developer or prompt field. Those archived observations do not capture the Work service’s instruction stack and are not refreshed by a new CLI catalog. ${link('Archived Work evidence', 'chatgpt-work-source-check-2026-09-24.md')} · ${link('Sanitized browser trace', 'chatgpt-work-gpt6-client-trace-2026-09-24.json')}.
 
-The September 24 automatic voice prefetch selected Luna and advertised an empty client tool list, but it was not a completed microphone call. The completed-call Work voice tool surface remains unobserved in that evidence. ${link('Dated voice observation', 'voice-tool-surface-2026-09-24.md')}. The current ${link('bundled Codex/ChatGPT voice prompts', 'voice-prompts.md')} are a separate static source; their presence does not establish Work voice tools or runtime activation.
+The archived automatic voice prefetch selected Luna and advertised an empty client tool list, but it was not a completed microphone call. The completed-call Work voice tool surface remains unobserved in that evidence. ${link('Archived voice observation', 'voice-tool-surface-2026-09-24.md')}. The current ${link('bundled Codex/ChatGPT voice prompts', 'voice-prompts.md')} are a separate static source; their presence does not establish Work voice tools or runtime activation.
 `;
 }
 export function generate(root = path.resolve(import.meta.dirname,'../..')) {

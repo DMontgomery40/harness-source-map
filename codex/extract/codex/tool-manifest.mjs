@@ -27,7 +27,6 @@ const work = process.env.TOOL_MANIFEST_WORK || path.join(repo, "work");
 const PAGE = "desktop-tool-manifest.md";
 const JSON_FILE = "desktop-tool-manifest.json";
 const CAPTURE = "current-host-tool-manifest-2026-09-24.json";
-const CAPTURE_DATE = "2026-09-24";
 
 function fail(message) {
   console.error(`tool-manifest: ${message}`);
@@ -263,7 +262,7 @@ const parameterTexts = [];
 const lines = [
   "# Tool manifest (live)", "",
   `Source: \`${appName}\` ChatGPT desktop ${version} (build ${build}), \`app.asar\` SHA-256 \`${asar.sha256}\`.`, "",
-  `Every tool the Codex/ChatGPT desktop app defines for models, read from the installed app on each update. Each entry gives the tool's description as shipped and its parameters, says how each was recovered, and compares the tool with the [${CAPTURE_DATE} host tool capture](#current-host-tool-manifest-2026-09-24-json). Parameters marked as evaluated come from running the app's own zod and toJSONSchema code; approximate parameters are reconstructed without the app's run-time values and shown as a table only.`, ""
+  `Every tool the Codex/ChatGPT desktop app defines for models, read from the installed app on each update. Each entry gives the tool's description as shipped and its parameters, says how each was recovered, and compares the tool with the [archived host tool capture](#current-host-tool-manifest-2026-09-24-json). Parameters marked as evaluated come from running the app's own zod and toJSONSchema code; approximate parameters are reconstructed without the app's run-time values and shown as a table only.`, ""
 ];
 let currentGroup = null;
 const seenIds = new Map();
@@ -280,8 +279,8 @@ for (const tool of tools) {
   lines.push(`### ${n > 1 ? `${tool.name} (${n})` : tool.name}`, "",
     `Source: ${where}${desc.text != null ? `, SHA-256 \`${sha256(desc.text)}\`` : ""}.`, "");
   const status = {
-    absent: `Not in the ${CAPTURE_DATE} capture.`, unchanged: `Unchanged since the ${CAPTURE_DATE} capture.`, changed: `Changed since the ${CAPTURE_DATE} capture:`,
-    present: `In the ${CAPTURE_DATE} capture as \`${cmp.name}\`${directNames.has(cmp.name) ? " (a direct tool)" : ""}; ${tool.captureNote ?? "there is no bundled description to compare"}.`
+    absent: `Not in the archived capture.`, unchanged: `Unchanged since the archived capture.`, changed: `Changed since the archived capture:`,
+    present: `In the archived capture as \`${cmp.name}\`${directNames.has(cmp.name) ? " (a direct tool)" : ""}; ${tool.captureNote ?? "there is no bundled description to compare"}.`
   }[cmp.status];
   if (desc.withheld) lines.push(`Description: withheld; the privacy scan flagged a ${desc.withheld}.`, "");
   else if (desc.text == null) lines.push(`Description: name only; ${tool.description.why}.`, "");
@@ -335,8 +334,8 @@ for (const tool of tools) {
 const bundleNamespaces = new Set(["codex_app", "node_repl", ...servers.map(s => s.namespace)]);
 const defined = new Set(records.filter(r => r.namespace).flatMap(r => [`mcp__${r.namespace}__${r.name}`, `mcp__${r.namespace}.${r.name}`]));
 const seenNotDefined = [...captureCore.keys(), ...directNames].filter(n => { const m = /^mcp__(.+?)(?:__|\.)(.+)$/.exec(n); return m && bundleNamespaces.has(m[1]) && !defined.has(n); }).sort(byCodePoint);
-lines.push("## Seen in the September 24 capture, not defined in this bundle", "",
-  `These names are in the ${CAPTURE_DATE} capture, in namespaces served by bundled tools, but no definition for them is in the app bundle. Their text is on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page.`, "");
+lines.push("## Seen in the archived capture, not defined in this bundle", "",
+  `These names are in the archived capture, in namespaces served by bundled tools, but no definition for them is in the app bundle. Their text is on the [complete host tool manifest](#current-host-tool-manifest-2026-09-24-json) page.`, "");
 lines.push(...(seenNotDefined.length ? seenNotDefined.map(n => `- \`${n}\``) : ["None."]), "");
 if (notFound.length) {
   lines.push("## Not found in this build", "", "Anchors this generator expects but did not find in the installed app.", "");

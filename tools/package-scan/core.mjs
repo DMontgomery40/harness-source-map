@@ -552,7 +552,7 @@ export async function triage(items, { product, cacheFile, cap = Number.MAX_SAFE_
       catch(error) {if(!(error instanceof PrivacyError)) throw error;Object.assign(labels[v.i],{status:'withheld',reason:'Privacy boundary',text_sha256:crypto.createHash('sha256').update(labels[v.i].text).digest('hex')});delete labels[v.i].text;return false;}
     });
     const requestState={task:'Independent package changes; each question supplies its source.'};
-    const {batches,oversized}=packQuestions(safe,{batchSize:16,state:requestState,keyOf:i=>String(i)});
+    const {batches,oversized}=packQuestions(safe,{batchSize:16,state:requestState,keyOf:i=>String(i),config});
     oversized.forEach(v=>Object.assign(labels[v.i],{status:'needs-local-review',reason:'Complete change exceeds the request budget'}));
     for(const batch of batches) {
       const questions=Object.fromEntries(batch.map((v,i)=>[String(i),v.questions.signal]));
@@ -696,11 +696,11 @@ export function renderPage(inv, { title, intro, sourceLine, coveredNote = "" }) 
 
 export function renderDiff(d, { title, labels = [], unavailable = null, skipped = 0 }) {
   const L = [`# ${title}`, ""];
-  const label = (where, text) => labels.find(l => l.where === where && l.text.includes(String(text).slice(0, 200)));
+  const label = (where, text) => labels.find(l => l.where === where && typeof l.text === "string" && l.text.includes(String(text).slice(0, 200)));
   const tag = (where, text) => { const l = label(where, text); return l?.choice ? ` — **${l.choice}** (${l.confidence})` : ""; };
   if (unavailable) L.push(`Jev labels unavailable (${unavailable}); the changes below are unlabelled.`, "");
   if (skipped) L.push(`${skipped} further changes were not sent to Jev this run (cap).`, "");
-  const flagged = labels.filter(l => l.choice && l.choice !== "routine");
+  const flagged = labels.filter(l => l.choice && l.choice !== "routine" && typeof l.text === "string");
   if (flagged.length) {
     L.push("## Flagged by Jev", "");
     for (const l of flagged) L.push(`- **${l.choice}** (${l.confidence}) · ${tick(l.where)}: ${l.text}`);

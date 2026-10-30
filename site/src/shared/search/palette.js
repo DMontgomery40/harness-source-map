@@ -111,7 +111,7 @@ function build() {
   const closeBtn = el("button", { class: "ds-close", type: "button", "aria-label": "Close search" }, `<kbd>Esc</kbd>`);
   const tabs = el("div", { class: "ds-scopes", role: "tablist", "aria-label": "Show" });
   const hints = el("div", { class: "ds-hints", "aria-label": "Search syntax" },
-    `<span class="ds-hints-label">Try</span>${[["env:", "env vars"], ["is:undocumented", ""], [section === "codex" ? "in:claude-code" : "in:codex", ""], ['"exact phrase"', ""], ["-exclude", ""]].map(([t, n]) => `<button type="button" tabindex="-1" data-insert="${esc(t)}"><code>${esc(t)}</code>${n ? ` <span>${esc(n)}</span>` : ""}</button>`).join("")}`);
+    `<span class="ds-hints-label">Try</span>${[["env:", "env vars"], ["is:new", ""], ["is:undocumented", ""], [section === "codex" ? "in:claude-code" : "in:codex", ""], ['"exact phrase"', ""], ["-exclude", ""]].map(([t, n]) => `<button type="button" tabindex="-1" data-insert="${esc(t)}"><code>${esc(t)}</code>${n ? ` <span>${esc(n)}</span>` : ""}</button>`).join("")}`);
   const list = el("div", { class: "ds-list", id: "ds-list", role: "listbox", "aria-label": "Results" });
   const preview = el("aside", { class: "ds-preview", "aria-label": "Preview" });
   const status = el("div", { class: "ds-sr", role: "status", "aria-live": "polite" });
@@ -361,11 +361,12 @@ function rowHtml(r, i, q, multi) {
   if (r.type === "more") return `<div ${base}><span class="ds-chip ds-chip-hollow"></span><div class="ds-main"><div class="ds-title"><b>${r.page ? `Show ${Math.min(LIST_STEP, r.n).toLocaleString("en-US")} more` : `Show all ${r.n.toLocaleString("en-US")} ${esc((KIND[r.kind]?.label ?? r.kind).toLowerCase())}`}</b></div></div><kbd class="ds-key">Enter</kbd></div>`;
   const it = r.item;
   const title = marked(it.title, matchRanges(it.title, q, { fuzzy: true }));
+  const newBadge = it.tags?.includes("New") ? '<span class="ds-badge">New</span>' : "";
   const snippetSource = it.kind === "command" ? it.sub : resultSnippet(it, q);
   const snippet = snippetSource ? `<div class="ds-snip">${marked(snippetSource, matchRanges(snippetSource, q))}</div>` : "";
   const meta = it.kind === "command" ? "" : it.kind === "page" ? [it.category, it.count ? `${it.count.toLocaleString("en-US")} records` : ""].filter(Boolean).join(" · ") : crumbText(it);
   const status = it.documented === false ? `<span class="ds-flag">undocumented</span>` : "";
-  return `<div ${base}><span class="ds-chip"></span><div class="ds-main"><div class="ds-title"><b>${title}</b>${multi && it.productLabel ? `<span class="ds-badge">${esc(it.productLabel)}</span>` : ""}${status}</div>${meta ? `<div class="ds-meta">${esc(meta)}</div>` : ""}${snippet}</div><span class="ds-side"><span class="ds-kind">${esc(KIND[it.kind]?.one ?? "")}</span>${it.url ? `<button type="button" class="ds-copy" tabindex="-1" data-copy aria-label="Copy link to ${esc(it.title)}">Copy link</button>` : ""}</span></div>`;
+  return `<div ${base}><span class="ds-chip"></span><div class="ds-main"><div class="ds-title"><b>${title}</b>${multi && it.productLabel ? `<span class="ds-badge">${esc(it.productLabel)}</span>` : ""}${newBadge}${status}</div>${meta ? `<div class="ds-meta">${esc(meta)}</div>` : ""}${snippet}</div><span class="ds-side"><span class="ds-kind">${esc(KIND[it.kind]?.one ?? "")}</span>${it.url ? `<button type="button" class="ds-copy" tabindex="-1" data-copy aria-label="Copy link to ${esc(it.title)}">Copy link</button>` : ""}</span></div>`;
 }
 
 function renderList(groups, q, multi, empty) {

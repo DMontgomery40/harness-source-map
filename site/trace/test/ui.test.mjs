@@ -424,6 +424,54 @@ test('tool inspector handles missing text, reader errors and competing async rea
   assert.ok(host.all(n => n.tagName === 'PRE')[0].textContent.includes('source missing'));
 });
 
+test('request reasoning opens exact output refs beyond the input window, including long text and multiple blocks', async () => {
+  const { readRef } = await import('../model.js');
+  const { forgetAll } = await import('../panel-memory.js');
+  const texts = ['Synthetic reasoning. '.repeat(12000) + 'END OF REASONING', '<script>literal second reasoning</script>'];
+  const sources = texts.map(text => {
+    const bytes = new TextEncoder().encode(JSON.stringify({ text }));
+    return { size: bytes.length, slice: async (a, b) => bytes.slice(a, b) };
+  });
+  const blocks = texts.map((text, i) => ({ i, kind: 'model', reasoning: true, chars: text.length, ref: { file: i, offset: 0, length: sources[i].size, path: ['text'] } }));
+  for (const [reasoning, expected] of [
+    [{ readable: true, block: 0 }, texts.slice(0, 1)],
+    [{ readable: true, blocks: [0, 1], block: 1 }, texts],
+    [{ encrypted: true, summary: blocks[0].ref }, texts.slice(0, 1)],
+  ]) {
+    forgetAll();
+    const req = { i: 0, t: 1000, tokens: { context: 0 }, window: [0, -1], reasoning };
+    const agent = { id: 'reasoning-fixture', kind: 'root', requests: [req], blocks, asks: [], compactions: [] };
+    const host = new Element('aside'), reads = [];
+    renderPanel(host, { trace: { agents: [agent] }, level: 2, agent, reqIdx: 0 }, {
+      getText: async (id, ref) => { reads.push({ id, ref }); return { text: await readRef(sources[ref.file], ref) }; }
+    });
+    assert.equal(reads.length, 0, 'reasoning is loaded only when opened');
+    const buttons = host.all(n => n.tagName === 'BUTTON' && /^Show reasoning/.test(n.textContent));
+    assert.equal(buttons.length, expected.length);
+    for (const button of buttons) button.dispatch('click');
+    await new Promise(resolve => setImmediate(resolve));
+    assert.deepEqual(host.all(n => n.tagName === 'PRE').map(n => n.textContent), expected);
+    assert.ok(reads.every(r => r.id === agent.id));
+    assert.equal(host.all(n => n.tagName === 'SCRIPT').length, 0, 'reasoning remains literal text');
+    if (reasoning.encrypted) assert.match(host.textContent, /Encrypted/);
+  }
+  forgetAll();
+});
+
+test('encrypted or unavailable reasoning has no misleading readable-text action', async () => {
+  const { forgetAll } = await import('../panel-memory.js');
+  for (const reasoning of [{ encrypted: true }, { readable: false, block: 0 }, { readable: true, block: 99 }]) {
+    forgetAll();
+    const req = { i: 0, t: 1000, tokens: { context: 0 }, reasoning };
+    const agent = { id: 'unavailable-fixture', kind: 'root', requests: [req], blocks: [{ chars: 0, ref: { file: 0 } }], asks: [], compactions: [] };
+    const host = new Element('aside');
+    renderPanel(host, { trace: { agents: [agent] }, level: 2, agent, reqIdx: 0 }, { getText: () => assert.fail('must not read unavailable reasoning') });
+    assert.equal(host.all(n => n.tagName === 'BUTTON' && /^Show reasoning/.test(n.textContent)).length, 0);
+    assert.match(host.textContent, reasoning.encrypted ? /Encrypted/ : /Text unavailable/);
+  }
+  forgetAll();
+});
+
 test("the readers lay out JSON and one-line tags, keep shell commands and prose as written, and keep the stored text a click away", async () => {
   const tick = () => new Promise(resolve => setImmediate(resolve));
   const pressed = (host, label) => host.all(n => n.tagName === "BUTTON" && n.textContent === label)[0];
@@ -1041,7 +1089,13 @@ test("the Sources lens lists every source by where it stands, opens content on r
   const lens = new Element("aside");
   renderPanel(lens, { trace, level: 0, lens: "sources", mode: "3d" }, A);
   const text = lens.textContent;
-  for (const s of ["Everything on this machine", "Found for this session", "Current values, not this session's", "In the shipped code, readable, not read by Trace yet", "In the shipped code, can't be tied to one session", "How it joins: live only", "Nothing here for this session", "Credentials", "codex-rs/goals/src/lib.rs:10", "CLI on this machine 0.144.0"]) assert.ok(text.includes(s), s);
+  for (const s of ["Everything on this machine", "From this session", "Current local files", "Unavailable sources (4)", "Source details", "live only", "codex-rs/goals/src/lib.rs:10", "CLI on this machine 0.144.0"]) assert.ok(text.includes(s), s);
+  const visibleText = n => n.tagName === "DETAILS" && !n.open
+    ? n.children.find(c => c.tagName === "SUMMARY")?.textContent || ""
+    : n.children.length ? n.childNodes.map(visibleText).join(" ") : n.textContent;
+  assert.ok(!visibleText(lens).includes("codex-rs"), "implementation details stay behind a disclosure");
+  assert.ok(!visibleText(lens).includes("Current local files may have changed"), "provenance explanation is optional");
+
   // Opening a found source asks for its content; a source Trace doesn't read, or a credential, never does.
   const rows = lens.all(n => n.tagName === "DETAILS" && /src-row/.test(n.className));
   for (const r of rows) { r.open = true; r.dispatch("toggle"); }

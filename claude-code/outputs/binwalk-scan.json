@@ -1,6 +1,6 @@
 {
  "product": "Claude Code",
- "version": "2.1.289",
+ "version": "2.1.295",
  "binwalk": "3.1.0",
  "scanner": {
   "version": 3,
@@ -11,16 +11,16 @@
  "bun_section": {
   "offset": 68206592,
   "offset_hex": "0x410C000",
-  "size": 160738642
+  "size": 170791110
  },
  "targets": [
   {
    "path": "Claude Code native binary (macOS arm64)",
-   "package_path": "@anthropic-ai/claude-code-darwin-arm64@2.1.289/package/claude",
+   "package_path": "@anthropic-ai/claude-code-darwin-arm64@2.1.295/package/claude",
    "role": "Claude Code native binary",
    "present": true,
-   "size": 229616464,
-   "sha256": "03d66745e3bb69ec727d66023696f3820bc0a00a8a5ba725eb6706d0c67cbe69",
+   "size": 239695888,
+   "sha256": "0116ee2e0a513900b633d9951367f18747686478e2b462805b8c31609f047f70",
    "signature_counts": {
     "copyright": 17,
     "crc32": 2,
@@ -215,8 +215,8 @@
     {
      "signature": "copyright",
      "description": "Copyright text: \"copyright copysource cor corc corr corr2data corr_anti corr_kmo corr_smc corre correl correla correl\"",
-     "offset": 74616883,
-     "offset_hex": "0x4729033",
+     "offset": 74144567,
+     "offset_hex": "0x46B5B37",
      "size": 13298,
      "sha256": "ab0f623884df8c5a0039774fef1c8b103ebb1205d8f96f51e1a86a6890d39c56",
      "in_bun_section": true
@@ -224,17 +224,8 @@
     {
      "signature": "svg",
      "description": "SVG image",
-     "offset": 74825205,
-     "offset_hex": "0x475BDF5",
-     "size": 242009,
-     "sha256": "47c3a2137ea2fd7ac1093e6e2ee14ace454d2e7d71bc667fa6812cd98b686ef5",
-     "in_bun_section": true
-    },
-    {
-     "signature": "svg",
-     "description": "SVG image",
-     "offset": 75618072,
-     "offset_hex": "0x481D718",
+     "offset": 74506212,
+     "offset_hex": "0x470DFE4",
      "size": 130,
      "sha256": "9f75e844e3f884770fec81bb5c1052375678f7635ec3a7ddba3e3684825980f4",
      "in_bun_section": true
@@ -242,17 +233,26 @@
     {
      "signature": "svg",
      "description": "SVG image",
-     "offset": 76526401,
-     "offset_hex": "0x48FB341",
-     "size": 461856,
-     "sha256": "ef7db21e1966cb6a52af1d3a85edb8826ccb5fa0f563013c72027a06b4a64789",
+     "offset": 74818285,
+     "offset_hex": "0x475A2ED",
+     "size": 240913,
+     "sha256": "ddf309e6e6596f8a9f7dacd7d578069c3775b686649ef7885501a39663a733f9",
+     "in_bun_section": true
+    },
+    {
+     "signature": "svg",
+     "description": "SVG image",
+     "offset": 76164128,
+     "offset_hex": "0x48A2C20",
+     "size": 169,
+     "sha256": "be3f275fd19a7a6c8327c4c327d6eef1614bdf794cbc826cfdb6a2b0dcb6d5aa",
      "in_bun_section": true
     },
     {
      "signature": "pem_public_key",
      "description": "PEM public key",
-     "offset": 77294648,
-     "offset_hex": "0x49B6C38",
+     "offset": 77638604,
+     "offset_hex": "0x4A0ABCC",
      "size": 800,
      "sha256": "395759c1f7449ef4cdef305a42e820f3c766d6090d142634ebdb049f113168b6",
      "in_bun_section": true,
@@ -261,8 +261,8 @@
     {
      "signature": "copyright",
      "description": "Copyright text: \"copyright|yjit|jit|(?:en|dis)able[-=].*|[a-z-]*encoding=.*))$\"",
-     "offset": 77419469,
-     "offset_hex": "0x49D53CD",
+     "offset": 77958461,
+     "offset_hex": "0x4A58D3D",
      "size": 61,
      "sha256": "ae245ba1341d8b41873ee66486a098c3780d99e7eca1a94de7c2e218bd3289c7",
      "in_bun_section": true
@@ -270,121 +270,27 @@
     {
      "signature": "pem_certificate",
      "description": "PEM certificate",
-     "offset": 79976796,
-     "offset_hex": "0x4C4595C",
+     "offset": 80439680,
+     "offset_hex": "0x4CB6980",
      "size": 708,
      "sha256": "22df5ef459b53617a860801e3a9ee13ce01ac016ed50c698faeda2703d82b61d",
      "in_bun_section": true,
      "identified": "PEM certificate"
     },
     {
-     "signature": "svg",
-     "description": "SVG image",
-     "offset": 82876076,
-     "offset_hex": "0x4F096AC",
-     "size": 3348,
-     "sha256": "fd392ad934b1fce4b5f6daa9a8a475a9aded5be584b55d5b0ad1bfac38254f56",
-     "in_bun_section": true
-    },
-    {
-     "signature": "svg",
-     "description": "SVG image",
-     "offset": 82879432,
-     "offset_hex": "0x4F0A3C8",
-     "size": 6628,
-     "sha256": "b80910089dd390ff567d9ea190e893f84f471a7030dba6272bdf3fb90e7afaba",
-     "in_bun_section": true
-    },
-    {
      "signature": "copyright",
      "description": "Copyright text: \"Copyright (c) 2014 - 2022 Knut Sveidqvist */ \"",
-     "offset": 83252717,
-     "offset_hex": "0x4F655ED",
+     "offset": 83677253,
+     "offset_hex": "0x4FCD045",
      "size": 45,
      "sha256": "2cbc3b1efeb6d68b539fe2b126455db27418a70c7511aa29d3caf1c139383faa",
      "in_bun_section": true
     },
     {
-     "signature": "copyright",
-     "description": "Copyright text: \"copyright|yjit|jit|(?:en|dis)able[-=].*|[a-z-]*encoding=.*))$/s,bridge:/system|exec|\\x60|%x|popen|sp\"",
-     "offset": 188004435,
-     "offset_hex": "0xB34B853",
-     "size": 3687085,
-     "sha256": "74dc07bba7bb488ec681b27fb6bc95a5f0b0666d28f502d1756883809a022857",
-     "in_bun_section": true
-    },
-    {
-     "signature": "pem_public_key",
-     "description": "PEM public key",
-     "offset": 191748323,
-     "offset_hex": "0xB6DD8E3",
-     "size": 800,
-     "sha256": "395759c1f7449ef4cdef305a42e820f3c766d6090d142634ebdb049f113168b6",
-     "in_bun_section": true,
-     "inside": "/$bunfs/root/chunk-mxq2tee3.js",
-     "identified": "PEM public key"
-    },
-    {
-     "signature": "copyright",
-     "description": "Copyright text: \"copyright\",\"-doc\",\"-moduledoc\",\"-vsn\",\"-import\",\"-include\",\"-include_lib\",\"-compile\",\"-define\",\"-els\"",
-     "offset": 192444675,
-     "offset_hex": "0xB787903",
-     "size": 457398,
-     "sha256": "5e4615c28f55b051ac78bfdd901fa3ad5ad6a7b843a04ea21a5761b2093e3779",
-     "in_bun_section": true
-    },
-    {
-     "signature": "pem_certificate",
-     "description": "PEM certificate",
-     "offset": 193460221,
-     "offset_hex": "0xB87F7FD",
-     "size": 708,
-     "sha256": "22df5ef459b53617a860801e3a9ee13ce01ac016ed50c698faeda2703d82b61d",
-     "in_bun_section": true,
-     "inside": "/$bunfs/root/chunk-bdwdvfxk.js",
-     "identified": "PEM certificate"
-    },
-    {
-     "signature": "copyright",
-     "description": "Copyright text: \"copyright:{regex:/&(copy|#169);/g,val:\"\\xA9\"},reg:{regex:/&(reg|#174);/g,val:\"\\xAE\"},inr:{regex:/&(i\"",
-     "offset": 198692704,
-     "offset_hex": "0xBD7CF60",
-     "size": 123084,
-     "sha256": "920a9d6c150cb7bb04223a9016a345238cb3ef7299dfd1151ec9bb645a9b5d2f",
-     "in_bun_section": true
-    },
-    {
      "signature": "svg",
      "description": "SVG image",
-     "offset": 203076451,
-     "offset_hex": "0xC1AB363",
-     "size": 146,
-     "sha256": "4823522122d486f2bfc7ebeafbef8f0a0daf8d5f05b2708a9791eccbed4073c3",
-     "in_bun_section": true
-    },
-    {
-     "signature": "copyright",
-     "description": "Copyright text: \"copyright:\"\\xA9\\uFE0F\",corn:\"\\uD83C\\uDF3D\",costa_rica:\"\\uD83C\\uDDE8\\uD83C\\uDDF7\",cote_divoire:\"\\uD83\"",
-     "offset": 208847331,
-     "offset_hex": "0xC72C1E3",
-     "size": 1126479,
-     "sha256": "08695bd339a0617f8046499d9d55471d9e200934ac5a3b1be861cbcd6fdd3827",
-     "in_bun_section": true
-    },
-    {
-     "signature": "svg",
-     "description": "SVG image",
-     "offset": 210979324,
-     "offset_hex": "0xC9349FC",
-     "size": 166227,
-     "sha256": "dadc007ae57ca97bd4cb7e4a82ae7408777decaae1038db2a40780ba6071c7b7",
-     "in_bun_section": true
-    },
-    {
-     "signature": "svg",
-     "description": "SVG image",
-     "offset": 212790776,
-     "offset_hex": "0xCAEEDF8",
+     "offset": 84093012,
+     "offset_hex": "0x5032854",
      "size": 3348,
      "sha256": "fd392ad934b1fce4b5f6daa9a8a475a9aded5be584b55d5b0ad1bfac38254f56",
      "in_bun_section": true
@@ -392,44 +298,138 @@
     {
      "signature": "svg",
      "description": "SVG image",
-     "offset": 212794134,
-     "offset_hex": "0xCAEFB16",
+     "offset": 84096368,
+     "offset_hex": "0x5033570",
      "size": 6628,
      "sha256": "b80910089dd390ff567d9ea190e893f84f471a7030dba6272bdf3fb90e7afaba",
      "in_bun_section": true
     },
     {
+     "signature": "copyright",
+     "description": "Copyright text: \"copyright|yjit|jit|(?:en|dis)able[-=].*|[a-z-]*encoding=.*))$/s,bridge:/system|exec|\\x60|%x|popen|sp\"",
+     "offset": 197846996,
+     "offset_hex": "0xBCAE7D4",
+     "size": 1324230,
+     "sha256": "7d4f87f1beaccbaca4a6fb1c1a0dee4169d069a7a5dea4fcf89459de1fcf8e76",
+     "in_bun_section": true
+    },
+    {
+     "signature": "pem_public_key",
+     "description": "PEM public key",
+     "offset": 199495507,
+     "offset_hex": "0xBE40F53",
+     "size": 800,
+     "sha256": "395759c1f7449ef4cdef305a42e820f3c766d6090d142634ebdb049f113168b6",
+     "in_bun_section": true,
+     "inside": "/$bunfs/root/chunk-ef4mvp7n.js",
+     "identified": "PEM public key"
+    },
+    {
+     "signature": "copyright",
+     "description": "Copyright text: \"copyright\",\"-doc\",\"-moduledoc\",\"-vsn\",\"-import\",\"-include\",\"-include_lib\",\"-compile\",\"-define\",\"-els\"",
+     "offset": 200042201,
+     "offset_hex": "0xBEC66D9",
+     "size": 457400,
+     "sha256": "90d2d871fb6ceab1269030ee68288b9c1dc54cfa427d4cb0d719d3b5f7ac1efa",
+     "in_bun_section": true
+    },
+    {
+     "signature": "pem_certificate",
+     "description": "PEM certificate",
+     "offset": 201297753,
+     "offset_hex": "0xBFF8F59",
+     "size": 708,
+     "sha256": "22df5ef459b53617a860801e3a9ee13ce01ac016ed50c698faeda2703d82b61d",
+     "in_bun_section": true,
+     "inside": "/$bunfs/root/chunk-7a9698eq.js",
+     "identified": "PEM certificate"
+    },
+    {
+     "signature": "copyright",
+     "description": "Copyright text: \"copyright:{regex:/&(copy|#169);/g,val:\"\\xA9\"},reg:{regex:/&(reg|#174);/g,val:\"\\xAE\"},inr:{regex:/&(i\"",
+     "offset": 206535832,
+     "offset_hex": "0xC4F7C98",
+     "size": 123099,
+     "sha256": "e172c17426b9ccbb979cb96c4edcd9f2e04c266e0fd8365b690d8ed08d3de7aa",
+     "in_bun_section": true
+    },
+    {
      "signature": "svg",
      "description": "SVG image",
-     "offset": 213901179,
-     "offset_hex": "0xCBFDF7B",
+     "offset": 211242000,
+     "offset_hex": "0xC974C10",
+     "size": 146,
+     "sha256": "4823522122d486f2bfc7ebeafbef8f0a0daf8d5f05b2708a9791eccbed4073c3",
+     "in_bun_section": true
+    },
+    {
+     "signature": "svg",
+     "description": "SVG image",
+     "offset": 212500452,
+     "offset_hex": "0xCAA7FE4",
      "size": 213,
-     "sha256": "f07c90d32ea6676e0ab1c1327632a551b776780f7b258a52c488b6b46892615b",
+     "sha256": "1a38198ab3d34eb33e1cb8c7493f4c9464c60f7988b002ea14c87a6cc38a50e5",
      "in_bun_section": true
     },
     {
      "signature": "copyright",
-     "description": "Copyright text: \"Copyright(c) 2015 Douglas Christopher Wilson * MIT Licensed */var ni=J((e)=>{var t=/; *([!#$%&'*+.^_\"",
-     "offset": 214063058,
-     "offset_hex": "0xCC257D2",
-     "size": 217748,
-     "sha256": "f9d6ebb5e9eec85485d13b7c1764b5860139a2300169e38bdf8faadc4f9258fe",
+     "description": "Copyright text: \"copyright:\"\\xA9\\uFE0F\",corn:\"\\uD83C\\uDF3D\",costa_rica:\"\\uD83C\\uDDE8\\uD83C\\uDDF7\",cote_divoire:\"\\uD83\"",
+     "offset": 216492438,
+     "offset_hex": "0xCE76996",
+     "size": 1188870,
+     "sha256": "05a821a13f87d4261f65c3f8e454a5733a6c6a1e54f880336e6e0eb7c703f396",
+     "in_bun_section": true
+    },
+    {
+     "signature": "svg",
+     "description": "SVG image",
+     "offset": 218742703,
+     "offset_hex": "0xD09BFAF",
+     "size": 172722,
+     "sha256": "740f934ab35359cbdb0bc7776fb61f820fbd076e2a8de99e3c7018c0de51b024",
+     "in_bun_section": true
+    },
+    {
+     "signature": "svg",
+     "description": "SVG image",
+     "offset": 222114703,
+     "offset_hex": "0xD3D338F",
+     "size": 3348,
+     "sha256": "fd392ad934b1fce4b5f6daa9a8a475a9aded5be584b55d5b0ad1bfac38254f56",
+     "in_bun_section": true
+    },
+    {
+     "signature": "svg",
+     "description": "SVG image",
+     "offset": 222118061,
+     "offset_hex": "0xD3D40AD",
+     "size": 6628,
+     "sha256": "b80910089dd390ff567d9ea190e893f84f471a7030dba6272bdf3fb90e7afaba",
      "in_bun_section": true
     },
     {
      "signature": "copyright",
-     "description": "Copyright text: \"Copyright (c) 2014 - 2022 Knut Sveidqvist */ `;async function J(){return H+await b7e(D,import.meta.d\"",
-     "offset": 219448442,
-     "offset_hex": "0xD14847A",
+     "description": "Copyright text: \"Copyright(c) 2015 Douglas Christopher Wilson * MIT Licensed */var ai=J((e)=>{var t=/; *([!#$%&'*+.^_\"",
+     "offset": 223110232,
+     "offset_hex": "0xD4C6458",
+     "size": 217749,
+     "sha256": "51f31eb968c9c1ef94d80a7537437a26f543a961cc0447ffffc684c0fc9dfd7b",
+     "in_bun_section": true
+    },
+    {
+     "signature": "copyright",
+     "description": "Copyright text: \"Copyright (c) 2014 - 2022 Knut Sveidqvist */ `;async function J(){return H+await Uot(D,import.meta.d\"",
+     "offset": 228346570,
+     "offset_hex": "0xD9C4ACA",
      "size": 142,
-     "sha256": "c6a8d8f1dd71f006c77d869fe29ee12cf37a3e4171af9a60eb1acb381e749c8c",
+     "sha256": "55cd3801d0abf5067b34c68b04afa9565083b9f1e7ec09dc7e0079ac3398110c",
      "in_bun_section": true
     },
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 64021 bytes",
-     "offset": 220799432,
-     "offset_hex": "0xD2921C8",
+     "offset": 230759495,
+     "offset_hex": "0xDC11C47",
      "size": 64021,
      "sha256": "bd2f410be835f42c3001faa320f78673904613b4f8ba5017b98024c8cc3c7ddf",
      "in_bun_section": true,
@@ -447,17 +447,17 @@
     },
     {
      "signature": "zstd",
-     "description": "ZSTD compressed data, total size: 168267 bytes",
-     "offset": 220863454,
-     "offset_hex": "0xD2A1BDE",
-     "size": 168267,
-     "sha256": "169df44232ddc163d899c2290ae7cae5d2f4fc0a3f98d0f69db47f57b37a9cab",
+     "description": "ZSTD compressed data, total size: 170760 bytes",
+     "offset": 230823517,
+     "offset_hex": "0xDC2165D",
+     "size": 170760,
+     "sha256": "d7749ea32a9646d5dfa844a610851c6d10d1c31059426a4d7de3e1f0f420afaa",
      "in_bun_section": true,
      "inside": "/$bunfs/root/hljsBundle.generated.min.js",
      "identified": "zstd frame",
      "decoded": {
-      "size": 596493,
-      "sha256": "365c36d29ed495f0c78a025f24b01e69d8b8659b07d2caa63dbfe92d957d31f7",
+      "size": 606473,
+      "sha256": "ae4a713108fb2d92e1be0156d49821df6c4df5c88e885c490e55b2a66df48973",
       "kind": "text",
       "detail": {
        "lines": 50
@@ -470,8 +470,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 24296 bytes",
-     "offset": 221059754,
-     "offset_hex": "0xD2D1AAA",
+     "offset": 231022310,
+     "offset_hex": "0xDC51EE6",
      "size": 24296,
      "sha256": "a77cb068a25f392a96c26f6879d3171d3f5fc427329479c1e1457f1f12565ffa",
      "in_bun_section": true,
@@ -492,8 +492,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 31798 bytes",
-     "offset": 221098982,
-     "offset_hex": "0xD2DB3E6",
+     "offset": 231061538,
+     "offset_hex": "0xDC5B822",
      "size": 31798,
      "sha256": "2fb5d333f89f151aa4662b4e5f9b1f229aed97e16da8e36882b1dadc64796aaa",
      "in_bun_section": true,
@@ -512,8 +512,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 34468 bytes",
-     "offset": 221130781,
-     "offset_hex": "0xD2E301D",
+     "offset": 231093337,
+     "offset_hex": "0xDC63459",
      "size": 34468,
      "sha256": "b60a6fedfc873c0b4ef32ce00f33a8895d1cd4d2da185e78e68d62da619c0146",
      "in_bun_section": true,
@@ -533,17 +533,17 @@
     },
     {
      "signature": "zstd",
-     "description": "ZSTD compressed data, total size: 31473 bytes",
-     "offset": 225436622,
-     "offset_hex": "0xD6FE3CE",
-     "size": 31473,
-     "sha256": "834da19dcab30cbbc562e289245d0c6da44a5d5cbf7e11c527b316859f29857b",
+     "description": "ZSTD compressed data, total size: 31641 bytes",
+     "offset": 231173734,
+     "offset_hex": "0xDC76E66",
+     "size": 31641,
+     "sha256": "fed8be990274eb15400e28659d8481a06a43c212c4057dbc549b1a96c78ab8d3",
      "in_bun_section": true,
-     "inside": "/$bunfs/root/permissions_external-64ee756a.txt.zst",
+     "inside": "/$bunfs/root/permissions_external-275a0e0e.txt.zst",
      "identified": "zstd frame",
      "decoded": {
-      "size": 95251,
-      "sha256": "ac33e28b62e933221a483e6358bb1c739e728bd94366d9976850eb9e698d677c",
+      "size": 96000,
+      "sha256": "9b240751803312d1c7e9069f4f17ff4caa1bb5edc7e27783a5e3c59fd177457b",
       "kind": "text",
       "detail": {
        "lines": 159
@@ -555,20 +555,20 @@
     },
     {
      "signature": "zstd",
-     "description": "ZSTD compressed data, total size: 130857 bytes",
-     "offset": 225468096,
-     "offset_hex": "0xD705EC0",
-     "size": 130857,
-     "sha256": "d9ce7b8d77f31e631d912070aebf9bb8965702ba7148569f0c767dc5769803af",
+     "description": "ZSTD compressed data, total size: 138524 bytes",
+     "offset": 231205376,
+     "offset_hex": "0xDC7EA00",
+     "size": 138524,
+     "sha256": "56a1f7f51bb2f69422c94b79875df68190e3b331ee31daf7cca4ac35277ce8a8",
      "in_bun_section": true,
-     "inside": "/$bunfs/root/claude-code.d.ts-30639c1e.txt.zst",
+     "inside": "/$bunfs/root/claude-code.d.ts-786ac4b5.txt.zst",
      "identified": "zstd frame",
      "decoded": {
-      "size": 586065,
-      "sha256": "791464683ba02b5905d477fdb2fe9a81a5110c937bc28bae21414657d53a9894",
+      "size": 621389,
+      "sha256": "ca0ab16c1f79f247c9de2a574bc81bf8bc7fa401e45bdfc7809337615c0ab351",
       "kind": "text",
       "detail": {
-       "lines": 15196
+       "lines": 15981
       },
       "nested_signatures": {
        "svg": 1
@@ -577,43 +577,20 @@
     },
     {
      "signature": "zstd",
-     "description": "ZSTD compressed data, total size: 785819 bytes",
-     "offset": 226085276,
-     "offset_hex": "0xD79C99C",
-     "size": 785819,
-     "sha256": "d98ea41d54f7d3253f244c7834baf3f322f2aaa9e09fa9205db627e58ebd84cf",
+     "description": "ZSTD compressed data, total size: 28223 bytes",
+     "offset": 236059302,
+     "offset_hex": "0xE11FAA6",
+     "size": 28223,
+     "sha256": "c3eeef17d8ff86e14b2b4b103f9b47fbee94c5b2bc381a3e9366b51f1b94ce9e",
      "in_bun_section": true,
-     "inside": "/$bunfs/root/mermaid.min.js",
+     "inside": "/$bunfs/root/ct.mjs-1415bbd2.txt.zst",
      "identified": "zstd frame",
      "decoded": {
-      "size": 3566058,
-      "sha256": "18327bef70d96fb505fe7287d9f6a7362ebf07ff6576ddfaffb1a06f3e1a2954",
+      "size": 106298,
+      "sha256": "17daa96970f9cfc526f3bde1a55da65addbd0f190d2064e7304eac001e5a50e6",
       "kind": "text",
       "detail": {
-       "lines": 3588
-      },
-      "nested_signatures": {
-       "copyright": 1,
-       "svg": 2
-      }
-     }
-    },
-    {
-     "signature": "zstd",
-     "description": "ZSTD compressed data, total size: 27748 bytes",
-     "offset": 226919014,
-     "offset_hex": "0xD868266",
-     "size": 27748,
-     "sha256": "a092500b22eefb72343b4c6550133d681ca4b00f8c99e5f28d6aa59900be0a5a",
-     "in_bun_section": true,
-     "inside": "/$bunfs/root/ct.mjs-f90faa93.txt.zst",
-     "identified": "zstd frame",
-     "decoded": {
-      "size": 103084,
-      "sha256": "57fff821c4b211d48cf9fefa41a2c57f4126a7da7dc43d407b7759ba9b51c736",
-      "kind": "text",
-      "detail": {
-       "lines": 946
+       "lines": 969
       },
       "nested_signatures": {}
      }
@@ -621,8 +598,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 41172 bytes",
-     "offset": 227021893,
-     "offset_hex": "0xD881445",
+     "offset": 236162752,
+     "offset_hex": "0xE138EC0",
      "size": 41172,
      "sha256": "1fffbf6109b16cc458484d83a7bebc1bcb8b1b5cba84129281a5bc5bd79e06a5",
      "in_bun_section": true,
@@ -649,20 +626,20 @@
     },
     {
      "signature": "zstd",
-     "description": "ZSTD compressed data, total size: 19093 bytes",
-     "offset": 227093804,
-     "offset_hex": "0xD892D2C",
-     "size": 19093,
-     "sha256": "71e3438887ca98801352491fb430c286f41935671253483a9a5a5882da7d036f",
+     "description": "ZSTD compressed data, total size: 22879 bytes",
+     "offset": 236239841,
+     "offset_hex": "0xE14BBE1",
+     "size": 22879,
+     "sha256": "e34ff4e9f828bded0b3953280b1ec6de07ccadfd221dee5c1a4063390c05d888",
      "in_bun_section": true,
-     "inside": "/$bunfs/root/playwright-mcp.mjs-3da98bf8.txt.zst",
+     "inside": "/$bunfs/root/playwright-mcp.mjs-8ae8cb57.txt.zst",
      "identified": "zstd frame",
      "decoded": {
-      "size": 70477,
-      "sha256": "599fc9a80173cb393f3aff30826fa65b1106fb2c294fe9da7631055f343d98e7",
+      "size": 88016,
+      "sha256": "f294945ec1ce2f80f5bfbf5484f50f56736553ea46763c2db4e39821668a41a7",
       "kind": "text",
       "detail": {
-       "lines": 858
+       "lines": 991
       },
       "nested_signatures": {}
      }
@@ -670,8 +647,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 24466 bytes",
-     "offset": 227409305,
-     "offset_hex": "0xD8DFD99",
+     "offset": 236563793,
+     "offset_hex": "0xE19AD51",
      "size": 24466,
      "sha256": "7215a7eaca38bd5a59b4f2d3f58302e5eaf8ab57e164ad588f1c577d9f22b4d3",
      "in_bun_section": true,
@@ -689,20 +666,20 @@
     },
     {
      "signature": "zstd",
-     "description": "ZSTD compressed data, total size: 32070 bytes",
-     "offset": 227732989,
-     "offset_hex": "0xD92EDFD",
-     "size": 32070,
-     "sha256": "d4ced200393e59cbd109a6329b4455657c040c6220feb1303e93782f3888a202",
+     "description": "ZSTD compressed data, total size: 32701 bytes",
+     "offset": 236891585,
+     "offset_hex": "0xE1EADC1",
+     "size": 32701,
+     "sha256": "39b7b35a39ec226f4c9d9478374a9c0ad505db412c0dc63aebb26034f204b64e",
      "in_bun_section": true,
-     "inside": "/$bunfs/root/SKILL-69f6fb6b.md.zst",
+     "inside": "/$bunfs/root/SKILL-fbddff64.md.zst",
      "identified": "zstd frame",
      "decoded": {
-      "size": 100775,
-      "sha256": "fd514523fb33274fa9847f1ed92e63847c2490db68b1aaff388df98286496e63",
+      "size": 102921,
+      "sha256": "f634599717dd40965af0324776b25ec192ece99686fe481f32c982a7ab028b9b",
       "kind": "text",
       "detail": {
-       "lines": 596
+       "lines": 604
       },
       "nested_signatures": {}
      }
@@ -710,8 +687,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 24732 bytes",
-     "offset": 227855917,
-     "offset_hex": "0xD94CE2D",
+     "offset": 237015900,
+     "offset_hex": "0xE20935C",
      "size": 24732,
      "sha256": "6746ffbbeb1257bfb7d99f8aed69fe3403bc534bee523a805ae7e02d2fe5b65d",
      "in_bun_section": true,
@@ -729,20 +706,20 @@
     },
     {
      "signature": "zstd",
-     "description": "ZSTD compressed data, total size: 84100 bytes",
-     "offset": 228060350,
-     "offset_hex": "0xD97ECBE",
-     "size": 84100,
-     "sha256": "58574422a4d10b8378f491decdbf6b4383d7151ebf17c46ec8f30f5d2ffcc105",
+     "description": "ZSTD compressed data, total size: 89537 bytes",
+     "offset": 237239613,
+     "offset_hex": "0xE23FD3D",
+     "size": 89537,
+     "sha256": "c7ec3ee25dd26609cf49d9f4d8afe268efd5355925889dc522744203bfb7fe73",
      "in_bun_section": true,
-     "inside": "/$bunfs/root/model-migration-365c3b3c.md.zst",
+     "inside": "/$bunfs/root/model-migration-64fbe83d.md.zst",
      "identified": "zstd frame",
      "decoded": {
-      "size": 318239,
-      "sha256": "a460eacae8c5486312a3632300b11c3399f4dc3270a05b829b34e98249396f61",
+      "size": 346908,
+      "sha256": "825d302e8b80ae7ebe5a70e08fd2e403282cf80b3e1118f184f762ed9d1808ab",
       "kind": "text",
       "detail": {
-       "lines": 2254
+       "lines": 2422
       },
       "nested_signatures": {}
      }
@@ -750,8 +727,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 18679 bytes",
-     "offset": 228210654,
-     "offset_hex": "0xD9A37DE",
+     "offset": 237395734,
+     "offset_hex": "0xE265F16",
      "size": 18679,
      "sha256": "49170dc672def75152b003abaa3958f31399b42351484c57d5d426104a11e038",
      "in_bun_section": true,
@@ -770,8 +747,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 27613 bytes",
-     "offset": 228306558,
-     "offset_hex": "0xD9BAE7E",
+     "offset": 237508792,
+     "offset_hex": "0xE2818B8",
      "size": 27613,
      "sha256": "e06f3b4b50e9c2f4a9605ff4cd67caf28a3b0a709a8c82524cfa02fa6e25d640",
      "in_bun_section": true,
@@ -792,8 +769,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 41562 bytes",
-     "offset": 228340566,
-     "offset_hex": "0xD9C3356",
+     "offset": 237542800,
+     "offset_hex": "0xE289D90",
      "size": 41562,
      "sha256": "9e882eb9d5febc6f626c788a4767b37440a341d0484c548e4bf222f0301adf94",
      "in_bun_section": true,
@@ -814,8 +791,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 28340 bytes",
-     "offset": 228382129,
-     "offset_hex": "0xD9CD5B1",
+     "offset": 237584363,
+     "offset_hex": "0xE293FEB",
      "size": 28340,
      "sha256": "fc660d16cda123c51da8e1241fe7b9852b1b4fe9926721c80598896bcd7fa84f",
      "in_bun_section": true,
@@ -834,8 +811,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 89731 bytes",
-     "offset": 228419897,
-     "offset_hex": "0xD9D6939",
+     "offset": 237622131,
+     "offset_hex": "0xE29D373",
      "size": 89731,
      "sha256": "2d46ad366065f99f79e1d6ef51d54651bd7ef312c456dea6ec1cd1c3916b4009",
      "in_bun_section": true,
@@ -856,8 +833,8 @@
     {
      "signature": "zstd",
      "description": "ZSTD compressed data, total size: 33596 bytes",
-     "offset": 228509629,
-     "offset_hex": "0xD9EC7BD",
+     "offset": 237711863,
+     "offset_hex": "0xE2B31F7",
      "size": 33596,
      "sha256": "91c2122a9d64ee8b239caf8e96a6cfce4aa8728ee70e54d6d148f40ab31a09a5",
      "in_bun_section": true,
@@ -875,22 +852,45 @@
     },
     {
      "signature": "zstd",
-     "description": "ZSTD compressed data, total size: 27529 bytes",
-     "offset": 228569551,
-     "offset_hex": "0xD9FB1CF",
-     "size": 27529,
-     "sha256": "99f7649c2b0bb110f948c42a6dfc9f2c139ef84266d747ddb38c1b6040267a5b",
+     "description": "ZSTD compressed data, total size: 27885 bytes",
+     "offset": 237782139,
+     "offset_hex": "0xE2C447B",
+     "size": 27885,
+     "sha256": "fa9ccc9cd1f2f916b3ad1d364333491b24458659d403f7ebce4f3f4e560bd1c6",
      "in_bun_section": true,
-     "inside": "/$bunfs/root/plugin-eval-b1b03aad.md.zst",
+     "inside": "/$bunfs/root/plugin-eval-08c65fe1.md.zst",
      "identified": "zstd frame",
      "decoded": {
-      "size": 80310,
-      "sha256": "727b31d0996b8a22f82ad1e27e3164dc912341b43a87c3d251fda384d7f09310",
+      "size": 81287,
+      "sha256": "cf36325d5eb1b630f56ecc357a37df7fd5837e75362f8c355ecc8299b009ca5e",
       "kind": "text",
       "detail": {
-       "lines": 514
+       "lines": 515
       },
       "nested_signatures": {}
+     }
+    },
+    {
+     "signature": "zstd",
+     "description": "ZSTD compressed data, total size: 785819 bytes",
+     "offset": 237877630,
+     "offset_hex": "0xE2DB97E",
+     "size": 785819,
+     "sha256": "d98ea41d54f7d3253f244c7834baf3f322f2aaa9e09fa9205db627e58ebd84cf",
+     "in_bun_section": true,
+     "inside": "/$bunfs/root/mermaid.min.js",
+     "identified": "zstd frame",
+     "decoded": {
+      "size": 3566058,
+      "sha256": "18327bef70d96fb505fe7287d9f6a7362ebf07ff6576ddfaffb1a06f3e1a2954",
+      "kind": "text",
+      "detail": {
+       "lines": 3588
+      },
+      "nested_signatures": {
+       "copyright": 1,
+       "svg": 2
+      }
      }
     }
    ]

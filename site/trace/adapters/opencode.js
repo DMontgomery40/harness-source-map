@@ -1,6 +1,7 @@
 // Native `opencode export` JSON, release v1.18.34. The exported parts are logged
 // evidence; request assembly may transform or omit them before a provider call.
 import { newAgent, addBlock, partText, finalizeAgent, classifyCommand, RANK } from '../model.js';
+import {addEnvelopeBlock} from './instruction-spans.js';
 
 const decoder = new TextDecoder();
 const finite = value => Number.isFinite(value) ? value : 0;
@@ -96,7 +97,7 @@ export async function parseOpenCodeExport(source, fileIndex, { onProgress = () =
     message.parts.forEach((part, pi) => {
       const path = ['parts', pi], t = finite(part.time?.start) || created;
       lastTime = Math.max(lastTime, t, finite(part.time?.end));
-      const add = (kind, label, value, field) => addBlock(agent, { t, kind, label, text: partText(value), ref: ref([...path, ...field]) });
+      const add = (kind, label, value, field) => addEnvelopeBlock(agent, { t, kind, label, text: partText(value), ref: ref([...path, ...field]) });
       if (part.type === 'text') {
         const b = add(m.summary ? 'summary' : m.role === 'assistant' ? 'model' : part.synthetic ? 'injected' : 'you',
           m.summary ? 'compaction summary' : m.role === 'assistant' ? 'assistant' : part.synthetic ? 'harness-added text (exported)' : 'user', part.text, ['text']);
@@ -109,7 +110,7 @@ export async function parseOpenCodeExport(source, fileIndex, { onProgress = () =
       } else if (part.type === 'tool') {
         const b = add('model', `${part.tool} call`, part.state?.input || {}, ['state', 'input']);
         let result = null;
-        if (part.state?.status === 'completed') result = add('outside', `${part.tool} result`, part.state.output, ['state', 'output']).ref;
+        if (part.state?.status === 'completed') result = add(part.tool==='skill'?'injected':'outside', part.tool==='skill'?'skill instructions (exported)':`${part.tool} result`, part.state.output, ['state', 'output']).ref;
         else if (part.state?.status === 'error') result = add('outside', `${part.tool} error`, part.state.error, ['state', 'error']).ref;
         pending.push(actionFor(part, b.ref, result));
         if (part.state?.status === 'pending' || part.state?.status === 'running') notes.push('A tool call was still in progress when the session was exported.');

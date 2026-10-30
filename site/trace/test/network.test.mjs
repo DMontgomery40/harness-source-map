@@ -27,6 +27,39 @@ const claudeTrace = () => session([join(NET, "claude")]);
 const codexTrace = () => session([join(NET, "codex")]);
 const har = (name) => ({ name, text: readFileSync(join(NET, name), "utf8") });
 
+test('direct GLM destinations expose streamed reasoning through the network reader', async () => {
+  const id = 'ses_DirectGlmFixture';
+  const bytes = new TextEncoder().encode(JSON.stringify({ info: { id, time: { created: 1000 } }, messages: [
+    { info: { id: 'msg_fixture', role: 'user', time: { created: 1000 } }, parts: [{ type: 'text', text: 'Synthetic task' }] }
+  ] }));
+  const { trace } = await loadTrace([{ path: 'session.json', source: { size: bytes.length, slice: async (a, b) => bytes.slice(a, b) } }]);
+  const endpoints = ['https://api.z.ai/api/paas/v4', 'https://api.z.ai/api/coding/paas/v4',
+    'https://open.bigmodel.cn/api/paas/v4', 'https://open.bigmodel.cn/api/coding/paas/v4'];
+  const events = [
+    { id: 'reply_fixture', model: 'glm-5.3', choices: [{ index: 0, delta: { reasoning_content: 'Synthetic received reasoning.' } }] },
+    { choices: [{ index: 0, delta: { content: 'Synthetic answer.' }, finish_reason: 'stop' }] }
+  ].map(value => `data: ${JSON.stringify(value)}\n\n`).join('') + 'data: [DONE]\n\n';
+  const entries = endpoints.map(endpoint => ({ startedDateTime: '2026-01-01T00:00:00Z', time: 1,
+    request: { method: 'POST', url: endpoint + '/chat/completions', headers: [{ name: 'x-opencode-session-id', value: id }],
+      postData: { mimeType: 'application/json', text: JSON.stringify({ model: 'glm-5.3', stream: true, messages: [{ role: 'user', content: 'Synthetic task' }] }) } },
+    response: { status: 200, headers: [], content: { mimeType: 'text/event-stream', text: events } }
+  }));
+  const { capture, store } = await analyzeCapture([{ name: 'direct-glm.har', text: JSON.stringify({ log: { version: '1.2', entries } }) }], trace);
+  assert.equal(capture.calls.length, endpoints.length);
+  for (const call of capture.calls) {
+    assert.equal(call.protocol, 'chat-completions');
+    assert.equal(call.routing.gateway, false);
+    assert.equal(call.routing.reportedProvider, null, 'host recognition must not invent response routing metadata');
+    assert.equal(call.association, 'session-id');
+    assert.equal(call.response.reasoning[0].field, 'reasoning_content');
+    assert.equal(call.response.reasoning[0].chars, 'Synthetic received reasoning.'.length);
+    assert.equal(store.body(call.entry, 'reasoning').text, 'reasoning_content [choice 0]\nSynthetic received reasoning.');
+    assert.equal(store.body(call.entry, 'reasoning').cut, false);
+  }
+  assert.equal(classify('opencode', { host: 'api.z.ai.evil.example', path: '/api/paas/v4/chat/completions', method: 'POST' }).role, 'other');
+  assert.equal(classify('opencode', { host: 'api.z.ai', path: '/api/paas/v4/chat/completions', method: 'GET' }).role, 'other');
+});
+
 // Every planted value that must not reach the page.
 function planted(text) { return Object.entries(PLANTED).filter(([, v]) => text.includes(v)).map(([k]) => k); }
 function everything(capture, store) {

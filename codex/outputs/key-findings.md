@@ -1,6 +1,6 @@
 # Key findings
 
-Current extraction: ChatGPT desktop 26.930.31730 (build 12947), bundled Codex CLI 0.160.0. These findings regenerate from the current published records on every refresh. Each linked source retains its own capture provenance; a failed extractor can leave an earlier record in place.
+Current extraction: ChatGPT desktop 26.1002.52244 (build 13536), bundled Codex CLI 0.162.0-alpha.2. These findings regenerate from the current published records on every refresh. Each linked source retains its own capture provenance; a failed extractor can leave an earlier record in place.
 
 ## The authenticated catalog exposes the model instruction stack
 
@@ -16,18 +16,22 @@ The shipped Page editing and visualization wrappers recognize complete native `a
 
 Team Space UI text separately describes shared agent instructions used by scheduled runs. [Surface coverage ledger](https://harness.dtmont.com/codex/devday-surface-coverage/) retains the source text and unresolved dispatch details. Page-scoped guidance, scheduled-run composition and ordinary document content have distinct evidence boundaries.
 
+## Intelligent UI has separate instruction and delivery paths
+
+[Intelligent UI and inline visualizations](https://harness.dtmont.com/codex/intelligent-ui/) publishes the complete Visualize skill, design-controls reference and Page-precedence notice from the shipped desktop app. It distinguishes registered learning blocks, generative-UI widget refresh and inline HTML, and records widget-state handling and the Sites handoff. Client source establishes those instruction contents and assembly paths; account rollout and server-side delivery require separate evidence.
+
 ## Shipped prompts and tools show what the client can assemble
 
 [Plan mode and Default mode](https://harness.dtmont.com/codex/collaboration-modes/) documents mode selection, developer-message assembly and the exact executable-verified templates. Null catalog mode fields mean no catalog override; selected mode settings can still supply the instructions. Plan mode is distinct from the `update_plan` progress tool.
 
-The 5 ChatGPT prompt inventories contain 96 published items and 4 unavailable anchors. [Work prompts](https://harness.dtmont.com/codex/chatgpt-work-prompts/) includes the current captured requests and source labels. [Desktop tool manifest](https://harness.dtmont.com/codex/tool-manifest/) defines 71 tools. The [configuration reference](https://harness.dtmont.com/codex/codex-config/) contains 1,152 entries and the [environment-variable reference](https://harness.dtmont.com/codex/codex-env-vars/) contains 340 entries; each follows its documented source version.
+The 5 ChatGPT prompt inventories contain 95 published items and 5 unavailable anchors. [Work prompts](https://harness.dtmont.com/codex/chatgpt-work-prompts/) includes the current captured requests and source labels. [Desktop tool manifest](https://harness.dtmont.com/codex/tool-manifest/) defines 71 tools. The [configuration reference](https://harness.dtmont.com/codex/codex-config/) contains 1,169 entries and the [environment-variable reference](https://harness.dtmont.com/codex/codex-env-vars/) contains 342 entries; each follows its documented source version.
 
-The additional [model-facing text sweep](https://harness.dtmont.com/codex/desktop-model-facing-text/) publishes 159 reviewed entries: 0 local source review and 159 Jev classifications. Classifier confidence is a triage signal, while local review is a separate source decision. Neither proves UI execution, account access or live model delivery.
+The additional [model-facing text sweep](https://harness.dtmont.com/codex/desktop-model-facing-text/) publishes 160 reviewed entries: 0 local source review and 160 Jev classifications. Classifier confidence is a triage signal, while local review is a separate source decision. Neither proves UI execution, account access or live model delivery.
 
-The structural ledger contains 0 structural candidates; 0 classified positive, including 0 endpoints. A shipped endpoint, label, enum or feature flag does not establish a launched or enabled feature. [Complete coverage and unresolved surfaces](https://harness.dtmont.com/codex/devday-surface-coverage/) preserves these limits.
+The structural ledger contains 11,822 structural candidates; 1,831 classified positive, including 32 endpoints. A shipped endpoint, label, enum or feature flag does not establish a launched or enabled feature. [Complete coverage and unresolved surfaces](https://harness.dtmont.com/codex/devday-surface-coverage/) preserves these limits.
 
-## Historical Work and voice observations — September 24, 2026
+## Archived Work and voice observations
 
-Authenticated browser test turns on September 24 selected `gpt-6-astra-wm`, `gpt-6-sol-wm` and `gpt-6-luna-wm`. Each observed request contained one user message and the model selection, with no client-visible system, developer or prompt field. Those dated observations do not capture the Work service’s instruction stack and are not refreshed by a new CLI catalog. [Dated Work evidence](https://harness.dtmont.com/codex/chatgpt-work/) · [Sanitized browser trace](https://harness.dtmont.com/codex/sanitized-gpt-6-work-client-trace/).
+Archived authenticated browser test turns selected `gpt-6-astra-wm`, `gpt-6-sol-wm` and `gpt-6-luna-wm`. Each observed request contained one user message and the model selection, with no client-visible system, developer or prompt field. Those archived observations do not capture the Work service’s instruction stack and are not refreshed by a new CLI catalog. [Archived Work evidence](https://harness.dtmont.com/codex/chatgpt-work/) · [Sanitized browser trace](https://harness.dtmont.com/codex/sanitized-gpt-6-work-client-trace/).
 
-The September 24 automatic voice prefetch selected Luna and advertised an empty client tool list, but it was not a completed microphone call. The completed-call Work voice tool surface remains unobserved in that evidence. [Dated voice observation](https://harness.dtmont.com/codex/voice-tools/). The current [bundled Codex/ChatGPT voice prompts](https://harness.dtmont.com/codex/bundled-codex-voice-prompts/) are a separate static source; their presence does not establish Work voice tools or runtime activation.
+The archived automatic voice prefetch selected Luna and advertised an empty client tool list, but it was not a completed microphone call. The completed-call Work voice tool surface remains unobserved in that evidence. [Archived voice observation](https://harness.dtmont.com/codex/voice-tools/). The current [bundled Codex/ChatGPT voice prompts](https://harness.dtmont.com/codex/bundled-codex-voice-prompts/) are a separate static source; their presence does not establish Work voice tools or runtime activation.

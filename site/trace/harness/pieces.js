@@ -323,6 +323,7 @@ function carried(text, vehicle, drop) {
 function candidates(b, text, product, drop) {
   const kind = b.kind, label = b.label || "";
   if (kind === "model") return [];
+  if(b.capture)return [{text,vehicle:b.capture.evidence,whole:true}];
   if (kind === "harness" || kind === "injected" || kind === "summary") {
     const standing = STANDING.test(label);
     // A slot logged as JSON (a tools array) or an agent's structured output groups by its row label.

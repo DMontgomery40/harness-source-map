@@ -414,7 +414,7 @@ export function recordList(items, { key = "", offset = 0, content = readableValu
 }
 
 const clip = (s, n) => { const t = String(s).replace(/\s+/g, " ").trim(); return t.length > n ? `${t.slice(0, n - 1)}…` : t; };
-const TITLE_KEYS = ["item_type", "target", "name", "type", "role", "status", "display", "text", "title", "thread_name", "turn_id", "file", "level"];
+const TITLE_KEYS = ["item_type", "target", "name", "plugin", "type", "role", "status", "display", "text", "title", "thread_name", "turn_id", "file", "level"];
 // Where a record keeps its body (a rollout line's payload, a history row's item).
 const INNER = ["payload", "item", "item_json", "payload_json", "message", "msg", "data", "event", "params", "delta"];
 const WHEN_KEYS = ["timestamp", "ts", "time", "created_at_ms", "createdAtMs", "created_at", "createdAt", "started_at"];

@@ -1,6 +1,6 @@
 # Codex CLI bundled skills
 
-Source: openai/codex `rust-v0.160.0` (commit `a956835d0207`), matching the bundled `codex-cli 0.160.0`.
+Source: openai/codex `rust-v0.162.0-alpha.2` (commit `74e804deeb12`), matching the bundled `codex-cli 0.162.0-alpha.2`.
 
 The sample skills built into the Codex CLI, each with its SKILL.md and reference files. They are read from the openai/codex source at the tag that matches the bundled CLI and checked byte for byte against the shipped executable.
 

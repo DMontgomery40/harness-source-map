@@ -116,7 +116,7 @@ test("claude-code hint: loose subagent files are grouped by content; a loose fil
 test("a hint that names no file is a clear error; a subagents folder without its root still loads", async () => {
   const { all, cc } = tree();
   const missing = uuid7(CODEX_T0 + 99 * DAY, 99);
-  await assert.rejects(loadTrace(all, { root: missing }), { message: `Session ${missing} isn't in the picked folder. Pick ~/.codex/sessions (or ~/.claude/projects)` });
+  await assert.rejects(loadTrace(all, { root: missing }), { message: `Session ${missing} isn't in the picked folder. Pick ~/.codex/sessions, ~/.claude/projects, or the matching OpenCode/Cursor export folder; native stores need the local resolver` });
   assert.equal(await narrowByHint(all, "not-an-id"), null);
   const { trace } = await loadTrace([cc.sub, cc.meta], { root: CC.session });
   assert.deepEqual([trace.product, trace.agents[0].requests.length], ["claude-code", 2]);
@@ -129,7 +129,7 @@ test("worker: a missing session comes back as the error message", async () => {
   const rel = `codex/2026/01/01/rollout-2026-01-01T00-00-00-${CODEX.root}.jsonl`;
   const missing = uuid7(CODEX_T0 + 99 * DAY, 99);
   await self.onmessage({ data: { type: "load", files: [{ path: rel, file: new File([fix(rel)], "r.jsonl") }], root: missing } });
-  assert.deepEqual(posted.find((m) => m.type === "error"), { type: "error", message: `Session ${missing} isn't in the picked folder. Pick ~/.codex/sessions (or ~/.claude/projects)` });
+  assert.deepEqual(posted.find((m) => m.type === "error"), { type: "error", message: `Session ${missing} isn't in the picked folder. Pick ~/.codex/sessions, ~/.claude/projects, or the matching OpenCode/Cursor export folder; native stores need the local resolver` });
   await self.onmessage({ data: { type: "load", files: [{ path: rel, file: new File([fix(rel)], "r.jsonl") }], root: CODEX.root } });
   const narrow = posted.filter((m) => m.type === "progress" && m.phase === "narrow");
   assert.ok(narrow.length && narrow[narrow.length - 1].found.product === "codex");

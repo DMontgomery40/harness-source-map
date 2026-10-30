@@ -1,6 +1,6 @@
 {
  "area": "hooks",
- "version": "2.1.289",
+ "version": "2.1.295",
  "items": [
   {
    "id": "hook-pre-tool-use",
@@ -74,35 +74,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206021448,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214179832,
      "length": 215,
      "sha256": "73538c8efbf530cefb41c4a9895223cf0bf238199c12669f76ce46dbb435ac3d",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789803,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748787,
      "length": 12,
      "sha256": "253fc8ec641be14f9b8c49de8642cbcb27ad2a6f0e200b82a8ae048f53a73f79",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189557734,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197472626,
      "length": 106,
-     "sha256": "0b14e611029300c9e5502ca0716e0f9ada2deb0d6b03b4a664c99d03907d68fe",
-     "version": "2.1.289",
+     "sha256": "5e6898f8e85ecd9cc6b3e43d78c73bc0f9d09d093545cfa1a2257026ee259445",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180708861,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187126684,
      "length": 128,
-     "sha256": "ef8026f106421cde3fa6066625ee26fe835ca155d69535ffb43446bac8527911",
-     "version": "2.1.289",
+     "sha256": "6afd55e78d1966b06622c4b38495160d3e01cb3addf418fe1d1354307090786b",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -192,43 +192,43 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206021773,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214180157,
      "length": 252,
      "sha256": "4d158142fee7f10e77f82d9c05e99b6358ed1bea48fdd324373a9c941800fa39",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789816,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748800,
      "length": 13,
      "sha256": "9fc152c7d1b42d7fde295c7352b0fdc8f53e80f419499b3f63347e742939ae04",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189558477,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197473369,
      "length": 137,
-     "sha256": "691e0d2180b8cb3a9b21d8c0ab761a2b5ff68f476ad1b08f6d49fbf8fe594d95",
-     "version": "2.1.289",
+     "sha256": "98f4a1b65d4659e35e8a6fbd3a0ef283da07d280b8e86fe33052256ed8ef9065",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180709152,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187126975,
      "length": 266,
-     "sha256": "9a39f15e46be0cb6c1c9fdbe210a9cd210982dd1017021824c40f644dbb963d2",
-     "version": "2.1.289",
+     "sha256": "160e2aeb8a33d2837cb049506251a90e315477685e322c81015aa6847c3067d5",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x6ax856p.js",
-     "binary_offset": 186252277,
+     "file": "chunk-exevr2hy.js",
+     "binary_offset": 193383262,
      "length": 2460,
-     "sha256": "1f47c80b363c011e7cec31c5dc33671e7b427b8ce58e3368d02194b7c7d42998",
-     "version": "2.1.289",
+     "sha256": "452b69b1e73bb28738aa70a134ea48986b69c10ff9cf168baf58183d88cdcbbe",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -308,35 +308,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206022148,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214180532,
      "length": 262,
      "sha256": "134dcd9d6e86222e2790e6a50f6797db94af428bfd410e22f26188c0fa62fc2f",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789830,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748814,
      "length": 20,
      "sha256": "769dd262305b05bba5356197e0fa2cca05be6131018c2e777f044558425928f5",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189558950,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197473842,
      "length": 151,
-     "sha256": "98cd8a0994096899d7173d06cfeb6826819c7680bb33a77ad8098e69cccae334",
-     "version": "2.1.289",
+     "sha256": "6563e82259c12a4dbbe67d0fe3737a8eca97b320778287f3acc6cfee607e0e4f",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180709419,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187127242,
      "length": 292,
-     "sha256": "6e4675885124e053b311771c04d937c1cc0ba6b3c62fef22350c08e8a739e120",
-     "version": "2.1.289",
+     "sha256": "dbcff96271a1db78b4f32887e5ed86a9fa80463e0f483dfcff4908b496904fc8",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -384,35 +384,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206022538,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214180922,
      "length": 380,
      "sha256": "cfcc9c8da8f4b6fd9f21c009ff13b272a543615d7785b9683776adabf8cb640a",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789851,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748835,
      "length": 15,
      "sha256": "da2f5e913fa3f8a83fca81a65e5862fcd67c986fdf524511c0e9915fc3175add",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189559374,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197474266,
      "length": 72,
-     "sha256": "c7955ff6c7326ff1cdae611f43a2828acced9aa1db65acb0685b54a7a0e73a2c",
-     "version": "2.1.289",
+     "sha256": "0821e1bb1b1ef92fd7a121da358f560ebca3c614d37a350852f94513ca04db30",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180709803,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187127626,
      "length": 349,
-     "sha256": "8e03b45ad4fb9e646650c920c0689cfdace5ac09381f2823e02216d9381c283b",
-     "version": "2.1.289",
+     "sha256": "66d0715fbd1bad502a2de1e4aaad57ff0b52466f350254704197206344d4ef51",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -490,35 +490,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206023414,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214181798,
      "length": 144,
      "sha256": "7d7621b81e3724416d7e56a38b0355481ba993bf6a52a42413995433ebe0d2c2",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789867,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748851,
      "length": 14,
      "sha256": "b38fedbdf79b7ccc84557fa5e84ddb06ffe3b7003b70444d517259fa325ead3b",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189447679,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197354529,
      "length": 84,
-     "sha256": "d83fa74e6414c87da24b346a117e274f86b034b930d733454416afc97184e94e",
-     "version": "2.1.289",
+     "sha256": "52d604ae2ccb9fe8e24856ece77d4bb86ac3e325ead45166da0364999d22f564",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180710299,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187128122,
      "length": 112,
-     "sha256": "e4ab7dac28d9c9248a2a3681ed24e31c47c0eb3adf7587ed8b5dca677ecab38b",
-     "version": "2.1.289",
+     "sha256": "aff66d9c216d122577058e417dd1c0aea574e5c90bb2a55fc1db4a1813eb32a3",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -586,43 +586,43 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206023744,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214182128,
      "length": 223,
      "sha256": "c6a6bb39281daa5df7d6fa1acdb17598fa33f0b0d45a798d9aadb03d576479f3",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789882,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748866,
      "length": 18,
      "sha256": "eb741316be7958143bbcf80f56a417ef48bf656f58cbd2b12012292c5d751bbf",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189457674,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197364670,
      "length": 90,
-     "sha256": "01cffb2470b16d4779722c359357e055f81403759f00352cd75f8e1ca3294082",
-     "version": "2.1.289",
+     "sha256": "daa65b575984364c1edffea51fa8ef0e728b26cbc17b1af488079f8f64ed971e",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189458028,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197365024,
      "length": 106,
-     "sha256": "735b7abeef0d2e37374d51a70e6bf6ab8aff6309e72a213a80395cc1c25fd88e",
-     "version": "2.1.289",
+     "sha256": "e3f201ca783ccb4846cc6b70199ec7e1698517c83aff56715ffd1ca2c93ae9ac",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180710412,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187128235,
      "length": 775,
-     "sha256": "3d81e93fb6acc0551cf69f24058964b84e7802eb19af2b410d07327915b263cf",
-     "version": "2.1.289",
+     "sha256": "407a68aeea47e5c98a011ed65a1e4491e377a9d79f775ad7d6e5ef7df735a0fb",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -695,35 +695,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206024066,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214182450,
      "length": 252,
      "sha256": "e5532096ec4da951832e584cd56bf65ca65f3074931269feca040130195a2dc0",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789901,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748885,
      "length": 21,
      "sha256": "d5e4bf67157f66a52abb3e26d49f7f93a9e468fca161ce8e7711c07fe8ee4d4b",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189453217,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197360213,
      "length": 136,
-     "sha256": "c0baa69ffb24cc586c62e5bc602d707592ecccd4d866431d53ac66d746ca59cc",
-     "version": "2.1.289",
+     "sha256": "4fce3cf4e9b9214882609205b841cde30dc65baf53155c0bd6807882c912194b",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180711188,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187129011,
      "length": 188,
-     "sha256": "8bd87a66ce9f6937a980b35774ab2101d6d2e0eeaacdaef60ae6e2e7345b9571",
-     "version": "2.1.289",
+     "sha256": "d2e33849bdd2d2cdb42abd1eff4b450d09ebb88b3a0e327f5de4a5cf1b164fbc",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -830,35 +830,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206024442,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214182826,
      "length": 173,
      "sha256": "3bfa51016525f318ec66801490f7b564c23b5d989895ecd414449d031036dcb3",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789923,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748907,
      "length": 14,
      "sha256": "e8f766020a649cd2d2eb8c347a76eb633ba1b5ef9d15d938bd84eee0cb1acf00",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189448191,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197355054,
      "length": 109,
-     "sha256": "b76b8f4317411ce0e731a09890575ddb330d3abc176ef89e31c49d308ad59cef",
-     "version": "2.1.289",
+     "sha256": "e6a4021159baaad138b2e4f05c934331b5cd5378bd0f52951119468ec8e64449",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180711377,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187129200,
      "length": 937,
-     "sha256": "798e65291c79715544c8052818e73cb4b18c61d3c80b8497754759efaac75f51",
-     "version": "2.1.289",
+     "sha256": "26be7b36b221209408a4a26f0da78e4e538127e43854227816cb9d65e743845a",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -910,35 +910,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206027707,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214186091,
      "length": 140,
      "sha256": "487473dddafee3c3fef5ea0ee9e53d0bff16dafc5a7f18bb8f60e9a917347c64",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789938,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748922,
      "length": 12,
      "sha256": "0e3316327adeaf2aff8575946bf590a847ba3ff29ab2fb1691fe91b481159baf",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189449516,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197356379,
      "length": 53,
-     "sha256": "e16dc5965c3859bc714c5a95d4573c792b738620faaf30226c1a80faf5c716b2",
-     "version": "2.1.289",
+     "sha256": "69646252c04b123b62b5d5c929617a5051488b08c3ea0213570b775bd2a03ee8",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180721114,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187138937,
      "length": 67,
-     "sha256": "87a0987c2f787314d93bc535a7bd93ba3f717903c156597c9066faf1b8970fe8",
-     "version": "2.1.289",
+     "sha256": "210142ba7060c01be12e83125541a1bccbcd20a37a225e869ec43df36c3e6a73",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1004,35 +1004,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206024781,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214183165,
      "length": 144,
      "sha256": "7510886ec1801c3bd686308aa042580b93cb3398c8740c763aa101813a6fa417",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789951,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748935,
      "length": 6,
      "sha256": "4a784e3e95a08715513ca46cee31eccacff2cae8533a976da4e173138d137776",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189451894,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197358764,
      "length": 81,
-     "sha256": "7ed249c359216354c948f009962cd688c20fb24c10efac21967ab8adf9dbb14b",
-     "version": "2.1.289",
+     "sha256": "3263792288ee3ac1d7e9f1306ec703c82161e8bf91ec35741210b81586e0662a",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180713623,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187131446,
      "length": 694,
-     "sha256": "eccd2f40f19d4f1e0d1a947678bbbaf897241136b9ec959200aa9f823654d92b",
-     "version": "2.1.289",
+     "sha256": "79c624e9accb0480ddef8e474f4a872133b6478e96b1ba91d730c34e52331f7d",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1088,35 +1088,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206025001,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214183385,
      "length": 153,
      "sha256": "91c9a01ee0fd11a66bf004afb441bb5b6817afa85b35ee3d596915598d4bed94",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789958,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748942,
      "length": 13,
      "sha256": "15fcb9c0f161924942c29dcc2ed4a61d9df425369b7ef2ed8eab6c326e00c5f1",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189450896,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197357766,
      "length": 124,
-     "sha256": "2440c1f86b68b7ed7da56d309b2b5f82029f5ec657f34e6d033b402254515fc4",
-     "version": "2.1.289",
+     "sha256": "cf2fca1ec4012e30957741885ecb6351231af51d8e1357f4006c7f732cb628b0",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180714318,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187132141,
      "length": 134,
-     "sha256": "37323f53f538185ff99e9823164d119976a45f160f1294069bf50c45102b640a",
-     "version": "2.1.289",
+     "sha256": "4ae8da31ca23ee1af280a6402b464baf6c667704faf077fd48e0a9daf9271901",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1162,35 +1162,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206025538,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214183922,
      "length": 194,
      "sha256": "9136568b9a160f6c3e54642f786e07a4e3582c3187d11f0bf7e0a49769e11b2a",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789972,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748956,
      "length": 15,
      "sha256": "5be631abb55cf4c7e655bc5a3986bcb499001b16a27ac4dcc3c8fa8caec2bc6a",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189449126,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197355989,
      "length": 79,
-     "sha256": "96297d9841231de03203ef217753adfa1efd9b91409db9dad37c2f5e5d60f3ec",
-     "version": "2.1.289",
+     "sha256": "433dd26bce8d17b0bcbbea0b829242828f072c6cabb82ad54005e697ca399f16",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180714453,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187132276,
      "length": 86,
-     "sha256": "ac0f60285ad653b327a4715fadbe5db6073266767270a866d79f0b0ec2462b8f",
-     "version": "2.1.289",
+     "sha256": "0c1ddac5f22d0cdd196957e69441f8a415b50fef5ea0af917d4d362133c4a5f6",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1263,35 +1263,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206025889,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214184273,
      "length": 227,
      "sha256": "8d6b66949afb70a7ffeb8104d406ecc5c5487c970c50fa5af76908e1ca51fa41",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789988,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748972,
      "length": 14,
      "sha256": "aff4c9d99bfa48fdf8e9692971fb0f0a83027835cbd12e0fd1acfbcf5000c95e",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189451733,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197358603,
      "length": 160,
-     "sha256": "32e4bd67b77c6ea6cea2fddc7d3275ed24d8472ce841a5fd7688c26f0c960d9b",
-     "version": "2.1.289",
+     "sha256": "0a3b6da67842a3dc63260cbcd4cf724183dc01b978037cd92e7887eabd3e45ba",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180714540,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187132363,
      "length": 756,
-     "sha256": "c3e73a9934104e56aade46ff18ae6f2c851f622c6bf70754125c940fe42bfeb6",
-     "version": "2.1.289",
+     "sha256": "a51db9cfe8563677a150a1d88f3e9d1b580be189631a3a3fa1c67e09c77fee4f",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1344,35 +1344,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206026237,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214184621,
      "length": 216,
      "sha256": "e5ebe813cefdb4b7f5f4cdca4752aa88f87fcffb5f072399f728a5888ee0ef50",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790003,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748987,
      "length": 12,
      "sha256": "67b94e3ae4443863b4428c825977932046af4482342812d76b92ed654c20a66b",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189437394,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197344230,
      "length": 103,
-     "sha256": "b34dff472c09f5300bcf04d2fbac1c06dbc30342271ca3a79d40b52b04449a2d",
-     "version": "2.1.289",
+     "sha256": "175739980e2aa6b0db7cfbf08e5f245556115036a50a1fa4815161592f944474",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180715297,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187133120,
      "length": 119,
-     "sha256": "35fd8042d6298e149b0900c39f8bec50f384dd200e207343c9451e52d85228f4",
-     "version": "2.1.289",
+     "sha256": "3fbd5b30f574a5165f94241041ab6504470d2a6da42fb1a8fe08001e3bc1e0d4",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1426,35 +1426,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206026586,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214184970,
      "length": 146,
      "sha256": "00b084064dc051ccaa9a316d5b78d3e2a67ff7b6e81c3779306e6fee117cc1bb",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790016,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749000,
      "length": 13,
      "sha256": "4d755a2b330f9a6f49f3801cd36880c2fc20467683a0923ad072901c6fa148df",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189438580,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197345416,
      "length": 96,
-     "sha256": "a46558a282e6a40736a183d74491a2b0a602eb0a7bcaa5a78ec6c8e47e214b4f",
-     "version": "2.1.289",
+     "sha256": "b09e1d54fedb93a7ac59a7cc0cbe1a724ddc2f822d7d18d50d04c61d10456fe8",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180715417,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187133240,
      "length": 165,
-     "sha256": "5236fbc15296268e1c2cb05bef66d9539d9907a1ffe3b07942ed1197d39a85b3",
-     "version": "2.1.289",
+     "sha256": "b5a20e196cb22cdd7467f9cdf5eb2aa4fd442de4e8366782f117797577bc73ab",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1548,35 +1548,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206026904,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214185288,
      "length": 326,
      "sha256": "d4c9310e90c425e8a23693197a9b615280aa053b09693c96889402ce77b884dc",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790030,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749014,
      "length": 16,
      "sha256": "693283eaaf22fb13183237672087cb8a9ae6f5bf8f3d673c8948658273e2441b",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189443573,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197350410,
      "length": 157,
-     "sha256": "05a71b331dfab14192f8f5ea596b941c654d93fb1d4a3715ded23d0238a570f0",
-     "version": "2.1.289",
+     "sha256": "2c9dafae96cfafead1d2206e8ec28d7f9f71ad4074de29c5831d105e53bf7023",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180717096,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187134919,
      "length": 95,
-     "sha256": "c7d9e1b4f9f98ad9150516d7b53bd1d0e5b3a533fd7c55a9b21d432c3646a3b1",
-     "version": "2.1.289",
+     "sha256": "e62312c0697ce5e77f09e3cfd7b5e864b87b6068bca78bfe0eef2b4978723e47",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1666,35 +1666,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206027367,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214185751,
      "length": 227,
      "sha256": "ba63621965ca81e2589310cb0a1d454e19669c0d16e8253044022991c39943fd",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790047,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749031,
      "length": 17,
      "sha256": "3aae5bb478c1c933461ad4e50fca2e842d682712a668947c0cb5d254c4adbba2",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189445426,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197352263,
      "length": 158,
-     "sha256": "b7be8a68b44c6e7ebb22246fc5b28aed06dcc56bfb08cfe665237890e0a5d84c",
-     "version": "2.1.289",
+     "sha256": "3fa1b0ad982f24a255ae5f539b1d1ee486d40958143c3e0520415a8869c9da67",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180717192,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187135015,
      "length": 112,
-     "sha256": "2fe0a2eafff5cc7223e7927eb7198bdbbd9590588a5795e5818e8dd6600e03e0",
-     "version": "2.1.289",
+     "sha256": "5f9c32134ee28cc143aaeaa29ebc91bfca506dce85aa11583de121a8e8b4747b",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1759,35 +1759,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206027984,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214186368,
      "length": 233,
      "sha256": "5273aa4458d6866ba6dfc0fc1647b523f0cde389a6c6f719305ce47f72c4a840",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790065,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749049,
      "length": 19,
      "sha256": "16e7da4b1c2eb49561b695b3884aa99cb11e9869549077df693743c0bf4b6ed8",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189560008,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197475102,
      "length": 124,
-     "sha256": "c1ace3d342a9488aa8aca037c518d67558bdf85a325e09e81580b2509c03dae6",
-     "version": "2.1.289",
+     "sha256": "202206cc4c9f579256a89c95dfaaeb7dc18c0417fead976467dc209b19e50e7e",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180708990,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187126813,
      "length": 161,
-     "sha256": "8e709f9c7bc0008ad678e0d1f46739c94f06c5477a2d132a0b675b897d8dc41c",
-     "version": "2.1.289",
+     "sha256": "91d13f497a93e52aba822e7ad61e867151f70f8c8ab52048e0e15f85c42206b8",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1856,35 +1856,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206023006,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214181390,
      "length": 290,
      "sha256": "621bd4957404090165ead51d9539ce62a89db2e5a19b5821f2a54366bb771585",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790085,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749069,
      "length": 18,
      "sha256": "b22a1c41c6e659b4bff0a28e2d63c9878dc826a1e54773251b69e13d8b496423",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189559679,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197474773,
      "length": 121,
-     "sha256": "8ef598d7fd2705cac83571580bcf2944f95ae90e160a85dfe53daf3efb010af9",
-     "version": "2.1.289",
+     "sha256": "d14e3bc665c76c2820848bf966d3b50354919c6aa1efbc32f978266e3d9497eb",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180710153,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187127976,
      "length": 145,
-     "sha256": "5e789e967130f93931f52b46f395cc786bca5a13f4043577118c8df9dbd32656",
-     "version": "2.1.289",
+     "sha256": "f7c81bcaaa2a6968f80adf4675d64f07c915479887d51aeb31cda49051180966",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -1938,35 +1938,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206028342,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214186726,
      "length": 198,
      "sha256": "c1e52a7ab95c33b0f35a90c6d0532360bf2735d0ec5ed2cac30380872fac45fd",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790104,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749088,
      "length": 7,
      "sha256": "58c1181addaa53b91d632bea9f49129710402ad6da7ca86a80e7d4a7b8a28525",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189448847,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197355710,
      "length": 49,
-     "sha256": "c064306e930e1b0fd46d75ee20f1a392f9feae13172487b68b0e4b0a8f7ee11b",
-     "version": "2.1.289",
+     "sha256": "2b6fd83a6f1caa90a9e9fe89e192c1aa1994246deb5369415959bb68aaee9126",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180712315,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187130138,
      "length": 84,
-     "sha256": "ff53fd6eb0cec3ca9c049dc4ecb98213e2d30fa07877f6606ff2d0592828e362",
-     "version": "2.1.289",
+     "sha256": "042fae5d4552f0c5e552a3ec9458af00fca27b8ab2788b8e8074b7a048c8f50c",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2014,35 +2014,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206028685,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214187069,
      "length": 226,
      "sha256": "50951a9246afab03c25d949e7be5df403bfc2d91cc51470160b0a79012592b87",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790112,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749096,
      "length": 14,
      "sha256": "6ffbdc77d0361eef1f41d2b7a63b900003ea7acf4fdcc28ed1e2dad16efe256b",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189452322,
-     "length": 84,
-     "sha256": "e747c8e849359da403b4e51ddabe62d7a91085046378d5d9d1ee00ad15b959bc",
-     "version": "2.1.289",
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197359192,
+     "length": 126,
+     "sha256": "52e6c79876687ab25798f2217c59f70f09d4747a63f99bc8bcf6aea9a0373f4e",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180717305,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187135128,
      "length": 235,
-     "sha256": "5374d58f20f8b74c4948aef5668073ae5229fd9c301d4fa9f24291e32d3e7039",
-     "version": "2.1.289",
+     "sha256": "32a367f1162f82afee0693af503bd08203d490e1f65a5fdf17e00505cf4c7a67",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2105,35 +2105,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206028977,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214187361,
      "length": 245,
      "sha256": "15885caa72a55198a201b8e1c94549a2b3c6218c5d2b8a96e26d4b4b0171d040",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790127,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749111,
      "length": 13,
      "sha256": "95e828b84dde609784d4b6737082a93b593ec6a999cfaf16ff5a648dc5228e8d",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189452550,
-     "length": 127,
-     "sha256": "5415117c4a9727929858f369778516018f830cd0c124fb4fe0ad3edb8d2198be",
-     "version": "2.1.289",
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197359462,
+     "length": 169,
+     "sha256": "87e7f8de40c66fcc9e8bfbcae6b3714f9e6e90601736dbcf13bf17dfd5f5294a",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180717541,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187135364,
      "length": 317,
-     "sha256": "a9f6b329eaa141e8fa4f434e71db55bce013d7f52726fec5c4e519706978da6d",
-     "version": "2.1.289",
+     "sha256": "78a2790ab4d020237dcc5b0a4170fd950a7e3c2dfae485db0e36ea036db30a74",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2196,35 +2196,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206029302,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214187686,
      "length": 247,
      "sha256": "c5c3839376b0997aaa7e7113f119fe6938cbc60263a2cfff2f4c26d1e29eab8c",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790141,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749125,
      "length": 15,
      "sha256": "85cbf4a0c1b90467b48c2c86d84b9f00c299b3895a636d8efad8f6787a06e650",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189452821,
-     "length": 129,
-     "sha256": "9ef39e432ce67b3834483918fb77e5d44e792870ac21bf7dd144a7cd859b8b58",
-     "version": "2.1.289",
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197359775,
+     "length": 171,
+     "sha256": "334157e427faf3fbd63c4cbd38a14941e797dd3c822287767a67e689e63bcf42",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180717859,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187135682,
      "length": 319,
-     "sha256": "7a74f9352f7e8bf659afa9f41643ac12c242f0a34027cdee192013e9507d5ca5",
-     "version": "2.1.289",
+     "sha256": "c55183af0d20852d7dc2d2198edc1019e1de36a32277214c27d13e6c9bb3421c",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2303,35 +2303,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206029639,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214188023,
      "length": 302,
      "sha256": "8e5c88f4bd0775748fbfe18b11539a521279252167e209a42e63c562556ad1d7",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790157,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749141,
      "length": 13,
      "sha256": "4a03ab477976a2f655237ff6caf2253689ddf56b57805aa6ae6784f76e1dc8e6",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189440040,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197346876,
      "length": 124,
-     "sha256": "710d7b44056f0737275555c2a6ca6fa10dfba6df953ce7adf0b93133788c31a2",
-     "version": "2.1.289",
+     "sha256": "8598676632d6d739942a600951670011c66db380ff4a0bb5764d9a9b6912c6f9",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180718179,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187136002,
      "length": 379,
-     "sha256": "a6b604bb62d3e8bfee39bf22ccd5a51d8f01115f93fcdbf199e39439145cf49a",
-     "version": "2.1.289",
+     "sha256": "a55b172f44e4c4b06291cc53c21e3da2bee0409d8624c679487016245e80435b",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2405,35 +2405,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206030087,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214188471,
      "length": 338,
      "sha256": "feda6eee211411adb19e3c3a1504d0f5398bb040db84b9e0a1df4452e6bde227",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790171,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749155,
      "length": 19,
      "sha256": "9f90e80838561da44bbee6fa0a51b4b3dba82688dc494ad9913895a221784773",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189440539,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197347375,
      "length": 114,
-     "sha256": "c71db822b52686ba0017dbf107598fb8fd03714ee478cebf7647cdea3329de42",
-     "version": "2.1.289",
+     "sha256": "6563432ba31ad787683df101527955f42b64297ee6448c571f016ea21c9c7a9e",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180718559,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187136382,
      "length": 403,
-     "sha256": "1fa21cf8f4ba7e76ff7af7d839e25f68eb117f9e5a32ec534bbc63a2a13531df",
-     "version": "2.1.289",
+     "sha256": "23a17c37b9cce48e5527d3ad5054b53f77428f7d1bea8914d86e24b224e38b8c",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2490,35 +2490,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206030571,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214188955,
      "length": 268,
      "sha256": "2f6536a0229a9d104afb44e52d17ab030f52459f302a4d1ec3c82e257cde10e9",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790191,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749175,
      "length": 14,
      "sha256": "09825f3041547a8198f3fe5f5ee0e01b2ecd361ed17d24ef4f5d1aa631ab9593",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189439346,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197346182,
      "length": 67,
-     "sha256": "a6c8a0c223451b374f9fd17853403157b7d5fcb09c595246654f84be6e80c416",
-     "version": "2.1.289",
+     "sha256": "4393576872dd05c9652c674a163ef886b98b091c0169366910b1969b9e9f89ed",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180719047,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187136870,
      "length": 95,
-     "sha256": "051500c3aee9b8ced02200f6ce6867f30ed89ee9f4204952c78c25ae54c21961",
-     "version": "2.1.289",
+     "sha256": "6bc304309ea203ea28cd113803f199cd97ea4e2881a5e3950e9e4083fa58a3b3",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2565,35 +2565,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206031835,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214190219,
      "length": 226,
      "sha256": "15bd16daadd75032c9e283629b62ca02b9e7f11523bf470eeba316f32dff5f5c",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790206,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749190,
      "length": 16,
      "sha256": "438da0f61af72972b93644aeab84aab7450f4f606ac6c02941a4cd924a1cfa31",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189458493,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197365490,
      "length": 55,
-     "sha256": "2c1cb014f787c01e2f6ba012f75d4e8f2bbd9befdffd525375a93cfc0222ccac",
-     "version": "2.1.289",
+     "sha256": "0ac6d5e94223eb8bbcd03d56164567ea3eb934cdf126e4d0a6419a597132490b",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180719464,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187137287,
      "length": 68,
-     "sha256": "3b919cf8359947e2cbe64d76a3a28c689f4f411a511bc04fbed13a9459183c36",
-     "version": "2.1.289",
+     "sha256": "f9ab66c678b90ad88037cc22b9e2c8114b4d8dda09101abe621af026dd5fd00f",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2636,35 +2636,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206032138,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214190522,
      "length": 162,
      "sha256": "0d5a6e0a1b40a8519cfdc1933280b874694b7cdd5402101c6625a97c32ace021",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790223,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749207,
      "length": 16,
      "sha256": "22e8fa25e93a206bec9a4e863467bce7fea915e28cf59a0815ccf813636e825c",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189459383,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197366838,
      "length": 64,
-     "sha256": "b25776a77f90251473d210f2eef1436281f125a37f8c4ade9eb19cf679384c70",
-     "version": "2.1.289",
+     "sha256": "526eab6ced262490fc0113a034166347b6a041becab21691d3810f4fc56d0401",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180719533,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187137356,
      "length": 77,
-     "sha256": "fbd87b660553696960bd477347c0e289859c6c8c22f4e3f6d8b3deab3ac2e4ed",
-     "version": "2.1.289",
+     "sha256": "f410dafa98b3cee89a1cc6fb8eef8da50d9bd97fcf704bebbbe9e75ee0b5d6ea",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2739,35 +2739,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206031066,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214189450,
      "length": 547,
      "sha256": "670752ef74b5807007b5ff524d7462b31c8024b1ef7b473e776b9f4209b60f6e",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790240,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749224,
      "length": 20,
      "sha256": "3715d0b394a68c33f517bec90eb0ebed28de8db005a02281b5e05478dfc948e2",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189441570,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197348407,
      "length": 148,
-     "sha256": "00a4d0be269e8b26b26483a7651ea0f677214860d808632900adf7183554d598",
-     "version": "2.1.289",
+     "sha256": "d1e37d7b921558f943cadb830fa12223c36993431d3ce16692259f438833a783",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180719261,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187137084,
      "length": 202,
-     "sha256": "cba05c3d5e6305b78df5a40b7090df87aa961d36d3307f7c924e194031fdccb6",
-     "version": "2.1.289",
+     "sha256": "59c5cbc784a8b53f4ea4241fa322d6c0c5a8738123a3fb5e02f4ea0d87a54dc6",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2820,35 +2820,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206032372,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214190756,
      "length": 364,
      "sha256": "aa434ac8544d367715f5e906d9fcdd2b31aee6b3661a695c6c5bf934ed45e786",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790261,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749245,
      "length": 12,
      "sha256": "6dbfd38fd6e37d6af53fcb26855dd216f64241755d61ec3ff45e4d37b3314434",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189441232,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197348069,
      "length": 64,
-     "sha256": "3ebce8ae8c36835df011e3ece0bcabe7e9a099d9cbe72974c888216466684c6f",
-     "version": "2.1.289",
+     "sha256": "fa3aab98e0448d7ee5866ede8268959ed6d9f08ae2e8fe5230fc680896f25500",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180719611,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187137434,
      "length": 79,
-     "sha256": "7062a1d8b5409ec76dfd611e30a48353f579158b17963760713bb284b30fbb9e",
-     "version": "2.1.289",
+     "sha256": "15d0045933c2f44fc9aed02c0bb43a9a06b1bd592f4069399b62f5876ed430b8",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2901,35 +2901,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206032801,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214191185,
      "length": 476,
      "sha256": "564f4da1d8b301314cd1cfcf637ac47954e27c47828733747db9d6ef0790c004",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790274,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749258,
      "length": 13,
      "sha256": "38aef90db7bfca2851f0121d6bd25b7049fe01ed8d926cc668e253ccffd79129",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189441346,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197348183,
      "length": 65,
-     "sha256": "5ad0aef5096c64d581cda4b14375ecb63719bbcf1fcd8185cf6daa518435d699",
-     "version": "2.1.289",
+     "sha256": "3e1789bad48f8c9d5729ea6531448888660f31451ef19eae6fa54c3e57ddbc31",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180719691,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187137514,
      "length": 105,
-     "sha256": "2521d6aec265e5574a768e825ad360046eec710bcef7a50203af4217d577270a",
-     "version": "2.1.289",
+     "sha256": "d505563c9395db0a6c3d30688b488485237e4189804fa418d5dd1e2a71f97514",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -2984,35 +2984,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206033364,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214191748,
      "length": 662,
      "sha256": "27780e0b71bd19dc43ba12e830094722632bfdf8f64f0777df8405fa061b5256",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790288,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749272,
      "length": 16,
      "sha256": "22b2700a207f1e20c453b8eeb31049fbc749dbfd88bef6a2668e7e40d3312b54",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189439652,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197346488,
      "length": 69,
-     "sha256": "6660e7ecdf38df266c77565b85b960f2f9a0f818f9a54b06c728971fbe634909",
-     "version": "2.1.289",
+     "sha256": "ae7e7cf84171b3cb2edff0d4c93847c091d65db26e72848288c3529001f1175c",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180719797,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187137620,
      "length": 302,
-     "sha256": "2d834d2425fedccd6d8853ca68aed98dfb8cc599817990929c5b800f22c133db",
-     "version": "2.1.289",
+     "sha256": "efa15911388027f20c040ee92b7f74f3186d2d17a970a24020c603af4dcadaf4",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -3082,35 +3082,35 @@
    },
    "provenance": [
     {
-     "file": "chunk-nyc4mmse.js",
-     "binary_offset": 206034194,
+     "file": "chunk-3ak8hnaq.js",
+     "binary_offset": 214192578,
      "length": 361,
      "sha256": "b0267654d0ce49b289daced302b7db87df1d5c6a77dbd3876314cba2f160aafc",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179790305,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187749289,
      "length": 16,
      "sha256": "ed96e57410d090029c0a3157e508b7b959a00e17c8c32bb234623f3d338eb7c3",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-x2pwb441.js",
-     "binary_offset": 189441848,
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 197348685,
      "length": 130,
-     "sha256": "10295a2b361128ec1e384cbfb156547fc0d51281cc23883bf919929cf2a26943",
-     "version": "2.1.289",
+     "sha256": "4c122b7f6e199775bb71891d2da67477edf661722342d408cda2146db3607d5b",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180720100,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187137923,
      "length": 938,
-     "sha256": "94a13d13694d07073a66c3dd4265e3d5a4c0336661dfbc993e3ebcb976d1e9f7",
-     "version": "2.1.289",
+     "sha256": "043a079f0164c461a5f77d15ed46558e53bab835851cad1b45783091cfb2e513",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -3162,11 +3162,11 @@
    },
    "provenance": [
     {
-     "file": "chunk-7h50ka43.js",
-     "binary_offset": 180707335,
+     "file": "chunk-pm56fyce.js",
+     "binary_offset": 187125158,
      "length": 1525,
-     "sha256": "76978e6675a37fd2b5120071064c2b6924a71729f1e83a2286021002aaa03e2c",
-     "version": "2.1.289",
+     "sha256": "229c031156a50c2b0aad2f614f73694696a8aa74d28d2ffed6652b00f238f40b",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -3243,11 +3243,11 @@
    },
    "provenance": [
     {
-     "file": "chunk-x6ax856p.js",
-     "binary_offset": 186250135,
+     "file": "chunk-exevr2hy.js",
+     "binary_offset": 193381120,
      "length": 5984,
-     "sha256": "28d357d8cdc8089feceb7e043973017262138be0dd4d280c7898060fcaffc710",
-     "version": "2.1.289",
+     "sha256": "943e800213f372554b5c1da6b275402af0b4b0148dcc3dac425be8603e9ab0fe",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -3320,24 +3320,61 @@
       "type": "\"device\" | \"skip\"",
       "optional": true,
       "description": "@internal Where this hook may run when a cloud session is driven from this machine. 'device': offer it to the cloud session and run it here even when its script sits where the cloud session can write on this machine or cannot be pinned — the author accepts that the session may have changed files this hook executes. 'skip': never offer it to cloud sessions. Omit for the default: a command hook whose script could be read and pinned and lies outside everything the cloud session can write here is offered; other command hooks are not. Applies to this entry only: the same hook written in another settings scope keeps its own setting. An unrecognised value reads as 'skip' (the file still loads; the hook stays on this machine)."
+     },
+     "onFailure": {
+      "type": "\"continue\" | \"block\"",
+      "optional": true,
+      "description": "What a failure of this hook does: it could not start (a missing script or plugin directory), timed out, exited with a code other than 0 or 2, or printed JSON that is invalid or fails validation. 'continue' (default): the failure is reported and the action goes ahead. 'block': the failure counts as exit code 2, so the action the event guards (a tool call, a permission request, a prompt) is blocked. Ignored for async hooks and on Stop, SubagentStop, TaskCompleted and TeammateIdle."
      }
     }
    },
    "provenance": [
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179814387,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187774028,
      "length": 25,
      "sha256": "0cc68a763b96ac1c679847284b1ade1126e3ff8558e9b5cbbc26fb0a02d2ccb0",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179820403,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187780074,
      "length": 155,
-     "sha256": "caa0bc5b3958e3ef7d23cd31d8cde072a11f31126d6d98a4d30181bb8ccb83f4",
-     "version": "2.1.289",
+     "sha256": "0abdf81d28c2aacc52aaf718df5a7a21b80d61216cb537c23cf3743bf9062e65",
+     "version": "2.1.295",
+     "platform": "darwin-arm64"
+    },
+    {
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187773490,
+     "length": 485,
+     "sha256": "ee11c9225d8f9331cc3cf41b78fa60b4d4746928887b1dbe9907af8b16a673e1",
+     "version": "2.1.295",
+     "platform": "darwin-arm64"
+    },
+    {
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187773978,
+     "length": 6082,
+     "sha256": "0f9fca91f438b0fcd1c8e2d5c59a6b6d659368fe39fc5803ae89745aded6b6ce",
+     "version": "2.1.295",
+     "platform": "darwin-arm64"
+    },
+    {
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 195046709,
+     "length": 166,
+     "sha256": "64fe1e244ad9dcb7e421f1612ae4b2bc8a0569a43e91360137915ff537d5e5c4",
+     "version": "2.1.295",
+     "platform": "darwin-arm64"
+    },
+    {
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 195046985,
+     "length": 164,
+     "sha256": "4c3f34cedef0a65a07dd93d0d794503c9a63eca6e25d74065d1c879790bf15b3",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -3390,19 +3427,19 @@
    },
    "provenance": [
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179816813,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187776469,
      "length": 22,
      "sha256": "e6bbff9ed5c568d06e7a6b3477fc6d218dd44e583a9fcf86707ee9893e08624a",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179820403,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187780074,
      "length": 155,
-     "sha256": "caa0bc5b3958e3ef7d23cd31d8cde072a11f31126d6d98a4d30181bb8ccb83f4",
-     "version": "2.1.289",
+     "sha256": "0abdf81d28c2aacc52aaf718df5a7a21b80d61216cb537c23cf3743bf9062e65",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -3450,19 +3487,19 @@
    },
    "provenance": [
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179819681,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187779352,
      "length": 28,
      "sha256": "5c0c1dc8f8223f48bf57f1be24bf88244bcdd7b0785f2eb35d7b2439d028cf94",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179820403,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187780074,
      "length": 155,
-     "sha256": "caa0bc5b3958e3ef7d23cd31d8cde072a11f31126d6d98a4d30181bb8ccb83f4",
-     "version": "2.1.289",
+     "sha256": "0abdf81d28c2aacc52aaf718df5a7a21b80d61216cb537c23cf3743bf9062e65",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -3515,24 +3552,61 @@
       "type": "\"device\" | \"skip\"",
       "optional": true,
       "description": "@internal Where this hook may run when a cloud session is driven from this machine. 'skip': never offer it to cloud sessions; 'device' or omitted: offered (an HTTP hook has no script to pin). Applies to this entry only. An unrecognised value reads as 'skip' (the file still loads)."
+     },
+     "onFailure": {
+      "type": "\"continue\" | \"block\"",
+      "optional": true,
+      "description": "What a failure of this hook does: it could not start (a missing script or plugin directory), timed out, exited with a code other than 0 or 2, or printed JSON that is invalid or fails validation. 'continue' (default): the failure is reported and the action goes ahead. 'block': the failure counts as exit code 2, so the action the event guards (a tool call, a permission request, a prompt) is blocked. Ignored for async hooks and on Stop, SubagentStop, TaskCompleted and TeammateIdle."
      }
     }
    },
    "provenance": [
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179818386,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187778042,
      "length": 16,
      "sha256": "30ff3ee9d4177a7f275054c513b948a095b2d10bf51385d45c37fd5117f76ebe",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179820403,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187780074,
      "length": 155,
-     "sha256": "caa0bc5b3958e3ef7d23cd31d8cde072a11f31126d6d98a4d30181bb8ccb83f4",
-     "version": "2.1.289",
+     "sha256": "0abdf81d28c2aacc52aaf718df5a7a21b80d61216cb537c23cf3743bf9062e65",
+     "version": "2.1.295",
+     "platform": "darwin-arm64"
+    },
+    {
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187773490,
+     "length": 485,
+     "sha256": "ee11c9225d8f9331cc3cf41b78fa60b4d4746928887b1dbe9907af8b16a673e1",
+     "version": "2.1.295",
+     "platform": "darwin-arm64"
+    },
+    {
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187773978,
+     "length": 6082,
+     "sha256": "0f9fca91f438b0fcd1c8e2d5c59a6b6d659368fe39fc5803ae89745aded6b6ce",
+     "version": "2.1.295",
+     "platform": "darwin-arm64"
+    },
+    {
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 195046709,
+     "length": 166,
+     "sha256": "64fe1e244ad9dcb7e421f1612ae4b2bc8a0569a43e91360137915ff537d5e5c4",
+     "version": "2.1.295",
+     "platform": "darwin-arm64"
+    },
+    {
+     "file": "chunk-bc48hzhc.js",
+     "binary_offset": 195046985,
+     "length": 164,
+     "sha256": "4c3f34cedef0a65a07dd93d0d794503c9a63eca6e25d74065d1c879790bf15b3",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -3584,19 +3658,19 @@
    },
    "provenance": [
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179817730,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187777386,
      "length": 20,
      "sha256": "980e5a44ec717ab42c1a0726df3df60175dcda79a9b52b0afc2f54a34b10cf5d",
-     "version": "2.1.289",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179820403,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187780074,
      "length": 155,
-     "sha256": "caa0bc5b3958e3ef7d23cd31d8cde072a11f31126d6d98a4d30181bb8ccb83f4",
-     "version": "2.1.289",
+     "sha256": "0abdf81d28c2aacc52aaf718df5a7a21b80d61216cb537c23cf3743bf9062e65",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]
@@ -3659,19 +3733,19 @@
    },
    "provenance": [
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179820559,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187780230,
      "length": 181,
-     "sha256": "097bcb64708767fe0d2807dce2a176f950ffd224bf9fd10043923a4d085afb43",
-     "version": "2.1.289",
+     "sha256": "bfd6a04ec05a9518e6874178916f6733c82c0660040939326abc32fc2f0ccb15",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     },
     {
-     "file": "chunk-ey40d6gf.js",
-     "binary_offset": 179789799,
+     "file": "chunk-8mqjkh8a.js",
+     "binary_offset": 187748783,
      "length": 523,
-     "sha256": "4fdb0b722854953cf36f5e83435e5b9aed0bbb80bd3db976f2018c70385a82f4",
-     "version": "2.1.289",
+     "sha256": "d9130997e5064bead534180c9dfec9bdd1ed473e6eeaa9a8e96aa375a065b8a4",
+     "version": "2.1.295",
      "platform": "darwin-arm64"
     }
    ]

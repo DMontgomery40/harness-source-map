@@ -2,6 +2,8 @@
 // from a real Cursor desktop v1 chat store. Stored text remains behind source
 // references; opaque desktop blobs are never decoded or represented as events.
 import { newAgent, addBlock, finalizeAgent, classifyCommand, partText, RANK } from '../model.js';
+import {addEnvelopeBlock} from './instruction-spans.js';
+const addCursorBlock=(agent,options)=>addEnvelopeBlock(agent,options,'system_reminder');
 
 const decoder = new TextDecoder();
 const finite = value => Number.isFinite(value) ? value : 0;
@@ -68,7 +70,7 @@ export async function parseCursorAgentStream(source, fileIndex, { onProgress = (
   const notes = [];
   const actions = new Map(), orderedActions = [], reasoning = [];
   const ref = (record, path) => ({ file: fileIndex, offset: record.offset, length: record.length, path });
-  const add = (record, kind, label, value, path) => addBlock(agent, { t: finite(record.row.timestamp_ms), kind, label, text: partText(value), ref: ref(record, path) });
+  const add = (record, kind, label, value, path) => addCursorBlock(agent, { t: finite(record.row.timestamp_ms), kind, label, text: partText(value), ref: ref(record, path) });
 
   const resultIndex = records.findLastIndex(record => record.row.type === 'result');
   let suffixStart = resultIndex;
@@ -149,7 +151,7 @@ export async function parseCursorDesktopExport(source, fileIndex, { onProgress =
   const created = finite(info.createdAtMs), updated = finite(info.updatedAtMs) || created;
   let model = null;
   const ref = path => ({ ...span, path });
-  const add = (kind, label, value, path, t = created) => addBlock(agent, { t, kind, label, text: partText(value), ref: ref(path) });
+  const add = (kind, label, value, path, t = created) => addCursorBlock(agent, { t, kind, label, text: partText(value), ref: ref(path) });
 
   for (let mi = 0; mi < native.messages.length; mi++) {
     const message = native.messages[mi]?.value, base = ['messages', mi, 'value'];
@@ -210,7 +212,7 @@ function parseCursorDesktopTranscript(native, bytes, fileIndex, { onProgress, in
     'The native transcript does not persist request IDs, model identity, reasoning events, tool call IDs, or tool results; Trace leaves those fields empty.',
   ];
   const ref = path => ({ ...span, path });
-  const add = (t, kind, label, value, path) => addBlock(agent, { t, kind, label, text: partText(value), ref: ref(path) });
+  const add = (t, kind, label, value, path) => addCursorBlock(agent, { t, kind, label, text: partText(value), ref: ref(path) });
   let requestStart = 0, actions = [], sawAssistant = false;
   const finishRequest = (t, finish, complete) => {
     if (!sawAssistant) return;

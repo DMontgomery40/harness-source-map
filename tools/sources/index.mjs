@@ -4,12 +4,14 @@
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { sessionContext } from "./context.mjs";
+import { nativeSourcesReport, readNativeSource } from "./native.mjs";
 import { SPECS } from "./specs.mjs";
 import { probe, read, displayPath, expand } from "./read.mjs";
 
 const CATALOG = { "claude-code": "../../claude-code/outputs/local-sources.json", codex: "../../codex/outputs/local-sources.json" };
 const catalogs = new Map();
 export function catalogOf(product) {
+  if (!CATALOG[product]) return null;
   if (catalogs.has(product)) return catalogs.get(product);
   const f = fileURLToPath(new URL(CATALOG[product], import.meta.url));
   let c = null;
@@ -21,6 +23,7 @@ export function catalogOf(product) {
 // { context, sources: [{ id, name, join, path, status, count, unit, bytes, modified, span, shownIn, read, catalog }] }
 // status: found | none-for-session | absent | present | credential | not-read | error
 export async function sourcesReport(session, opts = {}) {
+  if (["cursor", "opencode"].includes(session.product)) return nativeSourcesReport(session, opts);
   const ctx = sessionContext(session, opts);
   const specs = SPECS[ctx.product] || [];
   const catalog = catalogOf(ctx.product);
@@ -49,6 +52,7 @@ export async function sourcesReport(session, opts = {}) {
 }
 
 export async function readSource(session, sourceId, opts = {}) {
+  if (["cursor", "opencode"].includes(session.product)) return readNativeSource(session, sourceId, opts);
   const ctx = sessionContext(session, opts);
   const s = (SPECS[ctx.product] || []).find((x) => x.id === sourceId);
   if (!s) return { kind: "note", text: "Trace doesn't read this source yet; the Sources lens lists it from the shipped code." };

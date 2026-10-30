@@ -43,6 +43,8 @@ export function textOf(html) {
 // Chrome inside a page's content that is not the entry's own text: tag chips, feeds links,
 // review labels, the data-file line.
 const CHROME = [
+  /<span class="release-new"[^>]*>[\s\S]*?<\/span>/g,
+  /<p class="release-note">[\s\S]*?<\/p>/g,
   /<div class="item-tags">[\s\S]*?<\/div>/g,
   /<div class="review-tag">[\s\S]*?<\/div>/g,
   /<button\b[\s\S]*?<\/button>/g,
@@ -262,7 +264,7 @@ export function buildSearchIndex({ product, documents, featured = [], strictReco
     if (missed) stats.unmatched[doc.slug] = missed;
     if (missed && strictRecords) throw new Error(`${doc.slug}: ${missed} search records have no rendered heading`);
 
-    pages.push({ s: doc.slug, t: doc.title, c: doc.category, d: clip(doc.summary || firstParagraph(doc.html), LIMITS.summary) || undefined, n: taken.size || undefined, f: featured.includes(doc.slug) ? 1 : undefined });
+    pages.push({ s: doc.slug, t: doc.title, c: doc.category, d: clip(doc.summary || firstParagraph(doc.html), LIMITS.summary) || undefined, n: taken.size || undefined, f: featured.includes(doc.slug) ? 1 : undefined, ...(doc.isNew ? { nw: 1 } : {}) });
     for (const row of rows) {
       const it = { k: "h", p, a: row.o.id, t: row.text };
       if (row.crumbs.length) it.b = row.crumbs;

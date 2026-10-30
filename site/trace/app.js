@@ -91,11 +91,11 @@ function setupLoader() {
     const open = $("#paste-out .btn.open");
     if (open && !open.disabled) open.click();
   });
-  $("#pick-root").addEventListener("change", e => {
+  $("#pick-root").addEventListener("change", async e => {
     const files = [...e.target.files].map(f => ({ path: f.webkitRelativePath || f.name, file: f }));
     if (!files.length) return;
     e.target.value = "";
-    if (pasted?.id && !holdsPaste(files, pasted.id)) return missingPaste(files);
+    if (pasted?.id && !await holdsPaste(files, pasted.id)) return missingPaste(files);
     pickedRoots.set(e.target.dataset.product, files);
     loadFiles(narrowPicked(files, pasted), pasted?.id || null);
   });
@@ -237,11 +237,14 @@ function getWorker() {
     } else if (data.type === "harness-error") {
       pendingHarness?.reject(new Error(data.message)); pendingHarness = null;
     } else if (data.type === "network-progress") {
+      if(data.id!==pendingNetwork?.id)return;
       const mb = n => `${(n / 1048576).toFixed(1)} MB`;
       netStatus(data.phase === "read" ? `Reading the capture: ${mb(data.done)} of ${mb(data.total)}…` : "Reading the requests, redacting identity and joining them to the log…", "busy");
     } else if (data.type === "network") {
-      pendingNetwork?.resolve(data.capture); pendingNetwork = null;
+      if(data.id!==pendingNetwork?.id)return;
+      pendingNetwork?.resolve({capture:data.capture,trace:data.trace}); pendingNetwork = null;
     } else if (data.type === "network-error") {
+      if(data.id!==pendingNetwork?.id)return;
       pendingNetwork?.reject(new Error(data.message)); pendingNetwork = null;
     } else if (data.type === "network-body") {
       const p = pendingBody.get(data.id);
@@ -318,6 +321,7 @@ async function parseInWorker(files, root, current=()=>true) {
 // Parsed, filtered, redacted and joined in the worker; the page keeps only the redacted summary in S.network
 // (never saved: not in history entries, IndexedDB or localStorage). Bodies are read from the worker on demand.
 let pendingNetwork = null;
+let networkSeq = 0;
 const pendingBody = new Map();
 let bodySeq = 0;
 const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode or Cursor desktop .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
@@ -327,7 +331,7 @@ const HAR_ALONE = "A network capture needs its session log. Drop the .har togeth
 async function splitCaptures(files) {
   const hars = [], rest = [];
   for (const f of files) {
-    let har = /\.har$/i.test(f.path);
+    let har = f.kind === "capture" || /\.har$/i.test(f.path);
     if (!har && /\.json$/i.test(f.path) && f.file?.slice) { try {
       const head = await f.file.slice(0, 256).text();
       har = looksLikeHar(head) || looksLikeCursorDecoded(head);
@@ -350,25 +354,37 @@ function netStatus(msg, kind = "info") {
 }
 async function attachCapture(files) {
   if (!S.trace) return showError(HAR_ALONE);
+  const seq=++networkSeq;
   const btn = $("#add-capture");
   btn.disabled = true;
   netStatus("Reading the capture…", "busy");
   try {
-    const capture = await new Promise((resolve, reject) => {
+    const {capture,trace} = await new Promise((resolve, reject) => {
       pendingNetwork?.reject(new Error("replaced by another capture"));
-      pendingNetwork = { resolve, reject };
+      pendingNetwork = { resolve, reject, id:seq };
       // A session parsed here (the synthetic or developer load) goes along; the worker has no copy.
-      getWorker().postMessage({ type: "network", files, ...(text === workerText ? {} : { trace: S.trace }) });
+      getWorker().postMessage({ type: "network", id:seq, files, ...(text === workerText ? {} : { trace: S.trace }) });
     });
+    if(seq!==networkSeq)return;
     S.network = capture;
+    if(trace){
+      const camera=scene?.getView(),mode=S.mode;
+      trace.sourceWarnings=S.trace.sourceWarnings;
+      S.trace=normalize(trace);S.layout=buildLayout(S.trace);S.agent=S.agentId?agentById(S.agentId):null;S.block=null;
+      palette?.setTrace(S.trace);harness?.reset();
+      scene?.dispose();scene=null;shownKey=null;forgetPanels();
+      transport?.load(playbackFor(S.layout));buildHud();
+      await setMode(mode,()=>seq===networkSeq);if(seq!==networkSeq)return;if(camera)scene?.restoreView(camera);
+    }
     const n = capture.calls.length, matched = capture.join.matched;
     netStatus(`Network capture attached: ${fmtInt(capture.kept)} requests, ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${networkMatchCount(matched)}). Open “What went over the wire” (5).`, "ok");
     palette?.setNetwork?.(capture);
     buildLenses();
     render(false);
   } catch (e) {
+    if(seq!==networkSeq)return;
     netStatus(e.message || String(e), "error");
-  } finally { btn.disabled = false; netButton(); if (!$("#net-help").hidden) netHelp(true); helpUI?.refresh(); }
+  } finally { if(seq===networkSeq){btn.disabled = false; netButton(); if (!$("#net-help").hidden) netHelp(true); helpUI?.refresh();} }
 }
 // The capture button says whether this session has one; the card it opens says what a capture is, how
 // to record one and where Trace finds it, and offers the file picker for a .har already made.
@@ -415,6 +431,8 @@ function netHelp(open = $("#net-help").hidden) {
   ].filter(child => child != null && child !== false));
 }
 function clearCapture() {
+  networkSeq++;
+  $("#add-capture").disabled=false;
   S.network = null;
   S.netFocus = null;
   closeWireReader();
@@ -439,6 +457,7 @@ function networkBody(entry, part) {
 // sends the pasted id only if some dropped path names it, so a stale paste can't block a drop.
 async function loadFiles(files, root) {
   if (!files || !files.length) return;
+  const sourceWarnings=files.warnings||[];
   const claim=loads.begin();claim.onCancel(cancelWorkerLoad);
   if(!files.every(file=>file.publicExample)){exampleAbort?.abort();publicExample=null;$("#example-banner").hidden=true;const url=new URL(location.href);url.searchParams.delete("example");history.replaceState(null,"",url);}
   const { hars, logs: rest } = await splitCaptures(files);
@@ -448,7 +467,7 @@ async function loadFiles(files, root) {
   if (hars.length && !logs.length) return showError(HAR_ALONE);
   if (!logs.length) return showError("No .jsonl session logs or native OpenCode or Cursor desktop .json exports in what was dropped.");
   if (root === undefined) {
-    if (pasteRoot && !holdsPaste(files, pasteRoot)) return missingPaste(files);
+    if (pasteRoot && !await holdsPaste(files, pasteRoot)) return missingPaste(files);
     root = pasteRoot;
   }
   setProgress(0, `Reading ${fmtInt(files.length)} files…`);
@@ -457,6 +476,7 @@ async function loadFiles(files, root) {
   try {
     const trace = await parseInWorker(files, root,claim.current);
     if(!claim.current())return;
+    trace.sourceWarnings = sourceWarnings;
     text = workerText;
     await start(trace,claim.current);
     if(!claim.current())return;
@@ -485,15 +505,15 @@ function openHelp(topic = null) {
 // when the lens opens, so a page from elsewhere never reaches for 127.0.0.1 unasked (a console error, and in
 // Chrome a local-network permission prompt). Without a resolver the lens says how to start one.
 let sourcesSeq = 0, sourcesAsked = -1;
-function sessionRootId() { return String((S.trace?.agents.find(a => a.kind === "root") || S.trace?.agents[0])?.id || "").toLowerCase(); }
+function sessionRootId() { return String((S.trace?.agents.find(a => a.kind === "root") || S.trace?.agents[0])?.id || ""); }
 const resolverInPlay = () => !publicExample && (location.origin === "http://127.0.0.1:8766" || !!lastFiles?.some(f => f.local));
 function loadSources() {
   if (sourcesAsked === sourcesSeq) return;
   sourcesAsked = sourcesSeq;
   const seq = sourcesSeq, id = sessionRootId();
-  const done = v => { if (seq !== sourcesSeq) return; S.sources = v; if (S.lens === SOURCES_LENS.key) render(false); helpUI?.refresh(); };
+  const done = v => { if (seq !== sourcesSeq) return; S.sources = v; if ([SOURCES_LENS.key,'context'].includes(S.lens)) render(false); helpUI?.refresh(); };
   if(publicExample) return done({unavailable:true,reason:"This public example uses published source logs only. Local machine sources are not requested."});
-  if (!/^[0-9a-f-]{36}$/.test(id)) return done({ unavailable: true, reason: "This session has no session id to look up." });
+  if (!/^(?:[0-9a-f-]{36}|ses_[A-Za-z0-9_-]{1,160})$/i.test(id)) return done({ unavailable: true, reason: "This session has no session id to look up." });
   localSources(id).then(r => done(r || { unavailable: true, reason: "The local resolver didn't answer this page: it isn't running, or this page isn't one it serves." }),
     e => done({ unavailable: true, reason: e.message || String(e) }));
 }
@@ -507,8 +527,17 @@ function attachFound() {
 }
 
 // A pasted id is in the files when some path names it (the session's .jsonl, a rollout file name).
-function holdsPaste(files, id) {
-  return files.some(f => f.path.toLowerCase().includes(id));
+async function holdsPaste(files, id) {
+  if (files.some(f => f.path.includes(id) || (!id.startsWith('ses_') && f.path.toLowerCase().includes(id.toLowerCase())))) return true;
+  for (const f of files) {
+    if (!f.file || !/\.jsonl?$/i.test(f.path)) continue;
+    try {
+      const raw = /\.json$/i.test(f.path) ? await f.file.text() : (await f.file.slice(0,65536).text()).split('\n')[0];
+      const value = JSON.parse(raw);
+      if (value.info?.id === id || value.session_id?.toLowerCase() === id.toLowerCase()) return true;
+    } catch { /* the worker reports invalid or unrelated input */ }
+  }
+  return false;
 }
 
 // The files don't hold the pasted session: say so, and let the user pick again or open what they picked.
@@ -579,7 +608,7 @@ async function rawLine(trace, sources, ref) {
 
 // ---------- paste → open ----------
 // Codex thread ids are UUIDv7: the first 48 bits are Unix milliseconds, which name the folder and file.
-const ROOT_DIR = { codex: "~/.codex/sessions", "claude-code": "~/.claude/projects" };
+const ROOT_DIR = { codex: "~/.codex/sessions", "claude-code": "~/.claude/projects", opencode: "~/.harness-source-map/captures", cursor: "~/.harness-source-map/captures" };
 let pasted = null;           // the parsed paste the open button acts on
 const pickedRoots = new Map(); // product -> files picked this page load (no File System Access)
 
@@ -604,12 +633,15 @@ function describePaste(v) {
     const d = new Date(info.ms);
     const day = `${d.getFullYear()}/${p2(d.getMonth() + 1)}/${p2(d.getDate())}`;
     const stamp = `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}T${p2(d.getHours())}-${p2(d.getMinutes())}-${p2(d.getSeconds())}`;
-    what = `Codex thread started ${fmtWhen(info.ms)}.`;
+    what = `Codex/ChatGPT thread started ${fmtWhen(info.ms)}.`;
     where.push(el("p", { text: "Its log (the file name uses local time):" }), pathRow(`~/.codex/sessions/${day}/rollout-${stamp}-${info.id}.jsonl`),
       el("p", { text: "Subagents and guardian reviews are separate files in the date folders from that day on." }));
+  } else if (info.product === 'opencode' || info.product === 'cursor') {
+    what = `${productLabel(info.product)} session ${info.id}.`;
+    where.push(el("p", {text:"The local resolver reads the native session store and matching recording folders. Without it, choose a folder containing the session export and its network capture."}));
   } else {
     const file = info.path || `~/.claude/projects/<project>/${info.id}.jsonl`;
-    what = `Claude Code session ${info.id ? info.id.slice(0, 8) : ""}.`;
+    what = `Claude Code or Cursor session ${info.id ? info.id.slice(0, 8) : ""}. The local resolver detects the product.`;
     where.push(el("p", { text: "Its log, and the same-named folder that holds its subagents:" }), pathRow(file), pathRow(file.replace(/\.jsonl$/, "/")));
   }
   const hint = el("p", { class: "open-hint", text: "" });
@@ -619,7 +651,7 @@ function describePaste(v) {
     el("details", {}, el("summary", { text: "Where the files are" }), ...where));
   storedHandle(info.product).then(h => {
     hint.textContent = pickedRoots.has(info.product) || h ? "Opens from the folder you picked before."
-      : `You'll pick ${ROOT_DIR[info.product]} once; the session and its subagents open from it.`;
+      : "Opens through the local resolver, or asks for a session export folder.";
   });
 }
 
@@ -645,7 +677,7 @@ async function openPasted(info, btn, hint, fresh = false) {
     $("#progress").hidden = true;
   }
   const mem = !fresh && pickedRoots.get(info.product);
-  if (mem) return holdsPaste(mem, info.id) ? loadFiles(narrowPicked(mem, info), info.id) : missingPaste(mem);
+  if (mem) return await holdsPaste(mem, info.id) ? loadFiles(narrowPicked(mem, info), info.id) : missingPaste(mem);
   if (typeof window.showDirectoryPicker === "function") {
     const previous = await storedHandle(info.product);
     let handle = fresh ? null : previous;
@@ -664,7 +696,7 @@ async function openPasted(info, btn, hint, fresh = false) {
     setProgress(0, "Finding the session's files…");
     try {
       const files = await filesFromHandle(handle, info);
-      if (!holdsPaste(files, info.id)) {
+      if (!await holdsPaste(files, info.id)) {
         btn.disabled = false;
         return missingPaste(files);
       }
@@ -688,6 +720,7 @@ async function openPasted(info, btn, hint, fresh = false) {
 // The worker's loader narrows further by id.
 function narrowPicked(files, info) {
   if (!info?.id) return files;
+  if (["opencode", "cursor"].includes(info.product) || (info.product === "claude-code" && !files.some(f=>f.path.includes(info.id)))) return files;
   let keep;
   if (info.product === "claude-code") keep = files.filter(f => f.path.includes(info.id));
   else {
@@ -712,6 +745,7 @@ async function filesFromHandle(root, info) {
       else await walk(h, `${prefix}${name}/`);
     }
   };
+  if (["opencode", "cursor"].includes(info.product)) { await walk(root, ""); return out; }
   if (info.product === "claude-code") {
     let base = root;
     const projects = await child(root, "projects", "dir");
@@ -728,6 +762,7 @@ async function filesFromHandle(root, info) {
     if (!(await tryDir(base, ""))) {
       for await (const [name, h] of base.entries()) if (h.kind === "directory" && await tryDir(h, `${name}/`)) break;
     }
+    if (!out.length) await walk(root, "");
     return out;
   }
   // A capture filed beside the thread's rollout (tools/capture/file-capture.mjs) comes along.
@@ -849,6 +884,12 @@ async function start(trace,current=()=>true) {
   S.tools = indexFor(referenceIndex, trace.product)?.tools || null; // custody ladder's "Guided by"
   mapReturn = null;
   S.trace = normalize(trace);
+  const sourceNotes = $("#source-notes");
+  sourceNotes.hidden = !trace.sourceWarnings?.length;
+  sourceNotes.replaceChildren(...(trace.sourceWarnings?.length ? [
+    el("details", {}, el("summary", { text: "Recording notes" }),
+      ...trace.sourceWarnings.map(message => el("p", { text: message })))
+  ] : []));
   S.layout = buildLayout(S.trace);
   transport ||= createTransport($("#playback"), {
     onPlayhead: p => { scene?.setPlayhead(p); direct(p); playCardTick(p); harness?.playhead(p); },
@@ -1334,6 +1375,7 @@ const A = {
   help: topic => openHelp(topic),
   // Everything on this machine (sources/panel.js): the report comes with the session; content on request.
   sourcesLens: view => sourcesLens({ ...view, sources: S.sources, sourceOpen: S.sourceOpen }, A),
+  openInstructions: () => selectLens(SOURCES_LENS.key),
   openSource(sourceId, opts = {}) {
     const id = sessionRootId(), seq = sourcesSeq;
     S.sourceOpen.set(sourceId, { loading: true, part: opts.part || null });

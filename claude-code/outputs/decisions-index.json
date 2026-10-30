@@ -9,7 +9,7 @@
      "title": "Prompt cache TTL",
      "rung": "envTtl",
      "rank": 2,
-     "of": 10
+     "of": 11
     }
    ]
   },
@@ -27,7 +27,7 @@
      "title": "Prompt cache TTL",
      "rung": "envSubagentTtl",
      "rank": 3,
-     "of": 10
+     "of": 11
     }
    ]
   },
@@ -45,7 +45,7 @@
      "title": "Prompt cache TTL",
      "rung": "disable",
      "rank": 0,
-     "of": 10
+     "of": 11
     }
    ]
   },
@@ -83,7 +83,7 @@
      "title": "Prompt cache TTL",
      "rung": "enable1h",
      "rank": 7,
-     "of": 10
+     "of": 11
     }
    ]
   },
@@ -96,7 +96,7 @@
      "title": "Prompt cache TTL",
      "rung": "enable1hBedrock",
      "rank": 8,
-     "of": 10
+     "of": 11
     }
    ]
   },
@@ -109,7 +109,7 @@
      "title": "Prompt cache TTL",
      "rung": "force5m",
      "rank": 1,
-     "of": 10
+     "of": 11
     }
    ]
   },
@@ -394,7 +394,7 @@
   },
   {
    "id": "env-api-timeout-ms",
-   "status": "pending",
+   "status": "standalone",
    "feeds": []
   },
   {
@@ -502,7 +502,7 @@
   },
   {
    "id": "env-claude-agent-sdk-mcp-no-prefix",
-   "status": "standalone",
+   "status": "pending",
    "feeds": []
   },
   {
@@ -589,6 +589,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-bg-carried-prompts-sha256",
+   "status": "pending",
+   "feeds": []
+  },
+  {
    "id": "env-claude-bg-claim-auth",
    "status": "standalone",
    "feeds": []
@@ -670,7 +675,7 @@
   },
   {
    "id": "env-claude-bg-tcc-disclaimed",
-   "status": "standalone",
+   "status": "pending",
    "feeds": []
   },
   {
@@ -980,8 +985,13 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-artifact-preview-emulator",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-artifact-quickstart",
-   "status": "pending",
+   "status": "standalone",
    "feeds": []
   },
   {
@@ -1022,6 +1032,11 @@
   {
    "id": "env-claude-code-artifact-verify",
    "status": "pending",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-artifact-versions",
+   "status": "standalone",
    "feeds": []
   },
   {
@@ -1069,6 +1084,11 @@
   },
   {
    "id": "env-claude-code-auto-mode-tier",
+   "status": "pending",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-autoupdater-disabled-by-host",
    "status": "pending",
    "feeds": []
   },
@@ -1157,12 +1177,12 @@
   },
   {
    "id": "env-claude-code-bridge-owner-account-uuid",
-   "status": "pending",
+   "status": "standalone",
    "feeds": []
   },
   {
    "id": "env-claude-code-bridge-owner-org-uuid",
-   "status": "pending",
+   "status": "standalone",
    "feeds": []
   },
   {
@@ -1188,6 +1208,11 @@
   {
    "id": "env-claude-code-bubblewrap",
    "status": "pending",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-calm-mochi",
+   "status": "standalone",
    "feeds": []
   },
   {
@@ -1296,6 +1321,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-curried-trinket",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-custom-oauth-url",
    "status": "pending",
    "feeds": []
@@ -1346,6 +1376,11 @@
   {
    "id": "env-claude-code-desktop-app-version",
    "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-desktop-skill-switches",
+   "status": "pending",
    "feeds": []
   },
   {
@@ -1400,7 +1435,7 @@
      "title": "Total tokens reminder",
      "rung": "disableAttachments",
      "rank": 0,
-     "of": 5
+     "of": 6
     }
    ]
   },
@@ -1440,6 +1475,11 @@
   {
    "id": "env-claude-code-disable-bg-shell-pressure-reap",
    "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-disable-bg-stable-path",
+   "status": "pending",
    "feeds": []
   },
   {
@@ -1673,6 +1713,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-disable-proactivity",
+   "status": "pending",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-disable-refusal-fallback",
    "status": "standalone",
    "feeds": []
@@ -1791,15 +1836,15 @@
      "decision": "effort-level",
      "title": "Reasoning effort",
      "rung": "env",
-     "rank": 2,
-     "of": 12
+     "rank": 3,
+     "of": 14
     },
     {
      "decision": "effort-level",
      "title": "Reasoning effort",
      "rung": "envAuto",
-     "rank": 3,
-     "of": 12
+     "rank": 4,
+     "of": 14
     }
    ]
   },
@@ -1976,7 +2021,7 @@
      "title": "Reasoning effort",
      "rung": "extraBody",
      "rank": 1,
-     "of": 12
+     "of": 14
     },
     {
      "decision": "thinking-mode",
@@ -2153,6 +2198,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-harmonic-riddle",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-hide-cwd",
    "status": "pending",
    "feeds": []
@@ -2218,6 +2268,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-host-skill-catalog",
+   "status": "pending",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-host-worktree",
    "status": "pending",
    "feeds": []
@@ -2253,6 +2308,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-idle-compact-min-tokens",
+   "status": "pending",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-idle-threshold-minutes",
    "status": "standalone",
    "feeds": []
@@ -2270,11 +2330,6 @@
   {
    "id": "env-claude-code-inline-tools",
    "status": "standalone",
-   "feeds": []
-  },
-  {
-   "id": "env-claude-code-intro-frame",
-   "status": "pending",
    "feeds": []
   },
   {
@@ -2315,6 +2370,11 @@
   {
    "id": "env-claude-code-loop-persistent",
    "status": "pending",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-managed-config-prefetch",
+   "status": "standalone",
    "feeds": []
   },
   {
@@ -2490,7 +2550,7 @@
   },
   {
    "id": "env-claude-code-nonstreaming-timeout-retries",
-   "status": "pending",
+   "status": "standalone",
    "feeds": []
   },
   {
@@ -2559,6 +2619,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-overloaded-retry-base-delay-ms",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-package-manager-auto-update",
    "status": "standalone",
    "feeds": []
@@ -2595,7 +2660,7 @@
   },
   {
    "id": "env-claude-code-pewter-owl-tool",
-   "status": "standalone",
+   "status": "pending",
    "feeds": []
   },
   {
@@ -2774,6 +2839,26 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-relaunch-proactivity-baseline",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-relaunch-proactivity-decided",
+   "status": "pending",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-relaunch-proactivity-ever-on",
+   "status": "pending",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-relaunch-proactivity-level",
+   "status": "pending",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-relaunch-terminal-size",
    "status": "standalone",
    "feeds": []
@@ -2807,6 +2892,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-remote-sdk-url",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-remote-send-keepalives",
    "status": "pending",
    "feeds": []
@@ -2827,7 +2917,17 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-remote-tools-host-allows-unattended",
+   "status": "pending",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-remote-tools-pin-stored-login",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-remove-prompt-strings",
    "status": "standalone",
    "feeds": []
   },
@@ -2839,6 +2939,11 @@
   {
    "id": "env-claude-code-report-findings",
    "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-restrict-personal-config",
+   "status": "pending",
    "feeds": []
   },
   {
@@ -2897,8 +3002,23 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-resume-tolerates-context-seeds",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-retry-watchdog",
    "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-retry-watchdog-max-wait-ms",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-rippling-tulip",
+   "status": "pending",
    "feeds": []
   },
   {
@@ -3015,6 +3135,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-silent-turn-reminder-seconds",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-silent-turn-reminder-text",
    "status": "standalone",
    "feeds": []
@@ -3040,7 +3165,7 @@
      "title": "Total tokens reminder",
      "rung": "simpleMode",
      "rank": 0,
-     "of": 5
+     "of": 6
     }
    ]
   },
@@ -3106,6 +3231,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-sleep-compact",
+   "status": "pending",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-slow-operation-threshold-ms",
    "status": "standalone",
    "feeds": []
@@ -3146,12 +3276,32 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-streamed-bumblebee",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-streamed-bumblebee-text",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-subagent-config-warning",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-subagent-model",
    "status": "standalone",
    "feeds": []
   },
   {
    "id": "env-claude-code-subagent-model-force",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-subagent-prompt-snapshot",
    "status": "standalone",
    "feeds": []
   },
@@ -3359,8 +3509,8 @@
      "decision": "total-tokens-reminder",
      "title": "Total tokens reminder",
      "rung": "env",
-     "rank": 1,
-     "of": 5
+     "rank": 2,
+     "of": 6
     }
    ]
   },
@@ -3453,12 +3603,22 @@
    "feeds": []
   },
   {
+   "id": "env-claude-code-web-search-refills-per-hour",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-claude-code-webfetch-cache-ttl-ms",
    "status": "standalone",
    "feeds": []
   },
   {
    "id": "env-claude-code-webfetch-deadline-ms",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-code-websearch-citations",
    "status": "standalone",
    "feeds": []
   },
@@ -3652,6 +3812,11 @@
    "feeds": []
   },
   {
+   "id": "env-claude-pty-host-no-stable-path",
+   "status": "pending",
+   "feeds": []
+  },
+  {
    "id": "env-claude-pty-orphan-check-ms",
    "status": "pending",
    "feeds": []
@@ -3698,6 +3863,11 @@
   },
   {
    "id": "env-claude-runner-fetch-depth",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-claude-runner-fetch-server-progress-cap-ms",
    "status": "standalone",
    "feeds": []
   },
@@ -3914,7 +4084,7 @@
   },
   {
    "id": "env-fallback-for-all-primary-models",
-   "status": "pending",
+   "status": "standalone",
    "feeds": []
   },
   {
@@ -4239,6 +4409,11 @@
    "feeds": []
   },
   {
+   "id": "env-self-hosted-runner-server-auto-mode-lists",
+   "status": "pending",
+   "feeds": []
+  },
+  {
    "id": "env-self-hosted-runner-session-idle-min",
    "status": "standalone",
    "feeds": []
@@ -4340,11 +4515,6 @@
   },
   {
    "id": "env-vitals-emitter-bin",
-   "status": "standalone",
-   "feeds": []
-  },
-  {
-   "id": "env-voice-stream-base-url",
    "status": "standalone",
    "feeds": []
   },
@@ -4738,6 +4908,11 @@
   },
   {
    "id": "env-vertex-region-claude-haiku-4-5",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "env-vertex-region-claude-haiku-5-5",
    "status": "standalone",
    "feeds": []
   },
@@ -5186,6 +5361,11 @@
    "feeds": []
   },
   {
+   "id": "env-ccr-agent-proxy-token-file-descriptor",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
    "id": "env-ccr-agent-proxy-upload-gate-disabled",
    "status": "pending",
    "feeds": []
@@ -5551,11 +5731,6 @@
    "feeds": []
   },
   {
-   "id": "env-gcm-interactive",
-   "status": "os-shell",
-   "feeds": []
-  },
-  {
    "id": "env-gh-enterprise-token",
    "status": "os-shell",
    "feeds": []
@@ -5596,11 +5771,6 @@
    "feeds": []
   },
   {
-   "id": "env-git-config-nosystem",
-   "status": "os-shell",
-   "feeds": []
-  },
-  {
    "id": "env-git-config-parameters",
    "status": "os-shell",
    "feeds": []
@@ -5627,11 +5797,6 @@
   },
   {
    "id": "env-git-ssh-variant",
-   "status": "os-shell",
-   "feeds": []
-  },
-  {
-   "id": "env-git-terminal-prompt",
    "status": "os-shell",
    "feeds": []
   },
@@ -5932,11 +6097,6 @@
   },
   {
    "id": "env-space-creator-user-id",
-   "status": "os-shell",
-   "feeds": []
-  },
-  {
-   "id": "env-ssh-auth-sock",
    "status": "os-shell",
    "feeds": []
   },
@@ -6372,6 +6532,11 @@
   },
   {
    "id": "env-set-claude-bg-backend",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-claude-bg-carried-prompts-sha256",
    "status": "set-only",
    "feeds": []
   },
@@ -6821,6 +6986,11 @@
    "feeds": []
   },
   {
+   "id": "env-set-claude-code-disable-proactivity",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-claude-code-disable-structured-outputs",
    "status": "set-only",
    "feeds": []
@@ -7016,6 +7186,11 @@
    "feeds": []
   },
   {
+   "id": "env-set-claude-code-host-skill-catalog",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-claude-code-host-worktree",
    "status": "set-only",
    "feeds": []
@@ -7026,7 +7201,17 @@
    "feeds": []
   },
   {
+   "id": "env-set-claude-code-hosted-desktop",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-claude-code-ide-host-override",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-claude-code-idle-compact-min-tokens",
    "status": "set-only",
    "feeds": []
   },
@@ -7326,6 +7511,26 @@
    "feeds": []
   },
   {
+   "id": "env-set-claude-code-relaunch-proactivity-baseline",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-claude-code-relaunch-proactivity-decided",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-claude-code-relaunch-proactivity-ever-on",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-claude-code-relaunch-proactivity-level",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-claude-code-relaunch-terminal-size",
    "status": "set-only",
    "feeds": []
@@ -7356,6 +7561,11 @@
    "feeds": []
   },
   {
+   "id": "env-set-claude-code-remote-sdk-url",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-claude-code-remote-send-keepalives",
    "status": "set-only",
    "feeds": []
@@ -7381,12 +7591,22 @@
    "feeds": []
   },
   {
+   "id": "env-set-claude-code-remote-tools-host-allows-unattended",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-claude-code-repl",
    "status": "set-only",
    "feeds": []
   },
   {
    "id": "env-set-claude-code-repo-checkouts",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-claude-code-restrict-personal-config",
    "status": "set-only",
    "feeds": []
   },
@@ -7442,6 +7662,11 @@
   },
   {
    "id": "env-set-claude-code-resume-tolerates-context-appends",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-claude-code-resume-tolerates-context-seeds",
    "status": "set-only",
    "feeds": []
   },
@@ -7536,6 +7761,11 @@
    "feeds": []
   },
   {
+   "id": "env-set-claude-code-sleep-compact",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-claude-code-spawn-timestamp-ms",
    "status": "set-only",
    "feeds": []
@@ -7572,6 +7802,11 @@
   },
   {
    "id": "env-set-claude-code-supervised",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-claude-code-sync-plugin-install",
    "status": "set-only",
    "feeds": []
   },
@@ -7751,6 +7986,11 @@
    "feeds": []
   },
   {
+   "id": "env-set-claude-code-web-search-refills-per-hour",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-claude-code-worker-checkin-schedule",
    "status": "set-only",
    "feeds": []
@@ -7866,6 +8106,11 @@
    "feeds": []
   },
   {
+   "id": "env-set-claude-pty-host-no-stable-path",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-claude-pty-orphan-check-ms",
    "status": "set-only",
    "feeds": []
@@ -7922,6 +8167,11 @@
   },
   {
    "id": "env-set-claude-runner-fetch-depth",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-claude-runner-fetch-server-progress-cap-ms",
    "status": "set-only",
    "feeds": []
   },
@@ -8121,12 +8371,32 @@
    "feeds": []
   },
   {
+   "id": "env-set-git-glob-pathspecs",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-git-icase-pathspecs",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-git-index-file",
    "status": "set-only",
    "feeds": []
   },
   {
+   "id": "env-set-git-literal-pathspecs",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
    "id": "env-set-git-no-lazy-fetch",
+   "status": "set-only",
+   "feeds": []
+  },
+  {
+   "id": "env-set-git-noglob-pathspecs",
    "status": "set-only",
    "feeds": []
   },
@@ -9049,7 +9319,7 @@
      "title": "Prompt cache TTL",
      "rung": "settingTtl",
      "rank": 4,
-     "of": 10
+     "of": 11
     },
     {
      "decision": "settings-layers",
@@ -9069,7 +9339,7 @@
      "title": "Prompt cache TTL",
      "rung": "settingSubagentTtl",
      "rank": 5,
-     "of": 10
+     "of": 11
     },
     {
      "decision": "settings-layers",
@@ -9108,15 +9378,15 @@
      "decision": "effort-level",
      "title": "Reasoning effort",
      "rung": "setting",
-     "rank": 6,
-     "of": 12
+     "rank": 8,
+     "of": 14
     },
     {
      "decision": "effort-level",
      "title": "Reasoning effort",
      "rung": "userSetting",
-     "rank": 8,
-     "of": 12
+     "rank": 10,
+     "of": 14
     },
     {
      "decision": "settings-layers",
@@ -9155,8 +9425,8 @@
      "decision": "effort-level",
      "title": "Reasoning effort",
      "rung": "modelSettings",
-     "rank": 7,
-     "of": 12
+     "rank": 9,
+     "of": 14
     },
     {
      "decision": "settings-layers",
@@ -12939,8 +13209,8 @@
      "decision": "total-tokens-reminder",
      "title": "Total tokens reminder",
      "rung": "setting",
-     "rank": 2,
-     "of": 5
+     "rank": 3,
+     "of": 6
     },
     {
      "decision": "settings-layers",
@@ -13073,6 +13343,19 @@
    "id": "settings-safe-env-custom-headers",
    "status": "action",
    "feeds": []
+  },
+  {
+   "id": "setting-idle-compaction",
+   "status": "layered",
+   "feeds": [
+    {
+     "decision": "settings-layers",
+     "title": "Where a setting's value comes from",
+     "rung": null,
+     "rank": null,
+     "of": null
+    }
+   ]
   },
   {
    "id": "cli-root",
@@ -13510,8 +13793,8 @@
      "decision": "effort-level",
      "title": "Reasoning effort",
      "rung": "cli",
-     "rank": 5,
-     "of": 12
+     "rank": 6,
+     "of": 14
     }
    ]
   },
@@ -13557,7 +13840,7 @@
   },
   {
    "id": "cli-flag-client-data-url",
-   "status": "standalone",
+   "status": "pending",
    "feeds": []
   },
   {
@@ -15036,6 +15319,31 @@
   {
    "id": "cli-cmd-update",
    "status": "action",
+   "feeds": []
+  },
+  {
+   "id": "cli-flag-mcp-serve-transport",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "cli-flag-mcp-serve-port",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "cli-flag-mcp-serve-result-format",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "cli-flag-mcp-serve-session-tunnel",
+   "status": "standalone",
+   "feeds": []
+  },
+  {
+   "id": "cli-flag-proactivity",
+   "status": "standalone",
    "feeds": []
   }
  ]

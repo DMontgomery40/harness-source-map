@@ -42,6 +42,8 @@ It is **not** about token cost or the fact that context is re-read every turn. D
 ## Rules
 - **Jev discovery:** read `docs/specs/jev-discovery.md` and, when available, the global `jev-workflows` skill before changing a classifier or coverage sweep. Check candidate selection, complete source text, privacy filtering, batch-size accounting, cache identity, unanswered work, and site record indexing as separate layers. The publicly shipped Claude Code binary is approved source material for this site. Do not confuse that publication scope with sending the complete corpus to an external classifier: the broad TypeSafe transfer is opt-in and needs destination-specific authorization; local preparation does not make that transfer.
 - Run the gate before calling work done: `npm run check` (build, all tests, link check, leak check).
+- Once work is complete and verified, commit your own changes and push immediately. Confirm the push
+  succeeded before reporting completion.
 - Trace always opens in the 3D landscape (2D only without WebGL or with reduced motion). The harness
   layer and any new layer are reached from it and never open first, whether by default, URL or saved
   view (David, 2026-09-27).

@@ -5,6 +5,7 @@ import { createRoutes } from "./routes.mjs";
 import { SITE, productOrigin, ICON_LINKS } from "../shared/site.mjs";
 import { buildSearchIndex } from "../shared/search-index.mjs";
 import { searchScript, searchTrigger, searchTriggerStyles } from "../shared/search-ui.mjs";
+import { cleanCaptureHeadings, decorateNewRecords, releaseBadge, releaseStyles } from "../shared/release-tags.mjs";
 
 import { anchorOutline, renderToc, tocNoscriptStyles, tocScript, tocStyles } from "./toc.mjs";
 
@@ -20,7 +21,7 @@ export const CODEX_PROFILE = {
   shareDescription: "ChatGPT Work evidence, Codex/ChatGPT GPT-6 instruction texts, desktop helper prompts, and voice tool evidence.",
   dek: "ChatGPT Work, Codex/ChatGPT GPT-6 instructions, desktop helpers, and voice evidence in one reference.",
   socialCard: { file: "prompt-map-social-card.png", alt: "Dark GPT-6 prompt source map card with a lime green winking face and Good takes detected stamp." },
-  featured: ["key-findings", "devday-update", "gpt-6-1-sol-base-instructions", "persistent-mode-instructions", "codex-config", "codex-env-vars", "codex-cli-prompts", "tool-manifest"],
+  featured: ["key-findings", "devday-update", "memory-pipeline", "gpt-6-1-sol-base-instructions", "persistent-mode-instructions", "codex-config", "codex-env-vars", "codex-cli-prompts", "tool-manifest"],
   intro: true,
   guide: renderGuide,
   front: () => ""
@@ -194,6 +195,30 @@ function stripEditorialTitle(source) {
     : source;
 }
 
+// The combined reference need not repeat JSON indentation from every source page.
+// Remove only insignificant whitespace: retain string escapes and numeric lexemes,
+// including integers that cannot be represented exactly by JavaScript numbers.
+function compactJsonWhitespace(source) {
+  try { JSON.parse(source); } catch { return source; }
+  const parts = [];
+  let start = 0, quoted = false, escaped = false;
+  for (let i = 0; i < source.length; i++) {
+    const char = source[i];
+    if (quoted) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === '"') quoted = false;
+    } else if (char === '"') quoted = true;
+    else if (char === " " || char === "\t" || char === "\r" || char === "\n") {
+      parts.push(source.slice(start, i));
+      while (i + 1 < source.length && /[ \t\r\n]/.test(source[i + 1])) i++;
+      start = i + 1;
+    }
+  }
+  parts.push(source.slice(start));
+  return parts.join("");
+}
+
 function renderStructuredSource(document, anchor, ids) {
   const metadata = JSON.parse(document.source);
   const groups = new Map();
@@ -211,11 +236,11 @@ function renderStructuredSource(document, anchor, ids) {
 function renderDocument(document, ids) {
   const name = fileName(document.path);
   const anchor = document.anchor ?? fileAnchor(document.path);
-  const source = !document.instructionProfile || document.instructionProfile === "voice"
+  const source = document.format === "markdown" && (!document.instructionProfile || document.instructionProfile === "voice")
     ? stripEditorialTitle(document.source)
     : document.source;
   ids.add(anchor).add(`${anchor}-title`);
-  const { html: content, outline } =
+  let { html: content, outline } =
     document.format === "markdown"
       ? anchorOutline(`<div class="markdown-body">${document.instructionProfile
         ? renderInstructionMarkdown(source, document.instructionProfile, anchor)
@@ -224,6 +249,7 @@ function renderDocument(document, ids) {
         ? renderStructuredSource(document, anchor, ids)
         : { html: `<pre class="source-block"><code>${escapeHtml(document.source)}</code></pre>`, outline: [] };
 
+  if (document.snapshot && document.format === "markdown") ({ html: content, outline } = cleanCaptureHeadings(content, outline));
   let body = content;
   if (document.filter) {
     const inner = content.replace(/^<div class="markdown-body">/, "").replace(/<\/div>$/, "");
@@ -231,6 +257,9 @@ function renderDocument(document, ids) {
     if (wrapped.matched !== document.filter.records.length) throw new Error(`${document.path}: tagged ${wrapped.matched} of ${document.filter.records.length} entries`);
     body = `${filterBar(document.filter, wrapped.matched)}<div class="markdown-body">${wrapped.html}</div>`;
   }
+  if (!document.filter) body = decorateNewRecords(body, outline, document.searchRecords, source => (document.promptText ? promptMarkdown : markdown).parseInline(source));
+  const compactSource = document.format === "source" && !document.searchRecords?.length
+    ? compactJsonWhitespace(document.source) : document.source;
   return {
     path: document.navKey ?? document.path,
     anchor,
@@ -243,7 +272,10 @@ function renderDocument(document, ids) {
     defaultOpen: document.defaultOpen,
     promptText: document.promptText === true,
     records: document.searchRecords,
+    isNew: document.isNew,
     content: body,
+    indexContent: compactSource === document.source ? body
+      : `<pre class="source-block"><code>${escapeHtml(compactSource)}</code></pre>`,
     filterVocabulary: document.filter?.vocabulary,
     outline,
     // A long page (`outlineDepth`) lists only its groups in the sidebar, not every entry.
@@ -251,20 +283,19 @@ function renderDocument(document, ids) {
   };
 }
 
-// One-time observations are labeled with their date; everything else is regenerated
-// from the current sources.
+// Capture dates stay in the evidence metadata, not in navigation labels.
 function kicker(document) {
-  return document.snapshot ? `${document.category} · Snapshot from ${document.snapshot}` : document.category;
+  return document.snapshot ? `${document.category} · Captured evidence` : document.category;
 }
 
-function documentPanel(document) {
+function documentPanel(document, routes) {
   return `
     <details class="document" id="${document.anchor}" aria-labelledby="${document.anchor}-title"${document.defaultOpen ? " open" : ""}>
       <summary class="document-summary">
         <div class="document-kicker">${escapeHtml(kicker(document))}</div>
-        <h2 id="${document.anchor}-title">${escapeHtml(document.title)}</h2>
+        <h2 id="${document.anchor}-title">${escapeHtml(document.title)}${document.isNew ? releaseBadge() : ""}</h2>
       </summary>
-      <div class="document-content">${document.content}</div>
+      <div class="document-content">${document.indexContent !== document.content ? `<p class="source-raw"><a href="${escapeHtml(routes.slug(document.anchor))}/">Open formatted source</a></p>` : ""}${document.indexContent}</div>
     </details>`;
 }
 
@@ -273,7 +304,7 @@ function documentArticle(document, routes) {
       <article class="document-page" id="${document.anchor}" aria-labelledby="${document.anchor}-title">
         <header class="document-page-header">
           <div class="document-kicker">${escapeHtml(kicker(document))}</div>
-          <h1 class="page-title" id="${document.anchor}-title">${escapeHtml(document.title)}</h1>
+          <h1 class="page-title" id="${document.anchor}-title">${escapeHtml(document.title)}${document.isNew ? releaseBadge() : ""}</h1>
           <a class="full-reference-link" href="../">Full reference</a>
         </header>
         <div class="document-content">${routes.localize(document.content, document.anchor)}</div>
@@ -298,6 +329,7 @@ export function searchIndex(rendered, routes, profile = CODEX_PROFILE) {
       slug: routes.slug(document.anchor),
       title: document.title,
       category: document.category,
+      isNew: document.isNew,
       html: routes.localize(document.content, document.anchor),
       outline: document.outline.map(item => ({ ...item, id: routes.localId(item.id, document.anchor) })),
       records: document.records,
@@ -311,6 +343,7 @@ export function searchIndex(rendered, routes, profile = CODEX_PROFILE) {
 export function renderSite({ categories, documents, status = null, profile = CODEX_PROFILE }) {
   const ids = new Set();
   const rendered = documents.map(document => renderDocument(document, ids));
+  categories = categories.map(category => ({ ...category, files: category.files.map(file => ({ ...file, isNew: documents.find(d => d.path === file.path && d.navKey === file.navKey)?.isNew })) }));
   const routes = createRoutes(rendered);
   const { index, stats } = searchIndex(rendered, routes, profile);
   return [
@@ -403,6 +436,7 @@ ${card ? `  <meta name="twitter:image" content="${origin}/${card.file}">
     .main{padding:0 60px 0 370px}
     .content{width:min(768px,100%);margin:0 auto;padding:100px 0 80px}
     .date{color:var(--muted);font-size:14px;text-align:center}
+    ${releaseStyles}
     .page-title{margin:26px 0 24px;font-size:48px;line-height:1.16;font-weight:500;letter-spacing:-.025em;text-align:center}
     .dek{max-width:650px;margin:0 auto;color:#d3d5cf;font-size:18px;line-height:1.48;text-align:center}
     .document{scroll-margin-top:36px;margin-top:112px;padding-top:34px;border-top:1px solid var(--line)}
@@ -513,7 +547,7 @@ ${current ? documentArticle(current, routes) : `      <header>
         <p class="dek">${escapeHtml(profile.dek)}</p>
 ${profile.front(rendered)}${profile.guide ? profile.guide(rendered) : ""}
       </header>
-${rendered.map(documentPanel).join("\n")}`}
+${rendered.map(document => documentPanel(document, routes)).join("\n")}`}
     </div>
   </main>
   <script>

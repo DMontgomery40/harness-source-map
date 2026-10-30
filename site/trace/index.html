@@ -40,9 +40,9 @@
         <p id="example-description" class="example-description" aria-live="polite"></p>
       </div>
       <div class="find">
-        <label for="paste" class="find-label">Paste a Codex/ChatGPT link or thread id, or a Claude Code session id</label>
+        <label for="paste" class="find-label">Paste a session ID or Codex/ChatGPT thread link</label>
         <input id="paste" class="paste" type="text" spellcheck="false" autocomplete="off"
-          placeholder="codex://threads/…, a thread id, or a Claude Code session id or path">
+          placeholder="OpenCode ses_…, Cursor or Claude Code UUID, or codex://threads/…">
         <div id="paste-out" class="paste-out" aria-live="polite"></div>
       </div>
       <p class="or">Or drop the files yourself</p>
@@ -91,6 +91,7 @@
     <div id="resizer" class="resizer" role="separator" aria-orientation="vertical" aria-label="Resize the panel" tabindex="0"></div>
     <div class="side-heading"><span class="eyebrow">Explore session</span><span class="side-actions"><button id="help-open" class="help-open" type="button" title="Help: open a session, see everything on this machine, captures">Help</button><button id="add-capture" class="net-button" type="button" data-state="none" aria-expanded="false" aria-controls="net-help" title="Network capture: what went over the wire in this session">+ Network capture</button><button id="overview" class="text-control" type="button">↖ Overview</button></span></div>
     <div id="example-banner" class="example-banner" hidden><details><summary>Real session · Details</summary><p id="example-label"></p></details><button id="example-own-session" class="text-control" type="button">Open your own session</button></div>
+    <div id="source-notes" class="example-banner" hidden></div>
     <input id="pick-har" type="file" multiple accept=".har,.json,application/json" hidden>
     <p id="net-status" class="net-status" role="status" aria-live="polite" hidden></p>
     <div id="net-help" class="net-help" hidden></div>

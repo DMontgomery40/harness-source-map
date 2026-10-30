@@ -1,9 +1,9 @@
 {
  "page": "outputs/chatgpt-conversation-prompts.md",
- "app_version": "26.930.31730",
- "app_build": "12947",
+ "app_version": "26.1002.52244",
+ "app_build": "13536",
  "source": {
-  "asar_sha256": "87a934de9a00a04d2e534693db87756321ca4f3413f6caa55d3a0d32a5543836"
+  "asar_sha256": "40efd7acdf03a24817fcd7f35684fc2173b154df06774243cb4ab227e36fa915"
  },
  "items": [
   {
@@ -11,8 +11,8 @@
    "title": "Regenerate with feedback",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/chatgpt-conversation-turn-content-5d0b191cc345.js",
-   "byte_offset": 296073,
+   "source_file": "webview/assets/chatgpt-conversation-turn-content-7ca20ac4bca6.js",
+   "byte_offset": 304846,
    "sha256": "d68556b8a8cac27620e6c3fca92aa36debd19bd595957d8b899ebf69130d4a9d",
    "text": "The user provided feedback on a previous completion. Use it to generate a new completion. The output should be a standalone response that reflects the feedback without acknowledging it. Do not mention, suggest, or imply that this is a revision, improvement, or result of feedback. Respond in the same language as the original completion, even if the feedback is in another language. Only switch if the feedback explicitly asks you to translate the completion. Here is the feedback:\n"
   },
@@ -21,8 +21,8 @@
    "title": "Ask ChatGPT about a sponsored ad",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/placement-715d7f997424.js",
-   "byte_offset": 148323,
+   "source_file": "webview/assets/placement-c5eab8bc49b1.js",
+   "byte_offset": 153243,
    "sha256": "c7e19e498d3e8673989a66249519934b5927e2af1230f7a8e7cb800caf29b37b",
    "text": "The user is referring to a sponsored ad: {LABEL}\n{DATA}"
   },
@@ -31,7 +31,7 @@
    "title": "Conversational onboarding kickoff",
    "label": "exact",
    "message_id": "chatgpt.new-onboarding.conversational-onboarding.bootstrap.kickoff-prompt",
-   "source_file": "webview/assets/chatgpt-onboarding-content-ca56df77e4dd.js",
+   "source_file": "webview/assets/chatgpt-onboarding-content-a732ca275e9f.js",
    "byte_offset": 4036,
    "sha256": "478e1a7542e5e0f0e8f37e331c80e7a5dc37898bcaa893f32715f9eb0f6ba8a5",
    "text": "Write the first assistant message for this onboarding conversation."
@@ -41,8 +41,8 @@
    "title": "Image edit: remove background",
    "label": "exact",
    "message_id": "imageSidePanel.removeBackgroundPrompt",
-   "source_file": "webview/assets/image-side-panel-53196d0209a2.js",
-   "byte_offset": 85773,
+   "source_file": "webview/assets/image-side-panel-8a1bba99f23f.js",
+   "byte_offset": 85577,
    "sha256": "17f4b84bda66d7c716c663463a0dc387d84ba141234aea966c78aff5c8c3b4e1",
    "text": "Remove the background from this image. Keep all foreground subjects unchanged and fully intact, with clean, smooth edges. Make the background transparent."
   },
@@ -51,8 +51,8 @@
    "title": "Image edit: remove selection",
    "label": "exact",
    "message_id": "imageSidePanel.removeSelectionPrompt",
-   "source_file": "webview/assets/image-side-panel-53196d0209a2.js",
-   "byte_offset": 80664,
+   "source_file": "webview/assets/image-side-panel-8a1bba99f23f.js",
+   "byte_offset": 80655,
    "sha256": "22ea809d5b22ec49b853bca396b882fe6032344f0e09409737019ff9eb5cc10f",
    "text": "Remove the selected area from this image"
   },
@@ -61,8 +61,8 @@
    "title": "Image questionnaire: attached image",
    "label": "exact",
    "message_id": "chatgpt.imagegenInput.uploadedImageAnswer",
-   "source_file": "webview/assets/app-primary-5fc751535eb1.js",
-   "byte_offset": 132270,
+   "source_file": "webview/assets/app-primary-15d1279f1ff0.js",
+   "byte_offset": 135020,
    "sha256": "c53ee0d7026b93f6b79ca8e0a347c30b9327e75d5c93492e0911efe0ba9d46ad",
    "text": "Use the attached image: {fileName}"
   },
@@ -71,8 +71,8 @@
    "title": "Image questionnaire: attached file",
    "label": "exact",
    "message_id": "chatgpt.imagegenInput.uploadedFileAnswer",
-   "source_file": "webview/assets/app-primary-5fc751535eb1.js",
-   "byte_offset": 132597,
+   "source_file": "webview/assets/app-primary-15d1279f1ff0.js",
+   "byte_offset": 135347,
    "sha256": "b1cf3aa3d19a0e9bc2a14bb1be3307ce4e9c3f4d9cbebeb3ca02d4afadb4338e",
    "text": "Use the attached file: {fileName}"
   },
@@ -81,8 +81,8 @@
    "title": "Image questionnaire: skipped",
    "label": "exact",
    "message_id": "chatgpt.imagegenInput.questionsSkipped",
-   "source_file": "webview/assets/app-primary-5fc751535eb1.js",
-   "byte_offset": 133627,
+   "source_file": "webview/assets/app-primary-15d1279f1ff0.js",
+   "byte_offset": 136377,
    "sha256": "0aecb48b055f5557b2b3bd925696c2e08cbbd470cc25c36eca6ca92c97599bde",
    "text": "Questions skipped"
   },
@@ -91,8 +91,8 @@
    "title": "Flight search adjustment",
    "label": "exact",
    "message_id": "flightSearch.submission.adjustment",
-   "source_file": "webview/assets/form-a3501a7ac9bb.js",
-   "byte_offset": 10152,
+   "source_file": "webview/assets/form-257896f0636d.js",
+   "byte_offset": 10156,
    "sha256": "304dd9653993e7dbac4e4752eadf721ce072fb1046e352aa110f065522812a65",
    "text": "Please update my flight search. Current details: {tripType, select, round_trip {Round trip} other {One way}}; from {hasOrigin, select, yes {{origin}} other {Not specified}} to {hasDestination, select, yes {{destination}} other {Not specified}}; departure {hasDeparture, select, yes {{departureDate}} other {Not specified}}; return {tripType, select, one_way {No return flight} other {{hasReturn, select, yes {{returnDate}} other {Not specified}}}}; adults {partySize}; {cabinClass, select, premium_economy {Premium economy} business {Business} first {First} other {Economy}}; {connections, plural, =-1 {Any number of stops} =0 {Nonstop only} one {At most # stop in each direction} other {At most # stops in each direction}}.\nMy changes: {changes}\nApply these changes in place of any conflicting details, and ask for anything still needed before searching."
   },
@@ -101,8 +101,8 @@
    "title": "Handoff accepted: tool result",
    "label": "assembled",
    "message_id": null,
-   "source_file": "webview/assets/app-initial-576fc7ca620e.js",
-   "byte_offset": 1757495,
+   "source_file": "webview/assets/app-initial-61c077dcc1af.js",
+   "byte_offset": 1771889,
    "sha256": "aee7f45d27687e0a56d9ca178489bf3fa02a04b3fbafc4a13e22b80454a018e5",
    "text": "User chose to hand off:\n- You can confirm that the new chat has been created but do not link to it until the user asks you to\n- You can't make any more changes to the new chat! If user wants changes, they need to go the new chat and make changes themselves.\n- If the user says they can't find the chat, link them using this markdown exactly: [here](<…>)"
   },
@@ -111,8 +111,8 @@
    "title": "Handoff declined: tool result",
    "label": "exact",
    "message_id": null,
-   "source_file": "webview/assets/app-initial-576fc7ca620e.js",
-   "byte_offset": 1757888,
+   "source_file": "webview/assets/app-initial-61c077dcc1af.js",
+   "byte_offset": 1772282,
    "sha256": "c29d1c24d0b5f05634b1da23959a495fc825ec4324c3a5a7c53da5dfd94bd6f3",
    "text": "The user chose not to hand off."
   }

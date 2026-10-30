@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 // Loopback-only Trace resolver. No uploads, arbitrary paths, or directory-listing API.
+import {largeHarEntries, captureEntryMatches} from './trace-har.mjs';
+import {readFileSync} from 'node:fs';
 import {createServer} from 'node:http';
 import {readdir, lstat, realpath, readFile, open} from 'node:fs/promises';
 import {join, resolve, relative, extname, dirname, basename} from 'node:path';
 import {homedir, tmpdir} from 'node:os';
 import {randomBytes} from 'node:crypto';
 import {fileURLToPath, pathToFileURL} from 'node:url';
+import {nativeOpenCode, nativeCursor, memoryEntry} from './trace-native.mjs';
+import {sessionId, OPENCODE_ID} from '../site/trace/paste.js';
 import {narrowByHint} from '../site/trace/loader.js';
 import {SITE, siteOrigin} from '../site/src/shared/site.mjs';
 import {sourcesReport, readSource} from './sources/index.mjs';
@@ -19,7 +23,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ORIGINS = new Set([siteOrigin(), ...Object.values(SITE.products).map(p => `https://${p.legacyHost}`)]);
 const within = (root, file) => {const rel=relative(root,file);return rel!== '..' && !rel.startsWith('../') && !rel.startsWith('/');};
 // Claude desktop agent-mode sessions keep their transcripts in their own config folders under the app's data.
-const defaultRoots = {codex:join(homedir(),'.codex','sessions'),'claude-code':join(homedir(),'.claude','projects'),
+const defaultRoots = {cursor:join(homedir(),'.cursor'),codex:join(homedir(),'.codex','sessions'),'claude-code':join(homedir(),'.claude','projects'),
  'claude-desktop':join(homedir(),'Library','Application Support','Claude','local-agent-mode-sessions')};
 
 async function fileEntry(root,path){
@@ -40,7 +44,7 @@ async function list(root) {
    const path=join(dir,item.name);
    if(item.isSymbolicLink())continue;
    if(item.isDirectory())await walk(path);
-   else if(item.isFile() && /\.(jsonl|json|txt)$/.test(item.name))entries.push(await fileEntry(root,path));
+   else if(item.isFile() && /\.(jsonl|json|txt|har)$/.test(item.name))entries.push(await fileEntry(root,path));
   }
  }
  await walk(root);return entries;
@@ -82,20 +86,76 @@ async function capturesOf(root,logs){
  return entries;
 }
 
-export function createTraceServer({roots=defaultRoots,siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){
+const dataRoot=join(process.env.XDG_DATA_HOME || join(homedir(),'.local','share'),'opencode');
+const localConfigFiles=[join(homedir(),'.harness-source-map','trace-local.json'),fileURLToPath(new URL('../private/trace-local.json',import.meta.url))];
+const localConfigs=localConfigFiles.flatMap(file=>{try{return [JSON.parse(readFileSync(file,'utf8'))];}catch{return [];}});
+const configuredPaths=key=>localConfigs.flatMap(config=>Array.isArray(config[key])?config[key].filter(p=>typeof p==='string'&&p.startsWith('/')):[]);
+const defaultDatabases=[...configuredPaths('opencodeDatabases'),process.env.OPENCODE_DB ? resolve(dataRoot,process.env.OPENCODE_DB) : join(dataRoot,'opencode.db')];
+const defaultCaptureRoots=[...configuredPaths('captureRoots'),join(homedir(),'.harness-source-map','captures'),fileURLToPath(new URL('../private/research',import.meta.url)),...(process.env.TRACE_CAPTURE_ROOTS||'').split(process.platform==='win32'?';':':').filter(Boolean)];
+
+export function createTraceServer({roots=defaultRoots,captureRoots=roots===defaultRoots?defaultCaptureRoots:[],opencodeDatabases=roots===defaultRoots?defaultDatabases:[],siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){
  const tickets=new Map();
  // The family of a session id, found the same way for the manifest and for its local sources (kept briefly,
  // so the Sources lens doesn't walk every project folder on each read).
  const found=new Map();
  async function findSession(id){
   const hit0=found.get(id);if(hit0 && hit0.at>Date.now()-10*60*1000)return hit0;
-  let hit,root;
-  for(const dir of Object.values(roots)){
+  let hit,root;const warnings=[];
+  // Recorded exports often contain richer evidence than native desktop persistence.
+  // Group by recording folder so unrelated sessions/captures cannot hitch a ride.
+  const recordings=[], captureFolders=new Map();
+  for(const dir of captureRoots){
+   const base=await realpath(dir).catch(()=>null);if(!base)continue;
+   const entries=await list(base), groups=new Map();
+   for(const entry of entries){const folder=dirname(entry.path);if(!groups.has(folder))groups.set(folder,[]);groups.get(folder).push(entry);}
+   for(const [folder,files] of groups){
+    captureFolders.set(folder,base);
+    const match=await narrowByHint(files,id);
+    if(match && ['opencode','cursor'].includes(match.session.product))recordings.push({match,root:base,folder});
+   }
+  }
+  if(recordings.length){
+   // Prefer the fullest saved session and retain every matching capture segment.
+   recordings.sort((a,b)=>b.match.session.bytes-a.match.session.bytes);
+   hit=recordings[0].match;root=recordings[0].root;
+   const unique=new Map();
+   for(const r of recordings)for(const e of r.match.session.entries){const key=e.meta?.id||r.match.session.id;if(!unique.has(key))unique.set(key,{...e,root:r.root});}
+   hit.session.entries=[...unique.values()];
+  }
+  // A persisted export is a snapshot. Prefer the live native store when it
+  // exists, keeping recorded-only descendants and all associated wire evidence.
+  let nativeEntries=[];
+  try{nativeEntries=OPENCODE_ID.test(id)?await nativeOpenCode(id,opencodeDatabases):await nativeCursor(id,roots.cursor);}
+  catch(error){if(!hit)throw error;warnings.push('The native session store could not be read; showing a saved recording.');}
+  if(nativeEntries.length){
+   const nativeHit=await narrowByHint(nativeEntries,id);
+   if(nativeHit){
+    if(hit?.session.product==='cursor' && hit.session.surface==='agent-cli'){
+     // Stream-json retains reasoning/tools absent from desktop persistence.
+     // Count user turns to avoid silently hiding a later native follow-up.
+     const saved=hit.session.entries[0];
+     const savedText=new TextDecoder().decode(await saved.source.slice(0,saved.source.size));
+     const savedTurns=savedText.split(/\r?\n/).filter(Boolean).map(line=>{try{return JSON.parse(line);}catch{return null;}}).filter(row=>row?.type==='user').length;
+     const current=JSON.parse(new TextDecoder().decode(await nativeEntries[0].source.slice(0,nativeEntries[0].source.size)));
+     const currentTurns=current.rows?.filter(row=>row.value?.role==='user').length ?? current.messages?.filter(row=>row.value?.role==='user').length ?? 0;
+     if(currentTurns>savedTurns){hit=nativeHit;root=process.cwd();warnings.push('The native Cursor session contains later user turns than its saved Agent recording. The current native transcript is shown; network captures cover only recorded traffic.');}
+     else warnings.push('Showing the saved Cursor Agent recording, which retains reasoning and tool events absent from the native transcript.');
+    }else{
+     if(hit?.session.product==='opencode'){
+      const ids=new Set(nativeHit.session.entries.map(e=>e.meta.id));
+      nativeHit.session.entries.push(...hit.session.entries.filter(e=>!ids.has(e.meta.id)));
+     }
+     hit=nativeHit;root=process.cwd();
+    }
+   }
+  }
+  for(const [product,dir] of Object.entries(roots)){
+   if(hit)break;if(product==='cursor'||OPENCODE_ID.test(id))continue;
    root=await realpath(dir).catch(()=>resolve(dir));const entries=await list(root);
    hit=await narrowByHint(entries,id);if(hit)break;
   }
   if(!hit)return null;
-  const out={session:hit.session,root,at:Date.now()};found.set(id,out);
+  const out={session:hit.session,root,recordings,captureFolders,warnings,at:Date.now()};found.set(id,out);
   while(found.size>50)found.delete(found.keys().next().value);
   return out;
  }
@@ -137,7 +197,7 @@ export function createTraceServer({roots=defaultRoots,siteRoot=null,home,recorde
     // Every local source of a session (tools/sources): the report, then one source's content on request.
     if((url.pathname==='/v1/sources'||url.pathname==='/v1/source') && req.method==='POST'){
      const body=await readBody(req);if(body===null)return reply(413,{error:'Request too large'});if(!body)return reply(400,{error:'Invalid request'});
-     const id=typeof body.id==='string'&&UUID.test(body.id)?body.id.toLowerCase():null;if(!id)return reply(400,{error:'Invalid session ID'});
+     const id=sessionId(body.id);if(!id)return reply(400,{error:'Invalid session ID'});
      const hit=await findSession(id);if(!hit)return reply(404,{error:'Session not found on this machine'});
      if(url.pathname==='/v1/sources')return reply(200,await sourcesReport(hit.session,{home}));
      if(typeof body.source!=='string'||!/^[a-z0-9.-]{1,80}$/.test(body.source))return reply(400,{error:'Invalid source'});
@@ -147,30 +207,74 @@ export function createTraceServer({roots=defaultRoots,siteRoot=null,home,recorde
     if(url.pathname==='/v1/session' && req.method==='POST'){
      const body=await readBody(req);if(body===null)return reply(413,{error:'Request too large'});if(!body)return reply(400,{error:'Invalid request'});
      let {id,captures}=body;
-     if(typeof id!=='string'||!UUID.test(id))return reply(400,{error:'Invalid session ID'});
-     id=id.toLowerCase();found.delete(id);
+     id=sessionId(id);if(!id)return reply(400,{error:'Invalid session ID'});
+     found.delete(id);
      const hit=await findSession(id);
      if(!hit)return reply(404,{error:'Session not found on this machine'});
      const {session,root}=hit;
-     if(captures===true)await fileLooseCaptures(session,roots,home,captureDirs);
+     if(captures===true && ['codex','claude-code'].includes(session.product))await fileLooseCaptures(session,roots,home,captureDirs);
+     const warnings=[...hit.warnings];
      const entries=[...session.entries,...session.metas||[],...session.toolResults||[],
       // Only a page that reads them asks for captures: an older page would hand a .har it can't read to its worker.
       ...(captures===true?await capturesOf(root,session.entries):[])];
+     if(captures===true && ['opencode','cursor'].includes(session.product)){
+      const ids=new Set(session.entries.map(e=>e.meta?.id||session.id));
+      const known=new Set(hit.recordings.map(r=>r.folder));
+      let segment=0;
+      for(const [folder,base] of hit.captureFolders){
+       const files=await names(folder), attached=new Map();
+       for(const item of files){
+        if(!item.isFile()||!/\.har$/i.test(item.name))continue;
+        const path=join(folder,item.name);
+        if(!within(base,await realpath(path)))continue;
+        const options={includeUnattributed:known.has(folder),product:session.product};
+        try{
+         let segments;
+         if((await lstat(path)).size>32*1024*1024)segments=await largeHarEntries(path,ids,options);
+         else {
+          const har=JSON.parse(await readFile(path,'utf8'));
+          if(!Array.isArray(har.log?.entries))throw new Error('Invalid HAR');
+          const originalIndices=har.log.entries.flatMap((entry,index)=>captureEntryMatches(entry,ids,options)?[index]:[]);
+          segments=originalIndices.length?[{...memoryEntry({...har,log:{...har.log,entries:originalIndices.map(i=>har.log.entries[i])}},item.name),originalIndices}]:[];
+         }
+         const targets=[];
+         for(const entry of segments){
+          const publicPath=`recording-${segment++}-${item.name}`;
+          entries.push({...entry,root:base,publicPath,kind:'capture'});
+          targets.push({publicPath,originalIndices:entry.originalIndices});
+         }
+         if(targets.length)attached.set(item.name,targets);
+        }catch{warnings.push(`Could not read a saved network capture (${item.name}); it may be incomplete.`);}
+
+       }
+       if(!attached.size)continue;
+       for(const item of files){
+        if(!item.isFile()||!/\.json$/i.test(item.name))continue;
+        const path=join(folder,item.name);if(!within(base,await realpath(path)))continue;
+        const value=await readFile(path,'utf8').then(JSON.parse).catch(()=>null);
+        if(value?.format!=='trace-cursor-agent-service-decoded'||!attached.has(value.capture))continue;
+        for(const target of attached.get(value.capture)){
+         const decoded=(value.entries||[]).filter(e=>target.originalIndices.includes(e.harIndex)).map(e=>({...e,harIndex:target.originalIndices.indexOf(e.harIndex)}));
+         if(decoded.length)entries.push({...memoryEntry({...value,capture:target.publicPath,entries:decoded},`recording-${segment++}-${item.name}`),kind:'capture'});
+        }
+       }
+      }
+     }
      // Tickets contain only this requested family. No absolute paths are sent to the page.
      const now=Date.now();for(const [key,value] of tickets)if(value.expires<now)tickets.delete(key);
      while(tickets.size>20000)tickets.delete(tickets.keys().next().value);
      const files=entries.map(entry=>{
-      const token=randomBytes(24).toString('hex');tickets.set(token,{entry,root,expires:now+24*60*60*1000});
-      return {path:relative(root,entry.path).split('\\').join('/'),size:entry.source.size,url:'/v1/file/'+token};
+      const token=randomBytes(24).toString('hex');tickets.set(token,{entry,root:entry.root||root,expires:now+24*60*60*1000});
+      return {path:entry.publicPath||(entry.memory?entry.path:relative(entry.root||root,entry.path).split('\\').join('/')),kind:entry.kind,size:entry.source.size,url:'/v1/file/'+token};
      });
-     return reply(200,{id,product:session.product,files});
+     return reply(200,{id,product:session.product,files,warnings:[...new Set(warnings)]});
     }
     if(url.pathname.startsWith('/v1/file/') && req.method==='GET'){
      const ticket=tickets.get(url.pathname.slice('/v1/file/'.length));
      if(!ticket || ticket.expires<Date.now())return reply(404,{error:'Session file expired; reopen the session'});
      const start=Number(url.searchParams.get('start')),end=Number(url.searchParams.get('end'));
      if(!url.searchParams.has('start')||!url.searchParams.has('end')||!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<0||end<start||end>ticket.entry.source.size||end-start>16*1024*1024)return reply(400,{error:'Invalid range'});
-     if(!within(ticket.root,await realpath(ticket.entry.path)))return reply(403,{error:'Outside session root'});
+     if(!ticket.entry.memory && !within(ticket.root,await realpath(ticket.entry.path)))return reply(403,{error:'Outside session root'});
      const bytes=await ticket.entry.source.slice(start,end);res.writeHead(200,{'Content-Type':'application/octet-stream','Content-Length':bytes.length});return res.end(bytes);
     }
     return reply(404,{error:'Not found'});

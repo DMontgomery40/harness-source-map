@@ -35,6 +35,23 @@ const reply = (status, body, headers = {}) => ({ status, ok: status >= 200 && st
 const config = { provider: 'TypeSafe', endpoint: 'https://api.typesafe.ai/v1/systemone', model: 'jev-1.13.0', key: 'k', version: JEV_VERSION };
 const questions = { q: { type: 'noul', instructions: 'Is it?' } };
 
+test('explicit OpenAI selection uses Decisions and isolates its cache and failures', async () => {
+  const selected = decisionConfig({ JEV_PROVIDER: 'openai', OPENAI_API_KEY: 'openai-test', TYPESAFE_API_KEY: 'unused' }, () => '');
+  let sent;
+  const result = await ask(selected, { state: { text: 'public evidence' }, questions }, { fetchImpl: async (url, options) => {
+    sent = { url, body: JSON.parse(options.body) };
+    return reply(200, { model: 'gpt-6-luna', answers: [{ name: 'q', type: 'predicate', probability: .9 }] });
+  } });
+  assert.equal(selected.provider, 'OpenAI');
+  assert.equal(sent.url, 'https://api.openai.com/v1/decisions');
+  assert.equal(sent.body.questions[0].type, 'predicate');
+  assert.equal(result.answers.q.noul, .9);
+  assert.match(selected.cacheVersion, /^openai-decisions-/);
+  let attempts = 0;
+  await assert.rejects(ask(selected, { state: {}, questions }, { fetchImpl: async () => { attempts++; return reply(401, {}); } }), JevUnavailableError);
+  assert.equal(attempts, 1);
+});
+
 test('ask sends the pinned model and returns the parsed response', async () => {
   let sent;
   const body = await ask(config, { state: { text: 'x' }, questions }, { fetchImpl: async (url, opts) => { sent = { url, ...opts }; return reply(200, { model: 'jev-1.13.0', answers: { q: { type: 'noul', noul: 0.9 } } }); } });

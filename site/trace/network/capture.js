@@ -13,6 +13,7 @@ import {
 import { collectTransit, reportTransit } from "./transit.js";
 import { chatCompletionsCall, chatReasoningText } from './chat-completions.js';
 import { productLabel } from '../products.js';
+import { instructionParts } from './instructions.js';
 
 const EAGER_ROLES = new Set(["model", "side", "flags", "bootstrap", "catalog", "telemetry"]);
 const SMALL = 65536;            // other bodies up to this size are read eagerly too (MCP requests, small lists)
@@ -539,6 +540,13 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
     ms: now() - t0,
   };
   const store = {
+    instructionEvidence() {
+      return calls.filter(c=>c.matched?.length && ['cursor','opencode'].includes(c.product)).map(c=>({
+        entry:c.entry, matched:c.matched,
+        parts:instructionParts(c.product, R.json(harvested(R, c.product==='cursor'
+          ? decodedByEntry.get(c.entry)?.request : jsonOr(bodyText(raw[c.entry],'request'),{}))))
+      })).filter(item=>item.parts.length);
+    },
     // The literal body of entry i, redacted: part "request" | "response" | "frames". { text, mode, cut }.
     body(i, part) {
       const e = raw[i];

@@ -7,6 +7,7 @@ import { expandFacts } from "../shared/facts.mjs";
 import { escapeHtml, renderSite } from "./render.mjs";
 import { headingSlug } from "./toc.mjs";
 import { loadSearchRecords, logSearchStats } from "../shared/search-index.mjs";
+import { loadReleaseTags, tagDocument } from "../shared/release-tags.mjs";
 
 // Document pages are regenerated on every build so renamed documents leave no stale pages.
 async function removeDocumentPages(outDir) {
@@ -45,8 +46,9 @@ function feedLink(f) {
   return { label: `Feeds: ${f.title}, ${rung}`, href };
 }
 
-export async function buildSite({ sourceRoot, outFile, categories }) {
+export async function buildSite({ sourceRoot, outFile, categories, fullInventory = false }) {
   const documents = [];
+  const release = await loadReleaseTags({ product: "claude-code", sourceRoot, categories, fullInventory });
   const decisionsIndex = await readFile(path.join(sourceRoot, "outputs/decisions-index.json"), "utf8").then(raw => JSON.parse(raw).items, () => []);
   const feedsById = new Map(decisionsIndex.map(i => [i.id, i.feeds ?? []]));
 
@@ -60,11 +62,12 @@ export async function buildSite({ sourceRoot, outFile, categories }) {
         if (file.filters) {
           const records = JSON.parse(await readFile(path.join(sourceRoot, file.filters.records), "utf8")).items;
           const tags = JSON.parse(await readFile(path.join(sourceRoot, file.filters.tags), "utf8"));
-          filter = { vocabulary: tags.tags, records: records.map(r => ({ group: r.group, title: r.title, tags: tags.items[r.id] ?? [], feeds: (feedsById.get(r.id) ?? []).map(feedLink) })) };
+          filter = { vocabulary: tags.tags, records: records.map(r => ({ id: r.id, group: r.group, title: r.title, tags: tags.items[r.id] ?? [], feeds: (feedsById.get(r.id) ?? []).map(feedLink) })) };
         }
         const ladders = file.ladders ? titleKnobs(JSON.parse(await readFile(path.join(sourceRoot, file.ladders), "utf8")).items, await knobTitles(sourceRoot)) : undefined;
         const searchRecords = await loadSearchRecords({ sourceRoot, file });
-        documents.push({ ...file, category: category.label, source, count, filter, ladders, searchRecords });
+        const tagged = tagDocument(file, category.label, searchRecords, filter, release);
+        documents.push({ ...file, category: category.label, source, count, filter: tagged.filter, ladders, searchRecords: tagged.records, isNew: tagged.isNew });
       } catch (error) {
         throw new Error(`Unable to read ${file.path}: ${error.message}`, {
           cause: error

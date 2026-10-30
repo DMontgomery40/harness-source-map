@@ -414,7 +414,7 @@ export function renderCodexPage(scan, { since }) {
   const lines = [
     "# Binwalk scan of the ChatGPT desktop app (this build)",
     "",
-    `Every embedded payload binwalk ${scan.binwalk} reports in the OpenAI executables of ChatGPT desktop ${scan.app.version} (build ${scan.app.build}) and its \`app.asar\`, regenerated for each build. Each payload is carved at binwalk's offset and size, hashed, decompressed when it is compressed, and identified by its structure. A change between builds (a new, removed or changed payload, or a protocol method added or removed) is reported by the watcher. The September 24, 2026 hand run of the same method is kept as an archive: [Binwalk report, September 24](binwalk-report/).`,
+    `Every embedded payload binwalk ${scan.binwalk} reports in the OpenAI executables of ChatGPT desktop ${scan.app.version} (build ${scan.app.build}) and its \`app.asar\`, regenerated for each build. Each payload is carved at binwalk's offset and size, hashed, decompressed when it is compressed, and identified by its structure. A change between builds (a new, removed or changed payload, or a protocol method added or removed) is reported by the watcher. The earlier hand run of the same method is kept as an archive: [Archived Binwalk report](binwalk-report/).`,
     "",
     "## Scanned files",
     "",
@@ -449,7 +449,7 @@ export function renderCodexPage(scan, { since }) {
     const m = scan.methods;
     lines.push("", `The experimental catalog has ${m.experimental_client.length} client methods, the standard one ${m.standard_client.length}; ${m.experimental_only.length} are experimental-only:`, "", m.experimental_only.map(x => `\`${x}\``).join(", "), "");
     if (since) {
-      lines.push(`Since the September 24 hand run (${since.then_standard} standard, ${since.then_experimental} experimental client methods): ${since.added.length ? `experimental-only methods added: ${since.added.map(x => `\`${x}\``).join(", ")}` : "no experimental-only method added"}; ${since.removed.length ? `removed: ${since.removed.map(x => `\`${x}\``).join(", ")}` : "none removed"}.`, "");
+      lines.push(`Since the archived hand run (${since.then_standard} standard, ${since.then_experimental} experimental client methods): ${since.added.length ? `experimental-only methods added: ${since.added.map(x => `\`${x}\``).join(", ")}` : "no experimental-only method added"}; ${since.removed.length ? `removed: ${since.removed.map(x => `\`${x}\``).join(", ")}` : "none removed"}.`, "");
     }
   }
   lines.push("## Reproduce", "", "Paths are inside `ChatGPT.app/Contents/Resources`.", "", "```sh",

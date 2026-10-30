@@ -43,10 +43,11 @@ export function wrapFilterable(html, filter) {
 }
 
 export function filterBar(filter, total) {
-  const chip = t => `<button type="button" class="chip${t.feature ? " chip-feature" : ""}" data-tag="${t.id}" aria-pressed="false">${escapeHtml(t.label)} <span class="chip-count">${t.count.toLocaleString("en-US")}</span></button>`;
+  const chip = t => `<button type="button" class="chip${t.feature ? " chip-feature" : ""}" data-tag="${t.id}" aria-pressed="false"${t.description ? ` title="${escapeHtml(t.description)}"` : ""}>${escapeHtml(t.label)} <span class="chip-count">${t.count.toLocaleString("en-US")}</span></button>`;
   const topics = filter.vocabulary.filter(t => t.kind === "topic");
   const status = filter.vocabulary.filter(t => t.kind !== "topic");
-  return `<div class="filter-bar" data-total="${total}">
+  const newTag = filter.vocabulary.find(t => t.id === "new");
+  return `${newTag?.description ? `<p class="release-note">${escapeHtml(newTag.description)}</p>` : ""}<div class="filter-bar" data-total="${total}">
     ${topics.length ? `<div class="filter-row"><span class="filter-label">Topics</span><div class="filter-chips">${topics.map(chip).join("")}</div></div>` : ""}
     <div class="filter-row"><span class="filter-label">Status</span><div class="filter-chips">${status.map(chip).join("")}</div></div>
     <div class="filter-status"><span class="filter-count">Showing all ${total.toLocaleString("en-US")}</span><button type="button" class="filter-clear" hidden>Clear filters</button></div>

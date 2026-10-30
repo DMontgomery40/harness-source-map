@@ -45,8 +45,8 @@
         "sha256": "db0eb178767ed4ab4cbb8138447c6d2d395be0d7bf0f6839e0af7f7cbdecc0aa"
       },
       "confirmation_policies": {
-        "utf8_bytes": 22749,
-        "sha256": "945746178531943a1779c827f388b64815a30f05b4fc307a937e3d444fbb7904"
+        "utf8_bytes": 23847,
+        "sha256": "59d3caa856c079d3cec0a63c3de972d9c8747eaab543beea15088cd2dadabdda"
       }
     },
     "gpt-6-astra": {
@@ -91,8 +91,8 @@
         "sha256": "db0eb178767ed4ab4cbb8138447c6d2d395be0d7bf0f6839e0af7f7cbdecc0aa"
       },
       "confirmation_policies": {
-        "utf8_bytes": 22749,
-        "sha256": "945746178531943a1779c827f388b64815a30f05b4fc307a937e3d444fbb7904"
+        "utf8_bytes": 23847,
+        "sha256": "59d3caa856c079d3cec0a63c3de972d9c8747eaab543beea15088cd2dadabdda"
       }
     },
     "gpt-6-sol": {
@@ -137,8 +137,8 @@
         "sha256": "db0eb178767ed4ab4cbb8138447c6d2d395be0d7bf0f6839e0af7f7cbdecc0aa"
       },
       "confirmation_policies": {
-        "utf8_bytes": 22749,
-        "sha256": "945746178531943a1779c827f388b64815a30f05b4fc307a937e3d444fbb7904"
+        "utf8_bytes": 23847,
+        "sha256": "59d3caa856c079d3cec0a63c3de972d9c8747eaab543beea15088cd2dadabdda"
       }
     },
     "gpt-6-luna": {
@@ -183,8 +183,8 @@
         "sha256": "db0eb178767ed4ab4cbb8138447c6d2d395be0d7bf0f6839e0af7f7cbdecc0aa"
       },
       "confirmation_policies": {
-        "utf8_bytes": 22749,
-        "sha256": "945746178531943a1779c827f388b64815a30f05b4fc307a937e3d444fbb7904"
+        "utf8_bytes": 23847,
+        "sha256": "59d3caa856c079d3cec0a63c3de972d9c8747eaab543beea15088cd2dadabdda"
       }
     }
   },

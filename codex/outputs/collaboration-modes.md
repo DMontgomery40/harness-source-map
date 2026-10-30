@@ -1,14 +1,14 @@
 # Plan mode and Default mode
 
-Source: openai/codex `rust-v0.160.0` (commit `a956835d0207`), matching the bundled `codex-cli 0.160.0`. Mode templates below are checked byte for byte against the shipped executable; catalog overrides come from the published authenticated model records.
+Source: openai/codex `rust-v0.162.0-alpha.2` (commit `74e804deeb12`), matching the bundled `codex-cli 0.162.0-alpha.2`. Mode templates below are checked byte for byte against the shipped executable; catalog overrides come from the published authenticated model records.
 
 Plan mode is a harness collaboration mode with its own developer instructions. It lets the agent inspect the environment, resolve requirements and produce a complete plan while prohibiting implementation edits. Default mode restores the normal task workflow. The two modes exist independently of persistent mode and the `update_plan` progress tool.
 
 ## What selects and inserts the mode
 
-The selected collaboration mode is `ModeKind::Plan` or `ModeKind::Default`. Built-in presets supply the matching bundled developer instructions; the Plan preset also selects medium reasoning effort. See [`codex-rs/models-manager/src/collaboration_mode_presets.rs`](https://github.com/openai/codex/blob/a956835d020762cb2b570053af06f643a11c0ecc/codex-rs/models-manager/src/collaboration_mode_presets.rs).
+The selected collaboration mode is `ModeKind::Plan` or `ModeKind::Default`. Built-in presets supply the matching bundled developer instructions; the Plan preset also selects medium reasoning effort. See [`codex-rs/models-manager/src/collaboration_mode_presets.rs`](https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/models-manager/src/collaboration_mode_presets.rs).
 
-When `include_collaboration_mode_instructions` is enabled (its source default is true), world-state assembly reads the effective mode and adds its instruction section. The mode's authenticated `model_messages.collaboration_modes.plan` or `.default` catalog override takes precedence. Without an override, the harness uses non-empty `settings.developer_instructions` from the selected preset or custom mode settings. A null catalog Plan field therefore does not mean Plan mode is absent. See [`codex-rs/core/src/session/world_state.rs`](https://github.com/openai/codex/blob/a956835d020762cb2b570053af06f643a11c0ecc/codex-rs/core/src/session/world_state.rs), [`codex-rs/core/src/config/mod.rs`](https://github.com/openai/codex/blob/a956835d020762cb2b570053af06f643a11c0ecc/codex-rs/core/src/config/mod.rs) and [`codex-rs/core/src/context/world_state/collaboration_mode.rs`](https://github.com/openai/codex/blob/a956835d020762cb2b570053af06f643a11c0ecc/codex-rs/core/src/context/world_state/collaboration_mode.rs).
+When `include_collaboration_mode_instructions` is enabled (its source default is true), world-state assembly reads the effective mode and adds its instruction section. The mode's authenticated `model_messages.collaboration_modes.plan` or `.default` catalog override takes precedence. Without an override, the harness uses non-empty `settings.developer_instructions` from the selected preset or custom mode settings. A null catalog Plan field therefore does not mean Plan mode is absent. See [`codex-rs/core/src/session/world_state.rs`](https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/session/world_state.rs), [`codex-rs/core/src/config/mod.rs`](https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/config/mod.rs) and [`codex-rs/core/src/context/world_state/collaboration_mode.rs`](https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/context/world_state/collaboration_mode.rs).
 
 The fragment has role `developer`, content kind `collaboration_mode.instructions`, and `<collaboration_mode>` / `</collaboration_mode>` markers. The harness compares mode, model and instruction hashes with retained world state before emitting a changed fragment. When `update_plan_enabled` is false, it strips the tool's guidance from recognized built-in instructions; custom instructions remain unchanged. The templates' own rules say user wording does not switch the active mode; a new developer mode message does.
 
@@ -16,7 +16,7 @@ The fragment has role `developer`, content kind `collaboration_mode.instructions
 
 The bundled Plan prompt allows non-mutating exploration and validation, asks the agent to ground its questions in the environment, and forbids implementing the plan or changing tracked files. It describes exploration, intent and implementation-detail phases. A finished specification is rendered inside `<proposed_plan>` tags. The `update_plan` tool is a separate progress checklist and cannot enter or leave Plan mode. The exact current prompt follows below.
 
-The `request_user_input` handler checks its configured available modes and rejects calls in unavailable modes. In Plan mode, its request sets `is_blocking` to true; a non-root agent cannot call it. This is distinct from `request_user_input_async`. See [`codex-rs/core/src/tools/handlers/request_user_input.rs`](https://github.com/openai/codex/blob/a956835d020762cb2b570053af06f643a11c0ecc/codex-rs/core/src/tools/handlers/request_user_input.rs) and [`codex-rs/core/src/tools/handlers/request_user_input_spec.rs`](https://github.com/openai/codex/blob/a956835d020762cb2b570053af06f643a11c0ecc/codex-rs/core/src/tools/handlers/request_user_input_spec.rs).
+The `request_user_input` handler checks its configured available modes and rejects calls in unavailable modes. In Plan mode, its request sets `is_blocking` to true; a non-root agent cannot call it. This is distinct from `request_user_input_async`. See [`codex-rs/core/src/tools/handlers/request_user_input.rs`](https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/tools/handlers/request_user_input.rs) and [`codex-rs/core/src/tools/handlers/request_user_input_spec.rs`](https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/core/src/tools/handlers/request_user_input_spec.rs).
 
 ## Captured catalog fields
 
@@ -33,7 +33,7 @@ These are captured fields, not an observation of mode activation in a particular
 
 ### Plan mode
 
-Source: [`codex-rs/collaboration-mode-templates/templates/plan.md`](https://github.com/openai/codex/blob/a956835d020762cb2b570053af06f643a11c0ecc/codex-rs/collaboration-mode-templates/templates/plan.md), SHA-256 `d6d46c2d460a9d91ada2167605a8dfc56efde6b2ab61e101444c736c6fd6960a`. Verified in the shipped executable.
+Source: [`codex-rs/collaboration-mode-templates/templates/plan.md`](https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/collaboration-mode-templates/templates/plan.md), SHA-256 `d6d46c2d460a9d91ada2167605a8dfc56efde6b2ab61e101444c736c6fd6960a`. Verified in the shipped executable.
 
 ```text
 # Plan Mode (Conversational)
@@ -168,7 +168,7 @@ If the user stays in Plan mode and asks for revisions after a prior `<proposed_p
 
 ### Default mode
 
-Source: [`codex-rs/collaboration-mode-templates/templates/default.md`](https://github.com/openai/codex/blob/a956835d020762cb2b570053af06f643a11c0ecc/codex-rs/collaboration-mode-templates/templates/default.md), SHA-256 `1042cc643eb0147ca1039b19287c7462ceb297502f7f310d9664ac323a12feca`. Verified in the shipped executable.
+Source: [`codex-rs/collaboration-mode-templates/templates/default.md`](https://github.com/openai/codex/blob/74e804deeb1241d5fe699b31fb319f7d46454c42/codex-rs/collaboration-mode-templates/templates/default.md), SHA-256 `1042cc643eb0147ca1039b19287c7462ceb297502f7f310d9664ac323a12feca`. Verified in the shipped executable.
 
 ```text
 # Collaboration Mode: Default

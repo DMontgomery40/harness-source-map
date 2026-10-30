@@ -1,6 +1,6 @@
 # ChatGPT finance and health prompts
 
-Source: `app.asar` of the Codex/ChatGPT desktop app 26.930.31730 (build 12947), SHA-256 `87a934de9a00a04d2e534693db87756321ca4f3413f6caa55d3a0d32a5543836`.
+Source: `app.asar` of the Codex/ChatGPT desktop app 26.1002.52244 (build 13536), SHA-256 `40efd7acdf03a24817fcd7f35684fc2173b154df06774243cb4ab227e36fa915`.
 
 Messages the app sends for ChatGPT's personal finance features (manual accounts and newly connected accounts) and the hidden context message for a selected Health record.
 
@@ -12,7 +12,7 @@ Each entry says whether its text is exact (one literal in the bundle) or assembl
 
 ### Manual account: cash
 
-Source: `webview/assets/CompilerIntrinsics-2d35227fcbc5.js`, offset 362224, SHA-256 `7cb7157a5301cd54123329cb032e188baf09d56ad47975796c707863683faa65`.
+Source: `webview/assets/CompilerIntrinsics-a07e71512781.js`, offset 369301, SHA-256 `7cb7157a5301cd54123329cb032e188baf09d56ad47975796c707863683faa65`.
 
 Exact text from the bundle.
 
@@ -24,7 +24,7 @@ Help me track a cash account manually. Ask one short question at a time for its 
 
 ### Manual account: investment
 
-Source: `webview/assets/CompilerIntrinsics-2d35227fcbc5.js`, offset 362989, SHA-256 `b42809a0fe8a3af18c79f3974c6dc63189ba47b28f6b4cbb36b34b6f979abf08`.
+Source: `webview/assets/CompilerIntrinsics-a07e71512781.js`, offset 370646, SHA-256 `b42809a0fe8a3af18c79f3974c6dc63189ba47b28f6b4cbb36b34b6f979abf08`.
 
 Exact text from the bundle.
 
@@ -36,7 +36,7 @@ Help me track an investment account manually. Ask one short question at a time f
 
 ### Manual account: real estate
 
-Source: `webview/assets/CompilerIntrinsics-2d35227fcbc5.js`, offset 363793, SHA-256 `e0156866c1361713b955796f64a150829a7a9dd14c665413adb1aa2f7953e58a`.
+Source: `webview/assets/CompilerIntrinsics-a07e71512781.js`, offset 373066, SHA-256 `e0156866c1361713b955796f64a150829a7a9dd14c665413adb1aa2f7953e58a`.
 
 Exact text from the bundle.
 
@@ -48,7 +48,7 @@ Help me track real estate manually. Ask one short question at a time for the pro
 
 ### Manual account: vehicle
 
-Source: `webview/assets/CompilerIntrinsics-2d35227fcbc5.js`, offset 364431, SHA-256 `ccfb5eb8226036a30bd7d2a1c67837d295c5e207dc4d3bb91e4d47d3e3bbcff3`.
+Source: `webview/assets/CompilerIntrinsics-a07e71512781.js`, offset 373607, SHA-256 `ccfb5eb8226036a30bd7d2a1c67837d295c5e207dc4d3bb91e4d47d3e3bbcff3`.
 
 Exact text from the bundle.
 
@@ -60,7 +60,7 @@ Help me track a vehicle manually. Ask one short question at a time for its name,
 
 ### Manual account: asset
 
-Source: `webview/assets/CompilerIntrinsics-2d35227fcbc5.js`, offset 365090, SHA-256 `152e2eb2657d3453def2f2b98822b07a9280d20a4d7d2843b0069a650e05f662`.
+Source: `webview/assets/CompilerIntrinsics-a07e71512781.js`, offset 371912, SHA-256 `152e2eb2657d3453def2f2b98822b07a9280d20a4d7d2843b0069a650e05f662`.
 
 Exact text from the bundle.
 
@@ -72,7 +72,7 @@ Help me track an asset manually. Ask one short question at a time for its name, 
 
 ### Manual account: loan
 
-Source: `webview/assets/CompilerIntrinsics-2d35227fcbc5.js`, offset 365727, SHA-256 `14c02b21c767a10bc43dafd4c6139c78244ea261e98331e84a379327c276a2cb`.
+Source: `webview/assets/CompilerIntrinsics-a07e71512781.js`, offset 371338, SHA-256 `14c02b21c767a10bc43dafd4c6139c78244ea261e98331e84a379327c276a2cb`.
 
 Exact text from the bundle.
 
@@ -84,7 +84,7 @@ Help me track a loan manually. Ask one short question at a time for its name, ty
 
 ### Manual account: debt
 
-Source: `webview/assets/CompilerIntrinsics-2d35227fcbc5.js`, offset 366415, SHA-256 `12aa6a70f14eee9841ebc559cf01b7e597877abb2333c27313a0da06f01ff3a7`.
+Source: `webview/assets/CompilerIntrinsics-a07e71512781.js`, offset 372436, SHA-256 `12aa6a70f14eee9841ebc559cf01b7e597877abb2333c27313a0da06f01ff3a7`.
 
 Exact text from the bundle.
 
@@ -96,7 +96,7 @@ Help me track a debt manually. Ask one short question at a time for its name, wh
 
 ### Manual account: insurance
 
-Source: `webview/assets/CompilerIntrinsics-2d35227fcbc5.js`, offset 367263, SHA-256 `fff9d6741b4b0d706f73c90a9e930686a707c0bcd7862876757191fe70051576`.
+Source: `webview/assets/CompilerIntrinsics-a07e71512781.js`, offset 369969, SHA-256 `fff9d6741b4b0d706f73c90a9e930686a707c0bcd7862876757191fe70051576`.
 
 Exact text from the bundle.
 
@@ -110,7 +110,7 @@ Help me track an insurance policy manually. First ask if it has an actual cash o
 
 ### Newly connected accounts
 
-Source: `webview/assets/home-beacon-ba0b247f8f79.js`, offset 4174, SHA-256 `6a3fd68e58b9b5b9ccb6657e2574659cadf80fec23af48a63d7fe4ed5d39b0f8`.
+Source: `webview/assets/home-beacon-d2f696606dcb.js`, offset 4357, SHA-256 `6a3fd68e58b9b5b9ccb6657e2574659cadf80fec23af48a63d7fe4ed5d39b0f8`.
 
 Exact text from the bundle. Message id `personalFinance.homeBeacon.onboardingPrompt`. The same text ships at 2 places in the bundle; the first is shown.
 
@@ -124,7 +124,7 @@ What can I do with my newly connected accounts once they finish syncing?
 
 ### Selected Health record
 
-Source: `webview/assets/page-6b9b65f8b5e1.js`, offset 21691, SHA-256 `66363e44c91093868d6bde0d5761dfdbaf5c9b75b9d709f682cb832955843179`.
+Source: `webview/assets/page-5230a99948b8.js`, offset 21834, SHA-256 `66363e44c91093868d6bde0d5761dfdbaf5c9b75b9d709f682cb832955843179`.
 
 Assembled from literal pieces in the bundle, joined as the app joins them; `<…>` marks a value filled in at run time. Sent as a hidden tool-role message (author `olympic.context`); <…> is the Health-generated link as JSON.
 

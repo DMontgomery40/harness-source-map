@@ -10,6 +10,7 @@ import { renderLanding } from "./src/shared/landing.mjs";
 import { SEARCH_CLIENT_FILES } from "./src/shared/search-ui.mjs";
 import { writeSearchText } from "./src/shared/search-index.mjs";
 import { pruneEmptyPages } from "./src/shared/record-sections.mjs";
+import { updateReleaseTags } from "./src/shared/release-tags.mjs";
 import { renderRootIndex, writeProductDocs } from "./src/shared/llms.mjs";
 import { renderTraceGuide } from "./src/shared/trace-guide.mjs";
 import { buildSite as buildClaudeCode } from "./src/claude-code/build-site.mjs";
@@ -38,11 +39,14 @@ await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 
 // A page cut from part of a records file is built only when it has records (record-sections.mjs).
-for (const product of PRODUCTS) product.categories = await pruneEmptyPages(product.categories, path.join(repoRoot, product.id));
+for (const product of PRODUCTS) {
+  product.categories = await pruneEmptyPages(product.categories, path.join(repoRoot, product.id));
+  if (["claude-code", "codex"].includes(product.id)) await updateReleaseTags({ product: product.id, sourceRoot: path.join(repoRoot, product.id), categories: product.categories });
+}
 
 for (const product of PRODUCTS) {
   const section = SITE.products[product.id].path;
-  const context = await product.build({ sourceRoot: path.join(repoRoot, product.id), outFile: path.join(dist, section, "index.html"), categories: product.categories });
+  const context = await product.build({ sourceRoot: path.join(repoRoot, product.id), outFile: path.join(dist, section, "index.html"), categories: product.categories, fullInventory: true });
   await writeProductDocs({ outDir: path.join(dist, section), product: product.id, categories: product.categories, documents: context.documents });
   for (const file of product.assets) await copyFile(path.join(siteRoot, "assets", product.id, file), path.join(dist, section, file));
   if (["opencode", "cursor"].includes(product.id)) buildFullCatalog({ sourceRoot: path.join(repoRoot, product.id), outDir: path.join(dist, section), context });
