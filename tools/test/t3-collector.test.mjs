@@ -249,6 +249,10 @@ test('launched threads join their launcher\'s family by the launch call\'s own r
   for (const {p, h} of launches) {
    assert.ok(['t3_thread_launch', 'create_threads'].includes(h.join.tool), 'only a launch tool joins');
    assert.ok(h.join.callId && h.join.paths.length && h.join.paths.every(x => x.startsWith('agent-sessions/')), 'each join names its call and transcript');
+   // [P1] Claude Code writes each call again in untimed api-request-blob lines, and that copy won: no launch had a
+   // time, so its line could not leave its caller at the call
+   if (/^agent-sessions\/claude-code\//.test(h.join.path)) assert.ok(h.join.at && h.join.calledAt, 'a Claude Code launch keeps the time of its call');
+   assert.equal(h.join.path, h.join.paths[0], 'the hop names the earliest call that returned the thread');
    assert.equal(h.from.environmentId, p.environmentId);
    assert.ok(p.threadIds.has(h.from.threadId), 'the launcher is a thread of the part');
    assert.equal(h.join.held, holds(h.to.threadId, h.to.environmentId));

@@ -248,7 +248,7 @@ export function latestBuild(familyDir) {
 // changed after their part was taken (the hourly harvest keeps the rest). A build is reused, across resolver restarts
 // too, while its inputs are the same: the same parts (by collection time), the same assembly version, and every
 // machine's span archive either unchanged or already past the family's window when the build was made.
-export const ASSEMBLY_VERSION = 2;
+export const ASSEMBLY_VERSION = 3;
 const OPEN_REUSE_MS = 5 * 60000;
 export async function assembleFamily({threadId, environmentId = null, repo = mainRepo(), t3Home = join(homedir(), '.t3'), partsKey = null, onProgress = () => {}, maxAgeMs = null, refreshLocal = true} = {}) {
  const incoming = incomingDir(repo);

@@ -91,7 +91,8 @@ export function familyThreads(bundle, machines) {
     // A launch (t3_thread_launch, create_threads): T3 records no parent on either side; the join is the launching
     // agent's own call result in its transcript (tools/t3/launches.mjs). A lineage break: joined by our evidence.
     if (h.kind === "launch") {
-      t.launch = { from: hop.from, fromEnv: hop.fromEnv, tool: h.join?.tool || null, at: ms(h.join?.at || h.startedAt), path: h.join?.paths?.[0] || h.join?.path || null,
+      t.launch = { from: hop.from, fromEnv: hop.fromEnv, tool: h.join?.tool || null, callId: h.join?.callId || null, at: ms(h.join?.at || h.startedAt), calledAt: ms(h.join?.calledAt),
+        path: h.join?.path || h.join?.paths?.[0] || null, paths: h.join?.paths || (h.join?.path ? [h.join.path] : []),
         linkEnvironmentId: h.join?.linkEnvironmentId || null, requestedEnvironmentId: h.join?.requestedEnvironmentId || null, linkOrigin: t.linkOrigin };
       if (!t.parent) { t.parent = hop.from; t.parentEnv = hop.fromEnv; t.origin = "launch"; }
       t.hop ||= hop;
@@ -169,6 +170,36 @@ export function transcriptParents(sessions, threads) {
           if (want && !(r.action.target || "").includes(want)) continue;
           out.set(t.id, { agentId: a.id, callT: r.t });
         }
+      }
+    }
+  }
+  return out;
+}
+
+// Who launched each launched thread (t3_thread_launch, create_threads): the agent whose request made the launch call,
+// found by the call's id among the requests of every session of the thread that made it (a Claude Code Workflow's
+// or Agent's own transcript is a ridge in its thread's session). Where several agents hold the call (a fork replays
+// its parent's rows), the one whose transcript the collector named. Returns thread id -> { agent, request, t, how }
+// ("call": by the call id; "path": by the call id and the named transcript).
+export function launchCallers(sessions, threads, files = []) {
+  const out = new Map();
+  const want = new Map();
+  for (const t of threads.values()) if (t.launch?.callId) (want.get(t.launch.from) || want.set(t.launch.from, []).get(t.launch.from)).push(t);
+  if (!want.size) return out;
+  const hasCall = (r, id) => r.action && (r.action.callId === id || (r.action.all || []).some(x => x.callId === id));
+  const fileOf = (r, id) => { const act = r.action?.callId === id ? r.action : (r.action?.all || []).find(x => x.callId === id); return files[act?.args?.file]?.name || ""; };
+  const plain = p => String(p || "").replace(/^agent-sessions\//, "").replace(/\.gz$/, "");
+  for (const s of sessions) {
+    const list = want.get(s.thread.id);
+    if (!list) continue;
+    for (const t of list) for (const a of s.agents) {
+      const rs = a.requests || [];
+      for (let i = 0; i < rs.length; i++) {
+        if (!hasCall(rs[i], t.launch.callId)) continue;
+        const named = !!t.launch.path && fileOf(rs[i], t.launch.callId).replace(/\.gz$/, "").endsWith(plain(t.launch.path));
+        const had = out.get(t.id);
+        if (!had || (named && had.how !== "path")) out.set(t.id, { agent: a, request: i, t: rs[i].t, how: named ? "path" : "call" });
+        break;
       }
     }
   }
@@ -301,13 +332,25 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     if (child) agentOfThread.set(t.id, agentOfThread.get(child.id));
   }
 
-  // Parents: the transcript's caller where it made the delegation, else T3's recorded parent, else the root.
+  // Parents: a launched thread's caller (the agent whose own call returned its id); the transcript's caller where it
+  // made the delegation; else T3's recorded parent; else the root. A launch leaves its caller's ridge at the request
+  // that made the call. T3 records no parent for a launched thread, so it claims none (no claimed-parent break).
   const byTranscript = transcriptParents(sessions, threads);
   const rootAgent = agentOfThread.get(rootId);
+  const callers = launchCallers(sessions, threads, out.files);
   for (const s of sessions) {
     if (s.thread === root || s.continuation) continue;
     const main = s.agents.find(a => a.id === s.mainId);
     const claimed = agentOfThread.get(s.thread.parent) || null;
+    const call = callers.get(s.thread.id);
+    if (s.thread.launch) {
+      main.parentId = call?.agent.id || claimed || rootAgent;
+      main.t3.parentAgent = s.thread.origin === "launch" ? null : claimed;
+      // the line leaves the caller's ridge at the call; nothing records a result coming back to it
+      if (call) { main.spawn = { t: call.t, parentRequest: call.request, callId: s.thread.launch.callId, linkedBy: "launch-call" }; main.t3.launchCaller = call.how; }
+      main.returns = [];
+      continue;
+    }
     const seen = byTranscript.get(s.thread.id);
     main.parentId = seen?.agentId || claimed || rootAgent;
     main.t3.parentAgent = claimed;
@@ -330,7 +373,7 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     out.voids.push({
       thread: t.id, machine: nameOf(t.env), environmentId: t.env, provider: PRODUCTS[t.provider] || t.provider || null, model: t.model, ...labOf(t, ev),
       title: t.title, from, to, firstEvidence: ev?.firstActivity ?? null, lastEvidence: ev?.lastActivity ?? null, status: t.task?.status || t.hop?.status || null,
-      delivery: t.task?.delivery || null, parent: agentOfThread.get(t.parent) || rootAgent, parentThreadId: t.parent,
+      delivery: t.task?.delivery || null, parent: callers.get(t.id)?.agent.id || agentOfThread.get(t.parent) || rootAgent, parentRequest: callers.get(t.id)?.request ?? null, parentThreadId: t.parent,
       why: t.uncollected || (ev?.lines ? "no-usage" : t.native ? "unparsed" : "no-evidence"), claimedEnd, launch: t.launch || null,
       silence: ev?.lines ? silenceIn(ev, from, to, Number.isFinite(logTaken) ? logTaken : null) : null
     });
