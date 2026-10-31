@@ -402,8 +402,17 @@ async function collect(o) {
  return {out, machine, bundle, hops: fam.hops, before};
 }
 
-// Bundle-level redaction counts are the sum of the machines'.
+// Bundle-level redaction counts are the sum of the machines'. A hop whose target machine was collected but whose
+// thread is not in that part (it began after the part was taken, or is gone there) is a gap on that machine, so a
+// reader never meets an edge with silently no thread behind it.
+const HOP_GAP = 'remote hop';
 function finishBundle(bundle) {
+ for (const m of bundle.machines) {
+  if (m.status !== 'collected') continue;
+  const have = new Set(m.threadIds || []);
+  m.gaps = (m.gaps || []).filter(g => !g.startsWith(HOP_GAP));
+  for (const h of bundle.hops || []) if (h.to.environmentId === m.environmentId && !have.has(h.to.threadId)) m.gaps.push(`${HOP_GAP} to ${h.to.threadId} (started ${h.startedAt || '?'}) is not in this part: it began after the part was collected, or its thread is gone here`);
+ }
  const total = Object.fromEntries(RULES.map(r => [r, 0]));
  for (const m of bundle.machines) for (const [r, n] of Object.entries(m.redaction?.counts || {})) total[r] = (total[r] || 0) + n;
  bundle.redaction = {rules: RULES, counts: total};
@@ -533,4 +542,4 @@ async function main() {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(e => {console.error(e.message); process.exit(2);});
-export {collect, merge, args, USAGE};
+export {collect, merge, args, finishBundle, USAGE};
