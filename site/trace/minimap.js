@@ -251,7 +251,7 @@ export function renderOverview(host, trace, L, opts) {
   const askY0 = top - (full ? 26 : 12), askY1 = top - (full ? 12 : 5);
   for (const a of root.asks) {
     const x = px(L.X(a.t));
-    g.append(S("line", { x1: x, x2: x, y1: askY0, y2: askY1, stroke: STRATA[2].color, "stroke-width": 2 }));
+    g.append(S("line", { x1: x, x2: x, y1: askY0, y2: askY1, stroke: STRATA[2].color, "stroke-width": 2, "stroke-opacity": rootDim }));
   }
   // outward rail
   const railY = top + areaH + railH / 2 + (full ? 4 : 2);
@@ -275,7 +275,7 @@ export function renderOverview(host, trace, L, opts) {
         "fill-opacity": on ? (0.5 + 0.5 * Math.min(1, Math.log10(Math.max(fresh, 1)) / 7)).toFixed(2) : OUT, "data-agent": id, class: on ? "lane" : "lane fleet-out" });
       r.append(S("title", {}, `${a.name}: ${fmtTok(fresh)} fresh tokens`));
       g.append(r);
-      if (full && x1 - x0 > 7 * (a.name || "").length + 8 && laneH >= 10) g.append(S("text", { x: x0 + 4, y: lane0 + s.lane * laneH + laneH - 4, class: "bar" }, a.name));
+      if (full && x1 - x0 > 7 * (a.name || "").length + 8 && laneH >= 10) g.append(S("text", { x: x0 + 4, y: lane0 + s.lane * laneH + laneH - 4, class: "bar", ...(on ? {} : { opacity: OUT }) }, a.name));
     }
   }
   // a T3 family's voids: threads with no ridge, outlined on their lane (dark when nothing of them was collected)
