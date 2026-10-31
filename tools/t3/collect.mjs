@@ -4,7 +4,7 @@
 // Usage: node tools/t3/collect.mjs --help
 import {existsSync, readFileSync, readdirSync, statSync, rmSync, mkdirSync, writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
-import {createHash} from 'node:crypto';
+import {createHash, createHmac} from 'node:crypto';
 import {homedir, hostname, platform, arch} from 'node:os';
 import {join, resolve, dirname, relative, sep, basename} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -607,9 +607,12 @@ async function mergePool(n, data) {
  const run = tasks => new Promise((resolve, reject) => {
   const queue = [...tasks].sort((a, b) => b.size - a.size), results = [];
   let open = 0, failed = false;
-  const fail = e => {if (!failed) {failed = true; reject(e);}};
+  const fail = e => {if (!failed) {failed = true; off(); reject(e);}};
   const onError = e => fail(e);
-  const done = () => {for (const w of workers) w.off('error', onError); resolve(results);};
+  // a worker that exits mid-run (out of memory, killed) fails the run: never a merge that waits forever
+  const onExit = code => fail(new Error(`a merge worker exited (code ${code}) with files still to merge`));
+  const off = () => {for (const w of workers) {w.off('error', onError); w.off('exit', onExit);}};
+  const done = () => {off(); resolve(results);};
   const next = w => {
    if (failed) return;
    const t = queue.shift();
@@ -628,10 +631,13 @@ async function mergePool(n, data) {
    w.postMessage({id, src: t.src, rel: t.rel, mode: t.mode});
   };
   if (!queue.length) return resolve([]);
-  for (const w of workers) w.on('error', onError);
+  for (const w of workers) {w.on('error', onError); w.on('exit', onExit);}
   for (const w of workers) next(w);
  });
- return {run, close: () => Promise.all(workers.map(w => w.terminate()))};
+ // values promoted after one machine, for the next machines' files (messages are handled in order)
+ const addValues = list => {if (list.length) for (const w of workers) w.postMessage({addValues: list});};
+ return {run, addValues, close: () => Promise.all(workers.map(w => w.terminate()))};
+ // (a terminated worker's exit comes after its run is done, when no run listens)
 }
 
 // The everywhere-pass over a file a worker wrote: values promoted after it was written are removed from it too.
@@ -712,7 +718,6 @@ async function merge(o) {
    // The assembly's span union (o.fastSpans): lines are kept as text (no parse per span), keyed by span id and
    // ordered by start time read from the line; spans from --spans-from bundles are kept inside o.spanWindow, re-keyed
    // and redacted as text.
-   const credPrint = createHash('sha256').update(credValues.map(([v]) => v).sort().join('\u0000')).digest('hex');
    const SPAN_ID = /"spanId":"([^"]+)"/, START = /"startTimeUnixNano":"(\d+)"/, END = /"endTimeUnixNano":"(\d+)"/;
    const nanoKey = l => (START.exec(l)?.[1] || '').padStart(20, '0');
    const inWindow = l => {if (!o.spanWindow) return true; const e = END.exec(l)?.[1] || START.exec(l)?.[1]; if (!e) return true; const t = Number(BigInt(e) / 1000000n); return t >= o.spanWindow.sinceMs && t <= o.spanWindow.untilMs;};
@@ -725,13 +730,29 @@ async function merge(o) {
     for (const f of fromBundles) {
      const file = [join(f.dir, mdir, rel), join(f.dir, mdir, rel + '.gz')].find(x => existsSync(x));
      if (!file) continue;
-     // A --spans-from bundle does not change: its spans, re-keyed to this bundle and redacted with this machine's
-     // values, are kept (o.spansFromCache) for the next build with the same key and values.
+     // A --spans-from bundle does not change: its spans, re-keyed to this bundle and redacted, are kept
+     // (o.spansFromCache) for the next build with the same key, beside keyed hashes of the values they were redacted
+     // with (never the values). T3's own secret values rotate, so a later build may know values the cache was not
+     // redacted with: each is looked for in the cached text, and only if one is there are its lines redacted again.
      const st = statSync(file);
-     const cacheFile = o.spansFromCache && join(o.spansFromCache, `${createHash('sha256').update([file, st.size, st.mtimeMs, aliasKeyId(key), credPrint, COLLECTOR_VERSION].join('\u0000')).digest('hex').slice(0, 24)}.ndjson.gz`);
-     const cached = cacheFile && existsSync(cacheFile);
+     const cacheFile = o.spansFromCache && join(o.spansFromCache, `${createHash('sha256').update([file, st.size, st.mtimeMs, aliasKeyId(key), COLLECTOR_VERSION, 'values-file'].join('\u0000')).digest('hex').slice(0, 24)}.ndjson.gz`);
+     const valuesFile = cacheFile && cacheFile.replace(/\.ndjson\.gz$/, '.values.json');
+     const markOf = (v, rule) => createHmac('sha256', key).update(`${rule}\u0000${v}`).digest('hex').slice(0, 32);
+     const marks = () => [...redactor.values].map(([v, rule]) => markOf(v, rule));
+     let known = null;
+     if (cacheFile && existsSync(cacheFile)) try {known = new Set(JSON.parse(readFileSync(valuesFile, 'utf8')));} catch {}
+     const cached = !!known;
+     let source = cached ? fileBuffer(cacheFile) : fileBuffer(file);
+     if (cached) {
+      const unseen = [...redactor.values].filter(([v, rule]) => !known.has(markOf(v, rule)));
+      if (unseen.some(([v]) => source.indexOf(v) !== -1)) {
+       source = linesBuffer([...bufferLines(source)].map(l => redactor.exactOnly(l)));
+       try {writeFileSync(cacheFile, gzip(source, 1), {mode: 0o600});} catch {}
+      }
+      if (unseen.length) try {writeFileSync(valuesFile, JSON.stringify(marks()), {mode: 0o600});} catch {}
+     }
      const fresh = [];
-     for (const l of bufferLines(fileBuffer(cached ? cacheFile : file))) {
+     for (const l of bufferLines(source)) {
       const id = l && SPAN_ID.exec(l)?.[1];
       if (!id) continue;
       const line = cached ? l : redactor.string(redactor.rekey(l, f.key));
@@ -739,12 +760,18 @@ async function merge(o) {
       if (byId.has(id) || !inWindow(line)) continue;
       byId.set(id, line);
      }
-     if (cacheFile && !cached && fresh.length) {try {mkdirSync(o.spansFromCache, {recursive: true, mode: 0o700}); writeFileSync(cacheFile, gzip(linesBuffer(fresh), 1), {mode: 0o600});} catch {}}
+     if (cacheFile && !cached && fresh.length) {try {mkdirSync(o.spansFromCache, {recursive: true, mode: 0o700}); writeFileSync(cacheFile, gzip(linesBuffer(fresh), 1), {mode: 0o600}); writeFileSync(valuesFile, JSON.stringify(marks()), {mode: 0o600});} catch {}}
     }
     fromCounts[rel] = {part: fromPart, prior: fromPrior, spansFrom: byId.size - fromPart - fromPrior};
     const all = [...byId.values()].map(l => [nanoKey(l), l]).sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).map(x => x[1]);
     m.counts = {...m.counts, [rel === 'spans.ndjson' ? 'spans' : 'desktopSpans']: all.length};
-    writer.lines(`${mdir}/${rel}`, all);
+    // With workers, the union (already redacted) is handed to one as a file: its guard scan and gzip run there,
+    // beside the machine's other files. The file is in the build's own folder, outside the bundle.
+    if (pool) {
+     const tmpFile = join(dirname(out), `.spans-${m.environmentId}-${rel}`);
+     writeFileSync(tmpFile, linesBuffer(all), {mode: 0o600});
+     tasks.push({src: tmpFile, rel: `${mdir}/${rel}`, mode: 'none', size: statSync(tmpFile).size, tmp: true});
+    } else writer.lines(`${mdir}/${rel}`, all);
    };
    // A live part taken before coverage was based on span ends: its window is cut again from the part's own spans
    // (the earliest end among them is where its log's retention began).
@@ -770,14 +797,18 @@ async function merge(o) {
    // The workers' files: their redaction counts, the values their shapes revealed (promoted below, with the
    // spans'), and the files the guard would not write.
    const pooled = tasks.length ? await pool.run(tasks) : [];
+   for (const t of tasks) if (t.tmp) rmSync(t.src, {force: true});
    for (const r of pooled) {
     for (const [k, n] of Object.entries(r.counts)) redactor.counts[k] = (redactor.counts[k] || 0) + n;
     for (const [v, rule] of r.found) if (!redactor.values.has(v)) redactor.found.set(v, rule);
     gaps.push(...r.gaps);
    }
+   const known = pool ? new Set(redactor.values.keys()) : null;
    const {promoted} = writer.flush();
-   // a value promoted now is removed from the workers' files too (the everywhere-pass, as PartWriter does)
+   // a value promoted now is removed from the workers' files too (the everywhere-pass, as PartWriter does), and
+   // the workers know it for the next machines
    if (promoted) for (const r of pooled) if (r.written) rewriteExact(r.written, redactor, o.gzipLevel || 6);
+   if (promoted && pool) pool.addValues([...redactor.values].filter(([v]) => !known.has(v)));
    const verify = o.verifyParts === false ? {files: 0, bytes: 0, hits: {}, deferred: 'the whole bundle is verified after the merge'} : scanBundle(out, {values: credValues, only: [mdir]});
    const own = (m.parts || priorParts(m, 'part')).map(p => p.source !== 'live' || p.basis === 'span-end' || partMinEnd === null ? p
     : {...p, window: {since: iso(Math.max(Date.parse(p.window.since), partMinEnd)), until: p.window.until}, basis: 'span-end', recomputed: 'from the part spans at merge'});

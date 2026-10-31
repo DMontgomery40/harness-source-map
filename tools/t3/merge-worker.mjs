@@ -5,14 +5,14 @@
 // merge removes them from every file of the machine (PartWriter's everywhere-pass), as on one thread.
 //
 // workerData: {out, familyKey (hex), partsKey (hex), values: [[value, rule]], credValues: [[value, kind]], gzip, level}
-// Task: {id, src, rel, mode: 'own' | 'same' | 'full'}. Reply: {id, written | null, counts, found: [[value, rule]], gaps}.
+// Task: {id, src, rel, mode: 'own' | 'same' | 'full' | 'none'}. Reply: {id, written | null, counts, found: [[value, rule]], gaps}.
 import {parentPort, workerData} from 'node:worker_threads';
 import {writeFileSync, rmSync, chmodSync} from 'node:fs';
 import {join, dirname} from 'node:path';
 import {FamilyRedactor} from './redact.mjs';
 import {scanner} from './verify.mjs';
 import {ExactSet} from './exact.mjs';
-import {fileBuffer, bufferLines, lineChunks, gzip, linesBuffer, GZIP_OVER} from './gz.mjs';
+import {fileBuffer, bufferLines, bufferChunks, lineChunks, gzip, linesBuffer, GZIP_OVER} from './gz.mjs';
 import {ensureDir} from './bundle.mjs';
 
 const w = workerData;
@@ -25,14 +25,24 @@ const reline = {
  own: l => redactor.fromParts(l),
  same: l => redactor.exactOnly(redactor.fromParts(l)),
  full: l => redactor.string(redactor.fromParts(l)),
+ none: l => l, // already redacted here (the merge's span union): only the guard and the write
 };
 
 parentPort.on('message', task => {
+ // values the merge promoted after an earlier machine (as one thread's redactor would have them by now)
+ if (task.addValues) {for (const [v, rule] of task.addValues) redactor.addValue(v, rule); return;}
  try {
   for (const k of Object.keys(redactor.counts)) redactor.counts[k] = 0;
   redactor.found.clear();
   const gaps = [];
-  let lines = [...bufferLines(fileBuffer(task.src))].map(reline[task.mode]);
+  const buf = fileBuffer(task.src);
+  // already redacted (the span union, hundreds of megabytes): scanned in chunks and written as it is, unless the
+  // guard finds something; then it takes the line path below like any file
+  if (task.mode === 'none' && ![...bufferChunks(buf)].some(chunk => Object.keys(scan(chunk)).length)) {
+   parentPort.postMessage({id: task.id, written: writeBuffer(task.rel, buf), counts: {...redactor.counts}, found: [], gaps});
+   return;
+  }
+  let lines = [...bufferLines(buf)].map(reline[task.mode]);
   let written = null;
   if (Object.keys(hitsOf(lines)).length) {
    lines = lines.map(scrub);
@@ -47,8 +57,8 @@ parentPort.on('message', task => {
 });
 
 // PartWriter.flush for one file: the plain or .gz form, the other removed.
-function write(rel, lines) {
- const final = linesBuffer(lines);
+const write = (rel, lines) => writeBuffer(rel, linesBuffer(lines));
+function writeBuffer(rel, final) {
  const plain = join(w.out, rel);
  const compress = w.gzip && final.length >= GZIP_OVER;
  const path = compress ? plain + '.gz' : plain;
