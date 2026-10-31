@@ -48,10 +48,19 @@ rc=$?
 if [ -n "${T3_HARVEST_PUSH:-}" ]; then
   DIR="$STORE/$ENV_ID"
   MARK="$DIR/.pushed"
-  NEXT="$DIR/.pushing"
+  NEXT="$DIR/.pushing-$$"
+  # One push at a time (an installer's backfill can meet the timer's cycle): a lock folder naming its pid.
+  PL="$DIR/.pushlock"
+  if ! mkdir "$PL" 2>/dev/null; then
+    OTHER="$(cat "$PL/pid" 2>/dev/null || true)"
+    if [ -n "$OTHER" ] && kill -0 "$OTHER" 2>/dev/null; then log "push $OTHER is running; this cycle's files go with it or with the next"; exit $rc; fi
+    rm -r "$PL"; mkdir "$PL"
+  fi
+  echo $$ > "$PL/pid"
+  trap 'rm -r "$PL" 2>/dev/null; rm -f "$NEXT"' EXIT
   touch "$NEXT"
   LIST="$(mktemp)"
-  ( cd "$DIR" && if [ -f "$MARK" ]; then find . -type f -newer "$MARK" ! -name '.push*' ! -path './.lock/*'; else find . -type f ! -name '.push*' ! -path './.lock/*'; fi ) > "$LIST"
+  ( cd "$DIR" && if [ -f "$MARK" ]; then find . -type f -newer "$MARK" ! -name '.push*' ! -path './.push*' ! -path './.lock/*'; else find . -type f ! -name '.push*' ! -path './.push*' ! -path './.lock/*'; fi ) > "$LIST"
   N="$(wc -l < "$LIST" | tr -d ' ')"
   if [ "$N" -gt 0 ]; then
     REMOTE="${T3_HARVEST_REMOTE:-harness-source-map/private/sessions/t3/incoming}"
