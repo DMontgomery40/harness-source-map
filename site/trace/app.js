@@ -24,6 +24,7 @@ import { filterRows, agentRows } from "./fleet/controls.js";
 import { fleetKeys, cycle, isFiltered } from "./fleet/filter.js";
 import { breakWords } from "./fleet/breaks.js";
 import { renderLadder } from "./fleet/ladder.js";
+import { landscapeState } from "./fleet/ground.js";
 
 const params = new URLSearchParams(location.search);
 const $ = s => document.querySelector(s);
@@ -33,7 +34,9 @@ const S = {
   trace: null, layout: null, level: 0, agentId: null, agent: null, reqIdx: null, stratum: null, block: null,
   lens: "context", mode: "3d", custodyFn: null, reading: false, detailedLabels: false, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args',
   // A T3 family: the machine/lab filter, and the family an own session was opened from (its crumb back)
-  fleetFilter: null, familyReturn: null
+  fleetFilter: null, familyReturn: null,
+  // B, the fleet ground: lanes grouped by machine. Only ever switched on from the family landscape, never restored.
+  ground: false
 };
 let scene = null;
 let palette = null; // search and keyboard shortcuts (palette.js)
@@ -924,7 +927,7 @@ async function start(trace,current=()=>true) {
   viewHistory?.dispose(); viewHistory = null;
   clearCapture(); // a capture belongs to the session it was attached to
   S.sources = null; S.sourceOpen = new Map(); sourcesSeq++;
-  Object.assign(S, { level: 0, agentId: null, reqIdx: null, stratum: null, block: null, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args', fleetFilter: null, familyReturn: null });
+  Object.assign(S, { level: 0, agentId: null, reqIdx: null, stratum: null, block: null, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args', fleetFilter: null, familyReturn: null, ground: false });
   forgetPanels(); shownKey = null;
   const referenceIndex = await loadIndex();
   if(!current())return;
@@ -1043,8 +1046,10 @@ async function setMode(mode, current = () => !!S.trace) {
       // 0x0 through scene.js's ResizeObserver, and the 3D view came back blank (found in the mock).
       $("#stage").style.visibility = mode === "harness" ? "hidden" : "";
       if (!scene) {
-        scene = createScene($("#stage"), { trace: S.trace, layout: S.layout, reducedMotion, onHover: showTip, onPick: pick, onMapFocus: followMap, onViewChange: saveViewSoon });
+        scene = createScene($("#stage"), { trace: S.trace, layout: S.ground ? buildLayout(S.trace, { groupBy: "machine" }) : S.layout, reducedMotion, onHover: showTip, onPick: pick, onMapFocus: followMap, onViewChange: saveViewSoon });
         window.__trace.scene = scene;
+        if (S.fleetFilter) scene.setFilter(S.fleetFilter, { dur: 0 });
+        if (S.ground) groundRibs();
         scene.setLabelDetail(S.detailedLabels);
         if (transport.playback) scene.setPlayhead({ P: transport.playback.P, playing: false });
         scene.onUserCamera?.(() => userCamera("hands"));
@@ -1218,6 +1223,7 @@ function buildFleetFilter() {
   const nav = filterRows(S.trace, S.fleetFilter, {
     set: (f, opts) => setFleetFilter(f, opts),
     preview: f => scene?.setFilter(f ?? S.fleetFilter, { dur: 0 }),
+    ground: S.mode === "3d" ? { on: S.ground, toggle: () => setGround(!S.ground) } : null,
   });
   if (nav) $("#lenses").after(nav);
 }
@@ -1227,6 +1233,24 @@ function setFleetFilter(f, { frame = false } = {}) {
   buildFleetFilter();
   scene?.setFilter(S.fleetFilter, { frame });
   if (S.mode === "2d") renderFlat();
+}
+// B, the fleet ground: the same landscape rebuilt with its lanes grouped into one terrace per machine; the waits
+// between machines arrive as ribs once the family's spans are read.
+async function setGround(on) {
+  if (!S.trace?.family || S.mode !== "3d" || S.level !== 0 || on === S.ground) return;
+  S.ground = on;
+  scene?.dispose(); scene = null;
+  await setMode("3d");
+  buildFleetFilter();
+  if (transport?.playback) scene?.setPlayhead({ P: transport.playback.P, playing: false });
+  render(false);
+}
+async function groundRibs() {
+  const want = scene;
+  try {
+    const r = await fleetRequest({ type: "fleet-net", waits: true });
+    if (scene === want && S.ground) scene.setRibs(r.waits);
+  } catch (e) { netStatus(`The fleet ground has no waits: ${e.message || e}`, "error"); }
 }
 // The files of one family thread's own harness session, inside the bundle the family came from.
 function ownSessionFiles(agent) {
@@ -1435,6 +1459,7 @@ function saveViewSoon() {
 }
 function restoreView(view) {
   clearTimeout(viewTimer);
+  view = { ...view, state: landscapeState(view.state) }; // a saved view never brings back the fleet ground
   mapReturn = view.mapReturn || null;
   const pb = transport?.playback;
   if (pb && Number.isFinite(view.P) && view.P !== pb.P) transport.seek(view.P);
@@ -1608,6 +1633,7 @@ function onKey(e) {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   // In a T3 family at the landscape, Esc first clears the machine filter; m / ⇧M step through the machines.
   if (e.key === "Escape" && S.level === 0 && isFiltered(S.fleetFilter)) { e.preventDefault(); setFleetFilter(null); return; }
+  if (e.key === "t" && S.trace.family && S.level === 0 && S.mode === "3d") { e.preventDefault(); setGround(!S.ground); return; }
   if ((e.key === "m" || e.key === "M") && S.trace.family && S.level === 0) {
     e.preventDefault();
     setFleetFilter({ ...(S.fleetFilter || {}), machine: cycle(fleetKeys(S.trace).machines, S.fleetFilter?.machine || null, e.key === "M" ? -1 : 1) });

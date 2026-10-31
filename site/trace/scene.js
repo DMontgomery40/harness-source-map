@@ -17,6 +17,7 @@ import { shouldRefreshDetail, shouldRedrawNavigator } from "./scene-rules.js";
 import { matcher, isFiltered } from "./fleet/filter.js";
 import { findBreaks } from "./fleet/breaks.js";
 import { buildVoids } from "./fleet/voids.js";
+import { buildGround } from "./fleet/ground.js";
 
 const H = BASE_H;         // world height of the tallest context
 const STAGE_Z0 = 15;
@@ -368,6 +369,8 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   const agentTex = new THREE.DataTexture(agentData, AW, ROWS, THREE.RGBAFormat, THREE.FloatType);
   // the ridge materials of a family sink; any other session's shaders are unchanged
   const SINK_DEF = trace.family ? { FLEET_SINK: "" } : {};
+  // Other family forms (voids, breaks, fleet ground) register how they follow the filter, and what a framing fits.
+  const fleetFades = [], fleetFramePoints = [];
   agentTex.minFilter = agentTex.magFilter = THREE.NearestFilter;
   for (let i = 0; i < AW; i++) {
     agentData[(AW + i) * 4] = 1;
@@ -1093,13 +1096,17 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     const r0 = rootInfo.segments[0];
     if (r0) label(L.root.kind === "root" ? "main thread" : L.root.name, "row", new THREE.Vector3(rootInfo.xs[r0.i0] * W, crest(L.root, r0.i0) + 4, -1), [0.5, 1], g);
     const nSub = agents.filter(a => a.kind === "subagent").length;
-    // A quiet label along the front edge of the subagent field.
-    if (L.lanes) {
+    // A quiet label along the front edge of the subagent field (the fleet ground names its terraces instead).
+    if (L.lanes && !L.terraces?.length) {
       // a T3 family's remote delegates are threads, not subagents
       label(`${trace.family ? "threads & subagents" : "subagents"} (${nSub})`, "row quiet", new THREE.Vector3(W * 0.5, 0, fieldFront), [0.5, 1], g);
     }
   }
   buildL0Labels();
+  // A T3 family's fleet ground (fleet/ground.js): built only for a layout grouped by machine.
+  const fleetGround = L.terraces?.length ? buildGround({ L, W, laneZ, subDepth: SUB_DEPTH, rootBack, shared, haze: HAZE, cut: m => cutByX(m),
+    coverage: Object.fromEntries((trace.fleet?.machines || []).map(m => [m.label, m.parts || []])), label: (t, cls, pos, c) => label(t, cls, pos, c, labelGroups.l0) }) : null;
+  if (fleetGround) { world.add(fleetGround.group); fleetFades.push(match => fleetGround.fade(match)); }
 
   // ---- L1: core samples of the focused agent ----
   const cap = Math.max(1, ...agents.map(a => a.requests.length));
@@ -1304,8 +1311,6 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     cliffLines.visible = level === 0 && fleetMatch(L.root);
     for (const f of fleetFades) f(level === 0 ? fleetMatch : () => false, level);
   }
-  // Other family forms (voids, breaks, fleet ground) register how they follow the filter and the level.
-  const fleetFades = [], fleetFramePoints = [];
   fleetFades.push(match => voids.fade(match));
   fleetFramePoints.push(match => voids.points(match));
   // The sink animates each ridge's row-2 value toward its target (instant with reduced motion).
@@ -1440,12 +1445,13 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     const pts = [...terrainPoints];
     for (const x of [-6, W + 3]) pts.push(new THREE.Vector3(x, 0, SIDE_Z + 8));
     pts.push(new THREE.Vector3(RX, terrainBounds.max.y + 3, 0));
+    if (fleetGround) pts.push(...fleetGround.points());
     // Portrait means the free area left beside the panel, not the whole canvas.
     const w = host.clientWidth - insets.left - insets.right, h = host.clientHeight - insets.top - insets.bottom;
     const portrait = w < h;
     const box = new THREE.Box3().setFromPoints(pts);
     // room for the ruler's tick labels and the row label on the left, flags and cliff labels on top
-    const pad = { l: 60, r: 8, t: 26, b: 22 };
+    const pad = fleetGround ? { l: 110, r: 8, t: 26, b: 60 } : { l: 60, r: 8, t: 26, b: 22 };
     // A single massif is seen nearly side-on, so its stepped profile reads the way the 2D chart does.
     const [az, el] = rule.compact ? (portrait ? [VIEW.cpaz, VIEW.cpel] : [VIEW.caz, VIEW.cel]) : (portrait ? [VIEW.paz, VIEW.pel] : [VIEW.az, VIEW.el]);
     const f = fit(null, dirFrom(az, el), box.getCenter(new THREE.Vector3()), pts, pad);
@@ -2171,6 +2177,9 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
       }
     },
     getFilter() { return fleetFilter; },
+    // fleet ground only: the family's forwarded waits as ribs between the machines' kerbs
+    setRibs(waits) { if (fleetGround) { fleetGround.setRibs(waits); dirty = 3; } },
+    hasGround: !!fleetGround,
     setInsets(v, preserveView = false) {
       const changed = JSON.stringify(v) !== JSON.stringify(insets);
       insets = v;

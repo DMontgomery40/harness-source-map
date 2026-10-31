@@ -6,6 +6,10 @@ import { parsePaste, parseT3Link, t3ThreadId } from "../paste.js";
 import { fleetKeys, matcher, cycle, isFiltered } from "../fleet/filter.js";
 import { findBreaks } from "../fleet/breaks.js";
 import { logSlug } from "../fleet/family.js";
+import { landscapeState } from "../fleet/ground.js";
+import { readFileSync } from "node:fs";
+
+const APP = readFileSync(new URL("../app.js", import.meta.url), "utf8");
 
 // T3's own link shape (packages/shared/src/threadLinks.ts), with the ids its tests use.
 const ENV = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee", THREAD = "11111111-1111-4111-8111-111111111111";
@@ -53,4 +57,20 @@ test("the machine key cycles through every machine and back to all", () => {
   assert.equal(cycle(list, null, -1), "m3");
   assert.equal(cycle(list, "m1", -1), null);
   assert.equal(cycle([], null, 1), null);
+});
+
+test("the family landscape opens in 3D, and the fleet ground is never on at open, from a URL or from history", () => {
+  // start() chooses the mode from WebGL and reduced motion alone, the same for a family as for any session
+  assert.match(APP, /S\.mode = !reducedMotion && S\.webgl \? "3d" : "2d";/);
+  // every load starts on the landscape (A): start() resets the ground
+  assert.match(APP, /fleetFilter: null, familyReturn: null, ground: false \}\);/);
+  // no URL parameter turns it on
+  assert.doesNotMatch(APP, /params\.(?:has|get)\(["'](?:ground|fleet)/);
+  // no history entry or saved view carries it: it is not a view key, and a restored state is stripped of it
+  const keys = /const VIEW_KEYS = \[([^\]]*)\]/.exec(APP)[1];
+  assert.doesNotMatch(keys, /ground/);
+  assert.match(APP, /view = \{ \.\.\.view, state: landscapeState\(view\.state\) \}/);
+  assert.deepEqual(landscapeState({ mode: "3d", level: 0, ground: true }), { mode: "3d", level: 0 });
+  const plain = { mode: "3d" };
+  assert.equal(landscapeState(plain), plain);
 });

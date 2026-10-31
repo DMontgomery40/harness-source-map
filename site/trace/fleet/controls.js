@@ -26,6 +26,9 @@ export function filterRows(trace, current, act) {
   }));
   if (machines.length > 1) nav.append(row("machine", machines, "All machines"));
   if (labs.length > 1) nav.append(row("lab", labs, "All labs"));
+  // B: the same landscape grouped into one terrace per machine, with the waits between them (key t)
+  if (act.ground && machines.length > 1) nav.append(el("div", { class: "ff-row" }, el("button", { type: "button", "aria-pressed": String(act.ground.on), text: "Group by machine",
+    title: "Fleet ground: one terrace per machine, the waits between them as light (t)", onclick: act.ground.toggle })));
   return nav;
 }
 

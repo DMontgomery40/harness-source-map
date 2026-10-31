@@ -2,12 +2,15 @@
 // 2D SVG overview used when motion is reduced or WebGL is unavailable.
 // The 3D corner navigator shares the actual scene meshes (map-overview.js).
 import { STRATA, STATUS, MODEL_COLORS, modelFamily, freshTokens, fmtTok, fmtClock, fmtDur, fmtTick, spansDays, blockTokens, unloggedShrinks, el } from "./panels.js";
+import { fleetKeys } from "./fleet/filter.js";
 
 const GAP_MS = 20 * 60e3;   // idle stretches longer than this are compressed
 const BURST_MS = 10 * 60e3; // a subagent pause longer than this starts a new burst
 
 // ---------- layout ----------
-export function buildLayout(trace) {
+// groupBy "machine" (a T3 family's fleet ground, fleet/ground.js): the lanes are grouped into one band per machine,
+// the root's machine first, one empty lane between machines; L.terraces lists each band. x is the same either way.
+export function buildLayout(trace, { groupBy = null } = {}) {
   const times = [];
   for (const a of trace.agents) {
     for (const r of a.requests) times.push(r.t);
@@ -71,15 +74,32 @@ export function buildLayout(trace) {
   const laneEnd = [];
   const pad = 0.006;
   const lastLane = new Map();
-  for (const s of packed) {
-    const key = s.void ? `void:${s.void.thread}` : s.agent.id;
-    const want = lastLane.get(key);
-    let lane = want != null && laneEnd[want] + pad < s.x0 ? want : laneEnd.findIndex(e => e + pad < s.x0);
-    if (lane < 0) { lane = laneEnd.length; laneEnd.push(0); }
-    laneEnd[lane] = Math.max(s.x1, s.x0 + 0.002);
-    s.lane = lane;
-    lastLane.set(key, lane);
-  }
+  const pack = (list, base) => {
+    const ends = [];
+    for (const s of list) {
+      const key = s.void ? `void:${s.void.thread}` : s.agent.id;
+      const want = lastLane.get(key);
+      let lane = want != null && ends[want] + pad < s.x0 ? want : ends.findIndex(e => e + pad < s.x0);
+      if (lane < 0) { lane = ends.length; ends.push(0); }
+      ends[lane] = Math.max(s.x1, s.x0 + 0.002);
+      s.lane = base + lane;
+      lastLane.set(key, lane);
+    }
+    return ends;
+  };
+  const terraces = [];
+  if (groupBy === "machine" && trace.family) {
+    let base = 0;
+    const machineOf = s => (s.void ? s.void.machine : s.agent.machine);
+    for (const machine of fleetKeys(trace).machines) {
+      const n = Math.max(1, pack(packed.filter(s => machineOf(s) === machine), base).length);
+      terraces.push({ machine, lane0: base, lane1: base + n - 1 });
+      for (let k = 0; k < n; k++) laneEnd.push(1);
+      base += n + 1;
+      laneEnd.push(1); // the valley between two machines
+    }
+    if (laneEnd.length) laneEnd.pop();
+  } else laneEnd.push(...pack(packed, 0));
 
   // Spawn and return links between an agent's bursts and its parent's requests.
   const links = [];
@@ -135,7 +155,7 @@ export function buildLayout(trace) {
   const hours = [];
   const start = new Date(t0); start.setMinutes(step < 3600e3 ? Math.floor(start.getMinutes() / (step / 60e3)) * (step / 60e3) : 0, 0, 0);
   for (let t = start.getTime() + step; t < t1; t += step) if (!gaps.some(g => t > g.a && t < g.b)) hours.push(t);
-  return { t0, t1, X, gaps, info, root, lanes: laneEnd.length, links, yMax, hours, byId, voids };
+  return { t0, t1, X, gaps, info, root, lanes: laneEnd.length, links, yMax, hours, byId, voids, terraces };
 }
 
 // ---------- SVG overview ----------

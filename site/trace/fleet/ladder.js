@@ -8,7 +8,7 @@ import { offsetAt } from "./net.js";
 const MAX_ROWS = 240, MAX_DEPTH = 7;
 
 // net: fleet/net.js buildNet; spans: env -> fleet/spans.js index; call: one of net.calls.
-export function buildLadder(net, spans, call) {
+export function buildLadder(net, spans, call, label = net.label) {
   const cix = spans.get(call.env);
   const chain = [];
   for (let p = call.i, k = 0; p >= 0 && k < 40; p = cix.parent[p], k++) {
@@ -35,7 +35,7 @@ export function buildLadder(net, spans, call) {
     walk(join.i, caller.length, call.t0);
   }
   return {
-    from: net.label(call.env), to: net.label(call.to), port: call.port, path: call.path, method: call.method, status: call.status, wait: call.wait,
+    from: label(call.env), to: label(call.to), port: call.port, path: call.path, method: call.method, status: call.status, wait: call.wait,
     caller, receiver,
     route: {
       port: call.port, host: join?.host || null, ua: join?.ua || null,

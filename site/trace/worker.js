@@ -252,7 +252,9 @@ self.onmessage = async (e) => {
     try {
       let last = 0;
       const { net } = await netOf((n, machine) => { const now = Date.now(); if (now - last > 120) { last = now; self.postMessage({ type: "fleet-net-progress", id: m.id, lines: n, machine }); } });
-      const label = net.label;
+      // machines by the names the family trace gives them (the terraces and the filter use the same)
+      const names = new Map((family.trace.fleet?.machines || []).map(x => [x.id, x.label]));
+      const label = env => names.get(env) || net.label(env);
       const out = { type: "fleet-net", id: m.id, rate: Object.fromEntries(Object.entries(net.rate).map(([k, v]) => [k.split(">").map(label).join(" → "), v])) };
       if (m.thread) {
         const t = family.trace.fleet.threads.find(x => x.id === m.thread);
@@ -273,7 +275,8 @@ self.onmessage = async (e) => {
       const { net, spans } = await netOf(() => {});
       const call = net.calls.find(c => callKey(c) === m.call);
       if (!call) throw new Error("that call is not in the family's spans");
-      self.postMessage({ type: "fleet-ladder", id: m.id, ladder: buildLadder(net, spans, call) });
+      const names = new Map((family.trace.fleet?.machines || []).map(x => [x.id, x.label]));
+      self.postMessage({ type: "fleet-ladder", id: m.id, ladder: buildLadder(net, spans, call, env => names.get(env) || net.label(env)) });
     } catch (err) {
       self.postMessage({ type: "fleet-ladder", id: m.id, error: String((err && err.message) || err) });
     }
