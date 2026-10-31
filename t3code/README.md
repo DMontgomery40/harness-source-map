@@ -15,7 +15,7 @@ node --test t3code/extract/test/*.test.mjs
 
 Extraction is offline and deterministic. It verifies HEAD, the release tag, pristine tracked files and every included/excluded Git blob. `--source CHECKOUT` and `--out DIRECTORY` select alternate paths. Only the pinned public checkout is accepted. No sessions, private files, runtime environment values or installed agent credentials are extraction inputs.
 
-The complete source inventory derives a workspace closure from the server, desktop and web packages. It includes first-party dependencies and development dependencies used by the runtime bundler, except test-only packages. Every excluded package-tree file has a reason. Source text assets are scanned completely. TypeScript/TSX lexical failures retain complete contiguous file spans; undecodable literals retain their raw source. This is occurrence discovery, not proof of runtime delivery.
+The complete source inventory derives a workspace closure from the server, desktop and web packages. It includes first-party dependencies and development dependencies used by the runtime bundler, except test-only packages. Test support, testkits and fixture trees are explicitly excluded. Every excluded package-tree file has a reason. Source text assets are scanned completely. TypeScript/TSX lexical failures retain complete contiguous file spans; undecodable literals retain their raw source. This is occurrence discovery, not proof of runtime delivery.
 
 ## Published libraries
 
@@ -35,11 +35,11 @@ JEV_BROAD_EXPORT=1 node t3code/extract/refresh.mjs --broad
 
 The shared Jev provider implements the authorized TypeSafe then OpenRouter chain. Requests contain at most 16 occurrences and 96,000 bytes; complete texts and exact outbound bodies are privacy-scanned. Source identity, provider/model identity and complete request content isolate caches. Unanswered work exits 75 without publishing; `JEV_PARTIAL_EXPORT=1` explicitly permits a labeled partial export. Coverage publishes every classified positive once, merging identical text occurrences and retaining their provenance; unanswered, oversized and privacy-withheld work remains unresolved. Local preparation is not a claim of completed classification. Credentials are never included in ledgers or public records.
 
-The watcher chooses the newest stable/nightly upstream tag, resolves its commit and retains that exact pending release across outages. A release whose identity differs from the reviewed pin stops for extractor review; it never relabels old records as new evidence. Existing product targets retain their schedule and behavior.
+The watcher chooses the newest stable/nightly upstream tag, resolves its commit and retains that exact pending release across outages. After checking both the tag and HEAD, the watcher updates `extract/release.json` and regenerates against that exact checkout. Missing or changed structural anchors stop for extractor review; old records are never relabeled as new evidence. Existing product targets retain their schedule and behavior.
 
 ## Site integration
 
-The integration owner registers `buildSite` and `categories` from `site/src/t3code/` in `site/build.mjs`, using product/site id `t3code`, with no static assets. This central registry is outside slice S1. Until registration, run the existing site build followed by:
+The integration owner registers `buildSite` and `categories` from `site/src/t3code/` in `site/build.mjs`, using product/site id `t3code`, with no static assets. This central registry is outside slice S1. The lead also adds `t3code`/`t3-code` to the product aliases in `site/src/shared/search/query.js` and includes `t3code/extract/test/*.test.mjs` in the root `test:extract` command; both files are outside S1. Until registration, run the existing site build followed by:
 
 ```sh
 node site/src/t3code/build.mjs

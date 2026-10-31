@@ -1236,17 +1236,9 @@ Package: `t3`. 45745 bytes. SHA-256 `75b4684fece4966b9ffdcb075fbc461ec4c3c92873b
 
 Package: `t3`. 7661 bytes. SHA-256 `83de210e3af76e5e2e4fce0e977623a29f80b04ae9f0124dfab3902cf92e47d4`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpInvocationContext.ts).
 
-### apps/server/src/mcp/McpSessionRegistry.testkit.ts
-
-Package: `t3`. 1074 bytes. SHA-256 `c48eb79c96cc6ba44f8aeca1265854ae37b91e82161a8577529c29182d3915ce`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpSessionRegistry.testkit.ts).
-
 ### apps/server/src/mcp/McpSessionRegistry.ts
 
 Package: `t3`. 8332 bytes. SHA-256 `6195899b6fb3e2f23e141d734a20245b7d7d364b66099d387c5268b4618169cc`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpSessionRegistry.ts).
-
-### apps/server/src/mcp/McpToolAccess.testkit.ts
-
-Package: `t3`. 2973 bytes. SHA-256 `499d3dc5b2584a78a82dc8a551f2cbc2f3fea6b9823c31d234d25bbc6a08d666`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.testkit.ts).
 
 ### apps/server/src/mcp/McpToolAccess.ts
 
@@ -1416,21 +1408,9 @@ Package: `t3`. 3282 bytes. SHA-256 `b229c3a2be84fbcce5bdd9324e106440776e28861a65
 
 Package: `t3`. 12802 bytes. SHA-256 `29f787b1da0f81cf0bc15330b5bb5f2d1bf33d25a64b8ec6c33cfdb8d997329d`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/observability/RpcInstrumentation.ts).
 
-### apps/server/src/orchestration-v2/Adapters/AcpAdapterV2.testkit.ts
-
-Package: `t3`. 11135 bytes. SHA-256 `d9c23af720e2b1f608a22a3e5c29243708cc50bcafe14c6e96964645224aba81`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/AcpAdapterV2.testkit.ts).
-
-### apps/server/src/orchestration-v2/Adapters/AcpRegistryAdapterV2.testkit.ts
-
-Package: `t3`. 3976 bytes. SHA-256 `59d74cb51bbcd31fa2c3ada03457ca4a619d9514c50ecca711ef2f2d7371be1b`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/AcpRegistryAdapterV2.testkit.ts).
-
 ### apps/server/src/orchestration-v2/Adapters/AntigravityAdapterV2.ts
 
 Package: `t3`. 10014 bytes. SHA-256 `c9fdc02a0b2e4a39cfd086d59d4e057389f8b0db6ddb456af9a246e50befee29`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/AntigravityAdapterV2.ts).
-
-### apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.testkit.ts
-
-Package: `t3`. 98708 bytes. SHA-256 `c27dd70461b664ed95772503980ce25b325f1d5a67e7304762ccc21440740867`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.testkit.ts).
 
 ### apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts
 
@@ -1444,41 +1424,9 @@ Package: `t3`. 4605 bytes. SHA-256 `6715c215659c71ef912d8551bc90d344bb65c6113af9
 
 Package: `t3`. 7193 bytes. SHA-256 `dd7d9ee955b379502e9353afb9279d0efbc469605f0d59a32bd4f4525be006b4`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/claudeWorkflowProgress.ts).
 
-### apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.testkit.ts
-
-Package: `t3`. 7066 bytes. SHA-256 `48ee609b2db77e23be99e0419250ddfaa5f62ae74a8f177645b9d5d0ca473ec9`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.testkit.ts).
-
 ### apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts
 
 Package: `t3`. 331364 bytes. SHA-256 `24e80aba39559c48052e99a936d97e243c65db21df0b83fab1074d9c6de3a885`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts).
-
-### apps/server/src/orchestration-v2/Adapters/CursorAdapterV2.testkit.ts
-
-Package: `t3`. 30609 bytes. SHA-256 `0f27b41124986564596cede6a544196f38de019c907883e0cb292dd0f2dc6ba5`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/CursorAdapterV2.testkit.ts).
-
-### apps/server/src/orchestration-v2/Adapters/FxAdapterV2.testkit.ts
-
-Package: `t3`. 3847 bytes. SHA-256 `ad37fba04ba8471474ed0bed21f7caf226690279bf11a7f0ef98c2ed3bb6c1fe`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/FxAdapterV2.testkit.ts).
-
-### apps/server/src/orchestration-v2/Adapters/GrokAdapterV2.testkit.ts
-
-Package: `t3`. 4501 bytes. SHA-256 `f62ec25b1b40181836b2f1929120490f416ec6fac1ff7b186a1ff4a8b50c25af`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/GrokAdapterV2.testkit.ts).
-
-### apps/server/src/orchestration-v2/Adapters/MuseAdapterV2.testkit.ts
-
-Package: `t3`. 17006 bytes. SHA-256 `a30dcd8444410235ba49e36e0e59155835a9926b2b9d770cf2ceb18215faf626`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/MuseAdapterV2.testkit.ts).
-
-### apps/server/src/orchestration-v2/Adapters/OpenCode2AdapterV2.testkit.ts
-
-Package: `t3`. 14984 bytes. SHA-256 `235e406f53b9541d4c07df4606df4d19d6e6a3f1962850ce3e914b366b912cd5`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/OpenCode2AdapterV2.testkit.ts).
-
-### apps/server/src/orchestration-v2/Adapters/OpenCodeAdapterV2.testkit.ts
-
-Package: `t3`. 16612 bytes. SHA-256 `4288193f6754a551528fea0644f848a755c20658bc04e75e5fe22ee5c248bb4f`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/OpenCodeAdapterV2.testkit.ts).
-
-### apps/server/src/orchestration-v2/Adapters/PiAdapterV2.testkit.ts
-
-Package: `t3`. 17045 bytes. SHA-256 `bd672011a740d733d6767355d26a6306606c30ceee065988baf25d9f75cffd4b`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/PiAdapterV2.testkit.ts).
 
 ### apps/server/src/orchestration-v2/Adapters/ProviderTextDeltaCoalescer.ts
 
@@ -1636,10 +1584,6 @@ Package: `t3`. 8374 bytes. SHA-256 `d8fa953cd0b21e22794d55d3ec9bcd12c3e2dc08b9fb
 
 Package: `t3`. 17093 bytes. SHA-256 `b1796e13e0303eef94250e927fb23d65b1b67f304d4babd198d6de47abfbe90e`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/ProviderTurnControlService.ts).
 
-### apps/server/src/orchestration-v2/ProviderTurnStartService.testkit.ts
-
-Package: `t3`. 2759 bytes. SHA-256 `fcbb06761ecb9120f5f9609a485fb0c86e4425a4ada64ab290bf022a7a22114a`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/ProviderTurnStartService.testkit.ts).
-
 ### apps/server/src/orchestration-v2/ProviderTurnStartService.ts
 
 Package: `t3`. 64741 bytes. SHA-256 `11b3e584386f67f2dab1f21127542d33d78992e6e17a84b42de4030534a1d7fb`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/ProviderTurnStartService.ts).
@@ -1699,34 +1643,6 @@ Package: `t3`. 5692 bytes. SHA-256 `0d37fa1f7bc1336ee24f75ce1e4829ec6fefc74b23e3
 ### apps/server/src/orchestration-v2/ShellStream.ts
 
 Package: `t3`. 24522 bytes. SHA-256 `fe49a07da6c174b4da10851aa59e5374860a6a82e1b1346def0f697934405212`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/ShellStream.ts).
-
-### apps/server/src/orchestration-v2/testkit/CommandOutputRecorder.ts
-
-Package: `t3`. 1867 bytes. SHA-256 `f78ae5ff127d35189806af81e0d8e4960d2ce916b6b14e406e92e32a827f2245`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/CommandOutputRecorder.ts).
-
-### apps/server/src/orchestration-v2/testkit/DeterministicRuntime.ts
-
-Package: `t3`. 397 bytes. SHA-256 `00e467808f4c6beebac40417b1d7b30b4a3430339496e80cd84b9c281977a7b9`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/DeterministicRuntime.ts).
-
-### apps/server/src/orchestration-v2/testkit/OrchestratorScenario.ts
-
-Package: `t3`. 27077 bytes. SHA-256 `f9cdc7e95e20954713b1f6b6c75b39443a32f1336fef45db1ed8c55d02cd2e76`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/OrchestratorScenario.ts).
-
-### apps/server/src/orchestration-v2/testkit/ProviderReplayFixtures.ts
-
-Package: `t3`. 8657 bytes. SHA-256 `c70dc71209ff26ebe3de4b7896a53d9f8ff460469903c167fd173bff20259fc6`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/ProviderReplayFixtures.ts).
-
-### apps/server/src/orchestration-v2/testkit/ProviderReplayHarness.ts
-
-Package: `t3`. 21656 bytes. SHA-256 `6803460b1e1c8914ffb999346a2b8a15d4a41f4ee42a6832255b29a7a0623288`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/ProviderReplayHarness.ts).
-
-### apps/server/src/orchestration-v2/testkit/pullRequestFixtures.ts
-
-Package: `t3`. 2580 bytes. SHA-256 `eb907b2c62f7c067f3b985bff18fdcf5e048b0f91b1b3653775a5c2a1369e272`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/pullRequestFixtures.ts).
-
-### apps/server/src/orchestration-v2/testkit/ReplayRuntimeInstructions.ts
-
-Package: `t3`. 2311 bytes. SHA-256 `204df42fdc1cd0156f8c94d8497e02851f728658c6e566f0f4844439bd92d716`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/ReplayRuntimeInstructions.ts).
 
 ### apps/server/src/orchestration-v2/ThreadCommandExecutor.ts
 
@@ -1839,10 +1755,6 @@ Package: `t3`. 10506 bytes. SHA-256 `00de307a86c41aeff481eb73f8e58f93d707f37b441
 ### apps/server/src/peer/PeerLinkRequests.ts
 
 Package: `t3`. 15955 bytes. SHA-256 `1237e75cef10c3beee30614e016d555ded4e575ace98efcc11e34a876cc3b0a5`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/peer/PeerLinkRequests.ts).
-
-### apps/server/src/peer/PeerLinks.testkit.ts
-
-Package: `t3`. 7599 bytes. SHA-256 `76d52e0f88233a5425bfbd3cf6729b1bdbf0b5bbae83a89d93b1b116cea4200d`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/peer/PeerLinks.testkit.ts).
 
 ### apps/server/src/peer/PeerLinks.ts
 
@@ -2448,10 +2360,6 @@ Package: `t3`. 2176 bytes. SHA-256 `28419d2839d986a6b1c3756056613cd83edc8cee7ba1
 
 Package: `t3`. 531 bytes. SHA-256 `f802870788f2c30363e713e1e1626e0d55309e0d8d46fb70c0eec53bcf4fc696`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/builtInProviderCatalog.ts).
 
-### apps/server/src/provider/ClaudeModelCatalog.testFixtures.ts
-
-Package: `t3`. 2252 bytes. SHA-256 `49126dfc284b8b6248b17c7a1424bfc999ee89611fc569e2b73d17bfcb850dfc`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/ClaudeModelCatalog.testFixtures.ts).
-
 ### apps/server/src/provider/ClaudeModelCatalog.ts
 
 Package: `t3`. 9918 bytes. SHA-256 `18359a8f5c934fd88e6b5643d8075d5f256ed2ccd1fb5b9119f7150a8531d09e`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/ClaudeModelCatalog.ts).
@@ -2699,26 +2607,6 @@ Package: `t3`. 74 bytes. SHA-256 `81dc451bb89999e094802ea4d50d5b5896ea239fd28243
 ### apps/server/src/provider/resetCreditCoordinator.ts
 
 Package: `t3`. 3391 bytes. SHA-256 `9fc804a6ee1634d8e442adbecc2ca4b522740b6d57adf781628220170ceb487c`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/resetCreditCoordinator.ts).
-
-### apps/server/src/provider/testFixtures/codexCollabMockPeer.mjs
-
-Package: `t3`. 7370 bytes. SHA-256 `b3c830634bb5bcecc767cfe78ee1bd5dcf3c3e1bb9fa58114f6c242559b8fd3f`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testFixtures/codexCollabMockPeer.mjs).
-
-### apps/server/src/provider/testFixtures/codexMultiAgentWire.json
-
-Package: `t3`. 12728 bytes. SHA-256 `13e0f3ce2155220f16ae6026716ac30cc7054a950c9c91ab445e71dd92f09cd1`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testFixtures/codexMultiAgentWire.json).
-
-### apps/server/src/provider/testFixtures/grok-text-mock-agent.mjs
-
-Package: `t3`. 1971 bytes. SHA-256 `d38b1ab1d82245a71fdd7299c61c88cf6fc59d92513fa90077598db96098a64d`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testFixtures/grok-text-mock-agent.mjs).
-
-### apps/server/src/provider/testing/ProviderInstanceRegistryLive.fixture.mjs
-
-Package: `t3`. 3228 bytes. SHA-256 `edbe3a846142cd3c792a5ab6766578d0039c110c69eeb24f5019d23a9de0836c`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testing/ProviderInstanceRegistryLive.fixture.mjs).
-
-### apps/server/src/provider/testUtils/providerRegistryMock.ts
-
-Package: `t3`. 1251 bytes. SHA-256 `4c6b1fa94dd611510417247545ff10fa7c08ada41855975ac54fe9539483ecc5`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testUtils/providerRegistryMock.ts).
 
 ### apps/server/src/provider/unavailableProviderSnapshot.ts
 
@@ -3000,26 +2888,6 @@ Package: `t3`. 9336 bytes. SHA-256 `7f11a0a3441eeb3bc7cf10b8a292e05dbbb118f6c991
 
 Package: `t3`. 6236 bytes. SHA-256 `29ce825fa893b523c3537400befe7ddc697816153cbc224b2e619440bf2e0d8b`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/terminal/OutputProtocol.ts).
 
-### apps/server/src/testUtils/gitConfig.setup.ts
-
-Package: `t3`. 674 bytes. SHA-256 `87bd772bf35d400b0e03d5fb6f303b5642d8e0bb1a02a64c8c574fc5bd1b5a93`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/gitConfig.setup.ts).
-
-### apps/server/src/testUtils/managedServiceEnv.setup.ts
-
-Package: `t3`. 292 bytes. SHA-256 `268c44ed68714328830b0c59702e0c469fb84f58260bc992765dbe21f0446d7a`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/managedServiceEnv.setup.ts).
-
-### apps/server/src/testUtils/processProbe.ts
-
-Package: `t3`. 2491 bytes. SHA-256 `614dbe3fb50509b6044878b5b331e90f4871f144eed91e2dd9a50ad92c6dfda1`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/processProbe.ts).
-
-### apps/server/src/testUtils/shardWeights.json
-
-Package: `t3`. 11684 bytes. SHA-256 `fe85e24e889de00f99c4989be1f8283590006a6564c61ef075cc0e02ae514f21`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/shardWeights.json).
-
-### apps/server/src/testUtils/weightedShardSequencer.ts
-
-Package: `t3`. 1490 bytes. SHA-256 `35eb66940da3d7e0b7a258eb7a21434b513124b6dc2e3a9859b708ecf786445e`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/weightedShardSequencer.ts).
-
 ### apps/server/src/textGeneration/AntigravityTextGeneration.ts
 
 Package: `t3`. 11975 bytes. SHA-256 `fa953b96071a01e43bb9158ab588368a932485c301b593bf9080e8d40214b553`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/textGeneration/AntigravityTextGeneration.ts).
@@ -3031,14 +2899,6 @@ Package: `t3`. 11314 bytes. SHA-256 `6bfd041d631bac060b1f7422fc4b6916b419434dcc1
 ### apps/server/src/textGeneration/CodexTextGeneration.ts
 
 Package: `t3`. 13891 bytes. SHA-256 `88db35e9f02ba381d5ca87e244e4a5a5321f72a84f89d6d627081c89cd8f1564`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/textGeneration/CodexTextGeneration.ts).
-
-### apps/server/src/textGeneration/OpenCode2TextGeneration.fixture.ts
-
-Package: `t3`. 11388 bytes. SHA-256 `7a74e046a41bd5c43886c8fb4356274b1af621009ec83ede4e50923e09211152`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/textGeneration/OpenCode2TextGeneration.fixture.ts).
-
-### apps/server/src/textGeneration/testing/ClaudeTextGeneration.fixture.mjs
-
-Package: `t3`. 2549 bytes. SHA-256 `468a36a1f8f5cd8873c93e123c3d9a91e5a5384cb6cfae648aa9ac073ab3de07`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/textGeneration/testing/ClaudeTextGeneration.fixture.mjs).
 
 ### apps/server/src/textGeneration/TextGeneration.ts
 
@@ -3115,10 +2975,6 @@ Package: `t3`. 184023 bytes. SHA-256 `ef245d834b1805bb850300692c106891b9626b3445
 ### apps/server/src/vcs/removeEmptyDirectory.ts
 
 Package: `t3`. 679 bytes. SHA-256 `bb42bd4ddacf17b073d55eb367e11fe4d91f060c6ac9a57b438e59f0ac398224`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/vcs/removeEmptyDirectory.ts).
-
-### apps/server/src/vcs/testing/VcsDriverContractHarness.ts
-
-Package: `t3`. 6542 bytes. SHA-256 `a05a3f2c341d038ab561b3880bcde9a8a93f6e339182fc9070f9151d2f0b6497`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/vcs/testing/VcsDriverContractHarness.ts).
 
 ### apps/server/src/vcs/VcsDriver.ts
 
@@ -4847,10 +4703,6 @@ Package: `@t3tools/web`. 4055 bytes. SHA-256 `08e07b21407e4fd93927069da6fcafcc39
 ### apps/web/src/components/device/useDeviceControls.ts
 
 Package: `@t3tools/web`. 2733 bytes. SHA-256 `91558f1163ea8770996d14cde2be8e632977b32ab44f7bb15ec68f63bfcfd782`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/web/src/components/device/useDeviceControls.ts).
-
-### apps/web/src/components/DevReplayHost.tsx
-
-Package: `@t3tools/web`. 5929 bytes. SHA-256 `362bee1c395b002852857c29faaff8ab786f06afa39dbda4899e840592bc1b86`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/web/src/components/DevReplayHost.tsx).
 
 ### apps/web/src/components/DiffFilePathCopyButton.tsx
 
@@ -8304,10 +8156,6 @@ Package: `@t3tools/web`. 79389 bytes. SHA-256 `b50d89128f8f62153760db1b0ec97aad0
 
 Package: `@t3tools/web`. 27700 bytes. SHA-256 `d208fa962720dd467139941eeb7c1516a9040d6d1a0e26b9144e424ac2d52078`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/web/src/terminalUiStateStore.ts).
 
-### apps/web/src/test-fixtures.ts
-
-Package: `@t3tools/web`. 7018 bytes. SHA-256 `92d02ee1380fe6c59fcf0316987bd9184f51abbe2c79be6715594a0df7d8ab0f`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/web/src/test-fixtures.ts).
-
 ### apps/web/src/textDirection.ts
 
 Package: `@t3tools/web`. 1024 bytes. SHA-256 `86a67bf172da7a6422856b38ffb33860fb5e2ddf331dd465b421744ee566aee6`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/web/src/textDirection.ts).
@@ -8935,10 +8783,6 @@ Package: `@t3tools/client-runtime`. 6643 bytes. SHA-256 `b3b129d60a8ea5127ad842a
 ### packages/client-runtime/src/state/orchestrationV2Projection.ts
 
 Package: `@t3tools/client-runtime`. 14894 bytes. SHA-256 `c34e9a517de3eea161002db23ffbd14d87adefb467cfd321ca671ba4fcee1fbe`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/client-runtime/src/state/orchestrationV2Projection.ts).
-
-### packages/client-runtime/src/state/orchestrationV2TestFixtures.ts
-
-Package: `@t3tools/client-runtime`. 3083 bytes. SHA-256 `f9ee39a63698e5e70725247df1269137436d836a1bdc0f26cb9a02c529e26776`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/client-runtime/src/state/orchestrationV2TestFixtures.ts).
 
 ### packages/client-runtime/src/state/outdatedServerUpdate.ts
 
@@ -10304,10 +10148,6 @@ Package: `@t3tools/provider-opencode`. 10958 bytes. SHA-256 `6fa47d34082ed95ea77
 
 Package: `@t3tools/provider-opencode`. 6020 bytes. SHA-256 `01cac53c72b1c74f05cddacef6775de7506ba7a9aec083836ce7741a3b558174`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-opencode/src/server/OpenCodeServerOwner.ts).
 
-### packages/provider-opencode/src/server/probeResponses.fixture.ts
-
-Package: `@t3tools/provider-opencode`. 3495 bytes. SHA-256 `34818809dd241e43504a5ff75e474e86f2b9bc956bde9789bae2748e9cb9209d`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-opencode/src/server/probeResponses.fixture.ts).
-
 ### packages/provider-opencode/src/server/status.ts
 
 Package: `@t3tools/provider-opencode`. 28854 bytes. SHA-256 `52204f2dd930f7b7a2a7457bd06b203341396898710b9d0a9753ed488c14d281`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-opencode/src/server/status.ts).
@@ -10379,10 +10219,6 @@ Package: `@t3tools/provider-pi`. 4079 bytes. SHA-256 `76eaf97b247834e5f65a3298ed
 ### packages/provider-pi/src/server/driver.ts
 
 Package: `@t3tools/provider-pi`. 8013 bytes. SHA-256 `3442f7dca6ee6176bfc0103d7e0b12aa5aee99fdcec7aba1a8d87408dee2cd12`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-pi/src/server/driver.ts).
-
-### packages/provider-pi/src/server/mcpBridge.testkit.ts
-
-Package: `@t3tools/provider-pi`. 5765 bytes. SHA-256 `2e243a2e326fb7c3fef2671a78fed378228280e359ffd8efbb36e761799787a4`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-pi/src/server/mcpBridge.testkit.ts).
 
 ### packages/provider-pi/src/server/mcpExtensionSource.ts
 
@@ -10903,18 +10739,6 @@ Package: `@t3tools/shared`. 1192 bytes. SHA-256 `e0fd536524d8897676e9f91d63a6361
 ### packages/shared/src/terminalOutput.ts
 
 Package: `@t3tools/shared`. 27548 bytes. SHA-256 `99581c1e116357e69832b7f62b595eb117af66a5cf2398fe29219a37c1d81a33`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/terminalOutput.ts).
-
-### packages/shared/src/testing/longTempDir.ts
-
-Package: `@t3tools/shared`. 525 bytes. SHA-256 `79b2d9ae8b9ae5d127bc550bfc69d3046985e21d9d3dfbc285e4677cfcda917e`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/testing/longTempDir.ts).
-
-### packages/shared/src/testing/providerEnv.ts
-
-Package: `@t3tools/shared`. 1039 bytes. SHA-256 `5cd80479632239c06f78c951d04034f23afb6b98588acc142f55a1001673188f`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/testing/providerEnv.ts).
-
-### packages/shared/src/testing/symlinks.ts
-
-Package: `@t3tools/shared`. 876 bytes. SHA-256 `a6402ebd722f253e8d1c7fe0c631cd161003effbf47c6698bd17ebbc01a9efd9`. [Pinned source](https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/testing/symlinks.ts).
 
 ### packages/shared/src/themePalettes.ts
 
@@ -11708,8 +11532,10 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/mcp/McpHttpServer.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 51500 bytes; Git blob `902785778a97521fcb03d9b14ff6087b0ecb59ab`.
 - `apps/server/src/mcp/McpInvocationContext.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2352 bytes; Git blob `94059d4fd8c538e053cdcdea90ce60b890356631`.
 - `apps/server/src/mcp/McpSessionRegistry.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 8226 bytes; Git blob `282c3dffd6d642e348133e4ab9a38e4a27eb9e39`.
+- `apps/server/src/mcp/McpSessionRegistry.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 1074 bytes; Git blob `84676e7ccb1b4f790663ccd99f764a2d1d2ca192`.
 - `apps/server/src/mcp/McpToolAccess.race.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 7335 bytes; Git blob `b02ef26374848309cdce1909faf281b55f1d505b`.
 - `apps/server/src/mcp/McpToolAccess.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 18353 bytes; Git blob `14888108502d598f9d850743a40d050d069885d8`.
+- `apps/server/src/mcp/McpToolAccess.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2973 bytes; Git blob `a985c1477a232a57cb90da72b5e8eb9adb5d793d`.
 - `apps/server/src/mcp/OrchestratorMcpService.activity.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 20186 bytes; Git blob `45561e7670411445bfbbe39a49c26095588b5ddd`.
 - `apps/server/src/mcp/OrchestratorMcpService.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 120388 bytes; Git blob `6450f9acac2cbdb2663df35ffee6c5787da5d496`.
 - `apps/server/src/mcp/OrchestratorMcpToolkit.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 25552 bytes; Git blob `ec8c9434bec43feb39ba8f7352323b7cd0680b26`.
@@ -11734,16 +11560,27 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/observability/HeapAttribution.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2482 bytes; Git blob `b355ba5c35e1f46340e38afc62d336af2e8075f2`.
 - `apps/server/src/observability/OtlpEndpointCheck.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 8165 bytes; Git blob `a197c55ae9a916dde455d89b03f064b48e6646b1`.
 - `apps/server/src/orchestration-v2/Adapters/AcpAdapterV2.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 345259 bytes; Git blob `bc2314201cca6aa746ec9d470758aca658da3c11`.
+- `apps/server/src/orchestration-v2/Adapters/AcpAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 11135 bytes; Git blob `d043ac09a6aeed76c9a168810b64f9b70541daff`.
 - `apps/server/src/orchestration-v2/Adapters/AcpRegistryAdapterV2.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 77853 bytes; Git blob `9c7ea03fe75109c950a0dce5235c8e00c67ac162`.
+- `apps/server/src/orchestration-v2/Adapters/AcpRegistryAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 3976 bytes; Git blob `2e5d9e4058da1e856fabf486dfff970c93d07dba`.
 - `apps/server/src/orchestration-v2/Adapters/AntigravityAdapterV2.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 44190 bytes; Git blob `fd5951a148ba98adadb7a7293a52f82c62505a73`.
 - `apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 624635 bytes; Git blob `d758984f6a5c34aaea70b19c9cb38b6cd875233e`.
+- `apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 98708 bytes; Git blob `c975e022b37dff63505d283bd9cfb5bb3919fe19`.
 - `apps/server/src/orchestration-v2/Adapters/ClaudeAgentSdkQueryRunner.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 22133 bytes; Git blob `dac2095d0d2236e5223eec6896150c0683af7a3d`.
 - `apps/server/src/orchestration-v2/Adapters/ClaudeTaskOutputTail.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 5894 bytes; Git blob `8da21b20236e26822c45d570905823d0d3860e83`.
 - `apps/server/src/orchestration-v2/Adapters/claudeWorkflowProgress.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 7315 bytes; Git blob `360a21c068f255512a72c9818218ea9b6ab5f1bd`.
 - `apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 310261 bytes; Git blob `e50b6689ef19a6c7ac91e1d13852c5d823522fac`.
+- `apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 7066 bytes; Git blob `6e07b695da62137e8afdedd6755bc22282bb47ee`.
+- `apps/server/src/orchestration-v2/Adapters/CursorAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 30609 bytes; Git blob `7310cc7c81ea0d729ed68d0f7ece27a91a206059`.
 - `apps/server/src/orchestration-v2/Adapters/FxAdapterV2.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 12938 bytes; Git blob `b6e78f8115d6944b0fbee96e8cd7d84ed10e86fe`.
+- `apps/server/src/orchestration-v2/Adapters/FxAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 3847 bytes; Git blob `2161c30a4f51c0a55d8adec977fa478507bcd50c`.
 - `apps/server/src/orchestration-v2/Adapters/GrokAdapterV2.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 21041 bytes; Git blob `d2c23e185ba968bbb415e9db49e1c0e0c8e1ae22`.
+- `apps/server/src/orchestration-v2/Adapters/GrokAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 4501 bytes; Git blob `9b4483561ce0af92b955d142e538ec99ae25f382`.
+- `apps/server/src/orchestration-v2/Adapters/MuseAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 17006 bytes; Git blob `55576ea5f362a009d05f273b87b4f87ff53282be`.
 - `apps/server/src/orchestration-v2/Adapters/OpenCode2AdapterV2.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 178791 bytes; Git blob `bb26a5dd53a30bc0b8c8bd431103f94c5a115848`.
+- `apps/server/src/orchestration-v2/Adapters/OpenCode2AdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 14984 bytes; Git blob `9a5f0332f9cc1bec2c3efa774dc31287efe30153`.
+- `apps/server/src/orchestration-v2/Adapters/OpenCodeAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 16612 bytes; Git blob `90ce687ca591faadd25a71ad4d280d582363f197`.
+- `apps/server/src/orchestration-v2/Adapters/PiAdapterV2.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 17045 bytes; Git blob `49eb6c9b3b999eb4f4c82ee10dfbca86bb6f8cc4`.
 - `apps/server/src/orchestration-v2/assistantStreaming.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 853 bytes; Git blob `d71042312bfb16205f222352fd9da5afda07ed83`.
 - `apps/server/src/orchestration-v2/AttachmentClaims.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 11163 bytes; Git blob `a67f7ee180db7bf574ac327ed777cd33769ce532`.
 - `apps/server/src/orchestration-v2/BackgroundWorkStop.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 40600 bytes; Git blob `ffe8203c8cbbf7e8faa45b90f7e7f546896c154f`.
@@ -11788,6 +11625,7 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/orchestration-v2/ProviderSwitchService.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 10723 bytes; Git blob `f44ee018750754ab4eb9a44fbd16bbe63ae45a10`.
 - `apps/server/src/orchestration-v2/ProviderTurnControlService.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 13932 bytes; Git blob `7932a03809c94881d331328b4397a3fe64d1781c`.
 - `apps/server/src/orchestration-v2/ProviderTurnStartService.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 54547 bytes; Git blob `beaf7961e378222929d22792215b2ed0c723a440`.
+- `apps/server/src/orchestration-v2/ProviderTurnStartService.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2759 bytes; Git blob `5b614b1e2aa6c4ba366fdf9ba4eb05ba298766c9`.
 - `apps/server/src/orchestration-v2/PullRequestSyncReactor.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 63874 bytes; Git blob `a0a284b5db5d42add227697a65daa94bcdfbc365`.
 - `apps/server/src/orchestration-v2/pullRequestWatch.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 18730 bytes; Git blob `0b6070f3646629ef7e3bb4663c7f6ab2ef9692fc`.
 - `apps/server/src/orchestration-v2/QueuedRunOrder.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 1356 bytes; Git blob `838ec141a4b50f2317753419c560bd88b6a8ac85`.
@@ -11809,7 +11647,9 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/orchestration-v2/testkit/AcpRegistryReplayFixtures.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 8248 bytes; Git blob `e0a9a233bfd9e7e488381a437b0c0dca1cc3a625`.
 - `apps/server/src/orchestration-v2/testkit/ClaudeReplayFixtures.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 13721 bytes; Git blob `8886daad3e0178d5c9de2accd069680866b1d78a`.
 - `apps/server/src/orchestration-v2/testkit/CodexReplayFixtures.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 687 bytes; Git blob `c0593351f20d75d67c3eb26c2b9173207890219f`.
+- `apps/server/src/orchestration-v2/testkit/CommandOutputRecorder.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 1867 bytes; Git blob `51951bfc3ad30fa73b2ff72683243b1f6bbeb9d6`.
 - `apps/server/src/orchestration-v2/testkit/CursorReplayFixtures.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 1004 bytes; Git blob `7557e8b3929f460b7e7e76b902f6f93d2f82bf62`.
+- `apps/server/src/orchestration-v2/testkit/DeterministicRuntime.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 397 bytes; Git blob `2c2187d64a7a3d3f9ac2c84ceb2ee2ecfa5e2416`.
 - `apps/server/src/orchestration-v2/testkit/fixtures/acp_elicitation/registry_transcript.ndjson` (t3): test, fixture or story source excluded from the shipped runtime library; 2851 bytes; Git blob `1a7f436b530aa6098ea6d91244f826d572773f4d`.
 - `apps/server/src/orchestration-v2/testkit/fixtures/claude_background_monitor_wake/claude_transcript.ndjson` (t3): test, fixture or story source excluded from the shipped runtime library; 37468 bytes; Git blob `afc19f75dc29594001483b12d3be3f16405c650d`.
 - `apps/server/src/orchestration-v2/testkit/fixtures/claude_background_monitor_wake/input.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 1206 bytes; Git blob `c49777215b81ae456bcf85fb1d55d26a30f174cb`.
@@ -12157,8 +11997,13 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/orchestration-v2/testkit/OpenCodeReplayFixtures.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2454 bytes; Git blob `f9a594042b7124523b235c8cfa26fed8168add5c`.
 - `apps/server/src/orchestration-v2/testkit/OrchestratorReplayRecovery.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 25337 bytes; Git blob `d17b4075060186e47317c3f18cc913b135d64fec`.
 - `apps/server/src/orchestration-v2/testkit/OrchestratorReplayRestartBackgroundNote.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 11825 bytes; Git blob `4adc098ba6d7b148126eafee4ec31b2a9b851ed1`.
+- `apps/server/src/orchestration-v2/testkit/OrchestratorScenario.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 27077 bytes; Git blob `77e8bae8f085fd2121bede9a7d8f6019dd5e503b`.
 - `apps/server/src/orchestration-v2/testkit/PiReplayFixtures.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 375 bytes; Git blob `b9db455d1cffde85176dda704db437e234c275e9`.
+- `apps/server/src/orchestration-v2/testkit/ProviderReplayFixtures.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 8657 bytes; Git blob `b4502323bb9ec1746f46486865e68300b4a3ca51`.
+- `apps/server/src/orchestration-v2/testkit/ProviderReplayHarness.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 21656 bytes; Git blob `afd11a9ab7ecb1e0c41c061c6f0e477b52d935ca`.
 - `apps/server/src/orchestration-v2/testkit/ProviderSwitch.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 139503 bytes; Git blob `bb21d8ca9929ac2798991449a8f72feb744ec40e`.
+- `apps/server/src/orchestration-v2/testkit/pullRequestFixtures.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2580 bytes; Git blob `63b490cc7e9d180fa70d55b930e64e8afb386a92`.
+- `apps/server/src/orchestration-v2/testkit/ReplayRuntimeInstructions.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2311 bytes; Git blob `661856720fc27733da2f0bdb5e95dad1e22b6c46`.
 - `apps/server/src/orchestration-v2/testkit/ThreadFork.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 36949 bytes; Git blob `d90886835a2349e39262bf1d336ec2b5ad8f2991`.
 - `apps/server/src/orchestration-v2/testkit/ThreadMergeBack.integration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 21730 bytes; Git blob `836e06e74fbde5cac1ca1a8fb356a1c45317ab37`.
 - `apps/server/src/orchestration-v2/ThreadDeletion.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 10224 bytes; Git blob `ef7c23bf75120277042b05b4175f3f41988552c3`.
@@ -12192,6 +12037,7 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/peer/PeerForwarding.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 28706 bytes; Git blob `d653e80754b3dff64b1c7f78652df14ed1e0c03a`.
 - `apps/server/src/peer/PeerLinkRequests.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 37526 bytes; Git blob `f59202bb140aef02868017964d796f45a531eded`.
 - `apps/server/src/peer/PeerLinks.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 21285 bytes; Git blob `f16a91f26c0adf7d184bc0038793e019b75d3295`.
+- `apps/server/src/peer/PeerLinks.testkit.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 7599 bytes; Git blob `0f7e39355b95d24239e069f40625009b2a1ec12b`.
 - `apps/server/src/peer/RemoteDelegation.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 74221 bytes; Git blob `7672251288d8cfee3600110e86ae617977318d04`.
 - `apps/server/src/persistence/DatabaseMaintenance.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 8431 bytes; Git blob `91a538a945d20d675e90eee0e5bd540b66acc96c`.
 - `apps/server/src/persistence/DatabaseStorage.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 4845 bytes; Git blob `878f59660088816fc7a5f453d8c4d84d79df7017`.
@@ -12261,6 +12107,7 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/provider/antigravityUsageLimits.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 12059 bytes; Git blob `7c0eeabb0a755318ed2d8ebd890fafae77df9545`.
 - `apps/server/src/provider/ClaudeCapabilitiesProbe.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 1729 bytes; Git blob `c03916564e0f7de276c0fb8b1e46797e718f1af9`.
 - `apps/server/src/provider/ClaudeModelCatalog.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 7557 bytes; Git blob `2092429f6d55623d8ae7c7981c154433dbb9a5d9`.
+- `apps/server/src/provider/ClaudeModelCatalog.testFixtures.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2252 bytes; Git blob `762f919dc39c1b53a267d18ceeff5a1b7def8a60`.
 - `apps/server/src/provider/claudeResetCredits.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 8507 bytes; Git blob `8db751657454c05b5a029fcbe8669b02d5dd7775`.
 - `apps/server/src/provider/claudeUsageLimits.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 8156 bytes; Git blob `f20d8b054363694b1448c1f5f6e8ef6b82930a0d`.
 - `apps/server/src/provider/CodexChatGptAuth.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 71428 bytes; Git blob `3e521103d56cff1617f834469d2b74ef4465187b`.
@@ -12301,7 +12148,12 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/provider/ProviderRegistry.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 105590 bytes; Git blob `60aad9c59977a64b3b27fdd3815e59d6edc20cc0`.
 - `apps/server/src/provider/providerStatusCache.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 5771 bytes; Git blob `79cb0bfbf5fdcee56a52c75a7f016fd52c95ad78`.
 - `apps/server/src/provider/resetCreditCoordinator.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 4346 bytes; Git blob `a7a8010a3f5f8df3ac432c7ce2b5a7bad6c80818`.
-- `apps/server/src/provider/testFixtures/codexCollabMockPeer.sh` (t3): binary or unsupported asset outside the text extraction surface; 274 bytes; Git blob `3f76d7eec160ed08fb7833cad1da9c26280972fb`.
+- `apps/server/src/provider/testFixtures/codexCollabMockPeer.mjs` (t3): test, fixture or story source excluded from the shipped runtime library; 7370 bytes; Git blob `cae8ea2c9380d699e7e0f96e320d70b81827175c`.
+- `apps/server/src/provider/testFixtures/codexCollabMockPeer.sh` (t3): test, fixture or story source excluded from the shipped runtime library; 274 bytes; Git blob `3f76d7eec160ed08fb7833cad1da9c26280972fb`.
+- `apps/server/src/provider/testFixtures/codexMultiAgentWire.json` (t3): test, fixture or story source excluded from the shipped runtime library; 12728 bytes; Git blob `0f183635b17e4c22d3b6a98ffa88c377138d841a`.
+- `apps/server/src/provider/testFixtures/grok-text-mock-agent.mjs` (t3): test, fixture or story source excluded from the shipped runtime library; 1971 bytes; Git blob `357bdb7fe564da229c9ce1c9567b114d4396cd62`.
+- `apps/server/src/provider/testing/ProviderInstanceRegistryLive.fixture.mjs` (t3): test, fixture or story source excluded from the shipped runtime library; 3228 bytes; Git blob `5c4c84f2aa3e305cc1a72348ced4c8be64f2a2f8`.
+- `apps/server/src/provider/testUtils/providerRegistryMock.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 1251 bytes; Git blob `a4008acc18efb76e265ec87e89e4f7e059253995`.
 - `apps/server/src/provider/TurnTokenUsage.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 4114 bytes; Git blob `25db70f6411a63297c1e39d77865fc56ae13c35e`.
 - `apps/server/src/provider/userInputAttachments.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 56103 bytes; Git blob `81c167c038d87bc9979ab7cd6ff99ad2581104b8`.
 - `apps/server/src/pullRequest/linkedThreads.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 6142 bytes; Git blob `230758714b381dbe766e1f2cbfd494065d746f77`.
@@ -12352,11 +12204,18 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/terminal/NodePtyAdapter.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 7873 bytes; Git blob `66704396e9e763bc44bedad028db56b157c33fc7`.
 - `apps/server/src/terminal/nodePtyConsoleList.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2573 bytes; Git blob `bcc8313089f43efbe7e34f262050eb8dc268afc5`.
 - `apps/server/src/terminal/OutputProtocol.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 14525 bytes; Git blob `a804a6610b77408bbea206bf7f712b24cf4b7865`.
+- `apps/server/src/testUtils/gitConfig.setup.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 674 bytes; Git blob `f2ad4a83e2d541c822da4fd3fadc302692f7b4c8`.
+- `apps/server/src/testUtils/managedServiceEnv.setup.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 292 bytes; Git blob `a6581817e14bb6741aa4b097ad0af666f19605da`.
+- `apps/server/src/testUtils/processProbe.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2491 bytes; Git blob `9970359244be387058c3814d6abcb0c52f130453`.
+- `apps/server/src/testUtils/shardWeights.json` (t3): test, fixture or story source excluded from the shipped runtime library; 11684 bytes; Git blob `86df1db6d7399e5963eb458d4f9eb1724c0fd011`.
+- `apps/server/src/testUtils/weightedShardSequencer.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 1490 bytes; Git blob `51c5130b3a5c423ef88211ef5372943a1cbc1e64`.
 - `apps/server/src/textGeneration/AntigravityTextGeneration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 23755 bytes; Git blob `3fcafcc15178922ce3b5b2005296fbcb560faea9`.
 - `apps/server/src/textGeneration/ClaudeTextGeneration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 16631 bytes; Git blob `3ea0502f83b33a966c96ea2ce67e50c90525d10a`.
 - `apps/server/src/textGeneration/CodexTextGeneration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 20304 bytes; Git blob `04ae83952b3c482ba8876fb81fc6063f30ee00b3`.
 - `apps/server/src/textGeneration/GrokTextGeneration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 5272 bytes; Git blob `c74f77db4d061d8bb51e260affbed52c5fe0c76d`.
+- `apps/server/src/textGeneration/OpenCode2TextGeneration.fixture.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 11388 bytes; Git blob `5840b909acbd5cdd9f2ae6b81de6b35cb50075f8`.
 - `apps/server/src/textGeneration/OpenCode2TextGeneration.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 7540 bytes; Git blob `2cfe556ebf58ffef4826e9ee37be7d2102502bc4`.
+- `apps/server/src/textGeneration/testing/ClaudeTextGeneration.fixture.mjs` (t3): test, fixture or story source excluded from the shipped runtime library; 2549 bytes; Git blob `d5ca2f185eb8ded917c6e54c3c3aef30e66d2d96`.
 - `apps/server/src/textGeneration/ThreadTitleLinks.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 2689 bytes; Git blob `ccb4cbfde9fce6b0ea02a342abc8df312e08348b`.
 - `apps/server/src/triage/triagePrompt.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 3329 bytes; Git blob `e034ad107fecdbb712fbba0aa7e5a1ed69152242`.
 - `apps/server/src/triage/TriageService.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 5907 bytes; Git blob `d3ffc8c91d03e6b24de66e8d42c6890cfe87c3ab`.
@@ -12372,7 +12231,8 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/server/src/utils/subscribeBeforeSnapshot.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 3100 bytes; Git blob `70f0beda25ce67dfcccce31b4b0f8579293c61dc`.
 - `apps/server/src/vcs/GitVcsDriver.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 61645 bytes; Git blob `ba2b4abe50af798bc3b6a80d5c197425836577fb`.
 - `apps/server/src/vcs/GitVcsDriverCore.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 241828 bytes; Git blob `c0f0967725e582931b30ab83a8c506645d229337`.
-- `apps/server/src/vcs/testing/GitVcsDriverCore.fixture.sh` (t3): binary or unsupported asset outside the text extraction surface; 431 bytes; Git blob `d461d27f3bc0e6b54a40b8ff1823542fb69f02b7`.
+- `apps/server/src/vcs/testing/GitVcsDriverCore.fixture.sh` (t3): test, fixture or story source excluded from the shipped runtime library; 431 bytes; Git blob `d461d27f3bc0e6b54a40b8ff1823542fb69f02b7`.
+- `apps/server/src/vcs/testing/VcsDriverContractHarness.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 6542 bytes; Git blob `fd474283590d13c428901c33f37d94ac1bfb4471`.
 - `apps/server/src/vcs/VcsDriverRegistry.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 5363 bytes; Git blob `b6f7dae8137445cddeb8ac258a7636093ce719f9`.
 - `apps/server/src/vcs/VcsProcess.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 18775 bytes; Git blob `212415171bdc6d7c63098b3b4c33d8bdd9fbd5ce`.
 - `apps/server/src/vcs/VcsProjectConfig.test.ts` (t3): test, fixture or story source excluded from the shipped runtime library; 4822 bytes; Git blob `65e4068db3618680c74e860d4a57c669ac27fb8e`.
@@ -12544,6 +12404,7 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/web/src/components/device/models/iphone-18-pro.glb` (@t3tools/web): binary or unsupported asset outside the text extraction surface; 2422548 bytes; Git blob `2dae3e9beaa6598ecc271fb128f0cdb671d471ba`.
 - `apps/web/src/components/device/models/iphone-duo.glb` (@t3tools/web): binary or unsupported asset outside the text extraction surface; 3097724 bytes; Git blob `0269a1dc40e0372bab37075937382bbc9e8c987f`.
 - `apps/web/src/components/device/useDeviceControls.browser.test.tsx` (@t3tools/web): test, fixture or story source excluded from the shipped runtime library; 7063 bytes; Git blob `5633369dc1cb2797a31e06eb269b69cf1b0f453d`.
+- `apps/web/src/components/DevReplayHost.tsx` (@t3tools/web): development replay or test fixture source; 5929 bytes; Git blob `71ec6bc2b081e26d1ce4cc87306e3bf06d36b2d3`.
 - `apps/web/src/components/DiffFilePathCopyButton.browser.test.tsx` (@t3tools/web): test, fixture or story source excluded from the shipped runtime library; 1289 bytes; Git blob `a2bec09ca960da575def85533387b26597e47567`.
 - `apps/web/src/components/diffs/AnnotatableCodeView.browser.test.tsx` (@t3tools/web): test, fixture or story source excluded from the shipped runtime library; 5518 bytes; Git blob `8725a6a0074a8efa7efcef96bc3193929f5ed1a8`.
 - `apps/web/src/components/diffs/codeViewSearch.test.ts` (@t3tools/web): test, fixture or story source excluded from the shipped runtime library; 2047 bytes; Git blob `ee377043900c5d03056c895d310246cde27a0208`.
@@ -12871,6 +12732,7 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `apps/web/src/terminal/ghostty/vendor/ghostty-vt.wasm` (@t3tools/web): binary or unsupported asset outside the text extraction surface; 630932 bytes; Git blob `a8e2405adefd37612dfea6ebd77fbcacbd9134be`.
 - `apps/web/src/terminal/ghostty/vendor/ghostty-write-pty.wasm` (@t3tools/web): binary or unsupported asset outside the text extraction surface; 112 bytes; Git blob `66835717dd8db61d4326577cc5271657fa68c44a`.
 - `apps/web/src/terminalUiStateStore.test.ts` (@t3tools/web): test, fixture or story source excluded from the shipped runtime library; 6600 bytes; Git blob `1ad8ba86c06aef05769855139e9dba8f2e633ada`.
+- `apps/web/src/test-fixtures.ts` (@t3tools/web): development replay or test fixture source; 7018 bytes; Git blob `494d95caa8d7973c5dd2fc40d7e5a5236cc3ae2b`.
 - `apps/web/src/textDirection.test.ts` (@t3tools/web): test, fixture or story source excluded from the shipped runtime library; 1044 bytes; Git blob `a104133799c5280f634186692f4c83189bbdf028`.
 - `apps/web/src/themeBoot.test.ts` (@t3tools/web): test, fixture or story source excluded from the shipped runtime library; 12845 bytes; Git blob `8341978986bbe5ef3a51372d8c25ff6c53496b43`.
 - `apps/web/src/themePalette.browser.test.ts` (@t3tools/web): test, fixture or story source excluded from the shipped runtime library; 1794 bytes; Git blob `4204b069780c9d2256a569aa18bc0a0eb19432c6`.
@@ -12986,6 +12848,7 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `packages/client-runtime/src/state/itemSupport.test.ts` (@t3tools/client-runtime): test, fixture or story source excluded from the shipped runtime library; 5276 bytes; Git blob `5075ca246172d9768d32709d35928633fab499e8`.
 - `packages/client-runtime/src/state/olderSettledThreads.test.ts` (@t3tools/client-runtime): test, fixture or story source excluded from the shipped runtime library; 22534 bytes; Git blob `571a8fbaaad74fdd68a274171142f6605185a55a`.
 - `packages/client-runtime/src/state/orchestrationV2Projection.test.ts` (@t3tools/client-runtime): test, fixture or story source excluded from the shipped runtime library; 22953 bytes; Git blob `f6ba3e9f0c1a749e122010d64e1112b84d32a232`.
+- `packages/client-runtime/src/state/orchestrationV2TestFixtures.ts` (@t3tools/client-runtime): development replay or test fixture source; 3083 bytes; Git blob `550dc389a86bfb51fe58b46489ba6bfd51f0c623`.
 - `packages/client-runtime/src/state/pendingUserInput.test.ts` (@t3tools/client-runtime): test, fixture or story source excluded from the shipped runtime library; 6337 bytes; Git blob `7f5a2b0b84c3d07ad9dcc2d52956a93d5d2bac0f`.
 - `packages/client-runtime/src/state/presentation.test.ts` (@t3tools/client-runtime): test, fixture or story source excluded from the shipped runtime library; 6177 bytes; Git blob `71e9c868cd439925575f70d41ce1d34dd8f74cbf`.
 - `packages/client-runtime/src/state/projectCommands.test.ts` (@t3tools/client-runtime): test, fixture or story source excluded from the shipped runtime library; 10464 bytes; Git blob `727dd87ff68648dd8b0669debb7831a59fee43fd`.
@@ -13098,8 +12961,8 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `packages/provider-acp-registry/src/server/auth.test.ts` (@t3tools/provider-acp-registry): test, fixture or story source excluded from the shipped runtime library; 12136 bytes; Git blob `47ce8cabb188b952d38f7393377c167a07417e19`.
 - `packages/provider-acp-registry/src/server/authenticationState.test.ts` (@t3tools/provider-acp-registry): test, fixture or story source excluded from the shipped runtime library; 4142 bytes; Git blob `09229cc300e4dab26fea5f40e9420dacd813f77d`.
 - `packages/provider-acp-registry/src/server/driver.test.ts` (@t3tools/provider-acp-registry): test, fixture or story source excluded from the shipped runtime library; 12599 bytes; Git blob `8a35bbc715be35b330e83480737c741d1fc10e92`.
-- `packages/provider-acp-registry/src/server/testing/AcpRegistrySupport.npm.fixture.sh` (@t3tools/provider-acp-registry): binary or unsupported asset outside the text extraction surface; 638 bytes; Git blob `4bfa5d9a8de9f7d0cb8f1ec09df9f5bdab31fd3f`.
-- `packages/provider-acp-registry/src/server/testing/AcpRegistrySupport.uv.fixture.sh` (@t3tools/provider-acp-registry): binary or unsupported asset outside the text extraction surface; 652 bytes; Git blob `18a456c24d15fc58f5ec252a7bd82215aa16bf99`.
+- `packages/provider-acp-registry/src/server/testing/AcpRegistrySupport.npm.fixture.sh` (@t3tools/provider-acp-registry): test, fixture or story source excluded from the shipped runtime library; 638 bytes; Git blob `4bfa5d9a8de9f7d0cb8f1ec09df9f5bdab31fd3f`.
+- `packages/provider-acp-registry/src/server/testing/AcpRegistrySupport.uv.fixture.sh` (@t3tools/provider-acp-registry): test, fixture or story source excluded from the shipped runtime library; 652 bytes; Git blob `18a456c24d15fc58f5ec252a7bd82215aa16bf99`.
 - `packages/provider-acp-registry/tsconfig.json` (@t3tools/provider-acp-registry): outside the package runtime source root and not a manifest runtime entry; 160 bytes; Git blob `024a9dc2d66f35cc921b4124147d194860b487e6`.
 - `packages/provider-acp/src/server/clientPolicy.test.ts` (@t3tools/provider-acp): test, fixture or story source excluded from the shipped runtime library; 12522 bytes; Git blob `630ebc979e7531cc5988d2445da2e01268c13a3f`.
 - `packages/provider-acp/src/server/clientTerminals.test.ts` (@t3tools/provider-acp): test, fixture or story source excluded from the shipped runtime library; 16196 bytes; Git blob `791bbc22a6a03d49aca8b5862e8189010f68398a`.
@@ -13176,6 +13039,7 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `packages/provider-opencode/src/server/OpenCodeRuntime.permissions.test.ts` (@t3tools/provider-opencode): test, fixture or story source excluded from the shipped runtime library; 448 bytes; Git blob `32c0394b03df868b9eed7947db23a65ada2354f3`.
 - `packages/provider-opencode/src/server/OpenCodeServerLedger.test.ts` (@t3tools/provider-opencode): test, fixture or story source excluded from the shipped runtime library; 12443 bytes; Git blob `5ea1943a1cb9c328233bdfc94fc210e6a5a8a505`.
 - `packages/provider-opencode/src/server/OpenCodeServerOwner.test.ts` (@t3tools/provider-opencode): test, fixture or story source excluded from the shipped runtime library; 8030 bytes; Git blob `a4010a648d2f12d53eda48f25ffa9a878fccd0b4`.
+- `packages/provider-opencode/src/server/probeResponses.fixture.ts` (@t3tools/provider-opencode): test, fixture or story source excluded from the shipped runtime library; 3495 bytes; Git blob `df67e40952a456077cf12636fe666ce237405d1d`.
 - `packages/provider-opencode/src/server/status.test.ts` (@t3tools/provider-opencode): test, fixture or story source excluded from the shipped runtime library; 39139 bytes; Git blob `b96036669b599e398ca5080753b7ddfcf8b0d670`.
 - `packages/provider-opencode/src/server/textGeneration.test.ts` (@t3tools/provider-opencode): test, fixture or story source excluded from the shipped runtime library; 19205 bytes; Git blob `9b9c2525190c1ab2d143fec54ffceeeb5dce3058`.
 - `packages/provider-opencode/src/server/usage.test.ts` (@t3tools/provider-opencode): test, fixture or story source excluded from the shipped runtime library; 12564 bytes; Git blob `20a768609a7da2e80bf8adc676eb87bf83bcad52`.
@@ -13186,6 +13050,7 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `packages/provider-pi/src/server/adapter.test.ts` (@t3tools/provider-pi): test, fixture or story source excluded from the shipped runtime library; 170201 bytes; Git blob `56754c30923bdda60d7c7a53c692f189499f2c1e`.
 - `packages/provider-pi/src/server/commands.test.ts` (@t3tools/provider-pi): test, fixture or story source excluded from the shipped runtime library; 1399 bytes; Git blob `b1089bdd52f569987f35c5c2f8eef47006a772d9`.
 - `packages/provider-pi/src/server/driver.test.ts` (@t3tools/provider-pi): test, fixture or story source excluded from the shipped runtime library; 10150 bytes; Git blob `087a8089aaee87caca53ec9402bfe98fa545f0a9`.
+- `packages/provider-pi/src/server/mcpBridge.testkit.ts` (@t3tools/provider-pi): test, fixture or story source excluded from the shipped runtime library; 5765 bytes; Git blob `133a4b2981ac1dbf9335ffcafaa2fbab384fcae5`.
 - `packages/provider-pi/src/server/mcpExtensionSource.test.ts` (@t3tools/provider-pi): test, fixture or story source excluded from the shipped runtime library; 21838 bytes; Git blob `cedf3974f535d1d87ba24c65cd5d6eeddd96bae4`.
 - `packages/provider-pi/src/server/mcpInjection.test.ts` (@t3tools/provider-pi): test, fixture or story source excluded from the shipped runtime library; 4809 bytes; Git blob `2ca5f35d026f55c9417a9e488df934a6df92df9d`.
 - `packages/provider-pi/src/server/status.test.ts` (@t3tools/provider-pi): test, fixture or story source excluded from the shipped runtime library; 9739 bytes; Git blob `b8559d1ab7d8aeb7523fcc4ef29819f12b89e169`.
@@ -13277,6 +13142,9 @@ Package: `@t3tools/tailscale`. 16393 bytes. SHA-256 `67c7b98089a8300a7100b01cc60
 - `packages/shared/src/telemetryId.test.ts` (@t3tools/shared): test, fixture or story source excluded from the shipped runtime library; 437 bytes; Git blob `e17598eb0cc080f36fbc96f36b0ca72cfd28a069`.
 - `packages/shared/src/terminalLabels.test.ts` (@t3tools/shared): test, fixture or story source excluded from the shipped runtime library; 1284 bytes; Git blob `00f9db0b0990bfbb518729b925c016399714e128`.
 - `packages/shared/src/terminalOutput.test.ts` (@t3tools/shared): test, fixture or story source excluded from the shipped runtime library; 6663 bytes; Git blob `8870d422b763d5cefd02d0334ed2b515b0812afa`.
+- `packages/shared/src/testing/longTempDir.ts` (@t3tools/shared): test, fixture or story source excluded from the shipped runtime library; 525 bytes; Git blob `09a4da9f8f53b23dbe3a601ce0f4bf423eac6a04`.
+- `packages/shared/src/testing/providerEnv.ts` (@t3tools/shared): test, fixture or story source excluded from the shipped runtime library; 1039 bytes; Git blob `21bf59e52b500d0f17cfa237e10fb4a7a5d95c9b`.
+- `packages/shared/src/testing/symlinks.ts` (@t3tools/shared): test, fixture or story source excluded from the shipped runtime library; 876 bytes; Git blob `e7b1aeb54edaba5ddda733cfea39d06bf4b20f6f`.
 - `packages/shared/src/thirdPartyLicenses.test.ts` (@t3tools/shared): test, fixture or story source excluded from the shipped runtime library; 1252 bytes; Git blob `0e78ba2b8e0f2367b755a8fb9d462d7f3065d759`.
 - `packages/shared/src/threadFindText.test.ts` (@t3tools/shared): test, fixture or story source excluded from the shipped runtime library; 4316 bytes; Git blob `77a0874c21336db3c834d4e203f38a83e88d5d35`.
 - `packages/shared/src/threadLinks.test.ts` (@t3tools/shared): test, fixture or story source excluded from the shipped runtime library; 6169 bytes; Git blob `82d981f59827c513ae34d9a61bd80179fe092360`.

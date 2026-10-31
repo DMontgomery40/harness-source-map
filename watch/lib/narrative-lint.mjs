@@ -51,7 +51,10 @@ async function judge(config, sentence, options) {
 
 // `cacheFile`, `config` and the ask() options ({ fetchImpl, attempts, sleep, ... }) are injectable for tests.
 export async function narrativeLint(repo, { threshold = 0.8, cacheFile = defaultCacheFile, config = decisionConfig(), ...askOptions } = {}) {
-  const configFile = path.join(repo, "narrative-lint.json");
+  const rootConfig = path.join(repo, "narrative-lint.json");
+  // Source-based pipelines can keep their generated-page declaration beside the extractor.
+  // Existing products' root configuration retains precedence and unchanged behavior.
+  const configFile = existsSync(rootConfig) ? rootConfig : path.join(repo, "extract/narrative-lint.json");
   const exempt = new Set(existsSync(configFile) ? JSON.parse(readFileSync(configFile, "utf8")).exempt : []);
   const cache = openCache(cacheFile,{config});
   const findings = [];

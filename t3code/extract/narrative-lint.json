@@ -1,0 +1,19 @@
+{
+  "exempt": [
+    "outputs/context-templates.md",
+    "outputs/discovery-status.md",
+    "outputs/instructions.md",
+    "outputs/key-findings.md",
+    "outputs/reference-configuration.md",
+    "outputs/reference-delivery.md",
+    "outputs/reference-instructions.md",
+    "outputs/reference-launch.md",
+    "outputs/reference-network.md",
+    "outputs/reference-runtime.md",
+    "outputs/reference-schemas.md",
+    "outputs/reference-tools.md",
+    "outputs/source-inventory.md",
+    "outputs/tools-parameters.md",
+    "outputs/unclassified.md"
+  ]
+}

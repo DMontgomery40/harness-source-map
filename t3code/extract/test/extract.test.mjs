@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildSourceClosure, discoverOccurrences, COMMIT, VERSION } from '../lib/full-library.mjs';
+import { literalsOf, decodeLiteral } from '../lib/ts-literals.mjs';
 import { reviewedLibrary, extract, writeOutputs } from '../extract.mjs';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const source = process.env.T3CODE_SOURCE ?? path.join(root, 'work/source');
@@ -19,6 +20,7 @@ test('pinned public closure includes all provider packages and accounts for ever
   assert.equal(new Set([...closure.included, ...closure.excluded].map(f => f.file)).size, closure.included.length + closure.excluded.length);
   assert.ok(closure.excluded.every(f => f.reason && f.gitBlob));
   assert.ok(closure.included.every(f => f.sha256 === hash(f.text)));
+  assert.ok(closure.included.every(f => !/\.(?:testkit|fixture)\.[^.]+$|\/(?:testkit|testUtils|testFixtures|testing)\//.test(f.file)));
 });
 
 test('every reviewed record has exact source-span provenance and pinned release identity', { skip: !available }, () => {
@@ -57,12 +59,20 @@ test('instruction, delivery, runtime policy and network requirements retain sour
   for (const needle of ['ingest.t3.codes', 'T3CODE_RELAY_URL', 'clerkFrontendApiUrl', 'nightly']) assert.ok(text('network').includes(needle), needle);
 });
 
+test('each complete orchestration section fits the Codex CLI application-context byte cap', { skip: !available }, () => {
+  load();
+  const declaration = groups.get('instructions').find(r => r.id === 'instruction-T3_CODE_ORCHESTRATION_SECTIONS');
+  const sections = literalsOf(declaration.text).outer.filter(l => l.kind === 'template').map(l => decodeLiteral(declaration.text, l));
+  assert.ok(sections.length > 0);
+  for (const section of sections) assert.ok(Buffer.byteLength(section, 'utf8') <= 4_000);
+});
+
 test('committed extraction is deterministic and current, with unresolved Jev work explicit', { skip: !available }, () => {
   const outputs = extract(source);
   writeOutputs(outputs, path.join(root, 'outputs'), { check: true });
   const inventory = JSON.parse(outputs['discovery-inventory.json']);
   assert.equal(inventory.items.length, inventory.summary.classified + inventory.summary.pending);
-  assert.ok(inventory.summary.pending > 0);
+  assert.equal(inventory.summary.pending, inventory.summary.providerPending + inventory.summary.localReview);
   const catalog = JSON.parse(outputs['library-catalog.json']);
   const ids = catalog.libraries.flatMap(l => l.recordIds);
   assert.equal(new Set(ids).size, ids.length); assert.equal(ids.length, catalog.totalRecords);

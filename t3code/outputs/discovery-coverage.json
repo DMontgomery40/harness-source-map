@@ -3,7 +3,7 @@
   "product": "T3 Code",
   "version": "0.1.6-nightly.20261031.3956",
   "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-  "sourceIdentity": "e771edd98dbd673d35c4efa436baf06c7e0762ceab21d18da6579c3b55b37c8b",
+  "sourceIdentity": "6b7a5e1f1e95a33d161c7abaa0be6a82ff9e9016934abd85d85a3e761cbf6dc9",
   "status": "partial",
   "classified": 0,
   "classifiedPositives": 0,
@@ -11,11 +11,11 @@
   "classifiedNegatives": 0,
   "publishedRecords": 0,
   "exactCovered": 0,
-  "providerPending": 33096,
+  "providerPending": 32858,
   "withheld": 1,
   "oversized": 0,
   "localReview": 1,
-  "pending": 33097,
+  "pending": 32859,
   "unverifiedGaps": 0,
   "method": "Every classified positive is published once with its exact occurrence text: on a Discovered page (noting any reviewed record that also contains it), or merged into the entry with the same text (publishedIn). Withheld and oversized occurrences are listed with their exact text on the Not classified page. Privacy-withheld, oversized and unanswered occurrences remain explicit unresolved work."
 }

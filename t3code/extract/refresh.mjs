@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { classifySources, DISCOVERY_VERSION } from "../../codex/extract/codex/lib/jev-discovery.mjs";
 import { decisionConfig, JEV_TEMPFAIL_EXIT, openCache } from "../../codex/extract/codex/lib/jev-provider.mjs";
 import { extract, writeOutputs } from "./extract.mjs";
-import { buildFullLibrary } from "./lib/full-library.mjs";
+import { buildFullLibrary, VERSION, COMMIT } from "./lib/full-library.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
@@ -56,7 +56,7 @@ export async function refresh(options) {
   mkdirSync(options.work, { recursive: true });
   const identity = prepared.closure.identity;
   const local = {
-    source: { version: "0.1.6-nightly.20261031.3956", commit: "d92c437baa19409f99416a44f748f148f4317c65", identity },
+    source: { version: VERSION, commit: COMMIT, identity },
     discovery: prepared.summary.discovery,
     candidates: prepared.discovery.records,
   };

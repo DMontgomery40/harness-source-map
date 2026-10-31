@@ -108,3 +108,13 @@ gate runs even when nothing changed.
 Local, gitignored: `watch/logs/watch.log` (every run), `watch/logs/agent-*.log` (repair agents),
 `watch/state.json` (fingerprints, failed versions, an open Jev outage), `watch/.lock`.
 `narrative-lint-cache.json` holds Jev's cached lint verdicts.
+
+## T3 Code public source
+
+The `t3code` target checks upstream release tags hourly and joins the existing all-product publication transaction. `T3CODE_WATCH_CHANNEL=all` (default) chooses the newest stable or nightly version; `stable` and `nightly` restrict the channel. Annotated tags resolve to their peeled commit. Preview tags are excluded.
+
+The exact release is retained in ignored `t3code/work/watcher-pending-release.json` across provider outages. It is cloned under `work/releases/<commit>` and verified against both HEAD and the release tag before `extract/release.json` advances. `refresh.mjs --broad` always prepares locally, uses the authorized public-source Jev route, and exits 75 without publishing unanswered work. The existing carry/retry transaction restores unpublished tracked changes and retries the pending release. Structural extraction failures stop for review. The target does not alter existing products' cadence, refresh, gate or deploy behavior.
+
+Every T3 Markdown page is generated from the pinned source; its exemption declaration lives beside the extractor at `t3code/extract/narrative-lint.json`. The lint still prefers existing products' root configuration.
+
+The T3 Code product must be registered in the central site builder before enabling publication; slice S1 supplies `site/src/t3code/build-site.mjs` and `catalog.mjs` for the integration owner.

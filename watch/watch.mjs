@@ -16,6 +16,7 @@ import { confirmChange } from "./lib/confirm.mjs";
 import { log, notify, run } from "./lib/run.mjs";
 import { cc } from "./targets/cc.mjs";
 import { codex } from "./targets/codex.mjs";
+import { t3code } from "./targets/t3code.mjs";
 
 const here = new URL(".", import.meta.url).pathname;
 const stateFile = `${here}state.json`;
@@ -23,7 +24,7 @@ const lockFile = `${here}.lock`;
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
 const forced = args.includes("--force") ? args[args.indexOf("--force") + 1] : null;
-const targets = [codex, cc];
+const targets = [codex, cc, t3code];
 if (forced && !targets.some(t => t.name === forced)) { console.error(`unknown target ${forced}; use ${targets.map(t => t.name).join(" or ")}`); process.exit(1); }
 
 // The lock names its process. A run killed outright (it happened once, most likely an

@@ -9,8 +9,10 @@ import { PrivacyError, privacyScan } from "../../../codex/extract/codex/lib/priv
 import { decodeLiteral, literalsOf } from "./ts-literals.mjs";
 import { discoveredTags, libraryMarkdown, nameOf, unclassifiedMarkdown, uniqueTitles } from "./presentation.mjs";
 
-export const VERSION = "0.1.6-nightly.20261031.3956";
-export const COMMIT = "d92c437baa19409f99416a44f748f148f4317c65";
+const release = JSON.parse(readFileSync(new URL('../release.json', import.meta.url), 'utf8'));
+if (!/^\d+\.\d+\.\d+(?:-nightly\.\d{8}\.\d+)?$/.test(release.version) || !/^[0-9a-f]{40}$/.test(release.commit)) throw new Error('Invalid public release pin');
+export const VERSION = release.version;
+export const COMMIT = release.commit;
 export const UPSTREAM = "https://github.com/pingdotgg/t3code";
 export const ROOT_PACKAGE = "t3";
 export const DISCOVERY_SCHEMA_VERSION = "t3code-discovery-v1";
@@ -94,7 +96,8 @@ function exclusionReason(file, pkg, runtimeFiles) {
     if (/^(?:README|AGENTS|CONTRIBUTING|CHANGELOG|LICENSE)(?:\.|$)/i.test(relative)) return "package documentation or license outside the runtime source root";
     return "outside the package runtime source root and not a manifest runtime entry";
   }
-  if (/(?:^|\/)(?:test|tests|__tests__|fixtures?|storybook)(?:\/|$)|\.(?:test|spec|stories)\.[^.]+$/i.test(relative)) return "test, fixture or story source excluded from the shipped runtime library";
+  if (/(?:^|\/)(?:test|tests|__tests__|testing|testkit|testUtils|testFixtures|fixtures?|storybook)(?:\/|$)|\.(?:test|spec|stories|testkit|testFixtures|fixture)\.[^.]+$/i.test(relative)) return "test, fixture or story source excluded from the shipped runtime library";
+  if (/(?:TestFixtures|test-fixtures|DevReplayHost)\.(?:ts|tsx|js|json)$/.test(relative)) return "development replay or test fixture source";
   const extension = path.extname(file).toLowerCase();
   if (extension === ".svg" || /\/assets\/icons?\//.test(file)) return "visual asset without executable or model-facing source text";
   if ([".css", ".scss", ".sass", ".less"].includes(extension)) return "style asset outside the harness text surface";

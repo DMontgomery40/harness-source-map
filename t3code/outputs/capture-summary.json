@@ -790,18 +790,18 @@
       }
     ],
     "trackedFiles": 4787,
-    "includedFiles": 2858,
-    "excludedFiles": 1929,
-    "sourceIdentity": "e771edd98dbd673d35c4efa436baf06c7e0762ceab21d18da6579c3b55b37c8b"
+    "includedFiles": 2814,
+    "excludedFiles": 1973,
+    "sourceIdentity": "6b7a5e1f1e95a33d161c7abaa0be6a82ff9e9016934abd85d85a3e761cbf6dc9"
   },
   "discovery": {
-    "files": 2858,
-    "scannedCodeFiles": 2849,
+    "files": 2814,
+    "scannedCodeFiles": 2805,
     "scannedAssetFiles": 9,
-    "literals": 174765,
-    "selected": 33097,
+    "literals": 171877,
+    "selected": 32859,
     "skipped": {
-      "not-prose-or-prompt-role": 141770
+      "not-prose-or-prompt-role": 139120
     },
     "parseFailures": [
       {
@@ -920,20 +920,20 @@
         "fallback": "complete contiguous source spans"
       }
     ],
-    "eligible": 33096,
-    "batches": 2553,
-    "payloadBytes": 233190297,
+    "eligible": 32858,
+    "batches": 2535,
+    "payloadBytes": 231532121,
     "classified": 0,
     "classifiedPositives": 0,
     "sameTextMerged": 0,
     "alsoInReviewedRecords": 0,
     "publishedDiscovered": 0,
     "classifiedNegatives": 0,
-    "providerPending": 33096,
+    "providerPending": 32858,
     "withheld": 1,
     "oversized": 0,
     "localReview": 1,
-    "pending": 33097
+    "pending": 32859
   },
   "recordCounts": {
     "reference-instructions": 11,
@@ -943,7 +943,7 @@
     "reference-schemas": 242,
     "reference-launch": 101,
     "reference-configuration": 83,
-    "reference-network": 75,
+    "reference-network": 114,
     "instructions": 0,
     "context-templates": 0,
     "tools-parameters": 0

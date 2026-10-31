@@ -2029,6 +2029,1059 @@
         "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
         "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
       }
+    },
+    {
+      "id": "network-8525596b5d5e320c2e36",
+      "title": "CLI_RELEASE_REPOSITORY (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CLI_RELEASE_REPOSITORY = \"pingdotgg/t3code\";\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 6,
+          "endLine": 6,
+          "startOffset": 137,
+          "endOffset": 188,
+          "sha256": "22d905f66349e3068b39a07b1b03dcb5966bb418e3ab91c325cbadd9c306be8a",
+          "textSha256": "22d905f66349e3068b39a07b1b03dcb5966bb418e3ab91c325cbadd9c306be8a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L6-L6"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-2fb80d8c990f48e89766",
+      "title": "CLI_RELEASES_PAGE_URL (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const CLI_RELEASES_PAGE_URL = `https://github.com/${CLI_RELEASE_REPOSITORY}/releases`;\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 7,
+          "endLine": 7,
+          "startOffset": 188,
+          "endOffset": 282,
+          "sha256": "2c6e99e8a3b9d4bfc36fd3d704d3293e320e16195f7b5248e7d45e4bad84e0a0",
+          "textSha256": "2c6e99e8a3b9d4bfc36fd3d704d3293e320e16195f7b5248e7d45e4bad84e0a0",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L7-L7"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-80c9281aa67f9210d6ce",
+      "title": "CLI_RELEASE_CHECKSUMS_FILE (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const CLI_RELEASE_CHECKSUMS_FILE = \"SHA256SUMS\";\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 8,
+          "endLine": 8,
+          "startOffset": 282,
+          "endOffset": 338,
+          "sha256": "bb1a18f2bb34ed83e9dae434da0a1b08eaf1e253f884d726f6f6c2779e93dc05",
+          "textSha256": "bb1a18f2bb34ed83e9dae434da0a1b08eaf1e253f884d726f6f6c2779e93dc05",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L8-L8"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-921e983258b6720f9c20",
+      "title": "CLI_RELEASE_BASE_URL_ENV (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const CLI_RELEASE_BASE_URL_ENV = \"T3CODE_RELEASE_BASE_URL\";\n\n// Keep archive keys aligned with the Linux matrix, Windows ARM64 build, and cli_archive rows in release.yml.\n// Node single-executables do not support darwin-x64 and segfault at startup.\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 9,
+          "endLine": 12,
+          "startOffset": 338,
+          "endOffset": 594,
+          "sha256": "27f4ae792c0866bace2a768617a06a7e6da3a42af2cd6920bcb2cd6f75178e02",
+          "textSha256": "27f4ae792c0866bace2a768617a06a7e6da3a42af2cd6920bcb2cd6f75178e02",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L9-L12"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-ff18b4629359de4d172e",
+      "title": "CLI_ARCHIVE_PLATFORM_KEYS (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CLI_ARCHIVE_PLATFORM_KEYS = [\n  \"darwin-arm64\",\n  \"linux-arm64\",\n  \"linux-x64\",\n  \"win32-arm64\",\n  \"win32-x64\",\n] as const;\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 13,
+          "endLine": 19,
+          "startOffset": 594,
+          "endOffset": 724,
+          "sha256": "b28b367faf5b5b98d422ad6eb152738d42f121d909f3a9a2494d67f5e1250884",
+          "textSha256": "b28b367faf5b5b98d422ad6eb152738d42f121d909f3a9a2494d67f5e1250884",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L13-L19"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-4e33e515d5c305b107cf",
+      "title": "CliArchivePlatformKey (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export type CliArchivePlatformKey = (typeof CLI_ARCHIVE_PLATFORM_KEYS)[number];\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 20,
+          "endLine": 21,
+          "startOffset": 724,
+          "endOffset": 805,
+          "sha256": "27c829c59c3a832e99089c763a902855acbb3d082a1ab3e90360d662d2c44819",
+          "textSha256": "27c829c59c3a832e99089c763a902855acbb3d082a1ab3e90360d662d2c44819",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L20-L21"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-2c51455b29640b580b36",
+      "title": "cliArchivePlatformKey (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function cliArchivePlatformKey(\n  platform: NodeJS.Platform,\n  arch: string,\n): CliArchivePlatformKey | undefined {\n  const key = `${platform}-${arch}`;\n  return CLI_ARCHIVE_PLATFORM_KEYS.find((candidate) => candidate === key);\n}\n\n/** Use System32 bsdtar on Windows; Git-for-Windows GNU tar cannot open zip archives. */\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 22,
+          "endLine": 30,
+          "startOffset": 805,
+          "endOffset": 1132,
+          "sha256": "86d1b3598f05dbc7ec1b8e24192e7d4a72d4e61560ca928c46d1e79ec5ce05ae",
+          "textSha256": "86d1b3598f05dbc7ec1b8e24192e7d4a72d4e61560ca928c46d1e79ec5ce05ae",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L22-L30"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-594c65992ec35125a02c",
+      "title": "cliArchiveTarCommand (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function cliArchiveTarCommand(\n  platform: NodeJS.Platform,\n  env: Readonly<Record<string, string | undefined>>,\n): string {\n  if (platform !== \"win32\") return \"tar\";\n  const systemRoot = env[\"SystemRoot\"] ?? env[\"windir\"] ?? \"C:\\\\Windows\";\n  return `${systemRoot}\\\\System32\\\\tar.exe`;\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 31,
+          "endLine": 39,
+          "startOffset": 1132,
+          "endOffset": 1428,
+          "sha256": "241bbc83aa51399bdc6f46316d6b8ff86862704fa8f28fd9775be9ecb3d6f602",
+          "textSha256": "241bbc83aa51399bdc6f46316d6b8ff86862704fa8f28fd9775be9ecb3d6f602",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L31-L39"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-7858a17d8fee3316a544",
+      "title": "cliArchiveFileName (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function cliArchiveFileName(version: string, platformKey: CliArchivePlatformKey): string {\n  return `t3-${version}-${platformKey}.${platformKey.startsWith(\"win32\") ? \"zip\" : \"tar.gz\"}`;\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 40,
+          "endLine": 43,
+          "startOffset": 1428,
+          "endOffset": 1624,
+          "sha256": "609afca92631973608b19e94fcd3dfb427ab881d88a6951acba07d133f304d07",
+          "textSha256": "609afca92631973608b19e94fcd3dfb427ab881d88a6951acba07d133f304d07",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L40-L43"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-7ed4bf20ab38a5a133e3",
+      "title": "CLI_RELEASE_DEFAULT_BASE_URL (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CLI_RELEASE_DEFAULT_BASE_URL = `https://github.com/${CLI_RELEASE_REPOSITORY}/releases/download`;\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 44,
+          "endLine": 45,
+          "startOffset": 1624,
+          "endOffset": 1728,
+          "sha256": "8eabb730b139ddb71a3c1dcc2e40dc4bf942e9fe4dac76979326764a1839c247",
+          "textSha256": "8eabb730b139ddb71a3c1dcc2e40dc4bf942e9fe4dac76979326764a1839c247",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L44-L45"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-1b359c478b56541bb584",
+      "title": "cliReleaseDownloadBaseUrl (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function cliReleaseDownloadBaseUrl(\n  version: string,\n  baseUrl: string | undefined = CLI_RELEASE_DEFAULT_BASE_URL,\n): string {\n  return `${(baseUrl?.trim() || CLI_RELEASE_DEFAULT_BASE_URL).replace(/\\/+$/, \"\")}/v${version}`;\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 46,
+          "endLine": 52,
+          "startOffset": 1728,
+          "endOffset": 1964,
+          "sha256": "10e063f685bb3e467cd708c9b7d188cea6022a21cd68a969583a4df3c280fe7c",
+          "textSha256": "10e063f685bb3e467cd708c9b7d188cea6022a21cd68a969583a4df3c280fe7c",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L46-L52"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-454592781dedab0293fa",
+      "title": "parseChecksums (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function parseChecksums(text: string): ReadonlyMap<string, string> {\n  const checksums = new Map<string, string>();\n  for (const line of text.split(/\\r?\\n/)) {\n    const match = /^([0-9a-fA-F]{64})\\s+\\*?(\\S.*)$/.exec(line.trim());\n    if (match?.[1] !== undefined && match[2] !== undefined) {\n      checksums.set(match[2], match[1].toLowerCase());\n    }\n  }\n  return checksums;\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 53,
+          "endLine": 63,
+          "startOffset": 1964,
+          "endOffset": 2352,
+          "sha256": "2faf7aeab01ed5343c428b30d070bf7bd2523ef8904ec4dbfccfc5fcc049840e",
+          "textSha256": "2faf7aeab01ed5343c428b30d070bf7bd2523ef8904ec4dbfccfc5fcc049840e",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L53-L63"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-4892b652186e2821153b",
+      "title": "CliReleaseChannel (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export type CliReleaseChannel = \"stable\" | \"nightly\" | \"preview\";\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 64,
+          "endLine": 64,
+          "startOffset": 2352,
+          "endOffset": 2418,
+          "sha256": "a60d3d81950685064ad7be2ca2b380cdc9142dbb4ca41f6a042278071240d9d2",
+          "textSha256": "a60d3d81950685064ad7be2ca2b380cdc9142dbb4ca41f6a042278071240d9d2",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L64-L64"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-5cea7307cf8242196803",
+      "title": "CLI_RELEASE_CHANNELS (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const CLI_RELEASE_CHANNELS: ReadonlyArray<CliReleaseChannel> = [\n  \"stable\",\n  \"nightly\",\n  \"preview\",\n];\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 65,
+          "endLine": 70,
+          "startOffset": 2418,
+          "endOffset": 2532,
+          "sha256": "0a243473b8335b639b6b5c5e76f52b774560b8aa024c04b5495c06011373e0b4",
+          "textSha256": "0a243473b8335b639b6b5c5e76f52b774560b8aa024c04b5495c06011373e0b4",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L65-L70"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-45528f25dc46bc7237fe",
+      "title": "cliReleaseChannelOf (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function cliReleaseChannelOf(version: string): CliReleaseChannel {\n  const channel = /^[^-+]+-(nightly|preview)\\.\\d{8}\\.\\d+$/.exec(version)?.[1];\n  return channel === \"nightly\" || channel === \"preview\" ? channel : \"stable\";\n}\n\n/** Whether updating between these versions crosses Stable and Nightly. Preview builds cross nothing.\n * Hosts refuse a crossing outside a track switch, which checks the database first. */\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 71,
+          "endLine": 77,
+          "startOffset": 2532,
+          "endOffset": 2955,
+          "sha256": "7a41cea973a61a2bc277aa81ab9f4f6e60469095327dc739785afa52cf9e8d84",
+          "textSha256": "7a41cea973a61a2bc277aa81ab9f4f6e60469095327dc739785afa52cf9e8d84",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L71-L77"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-da3b27115f4b0720ef0b",
+      "title": "crossesReleaseTrack (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function crossesReleaseTrack(fromVersion: string, toVersion: string): boolean {\n  const from = cliReleaseChannelOf(fromVersion);\n  const to = cliReleaseChannelOf(toVersion);\n  return from !== to && from !== \"preview\" && to !== \"preview\";\n}\n\n/** The desktop update track a build belongs to. Preview builds have no feed and read as Stable. */\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 78,
+          "endLine": 84,
+          "startOffset": 2955,
+          "endOffset": 3303,
+          "sha256": "50b3cfff9cb7d4a2060b5902aefa6d6c2d0652215720a9a97a176d6dd44b577c",
+          "textSha256": "50b3cfff9cb7d4a2060b5902aefa6d6c2d0652215720a9a97a176d6dd44b577c",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L78-L84"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-1ddef86432a7322b5927",
+      "title": "desktopUpdateChannelOf (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function desktopUpdateChannelOf(version: string): \"latest\" | \"nightly\" {\n  return cliReleaseChannelOf(version) === \"nightly\" ? \"nightly\" : \"latest\";\n}\n\n/** Whether a track switch may install `found` after its database check cleared `checked`: any build\n * on the switch's track at least as new, since later releases only add migrations. */\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 85,
+          "endLine": 90,
+          "startOffset": 3303,
+          "endOffset": 3650,
+          "sha256": "9875f4e2b2e2f95d7fc47c11edc6f957f38268c467021cb9d6f6003bea5efaed",
+          "textSha256": "9875f4e2b2e2f95d7fc47c11edc6f957f38268c467021cb9d6f6003bea5efaed",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L85-L90"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-8703366a120150427903",
+      "title": "acceptsTrackSwitchRelease (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function acceptsTrackSwitchRelease(\n  found: string,\n  channel: \"latest\" | \"nightly\",\n  checked: string,\n): boolean {\n  return (\n    cliReleaseChannelOf(found) === (channel === \"nightly\" ? \"nightly\" : \"stable\") &&\n    compareSemverVersions(found, checked) >= 0\n  );\n}\n\n/** Page until the channel matches; nightlies can push preview/stable releases past the first page. */\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 91,
+          "endLine": 102,
+          "startOffset": 3650,
+          "endOffset": 4029,
+          "sha256": "a6642d036881d54fd527ed406bd2a51b3ab6e2306c0e5193e3f0290aa2393a05",
+          "textSha256": "a6642d036881d54fd527ed406bd2a51b3ab6e2306c0e5193e3f0290aa2393a05",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L91-L102"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-b05d935284053c823848",
+      "title": "cliReleaseIndexPageUrl (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function cliReleaseIndexPageUrl(page: number): string {\n  return `https://api.github.com/repos/${CLI_RELEASE_REPOSITORY}/releases?per_page=100&page=${page}`;\n}\n\n/** Draft assets are not downloadable. */\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 103,
+          "endLine": 107,
+          "startOffset": 4029,
+          "endOffset": 4239,
+          "sha256": "c2be35ef199628f9e8c66d6acb8f4e228987f43acdafb6ffc0cbb06602fd1a43",
+          "textSha256": "c2be35ef199628f9e8c66d6acb8f4e228987f43acdafb6ffc0cbb06602fd1a43",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L103-L107"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-0a2035035854afc7ef8a",
+      "title": "newestCliReleaseVersion (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function newestCliReleaseVersion(\n  releases: ReadonlyArray<{\n    readonly tag_name: string;\n    readonly draft?: boolean | undefined;\n  }>,\n  channel: CliReleaseChannel,\n): string | undefined {\n  for (const release of releases) {\n    if (release.draft) continue;\n    const version = /^v(\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?)$/.exec(release.tag_name)?.[1];\n    if (version === undefined) continue;\n    if (cliReleaseChannelOf(version) === channel) return version;\n  }\n  return undefined;\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 108,
+          "endLine": 123,
+          "startOffset": 4239,
+          "endOffset": 4734,
+          "sha256": "cd1bbf11f9c7cdf9dfbdacee9d35aa896d3e8252d96e5d52b292722fd55977ce",
+          "textSha256": "cd1bbf11f9c7cdf9dfbdacee9d35aa896d3e8252d96e5d52b292722fd55977ce",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L108-L123"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-b3313326e8b7ae9302dc",
+      "title": "NpmReleaseMigrationManifest (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const NpmReleaseMigrationManifest = Schema.Struct({\n  t3code: Schema.Struct({ databaseMigration: Schema.Int }),\n});\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 124,
+          "endLine": 126,
+          "startOffset": 4734,
+          "endOffset": 4850,
+          "sha256": "ed7661a875d26a4d6f1d10253f3f38c437c4edfb1b3a1485db8b4c0556743f7b",
+          "textSha256": "ed7661a875d26a4d6f1d10253f3f38c437c4edfb1b3a1485db8b4c0556743f7b",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L124-L126"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-f0fd5ad06348e7762e61",
+      "title": "decodeNpmReleaseMigrationManifest (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const decodeNpmReleaseMigrationManifest = Schema.decodeUnknownOption(NpmReleaseMigrationManifest);\n\n/** Highest database migration a release's server knows, from its npm `t3` manifest. */\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 127,
+          "endLine": 129,
+          "startOffset": 4850,
+          "endOffset": 5038,
+          "sha256": "725269855b5ce206ce59c7c0ca4153afb6bec6783ea740b5814a8ce8ce78d8a6",
+          "textSha256": "725269855b5ce206ce59c7c0ca4153afb6bec6783ea740b5814a8ce8ce78d8a6",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L127-L129"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-8f0b2abedea7792a3b64",
+      "title": "npmReleaseDatabaseMigration (cliRelease.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function npmReleaseDatabaseMigration(manifest: unknown): number | undefined {\n  return Option.getOrUndefined(decodeNpmReleaseMigrationManifest(manifest))?.t3code\n    .databaseMigration;\n}\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/cliRelease.ts",
+          "startLine": 130,
+          "endLine": 133,
+          "startOffset": 5038,
+          "endOffset": 5233,
+          "sha256": "99454cfc333805bbfef5345153b6e7c5ee32e4c6a1d7223b8169ea5ca0e951ac",
+          "textSha256": "99454cfc333805bbfef5345153b6e7c5ee32e4c6a1d7223b8169ea5ca0e951ac",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/cliRelease.ts#L130-L133"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-dc18bd9c1feae3abefe3",
+      "title": "trimNonEmptyOption (DesktopConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const trimNonEmptyOption = (value: string): Option.Option<string> => {\n  const trimmed = value.trim();\n  return trimmed.length > 0 ? Option.some(trimmed) : Option.none();\n};\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopConfig.ts",
+          "startLine": 6,
+          "endLine": 10,
+          "startOffset": 225,
+          "endOffset": 400,
+          "sha256": "b1e458bcb80817e9b737c15ca7199b83d292044775f8be9c45b40a56df587a74",
+          "textSha256": "b1e458bcb80817e9b737c15ca7199b83d292044775f8be9c45b40a56df587a74",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopConfig.ts#L6-L10"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-17d75118922762e063e3",
+      "title": "trimmedString (DesktopConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const trimmedString = (name: string) =>\n  Config.String(name).pipe(Config.option, Config.map(Option.flatMap(trimNonEmptyOption)));\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopConfig.ts",
+          "startLine": 11,
+          "endLine": 13,
+          "startOffset": 400,
+          "endOffset": 532,
+          "sha256": "8b49fd6e35bbe1a39d0d60b11da4d8cc65bb40a81b265f901b30c5e3c3a57f08",
+          "textSha256": "8b49fd6e35bbe1a39d0d60b11da4d8cc65bb40a81b265f901b30c5e3c3a57f08",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopConfig.ts#L11-L13"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-4c67b7e4a6542941483a",
+      "title": "optionalBoolean (DesktopConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const optionalBoolean = (name: string) =>\n  Config.Boolean(name).pipe(Config.option, Config.map(Option.getOrElse(() => false)));\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopConfig.ts",
+          "startLine": 14,
+          "endLine": 16,
+          "startOffset": 532,
+          "endOffset": 662,
+          "sha256": "e5baadbf0671429b2f6ef00ffb5a7d23784b7c978499c9b3c5ef3aede75d8153",
+          "textSha256": "e5baadbf0671429b2f6ef00ffb5a7d23784b7c978499c9b3c5ef3aede75d8153",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopConfig.ts#L14-L16"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-76a22d9c1c7e6905915f",
+      "title": "commaSeparatedStrings (DesktopConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const commaSeparatedStrings = (name: string) =>\n  trimmedString(name).pipe(\n    Config.map(\n      Option.match({\n        onNone: () => [],\n        onSome: (value) =>\n          value\n            .split(\",\")\n            .map((entry) => entry.trim())\n            .filter((entry) => entry.length > 0),\n      }),\n    ),\n  );\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopConfig.ts",
+          "startLine": 17,
+          "endLine": 30,
+          "startOffset": 662,
+          "endOffset": 983,
+          "sha256": "eb5154420b4e98287a5ad4878671b001dc6858dc0e2ae7270ea2956d60ad4e49",
+          "textSha256": "eb5154420b4e98287a5ad4878671b001dc6858dc0e2ae7270ea2956d60ad4e49",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopConfig.ts#L17-L30"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-daf008b3ebea34507c6b",
+      "title": "compactEnv (DesktopConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const compactEnv = (env: Readonly<Record<string, string | undefined>>): Record<string, string> =>\n  Object.fromEntries(\n    Object.entries(env).filter((entry): entry is [string, string] => entry[1] !== undefined),\n  );\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopConfig.ts",
+          "startLine": 31,
+          "endLine": 35,
+          "startOffset": 983,
+          "endOffset": 1203,
+          "sha256": "9697f58dd083bdfda5aa5a4c2573be48c0e301650a98bc75bbb3a4c7d5c56920",
+          "textSha256": "9697f58dd083bdfda5aa5a4c2573be48c0e301650a98bc75bbb3a4c7d5c56920",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopConfig.ts#L31-L35"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-d5011a75ddbb6a72da1d",
+      "title": "DesktopConfig (DesktopConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const DesktopConfig = Config.all({\n  appDataDirectory: trimmedString(\"APPDATA\"),\n  xdgConfigHome: trimmedString(\"XDG_CONFIG_HOME\"),\n  xdgDataHome: trimmedString(\"XDG_DATA_HOME\"),\n  t3Home: trimmedString(\"T3CODE_HOME\"),\n  devServerUrl: Config.URL(\"VITE_DEV_SERVER_URL\").pipe(Config.option),\n  appUserModelIdOverride: trimmedString(\"T3CODE_DESKTOP_APP_USER_MODEL_ID\"),\n  devRemoteT3ServerEntryPath: trimmedString(\"T3CODE_DEV_REMOTE_T3_SERVER_ENTRY_PATH\"),\n  configuredBackendPort: Config.Port(\"T3CODE_PORT\").pipe(Config.option),\n  commitHashOverride: trimmedString(\"T3CODE_COMMIT_HASH\"),\n  desktopLanHostOverride: trimmedString(\"T3CODE_DESKTOP_LAN_HOST\"),\n  desktopHttpsEndpointUrls: commaSeparatedStrings(\"T3CODE_DESKTOP_HTTPS_ENDPOINTS\"),\n  otlpTracesUrl: trimmedString(\"T3CODE_OTLP_TRACES_URL\"),\n  otlpMetricsUrl: trimmedString(\"T3CODE_OTLP_METRICS_URL\"),\n  otlpLogsUrl: trimmedString(\"T3CODE_OTLP_LOGS_URL\"),\n  otlpExportIntervalMs: Config.Int(\"T3CODE_OTLP_EXPORT_INTERVAL_MS\").pipe(\n    Config.withDefault(10_000),\n  ),\n  otlpHeaders: Config.schema(OtlpHeadersFromString, \"T3CODE_OTLP_HEADERS\").pipe(Config.option),\n  otlpProtocol: Config.schema(OtlpProtocol, \"T3CODE_OTLP_PROTOCOL\").pipe(\n    Config.withDefault(\"http/json\"),\n  ),\n  desktopLauncherPath: trimmedString(\"T3CODE_DESKTOP_LAUNCHER_PATH\"),\n  appImagePath: trimmedString(\"APPIMAGE\"),\n  disableAutoUpdate: optionalBoolean(\"T3CODE_DISABLE_AUTO_UPDATE\"),\n  mockUpdates: optionalBoolean(\"T3CODE_DESKTOP_MOCK_UPDATES\"),\n  mockUpdateServerPort: Config.Port(\"T3CODE_DESKTOP_MOCK_UPDATE_SERVER_PORT\").pipe(\n    Config.withDefault(3000),\n  ),\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopConfig.ts",
+          "startLine": 36,
+          "endLine": 66,
+          "startOffset": 1203,
+          "endOffset": 2813,
+          "sha256": "b070eb57d8deca67fcbfd2d99f355a681b549e8b68423bd7de9a57e1cc686381",
+          "textSha256": "b070eb57d8deca67fcbfd2d99f355a681b549e8b68423bd7de9a57e1cc686381",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopConfig.ts#L36-L66"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-38881595e0248d61a772",
+      "title": "layerTest (DesktopConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerTest = (env: Readonly<Record<string, string | undefined>>) =>\n  ConfigProvider.layer(ConfigProvider.fromEnv({ env: compactEnv(env) }));\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopConfig.ts",
+          "startLine": 67,
+          "endLine": 68,
+          "startOffset": 2813,
+          "endOffset": 2967,
+          "sha256": "43576ae4955eff12c5d10b9af7bcd8906cf01041a40081714d701d16adabd9bb",
+          "textSha256": "43576ae4955eff12c5d10b9af7bcd8906cf01041a40081714d701d16adabd9bb",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopConfig.ts#L67-L68"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-0cdbfe20b1f5680b37e7",
+      "title": "MakeDesktopEnvironmentInput (DesktopEnvironment.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export interface MakeDesktopEnvironmentInput {\n  readonly dirname: string;\n  readonly homeDirectory: string;\n  readonly platform: NodeJS.Platform;\n  readonly processArch: string;\n  readonly appVersion: string;\n  readonly appPath: string;\n  readonly isPackaged: boolean;\n  readonly resourcesPath: string;\n  readonly runningUnderArm64Translation: boolean;\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopEnvironment.ts",
+          "startLine": 21,
+          "endLine": 32,
+          "startOffset": 811,
+          "endOffset": 1168,
+          "sha256": "abd32a0eec1b3911ce9859c935df8eb23599f23af6d4c4fb59a97643cb9f50de",
+          "textSha256": "abd32a0eec1b3911ce9859c935df8eb23599f23af6d4c4fb59a97643cb9f50de",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopEnvironment.ts#L21-L32"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-1fba895e0118a4a57ee8",
+      "title": "DesktopEnvironment (DesktopEnvironment.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class DesktopEnvironment extends Context.Service<\n  DesktopEnvironment,\n  {\n    readonly path: Path.Path;\n    readonly dirname: string;\n    readonly platform: NodeJS.Platform;\n    readonly processArch: string;\n    readonly isPackaged: boolean;\n    readonly isDevelopment: boolean;\n    readonly appVersion: string;\n    readonly appPath: string;\n    readonly resourcesPath: string;\n    readonly homeDirectory: string;\n    readonly appDataDirectory: string;\n    readonly baseDir: string;\n    readonly stateDir: string;\n    readonly desktopSettingsPath: string;\n    readonly clientSettingsPath: string;\n    readonly savedEnvironmentRegistryPath: string;\n    readonly serverSettingsPath: string;\n    readonly logDir: string;\n    readonly browserArtifactsDir: string;\n    readonly rootDir: string;\n    readonly appRoot: string;\n    readonly serverRoot: string;\n    readonly backendEntryPath: string;\n    readonly clientAssetsDir: string;\n    readonly backendCwd: string;\n    readonly preloadPath: string;\n    readonly compileCachePath: string;\n    readonly appUpdateYmlPath: string;\n    readonly devServerUrl: Option.Option<URL>;\n    readonly devRemoteT3ServerEntryPath: Option.Option<string>;\n    readonly configuredBackendPort: Option.Option<number>;\n    readonly commitHashOverride: Option.Option<string>;\n    readonly otlpTracesUrl: Option.Option<string>;\n    readonly otlpMetricsUrl: Option.Option<string>;\n    readonly otlpLogsUrl: Option.Option<string>;\n    readonly otlpExportIntervalMs: number;\n    readonly otlpHeaders: Option.Option<Record<string, string>>;\n    readonly otlpProtocol: OtlpProtocol;\n    readonly branding: DesktopAppBranding;\n    readonly displayName: string;\n    readonly appUserModelId: string;\n    readonly linuxDesktopEntryName: string;\n    readonly linuxWmClass: string;\n    readonly linuxApplicationsDir: string;\n    readonly desktopLauncherPath: Option.Option<string>;\n    readonly appImagePath: Option.Option<string>;\n    readonly defaultDesktopSettings: DesktopAppSettings.DesktopSettings;\n    readonly runtimeInfo: DesktopRuntimeInfo;\n    readonly resolvePickFolderDefaultPath: (rawOptions: unknown) => Option.Option<string>;\n    readonly resolveResourcePathCandidates: (fileName: string) => readonly string[];\n  }\n>()(\"@t3tools/desktop/app/DesktopEnvironment\") {}\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopEnvironment.ts",
+          "startLine": 33,
+          "endLine": 88,
+          "startOffset": 1168,
+          "endOffset": 3472,
+          "sha256": "3655d63a04059957bb6221875ead9d39183b081d8d1060d48ff0a59dc7e5f6c7",
+          "textSha256": "3655d63a04059957bb6221875ead9d39183b081d8d1060d48ff0a59dc7e5f6c7",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopEnvironment.ts#L33-L88"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-12e0c25885039c85cb0a",
+      "title": "APP_BASE_NAME (DesktopEnvironment.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const APP_BASE_NAME = \"T3 Code\";\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopEnvironment.ts",
+          "startLine": 89,
+          "endLine": 90,
+          "startOffset": 3472,
+          "endOffset": 3506,
+          "sha256": "a701b7e6195f83597e88e769c21af181921875e05065a2e01645289d15da1109",
+          "textSha256": "a701b7e6195f83597e88e769c21af181921875e05065a2e01645289d15da1109",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopEnvironment.ts#L89-L90"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-f2709c5ca2a28c4c66c6",
+      "title": "resolveDesktopAppStageLabel (DesktopEnvironment.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function resolveDesktopAppStageLabel(input: {\n  readonly isDevelopment: boolean;\n  readonly appVersion: string;\n}): DesktopAppStageLabel {\n  if (input.isDevelopment) {\n    return \"Dev\";\n  }\n\n  return isNightlyDesktopVersion(input.appVersion) ? \"Nightly\" : \"Beta\";\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopEnvironment.ts",
+          "startLine": 91,
+          "endLine": 101,
+          "startOffset": 3506,
+          "endOffset": 3773,
+          "sha256": "e05006292580bc4419cfbd883b4c6f3e8ea1cc643577dd77fe29b768351b58e1",
+          "textSha256": "e05006292580bc4419cfbd883b4c6f3e8ea1cc643577dd77fe29b768351b58e1",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopEnvironment.ts#L91-L101"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-ed5303dc7a86cfde24c3",
+      "title": "resolveDesktopAppBranding (DesktopEnvironment.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function resolveDesktopAppBranding(input: {\n  readonly isDevelopment: boolean;\n  readonly appVersion: string;\n}): DesktopAppBranding {\n  const stageLabel = resolveDesktopAppStageLabel(input);\n  return {\n    baseName: APP_BASE_NAME,\n    stageLabel,\n    displayName: `${APP_BASE_NAME} (${stageLabel})`,\n  };\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopEnvironment.ts",
+          "startLine": 102,
+          "endLine": 113,
+          "startOffset": 3773,
+          "endOffset": 4089,
+          "sha256": "9831138c759631f8ccf701a14ce0aae79bbe43bca4eee3a3e32f5ad33f1b310c",
+          "textSha256": "9831138c759631f8ccf701a14ce0aae79bbe43bca4eee3a3e32f5ad33f1b310c",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopEnvironment.ts#L102-L113"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-d06a792fc69cb404df0d",
+      "title": "normalizeDesktopArch (DesktopEnvironment.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function normalizeDesktopArch(arch: string): DesktopRuntimeArch {\n  if (arch === \"arm64\") return \"arm64\";\n  if (arch === \"x64\") return \"x64\";\n  return \"other\";\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopEnvironment.ts",
+          "startLine": 114,
+          "endLine": 119,
+          "startOffset": 4089,
+          "endOffset": 4252,
+          "sha256": "24c2c052e0a5654773645f2efa560bac52c65564b7956d9c66b825b3b0fea947",
+          "textSha256": "24c2c052e0a5654773645f2efa560bac52c65564b7956d9c66b825b3b0fea947",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopEnvironment.ts#L114-L119"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-14cf59cc9394b6be7d00",
+      "title": "resolveDesktopRuntimeInfo (DesktopEnvironment.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function resolveDesktopRuntimeInfo(input: {\n  readonly platform: NodeJS.Platform;\n  readonly processArch: string;\n  readonly runningUnderArm64Translation: boolean;\n}): DesktopRuntimeInfo {\n  const appArch = normalizeDesktopArch(input.processArch);\n\n  if (input.platform !== \"darwin\") {\n    return {\n      hostArch: appArch,\n      appArch,\n      runningUnderArm64Translation: false,\n    };\n  }\n\n  const hostArch = appArch === \"arm64\" || input.runningUnderArm64Translation ? \"arm64\" : appArch;\n\n  return {\n    hostArch,\n    appArch,\n    runningUnderArm64Translation: input.runningUnderArm64Translation,\n  };\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopEnvironment.ts",
+          "startLine": 120,
+          "endLine": 143,
+          "startOffset": 4252,
+          "endOffset": 4861,
+          "sha256": "8b9eb1355605226057290e1eeb0f9a83d67c8f520f82f5e069c92a978ba0e385",
+          "textSha256": "8b9eb1355605226057290e1eeb0f9a83d67c8f520f82f5e069c92a978ba0e385",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopEnvironment.ts#L120-L143"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-efc2c98f2397406bbeaa",
+      "title": "make (DesktopEnvironment.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const make = Effect.fn(\"desktop.environment.make\")(function* (\n  input: MakeDesktopEnvironmentInput,\n): Effect.fn.Return<DesktopEnvironment[\"Service\"], Config.ConfigError, Path.Path> {\n  const path = yield* Path.Path;\n  const config = yield* DesktopConfig.DesktopConfig;\n  const homeDirectory = input.homeDirectory;\n  const devServerUrl = config.devServerUrl;\n  const isDevelopment = Option.isSome(devServerUrl);\n  const appDataDirectory =\n    input.platform === \"win32\"\n      ? Option.getOrElse(config.appDataDirectory, () =>\n          path.join(homeDirectory, \"AppData\", \"Roaming\"),\n        )\n      : input.platform === \"darwin\"\n        ? path.join(homeDirectory, \"Library\", \"Application Support\")\n        : Option.getOrElse(config.xdgConfigHome, () => path.join(homeDirectory, \".config\"));\n  const baseDir = resolveDesktopBaseDir({\n    homeDirectory,\n    joinPath: path.join,\n    t3Home: config.t3Home,\n  });\n  const rootDir = path.resolve(input.dirname, \"../../..\");\n  const appRoot = input.isPackaged ? input.appPath : rootDir;\n  const serverRoot =\n    input.isPackaged && input.platform === \"win32\"\n      ? path.join(input.resourcesPath, \"server.asar\")\n      : appRoot;\n  const branding = resolveDesktopAppBranding({\n    isDevelopment,\n    appVersion: input.appVersion,\n  });\n  const displayName = branding.displayName;\n  const stateDir = resolveDesktopStateDir({\n    baseDir,\n    isDevelopment,\n    joinPath: path.join,\n    t3Home: config.t3Home,\n  });\n  const linuxApplicationsDir = path.join(\n    Option.getOrElse(config.xdgDataHome, () => path.join(homeDirectory, \".local\", \"share\")),\n    \"applications\",\n  );\n  const resourcesPath = input.resourcesPath;\n\n  return DesktopEnvironment.of({\n    path,\n    dirname: input.dirname,\n    platform: input.platform,\n    processArch: input.processArch,\n    isPackaged: input.isPackaged,\n    isDevelopment,\n    appVersion: input.appVersion,\n    appPath: input.appPath,\n    resourcesPath,\n    homeDirectory,\n    appDataDirectory,\n    baseDir,\n    stateDir,\n    desktopSettingsPath: path.join(stateDir, \"desktop-settings.json\"),\n    clientSettingsPath: path.join(stateDir, \"client-settings.json\"),\n    savedEnvironmentRegistryPath: path.join(stateDir, \"saved-environments.json\"),\n    serverSettingsPath: path.join(stateDir, \"settings.json\"),\n    logDir: path.join(stateDir, \"logs\"),\n    browserArtifactsDir: path.join(stateDir, \"browser-artifacts\"),\n    rootDir,\n    appRoot,\n    serverRoot,\n    backendEntryPath: path.join(serverRoot, \"apps/server/dist/bin.mjs\"),\n    clientAssetsDir: path.join(serverRoot, \"apps/server/dist/client\"),\n    backendCwd: input.isPackaged ? homeDirectory : appRoot,\n    preloadPath: path.join(input.dirname, \"preload.cjs\"),\n    compileCachePath: path.join(input.dirname, \"compileCache.cjs\"),\n    appUpdateYmlPath: input.isPackaged\n      ? path.join(resourcesPath, \"app-update.yml\")\n      : path.join(input.appPath, \"dev-app-update.yml\"),\n    devServerUrl,\n    devRemoteT3ServerEntryPath: config.devRemoteT3ServerEntryPath,\n    configuredBackendPort: config.configuredBackendPort,\n    commitHashOverride: config.commitHashOverride,\n    otlpTracesUrl: config.otlpTracesUrl,\n    otlpMetricsUrl: config.otlpMetricsUrl,\n    otlpLogsUrl: config.otlpLogsUrl,\n    otlpExportIntervalMs: config.otlpExportIntervalMs,\n    otlpHeaders: config.otlpHeaders,\n    otlpProtocol: config.otlpProtocol,\n    branding,\n    displayName,\n    appUserModelId: Option.getOrElse(config.appUserModelIdOverride, () =>\n      isDevelopment ? \"com.t3tools.t3code.dev\" : \"com.t3tools.t3code\",\n    ),\n    linuxDesktopEntryName: resolveLinuxDesktopEntryName(isDevelopment),\n    linuxWmClass: isDevelopment ? \"t3code-dev\" : \"t3code\",\n    linuxApplicationsDir,\n    desktopLauncherPath: config.desktopLauncherPath,\n    appImagePath: config.appImagePath,\n    defaultDesktopSettings: DesktopAppSettings.resolveDefaultDesktopSettings(input.appVersion),\n    runtimeInfo: resolveDesktopRuntimeInfo({\n      platform: input.platform,\n      processArch: input.processArch,\n      runningUnderArm64Translation: input.runningUnderArm64Translation,\n    }),\n    resolvePickFolderDefaultPath: (rawOptions) => {\n      if (typeof rawOptions !== \"object\" || rawOptions === null) {\n        return Option.none();\n      }\n\n      const { initialPath } = rawOptions as { initialPath?: unknown };\n      if (typeof initialPath !== \"string\") {\n        return Option.none();\n      }\n\n      const trimmedPath = initialPath.trim();\n      if (trimmedPath.length === 0) {\n        return Option.none();\n      }\n\n      if (trimmedPath === \"~\") {\n        return Option.some(homeDirectory);\n      }\n\n      if (trimmedPath.startsWith(\"~/\") || trimmedPath.startsWith(\"~\\\\\")) {\n        return Option.some(path.join(homeDirectory, trimmedPath.slice(2)));\n      }\n\n      return Option.some(path.resolve(trimmedPath));\n    },\n    resolveResourcePathCandidates: (fileName) => [\n      path.join(input.dirname, \"../resources\", fileName),\n      path.join(input.dirname, \"../prod-resources\", fileName),\n      path.join(resourcesPath, \"resources\", fileName),\n      path.join(resourcesPath, fileName),\n    ],\n  });\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopEnvironment.ts",
+          "startLine": 144,
+          "endLine": 278,
+          "startOffset": 4861,
+          "endOffset": 9972,
+          "sha256": "a330db56cbc712df4791b30c54c588cc3630c55cb5efc9959f37bca090d7c0ba",
+          "textSha256": "a330db56cbc712df4791b30c54c588cc3630c55cb5efc9959f37bca090d7c0ba",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopEnvironment.ts#L144-L278"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-1b022600dd625f7041cc",
+      "title": "layer (DesktopEnvironment.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layer = (input: MakeDesktopEnvironmentInput) =>\n  Layer.effect(DesktopEnvironment, make(input));\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/app/DesktopEnvironment.ts",
+          "startLine": 279,
+          "endLine": 280,
+          "startOffset": 9972,
+          "endOffset": 10082,
+          "sha256": "ae52d3b8f331f2e6816488a7c84ee6beb592d86563a3cf3393c62296d7f0a9c3",
+          "textSha256": "ae52d3b8f331f2e6816488a7c84ee6beb592d86563a3cf3393c62296d7f0a9c3",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/app/DesktopEnvironment.ts#L279-L280"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
     }
   ]
 }

@@ -785,9 +785,9 @@
       }
     ],
     "trackedFiles": 4787,
-    "includedFiles": 2858,
-    "excludedFiles": 1929,
-    "sourceIdentity": "e771edd98dbd673d35c4efa436baf06c7e0762ceab21d18da6579c3b55b37c8b"
+    "includedFiles": 2814,
+    "excludedFiles": 1973,
+    "sourceIdentity": "6b7a5e1f1e95a33d161c7abaa0be6a82ff9e9016934abd85d85a3e761cbf6dc9"
   },
   "files": [
     {
@@ -7571,28 +7571,6 @@
       "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
       "provenance": [
         {
-          "file": "apps/server/src/mcp/McpSessionRegistry.testkit.ts",
-          "startLine": 1,
-          "endLine": 29,
-          "sha256": "c48eb79c96cc6ba44f8aeca1265854ae37b91e82161a8577529c29182d3915ce",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpSessionRegistry.testkit.ts#L1-L29"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 1074,
-        "gitBlob": "84676e7ccb1b4f790663ccd99f764a2d1d2ca192",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
           "file": "apps/server/src/mcp/McpSessionRegistry.ts",
           "startLine": 1,
           "endLine": 218,
@@ -7606,28 +7584,6 @@
         "package": "t3",
         "bytes": 8332,
         "gitBlob": "962beb1aed6c7852c040f0a0e88a8fed500d2fef",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/mcp/McpToolAccess.testkit.ts",
-          "startLine": 1,
-          "endLine": 102,
-          "sha256": "499d3dc5b2584a78a82dc8a551f2cbc2f3fea6b9823c31d234d25bbc6a08d666",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.testkit.ts#L1-L102"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 2973,
-        "gitBlob": "a985c1477a232a57cb90da72b5e8eb9adb5d793d",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -8561,50 +8517,6 @@
       "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
       "provenance": [
         {
-          "file": "apps/server/src/orchestration-v2/Adapters/AcpAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 317,
-          "sha256": "d9c23af720e2b1f608a22a3e5c29243708cc50bcafe14c6e96964645224aba81",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/AcpAdapterV2.testkit.ts#L1-L317"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 11135,
-        "gitBlob": "d043ac09a6aeed76c9a168810b64f9b70541daff",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/Adapters/AcpRegistryAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 103,
-          "sha256": "59d74cb51bbcd31fa2c3ada03457ca4a619d9514c50ecca711ef2f2d7371be1b",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/AcpRegistryAdapterV2.testkit.ts#L1-L103"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 3976,
-        "gitBlob": "2e5d9e4058da1e856fabf486dfff970c93d07dba",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
           "file": "apps/server/src/orchestration-v2/Adapters/AntigravityAdapterV2.ts",
           "startLine": 1,
           "endLine": 265,
@@ -8618,28 +8530,6 @@
         "package": "t3",
         "bytes": 10014,
         "gitBlob": "bc842d2ec97247cca755b23e2ecfecef97d9c406",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 2845,
-          "sha256": "c27dd70461b664ed95772503980ce25b325f1d5a67e7304762ccc21440740867",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.testkit.ts#L1-L2845"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 98708,
-        "gitBlob": "c975e022b37dff63505d283bd9cfb5bb3919fe19",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -8715,28 +8605,6 @@
       "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
       "provenance": [
         {
-          "file": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 192,
-          "sha256": "48ee609b2db77e23be99e0419250ddfaa5f62ae74a8f177645b9d5d0ca473ec9",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.testkit.ts#L1-L192"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 7066,
-        "gitBlob": "6e07b695da62137e8afdedd6755bc22282bb47ee",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
           "file": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts",
           "startLine": 1,
           "endLine": 7906,
@@ -8750,160 +8618,6 @@
         "package": "t3",
         "bytes": 331364,
         "gitBlob": "2e2fdd4331c1f8255fbbe15fc04d57f25fe117f0",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/Adapters/CursorAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 908,
-          "sha256": "0f27b41124986564596cede6a544196f38de019c907883e0cb292dd0f2dc6ba5",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/CursorAdapterV2.testkit.ts#L1-L908"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 30609,
-        "gitBlob": "7310cc7c81ea0d729ed68d0f7ece27a91a206059",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/Adapters/FxAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 98,
-          "sha256": "ad37fba04ba8471474ed0bed21f7caf226690279bf11a7f0ef98c2ed3bb6c1fe",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/FxAdapterV2.testkit.ts#L1-L98"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 3847,
-        "gitBlob": "2161c30a4f51c0a55d8adec977fa478507bcd50c",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/Adapters/GrokAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 106,
-          "sha256": "f62ec25b1b40181836b2f1929120490f416ec6fac1ff7b186a1ff4a8b50c25af",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/GrokAdapterV2.testkit.ts#L1-L106"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 4501,
-        "gitBlob": "9b4483561ce0af92b955d142e538ec99ae25f382",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/Adapters/MuseAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 486,
-          "sha256": "a30dcd8444410235ba49e36e0e59155835a9926b2b9d770cf2ceb18215faf626",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/MuseAdapterV2.testkit.ts#L1-L486"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 17006,
-        "gitBlob": "55576ea5f362a009d05f273b87b4f87ff53282be",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/Adapters/OpenCode2AdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 354,
-          "sha256": "235e406f53b9541d4c07df4606df4d19d6e6a3f1962850ce3e914b366b912cd5",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/OpenCode2AdapterV2.testkit.ts#L1-L354"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 14984,
-        "gitBlob": "9a5f0332f9cc1bec2c3efa774dc31287efe30153",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/Adapters/OpenCodeAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 472,
-          "sha256": "4288193f6754a551528fea0644f848a755c20658bc04e75e5fe22ee5c248bb4f",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/OpenCodeAdapterV2.testkit.ts#L1-L472"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 16612,
-        "gitBlob": "90ce687ca591faadd25a71ad4d280d582363f197",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/Adapters/PiAdapterV2.testkit.ts",
-          "startLine": 1,
-          "endLine": 472,
-          "sha256": "bd672011a740d733d6767355d26a6306606c30ceee065988baf25d9f75cffd4b",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/Adapters/PiAdapterV2.testkit.ts#L1-L472"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 17045,
-        "gitBlob": "49eb6c9b3b999eb4f4c82ee10dfbca86bb6f8cc4",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -9771,28 +9485,6 @@
       "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
       "provenance": [
         {
-          "file": "apps/server/src/orchestration-v2/ProviderTurnStartService.testkit.ts",
-          "startLine": 1,
-          "endLine": 62,
-          "sha256": "fcbb06761ecb9120f5f9609a485fb0c86e4425a4ada64ab290bf022a7a22114a",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/ProviderTurnStartService.testkit.ts#L1-L62"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 2759,
-        "gitBlob": "5b614b1e2aa6c4ba366fdf9ba4eb05ba298766c9",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
           "file": "apps/server/src/orchestration-v2/ProviderTurnStartService.ts",
           "startLine": 1,
           "endLine": 1552,
@@ -10114,160 +9806,6 @@
         "package": "t3",
         "bytes": 24522,
         "gitBlob": "67d07d6684c0876c1894ef2801a54274bbbd57cb",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/testkit/CommandOutputRecorder.ts",
-          "startLine": 1,
-          "endLine": 53,
-          "sha256": "f78ae5ff127d35189806af81e0d8e4960d2ce916b6b14e406e92e32a827f2245",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/CommandOutputRecorder.ts#L1-L53"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 1867,
-        "gitBlob": "51951bfc3ad30fa73b2ff72683243b1f6bbeb9d6",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/testkit/DeterministicRuntime.ts",
-          "startLine": 1,
-          "endLine": 13,
-          "sha256": "00e467808f4c6beebac40417b1d7b30b4a3430339496e80cd84b9c281977a7b9",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/DeterministicRuntime.ts#L1-L13"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 397,
-        "gitBlob": "2c2187d64a7a3d3f9ac2c84ceb2ee2ecfa5e2416",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/testkit/OrchestratorScenario.ts",
-          "startLine": 1,
-          "endLine": 731,
-          "sha256": "f9cdc7e95e20954713b1f6b6c75b39443a32f1336fef45db1ed8c55d02cd2e76",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/OrchestratorScenario.ts#L1-L731"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 27077,
-        "gitBlob": "77e8bae8f085fd2121bede9a7d8f6019dd5e503b",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/testkit/ProviderReplayFixtures.ts",
-          "startLine": 1,
-          "endLine": 220,
-          "sha256": "c70dc71209ff26ebe3de4b7896a53d9f8ff460469903c167fd173bff20259fc6",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/ProviderReplayFixtures.ts#L1-L220"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 8657,
-        "gitBlob": "b4502323bb9ec1746f46486865e68300b4a3ca51",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/testkit/ProviderReplayHarness.ts",
-          "startLine": 1,
-          "endLine": 560,
-          "sha256": "6803460b1e1c8914ffb999346a2b8a15d4a41f4ee42a6832255b29a7a0623288",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/ProviderReplayHarness.ts#L1-L560"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 21656,
-        "gitBlob": "afd11a9ab7ecb1e0c41c061c6f0e477b52d935ca",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/testkit/pullRequestFixtures.ts",
-          "startLine": 1,
-          "endLine": 74,
-          "sha256": "eb907b2c62f7c067f3b985bff18fdcf5e048b0f91b1b3653775a5c2a1369e272",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/pullRequestFixtures.ts#L1-L74"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 2580,
-        "gitBlob": "63b490cc7e9d180fa70d55b930e64e8afb386a92",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/orchestration-v2/testkit/ReplayRuntimeInstructions.ts",
-          "startLine": 1,
-          "endLine": 71,
-          "sha256": "204df42fdc1cd0156f8c94d8497e02851f728658c6e566f0f4844439bd92d716",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/orchestration-v2/testkit/ReplayRuntimeInstructions.ts#L1-L71"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 2311,
-        "gitBlob": "661856720fc27733da2f0bdb5e95dad1e22b6c46",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -10884,28 +10422,6 @@
         "package": "t3",
         "bytes": 15955,
         "gitBlob": "15f48778732761b60176e4cab634f9ee56340dfc",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/peer/PeerLinks.testkit.ts",
-          "startLine": 1,
-          "endLine": 188,
-          "sha256": "76d52e0f88233a5425bfbd3cf6729b1bdbf0b5bbae83a89d93b1b116cea4200d",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/peer/PeerLinks.testkit.ts#L1-L188"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 7599,
-        "gitBlob": "0f7e39355b95d24239e069f40625009b2a1ec12b",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -14237,28 +13753,6 @@
       "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
       "provenance": [
         {
-          "file": "apps/server/src/provider/ClaudeModelCatalog.testFixtures.ts",
-          "startLine": 1,
-          "endLine": 83,
-          "sha256": "49126dfc284b8b6248b17c7a1424bfc999ee89611fc569e2b73d17bfcb850dfc",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/ClaudeModelCatalog.testFixtures.ts#L1-L83"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 2252,
-        "gitBlob": "762f919dc39c1b53a267d18ceeff5a1b7def8a60",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
           "file": "apps/server/src/provider/ClaudeModelCatalog.ts",
           "startLine": 1,
           "endLine": 285,
@@ -15614,116 +15108,6 @@
         "package": "t3",
         "bytes": 3391,
         "gitBlob": "189c43b54f7f63af1feb91fc706d6462b594e1ec",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/provider/testFixtures/codexCollabMockPeer.mjs",
-          "startLine": 1,
-          "endLine": 230,
-          "sha256": "b3c830634bb5bcecc767cfe78ee1bd5dcf3c3e1bb9fa58114f6c242559b8fd3f",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testFixtures/codexCollabMockPeer.mjs#L1-L230"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 7370,
-        "gitBlob": "cae8ea2c9380d699e7e0f96e320d70b81827175c",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/provider/testFixtures/codexMultiAgentWire.json",
-          "startLine": 1,
-          "endLine": 447,
-          "sha256": "13e0f3ce2155220f16ae6026716ac30cc7054a950c9c91ab445e71dd92f09cd1",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testFixtures/codexMultiAgentWire.json#L1-L447"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 12728,
-        "gitBlob": "0f183635b17e4c22d3b6a98ffa88c377138d841a",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/provider/testFixtures/grok-text-mock-agent.mjs",
-          "startLine": 1,
-          "endLine": 68,
-          "sha256": "d38b1ab1d82245a71fdd7299c61c88cf6fc59d92513fa90077598db96098a64d",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testFixtures/grok-text-mock-agent.mjs#L1-L68"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 1971,
-        "gitBlob": "357bdb7fe564da229c9ce1c9567b114d4396cd62",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/provider/testing/ProviderInstanceRegistryLive.fixture.mjs",
-          "startLine": 1,
-          "endLine": 97,
-          "sha256": "edbe3a846142cd3c792a5ab6766578d0039c110c69eeb24f5019d23a9de0836c",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testing/ProviderInstanceRegistryLive.fixture.mjs#L1-L97"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 3228,
-        "gitBlob": "5c4c84f2aa3e305cc1a72348ced4c8be64f2a2f8",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/provider/testUtils/providerRegistryMock.ts",
-          "startLine": 1,
-          "endLine": 24,
-          "sha256": "4c6b1fa94dd611510417247545ff10fa7c08ada41855975ac54fe9539483ecc5",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/provider/testUtils/providerRegistryMock.ts#L1-L24"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 1251,
-        "gitBlob": "a4008acc18efb76e265ec87e89e4f7e059253995",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -17273,116 +16657,6 @@
       "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
       "provenance": [
         {
-          "file": "apps/server/src/testUtils/gitConfig.setup.ts",
-          "startLine": 1,
-          "endLine": 16,
-          "sha256": "87bd772bf35d400b0e03d5fb6f303b5642d8e0bb1a02a64c8c574fc5bd1b5a93",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/gitConfig.setup.ts#L1-L16"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 674,
-        "gitBlob": "f2ad4a83e2d541c822da4fd3fadc302692f7b4c8",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/testUtils/managedServiceEnv.setup.ts",
-          "startLine": 1,
-          "endLine": 6,
-          "sha256": "268c44ed68714328830b0c59702e0c469fb84f58260bc992765dbe21f0446d7a",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/managedServiceEnv.setup.ts#L1-L6"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 292,
-        "gitBlob": "a6581817e14bb6741aa4b097ad0af666f19605da",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/testUtils/processProbe.ts",
-          "startLine": 1,
-          "endLine": 73,
-          "sha256": "614dbe3fb50509b6044878b5b331e90f4871f144eed91e2dd9a50ad92c6dfda1",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/processProbe.ts#L1-L73"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 2491,
-        "gitBlob": "9970359244be387058c3814d6abcb0c52f130453",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/testUtils/shardWeights.json",
-          "startLine": 1,
-          "endLine": 216,
-          "sha256": "fe85e24e889de00f99c4989be1f8283590006a6564c61ef075cc0e02ae514f21",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/shardWeights.json#L1-L216"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 11684,
-        "gitBlob": "86df1db6d7399e5963eb458d4f9eb1724c0fd011",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/testUtils/weightedShardSequencer.ts",
-          "startLine": 1,
-          "endLine": 35,
-          "sha256": "35eb66940da3d7e0b7a258eb7a21434b513124b6dc2e3a9859b708ecf786445e",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/testUtils/weightedShardSequencer.ts#L1-L35"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 1490,
-        "gitBlob": "51c5130b3a5c423ef88211ef5372943a1cbc1e64",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
           "file": "apps/server/src/textGeneration/AntigravityTextGeneration.ts",
           "startLine": 1,
           "endLine": 309,
@@ -17440,50 +16714,6 @@
         "package": "t3",
         "bytes": 13891,
         "gitBlob": "e17fa4c4c00e7575e8557c17c5ed31510b0cb887",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/textGeneration/OpenCode2TextGeneration.fixture.ts",
-          "startLine": 1,
-          "endLine": 365,
-          "sha256": "7a74e046a41bd5c43886c8fb4356274b1af621009ec83ede4e50923e09211152",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/textGeneration/OpenCode2TextGeneration.fixture.ts#L1-L365"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 11388,
-        "gitBlob": "5840b909acbd5cdd9f2ae6b81de6b35cb50075f8",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/textGeneration/testing/ClaudeTextGeneration.fixture.mjs",
-          "startLine": 1,
-          "endLine": 72,
-          "sha256": "468a36a1f8f5cd8873c93e123c3d9a91e5a5384cb6cfae648aa9ac073ab3de07",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/textGeneration/testing/ClaudeTextGeneration.fixture.mjs#L1-L72"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 2549,
-        "gitBlob": "d5ca2f185eb8ded917c6e54c3c3aef30e66d2d96",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -17902,28 +17132,6 @@
         "package": "t3",
         "bytes": 679,
         "gitBlob": "2ce80dfe588a2c559576500c6165a03a712dff27",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/server/src/vcs/testing/VcsDriverContractHarness.ts",
-          "startLine": 1,
-          "endLine": 169,
-          "sha256": "a05a3f2c341d038ab561b3880bcde9a8a93f6e339182fc9070f9151d2f0b6497",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/vcs/testing/VcsDriverContractHarness.ts#L1-L169"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "t3",
-        "bytes": 6542,
-        "gitBlob": "fd474283590d13c428901c33f37d94ac1bfb4471",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -27428,28 +26636,6 @@
         "package": "@t3tools/web",
         "bytes": 2733,
         "gitBlob": "7b17bc4a624e1676d0258f8a50f4c554df861df3",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "apps/web/src/components/DevReplayHost.tsx",
-          "startLine": 1,
-          "endLine": 148,
-          "sha256": "362bee1c395b002852857c29faaff8ab786f06afa39dbda4899e840592bc1b86",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/web/src/components/DevReplayHost.tsx#L1-L148"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "@t3tools/web",
-        "bytes": 5929,
-        "gitBlob": "71ec6bc2b081e26d1ce4cc87306e3bf06d36b2d3",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -46445,28 +45631,6 @@
       "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
       "provenance": [
         {
-          "file": "apps/web/src/test-fixtures.ts",
-          "startLine": 1,
-          "endLine": 223,
-          "sha256": "92d02ee1380fe6c59fcf0316987bd9184f51abbe2c79be6715594a0df7d8ab0f",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/web/src/test-fixtures.ts#L1-L223"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "@t3tools/web",
-        "bytes": 7018,
-        "gitBlob": "494d95caa8d7973c5dd2fc40d7e5a5236cc3ae2b",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
           "file": "apps/web/src/textDirection.ts",
           "startLine": 1,
           "endLine": 27,
@@ -49912,28 +49076,6 @@
         "package": "@t3tools/client-runtime",
         "bytes": 14894,
         "gitBlob": "fbba7d1bd9dd451bec4d19439da81fcc6d700c81",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "packages/client-runtime/src/state/orchestrationV2TestFixtures.ts",
-          "startLine": 1,
-          "endLine": 110,
-          "sha256": "f9ee39a63698e5e70725247df1269137436d836a1bdc0f26cb9a02c529e26776",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/client-runtime/src/state/orchestrationV2TestFixtures.ts#L1-L110"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "@t3tools/client-runtime",
-        "bytes": 3083,
-        "gitBlob": "550dc389a86bfb51fe58b46489ba6bfd51f0c623",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -57445,28 +56587,6 @@
       "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
       "provenance": [
         {
-          "file": "packages/provider-opencode/src/server/probeResponses.fixture.ts",
-          "startLine": 1,
-          "endLine": 83,
-          "sha256": "34818809dd241e43504a5ff75e474e86f2b9bc956bde9789bae2748e9cb9209d",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-opencode/src/server/probeResponses.fixture.ts#L1-L83"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "@t3tools/provider-opencode",
-        "bytes": 3495,
-        "gitBlob": "df67e40952a456077cf12636fe666ce237405d1d",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
           "file": "packages/provider-opencode/src/server/status.ts",
           "startLine": 1,
           "endLine": 872,
@@ -57854,28 +56974,6 @@
         "package": "@t3tools/provider-pi",
         "bytes": 8013,
         "gitBlob": "c37e5d757f382612ffa3f80b20e9dca1aa28c245",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "packages/provider-pi/src/server/mcpBridge.testkit.ts",
-          "startLine": 1,
-          "endLine": 169,
-          "sha256": "2e243a2e326fb7c3fef2671a78fed378228280e359ffd8efbb36e761799787a4",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-pi/src/server/mcpBridge.testkit.ts#L1-L169"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "@t3tools/provider-pi",
-        "bytes": 5765,
-        "gitBlob": "133a4b2981ac1dbf9335ffcafaa2fbab384fcae5",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -60736,72 +59834,6 @@
         "package": "@t3tools/shared",
         "bytes": 27548,
         "gitBlob": "9172554e0733661deb8d9a65b73683a61c6ab5a1",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "packages/shared/src/testing/longTempDir.ts",
-          "startLine": 1,
-          "endLine": 13,
-          "sha256": "79b2d9ae8b9ae5d127bc550bfc69d3046985e21d9d3dfbc285e4677cfcda917e",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/testing/longTempDir.ts#L1-L13"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "@t3tools/shared",
-        "bytes": 525,
-        "gitBlob": "09a4da9f8f53b23dbe3a601ce0f4bf423eac6a04",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "packages/shared/src/testing/providerEnv.ts",
-          "startLine": 1,
-          "endLine": 22,
-          "sha256": "5cd80479632239c06f78c951d04034f23afb6b98588acc142f55a1001673188f",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/testing/providerEnv.ts#L1-L22"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "@t3tools/shared",
-        "bytes": 1039,
-        "gitBlob": "21bf59e52b500d0f17cfa237e10fb4a7a5d95c9b",
-        "inclusionReason": "tracked runtime source/text asset",
-        "condition": "Tracked file in the complete runtime workspace dependency closure."
-      }
-    },
-    {
-      "version": "0.1.6-nightly.20261031.3956",
-      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
-      "provenance": [
-        {
-          "file": "packages/shared/src/testing/symlinks.ts",
-          "startLine": 1,
-          "endLine": 21,
-          "sha256": "a6402ebd722f253e8d1c7fe0c631cd161003effbf47c6698bd17ebbc01a9efd9",
-          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/testing/symlinks.ts#L1-L21"
-        }
-      ],
-      "details": {
-        "evidence": "public-source",
-        "observed": false,
-        "package": "@t3tools/shared",
-        "bytes": 876,
-        "gitBlob": "e7b1aeb54edaba5ddda733cfea39d06bf4b20f6f",
         "inclusionReason": "tracked runtime source/text asset",
         "condition": "Tracked file in the complete runtime workspace dependency closure."
       }
@@ -65559,6 +64591,13 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/mcp/McpSessionRegistry.testkit.ts",
+      "package": "t3",
+      "bytes": 1074,
+      "gitBlob": "84676e7ccb1b4f790663ccd99f764a2d1d2ca192",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/mcp/McpToolAccess.race.test.ts",
       "package": "t3",
       "bytes": 7335,
@@ -65570,6 +64609,13 @@
       "package": "t3",
       "bytes": 18353,
       "gitBlob": "14888108502d598f9d850743a40d050d069885d8",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/mcp/McpToolAccess.testkit.ts",
+      "package": "t3",
+      "bytes": 2973,
+      "gitBlob": "a985c1477a232a57cb90da72b5e8eb9adb5d793d",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -65741,10 +64787,24 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/orchestration-v2/Adapters/AcpAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 11135,
+      "gitBlob": "d043ac09a6aeed76c9a168810b64f9b70541daff",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/orchestration-v2/Adapters/AcpRegistryAdapterV2.test.ts",
       "package": "t3",
       "bytes": 77853,
       "gitBlob": "9c7ea03fe75109c950a0dce5235c8e00c67ac162",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/Adapters/AcpRegistryAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 3976,
+      "gitBlob": "2e5d9e4058da1e856fabf486dfff970c93d07dba",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -65759,6 +64819,13 @@
       "package": "t3",
       "bytes": 624635,
       "gitBlob": "d758984f6a5c34aaea70b19c9cb38b6cd875233e",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 98708,
+      "gitBlob": "c975e022b37dff63505d283bd9cfb5bb3919fe19",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -65790,10 +64857,31 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 7066,
+      "gitBlob": "6e07b695da62137e8afdedd6755bc22282bb47ee",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/Adapters/CursorAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 30609,
+      "gitBlob": "7310cc7c81ea0d729ed68d0f7ece27a91a206059",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/orchestration-v2/Adapters/FxAdapterV2.test.ts",
       "package": "t3",
       "bytes": 12938,
       "gitBlob": "b6e78f8115d6944b0fbee96e8cd7d84ed10e86fe",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/Adapters/FxAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 3847,
+      "gitBlob": "2161c30a4f51c0a55d8adec977fa478507bcd50c",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -65804,10 +64892,45 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/orchestration-v2/Adapters/GrokAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 4501,
+      "gitBlob": "9b4483561ce0af92b955d142e538ec99ae25f382",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/Adapters/MuseAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 17006,
+      "gitBlob": "55576ea5f362a009d05f273b87b4f87ff53282be",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/orchestration-v2/Adapters/OpenCode2AdapterV2.test.ts",
       "package": "t3",
       "bytes": 178791,
       "gitBlob": "bb26a5dd53a30bc0b8c8bd431103f94c5a115848",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/Adapters/OpenCode2AdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 14984,
+      "gitBlob": "9a5f0332f9cc1bec2c3efa774dc31287efe30153",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/Adapters/OpenCodeAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 16612,
+      "gitBlob": "90ce687ca591faadd25a71ad4d280d582363f197",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/Adapters/PiAdapterV2.testkit.ts",
+      "package": "t3",
+      "bytes": 17045,
+      "gitBlob": "49eb6c9b3b999eb4f4c82ee10dfbca86bb6f8cc4",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -66119,6 +65242,13 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/orchestration-v2/ProviderTurnStartService.testkit.ts",
+      "package": "t3",
+      "bytes": 2759,
+      "gitBlob": "5b614b1e2aa6c4ba366fdf9ba4eb05ba298766c9",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/orchestration-v2/PullRequestSyncReactor.test.ts",
       "package": "t3",
       "bytes": 63874,
@@ -66266,10 +65396,24 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/orchestration-v2/testkit/CommandOutputRecorder.ts",
+      "package": "t3",
+      "bytes": 1867,
+      "gitBlob": "51951bfc3ad30fa73b2ff72683243b1f6bbeb9d6",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/orchestration-v2/testkit/CursorReplayFixtures.integration.test.ts",
       "package": "t3",
       "bytes": 1004,
       "gitBlob": "7557e8b3929f460b7e7e76b902f6f93d2f82bf62",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/testkit/DeterministicRuntime.ts",
+      "package": "t3",
+      "bytes": 397,
+      "gitBlob": "2c2187d64a7a3d3f9ac2c84ceb2ee2ecfa5e2416",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -68702,6 +67846,13 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/orchestration-v2/testkit/OrchestratorScenario.ts",
+      "package": "t3",
+      "bytes": 27077,
+      "gitBlob": "77e8bae8f085fd2121bede9a7d8f6019dd5e503b",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/orchestration-v2/testkit/PiReplayFixtures.integration.test.ts",
       "package": "t3",
       "bytes": 375,
@@ -68709,10 +67860,38 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/orchestration-v2/testkit/ProviderReplayFixtures.ts",
+      "package": "t3",
+      "bytes": 8657,
+      "gitBlob": "b4502323bb9ec1746f46486865e68300b4a3ca51",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/testkit/ProviderReplayHarness.ts",
+      "package": "t3",
+      "bytes": 21656,
+      "gitBlob": "afd11a9ab7ecb1e0c41c061c6f0e477b52d935ca",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/orchestration-v2/testkit/ProviderSwitch.integration.test.ts",
       "package": "t3",
       "bytes": 139503,
       "gitBlob": "bb21d8ca9929ac2798991449a8f72feb744ec40e",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/testkit/pullRequestFixtures.ts",
+      "package": "t3",
+      "bytes": 2580,
+      "gitBlob": "63b490cc7e9d180fa70d55b930e64e8afb386a92",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/orchestration-v2/testkit/ReplayRuntimeInstructions.ts",
+      "package": "t3",
+      "bytes": 2311,
+      "gitBlob": "661856720fc27733da2f0bdb5e95dad1e22b6c46",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -68944,6 +68123,13 @@
       "package": "t3",
       "bytes": 21285,
       "gitBlob": "f16a91f26c0adf7d184bc0038793e019b75d3295",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/peer/PeerLinks.testkit.ts",
+      "package": "t3",
+      "bytes": 7599,
+      "gitBlob": "0f7e39355b95d24239e069f40625009b2a1ec12b",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -69430,6 +68616,13 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/provider/ClaudeModelCatalog.testFixtures.ts",
+      "package": "t3",
+      "bytes": 2252,
+      "gitBlob": "762f919dc39c1b53a267d18ceeff5a1b7def8a60",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/provider/claudeResetCredits.test.ts",
       "package": "t3",
       "bytes": 8507,
@@ -69710,11 +68903,46 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/provider/testFixtures/codexCollabMockPeer.mjs",
+      "package": "t3",
+      "bytes": 7370,
+      "gitBlob": "cae8ea2c9380d699e7e0f96e320d70b81827175c",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/provider/testFixtures/codexCollabMockPeer.sh",
       "package": "t3",
       "bytes": 274,
       "gitBlob": "3f76d7eec160ed08fb7833cad1da9c26280972fb",
-      "reason": "binary or unsupported asset outside the text extraction surface"
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/provider/testFixtures/codexMultiAgentWire.json",
+      "package": "t3",
+      "bytes": 12728,
+      "gitBlob": "0f183635b17e4c22d3b6a98ffa88c377138d841a",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/provider/testFixtures/grok-text-mock-agent.mjs",
+      "package": "t3",
+      "bytes": 1971,
+      "gitBlob": "357bdb7fe564da229c9ce1c9567b114d4396cd62",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/provider/testing/ProviderInstanceRegistryLive.fixture.mjs",
+      "package": "t3",
+      "bytes": 3228,
+      "gitBlob": "5c4c84f2aa3e305cc1a72348ced4c8be64f2a2f8",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/provider/testUtils/providerRegistryMock.ts",
+      "package": "t3",
+      "bytes": 1251,
+      "gitBlob": "a4008acc18efb76e265ec87e89e4f7e059253995",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
       "file": "apps/server/src/provider/TurnTokenUsage.test.ts",
@@ -70067,6 +69295,41 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/testUtils/gitConfig.setup.ts",
+      "package": "t3",
+      "bytes": 674,
+      "gitBlob": "f2ad4a83e2d541c822da4fd3fadc302692f7b4c8",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/testUtils/managedServiceEnv.setup.ts",
+      "package": "t3",
+      "bytes": 292,
+      "gitBlob": "a6581817e14bb6741aa4b097ad0af666f19605da",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/testUtils/processProbe.ts",
+      "package": "t3",
+      "bytes": 2491,
+      "gitBlob": "9970359244be387058c3814d6abcb0c52f130453",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/testUtils/shardWeights.json",
+      "package": "t3",
+      "bytes": 11684,
+      "gitBlob": "86df1db6d7399e5963eb458d4f9eb1724c0fd011",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/testUtils/weightedShardSequencer.ts",
+      "package": "t3",
+      "bytes": 1490,
+      "gitBlob": "51c5130b3a5c423ef88211ef5372943a1cbc1e64",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/textGeneration/AntigravityTextGeneration.test.ts",
       "package": "t3",
       "bytes": 23755,
@@ -70095,10 +69358,24 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/server/src/textGeneration/OpenCode2TextGeneration.fixture.ts",
+      "package": "t3",
+      "bytes": 11388,
+      "gitBlob": "5840b909acbd5cdd9f2ae6b81de6b35cb50075f8",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "apps/server/src/textGeneration/OpenCode2TextGeneration.test.ts",
       "package": "t3",
       "bytes": 7540,
       "gitBlob": "2cfe556ebf58ffef4826e9ee37be7d2102502bc4",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/textGeneration/testing/ClaudeTextGeneration.fixture.mjs",
+      "package": "t3",
+      "bytes": 2549,
+      "gitBlob": "d5ca2f185eb8ded917c6e54c3c3aef30e66d2d96",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -70211,7 +69488,14 @@
       "package": "t3",
       "bytes": 431,
       "gitBlob": "d461d27f3bc0e6b54a40b8ff1823542fb69f02b7",
-      "reason": "binary or unsupported asset outside the text extraction surface"
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/server/src/vcs/testing/VcsDriverContractHarness.ts",
+      "package": "t3",
+      "bytes": 6542,
+      "gitBlob": "fd474283590d13c428901c33f37d94ac1bfb4471",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
       "file": "apps/server/src/vcs/VcsDriverRegistry.test.ts",
@@ -71409,6 +70693,13 @@
       "bytes": 7063,
       "gitBlob": "5633369dc1cb2797a31e06eb269b69cf1b0f453d",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "apps/web/src/components/DevReplayHost.tsx",
+      "package": "@t3tools/web",
+      "bytes": 5929,
+      "gitBlob": "71ec6bc2b081e26d1ce4cc87306e3bf06d36b2d3",
+      "reason": "development replay or test fixture source"
     },
     {
       "file": "apps/web/src/components/DiffFilePathCopyButton.browser.test.tsx",
@@ -73700,6 +72991,13 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "apps/web/src/test-fixtures.ts",
+      "package": "@t3tools/web",
+      "bytes": 7018,
+      "gitBlob": "494d95caa8d7973c5dd2fc40d7e5a5236cc3ae2b",
+      "reason": "development replay or test fixture source"
+    },
+    {
       "file": "apps/web/src/textDirection.test.ts",
       "package": "@t3tools/web",
       "bytes": 1044,
@@ -74505,6 +73803,13 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "packages/client-runtime/src/state/orchestrationV2TestFixtures.ts",
+      "package": "@t3tools/client-runtime",
+      "bytes": 3083,
+      "gitBlob": "550dc389a86bfb51fe58b46489ba6bfd51f0c623",
+      "reason": "development replay or test fixture source"
+    },
+    {
       "file": "packages/client-runtime/src/state/pendingUserInput.test.ts",
       "package": "@t3tools/client-runtime",
       "bytes": 6337,
@@ -75293,14 +74598,14 @@
       "package": "@t3tools/provider-acp-registry",
       "bytes": 638,
       "gitBlob": "4bfa5d9a8de9f7d0cb8f1ec09df9f5bdab31fd3f",
-      "reason": "binary or unsupported asset outside the text extraction surface"
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
       "file": "packages/provider-acp-registry/src/server/testing/AcpRegistrySupport.uv.fixture.sh",
       "package": "@t3tools/provider-acp-registry",
       "bytes": 652,
       "gitBlob": "18a456c24d15fc58f5ec252a7bd82215aa16bf99",
-      "reason": "binary or unsupported asset outside the text extraction surface"
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
       "file": "packages/provider-acp-registry/tsconfig.json",
@@ -75835,6 +75140,13 @@
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
+      "file": "packages/provider-opencode/src/server/probeResponses.fixture.ts",
+      "package": "@t3tools/provider-opencode",
+      "bytes": 3495,
+      "gitBlob": "df67e40952a456077cf12636fe666ce237405d1d",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
       "file": "packages/provider-opencode/src/server/status.test.ts",
       "package": "@t3tools/provider-opencode",
       "bytes": 39139,
@@ -75902,6 +75214,13 @@
       "package": "@t3tools/provider-pi",
       "bytes": 10150,
       "gitBlob": "087a8089aaee87caca53ec9402bfe98fa545f0a9",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "packages/provider-pi/src/server/mcpBridge.testkit.ts",
+      "package": "@t3tools/provider-pi",
+      "bytes": 5765,
+      "gitBlob": "133a4b2981ac1dbf9335ffcafaa2fbab384fcae5",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
@@ -76539,6 +75858,27 @@
       "package": "@t3tools/shared",
       "bytes": 6663,
       "gitBlob": "8870d422b763d5cefd02d0334ed2b515b0812afa",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "packages/shared/src/testing/longTempDir.ts",
+      "package": "@t3tools/shared",
+      "bytes": 525,
+      "gitBlob": "09a4da9f8f53b23dbe3a601ce0f4bf423eac6a04",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "packages/shared/src/testing/providerEnv.ts",
+      "package": "@t3tools/shared",
+      "bytes": 1039,
+      "gitBlob": "21bf59e52b500d0f17cfa237e10fb4a7a5d95c9b",
+      "reason": "test, fixture or story source excluded from the shipped runtime library"
+    },
+    {
+      "file": "packages/shared/src/testing/symlinks.ts",
+      "package": "@t3tools/shared",
+      "bytes": 876,
+      "gitBlob": "e7b1aeb54edaba5ddda733cfea39d06bf4b20f6f",
       "reason": "test, fixture or story source excluded from the shipped runtime library"
     },
     {
