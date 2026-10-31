@@ -1,0 +1,3 @@
+# T3 Code Discovered context and user-turn templates
+
+0 strings from T3 Code v0.1.6-nightly.20261031.3956 that Jev judged to be written for the model: context and user-turn templates: text that tells the model about its situation, or is written into the user's turn. They come from a classification of every candidate text occurrence in the pinned source closure; an entry a reviewed page also shows says which. Each is named from where it sits in the code: the tool, agent, constant or property it belongs to, or the text file it is. The text is exact; each entry links the source line at commit `d92c437baa19` and gives Jev's model-facing confidence and role. Source presence does not show that a session sent the text.

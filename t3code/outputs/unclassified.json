@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 2,
+  "product": "T3 Code",
+  "version": "0.1.6-nightly.20261031.3956",
+  "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+  "sourceIdentity": "e771edd98dbd673d35c4efa436baf06c7e0762ceab21d18da6579c3b55b37c8b",
+  "items": [
+    {
+      "id": "occ-14903d6f8cb67c2631d89ac0",
+      "title": "REMOTE_NODE_ENV_SCRIPT",
+      "kind": "candidate",
+      "group": "packages/ssh/src/tunnel.ts",
+      "text": "[Withheld from publication by the privacy boundary; public source locator retained.]",
+      "reason": "Exact source occurrence failed the outbound privacy boundary",
+      "status": "withheld",
+      "provenance": [
+        {
+          "file": "packages/ssh/src/tunnel.ts",
+          "startLine": 326,
+          "endLine": 418,
+          "startOffset": 10211,
+          "endOffset": 12932,
+          "sha256": "2a321bee7088d2536fa5250348526d78b6debfcb6a87491eaa233179dd34908c",
+          "textSha256": "5eb3d89193de1ec2bde984b1ccfa8ed671aefa5e60f45859e9a9d77f1e9679b5",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/ssh/src/tunnel.ts#L326-L418"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "product": "T3 Code",
+  "version": "0.1.6-nightly.20261031.3956",
+  "release": "v0.1.6-nightly.20261031.3956",
+  "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+  "items": [
+    {
+      "id": "instruction-T3_CODE_ORCHESTRATION_SECTIONS",
+      "title": "T3 CODE ORCHESTRATION SECTIONS",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const T3_CODE_ORCHESTRATION_SECTIONS: ReadonlyArray<string> = [\n  `## T3 Code orchestration\n\nOrdinary coding tasks need no T3 tools.\n\n- Subagents: use your native tool when the child uses your provider, a model it offers, and no settings beyond yours, and it finishes in this turn (Claude \\`Agent\\` always with \\`run_in_background:false\\`; Codex \\`spawn_agent\\`, then wait). Use \\`delegate_task\\` for another provider's model, user-asked settings, a separate checkout (\\`isolation:\"worktree\"\\`), background work, or \\`delegate_task\\` by name. A native type running another provider's model counts too. Workflow only when asked.\n- Call \\`orchestrator_capabilities\\` once per thread, before the first \\`delegate_task\\`. Again only after an error or a user-named provider change. Settings go in \\`target.options\\`. Provider or model unavailable: say so. Never switch unasked, or fall back to native tools, Workflow, or CLIs. Never make a child's checkout in the shell or in \\`task\\`.\n- Every new delegate review or re-check is a new \\`delegate_task\\` (brief, findings, objections), never a \\`t3_thread_send\\`. Fix small review findings yourself; start no delegate for them. When told to proceed without a delegate, or to run fewer, \\`task_cancel\\` the extras. Start no replacement.\n- Follow a running delegate's \\`next\\`. Do not poll it (\\`task_status\\`, \\`sleep\\`, watchers, Monitor, ScheduleWakeup). Stop a delegate run you replace or no longer need with \\`task_cancel\\`, never \\`t3_thread_interrupt\\` on a \\`childThreadId\\`.\n- If you are a subagent or child, do the work yourself. Start no subagents unless your task says to.`,\n  `- \\`t3_thread_launch\\` and \\`create_threads\\` make new top-level threads, only when the user asks for a new thread. \"Subagent\", \"delegate\", and \"parallel\" never mean one. Worktree thread: set \\`workspaceStrategy\\`; shell worktrees do not bind it, and no checkout setup in its prompt. No \\`workspaceStrategy\\`: project root, not your worktree.\n- Given a thread id, \\`t3_thread_read\\` it before you answer about it.\n- Another machine: \\`t3_environment_links\\` lists linked ones. Pass its \\`environmentId\\` to a T3 tool to act there. Ids are then that machine's, so pass \\`threadId\\`.\n- A machine the user names that is not linked (\"delegate this to my vps\"): call \\`t3_environment_link\\` with a \\`hint\\` from their words. Never ask for a pairing code in chat.\n- In your reply, mention a thread by its \\`link\\`, verbatim. Never a plain title or bare id.\n- A secret: call \\`request_secret\\` yourself. Pass its \\`secretRef\\` to a T3 tool, or use \\`delivery: \"file\"\\` for a shell command. Never ask in chat or invent one. When asked only to schedule, \\`schedule_task\\` without running its prompt.\n- T3 tools may load late. Try the name once before you call it absent.`,\n  `### Visuals and preview\n\n- Answer data with a trend or comparison with a chart, and show any visual the user asks for here: pass its HTML to \\`html_preview\\`, then \\`html_render\\`. If the visual is a file, pass that file's HTML. A screenshot on disk or a text description does not show it. Never start a server for it. Tools a web page exposes give data only. Never use them to show results. Asked for an image to post, send, or use elsewhere: a \\`.png\\` file and its path, never \\`html_render\\`.\n- Never use \\`preview_*\\` to verify or show your own edit, even a frontend edit or an open tab. Do not repeat preview calls from an earlier turn. Use them only when the current request asks for browser work or names a page or tab. Public pages: web fetch or search unless browser work was asked; then preview tools only, no web fetch. Close a tab you opened before you reply, unless the user asked for it or uses it.`,\n];\n\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 4,
+          "endLine": 26,
+          "startOffset": 168,
+          "endOffset": 3893,
+          "sha256": "e28c6b35db89c393da352bab9cab9104ad0e683520a29c5e65042b3d74ee87a7",
+          "textSha256": "e28c6b35db89c393da352bab9cab9104ad0e683520a29c5e65042b3d74ee87a7",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L4-L26"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "T3 MCP is available; the adapter selects system, application developer context or a user-prompt prepend. See delivery records.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-T3_CODE_ORCHESTRATION_INSTRUCTIONS",
+      "title": "T3 CODE ORCHESTRATION INSTRUCTIONS",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const T3_CODE_ORCHESTRATION_INSTRUCTIONS = `\n\n${T3_CODE_ORCHESTRATION_SECTIONS.join(\"\\n\\n\")}\n`;\n\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 27,
+          "endLine": 31,
+          "startOffset": 3893,
+          "endOffset": 3997,
+          "sha256": "3b390d58628122fe0c6c9edc28da0c3edef71ebbe68d421476a5150e1c8b15f8",
+          "textSha256": "3b390d58628122fe0c6c9edc28da0c3edef71ebbe68d421476a5150e1c8b15f8",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L27-L31"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "T3 MCP is available; the adapter selects system, application developer context or a user-prompt prepend. See delivery records.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-T3_CODE_BROWSER_TOOL_INSTRUCTIONS",
+      "title": "T3 CODE BROWSER TOOL INSTRUCTIONS",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const T3_CODE_BROWSER_TOOL_INSTRUCTIONS = `\n\n## T3 Code browser\n\nWhen browser work was asked, \\`preview_*\\` is the browser you share with the user: \\`preview_status\\` first, then \\`preview_open\\` if no tab can be automated. Prefer snapshot locators over coordinates. Switch browsers only if the tools are absent or \\`preview_open\\` says unsupported, the user asks, or two preview calls fail on one step. Then quote the error and switch.\n`;\n\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 32,
+          "endLine": 38,
+          "startOffset": 3997,
+          "endOffset": 4445,
+          "sha256": "9d1cb7d5c228579b0b8e65c01533f64aab680fda6cf3b6a2080ba7e01332a5a5",
+          "textSha256": "9d1cb7d5c228579b0b8e65c01533f64aab680fda6cf3b6a2080ba7e01332a5a5",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L32-L38"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Browser capability where the provider delivery path selects browser guidance; see delivery records.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-T3_CODE_DEVICE_TOOLS",
+      "title": "T3 CODE DEVICE TOOLS",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const T3_CODE_DEVICE_TOOLS = [\"device_list\", \"device_open\", \"device_screenshot\", \"device_close\"];\n\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 39,
+          "endLine": 40,
+          "startOffset": 4445,
+          "endOffset": 4544,
+          "sha256": "a0f5c6ac311eabecad7c80388f137a176822c0c5c20c6701ac36edd127c751dd",
+          "textSha256": "a0f5c6ac311eabecad7c80388f137a176822c0c5c20c6701ac36edd127c751dd",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L39-L40"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "The thread has the device capability; the helper retains the loadTools substitution used by both device variants.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-deviceToolInstructions",
+      "title": "deviceToolInstructions",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const deviceToolInstructions = (loadTools: string) => `## T3 Code devices\n\nWhen a task needs an iOS Simulator or Android Emulator, on this machine or on an SSH device host such as a remote Mac, use the device tools so the user can watch it in the Device panel.${loadTools}\n1. Call \\`device_list\\` unless you already have the device's \\`hostId\\` and \\`id\\`.\n2. Call \\`device_open\\` with both. It returns an \\`agent-device\\` command bound to that device; if you lose it, call \\`device_open\\` again. Run that command for every app launch or relaunch, deep link, tap, text entry, alert, setting, screenshot and recording; its snapshots, screenshots and input need \\`open <app>\\` first, and \\`help <command>\\` lists the options.\n3. Call \\`device_screenshot\\` to look at the screen.\n\nNever do those with \\`xcrun simctl\\`, \\`idb\\`, \\`adb\\`, ssh, or scripts that wrap them. ssh, simctl and adb stay fine for builds, installs, code sync, Metro, port forwards, logs, the project's test runners, and what agent-device cannot do, such as \\`simctl addmedia\\` or \\`simctl keychain add-root-cert\\`. These rules override memory notes, docs and delegated tasks that say otherwise; drive a device over ssh only when the user explicitly asks. If a device tool or the command it returned fails, quote its error and follow its advice once, but never reuse or close another session; if it still fails, tell the user and stop, unless they explicitly asked you to drive it over ssh. If the platform you need is unavailable, say so. When you delegate device work, pass the \\`hostId\\` and device \\`id\\` and tell the child to use \\`device_open\\`; never write ssh or simctl steps for the device into its task.`;\n\n/** Device guidance for sessions holding the `device` capability, from top-level threads to delegated children. */\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 41,
+          "endLine": 50,
+          "startOffset": 4544,
+          "endOffset": 6344,
+          "sha256": "32001aafebd7c01e959b2ddbf71bd850f846e021c397bd454453d84a4e5164df",
+          "textSha256": "32001aafebd7c01e959b2ddbf71bd850f846e021c397bd454453d84a4e5164df",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L41-L50"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "The thread has the device capability; the helper retains the loadTools substitution used by both device variants.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-T3_CODE_DEVICE_TOOL_INSTRUCTIONS",
+      "title": "T3 CODE DEVICE TOOL INSTRUCTIONS",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const T3_CODE_DEVICE_TOOL_INSTRUCTIONS = deviceToolInstructions(\"\");\n\n/** Claude Code defers MCP tools behind ToolSearch, so Claude's copy says how to load them. */\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 51,
+          "endLine": 53,
+          "startOffset": 6344,
+          "endOffset": 6516,
+          "sha256": "beb37918d9c1ef27c0aaf42de005ebe1546a43b8e8b901e54fcf86d6a7375bfa",
+          "textSha256": "beb37918d9c1ef27c0aaf42de005ebe1546a43b8e8b901e54fcf86d6a7375bfa",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L51-L53"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "The thread has the device capability; the helper retains the loadTools substitution used by both device variants.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-T3_CODE_DEVICE_TOOL_INSTRUCTIONS_WITH_TOOL_SEARCH",
+      "title": "T3 CODE DEVICE TOOL INSTRUCTIONS WITH TOOL SEARCH",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const T3_CODE_DEVICE_TOOL_INSTRUCTIONS_WITH_TOOL_SEARCH = deviceToolInstructions(\n  ` Load them with ToolSearch \\`select:${T3_CODE_DEVICE_TOOLS.map((tool) => `mcp__t3-code__${tool}`).join(\",\")}\\`.`,\n);\n\n// ACP only: some ACP agents accept the injected MCP server but never expose\n// its tools, so they need the terminal transport other harnesses never use.\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 54,
+          "endLine": 59,
+          "startOffset": 6516,
+          "endOffset": 6880,
+          "sha256": "aedd5980278a9c0fc48ddb5678429c542f07631643190e9e90a6fb716be8591b",
+          "textSha256": "aedd5980278a9c0fc48ddb5678429c542f07631643190e9e90a6fb716be8591b",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L54-L59"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Claude Code with a device-capable T3 MCP session; also supplied to native subagents by SubagentStart.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-orchestrationInstructions",
+      "title": "orchestrationInstructions",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const orchestrationInstructions = (hasDeviceTools: boolean) =>\n  hasDeviceTools\n    ? `${T3_CODE_ORCHESTRATION_INSTRUCTIONS}\\n${T3_CODE_DEVICE_TOOL_INSTRUCTIONS}\\n`\n    : T3_CODE_ORCHESTRATION_INSTRUCTIONS;\n\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 107,
+          "endLine": 111,
+          "startOffset": 9624,
+          "endOffset": 9832,
+          "sha256": "48be2351e8db98aa79469b1c364764795e0a06989f1f8df4ce81df089c447a13",
+          "textSha256": "48be2351e8db98aa79469b1c364764795e0a06989f1f8df4ce81df089c447a13",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L107-L111"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "T3 MCP is available; the adapter selects system, application developer context or a user-prompt prepend. See delivery records.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-prependT3OrchestrationInstructions",
+      "title": "prependT3OrchestrationInstructions",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function prependT3OrchestrationInstructions(prompt: string, instructions: string): string {\n  return `<t3_code_orchestration_instructions>${instructions.trim()}</t3_code_orchestration_instructions>\\n\\n<user_request>\\n${prompt}\\n</user_request>`;\n}\n\n/** For providers whose instructions ride on the prompt, so a compacted conversation loses them. */\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 112,
+          "endLine": 116,
+          "startOffset": 9832,
+          "endOffset": 10181,
+          "sha256": "43871f0c94a0e399beb9ae7886ec834ae1370954e2bab0d613fbb85492fb8e84",
+          "textSha256": "43871f0c94a0e399beb9ae7886ec834ae1370954e2bab0d613fbb85492fb8e84",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L112-L116"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "T3 MCP is available; the adapter selects system, application developer context or a user-prompt prepend. See delivery records.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-t3OrchestrationPrompt",
+      "title": "t3OrchestrationPrompt",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function t3OrchestrationPrompt(input: {\n  readonly prompt: string;\n  readonly hasT3Mcp: boolean;\n  readonly hasDeviceTools: boolean;\n  readonly orchestrationDelivered: boolean;\n  readonly deviceInstructionsDelivered: boolean;\n}): string {\n  if (!input.hasT3Mcp) return input.prompt;\n  if (!input.orchestrationDelivered) {\n    return prependT3OrchestrationInstructions(\n      input.prompt,\n      orchestrationInstructions(input.hasDeviceTools),\n    );\n  }\n  return input.hasDeviceTools && !input.deviceInstructionsDelivered\n    ? prependT3OrchestrationInstructions(input.prompt, T3_CODE_DEVICE_TOOL_INSTRUCTIONS)\n    : input.prompt;\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 117,
+          "endLine": 135,
+          "startOffset": 10181,
+          "endOffset": 10823,
+          "sha256": "d2d06ec11c6c56e8733f501b49898ef53265476ad2705d73572e2d30b8577f17",
+          "textSha256": "d2d06ec11c6c56e8733f501b49898ef53265476ad2705d73572e2d30b8577f17",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L117-L135"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "T3 MCP is available; the adapter selects system, application developer context or a user-prompt prepend. See delivery records.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    },
+    {
+      "id": "instruction-t3OrchestrationSystemPrompt",
+      "title": "t3OrchestrationSystemPrompt",
+      "kind": "prompt",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function t3OrchestrationSystemPrompt(\n  hasT3Mcp: boolean,\n  hasDeviceTools: boolean,\n): string | undefined {\n  return hasT3Mcp ? orchestrationInstructions(hasDeviceTools) : undefined;\n}\n",
+      "provenance": [
+        {
+          "file": "packages/provider-core/src/server/orchestrationInstructions.ts",
+          "startLine": 136,
+          "endLine": 141,
+          "startOffset": 10823,
+          "endOffset": 11017,
+          "sha256": "3451b2de08ac5ca3f743171dfaf151cab4012bd85fe16532325fb262b60353d7",
+          "textSha256": "3451b2de08ac5ca3f743171dfaf151cab4012bd85fe16532325fb262b60353d7",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/provider-core/src/server/orchestrationInstructions.ts#L136-L141"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "T3 MCP is available; the adapter selects system, application developer context or a user-prompt prepend. See delivery records.",
+        "summary": "Complete upstream declaration, including template text and assembly conditions. The three orchestration sections are retained together in their declared order."
+      }
+    }
+  ]
+}

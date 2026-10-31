@@ -1,0 +1,2250 @@
+{
+  "schemaVersion": 1,
+  "product": "T3 Code",
+  "version": "0.1.6-nightly.20261031.3956",
+  "release": "v0.1.6-nightly.20261031.3956",
+  "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+  "items": [
+    {
+      "id": "config-cddacf91cc5a9b51a9fe",
+      "title": "DEFAULT_BROWSER_AUTO_SHOW_FLOATING_PREVIEW (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const DEFAULT_BROWSER_AUTO_SHOW_FLOATING_PREVIEW = true;\nexport {\n  BROWSER_RECORDING_FRAME_RATES,\n  BrowserRecordingFrameRate,\n  DEFAULT_BROWSER_RECORDING_FRAME_RATE,\n} from \"./preview.ts\";\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 291,
+          "endLine": 296,
+          "startOffset": 11111,
+          "endOffset": 11309,
+          "sha256": "5d54f3881a11e4e8412239daa830099153b86f70f5ec688095bc0d9baf0f4312",
+          "textSha256": "5d54f3881a11e4e8412239daa830099153b86f70f5ec688095bc0d9baf0f4312",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L291-L296"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-81954e40f8a8199446e8",
+      "title": "BrowserLinkTarget (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const BrowserLinkTarget = Schema.Literals([\"system\", \"app\"]);\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 297,
+          "endLine": 297,
+          "startOffset": 11309,
+          "endOffset": 11378,
+          "sha256": "146cf5a252413de0bbd12c10114d1cb9f6ee3d413db5d490744f4f6ce5ef2625",
+          "textSha256": "146cf5a252413de0bbd12c10114d1cb9f6ee3d413db5d490744f4f6ce5ef2625",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L297-L297"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-cb19a536040bc2d6acee",
+      "title": "DEFAULT_BROWSER_LINK_TARGET (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const DEFAULT_BROWSER_LINK_TARGET: BrowserLinkTarget = \"system\";\n/**\n * What the address bar searches with when the input is not an address.\n * \"custom\" uses `browserCustomSearchUrl`, a template with `%s` for the query.\n */\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 299,
+          "endLine": 303,
+          "startOffset": 11441,
+          "endOffset": 11672,
+          "sha256": "0dc70918e0291220ace465e171e7df3bc4107a6240bd86ea522e480acf5992ad",
+          "textSha256": "0dc70918e0291220ace465e171e7df3bc4107a6240bd86ea522e480acf5992ad",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L299-L303"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-2005ba058613e0946a93",
+      "title": "BrowserSearchEngine (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const BrowserSearchEngine = Schema.Literals([\n  \"duckduckgo\",\n  \"google\",\n  \"bing\",\n  \"brave\",\n  \"kagi\",\n  \"ecosia\",\n  \"custom\",\n]);\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 304,
+          "endLine": 312,
+          "startOffset": 11672,
+          "endOffset": 11812,
+          "sha256": "8d51283d470bee57321356a27b8016f77d31cd6da748df7b25a0cc53e12024a0",
+          "textSha256": "8d51283d470bee57321356a27b8016f77d31cd6da748df7b25a0cc53e12024a0",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L304-L312"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-325f03b30045af9c72f0",
+      "title": "DEFAULT_BROWSER_SEARCH_ENGINE (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const DEFAULT_BROWSER_SEARCH_ENGINE: BrowserSearchEngine = \"duckduckgo\";\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 314,
+          "endLine": 314,
+          "startOffset": 11879,
+          "endOffset": 11959,
+          "sha256": "3d44b304b165fdb1391741149a451a1c25ff70bc6a3747d29e4a033678795a01",
+          "textSha256": "3d44b304b165fdb1391741149a451a1c25ff70bc6a3747d29e4a033678795a01",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L314-L314"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-bdccc5ba250f65330ebf",
+      "title": "BrowserCustomSearchUrl (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const BrowserCustomSearchUrl = Schema.String.check(\n  Schema.isMaxLength(BROWSER_CUSTOM_SEARCH_URL_MAX_LENGTH),\n);\n\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 316,
+          "endLine": 319,
+          "startOffset": 12017,
+          "endOffset": 12140,
+          "sha256": "ca8b6f6419116daa7efea2491b86884aaf1b21797f0bc2bcf1387aa9ae032896",
+          "textSha256": "ca8b6f6419116daa7efea2491b86884aaf1b21797f0bc2bcf1387aa9ae032896",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L316-L319"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-53d68bf04a7503ba4fbf",
+      "title": "ClientSettingsSchema (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const ClientSettingsSchema = Schema.Struct({\n  notificationMode: NotificationMode.pipe(\n    Schema.withDecodingDefault(Effect.succeed(\"off\" as const)),\n  ),\n  inAppNotificationsEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  diffColorScheme: DiffColorScheme.pipe(\n    Schema.withDecodingDefault(Effect.succeed(\"red-green\" as const)),\n  ),\n  chatWidth: ChatWidth.pipe(Schema.withDecodingDefault(Effect.succeed(\"comfortable\" as const))),\n  effortDisplay: EffortDisplay.pipe(Schema.withDecodingDefault(Effect.succeed(\"label\" as const))),\n  loadBalancingEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  loadBalancingWeights: LoadBalancingWeights.pipe(Schema.withDecodingDefault(Effect.succeed({}))),\n  appearanceContrast: AppearanceContrast.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_APPEARANCE_CONTRAST)),\n  ),\n  // Zero avoids per-frame layout work from width/height transitions.\n  panelAnimationDurationMs: PanelAnimationDurationMs.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_PANEL_ANIMATION_DURATION_MS)),\n  ),\n  browserDefaultViewport: PreviewViewportSetting.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_BROWSER_VIEWPORT)),\n  ),\n  browserDefaultZoomFactor: PreviewZoomFactor.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_PREVIEW_ZOOM_FACTOR)),\n  ),\n  browserDefaultAppearance: PreviewAppearancePreference.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_PREVIEW_APPEARANCE)),\n  ),\n  browserRecordingFrameRate: BrowserRecordingFrameRate.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_BROWSER_RECORDING_FRAME_RATE)),\n  ),\n  browserRecordingShowKeyPresses: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(false)),\n  ),\n  browserRecordingShowMousePresses: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(false)),\n  ),\n\n  browserLinkTarget: BrowserLinkTarget.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_BROWSER_LINK_TARGET)),\n  ),\n\n  browserSearchEngine: BrowserSearchEngine.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_BROWSER_SEARCH_ENGINE)),\n  ),\n\n  // Kept when the engine is switched away from \"custom\" so switching back restores it.\n  browserCustomSearchUrl: BrowserCustomSearchUrl.pipe(\n    Schema.withDecodingDefault(Effect.succeed(\"\")),\n  ),\n\n  browserAutoShowFloatingPreview: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_BROWSER_AUTO_SHOW_FLOATING_PREVIEW)),\n  ),\n\n  browserProfiles: Schema.Array(BrowserProfile).pipe(\n    Schema.withDecodingDefault(Effect.succeed([])),\n  ),\n\n  browserDefaultProfileId: BrowserProfileId.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_BROWSER_PROFILE_ID)),\n  ),\n\n  confirmQuit: QuitConfirmationModeSetting.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_QUIT_CONFIRMATION_MODE)),\n  ),\n  confirmThreadArchive: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  confirmThreadDelete: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  confirmThreadUnpin: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  diffFilesCollapsed: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  diffIgnoreWhitespace: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  diffLayout: DiffLayout.pipe(Schema.withDecodingDefault(Effect.succeed(DEFAULT_DIFF_LAYOUT))),\n  environmentIdentificationMode: EnvironmentIdentificationMode.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_ENVIRONMENT_IDENTIFICATION_MODE)),\n  ),\n  glassOpacity: GlassOpacity.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_GLASS_OPACITY)),\n  ),\n  fontSizeInterface: InterfaceFontSize.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_INTERFACE_FONT_SIZE)),\n  ),\n  fontSizePrompt: PromptFontSize.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_PROMPT_FONT_SIZE)),\n  ),\n  fontSizeCode: CodeFontSize.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_CODE_FONT_SIZE)),\n  ),\n  fontSizeTerminal: TerminalFontSize.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_TERMINAL_FONT_SIZE)),\n  ),\n  fontFamilyCode: FontFamilyPreference.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n  fontFamilyComposer: FontFamilyPreference.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n  fontFamilySans: FontFamilyPreference.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n  fontFamilyTerminal: FontFamilyPreference.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n\n  fontSmoothing: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  // Older installs also decode to null; onboarding must additionally require an empty workspace.\n  onboardingCompletedAt: Schema.NullOr(Schema.String).pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  persistComposerContextStrip: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(false)),\n  ),\n\n  favorites: ModelFavorites.pipe(Schema.withDecodingDefault(Effect.succeed([]))),\n  providerModelPreferences: ProviderModelPreferences.pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  pullRequestMergeMethodOverrides: Schema.Record(\n    TrimmedNonEmptyString,\n    PullRequestMergeMethod,\n  ).pipe(Schema.withDecodingDefault(Effect.succeed({}))),\n\n  pullRequestLinksOpenInApp: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n\n  planModeEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  contextWindowMeterEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  composerRichTextEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  sendShortcut: Schema.Literals([\"enter\", \"mod-enter-multiline\", \"mod-enter\"]).pipe(\n    Schema.withDecodingDefault(Effect.succeed(\"enter\")),\n  ),\n  followUpBehavior: Schema.Literals([\"queue\", \"steer\"]).pipe(\n    Schema.withDecodingDefault(Effect.succeed(\"steer\")),\n  ),\n  proactivePanelsEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  showSkillsInSlashMenu: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  boringSidebarEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  boringSidebarMultilineRows: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(false)),\n  ),\n  // Retired Labs toggle. Still read as the default for the Usage item in threadDetailsItems.\n  threadDetailsUsageEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  // Sparse show/hide overrides for thread details card items. Missing ids use the client's\n  // default, so new items appear for everyone and unknown ids survive a downgrade.\n  threadDetailsItems: Schema.Record(Schema.String, Schema.Boolean).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  // Opt-in for the removed legacy sidebar. Still read so those users land in\n  // the boring sidebar; the boring sidebar toggle clears it.\n  legacySidebarEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  sidebarWorkingShelfEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  sidebarProjectGroupingMode: SidebarProjectGroupingMode.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_SIDEBAR_PROJECT_GROUPING_MODE)),\n  ),\n  sidebarProjectGroupingOverrides: Schema.Record(\n    TrimmedNonEmptyString,\n    SidebarProjectGroupingMode,\n  ).pipe(Schema.withDecodingDefault(Effect.succeed({}))),\n  sidebarProjectSortOrder: SidebarProjectSortOrder.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_SIDEBAR_PROJECT_SORT_ORDER)),\n  ),\n  sidebarThreadSortOrder: SidebarThreadSortOrder.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_SIDEBAR_THREAD_SORT_ORDER)),\n  ),\n  timestampFormat: TimestampFormat.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_TIMESTAMP_FORMAT)),\n  ),\n  snapShotEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  snapShotIncludeAccessibility: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(true)),\n  ),\n  snapShotShortcut: SnapShotShortcut.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_SNAP_SHOT_SHORTCUT)),\n  ),\n  snapShotPlaySound: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  snapShotSound: SnapShotSound.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_SNAP_SHOT_SOUND)),\n  ),\n  snapShotFlash: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  snapShotAnimations: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  wordWrap: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  // Opt-in TeX typesetting in rendered Markdown. Off keeps math parsing and\n  // KaTeX out of the render path entirely.\n  mathRenderingEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n});\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 351,
+          "endLine": 525,
+          "startOffset": 13329,
+          "endOffset": 22374,
+          "sha256": "babfb565b8b4673baa9c1d9c82de1f3b3499ecfa83da14c1e934ea8bbab850ec",
+          "textSha256": "babfb565b8b4673baa9c1d9c82de1f3b3499ecfa83da14c1e934ea8bbab850ec",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L351-L525"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-76d217d9be1bcd4082a5",
+      "title": "IDLE_COMPACTION_MODES (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const IDLE_COMPACTION_MODES = [\n  { value: \"onReturn\", label: \"When you return\" },\n  { value: \"beforeCacheExpires\", label: \"Before the cache expires (beta)\" },\n  { value: \"off\", label: \"Never\" },\n] as const;\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 688,
+          "endLine": 692,
+          "startOffset": 28094,
+          "endOffset": 28309,
+          "sha256": "702994c39065697d60260bf50d1b7117a829e25236197e96744952b0c67e3771",
+          "textSha256": "702994c39065697d60260bf50d1b7117a829e25236197e96744952b0c67e3771",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L688-L692"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-361c5eb56c58d3721a66",
+      "title": "PROJECT_SCOPED_SERVER_SETTING_KEYS (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const PROJECT_SCOPED_SERVER_SETTING_KEYS = [\n  \"worktreeCleanup\",\n  \"defaultModelSelection\",\n  \"defaultRuntimeMode\",\n  \"defaultThreadEnvMode\",\n  \"newWorktreesStartFromOrigin\",\n  \"worktreeSubmodules\",\n  \"defaultAutoPull\",\n  \"defaultProjectScripts\",\n  \"enableAgentBrowserAccess\",\n  \"enableAgentDeviceAccess\",\n  \"textGenerationModelSelection\",\n  \"threadTitleInstructions\",\n  \"sourceControlWriterModelSelection\",\n  \"reviewGuideModelSelection\",\n  \"reviewGuideInstructions\",\n  \"sourceControlWritingStyle\",\n  \"removeAgentCreditsOnMerge\",\n  \"branchNamingMode\",\n  \"branchNamePrefix\",\n  \"branchNameInstructions\",\n  \"pullRequestMergeMethod\",\n  \"sidebarAutoSettleOnMerge\",\n  \"sidebarAutoSettleAfterDays\",\n  \"sidebarAutoSettleKeepPullRequests\",\n  \"continueThreadsAfterServerUpdate\",\n  \"responseStreamingMode\",\n] as const;\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 1023,
+          "endLine": 1050,
+          "startOffset": 41528,
+          "endOffset": 42344,
+          "sha256": "c43606b7645c21fe577640e83437bc9a9c2d82cddeb6e34da32f738219d0ae3f",
+          "textSha256": "c43606b7645c21fe577640e83437bc9a9c2d82cddeb6e34da32f738219d0ae3f",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L1023-L1050"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-452649fac553c32c50f0",
+      "title": "ProjectSettingsOverrides (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const ProjectSettingsOverrides = Schema.Struct({\n  worktreeCleanup: Schema.optionalKey(WorktreeCleanup),\n  defaultModelSelection: Schema.optionalKey(Schema.NullOr(ModelSelection)),\n  defaultRuntimeMode: Schema.optionalKey(RuntimeMode),\n  defaultThreadEnvMode: Schema.optionalKey(ThreadEnvMode),\n  newWorktreesStartFromOrigin: Schema.optionalKey(Schema.Boolean),\n  worktreeSubmodules: ForwardCompatibleOptional(WorktreeSubmodules),\n  defaultAutoPull: Schema.optionalKey(Schema.Boolean),\n  defaultProjectScripts: Schema.optionalKey(Schema.Array(ProjectScript)),\n  enableAgentBrowserAccess: Schema.optionalKey(Schema.Boolean),\n  enableAgentDeviceAccess: Schema.optionalKey(Schema.Boolean),\n  textGenerationModelSelection: Schema.optionalKey(ModelSelection),\n  threadTitleInstructions: Schema.optionalKey(TrimmedString),\n  sourceControlWriterModelSelection: Schema.optionalKey(Schema.NullOr(ModelSelection)),\n  reviewGuideModelSelection: Schema.optionalKey(Schema.NullOr(ModelSelection)),\n  reviewGuideInstructions: Schema.optionalKey(TrimmedString),\n  sourceControlWritingStyle: Schema.optionalKey(SourceControlWritingStyleSetting),\n  removeAgentCreditsOnMerge: Schema.optionalKey(Schema.Boolean),\n  branchNamingMode: Schema.optionalKey(BranchNamingMode),\n  branchNamePrefix: Schema.optionalKey(TrimmedString),\n  branchNameInstructions: Schema.optionalKey(TrimmedString),\n  pullRequestMergeMethod: Schema.optionalKey(Schema.NullOr(PullRequestMergeMethod)),\n  sidebarAutoSettleOnMerge: Schema.optionalKey(Schema.Boolean),\n  sidebarAutoSettleAfterDays: Schema.optionalKey(Schema.NullOr(SidebarAutoSettleAfterDays)),\n  sidebarAutoSettleKeepPullRequests: Schema.optionalKey(Schema.Boolean),\n  continueThreadsAfterServerUpdate: Schema.optionalKey(Schema.Boolean),\n  responseStreamingMode: Schema.optionalKey(ResponseStreamingMode),\n  providerInstances: Schema.optionalKey(\n    Schema.Record(ProviderInstanceId, ProjectProviderInstanceOverride),\n  ),\n} satisfies Record<ProjectScopedServerSettingKey | \"providerInstances\", unknown>);\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 1060,
+          "endLine": 1090,
+          "startOffset": 42805,
+          "endOffset": 44837,
+          "sha256": "5ce09d3e2da95d7c28c6dfa10c4c7923fa1dfd21956f7a137197349add6c881a",
+          "textSha256": "5ce09d3e2da95d7c28c6dfa10c4c7923fa1dfd21956f7a137197349add6c881a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L1060-L1090"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-0faf0d0fb8e033c6ed16",
+      "title": "StorageCleanupReportEntry (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const StorageCleanupReportEntry = Schema.Struct({\n  kind: Schema.Literals([\"worktree\", \"browser-artifacts\", \"logs\"]),\n  outcome: Schema.Literals([\"removed\", \"kept\", \"failed\"]),\n  reason: Schema.String,\n  path: Schema.NullOr(Schema.String),\n  projectPath: Schema.NullOr(Schema.String).pipe(Schema.withDecodingDefault(Effect.succeed(null))),\n  threadId: Schema.NullOr(ThreadId),\n  threadTitle: Schema.NullOr(Schema.String),\n  bytes: Schema.NullOr(Schema.Number).pipe(Schema.withDecodingDefault(Effect.succeed(null))),\n  files: Schema.NullOr(Schema.Number).pipe(Schema.withDecodingDefault(Effect.succeed(null))),\n});\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 1140,
+          "endLine": 1150,
+          "startOffset": 46820,
+          "endOffset": 47441,
+          "sha256": "6ca7f3010a70597b6bc7bf1f6f61a6bdbef8a648c94016c2ace59780bfa460ad",
+          "textSha256": "6ca7f3010a70597b6bc7bf1f6f61a6bdbef8a648c94016c2ace59780bfa460ad",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L1140-L1150"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-a236f2391aa3ef8a35d3",
+      "title": "StorageCleanupSettings (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const StorageCleanupSettings = Schema.Struct({\n  worktreeKeepWhen: WorktreeKeepWhen.pipe(\n    Schema.withDecodingDefault(Effect.succeed(\"uncommitted-changes\")),\n  ),\n  worktreeAfterDays: StorageRetentionDays.pipe(Schema.withDecodingDefault(Effect.succeed(null))),\n  worktreeSettledAfterDays: SettledWorktreeRetentionDays.pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  worktreeOnMerge: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  worktreeOnDelete: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  worktreeUnchanged: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  browserArtifactsAfterDays: StorageRetentionDays.pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  logsAfterDays: StorageRetentionDays.pipe(Schema.withDecodingDefault(Effect.succeed(null))),\n});\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 1163,
+          "endLine": 1178,
+          "startOffset": 48017,
+          "endOffset": 48899,
+          "sha256": "91bd81d54be8692368ca1ba46e272aa1bba910594147f4275a0ed2e9e808cd8f",
+          "textSha256": "91bd81d54be8692368ca1ba46e272aa1bba910594147f4275a0ed2e9e808cd8f",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L1163-L1178"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-1e51cf2529162fc4cd28",
+      "title": "ServerSettings (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const ServerSettings = Schema.Struct({\n  // Null means unmigrated; empty is authoritative and must not resurrect cleared preferences.\n  favorites: Schema.NullOr(ModelFavorites).pipe(Schema.withDecodingDefault(Effect.succeed(null))),\n  providerModelPreferences: Schema.NullOr(ProviderModelPreferences).pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  worktreeCleanup: WorktreeCleanup.pipe(Schema.withDecodingDefault(Effect.succeed(null))),\n  storageCleanup: StorageCleanupSettings.pipe(\n    Schema.withDecodingDefault(Effect.succeed(Schema.decodeSync(StorageCleanupSettings)({}))),\n  ),\n\n  worktreesDirectory: TrimmedString.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n  /** Server-maintained history keeps old worktrees eligible for cleanup and review diffs. */\n  previousWorktreesDirectories: Schema.Array(TrimmedString).pipe(\n    Schema.withDecodingDefault(Effect.succeed([])),\n  ),\n  responseStreamingMode: ResponseStreamingMode.pipe(\n    Schema.withDecodingDefault(Effect.succeed(\"paragraph\" as const)),\n  ),\n  enableProviderUpdateChecks: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  continueThreadsAfterServerUpdate: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(true)),\n  ),\n\n  enableAgentBrowserAccess: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  projectAgentBrowserAccessOverrides: Schema.Record(ProjectId, Schema.Boolean).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  defaultAutoPull: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  defaultProjectScripts: Schema.Array(ProjectScript).pipe(\n    Schema.withDecodingDefault(Effect.succeed([])),\n  ),\n  projectScriptOverrides: Schema.Record(ProjectId, Schema.NullOr(Schema.Array(ProjectScript))).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  projectAutoPullOverrides: Schema.Record(ProjectId, Schema.Boolean).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  defaultModelSelection: Schema.NullOr(ModelSelection).pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  fallbackModelSelection: Schema.NullOr(ModelSelection).pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  defaultRuntimeMode: RuntimeMode.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_RUNTIME_MODE)),\n  ),\n\n  projectSettingsOverrides: Schema.Record(\n    ProjectId,\n    keepUnknownOverrideKeys(ProjectSettingsOverrides),\n  ).pipe(Schema.withDecodingDefault(Effect.succeed({}))),\n  /** Fold once so restarts cannot undo later UI resets. */\n  projectSettingsFolded: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n\n  enableAgentDeviceAccess: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  /** Enabling the Device panel must not grant providers device control. */\n  enableDeviceSupport: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  deviceOnboardingCompleted: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  deviceHosts: SshDeviceHostConfigs.pipe(Schema.withDecodingDefault(Effect.succeed([]))),\n  easDeviceHosts: EasDeviceHostConfigs.pipe(Schema.withDecodingDefault(Effect.succeed([]))),\n  simlockDeviceHosts: SimlockDeviceHostConfigs.pipe(Schema.withDecodingDefault(Effect.succeed([]))),\n  /** Alpha: Simlock device hosts. Off, the server ignores `simlockDeviceHosts`. */\n  simlockDeviceHostsEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  sidebarAutoSettleAfterDays: Schema.NullOr(SidebarAutoSettleAfterDays).pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_SIDEBAR_AUTO_SETTLE_AFTER_DAYS)),\n  ),\n  compactIdleThreads: LegacyCompactIdleThreads.pipe(\n    Schema.withDecodingDefault(Effect.succeed(false)),\n  ),\n  idleCompaction: Schema.optionalKey(IdleCompactionMode),\n  snoozeLimitedThreads: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  autoResumeLimitedThreads: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  snoozePresets: SnoozePresetSettings.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_SNOOZE_PRESETS)),\n  ),\n  /** Beta: guest links for this machine's threads. Off refuses new links and pauses existing ones. */\n  guestSharingEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  /**\n   * Beta: links to the user's other machines, both ways. Off refuses new links, calls over links\n   * and tasks on another machine; tasks already running there finish.\n   */\n  linkedEnvironmentsEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  sidebarAutoSettleKeepPullRequests: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(false)),\n  ),\n  sidebarAutoSettleOnMerge: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),\n  backgroundActivity: BackgroundActivitySettings,\n\n  automaticGitFetchInterval: Schema.DurationFromMillis.pipe(\n    Schema.withDecodingDefault(\n      Effect.succeed(Duration.toMillis(DEFAULT_AUTOMATIC_GIT_FETCH_INTERVAL)),\n    ),\n  ),\n  providerHealthRefreshInterval: Schema.DurationFromMillis.pipe(\n    Schema.withDecodingDefault(\n      Effect.succeed(Duration.toMillis(DEFAULT_PROVIDER_HEALTH_REFRESH_INTERVAL)),\n    ),\n  ),\n  backgroundActivityProfile: BackgroundActivityProfile.pipe(\n    Schema.withDecodingDefault(Effect.succeed(DEFAULT_BACKGROUND_ACTIVITY_PROFILE)),\n  ),\n  defaultTheme: DefaultThemePreference.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n  /** Distinguishes repeated sets of the same theme so clients apply each one. */\n  defaultThemeSetAt: Schema.String.check(Schema.isMaxLength(64)).pipe(\n    Schema.withDecodingDefault(Effect.succeed(\"\")),\n  ),\n  environmentIcon: ForwardCompatibleNullable(EnvironmentMachineKind).pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  /** Null inherits t3.json, then local; omit it on the wire for older clients requiring a literal. */\n  defaultThreadEnvMode: OmittedWhenNull(ThreadEnvMode),\n  newWorktreesStartFromOrigin: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(true)),\n  ),\n  /** Null inherits t3.json, then recursive; unknown values decode to null for older clients. */\n  worktreeSubmodules: ForwardCompatibleNullable(WorktreeSubmodules).pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  addProjectBaseDirectory: TrimmedString.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n  textGenerationModelSelection: ModelSelection.pipe(\n    Schema.withDecodingDefault(\n      Effect.succeed({\n        instanceId: ProviderInstanceId.make(\"codex\"),\n        model: DEFAULT_TEXT_GENERATION_MODEL,\n        options: [\n          {\n            id: \"reasoningEffort\",\n            value: DEFAULT_TEXT_GENERATION_REASONING_EFFORT,\n          },\n        ],\n      }),\n    ),\n  ),\n  threadTitleInstructions: TrimmedString.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n  branchNamingMode: BranchNamingMode.pipe(\n    Schema.withDecodingDefault(Effect.succeed(\"static\" as const)),\n  ),\n  branchNamePrefix: TrimmedString.pipe(Schema.withDecodingDefault(Effect.succeed(\"t3\"))),\n  branchNameInstructions: TrimmedString.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n  removeAgentCreditsOnMerge: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  sourceControlWritingStyle: SourceControlWritingStyleSetting.pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  sourceControlWriterModelSelection: Schema.NullOr(ModelSelection).pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  reviewGuidesEnabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),\n  reviewGuideModelSelection: Schema.NullOr(ModelSelection).pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n  reviewGuideInstructions: TrimmedString.pipe(Schema.withDecodingDefault(Effect.succeed(\"\"))),\n\n  pullRequestMergeMethod: Schema.NullOr(PullRequestMergeMethod).pipe(\n    Schema.withDecodingDefault(Effect.succeed(null)),\n  ),\n\n  // Schema.Unknown preserves unknown-driver configs across versions; see providerInstance.ts.\n  providerInstances: Schema.Record(ProviderInstanceId, ProviderInstanceConfig).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  observability: ObservabilitySettings.pipe(Schema.withDecodingDefault(Effect.succeed({}))),\n  sourceControlHosts: Schema.Record(Schema.String, SourceControlHostSettings).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  // User-chosen ids preserve rows across edits; undecodable entries round-trip untouched.\n  usageLimitSources: Schema.Record(UsageLimitSourceId, UsageLimitSourceConfig).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  secretProviders: Schema.Record(SecretProviderId, SecretProviderConfig).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n  cursorKeychainUsageEnabled: Schema.Boolean.pipe(\n    Schema.withDecodingDefault(Effect.succeed(false)),\n  ),\n\n  usagePriceOverrides: Schema.Record(TrimmedNonEmptyString, UsageModelPriceOverride).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n\n  usageModelAliases: Schema.Record(TrimmedNonEmptyString, TrimmedNonEmptyString).pipe(\n    Schema.withDecodingDefault(Effect.succeed({})),\n  ),\n});\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 1181,
+          "endLine": 1364,
+          "startOffset": 48973,
+          "endOffset": 58295,
+          "sha256": "683e5bb55c78ab36851150e62cbfc13e3002cc8c6a312165dc22b6141c0ed397",
+          "textSha256": "683e5bb55c78ab36851150e62cbfc13e3002cc8c6a312165dc22b6141c0ed397",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L1181-L1364"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-05a427ece8e822cf0dc3",
+      "title": "ServerSettingsPatch (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const ServerSettingsPatch = Schema.Struct({\n  setModelFavorites: Schema.optionalKey(\n    Schema.Array(Schema.Struct({ ...ModelFavorite.fields, favorite: Schema.Boolean })),\n  ),\n  setModelsHidden: Schema.optionalKey(\n    Schema.Array(Schema.Struct({ ...ModelFavorite.fields, hidden: Schema.Boolean })),\n  ),\n  setProviderModelOrder: Schema.optionalKey(\n    Schema.Struct({ provider: ProviderInstanceId, modelOrder: Schema.Array(TrimmedString) }),\n  ),\n  favorites: Schema.optionalKey(ModelFavorites),\n  providerModelPreferences: Schema.optionalKey(ProviderModelPreferences),\n  // Applied under the settings service's write lock, only while still unset.\n  migrateModelPreferences: Schema.optionalKey(\n    Schema.Struct({\n      favorites: Schema.optionalKey(ModelFavorites),\n      providerModelPreferences: Schema.optionalKey(ProviderModelPreferences),\n    }),\n  ),\n  worktreeCleanup: Schema.optionalKey(\n    Schema.NullOr(\n      Schema.Union([\n        Schema.Struct({ mode: Schema.Literal(\"off\") }),\n        Schema.Struct({\n          mode: Schema.Literal(\"custom\"),\n          rules: Schema.Struct({\n            worktreeKeepWhen: Schema.optionalKey(WorktreeKeepWhen),\n            worktreeAfterDays: Schema.optionalKey(StorageRetentionDays),\n            worktreeSettledAfterDays: Schema.optionalKey(SettledWorktreeRetentionDays),\n            worktreeOnMerge: Schema.optionalKey(Schema.Boolean),\n            worktreeOnDelete: Schema.optionalKey(Schema.Boolean),\n            worktreeUnchanged: Schema.optionalKey(Schema.Boolean),\n          }),\n        }),\n      ]),\n    ),\n  ),\n  storageCleanup: Schema.optionalKey(\n    Schema.Struct({\n      worktreeKeepWhen: Schema.optionalKey(WorktreeKeepWhen),\n      worktreeAfterDays: Schema.optionalKey(StorageRetentionDays),\n      worktreeSettledAfterDays: Schema.optionalKey(SettledWorktreeRetentionDays),\n      worktreeOnMerge: Schema.optionalKey(Schema.Boolean),\n      worktreeOnDelete: Schema.optionalKey(Schema.Boolean),\n      worktreeUnchanged: Schema.optionalKey(Schema.Boolean),\n      browserArtifactsAfterDays: Schema.optionalKey(StorageRetentionDays),\n      logsAfterDays: Schema.optionalKey(StorageRetentionDays),\n    }),\n  ),\n  worktreesDirectory: Schema.optionalKey(TrimmedString),\n  responseStreamingMode: Schema.optionalKey(ResponseStreamingMode),\n  enableProviderUpdateChecks: Schema.optionalKey(Schema.Boolean),\n  continueThreadsAfterServerUpdate: Schema.optionalKey(Schema.Boolean),\n  enableAgentBrowserAccess: Schema.optionalKey(Schema.Boolean),\n  projectAgentBrowserAccessOverrides: Schema.optionalKey(\n    Schema.Record(ProjectId, Schema.NullOr(Schema.Boolean)),\n  ),\n  defaultAutoPull: Schema.optionalKey(Schema.Boolean),\n  defaultProjectScripts: Schema.optionalKey(Schema.Array(ProjectScript)),\n  projectScriptOverrides: Schema.optionalKey(\n    Schema.Record(ProjectId, Schema.NullOr(Schema.Array(ProjectScript))),\n  ),\n  projectAutoPullOverrides: Schema.optionalKey(\n    Schema.Record(ProjectId, Schema.NullOr(Schema.Boolean)),\n  ),\n  defaultModelSelection: Schema.optionalKey(Schema.NullOr(ModelSelection)),\n  defaultRuntimeMode: Schema.optionalKey(RuntimeMode),\n  fallbackModelSelection: Schema.optionalKey(Schema.NullOr(ModelSelection)),\n  /** Replaces each project's override set; null removes it. Omitted providerInstances retains its stored value. */\n  projectSettingsOverrides: Schema.optionalKey(\n    Schema.Record(\n      ProjectId,\n      Schema.NullOr(\n        keepUnknownOverrideKeys(\n          Schema.Struct({\n            ...ProjectSettingsOverrides.fields,\n            sourceControlWritingStyle: Schema.optionalKey(SourceControlWritingStyleSettings),\n          }),\n        ),\n      ),\n    ),\n  ),\n  enableAgentDeviceAccess: Schema.optionalKey(Schema.Boolean),\n  enableDeviceSupport: Schema.optionalKey(Schema.Boolean),\n  deviceOnboardingCompleted: Schema.optionalKey(Schema.Boolean),\n  deviceHosts: Schema.optionalKey(SshDeviceHostConfigs),\n  easDeviceHosts: Schema.optionalKey(EasDeviceHostConfigs),\n  simlockDeviceHosts: Schema.optionalKey(SimlockDeviceHostConfigs),\n  simlockDeviceHostsEnabled: Schema.optionalKey(Schema.Boolean),\n  sidebarAutoSettleAfterDays: Schema.optionalKey(Schema.NullOr(SidebarAutoSettleAfterDays)),\n  compactIdleThreads: Schema.optionalKey(LegacyCompactIdleThreads),\n  idleCompaction: Schema.optionalKey(IdleCompactionMode),\n  sidebarAutoSettleKeepPullRequests: Schema.optionalKey(Schema.Boolean),\n  sidebarAutoSettleOnMerge: Schema.optionalKey(Schema.Boolean),\n  autoResumeLimitedThreads: Schema.optionalKey(Schema.Boolean),\n  snoozeLimitedThreads: Schema.optionalKey(Schema.Boolean),\n  snoozePresets: Schema.optionalKey(SnoozePresetSettings),\n  guestSharingEnabled: Schema.optionalKey(Schema.Boolean),\n  linkedEnvironmentsEnabled: Schema.optionalKey(Schema.Boolean),\n  backgroundActivity: Schema.optionalKey(\n    Schema.Struct({\n      schemaVersion: Schema.optionalKey(Schema.Literal(1)),\n      profile: Schema.optionalKey(BackgroundActivityProfileSelection),\n      baseProfile: Schema.optionalKey(BackgroundActivityProfile),\n      overrides: Schema.optionalKey(BackgroundActivityOverrides),\n    }),\n  ),\n  automaticGitFetchInterval: Schema.optionalKey(Schema.DurationFromMillis),\n  providerHealthRefreshInterval: Schema.optionalKey(Schema.DurationFromMillis),\n  backgroundActivityProfile: Schema.optionalKey(BackgroundActivityProfile),\n  environmentIcon: Schema.optionalKey(Schema.NullOr(EnvironmentMachineKind)),\n  defaultThreadEnvMode: Schema.optionalKey(Schema.NullOr(ThreadEnvMode)),\n  newWorktreesStartFromOrigin: Schema.optionalKey(Schema.Boolean),\n  worktreeSubmodules: Schema.optionalKey(Schema.NullOr(WorktreeSubmodules)),\n  addProjectBaseDirectory: Schema.optionalKey(TrimmedString),\n  textGenerationModelSelection: Schema.optionalKey(ModelSelectionPatch),\n  threadTitleInstructions: Schema.optionalKey(TrimmedString),\n  branchNamingMode: Schema.optionalKey(BranchNamingMode),\n  branchNamePrefix: Schema.optionalKey(TrimmedString),\n  branchNameInstructions: Schema.optionalKey(TrimmedString),\n  removeAgentCreditsOnMerge: Schema.optionalKey(Schema.Boolean),\n  sourceControlWritingStyle: Schema.optionalKey(\n    Schema.Struct({\n      mode: Schema.optionalKey(SourceControlWritingStyleMode),\n      customInstructions: Schema.optionalKey(TrimmedString),\n      followChangeRequestTemplates: Schema.optionalKey(Schema.Boolean),\n    }),\n  ),\n  sourceControlWriterModelSelection: Schema.optionalKey(Schema.NullOr(ModelSelection)),\n  reviewGuidesEnabled: Schema.optionalKey(Schema.Boolean),\n  reviewGuideModelSelection: Schema.optionalKey(Schema.NullOr(ModelSelection)),\n  reviewGuideInstructions: Schema.optionalKey(TrimmedString),\n  pullRequestMergeMethod: Schema.optionalKey(Schema.NullOr(PullRequestMergeMethod)),\n  observability: Schema.optionalKey(\n    Schema.Struct({\n      otlpTracesUrl: Schema.optionalKey(TrimmedString),\n      otlpMetricsUrl: Schema.optionalKey(TrimmedString),\n      otlpLogsUrl: Schema.optionalKey(TrimmedString),\n    }),\n  ),\n  /** Merges per host, replacing patched fields whole; redaction markers retain secrets, empty or omitted secrets remove them. */\n  sourceControlHosts: Schema.optionalKey(Schema.Record(Schema.String, SourceControlHostSettings)),\n  // Replace whole maps to avoid half-merged driver configs.\n  providerInstances: Schema.optionalKey(Schema.Record(ProviderInstanceId, ProviderInstanceConfig)),\n  // Merge per source to avoid racing other edits; null removes an entry.\n  usageLimitSources: Schema.optionalKey(\n    Schema.Record(UsageLimitSourceId, Schema.NullOr(UsageLimitSourceConfig)),\n  ),\n  secretProviders: Schema.optionalKey(\n    Schema.Record(SecretProviderId, Schema.NullOr(SecretProviderConfigWrite)),\n  ),\n  cursorKeychainUsageEnabled: Schema.optionalKey(Schema.Boolean),\n\n  usagePriceOverrides: Schema.optionalKey(\n    Schema.Record(TrimmedNonEmptyString, Schema.NullOr(UsageModelPriceOverride)),\n  ),\n\n  usageModelAliases: Schema.optionalKey(\n    Schema.Record(TrimmedNonEmptyString, Schema.NullOr(TrimmedNonEmptyString)),\n  ),\n});\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 1521,
+          "endLine": 1681,
+          "startOffset": 64448,
+          "endOffset": 72453,
+          "sha256": "00d3faa0f5971696506f5d6c9c91ddc44d6b456583caea0eb0568680f11230c5",
+          "textSha256": "00d3faa0f5971696506f5d6c9c91ddc44d6b456583caea0eb0568680f11230c5",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L1521-L1681"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-dddfac0b2a0677538006",
+      "title": "ClientSettingsPatch (settings.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const ClientSettingsPatch = Schema.Struct({\n  notificationMode: Schema.optionalKey(NotificationMode),\n  inAppNotificationsEnabled: Schema.optionalKey(Schema.Boolean),\n  diffColorScheme: Schema.optionalKey(DiffColorScheme),\n  chatWidth: Schema.optionalKey(ChatWidth),\n  effortDisplay: Schema.optionalKey(EffortDisplay),\n  loadBalancingEnabled: Schema.optionalKey(Schema.Boolean),\n  loadBalancingWeights: Schema.optionalKey(LoadBalancingWeights),\n  appearanceContrast: Schema.optionalKey(AppearanceContrast),\n  panelAnimationDurationMs: Schema.optionalKey(PanelAnimationDurationMs),\n  browserDefaultViewport: Schema.optionalKey(PreviewViewportSetting),\n  browserDefaultZoomFactor: Schema.optionalKey(PreviewZoomFactor),\n  browserDefaultAppearance: Schema.optionalKey(PreviewAppearancePreference),\n  browserRecordingFrameRate: Schema.optionalKey(BrowserRecordingFrameRate),\n  browserRecordingShowKeyPresses: Schema.optionalKey(Schema.Boolean),\n  browserRecordingShowMousePresses: Schema.optionalKey(Schema.Boolean),\n  browserLinkTarget: Schema.optionalKey(BrowserLinkTarget),\n  browserSearchEngine: Schema.optionalKey(BrowserSearchEngine),\n  browserCustomSearchUrl: Schema.optionalKey(BrowserCustomSearchUrl),\n  browserAutoShowFloatingPreview: Schema.optionalKey(Schema.Boolean),\n  browserProfiles: Schema.optionalKey(Schema.Array(BrowserProfile)),\n  browserDefaultProfileId: Schema.optionalKey(BrowserProfileId),\n  confirmQuit: Schema.optionalKey(QuitConfirmationMode),\n  confirmThreadArchive: Schema.optionalKey(Schema.Boolean),\n  confirmThreadDelete: Schema.optionalKey(Schema.Boolean),\n  confirmThreadUnpin: Schema.optionalKey(Schema.Boolean),\n  diffFilesCollapsed: Schema.optionalKey(Schema.Boolean),\n  diffIgnoreWhitespace: Schema.optionalKey(Schema.Boolean),\n  diffLayout: Schema.optionalKey(DiffLayout),\n  environmentIdentificationMode: Schema.optionalKey(EnvironmentIdentificationMode),\n  glassOpacity: Schema.optionalKey(GlassOpacity),\n  onboardingCompletedAt: Schema.optionalKey(Schema.NullOr(Schema.String)),\n  fontSizeInterface: Schema.optionalKey(InterfaceFontSize),\n  fontSizePrompt: Schema.optionalKey(PromptFontSize),\n  fontSizeCode: Schema.optionalKey(CodeFontSize),\n  fontSizeTerminal: Schema.optionalKey(TerminalFontSize),\n  fontFamilyCode: Schema.optionalKey(FontFamilyPreference),\n  fontFamilyComposer: Schema.optionalKey(FontFamilyPreference),\n  fontFamilySans: Schema.optionalKey(FontFamilyPreference),\n  fontFamilyTerminal: Schema.optionalKey(FontFamilyPreference),\n  fontSmoothing: Schema.optionalKey(Schema.Boolean),\n  persistComposerContextStrip: Schema.optionalKey(Schema.Boolean),\n  favorites: Schema.optionalKey(ModelFavorites),\n  providerModelPreferences: Schema.optionalKey(ProviderModelPreferences),\n  pullRequestMergeMethodOverrides: Schema.optionalKey(\n    Schema.Record(TrimmedNonEmptyString, PullRequestMergeMethod),\n  ),\n  pullRequestLinksOpenInApp: Schema.optionalKey(Schema.Boolean),\n  planModeEnabled: Schema.optionalKey(Schema.Boolean),\n  contextWindowMeterEnabled: Schema.optionalKey(Schema.Boolean),\n  composerRichTextEnabled: Schema.optionalKey(Schema.Boolean),\n  sendShortcut: Schema.optionalKey(Schema.Literals([\"enter\", \"mod-enter-multiline\", \"mod-enter\"])),\n  followUpBehavior: Schema.optionalKey(Schema.Literals([\"queue\", \"steer\"])),\n  proactivePanelsEnabled: Schema.optionalKey(Schema.Boolean),\n  showSkillsInSlashMenu: Schema.optionalKey(Schema.Boolean),\n  boringSidebarEnabled: Schema.optionalKey(Schema.Boolean),\n  boringSidebarMultilineRows: Schema.optionalKey(Schema.Boolean),\n  threadDetailsUsageEnabled: Schema.optionalKey(Schema.Boolean),\n  threadDetailsItems: Schema.optionalKey(Schema.Record(Schema.String, Schema.Boolean)),\n  legacySidebarEnabled: Schema.optionalKey(Schema.Boolean),\n  sidebarWorkingShelfEnabled: Schema.optionalKey(Schema.Boolean),\n  sidebarProjectGroupingMode: Schema.optionalKey(SidebarProjectGroupingMode),\n  sidebarProjectGroupingOverrides: Schema.optionalKey(\n    Schema.Record(TrimmedNonEmptyString, SidebarProjectGroupingMode),\n  ),\n  sidebarProjectSortOrder: Schema.optionalKey(SidebarProjectSortOrder),\n  sidebarThreadSortOrder: Schema.optionalKey(SidebarThreadSortOrder),\n  timestampFormat: Schema.optionalKey(TimestampFormat),\n  snapShotEnabled: Schema.optionalKey(Schema.Boolean),\n  snapShotIncludeAccessibility: Schema.optionalKey(Schema.Boolean),\n  snapShotShortcut: Schema.optionalKey(SnapShotShortcut),\n  snapShotPlaySound: Schema.optionalKey(Schema.Boolean),\n  snapShotSound: Schema.optionalKey(SnapShotSound),\n  snapShotFlash: Schema.optionalKey(Schema.Boolean),\n  snapShotAnimations: Schema.optionalKey(Schema.Boolean),\n  wordWrap: Schema.optionalKey(Schema.Boolean),\n  mathRenderingEnabled: Schema.optionalKey(Schema.Boolean),\n});\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/settings.ts",
+          "startLine": 1721,
+          "endLine": 1798,
+          "startOffset": 73695,
+          "endOffset": 78431,
+          "sha256": "6e66d94b1515c555623374ad07ff623eebb0e3a1767a1af3fc85d07ea3de12b3",
+          "textSha256": "6e66d94b1515c555623374ad07ff623eebb0e3a1767a1af3fc85d07ea3de12b3",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/settings.ts#L1721-L1798"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-9560f346ac75ae710af2",
+      "title": "RuntimeMode (providerPolicy.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const RuntimeMode = Schema.Literals([\n  \"approval-required\",\n  \"auto-accept-edits\",\n  \"auto\",\n  \"full-access\",\n]);\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/providerPolicy.ts",
+          "startLine": 25,
+          "endLine": 30,
+          "startOffset": 600,
+          "endOffset": 722,
+          "sha256": "a41d8b79b9982ee9b8277e3dea1a2dc2f1418912c6b36ab7433cb3f5251c42ea",
+          "textSha256": "a41d8b79b9982ee9b8277e3dea1a2dc2f1418912c6b36ab7433cb3f5251c42ea",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/providerPolicy.ts#L25-L30"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-6167f4dfeb10c4994d80",
+      "title": "DEFAULT_RUNTIME_MODE (providerPolicy.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const DEFAULT_RUNTIME_MODE: RuntimeMode = \"full-access\";\n\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/providerPolicy.ts",
+          "startLine": 32,
+          "endLine": 33,
+          "startOffset": 773,
+          "endOffset": 838,
+          "sha256": "cb8ec03d53a5173039c038a8c0d4d09d42745900b450cbb40faa45ed390ab383",
+          "textSha256": "cb8ec03d53a5173039c038a8c0d4d09d42745900b450cbb40faa45ed390ab383",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/providerPolicy.ts#L32-L33"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-1eb94bd196e98ed629c4",
+      "title": "ProviderInteractionMode (providerPolicy.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const ProviderInteractionMode = Schema.Literals([\"default\", \"plan\"]);\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/providerPolicy.ts",
+          "startLine": 34,
+          "endLine": 34,
+          "startOffset": 838,
+          "endOffset": 915,
+          "sha256": "c8325b191917b546d0a43208afd1c16bd4211e03d0ea68d5eed037a15a76766a",
+          "textSha256": "c8325b191917b546d0a43208afd1c16bd4211e03d0ea68d5eed037a15a76766a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/providerPolicy.ts#L34-L34"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-5be99c30c56ca4127ac0",
+      "title": "DEFAULT_PROVIDER_INTERACTION_MODE (providerPolicy.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const DEFAULT_PROVIDER_INTERACTION_MODE: ProviderInteractionMode = \"default\";\n\n",
+      "provenance": [
+        {
+          "file": "packages/contracts/src/providerPolicy.ts",
+          "startLine": 36,
+          "endLine": 37,
+          "startOffset": 990,
+          "endOffset": 1076,
+          "sha256": "b3d41d6ead792bb3810ac18e5089e245764ddb643fb815325a84c97e3e02434c",
+          "textSha256": "b3d41d6ead792bb3810ac18e5089e245764ddb643fb815325a84c97e3e02434c",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/contracts/src/providerPolicy.ts#L36-L37"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-11e16925ed2c983761b6",
+      "title": "McpCredentialRequest (McpSessionRegistry.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export interface McpCredentialRequest {\n  readonly threadId: ThreadId;\n  readonly providerInstanceId: ProviderInstanceId;\n  /** False omits the preview capability wherever the token is honored. Defaults to full access. */\n  readonly browserToolsAvailable?: boolean;\n  readonly capabilities?: ReadonlySet<McpInvocationContext.McpCapability>;\n  readonly subagent?: boolean;\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpSessionRegistry.ts",
+          "startLine": 15,
+          "endLine": 23,
+          "startOffset": 647,
+          "endOffset": 1022,
+          "sha256": "b4c9bdb8cf9d3f13f73a57a9f5aaa70ac7bd51f300647b81c955b99fd0b2d3d4",
+          "textSha256": "b4c9bdb8cf9d3f13f73a57a9f5aaa70ac7bd51f300647b81c955b99fd0b2d3d4",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpSessionRegistry.ts#L15-L23"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-fa7efa68429cab7797c7",
+      "title": "makeWithOptions (McpSessionRegistry.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const makeWithOptions = Effect.fn(\"McpSessionRegistry.make\")(function* (\n  options: McpSessionRegistryOptions = {},\n) {\n  const crypto = yield* Crypto.Crypto;\n  const environment = yield* ServerEnvironment.ServerEnvironment;\n  const environmentId = yield* environment.getEnvironmentId;\n  const httpServer = yield* HttpServer.HttpServer;\n  const state = yield* SynchronizedRef.make<RegistryState>({ records: new Map() });\n  const currentTimeMillis = options.now ? Effect.sync(options.now) : Clock.currentTimeMillis;\n  const livenessWindowMs = options.livenessWindowMs ?? DEFAULT_LIVENESS_WINDOW_MS;\n  const endpoint = NetAddress.isInetAddress(httpServer.address)\n    ? `http://${getHttpMcpEndpointHost(httpServer.address.address)}:${httpServer.address.port}/mcp`\n    : \"http://127.0.0.1/mcp\";\n\n  const hashToken = (token: string) =>\n    crypto\n      .digest(\"SHA-256\", new TextEncoder().encode(token))\n      .pipe(Effect.map(bytesToHex), Effect.orDie);\n\n  const issue: McpSessionRegistryShape[\"issue\"] = Effect.fn(\"McpSessionRegistry.issue\")(\n    function* (request) {\n      const issuedAt = yield* currentTimeMillis;\n      const providerSessionId = yield* crypto.randomUUIDv4().pipe(Effect.orDie);\n      const rawToken = yield* crypto.randomBytes(32).pipe(Effect.map(tokenFromBytes), Effect.orDie);\n      const tokenHash = yield* hashToken(rawToken);\n      const browserToolsAvailable = request.browserToolsAvailable ?? true;\n      const scope: McpInvocationContext.McpThreadInvocationScope = {\n        environmentId,\n        requestNamespace: providerSessionId,\n        thread: {\n          threadId: ThreadId.make(request.threadId),\n          providerSessionId,\n          providerInstanceId: ProviderInstanceId.make(request.providerInstanceId),\n          subagent: request.subagent === true,\n        },\n        client: undefined,\n        capabilities: new Set<McpInvocationContext.McpCapability>([\n          \"orchestration\",\n          \"worktree\",\n          \"pull-requests\",\n          ...(request.capabilities ?? (browserToolsAvailable ? ([\"preview\"] as const) : [])),\n        ]),\n        issuedAt,\n      };\n      yield* SynchronizedRef.update(state, ({ records }) => {\n        const next = new Map(records);\n        next.set(tokenHash, { tokenHash, scope, lastAliveAt: issuedAt });\n        return { records: next };\n      });\n      return {\n        config: {\n          environmentId,\n          threadId: scope.thread.threadId,\n          providerSessionId,\n          providerInstanceId: scope.thread.providerInstanceId,\n          endpoint,\n          authorizationHeader: `Bearer ${rawToken}`,\n          browserToolsAvailable: scope.capabilities.has(\"preview\"),\n          capabilities: scope.capabilities,\n        },\n      };\n    },\n  );\n\n  const resolve: McpSessionRegistryShape[\"resolve\"] = Effect.fn(\"McpSessionRegistry.resolve\")(\n    function* (rawToken) {\n      if (rawToken.length === 0) return undefined;\n      const tokenHash = yield* hashToken(rawToken);\n      const timestamp = yield* currentTimeMillis;\n      return yield* SynchronizedRef.modify(state, ({ records }) => {\n        const record = records.get(tokenHash);\n        if (!record || timestamp - record.lastAliveAt > livenessWindowMs) {\n          return [undefined, { records }] as const;\n        }\n        const next = new Map(records);\n        next.set(tokenHash, { ...record, lastAliveAt: timestamp });\n        return [record.scope, { records: next }] as const;\n      });\n    },\n  );\n\n  const touch: McpSessionRegistryShape[\"touch\"] = Effect.fn(\"McpSessionRegistry.touch\")(\n    function* (threadId) {\n      const timestamp = yield* currentTimeMillis;\n      yield* SynchronizedRef.update(state, ({ records }) => {\n        const next = new Map(records);\n        for (const [tokenHash, record] of records) {\n          if (record.scope.thread.threadId === threadId) {\n            next.set(tokenHash, { ...record, lastAliveAt: timestamp });\n          }\n        }\n        return { records: next };\n      });\n    },\n  );\n\n  const revokeWhere = (predicate: (record: CredentialRecord) => boolean) =>\n    SynchronizedRef.update(state, ({ records }) => ({\n      records: new Map(Array.from(records).filter(([, record]) => !predicate(record))),\n    }));\n\n  return McpSessionRegistry.of({\n    issue,\n    resolve,\n    touch,\n    revokeProviderSession: Effect.fn(\"McpSessionRegistry.revokeProviderSession\")(\n      function* (providerSessionId) {\n        yield* revokeWhere((record) => record.scope.thread.providerSessionId === providerSessionId);\n      },\n    ),\n    revokeThread: Effect.fn(\"McpSessionRegistry.revokeThread\")(function* (threadId) {\n      yield* revokeWhere((record) => record.scope.thread.threadId === threadId);\n    }),\n    revokeAll: SynchronizedRef.set(state, { records: new Map() }),\n  });\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpSessionRegistry.ts",
+          "startLine": 76,
+          "endLine": 192,
+          "startOffset": 2867,
+          "endOffset": 7639,
+          "sha256": "14f2ac985283301afcd60d94b67acae02141c5fd40970840f0f47dc17126d949",
+          "textSha256": "14f2ac985283301afcd60d94b67acae02141c5fd40970840f0f47dc17126d949",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpSessionRegistry.ts#L76-L192"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-21dd33446076dbd4b1c7",
+      "title": "mcpResourceMetadataUrl (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const mcpResourceMetadataUrl = (request: HttpServerRequest.HttpServerRequest) =>\n  HttpServerRequest.toURL(request).pipe(\n    Option.map((url) => `${url.origin}/.well-known/oauth-protected-resource/mcp`),\n  );\n\n/** Launched agents cannot open OAuth browsers; OAuth would mint credentials outliving their session. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 81,
+          "endLine": 86,
+          "startOffset": 3838,
+          "endOffset": 4154,
+          "sha256": "80061860fe0d9ed557ef68c624f6e4e24d183c67ac15fbe1d75caefb83c62980",
+          "textSha256": "80061860fe0d9ed557ef68c624f6e4e24d183c67ac15fbe1d75caefb83c62980",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L81-L86"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-f24c9755ef9f0c6532fc",
+      "title": "decodeModeLimit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const decodeModeLimit = Schema.decodeUnknownOption(\n  Schema.Struct({ runtimeMode: RuntimeMode, interactionMode: ProviderInteractionMode }),\n);\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 157,
+          "endLine": 159,
+          "startOffset": 6307,
+          "endOffset": 6451,
+          "sha256": "1454520f645af22165002e64533cbc6483e353ba9a6b11570ea788db323a2f2a",
+          "textSha256": "1454520f645af22165002e64533cbc6483e353ba9a6b11570ea788db323a2f2a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L157-L159"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-ee999aadb61b79b0ed46",
+      "title": "parseModeLimit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const parseModeLimit = (value: string) => {\n  const [runtimeMode, interactionMode, ...rest] = value.trim().split(\"/\");\n  return rest.length === 0 ? decodeModeLimit({ runtimeMode, interactionMode }) : Option.none();\n};\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 160,
+          "endLine": 164,
+          "startOffset": 6451,
+          "endOffset": 6670,
+          "sha256": "fc894b444ef6a61fa0ea34c8ed08353d3696f1163ba338bcf7fa9c05ebb237b8",
+          "textSha256": "fc894b444ef6a61fa0ea34c8ed08353d3696f1163ba338bcf7fa9c05ebb237b8",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L160-L164"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-714edeb84a9857b063ee",
+      "title": "invalidModeLimit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const invalidModeLimit = HttpServerResponse.jsonUnsafe(\n  {\n    error: \"invalid_mode_limit\",\n    message: \"T3-Mode-Limit must be <runtimeMode>/<interactionMode>, e.g. auto/default.\",\n  },\n  { status: 400, headers: { \"cache-control\": \"no-store\" } },\n);\n\n/** Applies a client's requested mode limit; undefined when the header is malformed. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 165,
+          "endLine": 173,
+          "startOffset": 6670,
+          "endOffset": 7011,
+          "sha256": "6b38059034f568a4efea7298d28b5a856965d19baa790021d3422cc654396873",
+          "textSha256": "6b38059034f568a4efea7298d28b5a856965d19baa790021d3422cc654396873",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L165-L173"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-99f5e00828d2e49d81d1",
+      "title": "withModeLimit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const withModeLimit = (\n  invocation: McpInvocationContext.McpInvocationScope,\n  request: HttpServerRequest.HttpServerRequest,\n): McpInvocationContext.McpInvocationScope | undefined => {\n  const header = request.headers[McpInvocationContext.MODE_LIMIT_HEADER];\n  if (header === undefined || invocation.client === undefined) return invocation;\n  const limit = parseModeLimit(header);\n  return Option.isNone(limit)\n    ? undefined\n    : { ...invocation, client: { ...invocation.client, narrowedTo: limit.value } };\n};\n\n// The Linked environments beta is off here: links wait until it is on again.\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 174,
+          "endLine": 186,
+          "startOffset": 7011,
+          "endOffset": 7606,
+          "sha256": "4806110eb9c233b27b374c39213d1c9146d9f04be6bc23b786b7cf718150d728",
+          "textSha256": "4806110eb9c233b27b374c39213d1c9146d9f04be6bc23b786b7cf718150d728",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L174-L186"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-40de81158848aeb01d05",
+      "title": "makeMcpAuthMiddleware (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const makeMcpAuthMiddleware = Effect.gen(function* () {\n  const registry = yield* McpSessionRegistry.McpSessionRegistry;\n  const clients = yield* Effect.serviceOption(McpClientAuthenticator);\n  const serverSettings = yield* ServerSettings.ServerSettingsService;\n  const linksEnabled = serverSettings.getSettings.pipe(\n    Effect.map((settings) => settings.linkedEnvironmentsEnabled),\n    Effect.orElseSucceed(() => false),\n  );\n  return Effect.fn(\"McpHttpServer.authenticateRequest\")(function* (httpEffect) {\n    const request = yield* HttpServerRequest.HttpServerRequest;\n    const authorization = request.headers.authorization;\n    const token =\n      authorization?.startsWith(\"Bearer \") === true\n        ? authorization.slice(\"Bearer \".length).trim()\n        : \"\";\n    const invocation =\n      (yield* registry.resolve(token)) ??\n      (Option.isSome(clients) && token.length > 0\n        ? yield* clients.value.authenticate(request)\n        : undefined);\n    if (!invocation) {\n      yield* Effect.logWarning(\"rejected MCP request with an unusable credential\", {\n        reason: token.length === 0 ? \"missing_bearer_token\" : \"unknown_or_expired_token\",\n      });\n      return unauthorized({\n        request,\n        presentedToken: token.length > 0,\n        offerOAuth: Option.isSome(clients) && !looksLikeProviderToken(token),\n      });\n    }\n    const limited = withModeLimit(invocation, request);\n    if (limited === undefined) return invalidModeLimit;\n    const linkedEnvironments = yield* linksEnabled;\n    if (limited.client?.linked === true && !linkedEnvironments) return linkedEnvironmentsOff;\n    return yield* httpEffect.pipe(\n      Effect.provideService(McpInvocationContext.McpInvocationContext, {\n        ...limited,\n        linkedEnvironments,\n      }),\n      Effect.map(normalizeMcpHttpResponse),\n    );\n  }) satisfies McpAuthMiddleware;\n}).pipe(Effect.withSpan(\"McpHttpServer.makeAuthMiddleware\"));\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 195,
+          "endLine": 238,
+          "startOffset": 7874,
+          "endOffset": 9794,
+          "sha256": "1ab3645e2a11d15a24836d705b1133bd47bb62566550e1991ef28da609095260",
+          "textSha256": "1ab3645e2a11d15a24836d705b1133bd47bb62566550e1991ef28da609095260",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L195-L238"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-23b8ec2ac58a19ec4bff",
+      "title": "saveScreenshot (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const saveScreenshot = Effect.fn(\"McpHttpServer.saveScreenshot\")(function* (\n  pageUrl: string,\n  data: Uint8Array,\n) {\n  const config = yield* ServerConfig.ServerConfig;\n  const fileSystem = yield* FileSystem.FileSystem;\n  const path = yield* Path.Path;\n  const millis = yield* Clock.currentTimeMillis;\n  const crypto = yield* Crypto.Crypto;\n  const unique = (yield* crypto.randomUUIDv4().pipe(Effect.orDie)).slice(0, 8);\n  const fileName = `browser-screenshot-${screenshotSiteSlug(pageUrl)}-${millis.toString(36)}-${unique}.png`;\n  const screenshotPath = path.join(config.browserArtifactsDir, fileName);\n  yield* fileSystem.makeDirectory(config.browserArtifactsDir, { recursive: true }).pipe(\n    Effect.andThen(fileSystem.writeFile(screenshotPath, data)),\n    Effect.mapError((cause) => new PreviewScreenshotSaveError({ screenshotPath, cause })),\n  );\n  return screenshotPath;\n});\n\n/** Decode with the advertised JSON codec, which permits null for optional fields that the raw schema rejects. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 427,
+          "endLine": 446,
+          "startOffset": 16734,
+          "endOffset": 17733,
+          "sha256": "1b96b41201e74ec2dfb3d995c923fbf18172bb338b1c92f06ff3a35b069e50c2",
+          "textSha256": "1b96b41201e74ec2dfb3d995c923fbf18172bb338b1c92f06ff3a35b069e50c2",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L427-L446"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-2171f35d828bd943d79d",
+      "title": "decodeAsAdvertised (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const decodeAsAdvertised = <Tools extends Record<string, Tool.Any>>(\n  toolkit: Toolkit.Toolkit<Tools>,\n): Toolkit.Toolkit<Tools> =>\n  Toolkit.make(\n    ...Object.values(toolkit.tools).map((tool) =>\n      tool.setParameters(Schema.toCodecJson(tool.parametersSchema)),\n    ),\n  ) as unknown as Toolkit.Toolkit<Tools>;\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 447,
+          "endLine": 455,
+          "startOffset": 17733,
+          "endOffset": 18051,
+          "sha256": "44cea0ce282fa74df971a103bf9b9132eef8cb9ea9eb50553bf3ff132c9086dc",
+          "textSha256": "44cea0ce282fa74df971a103bf9b9132eef8cb9ea9eb50553bf3ff132c9086dc",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L447-L455"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-9e98d44a7959f49c4899",
+      "title": "previewSnapshotFailure (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const previewSnapshotFailure = Effect.fn(\"previewSnapshotFailure\")(function <E>(\n  cause: Cause.Cause<E>,\n) {\n  if (Cause.hasInterrupts(cause) || cause.reasons.some(Cause.isDieReason)) {\n    return Effect.failCause(cause).pipe(Effect.orDie);\n  }\n  const failures = cause.reasons.filter(Cause.isFailReason);\n  const firstFailure = failures[0]?.error;\n  const errorTag =\n    typeof firstFailure === \"object\" &&\n    firstFailure !== null &&\n    \"_tag\" in firstFailure &&\n    typeof firstFailure._tag === \"string\"\n      ? firstFailure._tag\n      : \"PreviewSnapshotError\";\n  // Preview errors contain server-authored recovery guidance, never page output.\n  const message = isPreviewAutomationError(firstFailure) ? firstFailure.message : undefined;\n  const result = new McpSchema.CallToolResult({\n    isError: true,\n    structuredContent: {\n      error: {\n        _tag: errorTag,\n        operation: \"snapshot\",\n        failureCount: failures.length,\n        ...(message === undefined ? {} : { message }),\n      },\n    },\n    // Some clients show only the text content and others only structuredContent, so both carry it.\n    content: [{ type: \"text\", text: `Preview snapshot failed: ${message ?? `${errorTag}.`}` }],\n  });\n  return Effect.logWarning(\"preview snapshot failed\", {\n    operation: \"snapshot\",\n    errorTag,\n    failureCount: failures.length,\n  }).pipe(Effect.as(result));\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 458,
+          "endLine": 494,
+          "startOffset": 18120,
+          "endOffset": 19504,
+          "sha256": "469eb5202a2a9fc82c3f43b91518bd45b7b9a531cc99cd60f98528afc6595d8f",
+          "textSha256": "469eb5202a2a9fc82c3f43b91518bd45b7b9a531cc99cd60f98528afc6595d8f",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L458-L494"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-9853612b050cf032f8f4",
+      "title": "registerPreviewSnapshot (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const registerPreviewSnapshot = Effect.fn(\"McpHttpServer.registerPreviewSnapshot\")(function* () {\n  const server = yield* McpServer.McpServer;\n  const broker = yield* PreviewAutomationBroker.PreviewAutomationBroker;\n  const threads = yield* ThreadManagementService.ThreadManagementService;\n  const saveServices = yield* Effect.context<\n    ServerConfig.ServerConfig | FileSystem.FileSystem | Path.Path | Crypto.Crypto\n  >();\n  const built = yield* decodeAsAdvertised(PreviewSnapshotToolkit);\n  const tool = PreviewSnapshotTool;\n  yield* server.addTool({\n    tool: new McpSchema.Tool({\n      name: tool.name,\n      description: Tool.getDescription(tool),\n      inputSchema: advertisedJsonSchema(tool),\n      annotations: {\n        ...Context.getOption(tool.annotations, Tool.Title).pipe(\n          Option.map((title) => ({ title })),\n          Option.getOrUndefined,\n        ),\n        readOnlyHint: Context.get(tool.annotations, Tool.Readonly),\n        destructiveHint: Context.get(tool.annotations, Tool.Destructive),\n        idempotentHint: Context.get(tool.annotations, Tool.Idempotent),\n        openWorldHint: Context.get(tool.annotations, Tool.OpenWorld),\n      },\n    }),\n    annotations: tool.annotations,\n    handle: (payload) =>\n      Effect.withFiber((fiber) => {\n        const invocation = Context.getUnsafe(\n          fiber.context,\n          McpInvocationContext.McpInvocationContext,\n        );\n        return built.handle(\"preview_snapshot\", payload).pipe(\n          Stream.unwrap,\n          Stream.run(Sink.last()),\n          Effect.flatMap(Effect.fromOption),\n          Effect.provideService(PreviewAutomationBroker.PreviewAutomationBroker, broker),\n          Effect.provideService(ThreadManagementService.ThreadManagementService, threads),\n          Effect.provideService(McpInvocationContext.McpInvocationContext, invocation),\n          Effect.flatMap(({ encodedResult }) =>\n            Effect.gen(function* () {\n              const snapshot = encodedResult as SnapshotMetadata & {\n                readonly url: string;\n                readonly screenshot: {\n                  readonly mimeType: \"image/png\";\n                  readonly data: string;\n                  readonly width: number;\n                  readonly height: number;\n                };\n              };\n              const { screenshot, ...page } = snapshot;\n              const png = new Uint8Array(Buffer.from(screenshot.data, \"base64\"));\n              const screenshotPath =\n                payload?.save === true ? yield* saveScreenshot(snapshot.url, png) : undefined;\n              // Providers replay images on later requests, and some reject them; include images only when requested.\n              const includeImage = payload?.includeImage === true;\n              if (screenshotPath !== undefined && !includeImage) {\n                const saved = {\n                  url: cutText(snapshot.url, MAX_SNAPSHOT_IDENTIFIER_CHARS),\n                  screenshotPath,\n                };\n                return new McpSchema.CallToolResult({\n                  isError: false,\n                  structuredContent: saved,\n                  content: [{ type: \"text\", text: encodeJsonText(saved) }],\n                });\n              }\n              const metadata = {\n                ...page,\n                screenshot: {\n                  mimeType: screenshot.mimeType,\n                  width: screenshot.width,\n                  height: screenshot.height,\n                },\n                ...(screenshotPath === undefined ? {} : { screenshotPath }),\n              };\n              const bounded = boundSnapshotMetadata(metadata);\n              return new McpSchema.CallToolResult({\n                isError: false,\n                structuredContent:\n                  bounded.omitted.length === 0\n                    ? bounded.value\n                    : { ...bounded.value, omitted: bounded.omitted },\n                content: [\n                  {\n                    type: \"text\",\n                    text: encodeJsonText({\n                      url: cutText(snapshot.url, MAX_SNAPSHOT_IDENTIFIER_CHARS),\n                    }),\n                  },\n                  { type: \"text\", text: bounded.text },\n                  ...(bounded.omitted.length === 0\n                    ? []\n                    : [\n                        {\n                          type: \"text\" as const,\n                          text: `Snapshot text was bounded. Omitted: ${bounded.omitted.join(\"; \")}.`,\n                        },\n                      ]),\n                  ...(includeImage\n                    ? [{ type: \"image\" as const, data: png, mimeType: screenshot.mimeType }]\n                    : []),\n                ],\n              });\n            }),\n          ),\n          Effect.provide(saveServices),\n          Effect.matchCauseEffect({\n            onFailure: previewSnapshotFailure,\n            onSuccess: Effect.succeed,\n          }),\n        );\n      }),\n  });\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 495,
+          "endLine": 610,
+          "startOffset": 19504,
+          "endOffset": 24460,
+          "sha256": "5834347c43154088b638e31e85c005a66c657d567ec39e935c4965b3a22ab46b",
+          "textSha256": "5834347c43154088b638e31e85c005a66c657d567ec39e935c4965b3a22ab46b",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L495-L610"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-216e4eb3ef4f17dc1815",
+      "title": "ImageToolResult (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "interface ImageToolResult {\n  readonly screenshot: {\n    readonly mimeType: \"image/png\";\n    readonly data: string;\n    readonly width: number;\n    readonly height: number;\n  };\n  readonly [key: string]: unknown;\n}\n\n/** Expose only undescribed failures' tags; remote messages may contain renderer or device output. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 611,
+          "endLine": 621,
+          "startOffset": 24460,
+          "endOffset": 24778,
+          "sha256": "ab04c2dd61c1156a009bcc931dd9551c3e2629ecb8bb1fb6ffdb8e4928c2336f",
+          "textSha256": "ab04c2dd61c1156a009bcc931dd9551c3e2629ecb8bb1fb6ffdb8e4928c2336f",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L611-L621"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-a6ca9e606e35087e4b57",
+      "title": "imageToolFailure (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const imageToolFailure =\n  <E>(toolName: string, operation: string, failureText: string | ((error: E) => string)) =>\n  (cause: Cause.Cause<E>) => {\n    if (Cause.hasInterrupts(cause) || cause.reasons.some(Cause.isDieReason)) {\n      return Effect.failCause(cause).pipe(Effect.orDie);\n    }\n    const failures = cause.reasons.filter(Cause.isFailReason);\n    const firstFailure = failures[0]?.error;\n    const errorTag =\n      typeof firstFailure === \"object\" &&\n      firstFailure !== null &&\n      \"_tag\" in firstFailure &&\n      typeof firstFailure._tag === \"string\"\n        ? firstFailure._tag\n        : `${toolName}Error`;\n    const message =\n      typeof failureText === \"string\" || failures[0] === undefined\n        ? undefined\n        : failureText(failures[0].error);\n    const result = new McpSchema.CallToolResult({\n      isError: true,\n      structuredContent: {\n        error: {\n          _tag: errorTag,\n          operation,\n          failureCount: failures.length,\n          ...(message === undefined ? {} : { message }),\n        },\n      },\n      // Some clients show only the text content and others only structuredContent, so both carry it.\n      content: [\n        {\n          type: \"text\",\n          text: typeof failureText === \"string\" ? failureText : (message ?? `${toolName} failed.`),\n        },\n      ],\n    });\n    return Effect.logWarning(`${toolName} failed`, {\n      operation,\n      errorTag,\n      failureCount: failures.length,\n    }).pipe(Effect.as(result));\n  };\n\n/**\n * `McpServer.toolkit` serializes every result as JSON text, which is the wrong\n * shape for a screenshot: the model needs image content.\n */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 622,
+          "endLine": 669,
+          "startOffset": 24778,
+          "endOffset": 26421,
+          "sha256": "47b5607b6ec42ce928b21765136e2d23dea83a352acc572bd82a4e4d6e455ba3",
+          "textSha256": "47b5607b6ec42ce928b21765136e2d23dea83a352acc572bd82a4e4d6e455ba3",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L622-L669"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-96e4e026aac17ba460cf",
+      "title": "registerImageTool (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const registerImageTool = Effect.fn(\"McpHttpServer.registerImageTool\")(function* <\n  T extends Tool.Any,\n  E,\n  R,\n>(\n  tool: T,\n  handle: (payload: Tool.Parameters<T>) => Effect.Effect<{ readonly encodedResult: unknown }, E, R>,\n  provide: (\n    effect: Effect.Effect<{ readonly encodedResult: unknown }, E, R>,\n  ) => Effect.Effect<\n    { readonly encodedResult: unknown },\n    E,\n    McpInvocationContext.McpInvocationContext\n  >,\n  operation: string,\n  failureText: string | ((error: E) => string),\n) {\n  const server = yield* McpServer.McpServer;\n  yield* server.addTool({\n    tool: new McpSchema.Tool({\n      name: tool.name,\n      description: Tool.getDescription(tool),\n      inputSchema: advertisedJsonSchema(tool),\n      annotations: {\n        ...Context.getOption(tool.annotations, Tool.Title).pipe(\n          Option.map((title) => ({ title })),\n          Option.getOrUndefined,\n        ),\n        readOnlyHint: Context.get(tool.annotations, Tool.Readonly),\n        destructiveHint: Context.get(tool.annotations, Tool.Destructive),\n        idempotentHint: Context.get(tool.annotations, Tool.Idempotent),\n        openWorldHint: Context.get(tool.annotations, Tool.OpenWorld),\n      },\n    }),\n    annotations: tool.annotations,\n    handle: (payload) =>\n      Effect.withFiber((fiber) => {\n        const invocation = Context.getUnsafe(\n          fiber.context,\n          McpInvocationContext.McpInvocationContext,\n        );\n        return provide(handle(payload as Tool.Parameters<T>)).pipe(\n          Effect.provideService(McpInvocationContext.McpInvocationContext, invocation),\n          Effect.matchCauseEffect({\n            onFailure: imageToolFailure(tool.name, operation, failureText),\n            onSuccess: ({ encodedResult }) => {\n              const { screenshot, ...rest } = encodedResult as ImageToolResult;\n              const includeImage =\n                (payload as { readonly includeImage?: boolean } | undefined)?.includeImage !==\n                false;\n              const metadata = {\n                ...rest,\n                screenshot: {\n                  mimeType: screenshot.mimeType,\n                  width: screenshot.width,\n                  height: screenshot.height,\n                },\n              };\n              return Effect.succeed(\n                new McpSchema.CallToolResult({\n                  isError: false,\n                  structuredContent: metadata,\n                  content: [\n                    { type: \"text\", text: JSON.stringify(metadata) },\n                    ...(includeImage\n                      ? [\n                          {\n                            type: \"image\" as const,\n                            data: new Uint8Array(Buffer.from(screenshot.data, \"base64\")),\n                            mimeType: screenshot.mimeType,\n                          },\n                        ]\n                      : []),\n                  ],\n                }),\n              );\n            },\n          }),\n        );\n      }),\n  });\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 670,
+          "endLine": 752,
+          "startOffset": 26421,
+          "endOffset": 29423,
+          "sha256": "ad4592a652e848c95bfc59c740514eff0a25ddf4b7c46d205d7a078bb8ddfc11",
+          "textSha256": "ad4592a652e848c95bfc59c740514eff0a25ddf4b7c46d205d7a078bb8ddfc11",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L670-L752"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-344c940195eb1c8b4ddc",
+      "title": "registerDeviceScreenshot (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const registerDeviceScreenshot = Effect.fn(\"McpHttpServer.registerDeviceScreenshot\")(function* () {\n  const devices = yield* DeviceService.DeviceService;\n  const threads = yield* ThreadManagementService.ThreadManagementService;\n  const built = yield* decodeAsAdvertised(DeviceScreenshotToolkit);\n  yield* registerImageTool(\n    DeviceScreenshotTool,\n    (payload) =>\n      built\n        .handle(\"device_screenshot\", payload)\n        .pipe(Stream.unwrap, Stream.run(Sink.last()), Effect.flatMap(Effect.fromOption)),\n    (effect) =>\n      effect.pipe(\n        Effect.provideService(DeviceService.DeviceService, devices),\n        Effect.provideService(ThreadManagementService.ThreadManagementService, threads),\n      ),\n    \"screenshot\",\n    (error) => {\n      if (!isDeviceToolError(error)) {\n        return isOrchestratorMcpFailure(error) ? error.message : \"Device screenshot failed.\";\n      }\n      return error._tag === \"DeviceOperationError\" && error.reason === \"hub_rejected\"\n        ? `${error.message} Call device_list to check the device state, and device_open if it needs to be reopened.`\n        : error.message;\n    },\n  );\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 753,
+          "endLine": 779,
+          "startOffset": 29423,
+          "endOffset": 30561,
+          "sha256": "6b2bbc837d0ada6e10f10b685d225d6d8bdd27fd245757bbb5eba3518f4b4cf7",
+          "textSha256": "6b2bbc837d0ada6e10f10b685d225d6d8bdd27fd245757bbb5eba3518f4b4cf7",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L753-L779"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-423e4108dba3981d4daa",
+      "title": "isDeviceToolError (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const isDeviceToolError = Schema.is(DeviceToolError);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 781,
+          "endLine": 782,
+          "startOffset": 30629,
+          "endOffset": 30684,
+          "sha256": "e0ec4a8b50516b89501989b69c44124c19f541a4f987af0a397dce273bab76be",
+          "textSha256": "e0ec4a8b50516b89501989b69c44124c19f541a4f987af0a397dce273bab76be",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L781-L782"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-38125217e9c6642326d2",
+      "title": "registerHtmlPreview (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const registerHtmlPreview = Effect.fn(\"McpHttpServer.registerHtmlPreview\")(function* () {\n  const htmlRender = yield* HtmlRender.HtmlRender;\n  const threads = yield* ThreadManagementService.ThreadManagementService;\n  const built = yield* decodeAsAdvertised(HtmlPreviewToolkit);\n  yield* registerImageTool(\n    HtmlPreviewTool,\n    (payload) =>\n      built\n        .handle(\"html_preview\", payload)\n        .pipe(Stream.unwrap, Stream.run(Sink.last()), Effect.flatMap(Effect.fromOption)),\n    (effect) =>\n      effect.pipe(\n        Effect.provideService(HtmlRender.HtmlRender, htmlRender),\n        Effect.provideService(ThreadManagementService.ThreadManagementService, threads),\n      ),\n    \"preview\",\n\n    (error) =>\n      isOrchestratorMcpFailure(error) || AiError.isAiError(error)\n        ? error.message\n        : \"HTML preview failed.\",\n  );\n});\n\n/**\n * Tools that hand work to another thread's agent: they create it, message it,\n * steer it, or move context into it. Their events name the receiving agent too.\n */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 783,
+          "endLine": 810,
+          "startOffset": 30684,
+          "endOffset": 31703,
+          "sha256": "d04440719133ef3addccb889c5ba307a684014b732e8055ab24748dc2bcf069e",
+          "textSha256": "d04440719133ef3addccb889c5ba307a684014b732e8055ab24748dc2bcf069e",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L783-L810"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-a23f0e38e5526b69c77e",
+      "title": "HANDOFF_TOOLS (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const HANDOFF_TOOLS: ReadonlySet<string> = new Set([\n  \"delegate_task\",\n  \"create_threads\",\n  \"t3_thread_launch\",\n  \"t3_thread_send\",\n  \"t3_thread_send_attachments\",\n  \"schedule_task\",\n  \"run_scheduled_task_now\",\n]);\n\n/** Tool actions that hand work over with only a `{ sequence }` result; the input names the thread. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 811,
+          "endLine": 821,
+          "startOffset": 31703,
+          "endOffset": 32024,
+          "sha256": "126b5a8de1a1c8cc2919d1da1bf9410382dd92017805743aba0bf11c6a8bc111",
+          "textSha256": "126b5a8de1a1c8cc2919d1da1bf9410382dd92017805743aba0bf11c6a8bc111",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L811-L821"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-a63166fbf74791c832a4",
+      "title": "INPUT_TARGET_ACTIONS (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const INPUT_TARGET_ACTIONS: Readonly<Record<string, ReadonlySet<string>>> = {\n  t3_queue: new Set([\"edit\", \"promote_to_steer\"]),\n  t3_pending_request: new Set([\"respond\"]),\n};\n\n/** Tool actions that hand work over and name the receiving thread in their result. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 822,
+          "endLine": 827,
+          "startOffset": 32024,
+          "endOffset": 32288,
+          "sha256": "2b2fa65d9a8dcd54cc5c023035b1670fbe241167aee74f610137a4aac3b31ca0",
+          "textSha256": "2b2fa65d9a8dcd54cc5c023035b1670fbe241167aee74f610137a4aac3b31ca0",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L822-L827"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-8b0af7b9a0125f1ea5ef",
+      "title": "hasAction (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const hasAction = (\n  actions: Readonly<Record<string, ReadonlySet<string>>>,\n  tool: string,\n  args: unknown,\n) =>\n  actions[tool]?.has(String((args as { readonly action?: unknown } | null | undefined)?.action)) ===\n  true;\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 832,
+          "endLine": 839,
+          "startOffset": 32426,
+          "endOffset": 32652,
+          "sha256": "4946e25a7d7c8953685a9e8fc4124992b9260c3a26f41fd7bb4d5a871c5f6f35",
+          "textSha256": "4946e25a7d7c8953685a9e8fc4124992b9260c3a26f41fd7bb4d5a871c5f6f35",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L832-L839"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-f74b00d46374a7f2a44a",
+      "title": "isInputTargetHandoff (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const isInputTargetHandoff = (tool: string, args: unknown) =>\n  hasAction(INPUT_TARGET_ACTIONS, tool, args);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 840,
+          "endLine": 842,
+          "startOffset": 32652,
+          "endOffset": 32762,
+          "sha256": "05844659e4bce8e97c073a6fa4db7147f7965b53f18f7b2da076c7e08b3c12de",
+          "textSha256": "05844659e4bce8e97c073a6fa4db7147f7965b53f18f7b2da076c7e08b3c12de",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L840-L842"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-e68d64ff989a94587c58",
+      "title": "resultThreadKeys (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const resultThreadKeys = [\"childThreadId\", \"targetThreadId\", \"boundThreadId\", \"threadId\"] as const;\n\n/** Thread ids a handoff tool result names: the thread that received the work. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 843,
+          "endLine": 845,
+          "startOffset": 32762,
+          "endOffset": 32945,
+          "sha256": "d84e020c4f3f910dbd0f893a2fbc38edef0ac9185a519180203b0c8fa1186df5",
+          "textSha256": "d84e020c4f3f910dbd0f893a2fbc38edef0ac9185a519180203b0c8fa1186df5",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L843-L845"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-6911fb1b2899681c1856",
+      "title": "handoffTargetIds (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const handoffTargetIds = (\n  tool: string,\n  args: unknown,\n  result: McpSchema.CallToolResult | undefined,\n): ReadonlyArray<string> => {\n  if (!isInputTargetHandoff(tool, args)) return resultThreadIds(result?.structuredContent);\n  if (result === undefined || toolOutcome(result).outcome !== \"ok\") return [];\n  const threadId = (args as { readonly threadId?: unknown } | null | undefined)?.threadId;\n  return typeof threadId === \"string\" ? [threadId] : [];\n};\n\n/** Tool analytics must never include IDs, prompts or free text. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 858,
+          "endLine": 869,
+          "startOffset": 33554,
+          "endOffset": 34083,
+          "sha256": "559508427bb5754c82531ff5d1653f7d759880d214abbc138ce4955ddbe04a69",
+          "textSha256": "559508427bb5754c82531ff5d1653f7d759880d214abbc138ce4955ddbe04a69",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L858-L869"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-d9a4decd145234a94cf1",
+      "title": "withToolAnalytics (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const withToolAnalytics =\n  /* Request instrumentation already owns the span; keep this helper in that context. */\n  Effect.fnUntraced(function* <A, E, R>(registration: Effect.Effect<A, E, R>) {\n    const server = yield* McpServer.McpServer;\n    const analytics = yield* Effect.serviceOption(AnalyticsService.AnalyticsService);\n    if (Option.isNone(analytics)) return yield* registration;\n    const registry = yield* Effect.serviceOption(ProviderRegistry.ProviderRegistry);\n    const threads = yield* Effect.serviceOption(ThreadManagementService.ThreadManagementService);\n    const shellOf = (threadId: string) =>\n      Option.isNone(threads)\n        ? Effect.succeed(null)\n        : threads.value\n            .getThreadShell(ThreadId.make(threadId))\n            .pipe(Effect.orElseSucceed(() => null));\n    // Delegation depth: parents walked from the caller, capped.\n    const depthOf =\n      /* Request instrumentation already owns the span; keep this helper in that context. */\n      Effect.fnUntraced(function* (thread: AgentThread) {\n        let depth = 0;\n        let parentId =\n          thread.lineage.relationshipToParent === \"subagent\" ? thread.lineage.parentThreadId : null;\n        while (parentId !== null && depth < MAX_REPORTED_DEPTH) {\n          depth += 1;\n          const parent = yield* shellOf(parentId);\n          parentId =\n            parent?.lineage.relationshipToParent === \"subagent\"\n              ? parent.lineage.parentThreadId\n              : null;\n        }\n        return depth;\n      });\n    // Whether the caller's active run was started by a scheduled task.\n    const scheduledRunOf = (threadId: string, runId: RunId | null) =>\n      Option.isNone(threads) || runId === null\n        ? Effect.succeed(false)\n        : threads.value\n            .getThreadRecords(ThreadId.make(threadId), [\"runs\", \"messages\"], {\n              runIds: [runId],\n              messageRoles: [\"user\"],\n            })\n            .pipe(\n              Effect.map((records) => {\n                const run = records.runs.find((candidate) => candidate.id === runId);\n                return records.messages.some(\n                  (message) =>\n                    message.id === run?.userMessageId && message.scheduledTaskId !== undefined,\n                );\n              }),\n              Effect.orElseSucceed(() => false),\n            );\n    const record =\n      /* Request instrumentation already owns the span; keep this helper in that context. */\n      Effect.fnUntraced(\n        function* (\n          tool: string,\n          args: unknown,\n          result: McpSchema.CallToolResult | undefined,\n          durationMs: number,\n        ) {\n          const handoff =\n            HANDOFF_TOOLS.has(tool) ||\n            isInputTargetHandoff(tool, args) ||\n            hasAction(RESULT_TARGET_ACTIONS, tool, args);\n          const outcome = toolOutcome(result);\n          // Agents call status, read, and preview tools in tight loops, so an\n          // event per successful call floods analytics. Only failures count there.\n          if (!handoff && outcome.outcome === \"ok\") return;\n          // Client credentials (no calling thread) report an unknown caller.\n          const invocation = Option.getOrUndefined(\n            yield* Effect.serviceOption(McpInvocationContext.McpInvocationContext),\n          )?.thread;\n          const providers = Option.isSome(registry) ? yield* registry.value.getProviders : [];\n          // Only handoff tools pay for thread lookups; the rest report the\n          // caller's provider from the credential.\n          const caller =\n            handoff && invocation !== undefined\n              ? ((yield* shellOf(invocation.threadId)) ?? undefined)\n              : undefined;\n          const targetIds = handoff\n            ? [...new Set(handoffTargetIds(tool, args, result))].filter(\n                (threadId) => threadId !== invocation?.threadId,\n              )\n            : [];\n          const targets = yield* Effect.forEach(targetIds, shellOf);\n          for (const properties of agentToolProperties({\n            tool,\n            providers,\n            caller,\n            ...(invocation === undefined\n              ? {}\n              : { callerProviderInstanceId: invocation.providerInstanceId }),\n            ...(caller === undefined || invocation === undefined\n              ? {}\n              : {\n                  callerDepth: yield* depthOf(caller),\n                  callerScheduledRun: yield* scheduledRunOf(\n                    invocation.threadId,\n                    caller.activeRunId,\n                  ),\n                }),\n            targets: targets.filter((thread) => thread !== null),\n            outcome,\n            ...(handoff\n              ? { settings: handoffSettings(tool, args, result?.structuredContent) }\n              : {}),\n            durationMs,\n          })) {\n            yield* analytics.value.record(\"mcp.tool.invoked\", properties);\n          }\n        },\n        (effect, _tool, _args, _result, _durationMs) => effect.pipe(Effect.ignoreCause),\n      );\n    const recordingServer = McpServer.McpServer.of({\n      ...server,\n      addTool: Effect.fn(\"McpServer.addTool\")(function (options) {\n        return server.addTool({\n          ...options,\n          handle:\n            /* Request instrumentation already owns the span; keep this helper in that context. */\n            Effect.fnUntraced(function* (payload) {\n              const startedAt = yield* Clock.currentTimeMillis;\n              return yield* options.handle(payload).pipe(\n                Effect.onExit((exit) => {\n                  const result = exit._tag === \"Success\" ? exit.value : undefined;\n                  // A call that asks for input is retried with it, and that call is the one counted.\n                  if (result instanceof McpSchema.InputRequired) return Effect.void;\n                  // Handoff tools look up threads to record; the response must not wait on them.\n                  return Clock.currentTimeMillis.pipe(\n                    Effect.flatMap((endedAt) =>\n                      record(options.tool.name, payload, result, endedAt - startedAt),\n                    ),\n                    Effect.forkDetach,\n                    Effect.asVoid,\n                  );\n                }),\n              );\n            }),\n        });\n      }),\n    });\n    return yield* registration.pipe(Effect.provideService(McpServer.McpServer, recordingServer));\n  });\n\n/** `McpServer.registerToolkit` advertises the full codec schema; agents get the compact one. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 870,
+          "endLine": 1013,
+          "startOffset": 34083,
+          "endOffset": 40615,
+          "sha256": "8b63120bb0e8c12c8fadbb0bee827c29d5bc87348a547fdef77389eea2e5b7d5",
+          "textSha256": "8b63120bb0e8c12c8fadbb0bee827c29d5bc87348a547fdef77389eea2e5b7d5",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L870-L1013"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-d55574a208ab23017b81",
+      "title": "withAdvertisedSchemas (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const withAdvertisedSchemas = Effect.fn(\"McpHttpServer.withAdvertisedSchemas\")(function* <\n  Tools extends Record<string, Tool.Any>,\n  A,\n  E,\n  R,\n>(toolkit: Toolkit.Toolkit<Tools>, registration: Effect.Effect<A, E, R>) {\n  const server = yield* McpServer.McpServer;\n  const tools: Record<string, Tool.Any> = toolkit.tools;\n  const advertisingServer = McpServer.McpServer.of({\n    ...server,\n    addTool: Effect.fn(\"McpServer.addTool\")(function (options) {\n      const tool = tools[options.tool.name];\n      return server.addTool(\n        tool === undefined\n          ? options\n          : {\n              ...options,\n              tool: new McpSchema.Tool({\n                ...options.tool,\n                inputSchema: advertisedJsonSchema(tool),\n              }),\n            },\n      );\n    }),\n  });\n  return yield* registration.pipe(Effect.provideService(McpServer.McpServer, advertisingServer));\n});\n\n/**\n * `McpServer.toolkit` asks for every service its tools declare when it\n * registers them, but the auth middleware provides `McpInvocationContext` to\n * each request instead. Registration must not get one: the services it\n * captures would replace the request's.\n */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1014,
+          "endLine": 1047,
+          "startOffset": 40615,
+          "endOffset": 41795,
+          "sha256": "13e648f3f134c5fd4db831117d75223234764f6c08371e2a0f4714cae4bef984",
+          "textSha256": "13e648f3f134c5fd4db831117d75223234764f6c08371e2a0f4714cae4bef984",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1014-L1047"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-979c3d1d5cfdb7157b5d",
+      "title": "toolkitRegistration (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const toolkitRegistration = <Tools extends Record<string, Tool.Any>, EX, RX>(\n  toolkit: Toolkit.Toolkit<Tools>,\n  handlers: McpToolAccess.HandlersLayer<Tools, EX, RX>,\n) => {\n  const registration = Layer.effectDiscard(\n    withToolAnalytics(\n      withAdvertisedSchemas(toolkit, McpServer.registerToolkit(decodeAsAdvertised(toolkit))),\n    ),\n  ).pipe(Layer.provide(McpServer.McpServer.layer));\n  // @effect-diagnostics-next-line unsafeEffectTypeAssertion:off - the auth middleware provides it per request.\n  const registered = registration as Layer.Layer<\n    never,\n    never,\n    Exclude<Layer.Services<typeof registration>, McpInvocationContext.McpInvocationContext>\n  >;\n  return registered.pipe(Layer.provide(McpToolAccess.HandlersLayer.layer(handlers)));\n};\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1048,
+          "endLine": 1065,
+          "startOffset": 41795,
+          "endOffset": 42569,
+          "sha256": "936484cb62d73f32177563cf67d359f040448c163709474461eb822516b31c73",
+          "textSha256": "936484cb62d73f32177563cf67d359f040448c163709474461eb822516b31c73",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1048-L1065"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-f28b27499f2fa265930c",
+      "title": "imageToolRegistration (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const imageToolRegistration = <Tools extends Record<string, Tool.Any>, A, E, R, EX, RX>(\n  register: Effect.Effect<A, E, R>,\n  handlers: McpToolAccess.HandlersLayer<Tools, EX, RX>,\n) =>\n  Layer.effectDiscard(withToolAnalytics(register)).pipe(\n    Layer.provide(McpToolAccess.HandlersLayer.layer(handlers)),\n  );\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1066,
+          "endLine": 1073,
+          "startOffset": 42569,
+          "endOffset": 42882,
+          "sha256": "56ef045897749f04a73f225f915a294f22b5e6da10efcdd753e6f24364001d3b",
+          "textSha256": "56ef045897749f04a73f225f915a294f22b5e6da10efcdd753e6f24364001d3b",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1066-L1073"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-66b687bf1b727c5af901",
+      "title": "layerHtmlToolkit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerHtmlToolkit = Layer.mergeAll(\n  toolkitRegistration(HtmlRenderToolkit, HtmlHandlers.layerRender),\n  imageToolRegistration(registerHtmlPreview(), HtmlHandlers.layerPreview),\n).pipe(Layer.provide(HtmlRender.layer));\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1074,
+          "endLine": 1078,
+          "startOffset": 42882,
+          "endOffset": 43115,
+          "sha256": "4009ee930261e1fe23b1596c48e2ad2799f1b9a3a289e0706df4d169b52a8ec8",
+          "textSha256": "4009ee930261e1fe23b1596c48e2ad2799f1b9a3a289e0706df4d169b52a8ec8",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1074-L1078"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-a362ff1f5b87c9607f75",
+      "title": "layerPreviewStandardToolkitRegistration (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const layerPreviewStandardToolkitRegistration = toolkitRegistration(\n  PreviewStandardToolkit,\n  PreviewHandlers.layerStandard,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1079,
+          "endLine": 1083,
+          "startOffset": 43115,
+          "endOffset": 43247,
+          "sha256": "53bed3207257cf9f140c241be32be73d66495507c1768dbfee93779b18da6c32",
+          "textSha256": "53bed3207257cf9f140c241be32be73d66495507c1768dbfee93779b18da6c32",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1079-L1083"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-5395a207e832888a57c7",
+      "title": "layerPreviewSnapshotRegistration (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const layerPreviewSnapshotRegistration = imageToolRegistration(\n  registerPreviewSnapshot(),\n  PreviewHandlers.layerSnapshot,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1084,
+          "endLine": 1088,
+          "startOffset": 43247,
+          "endOffset": 43377,
+          "sha256": "21019e6f01081d052d43acdbcb9ca0b4d9cfda146f4aaa533b59a36283b139cd",
+          "textSha256": "21019e6f01081d052d43acdbcb9ca0b4d9cfda146f4aaa533b59a36283b139cd",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1084-L1088"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-741991a1564db972163f",
+      "title": "layerPreviewToolkit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerPreviewToolkit = Layer.mergeAll(\n  layerPreviewStandardToolkitRegistration,\n  layerPreviewSnapshotRegistration,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1089,
+          "endLine": 1093,
+          "startOffset": 43377,
+          "endOffset": 43511,
+          "sha256": "cfbda299a88d5407309e343b14194b67d1a8f71e5b470264e3b0d4c683ea31f4",
+          "textSha256": "cfbda299a88d5407309e343b14194b67d1a8f71e5b470264e3b0d4c683ea31f4",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1089-L1093"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-e5e1b1bea8148bddcdb7",
+      "title": "layerOrchestratorToolkit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerOrchestratorToolkit = toolkitRegistration(\n  OrchestratorToolkit,\n  OrchestratorHandlers.layer,\n).pipe(Layer.provide(OrchestratorMcpService.layer), Layer.provide(ThreadMetadataMcpService.layer));\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1094,
+          "endLine": 1098,
+          "startOffset": 43511,
+          "endOffset": 43726,
+          "sha256": "61a5040efe49acd0964c590be76a0b33c63aa5239c0365ddd8cd3738bba178ee",
+          "textSha256": "61a5040efe49acd0964c590be76a0b33c63aa5239c0365ddd8cd3738bba178ee",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1094-L1098"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-12c77ef526b7cccb93d3",
+      "title": "layerThreadToolkit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerThreadToolkit = toolkitRegistration(ThreadToolkit, ThreadHandlers.layer);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1099,
+          "endLine": 1100,
+          "startOffset": 43726,
+          "endOffset": 43819,
+          "sha256": "d664c09a78b9188ef659d7e68ce54e68c3889ef218b2400f881f551959ed34b9",
+          "textSha256": "d664c09a78b9188ef659d7e68ce54e68c3889ef218b2400f881f551959ed34b9",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1099-L1100"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-f4a0927b86bc7a927e89",
+      "title": "layerWorktreeToolkitRegistration (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const layerWorktreeToolkitRegistration = toolkitRegistration(\n  WorktreeToolkit,\n  WorktreeHandlers.layer,\n).pipe(Layer.provide(WorktreeMcpService.layer));\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1101,
+          "endLine": 1105,
+          "startOffset": 43819,
+          "endOffset": 43976,
+          "sha256": "0b3bbf781acd6beabb1bceb59f938a6e56dbe9ef0b5871f4692e80c802fce1e2",
+          "textSha256": "0b3bbf781acd6beabb1bceb59f938a6e56dbe9ef0b5871f4692e80c802fce1e2",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1101-L1105"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-e0aef5af46ca7e06e469",
+      "title": "layerPreviewControlsRegistration (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const layerPreviewControlsRegistration = toolkitRegistration(\n  PreviewControlsToolkit,\n  PreviewControlsHandlers.layer,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1106,
+          "endLine": 1110,
+          "startOffset": 43976,
+          "endOffset": 44101,
+          "sha256": "fa3ec46d17ee7e3de61b4c6e3b00fafb5fbadb093642b89f49048b9e337e5fd1",
+          "textSha256": "fa3ec46d17ee7e3de61b4c6e3b00fafb5fbadb093642b89f49048b9e337e5fd1",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1106-L1110"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-7042ccf78893ac3367c8",
+      "title": "layerEnvironmentToolkit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const layerEnvironmentToolkit = toolkitRegistration(\n  EnvironmentToolkit,\n  EnvironmentHandlers.layer,\n).pipe(Layer.provide(ThreadCommandExecutor.layer));\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1111,
+          "endLine": 1115,
+          "startOffset": 44101,
+          "endOffset": 44258,
+          "sha256": "162cbf571e56a2c9d6973320bfd6a60b006c42adfa71ce6564a391c6d0d3a0a3",
+          "textSha256": "162cbf571e56a2c9d6973320bfd6a60b006c42adfa71ce6564a391c6d0d3a0a3",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1111-L1115"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-bb0fb9877a7412df64a5",
+      "title": "layerProjectRegistration (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerProjectRegistration = toolkitRegistration(ProjectToolkit, ProjectHandlers.layer);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1116,
+          "endLine": 1117,
+          "startOffset": 44258,
+          "endOffset": 44359,
+          "sha256": "6063fa5f80bf07592cbcb9444c5073ba6e8252f5ddb702fbda38a7f82c213656",
+          "textSha256": "6063fa5f80bf07592cbcb9444c5073ba6e8252f5ddb702fbda38a7f82c213656",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1116-L1117"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-d2f5d128f220c645891a",
+      "title": "layerAttachmentToolkit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerAttachmentToolkit = toolkitRegistration(\n  AttachmentToolkit,\n  AttachmentHandlers.layer,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1118,
+          "endLine": 1122,
+          "startOffset": 44359,
+          "endOffset": 44471,
+          "sha256": "edf338cefc42c35f3688988f2cb9682135befec935eb5c7b79a36e35273f8137",
+          "textSha256": "edf338cefc42c35f3688988f2cb9682135befec935eb5c7b79a36e35273f8137",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1118-L1122"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-210e886bfa36995c8d40",
+      "title": "layerPullRequestsToolkit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerPullRequestsToolkit = toolkitRegistration(\n  PullRequestsToolkit,\n  PullRequestsHandlers.layer,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1123,
+          "endLine": 1127,
+          "startOffset": 44471,
+          "endOffset": 44589,
+          "sha256": "7bac3ac9a1e26b45bf4ddf3a31b6027960e196ed847e4efa64de319d9ac1294a",
+          "textSha256": "7bac3ac9a1e26b45bf4ddf3a31b6027960e196ed847e4efa64de319d9ac1294a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1123-L1127"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-4ebc81886699f36585e2",
+      "title": "layerDeviceStandardToolkitRegistration (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const layerDeviceStandardToolkitRegistration = toolkitRegistration(\n  DeviceStandardToolkit,\n  DeviceHandlers.layerStandard,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1128,
+          "endLine": 1132,
+          "startOffset": 44589,
+          "endOffset": 44718,
+          "sha256": "3227463b2b6bc3db30b763e7a241f820a7f82e73bc178a80b34b4334455cca82",
+          "textSha256": "3227463b2b6bc3db30b763e7a241f820a7f82e73bc178a80b34b4334455cca82",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1128-L1132"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-d9fadc2857a2172cd001",
+      "title": "layerDeviceScreenshotRegistration (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const layerDeviceScreenshotRegistration = imageToolRegistration(\n  registerDeviceScreenshot(),\n  DeviceHandlers.layerScreenshot,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1133,
+          "endLine": 1137,
+          "startOffset": 44718,
+          "endOffset": 44851,
+          "sha256": "5623a24b4be9014ab0658ff4ba8d4030c7939b8b66aa25568136dc436af896a3",
+          "textSha256": "5623a24b4be9014ab0658ff4ba8d4030c7939b8b66aa25568136dc436af896a3",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1133-L1137"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-4c810bae05d31b02cf85",
+      "title": "layerDeviceToolkit (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerDeviceToolkit = Layer.mergeAll(\n  layerDeviceStandardToolkitRegistration,\n  layerDeviceScreenshotRegistration,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1138,
+          "endLine": 1142,
+          "startOffset": 44851,
+          "endOffset": 44984,
+          "sha256": "e0351f4baec04fa75b63141a6fe33953cc7bde82ec126b9bae6e92ef280cc92d",
+          "textSha256": "e0351f4baec04fa75b63141a6fe33953cc7bde82ec126b9bae6e92ef280cc92d",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1138-L1142"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-22a5d09223747c093c83",
+      "title": "layerMcpTransport (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerMcpTransport = McpServer.layerHttp({\n  name: \"T3 Code\",\n  version: packageJson.version,\n  path: \"/mcp\",\n  protocols: [McpProtocol.v2025_06_18],\n  allowSessionTermination: true,\n}).pipe(Layer.provide(layerMcpAuthMiddleware));\n\n/** Every tool the T3 MCP server advertises. AgentContextBudget.test.ts measures this set. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1143,
+          "endLine": 1151,
+          "startOffset": 44984,
+          "endOffset": 45322,
+          "sha256": "8b2e29428d677a9ae36acffd7d6bb3ebe45eb285e8bf970752bf419b644cc004",
+          "textSha256": "8b2e29428d677a9ae36acffd7d6bb3ebe45eb285e8bf970752bf419b644cc004",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1143-L1151"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-d5cebc37d4f0d4f99dfd",
+      "title": "layerTools (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layerTools = Layer.mergeAll(\n  layerPreviewToolkit,\n  layerOrchestratorToolkit,\n  layerThreadToolkit,\n  layerAttachmentToolkit,\n  layerProjectRegistration,\n  layerEnvironmentToolkit,\n  layerPreviewControlsRegistration,\n  layerWorktreeToolkitRegistration,\n  layerPullRequestsToolkit,\n  layerDeviceToolkit,\n  layerHtmlToolkit,\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1152,
+          "endLine": 1165,
+          "startOffset": 45322,
+          "endOffset": 45664,
+          "sha256": "5c6d3d3d48716f8dde1a5dd81ce29760c392568f8adf5003728778ef2ebd86bf",
+          "textSha256": "5c6d3d3d48716f8dde1a5dd81ce29760c392568f8adf5003728778ef2ebd86bf",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1152-L1165"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-3cfe71face5195e4f3f3",
+      "title": "layer (McpHttpServer.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layer = layerTools.pipe(Layer.provideMerge(layerMcpTransport));\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpHttpServer.ts",
+          "startLine": 1166,
+          "endLine": 1166,
+          "startOffset": 45664,
+          "endOffset": 45741,
+          "sha256": "4ca938907b5806abcc2b5f2f304a981ed98c3724d5cc3fcb67a28b33901e55c0",
+          "textSha256": "4ca938907b5806abcc2b5f2f304a981ed98c3724d5cc3fcb67a28b33901e55c0",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpHttpServer.ts#L1166-L1166"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-c6b161220f134975d3e8",
+      "title": "builtHere (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const builtHere: unique symbol = Symbol(\"t3/mcp/McpToolAccess/builtHere\");\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 38,
+          "endLine": 39,
+          "startOffset": 1231,
+          "endOffset": 1307,
+          "sha256": "68fb22bc68036ce8de7119116ad022b01ba9ce8036f508630d4ba2b7e99acae6",
+          "textSha256": "68fb22bc68036ce8de7119116ad022b01ba9ce8036f508630d4ba2b7e99acae6",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L38-L39"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-27d07ce9493c156f988b",
+      "title": "refuseOutsideConstruction (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const refuseOutsideConstruction = (token: symbol) => {\n  if (token !== builtHere) {\n    throw new TypeError(\"Only McpToolAccess builds MCP tool declarations and handler layers.\");\n  }\n};\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 40,
+          "endLine": 45,
+          "startOffset": 1307,
+          "endOffset": 1495,
+          "sha256": "bde2a654743a1f430eab495348f4a9027ad500560c0cad3cdab505fc9becfe8b",
+          "textSha256": "bde2a654743a1f430eab495348f4a9027ad500560c0cad3cdab505fc9becfe8b",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L40-L45"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-f629d882b524de0332f8",
+      "title": "declare (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "let declare: <P, A, E, R>(\n  handle: (params: P) => Effect.Effect<A, E, R>,\n  remote: RemoteCheck<P> | undefined,\n) => Declaration<(params: P) => Effect.Effect<A, E, R>>;\n\n/**\n * What a call bound for a linked environment checks here before it goes: the\n * caller, not the thread or project it names, which live there and are\n * checked there. `undefined` for tools that act as the calling thread itself.\n */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 46,
+          "endLine": 55,
+          "startOffset": 1495,
+          "endOffset": 1904,
+          "sha256": "2688813c5c604b86435d2862a5dc9c599994b2d204770b7ada369093abeda00a",
+          "textSha256": "2688813c5c604b86435d2862a5dc9c599994b2d204770b7ada369093abeda00a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L46-L55"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-8d7738e7e12506a3bbd0",
+      "title": "handlersLayer (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "let handlersLayer: <Tools extends Record<string, Tool.Any>, EX, RX>(\n  layer: Layer.Layer<Tool.HandlersFor<Tools>, EX, RX>,\n) => HandlersLayer<Tools, EX, RX>;\n\n/** t3code/no-raw-mcp-registration confines Effect's unchecked registration API to McpHttpServer. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 69,
+          "endLine": 73,
+          "startOffset": 2426,
+          "endOffset": 2687,
+          "sha256": "82e28b14b4013ec38f9fb4dab9d71c85e771d8e810358d5982ea9765230af887",
+          "textSha256": "82e28b14b4013ec38f9fb4dab9d71c85e771d8e810358d5982ea9765230af887",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L69-L73"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-3a3858eac0a8c8d5627d",
+      "title": "refuseReadOnlyClient (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const refuseReadOnlyClient = McpInvocationContext.McpInvocationContext.pipe(\n  Effect.flatMap((scope) =>\n    scope.client?.access === \"read-only\"\n      ? Effect.fail(\n          new OrchestratorMcpFailure({\n            code: \"capability_denied\",\n            message:\n              \"This tool changes the environment, and this MCP client was approved for read-only access.\",\n          }),\n        )\n      : Effect.void,\n  ),\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 93,
+          "endLine": 106,
+          "startOffset": 3271,
+          "endOffset": 3698,
+          "sha256": "bbddc507e8483940cdbfccad87b2ff14475beea6fa4d680383bcc1ee426b5595",
+          "textSha256": "bbddc507e8483940cdbfccad87b2ff14475beea6fa4d680383bcc1ee426b5595",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L93-L106"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-72b77129933ac1ee9963",
+      "title": "requireThreadCaller (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const requireThreadCaller = McpInvocationContext.McpInvocationContext.pipe(\n  Effect.flatMap((scope) => McpInvocationContext.requireThreadScope(scope, \"This tool\")),\n);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 117,
+          "endLine": 120,
+          "startOffset": 3938,
+          "endOffset": 4108,
+          "sha256": "84110376a744fd3747b4cb59efb6cef2aed5d00b78930d819480bdebdc6a5435",
+          "textSha256": "84110376a744fd3747b4cb59efb6cef2aed5d00b78930d819480bdebdc6a5435",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L117-L120"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-70c18a1f0e61dfb3767d",
+      "title": "writes (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const writes = <P, A, E, R>(\n  handle: (params: P) => Effect.Effect<A, E, R>,\n  options?: {\n    /** Whether a linked caller may make it, as for uploads its own sends need. */\n    readonly linkedCallers?: \"allowed\";\n  },\n) =>\n  declare(\n    (params: P) =>\n      orchestratingCaller.pipe(\n        Effect.tap((caller) =>\n          options?.linkedCallers === \"allowed\"\n            ? Effect.void\n            : assertNotLinked(caller, \"change this environment's scheduled tasks\"),\n        ),\n        Effect.flatMap(() => handle(params)),\n      ),\n    () => orchestratingCaller,\n  );\n\n/** Requires handler capability checks, not thread control; linked work is refused the same way. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 145,
+          "endLine": 165,
+          "startOffset": 4948,
+          "endOffset": 5633,
+          "sha256": "236e6603f35004359125efabd40199bb5ee528030e1736071caac885d9dee026",
+          "textSha256": "236e6603f35004359125efabd40199bb5ee528030e1736071caac885d9dee026",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L145-L165"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-de1c7b09dabccd88b67e",
+      "title": "writesWithCapability (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const writesWithCapability = <P, A, E, R>(handle: (params: P) => Effect.Effect<A, E, R>) =>\n  declare(\n    (params: P) =>\n      writingCaller.pipe(\n        Effect.tap((caller) => assertNotLinked(caller, \"start work here that is not its link's\")),\n        Effect.flatMap(() => handle(params)),\n      ),\n    () => writingCaller,\n  );\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 166,
+          "endLine": 175,
+          "startOffset": 5633,
+          "endOffset": 5973,
+          "sha256": "c01457f29832df66ccd149789d4528ccc17040b250c59a827fea76675ffb9eee",
+          "textSha256": "c01457f29832df66ccd149789d4528ccc17040b250c59a827fea76675ffb9eee",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L166-L175"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-f9d8cc0aa23e85d9c4d0",
+      "title": "escalationDenied (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const escalationDenied = (refusal: DispatchModeRefusal) =>\n  new OrchestratorMcpFailure({\n    code:\n      refusal.mode === \"runtime\"\n        ? \"runtime_mode_escalation_denied\"\n        : \"interaction_mode_escalation_denied\",\n    message: `Thread ${refusal.threadId} now runs in ${refusal.runtimeMode}/${refusal.interactionMode} mode, above this caller's. Its user changed it while this call ran.`,\n  });\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 210,
+          "endLine": 218,
+          "startOffset": 7381,
+          "endOffset": 7785,
+          "sha256": "e746a71049abc1ca5d0b5db317b7d7a92d318330e32df33b086cb6a2a0c9ad96",
+          "textSha256": "e746a71049abc1ca5d0b5db317b7d7a92d318330e32df33b086cb6a2a0c9ad96",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L210-L218"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-9209f26eacc8ddaa6d6c",
+      "title": "StartedModes (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export interface StartedModes {\n  readonly runtimeMode: RuntimeMode;\n  readonly interactionMode: ProviderInteractionMode;\n  /** The linked environment the caller acts for. The thread must carry it. */\n  readonly linkOrigin: OrchestrationV2LinkOrigin | undefined;\n}\n\n/**\n * Starts threads with the modes `modes` requests, which may not be broader\n * than the caller's. `linked` says what a linked caller gets: threads stamped\n * with its `linkOrigin`, or a refusal where the tool cannot carry one.\n */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 219,
+          "endLine": 230,
+          "startOffset": 7785,
+          "endOffset": 8286,
+          "sha256": "bf1fa9d222d02ffd0b29fb804aec5522ebae3b793e26fb160dc2e2a034632cbf",
+          "textSha256": "bf1fa9d222d02ffd0b29fb804aec5522ebae3b793e26fb160dc2e2a034632cbf",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L219-L230"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-707d0707bd3384d3dd06",
+      "title": "startsThreads (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const startsThreads = <P, A, E, R>(\n  modes: (params: P) => {\n    readonly runtimeMode?: RuntimeMode | undefined;\n    readonly interactionMode?: ProviderInteractionMode | undefined;\n  },\n  handle: (params: P, modes: StartedModes) => Effect.Effect<A, E, R>,\n  linked: \"stamped\" | { readonly refused: string },\n) => {\n  const started = Effect.fn(\"McpToolAccess.started\")(function* (caller: Caller, params: P) {\n    const requested = modes(params);\n    return {\n      runtimeMode: yield* resolveRuntimeMode(caller.limits.runtimeMode, requested.runtimeMode),\n      interactionMode: yield* resolveInteractionMode(\n        caller.limits.interactionMode,\n        requested.interactionMode,\n      ),\n      linkOrigin: callerLinkOrigin(caller),\n    } satisfies StartedModes;\n  });\n  return declare(\n    (params: P) =>\n      Effect.gen(function* () {\n        const caller = yield* writingCaller;\n        if (linked !== \"stamped\") yield* assertNotLinked(caller, linked.refused);\n        return yield* handle(params, yield* started(caller, params));\n      }),\n    (params: P) => Effect.flatMap(writingCaller, (caller) => started(caller, params)),\n  );\n};\n\n/** One tool with two access rules, picked per call, such as create versus update. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 231,
+          "endLine": 261,
+          "startOffset": 8286,
+          "endOffset": 9523,
+          "sha256": "d1c72f8fdff4b81eabb0d5fbc0be095a4927b091c13f1e9b2727c9ff7f80ba44",
+          "textSha256": "d1c72f8fdff4b81eabb0d5fbc0be095a4927b091c13f1e9b2727c9ff7f80ba44",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L231-L261"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-ba630339f2fa574b74a7",
+      "title": "Handlers (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export type Handlers<Tools extends Record<string, Tool.Any>> = Declarations<\n  Toolkit.HandlersFrom<Tools>\n>;\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 327,
+          "endLine": 330,
+          "startOffset": 11784,
+          "endOffset": 11895,
+          "sha256": "6879ef2a2c484b21451f607346173d07db84d4790258a29797a98ac0662febf1",
+          "textSha256": "6879ef2a2c484b21451f607346173d07db84d4790258a29797a98ac0662febf1",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L327-L330"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-a198a96dcb9fb6ce7db1",
+      "title": "HandlersLayer (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class HandlersLayer<Tools extends Record<string, Tool.Any>, EX = never, RX = never> {\n  readonly #layer: Layer.Layer<Tool.HandlersFor<Tools>, EX, RX>;\n  private constructor(\n    token: typeof builtHere,\n    layer: Layer.Layer<Tool.HandlersFor<Tools>, EX, RX>,\n  ) {\n    refuseOutsideConstruction(token);\n    this.#layer = layer;\n  }\n  static {\n    handlersLayer = (layer) => new HandlersLayer(builtHere, layer);\n  }\n  static layer<Tools extends Record<string, Tool.Any>, EX, RX>(\n    handlers: HandlersLayer<Tools, EX, RX>,\n  ) {\n    return handlers.#layer;\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 331,
+          "endLine": 349,
+          "startOffset": 11895,
+          "endOffset": 12467,
+          "sha256": "9a364c03a25a07c56c037277dfef63366531851adebd36d26a03074291d315c2",
+          "textSha256": "9a364c03a25a07c56c037277dfef63366531851adebd36d26a03074291d315c2",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L331-L349"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-002072285ad22d8de234",
+      "title": "checkedHandlers (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const checkedHandlers = <Handlers>(declarations: Declarations<Handlers>): Handlers =>\n  Struct.map(declarations, checkedHandler);\n\n/**\n * A tool runs in a linked environment when its parameters take this target\n * as `environmentId`. Other tools may name an environment for their own\n * reasons, such as the one to link or to move a thread to.\n */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 350,
+          "endLine": 357,
+          "startOffset": 12467,
+          "endOffset": 12815,
+          "sha256": "9e8bab1b8a7f3bc5d96e7bac6ce0aabf92d55f76261422144608c27bd8622006",
+          "textSha256": "9e8bab1b8a7f3bc5d96e7bac6ce0aabf92d55f76261422144608c27bd8622006",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L350-L357"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-76ed0140c6260a41a147",
+      "title": "takesLinkedEnvironment (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const takesLinkedEnvironment = (tool: Tool.Any) => {\n  const parameters: unknown = tool.parametersSchema;\n  return (\n    Predicate.hasProperty(parameters, \"fields\") &&\n    Predicate.hasProperty(parameters.fields, \"environmentId\") &&\n    parameters.fields.environmentId === OrchestratorMcpEnvironmentTarget\n  );\n};\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 358,
+          "endLine": 366,
+          "startOffset": 12815,
+          "endOffset": 13130,
+          "sha256": "6d3ad2718c013a6b8ee036e10431428b1eb92ae06fbdd92aaa63eeee41041c3a",
+          "textSha256": "6d3ad2718c013a6b8ee036e10431428b1eb92ae06fbdd92aaa63eeee41041c3a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L358-L366"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-34e1a2740a867b5fd0ed",
+      "title": "linksUnavailable (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const linksUnavailable = new OrchestratorMcpFailure({\n  code: \"orchestration_error\",\n  message: \"This environment cannot reach linked environments.\",\n});\n\n/**\n * Every tool that takes a linked environment runs there the same way: its\n * declaration checks the caller here, and the same call goes to the other\n * environment, which checks the rest. The handler here never sees\n * `environmentId`, so it cannot leak into what it writes.\n */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 367,
+          "endLine": 377,
+          "startOffset": 13130,
+          "endOffset": 13569,
+          "sha256": "03302ce9643b95be0e1c7c8c42544fc56532367a57c160e5eca1d39a2910ba76",
+          "textSha256": "03302ce9643b95be0e1c7c8c42544fc56532367a57c160e5eca1d39a2910ba76",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L367-L377"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-bab61b0319904e95df68",
+      "title": "routed (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const routed = Effect.fn(\"McpToolAccess.routed\")(function* <Tools extends Record<string, Tool.Any>>(\n  toolkit: Toolkit.Toolkit<Tools>,\n  declarations: Handlers<Tools>,\n  checked: Toolkit.HandlersFrom<Tools>,\n) {\n  // Optional so toolkits that never leave this environment build without it.\n  const forwarding = yield* Effect.serviceOption(PeerForwarding.PeerForwarding);\n  const handlers: Record<string, unknown> = { ...checked };\n  for (const [name, declaration] of Object.entries<Declaration<unknown>>(declarations)) {\n    const tool = toolkit.tools[name];\n    if (tool === undefined || !takesLinkedEnvironment(tool)) continue;\n    const remote = remoteCheckOf(declaration);\n    if (remote === undefined)\n      return yield* Effect.die(\n        `${name} takes a linked environment, but it acts as its calling thread, which is here.`,\n      );\n    const here = handlers[name] as (\n      params: object,\n    ) => Effect.Effect<unknown, Tool.Failure<Tools[keyof Tools]>>;\n    handlers[name] = ({ environmentId, ...params }: { readonly environmentId?: EnvironmentId }) =>\n      Effect.gen(function* () {\n        const scope = yield* McpInvocationContext.McpInvocationContext;\n        const target = PeerForwarding.remoteTarget(scope, environmentId);\n        if (target === undefined) return yield* here(params);\n        if (scope.linkedEnvironments === false) return yield* PeerForwarding.linkedEnvironmentsOff;\n        yield* (remote as RemoteCheck<typeof params>)(params);\n        if (Option.isNone(forwarding)) return yield* linksUnavailable;\n        return yield* forwarding.value.call(scope, tool, target, { ...params, environmentId });\n      });\n  }\n  return handlers as Toolkit.HandlersFrom<Tools>;\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 378,
+          "endLine": 410,
+          "startOffset": 13569,
+          "endOffset": 15279,
+          "sha256": "80647ed952206b0b17b6e3a5438488316fa59b1c66b705a2f3e69b52c488094e",
+          "textSha256": "80647ed952206b0b17b6e3a5438488316fa59b1c66b705a2f3e69b52c488094e",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L378-L410"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    },
+    {
+      "id": "config-992939dc56971f37b6b0",
+      "title": "toLayer (McpToolAccess.ts)",
+      "kind": "setting",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const toLayer = <Tools extends Record<string, Tool.Any>, EX = never, RX = never>(\n  toolkit: Toolkit.Toolkit<Tools>,\n  build: Handlers<Tools> | Effect.Effect<Handlers<Tools>, EX, RX>,\n): HandlersLayer<Tools, EX, Exclude<RX, Scope.Scope>> => {\n  // Checked as soon as they are given, so a forged declaration fails here.\n  const withDeclarations = (declarations: Handlers<Tools>) =>\n    routed(toolkit, declarations, checkedHandlers(declarations));\n  return handlersLayer(\n    toolkit.toLayer(\n      Effect.isEffect(build) ? Effect.flatMap(build, withDeclarations) : withDeclarations(build),\n    ),\n  );\n};\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/mcp/McpToolAccess.ts",
+          "startLine": 411,
+          "endLine": 423,
+          "startOffset": 15279,
+          "endOffset": 15891,
+          "sha256": "db7816eb1eda3da345968308234f57bcb4bf5cee1f9e4fa3cbf364bbd51741c9",
+          "textSha256": "db7816eb1eda3da345968308234f57bcb4bf5cee1f9e4fa3cbf364bbd51741c9",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/mcp/McpToolAccess.ts#L411-L423"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Server settings, thread policy and MCP launch capabilities select the available tools and injected text.",
+        "summary": "Complete configuration/selection declaration. Defaults and precedence are source expressions."
+      }
+    }
+  ]
+}

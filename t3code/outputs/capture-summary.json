@@ -1,0 +1,957 @@
+{
+  "schemaVersion": 1,
+  "product": "T3 Code",
+  "version": "0.1.6-nightly.20261031.3956",
+  "release": "v0.1.6-nightly.20261031.3956",
+  "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+  "upstream": "https://github.com/pingdotgg/t3code",
+  "manifestVersion": "0.1.5",
+  "evidence": "public-source",
+  "observed": false,
+  "scope": {
+    "rootPackage": "t3",
+    "packages": [
+      {
+        "name": "@t3tools/client-runtime",
+        "directory": "packages/client-runtime",
+        "manifest": "packages/client-runtime/package.json"
+      },
+      {
+        "name": "@t3tools/contracts",
+        "directory": "packages/contracts",
+        "manifest": "packages/contracts/package.json"
+      },
+      {
+        "name": "@t3tools/desktop",
+        "directory": "apps/desktop",
+        "manifest": "apps/desktop/package.json"
+      },
+      {
+        "name": "@t3tools/provider-acp",
+        "directory": "packages/provider-acp",
+        "manifest": "packages/provider-acp/package.json"
+      },
+      {
+        "name": "@t3tools/provider-acp-registry",
+        "directory": "packages/provider-acp-registry",
+        "manifest": "packages/provider-acp-registry/package.json"
+      },
+      {
+        "name": "@t3tools/provider-core",
+        "directory": "packages/provider-core",
+        "manifest": "packages/provider-core/package.json"
+      },
+      {
+        "name": "@t3tools/provider-cursor",
+        "directory": "packages/provider-cursor",
+        "manifest": "packages/provider-cursor/package.json"
+      },
+      {
+        "name": "@t3tools/provider-fx",
+        "directory": "packages/provider-fx",
+        "manifest": "packages/provider-fx/package.json"
+      },
+      {
+        "name": "@t3tools/provider-grok",
+        "directory": "packages/provider-grok",
+        "manifest": "packages/provider-grok/package.json"
+      },
+      {
+        "name": "@t3tools/provider-muse",
+        "directory": "packages/provider-muse",
+        "manifest": "packages/provider-muse/package.json"
+      },
+      {
+        "name": "@t3tools/provider-opencode",
+        "directory": "packages/provider-opencode",
+        "manifest": "packages/provider-opencode/package.json"
+      },
+      {
+        "name": "@t3tools/provider-pi",
+        "directory": "packages/provider-pi",
+        "manifest": "packages/provider-pi/package.json"
+      },
+      {
+        "name": "@t3tools/secret-provider-core",
+        "directory": "packages/secret-provider-core",
+        "manifest": "packages/secret-provider-core/package.json"
+      },
+      {
+        "name": "@t3tools/secret-provider-definitions",
+        "directory": "packages/secret-provider-definitions",
+        "manifest": "packages/secret-provider-definitions/package.json"
+      },
+      {
+        "name": "@t3tools/secret-provider-onepassword",
+        "directory": "packages/secret-provider-onepassword",
+        "manifest": "packages/secret-provider-onepassword/package.json"
+      },
+      {
+        "name": "@t3tools/shared",
+        "directory": "packages/shared",
+        "manifest": "packages/shared/package.json"
+      },
+      {
+        "name": "@t3tools/source-control-azure-devops",
+        "directory": "packages/source-control-azure-devops",
+        "manifest": "packages/source-control-azure-devops/package.json"
+      },
+      {
+        "name": "@t3tools/source-control-bitbucket",
+        "directory": "packages/source-control-bitbucket",
+        "manifest": "packages/source-control-bitbucket/package.json"
+      },
+      {
+        "name": "@t3tools/source-control-core",
+        "directory": "packages/source-control-core",
+        "manifest": "packages/source-control-core/package.json"
+      },
+      {
+        "name": "@t3tools/source-control-definitions",
+        "directory": "packages/source-control-definitions",
+        "manifest": "packages/source-control-definitions/package.json"
+      },
+      {
+        "name": "@t3tools/source-control-forgejo",
+        "directory": "packages/source-control-forgejo",
+        "manifest": "packages/source-control-forgejo/package.json"
+      },
+      {
+        "name": "@t3tools/source-control-gitcafe",
+        "directory": "packages/source-control-gitcafe",
+        "manifest": "packages/source-control-gitcafe/package.json"
+      },
+      {
+        "name": "@t3tools/source-control-github",
+        "directory": "packages/source-control-github",
+        "manifest": "packages/source-control-github/package.json"
+      },
+      {
+        "name": "@t3tools/source-control-gitlab",
+        "directory": "packages/source-control-gitlab",
+        "manifest": "packages/source-control-gitlab/package.json"
+      },
+      {
+        "name": "@t3tools/ssh",
+        "directory": "packages/ssh",
+        "manifest": "packages/ssh/package.json"
+      },
+      {
+        "name": "@t3tools/tailscale",
+        "directory": "packages/tailscale",
+        "manifest": "packages/tailscale/package.json"
+      },
+      {
+        "name": "@t3tools/web",
+        "directory": "apps/web",
+        "manifest": "apps/web/package.json"
+      },
+      {
+        "name": "effect-acp",
+        "directory": "packages/effect-acp",
+        "manifest": "packages/effect-acp/package.json"
+      },
+      {
+        "name": "effect-codex-app-server",
+        "directory": "packages/effect-codex-app-server",
+        "manifest": "packages/effect-codex-app-server/package.json"
+      },
+      {
+        "name": "t3",
+        "directory": "apps/server",
+        "manifest": "apps/server/package.json"
+      }
+    ],
+    "edges": [
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/provider-acp-registry",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/provider-cursor",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/provider-fx",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/provider-grok",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/provider-muse",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/provider-opencode",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/provider-pi",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/source-control-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/client-runtime",
+        "to": "@t3tools/source-control-definitions",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/desktop",
+        "to": "@t3tools/client-runtime",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/desktop",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/desktop",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/desktop",
+        "to": "@t3tools/ssh",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/desktop",
+        "to": "@t3tools/tailscale",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-acp-registry",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-acp-registry",
+        "to": "@t3tools/provider-acp",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-acp-registry",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-acp-registry",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-acp-registry",
+        "to": "effect-acp",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "@t3tools/provider-acp",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-acp",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-acp",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-acp",
+        "to": "effect-acp",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "@t3tools/provider-core",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-core",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-cursor",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-cursor",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-cursor",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-fx",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-fx",
+        "to": "@t3tools/provider-acp",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-fx",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-fx",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-fx",
+        "to": "effect-acp",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "@t3tools/provider-grok",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-grok",
+        "to": "@t3tools/provider-acp",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-grok",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-grok",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-grok",
+        "to": "effect-acp",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "@t3tools/provider-muse",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-muse",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-muse",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-opencode",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-opencode",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-opencode",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-pi",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-pi",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/provider-pi",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/secret-provider-core",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/secret-provider-definitions",
+        "to": "@t3tools/secret-provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/secret-provider-definitions",
+        "to": "@t3tools/secret-provider-onepassword",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/secret-provider-onepassword",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/secret-provider-onepassword",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/secret-provider-onepassword",
+        "to": "@t3tools/secret-provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/secret-provider-onepassword",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/shared",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-azure-devops",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-azure-devops",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-azure-devops",
+        "to": "@t3tools/source-control-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-bitbucket",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-bitbucket",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-bitbucket",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-bitbucket",
+        "to": "@t3tools/source-control-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-core",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-core",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-definitions",
+        "to": "@t3tools/source-control-azure-devops",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-definitions",
+        "to": "@t3tools/source-control-bitbucket",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-definitions",
+        "to": "@t3tools/source-control-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-definitions",
+        "to": "@t3tools/source-control-forgejo",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-definitions",
+        "to": "@t3tools/source-control-gitcafe",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-definitions",
+        "to": "@t3tools/source-control-github",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-definitions",
+        "to": "@t3tools/source-control-gitlab",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-forgejo",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-forgejo",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-forgejo",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-forgejo",
+        "to": "@t3tools/source-control-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-gitcafe",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-gitcafe",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-gitcafe",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-gitcafe",
+        "to": "@t3tools/source-control-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-github",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-github",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-github",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-github",
+        "to": "@t3tools/source-control-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-gitlab",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-gitlab",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/source-control-gitlab",
+        "to": "@t3tools/source-control-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/ssh",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/ssh",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/tailscale",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/web",
+        "to": "@t3tools/client-runtime",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/web",
+        "to": "@t3tools/contracts",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/web",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/web",
+        "to": "@t3tools/secret-provider-definitions",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/web",
+        "to": "@t3tools/secret-provider-onepassword",
+        "field": "dependencies"
+      },
+      {
+        "from": "@t3tools/web",
+        "to": "@t3tools/shared",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/contracts",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/provider-acp",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/provider-acp-registry",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/provider-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/provider-cursor",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/provider-fx",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/provider-grok",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/provider-muse",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/provider-opencode",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/provider-pi",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/secret-provider-core",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/secret-provider-definitions",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/secret-provider-onepassword",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/shared",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/source-control-azure-devops",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/source-control-bitbucket",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/source-control-core",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/source-control-definitions",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/source-control-forgejo",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/source-control-gitcafe",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/source-control-github",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/source-control-gitlab",
+        "field": "dependencies"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/ssh",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/tailscale",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "t3",
+        "to": "@t3tools/web",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "t3",
+        "to": "effect-acp",
+        "field": "devDependencies (runtime bundler closure)"
+      },
+      {
+        "from": "t3",
+        "to": "effect-codex-app-server",
+        "field": "devDependencies (runtime bundler closure)"
+      }
+    ],
+    "trackedFiles": 4787,
+    "includedFiles": 2858,
+    "excludedFiles": 1929,
+    "sourceIdentity": "e771edd98dbd673d35c4efa436baf06c7e0762ceab21d18da6579c3b55b37c8b"
+  },
+  "discovery": {
+    "files": 2858,
+    "scannedCodeFiles": 2849,
+    "scannedAssetFiles": 9,
+    "literals": 174765,
+    "selected": 33097,
+    "skipped": {
+      "not-prose-or-prompt-role": 141770
+    },
+    "parseFailures": [
+      {
+        "file": "apps/web/src/components/chat/ChatOverlayHosts.tsx",
+        "error": "unterminated string at 5228",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/chat/TriageDraftHero.tsx",
+        "error": "unterminated string at 1466",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/clerk/RemoveT3ConnectEnvironmentDialog.tsx",
+        "error": "unterminated string at 2510",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/device/DevicePanel.tsx",
+        "error": "unterminated string at 14681",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/files/FilePreviewPanel.tsx",
+        "error": "unterminated string at 55670",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/files/imageDecode.worker.ts",
+        "error": "unterminated regex at 8157",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/projectScriptEditor.tsx",
+        "error": "unterminated string at 18943",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/pullRequest/LinkPullRequestDialog.tsx",
+        "error": "unterminated string at 4123",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/pullRequest/PullRequestCodeTab.tsx",
+        "error": "unterminated string at 41695",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/CodexSetupSection.tsx",
+        "error": "unterminated string at 26428",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/ConnectionsSettings.tsx",
+        "error": "unterminated string at 51354",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/CustomModelEditor.tsx",
+        "error": "unterminated string at 11416",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/LinkAccessPicker.tsx",
+        "error": "unterminated string at 2295",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/LinkedEnvironmentsSettings.tsx",
+        "error": "unterminated string at 14163",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/LoadBalancingSettings.tsx",
+        "error": "unterminated string at 2861",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/ProjectSettingsPanel.tsx",
+        "error": "unterminated string at 22081",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/PullRequestRoutingSettings.tsx",
+        "error": "unterminated string at 2697",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/ScheduledTasksSettings.tsx",
+        "error": "unterminated regex at 55666",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/SnapShotSetupDialog.tsx",
+        "error": "unterminated string at 13383",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/SourceControlAccountSettings.tsx",
+        "error": "unterminated string at 8900",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/settings/UsageProviderSettings.tsx",
+        "error": "unterminated string at 4903",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/components/SourceControlAppAccessNotice.tsx",
+        "error": "unterminated string at 2205",
+        "fallback": "complete contiguous source spans"
+      },
+      {
+        "file": "apps/web/src/routes/__root.tsx",
+        "error": "unterminated string at 5400",
+        "fallback": "complete contiguous source spans"
+      }
+    ],
+    "eligible": 33096,
+    "batches": 2553,
+    "payloadBytes": 233190297,
+    "classified": 0,
+    "classifiedPositives": 0,
+    "sameTextMerged": 0,
+    "alsoInReviewedRecords": 0,
+    "publishedDiscovered": 0,
+    "classifiedNegatives": 0,
+    "providerPending": 33096,
+    "withheld": 1,
+    "oversized": 0,
+    "localReview": 1,
+    "pending": 33097
+  },
+  "recordCounts": {
+    "reference-instructions": 11,
+    "reference-runtime": 8,
+    "reference-delivery": 11,
+    "reference-tools": 68,
+    "reference-schemas": 242,
+    "reference-launch": 101,
+    "reference-configuration": 83,
+    "reference-network": 75,
+    "instructions": 0,
+    "context-templates": 0,
+    "tools-parameters": 0
+  },
+  "limitations": [
+    "Pinned public source evidence, not observed model delivery. Runtime settings and tool capabilities control activation. Templates retain upstream substitutions; no local values or private sessions are inputs.",
+    "Package manifests may retain a base version different from the verified nightly release tag.",
+    "Downstream SDK implementations, build-injected secrets and private runtime settings are outside this source evidence.",
+    "Broad discovery pending work is not a completeness claim."
+  ]
+}

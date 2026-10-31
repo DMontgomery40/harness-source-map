@@ -1,0 +1,2034 @@
+{
+  "schemaVersion": 1,
+  "product": "T3 Code",
+  "version": "0.1.6-nightly.20261031.3956",
+  "release": "v0.1.6-nightly.20261031.3956",
+  "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+  "items": [
+    {
+      "id": "network-e1dc4d6e2a32d3567457",
+      "title": "CLOUD_CLI_OAUTH_LOOPBACK_PORT (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CLOUD_CLI_OAUTH_LOOPBACK_PORT = 34338;\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 22,
+          "endLine": 22,
+          "startOffset": 1047,
+          "endOffset": 1092,
+          "sha256": "21e7fd643d739f7d288a223597f85208b9d42afbb9369cd06b7e5028b029e029",
+          "textSha256": "21e7fd643d739f7d288a223597f85208b9d42afbb9369cd06b7e5028b029e029",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L22-L22"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-81de8cee55f6aa2d60e3",
+      "title": "CLOUD_CLI_OAUTH_SCOPES (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CLOUD_CLI_OAUTH_SCOPES = CONNECT_OAUTH_SCOPES;\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 23,
+          "endLine": 24,
+          "startOffset": 1092,
+          "endOffset": 1146,
+          "sha256": "71cac2132f2aaa5236291fcba8f6546ccc98d87ed091244d3d347f43bbf4cba1",
+          "textSha256": "71cac2132f2aaa5236291fcba8f6546ccc98d87ed091244d3d347f43bbf4cba1",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L23-L24"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-6e4ab5957bc8a131d186",
+      "title": "validateRelayUrl (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function validateRelayUrl(value: string) {\n  const relayUrl = normalizeSecureRelayUrl(value);\n  return relayUrl === null\n    ? Effect.fail(\n        new Config.ConfigError(\n          new Schema.SchemaError(\n            new SchemaIssue.InvalidValue({\n              message: \"Relay URL must be a secure absolute HTTPS origin.\",\n            }),\n          ),\n        ),\n      )\n    : Effect.succeed(relayUrl);\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 25,
+          "endLine": 39,
+          "startOffset": 1146,
+          "endOffset": 1554,
+          "sha256": "fab9758901b7baca69d8f3b4d01cd82ebba0a32e8fc117e6f6959cac2be23660",
+          "textSha256": "fab9758901b7baca69d8f3b4d01cd82ebba0a32e8fc117e6f6959cac2be23660",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L25-L39"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-ac6e5dd68136ef4d0f57",
+      "title": "readBuildTimeValue (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function readBuildTimeValue(value: string | undefined): string {\n  return typeof value === \"undefined\" ? \"\" : value.trim();\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 40,
+          "endLine": 43,
+          "startOffset": 1554,
+          "endOffset": 1681,
+          "sha256": "6a3a718be8ff6d6f20de52d35b5d531620cc064967a60a03a36fc2dc0f4973ee",
+          "textSha256": "6a3a718be8ff6d6f20de52d35b5d531620cc064967a60a03a36fc2dc0f4973ee",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L40-L43"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-11e914cc131d20b79d67",
+      "title": "normalizeSecureUrl (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function normalizeSecureUrl(value: string): string | null {\n  try {\n    const url = new URL(value);\n    return url.protocol === \"https:\" ? url.toString() : null;\n  } catch {\n    return null;\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 44,
+          "endLine": 52,
+          "startOffset": 1681,
+          "endOffset": 1879,
+          "sha256": "37a9e3fa8c71fc3774d4102fcd533fdb6c00409ff14e3a83fd272d349e9b631b",
+          "textSha256": "37a9e3fa8c71fc3774d4102fcd533fdb6c00409ff14e3a83fd272d349e9b631b",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L44-L52"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-60023b517317665d9518",
+      "title": "buildTimeRelayUrl (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const buildTimeRelayUrl =\n  typeof __T3CODE_BUILD_RELAY_URL__ === \"undefined\"\n    ? \"\"\n    : (normalizeSecureRelayUrl(__T3CODE_BUILD_RELAY_URL__) ?? \"\");\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 53,
+          "endLine": 56,
+          "startOffset": 1879,
+          "endOffset": 2033,
+          "sha256": "10e5077439e3d62c6741c85112bb3ef1397881c83dfc138b015a161869a3ca6a",
+          "textSha256": "10e5077439e3d62c6741c85112bb3ef1397881c83dfc138b015a161869a3ca6a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L53-L56"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-b67a9094b72bf8ab1e9a",
+      "title": "buildTimeClerkPublishableKey (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const buildTimeClerkPublishableKey = readBuildTimeValue(\n  typeof __T3CODE_BUILD_CLERK_PUBLISHABLE_KEY__ === \"undefined\"\n    ? undefined\n    : __T3CODE_BUILD_CLERK_PUBLISHABLE_KEY__,\n);\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 57,
+          "endLine": 61,
+          "startOffset": 2033,
+          "endOffset": 2219,
+          "sha256": "968fe6f692a317e39726317c30b769adc2184d8abd866c061e24c5647760639d",
+          "textSha256": "968fe6f692a317e39726317c30b769adc2184d8abd866c061e24c5647760639d",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L57-L61"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-2a89d13ece021611da9d",
+      "title": "buildTimeClerkCliOAuthClientId (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const buildTimeClerkCliOAuthClientId = readBuildTimeValue(\n  typeof __T3CODE_BUILD_CLERK_CLI_OAUTH_CLIENT_ID__ === \"undefined\"\n    ? undefined\n    : __T3CODE_BUILD_CLERK_CLI_OAUTH_CLIENT_ID__,\n);\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 62,
+          "endLine": 66,
+          "startOffset": 2219,
+          "endOffset": 2415,
+          "sha256": "c7364e5c6e2f90fd43fb8f09c7988a64b24db913f790eb27b9f529ea1d4c8571",
+          "textSha256": "c7364e5c6e2f90fd43fb8f09c7988a64b24db913f790eb27b9f529ea1d4c8571",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L62-L66"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-13f2f0018ce88d8b06c0",
+      "title": "buildTimeRelayClientTracing (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const buildTimeRelayClientTracing = {\n  tracesUrl: readBuildTimeValue(\n    typeof __T3CODE_BUILD_RELAY_CLIENT_OTLP_TRACES_URL__ === \"undefined\"\n      ? undefined\n      : __T3CODE_BUILD_RELAY_CLIENT_OTLP_TRACES_URL__,\n  ),\n  tracesDataset: readBuildTimeValue(\n    typeof __T3CODE_BUILD_RELAY_CLIENT_OTLP_TRACES_DATASET__ === \"undefined\"\n      ? undefined\n      : __T3CODE_BUILD_RELAY_CLIENT_OTLP_TRACES_DATASET__,\n  ),\n  tracesToken: readBuildTimeValue(\n    typeof __T3CODE_BUILD_RELAY_CLIENT_OTLP_TRACES_TOKEN__ === \"undefined\"\n      ? undefined\n      : __T3CODE_BUILD_RELAY_CLIENT_OTLP_TRACES_TOKEN__,\n  ),\n} as const;\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 67,
+          "endLine": 84,
+          "startOffset": 2415,
+          "endOffset": 3036,
+          "sha256": "8c9b219b342b15ff5766764464fd3188e79e9352937d4b53b86431e4e98f3527",
+          "textSha256": "8c9b219b342b15ff5766764464fd3188e79e9352937d4b53b86431e4e98f3527",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L67-L84"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-90c5e4db8fcce6af3f0d",
+      "title": "resolveRelayClientTracingConfig (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function resolveRelayClientTracingConfig(\n  env: Readonly<Record<string, string | undefined>> = process.env,\n  fallback = buildTimeRelayClientTracing,\n) {\n  if (!isRelayTracingEnabled(env)) {\n    return null;\n  }\n\n  const tracesUrl = env.T3CODE_RELAY_CLIENT_OTLP_TRACES_URL?.trim() || fallback.tracesUrl;\n  const tracesDataset =\n    env.T3CODE_RELAY_CLIENT_OTLP_TRACES_DATASET?.trim() || fallback.tracesDataset;\n  const tracesToken = env.T3CODE_RELAY_CLIENT_OTLP_TRACES_TOKEN?.trim() || fallback.tracesToken;\n  const normalizedTracesUrl = normalizeSecureUrl(tracesUrl);\n  return normalizedTracesUrl && tracesDataset && tracesToken\n    ? { tracesUrl: normalizedTracesUrl, tracesDataset, tracesToken }\n    : null;\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 85,
+          "endLine": 102,
+          "startOffset": 3036,
+          "endOffset": 3758,
+          "sha256": "8f95e225ae01d326dd6680d390c383af499893e953dfd0f28aa8c6b6748ac4d9",
+          "textSha256": "8f95e225ae01d326dd6680d390c383af499893e953dfd0f28aa8c6b6748ac4d9",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L85-L102"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-7427baff3466475107e9",
+      "title": "makeRelayUrlConfig (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function makeRelayUrlConfig(fallback = buildTimeRelayUrl) {\n  const runtimeConfig = Config.NonEmptyString(\"T3CODE_RELAY_URL\");\n  return (fallback ? runtimeConfig.pipe(Config.withDefault(fallback)) : runtimeConfig).pipe(\n    Config.mapEffect(validateRelayUrl),\n  );\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 103,
+          "endLine": 109,
+          "startOffset": 3758,
+          "endOffset": 4033,
+          "sha256": "636f982a180875c154620f03364912f307bbb5cce41b3a55ebda0566d98310f8",
+          "textSha256": "636f982a180875c154620f03364912f307bbb5cce41b3a55ebda0566d98310f8",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L103-L109"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-af4e7ce3f7ef5295fc0d",
+      "title": "relayUrlConfig (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const relayUrlConfig = makeRelayUrlConfig();\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 110,
+          "endLine": 111,
+          "startOffset": 4033,
+          "endOffset": 4086,
+          "sha256": "6b0afabc0992fa706a3174c7b0d2841858bdcc71d0d79c91db9309434a7a5de0",
+          "textSha256": "6b0afabc0992fa706a3174c7b0d2841858bdcc71d0d79c91db9309434a7a5de0",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L110-L111"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-ad2c04a8c837e88b0a27",
+      "title": "hostedAppUrlConfig (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const hostedAppUrlConfig = makePublicValueConfig(\n  \"T3CODE_HOSTED_APP_URL\",\n  DEFAULT_HOSTED_APP_URL,\n).pipe(Config.mapEffect(validateHostedAppUrl));\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 112,
+          "endLine": 116,
+          "startOffset": 4086,
+          "endOffset": 4245,
+          "sha256": "6b860bad423f53c52efbb14a00f63493483e707fa37e2642e658b83292757f50",
+          "textSha256": "6b860bad423f53c52efbb14a00f63493483e707fa37e2642e658b83292757f50",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L112-L116"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-3344da70be3b904ebf6a",
+      "title": "validateHostedAppUrl (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function validateHostedAppUrl(value: string) {\n  try {\n    const url = new URL(value);\n    const isLoopbackHttp =\n      url.protocol === \"http:\" &&\n      (url.hostname === \"localhost\" || url.hostname === \"127.0.0.1\" || url.hostname === \"[::1]\");\n    if (\n      (url.protocol !== \"https:\" && !isLoopbackHttp) ||\n      url.pathname !== \"/\" ||\n      url.search !== \"\" ||\n      url.hash !== \"\"\n    ) {\n      throw new Error(\"invalid hosted app origin\");\n    }\n    return Effect.succeed(url.origin);\n  } catch {\n    return Effect.fail(\n      new Config.ConfigError(\n        new Schema.SchemaError(\n          new SchemaIssue.InvalidValue({\n            message: \"Hosted app URL must be an absolute HTTPS origin (or HTTP loopback origin).\",\n          }),\n        ),\n      ),\n    );\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 117,
+          "endLine": 144,
+          "startOffset": 4245,
+          "endOffset": 5026,
+          "sha256": "4a31fdd89d68999afc9ff474de6bfe4b791feed2ccc92ee0014610cf259f24e9",
+          "textSha256": "4a31fdd89d68999afc9ff474de6bfe4b791feed2ccc92ee0014610cf259f24e9",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L117-L144"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-122dd75910fad0024531",
+      "title": "makePublicValueConfig (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function makePublicValueConfig(name: string, fallback: string) {\n  const runtimeConfig = Config.NonEmptyString(name);\n  return (fallback ? runtimeConfig.pipe(Config.withDefault(fallback)) : runtimeConfig).pipe(\n    Config.map((value) => value.trim()),\n  );\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 145,
+          "endLine": 151,
+          "startOffset": 5026,
+          "endOffset": 5286,
+          "sha256": "8169a6ce502f6908dd434764e647c6d7dffa1c282bc5c1dbebb3c8f9f47d7e48",
+          "textSha256": "8169a6ce502f6908dd434764e647c6d7dffa1c282bc5c1dbebb3c8f9f47d7e48",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L145-L151"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-f98146cc36876342e269",
+      "title": "CloudCliOAuthConfig (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export interface CloudCliOAuthConfig {\n  readonly tokenEndpoint: string;\n  readonly deviceAuthorizationEndpoint: string;\n  readonly clientId: string;\n  readonly loopbackPort: number;\n  readonly redirectUri: string;\n  readonly scopes: typeof CLOUD_CLI_OAUTH_SCOPES;\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 152,
+          "endLine": 160,
+          "startOffset": 5286,
+          "endOffset": 5554,
+          "sha256": "09847e5be6d5d8364b36752206a170a1d0e7660b2f5f7a9814d3f7efa53c5986",
+          "textSha256": "09847e5be6d5d8364b36752206a170a1d0e7660b2f5f7a9814d3f7efa53c5986",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L152-L160"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-30bf619fbaeb7df778e2",
+      "title": "makeCloudCliOAuthConfig (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function makeCloudCliOAuthConfig({\n  clerkPublishableKeyFallback = buildTimeClerkPublishableKey,\n  clerkCliOAuthClientIdFallback = buildTimeClerkCliOAuthClientId,\n}: {\n  readonly clerkPublishableKeyFallback?: string;\n  readonly clerkCliOAuthClientIdFallback?: string;\n} = {}) {\n  return Config.all({\n    clerkPublishableKey: makePublicValueConfig(\n      \"T3CODE_CLERK_PUBLISHABLE_KEY\",\n      clerkPublishableKeyFallback,\n    ),\n    clientId: makePublicValueConfig(\n      \"T3CODE_CLERK_CLI_OAUTH_CLIENT_ID\",\n      clerkCliOAuthClientIdFallback,\n    ),\n  }).pipe(\n    Config.mapEffect(({ clerkPublishableKey, clientId }) =>\n      Effect.try({\n        try: () => clerkFrontendApiUrlFromPublishableKey(clerkPublishableKey),\n        catch: (cause) =>\n          new Config.ConfigError(\n            new ConfigProvider.SourceError({\n              message: \"Failed to derive Clerk Frontend API URL from the publishable key.\",\n              cause,\n            }),\n          ),\n      }).pipe(\n        Effect.map(\n          (clerkFrontendApiUrl) =>\n            ({\n              tokenEndpoint: `${clerkFrontendApiUrl}/oauth/token`,\n              deviceAuthorizationEndpoint: `${clerkFrontendApiUrl}/oauth/device_authorization`,\n              clientId,\n              loopbackPort: CLOUD_CLI_OAUTH_LOOPBACK_PORT,\n              redirectUri: connectLoopbackRedirectUri(CLOUD_CLI_OAUTH_LOOPBACK_PORT),\n              scopes: CLOUD_CLI_OAUTH_SCOPES,\n            }) satisfies CloudCliOAuthConfig,\n        ),\n      ),\n    ),\n  );\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 161,
+          "endLine": 204,
+          "startOffset": 5554,
+          "endOffset": 7072,
+          "sha256": "501e1783c5c0b512fa7e37dadd83d6cefcbd8b05334b4c573f1988a237f82103",
+          "textSha256": "501e1783c5c0b512fa7e37dadd83d6cefcbd8b05334b4c573f1988a237f82103",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L161-L204"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-c66af5dbd0b40d0d3694",
+      "title": "cloudCliOAuthConfig (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const cloudCliOAuthConfig = makeCloudCliOAuthConfig();\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 205,
+          "endLine": 206,
+          "startOffset": 7072,
+          "endOffset": 7135,
+          "sha256": "9738d8ffa04349c20015161f8e39ec90b011f3a1daffe34d023e00ad2869f806",
+          "textSha256": "9738d8ffa04349c20015161f8e39ec90b011f3a1daffe34d023e00ad2869f806",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L205-L206"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-47c5deb72e01a825bf9b",
+      "title": "hasCloudPublicConfig (publicConfig.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const hasCloudPublicConfig = Boolean(\n  (normalizeSecureRelayUrl(process.env.T3CODE_RELAY_URL ?? \"\") ?? buildTimeRelayUrl) &&\n  (process.env.T3CODE_CLERK_PUBLISHABLE_KEY?.trim() || buildTimeClerkPublishableKey) &&\n  (process.env.T3CODE_CLERK_CLI_OAUTH_CLIENT_ID?.trim() || buildTimeClerkCliOAuthClientId),\n);\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/publicConfig.ts",
+          "startLine": 207,
+          "endLine": 211,
+          "startOffset": 7135,
+          "endOffset": 7451,
+          "sha256": "14553a20d2b4c4b2dc2ed4ce1ecb0b3051f5177af2f64de5d271d30203b4c004",
+          "textSha256": "14553a20d2b4c4b2dc2ed4ce1ecb0b3051f5177af2f64de5d271d30203b4c004",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/publicConfig.ts#L207-L211"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-b5e156c87916568a9a7b",
+      "title": "BufferedAnalyticsEvent (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "interface BufferedAnalyticsEvent {\n  readonly uuid: string;\n  readonly event: string;\n  readonly properties?: Readonly<Record<string, unknown>>;\n  readonly capturedAt: string;\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 25,
+          "endLine": 31,
+          "startOffset": 1112,
+          "endOffset": 1291,
+          "sha256": "9f90af32441180e21ed8648201bde0562cab050284eb3fd73d0952c9b472bfc5",
+          "textSha256": "9f90af32441180e21ed8648201bde0562cab050284eb3fd73d0952c9b472bfc5",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L25-L31"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-1994d0a9d60b43493340",
+      "title": "DeliveryState (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "interface DeliveryState {\n  readonly failedBatch: ReadonlyArray<BufferedAnalyticsEvent>;\n  readonly batchAttempts: number;\n  readonly firstFailedAt: number;\n  readonly failures: number;\n  readonly retryAt: number;\n}\n\n// Retry delays shorter than this still wait for the next background check.\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 32,
+          "endLine": 40,
+          "startOffset": 1291,
+          "endOffset": 1584,
+          "sha256": "85fd71f0515857614a00398c8c834d0618310c3dc582b39e0e4309394ad31252",
+          "textSha256": "85fd71f0515857614a00398c8c834d0618310c3dc582b39e0e4309394ad31252",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L32-L40"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-c1e139113c6e16f666c3",
+      "title": "FLUSH_INTERVAL_MS (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const FLUSH_INTERVAL_MS = 10_000;\n// A hung send would hold the flush lock, and with it the shutdown flush.\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 41,
+          "endLine": 42,
+          "startOffset": 1584,
+          "endOffset": 1692,
+          "sha256": "07d1b2b74403c8dabe581cd9d004192c63b6d114d28a333cedf129333fa19bf7",
+          "textSha256": "07d1b2b74403c8dabe581cd9d004192c63b6d114d28a333cedf129333fa19bf7",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L41-L42"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-1cf133d7f6e786702f7a",
+      "title": "SEND_TIMEOUT (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const SEND_TIMEOUT = \"10 seconds\";\n// A failed batch is tried again until it has failed for this long. Ingest answers 503 when it\n// cannot store a batch, and a broken Cloudflare location can take about 5 minutes to fail over.\n// The waiting batch holds newer events back; `maxBufferedEvents` bounds them meanwhile.\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 43,
+          "endLine": 46,
+          "startOffset": 1692,
+          "endOffset": 2008,
+          "sha256": "0a45af9051d6e2908360fd3f529438112adcff6bb35abb95ef3bf015108a34d7",
+          "textSha256": "0a45af9051d6e2908360fd3f529438112adcff6bb35abb95ef3bf015108a34d7",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L43-L46"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-3763707581ed44d5dd00",
+      "title": "MAX_BATCH_RETRY_MS (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const MAX_BATCH_RETRY_MS = 30 * 60_000;\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 47,
+          "endLine": 47,
+          "startOffset": 2008,
+          "endOffset": 2048,
+          "sha256": "50ef8d88b4ff7b5d06b6151c13600d586343890194847908a2f3a03115ffe2c2",
+          "textSha256": "50ef8d88b4ff7b5d06b6151c13600d586343890194847908a2f3a03115ffe2c2",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L47-L47"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-32672f8c4f95780021ed",
+      "title": "RETRY_BASE_DELAY_MS (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const RETRY_BASE_DELAY_MS = 2_000;\n// Clients can report any number of owner ids; past this many per observer, new ones\n// are not sent. Each observer has its own cap, so client reports never crowd out the\n// server's own.\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 48,
+          "endLine": 51,
+          "startOffset": 2048,
+          "endOffset": 2271,
+          "sha256": "8d219603db7151d3c625fbfb2df04ae49af41a0213461a6761988334bd503d5d",
+          "textSha256": "8d219603db7151d3c625fbfb2df04ae49af41a0213461a6761988334bd503d5d",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L48-L51"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-c6b132eda0d45ea4e3b0",
+      "title": "MAX_RECORDED_OWNERS (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const MAX_RECORDED_OWNERS = 1_000;\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 52,
+          "endLine": 52,
+          "startOffset": 2271,
+          "endOffset": 2306,
+          "sha256": "c608916e57118db9ae572ff53d419d8e33f457ab61e8cb60ae8d4a179a31b237",
+          "textSha256": "c608916e57118db9ae572ff53d419d8e33f457ab61e8cb60ae8d4a179a31b237",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L52-L52"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-95f6f8aa472e6a455d24",
+      "title": "RETRY_MAX_DELAY_MS (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const RETRY_MAX_DELAY_MS = 300_000;\n// These statuses reject the batch itself; unlike 408/429, retrying cannot help.\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 53,
+          "endLine": 54,
+          "startOffset": 2306,
+          "endOffset": 2423,
+          "sha256": "4b4f16a9eac5b8a50becb2bf6cdf6e057fc70c7a7f107b957b90a2f6877cb85e",
+          "textSha256": "4b4f16a9eac5b8a50becb2bf6cdf6e057fc70c7a7f107b957b90a2f6877cb85e",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L53-L54"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-3a6f829974ee640af1af",
+      "title": "REJECTED_BATCH_STATUSES (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const REJECTED_BATCH_STATUSES = new Set([400, 401, 413]);\n\n/** `random` is in [0, 1). */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 55,
+          "endLine": 57,
+          "startOffset": 2423,
+          "endOffset": 2512,
+          "sha256": "29643c613d0cd2fb2d1a2516ec8dd00c5e89c731f5f5d174ef5dcf1e5ea07dba",
+          "textSha256": "29643c613d0cd2fb2d1a2516ec8dd00c5e89c731f5f5d174ef5dcf1e5ea07dba",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L55-L57"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-ed495a7fde992d9bd1ce",
+      "title": "retryDelayMs (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function retryDelayMs(failures: number, random: number): number {\n  const ceiling = Math.min(RETRY_MAX_DELAY_MS, RETRY_BASE_DELAY_MS * 2 ** (failures - 1));\n  return Math.round(ceiling / 2 + (ceiling / 2) * random);\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 58,
+          "endLine": 62,
+          "startOffset": 2512,
+          "endOffset": 2731,
+          "sha256": "6ff32f01233aa545df18296abe163042baed27c0eeb7668a97aa02f81144f296",
+          "textSha256": "6ff32f01233aa545df18296abe163042baed27c0eeb7668a97aa02f81144f296",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L58-L62"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-364c1d46ff707f11a56b",
+      "title": "TelemetryEnvConfig (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const TelemetryEnvConfig = Config.all({\n  posthogKey: Config.String(\"T3CODE_POSTHOG_KEY\").pipe(\n    Config.withDefault(\"phc_XOWci4oZP4VvLiEyrFqkFjP4CZn55mjYYBMREK5Wd6m\"),\n  ),\n  posthogHost: Config.String(\"T3CODE_POSTHOG_HOST\").pipe(\n    Config.withDefault(\"https://ingest.t3.codes\"),\n  ),\n  enabled: Config.Boolean(\"T3CODE_TELEMETRY_ENABLED\").pipe(Config.withDefault(true)),\n  flushBatchSize: Config.Number(\"T3CODE_TELEMETRY_FLUSH_BATCH_SIZE\").pipe(Config.withDefault(20)),\n  maxBufferedEvents: Config.Number(\"T3CODE_TELEMETRY_MAX_BUFFERED_EVENTS\").pipe(\n    Config.withDefault(1_000),\n  ),\n  wslDistroName: Config.String(\"WSL_DISTRO_NAME\").pipe(Config.option),\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 63,
+          "endLine": 77,
+          "startOffset": 2731,
+          "endOffset": 3399,
+          "sha256": "3b2354862c276a889dbe632b8126645048fc833955fc9019b1bf2f748aa7597d",
+          "textSha256": "3b2354862c276a889dbe632b8126645048fc833955fc9019b1bf2f748aa7597d",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L63-L77"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-6f8da9c41d4325578063",
+      "title": "AnalyticsService (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class AnalyticsService extends Context.Service<\n  AnalyticsService,\n  {\n    readonly record: (\n      event: string,\n      properties?: Readonly<Record<string, unknown>>,\n    ) => Effect.Effect<void>;\n\n    readonly flush: Effect.Effect<void>;\n\n    /**\n     * Records `install.owner_observed` for each owner of this install that the\n     * server read itself or a connecting client reported. Each owner is sent once\n     * per server process, so reconnects and repeated reads are free.\n     */\n    readonly recordOwners: (\n      owners: ReadonlyArray<TelemetryOwner>,\n      observedBy: \"server\" | \"client\",\n    ) => Effect.Effect<void>;\n  }\n>()(\"t3/telemetry/AnalyticsService\") {}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 78,
+          "endLine": 99,
+          "startOffset": 3399,
+          "endOffset": 4086,
+          "sha256": "7dc45327820d4c103a0a59b383857be6212234311c29f76c5a64bceca1dcbdbf",
+          "textSha256": "7dc45327820d4c103a0a59b383857be6212234311c29f76c5a64bceca1dcbdbf",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L78-L99"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-5f14d2d09f255880f349",
+      "title": "serverOsFromNodePlatform (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function serverOsFromNodePlatform(platform: string): ClientOs {\n  switch (platform) {\n    case \"darwin\":\n      return \"macOS\";\n    case \"win32\":\n      return \"Windows\";\n    case \"linux\":\n      return \"Linux\";\n    case \"android\":\n      return \"Android\";\n    default:\n      return \"other\";\n  }\n}\n\n/** @public */\n/** @public */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 100,
+          "endLine": 116,
+          "startOffset": 4086,
+          "endOffset": 4411,
+          "sha256": "1488b0c8aa1cca8b599273773e88defd5b7b3f92ed92b8f9ce920f5f7e5aa7c9",
+          "textSha256": "1488b0c8aa1cca8b599273773e88defd5b7b3f92ed92b8f9ce920f5f7e5aa7c9",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L100-L116"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-ac8ad3212b4edbdc813e",
+      "title": "make (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const make = Effect.gen(function* () {\n  const telemetryConfig = yield* TelemetryEnvConfig;\n  const httpClient = yield* HttpClient.HttpClient;\n  const serverConfig = yield* ServerConfig.ServerConfig;\n  const { distinctId, installId } = yield* getTelemetryIdentity;\n  const crypto = yield* Crypto.Crypto;\n  const bufferRef = yield* Ref.make<ReadonlyArray<BufferedAnalyticsEvent>>([]);\n  const deliveryRef = yield* Ref.make<DeliveryState>({\n    failedBatch: [],\n    batchAttempts: 0,\n    firstFailedAt: 0,\n    failures: 0,\n    retryAt: 0,\n  });\n  const recordedOwnersRef = yield* Ref.make<\n    Readonly<Record<\"server\" | \"client\", ReadonlySet<string>>>\n  >({ server: new Set(), client: new Set() });\n  // The background flush and the shutdown flush must not send the same batch at once.\n  const flushLock = yield* Semaphore.make(1);\n  const clientType = serverConfig.mode === \"desktop\" ? \"desktop-app\" : \"cli-web-client\";\n  const hostPlatform = yield* HostProcess.Platform;\n  const hostArchitecture = yield* HostProcess.Architecture;\n\n  const enqueueBufferedEvent = (\n    uuid: string,\n    event: string,\n    properties?: Readonly<Record<string, unknown>>,\n  ) =>\n    Effect.flatMap(DateTime.now, (now) =>\n      Ref.modify(bufferRef, (current) => {\n        const appended = [\n          ...current,\n          {\n            uuid,\n            event,\n            ...(properties ? { properties } : {}),\n            capturedAt: DateTime.formatIso(now),\n          } satisfies BufferedAnalyticsEvent,\n        ];\n\n        const next =\n          appended.length > telemetryConfig.maxBufferedEvents\n            ? appended.slice(appended.length - telemetryConfig.maxBufferedEvents)\n            : appended;\n\n        return [\n          {\n            size: next.length,\n            dropped: next.length !== appended.length,\n          } as const,\n          next,\n        ] as const;\n      }),\n    );\n\n  const sendBatch = Effect.fn(\"AnalyticsService.sendBatch\")(function* (\n    events: ReadonlyArray<BufferedAnalyticsEvent>,\n  ) {\n    if (!telemetryConfig.enabled || !distinctId) return;\n\n    const payload = {\n      api_key: telemetryConfig.posthogKey,\n      batch: events.map((event) => ({\n        uuid: event.uuid,\n        event: event.event,\n        distinct_id: distinctId,\n        properties: {\n          ...event.properties,\n          ...(installId === null ? {} : { installId }),\n          $process_person_profile: false,\n          platform: hostPlatform,\n          wsl: Option.getOrUndefined(telemetryConfig.wslDistroName),\n          arch: hostArchitecture,\n          t3CodeVersion: packageJson.version,\n          telemetryChannel: ServerConfig.telemetryChannel,\n          clientType,\n          serverOs: serverOsFromNodePlatform(hostPlatform),\n          serverArch: hostArchitecture,\n          serverWslDistro: Option.getOrUndefined(telemetryConfig.wslDistroName),\n          serverAppVersion: packageJson.version,\n          serverMode: serverConfig.mode,\n        },\n        timestamp: event.capturedAt,\n      })),\n    };\n\n    yield* HttpClientRequest.post(`${telemetryConfig.posthogHost}/batch/`).pipe(\n      HttpClientRequest.bodyJson(payload),\n      Effect.flatMap(httpClient.execute),\n      Effect.flatMap(HttpClientResponse.filterStatusOk),\n      Effect.timeout(SEND_TIMEOUT),\n    );\n  });\n\n  const takeBatch = Ref.modify(bufferRef, (current) => {\n    const nextBatch = current.slice(0, telemetryConfig.flushBatchSize);\n    return [nextBatch, current.slice(nextBatch.length)] as const;\n  });\n\n  // Back off even after dropping rejected batches so bad API keys cannot drain the queue in a tight loop.\n  const flush: AnalyticsService[\"Service\"][\"flush\"] = Effect.gen(function* () {\n    while (true) {\n      const delivery = yield* Ref.get(deliveryRef);\n      const batch = delivery.failedBatch.length > 0 ? delivery.failedBatch : yield* takeBatch;\n      if (batch.length === 0) {\n        return;\n      }\n\n      const sent = yield* Effect.result(sendBatch(batch));\n      if (Result.isSuccess(sent)) {\n        yield* Ref.set(deliveryRef, {\n          failedBatch: [],\n          batchAttempts: 0,\n          firstFailedAt: 0,\n          failures: 0,\n          retryAt: 0,\n        });\n        continue;\n      }\n\n      const now = yield* Clock.currentTimeMillis;\n      const failures = delivery.failures + 1;\n      const batchAttempts = delivery.batchAttempts + 1;\n      const firstFailedAt = delivery.batchAttempts === 0 ? now : delivery.firstFailedAt;\n      const retryAt = now + retryDelayMs(failures, yield* Random.next);\n      const error = sent.failure;\n      const rejected =\n        error._tag === \"HttpClientError\" &&\n        error.reason._tag === \"StatusCodeError\" &&\n        REJECTED_BATCH_STATUSES.has(error.reason.response.status);\n      if (!rejected && now - firstFailedAt < MAX_BATCH_RETRY_MS) {\n        yield* Ref.set(deliveryRef, {\n          failedBatch: batch,\n          batchAttempts,\n          firstFailedAt,\n          failures,\n          retryAt,\n        });\n        yield* Effect.logDebug(\"Failed to send telemetry batch; will retry\", {\n          attempt: batchAttempts,\n          cause: error,\n        });\n        return;\n      }\n      yield* Ref.set(deliveryRef, {\n        failedBatch: [],\n        batchAttempts: 0,\n        firstFailedAt: 0,\n        failures,\n        retryAt,\n      });\n      yield* Effect.logWarning(\n        rejected\n          ? \"Dropped telemetry batch the endpoint rejected\"\n          : \"Dropped telemetry batch after repeated send failures\",\n        { events: batch.length, attempts: batchAttempts, cause: error },\n      );\n      return;\n    }\n  }).pipe(flushLock.withPermit);\n\n  const flushWhenDue = Effect.gen(function* () {\n    const { retryAt } = yield* Ref.get(deliveryRef);\n    if ((yield* Clock.currentTimeMillis) >= retryAt) {\n      yield* flush;\n    }\n  });\n\n  const record: AnalyticsService[\"Service\"][\"record\"] = Effect.fn(\"AnalyticsService.record\")(\n    function* (event, properties) {\n      if (!telemetryConfig.enabled || !distinctId) return;\n\n      // Catch Node UUID defects too; best-effort telemetry drops events without UUIDs.\n      const uuid = yield* Effect.exit(crypto.randomUUIDv7());\n      if (Exit.isFailure(uuid)) return;\n\n      const enqueueResult = yield* enqueueBufferedEvent(uuid.value, event, properties);\n      if (enqueueResult.dropped) {\n        yield* Effect.logDebug(\"analytics buffer full; dropping oldest event\", {\n          size: enqueueResult.size,\n          event,\n        });\n      }\n    },\n  );\n\n  const recordOwners: AnalyticsService[\"Service\"][\"recordOwners\"] = Effect.fn(\n    \"AnalyticsService.recordOwners\",\n  )((owners, observedBy) =>\n    Effect.forEach(\n      owners,\n      ({ source, ownerId }) =>\n        Ref.modify(recordedOwnersRef, (recorded) => {\n          const key = `${source}:${ownerId}`;\n          const seen = recorded[observedBy];\n          return seen.has(key) || seen.size >= MAX_RECORDED_OWNERS\n            ? [false, recorded]\n            : [true, { ...recorded, [observedBy]: new Set(seen).add(key) }];\n        }).pipe(\n          Effect.flatMap((isNew) =>\n            isNew\n              ? record(\"install.owner_observed\", { ownerSource: source, ownerId, observedBy })\n              : Effect.void,\n          ),\n        ),\n      { discard: true },\n    ),\n  );\n\n  yield* Effect.forever(Effect.sleep(FLUSH_INTERVAL_MS).pipe(Effect.andThen(flushWhenDue)), {\n    disableYield: true,\n  }).pipe(Effect.forkScoped);\n\n  yield* Effect.addFinalizer(() => flush);\n\n  return AnalyticsService.of({ record, flush, recordOwners });\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 117,
+          "endLine": 334,
+          "startOffset": 4411,
+          "endOffset": 11937,
+          "sha256": "65d693e474dc341a856d4a6a33125949172d8f2fbc37804eee14a806c48f23eb",
+          "textSha256": "65d693e474dc341a856d4a6a33125949172d8f2fbc37804eee14a806c48f23eb",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L117-L334"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-e1777be950089e325f77",
+      "title": "layer (AnalyticsService.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layer = Layer.effect(AnalyticsService, make);\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/telemetry/AnalyticsService.ts",
+          "startLine": 335,
+          "endLine": 335,
+          "startOffset": 11937,
+          "endOffset": 11996,
+          "sha256": "fbcaa04fda9e24d8a22473e1835004ce3e5e01a241799834158f1c73fd0b93f8",
+          "textSha256": "fbcaa04fda9e24d8a22473e1835004ce3e5e01a241799834158f1c73fd0b93f8",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/telemetry/AnalyticsService.ts#L335-L335"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-cb2eb7c529eac5331df9",
+      "title": "PREFLIGHT_TIMEOUT (selfUpdate.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const PREFLIGHT_TIMEOUT = Duration.seconds(30);\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/selfUpdate.ts",
+          "startLine": 42,
+          "endLine": 43,
+          "startOffset": 1640,
+          "endOffset": 1689,
+          "sha256": "38ff460c920ef7e3d402b85336409a27a9922a926c3019f2a37f5fcf458e896b",
+          "textSha256": "38ff460c920ef7e3d402b85336409a27a9922a926c3019f2a37f5fcf458e896b",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/selfUpdate.ts#L42-L43"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-4c279c9ff4fcd6e82da1",
+      "title": "resolveServerSelfUpdateCapability (selfUpdate.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function resolveServerSelfUpdateCapability(input: {\n  readonly desktopManaged: boolean;\n  readonly launcherManaged: boolean;\n}): ServerSelfUpdateCapability | null {\n  if (input.desktopManaged) return \"desktop-managed\" as const;\n  return input.launcherManaged ? (\"boot-service\" as const) : null;\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/selfUpdate.ts",
+          "startLine": 44,
+          "endLine": 51,
+          "startOffset": 1689,
+          "endOffset": 1994,
+          "sha256": "bf233830fe445db6920bf077461f944cfd96c70ee7ba2ea475a2246bd736ede3",
+          "textSha256": "bf233830fe445db6920bf077461f944cfd96c70ee7ba2ea475a2246bd736ede3",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/selfUpdate.ts#L44-L51"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-63d504ede3fd30769cc5",
+      "title": "ServerSelfUpdate (selfUpdate.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class ServerSelfUpdate extends Context.Service<\n  ServerSelfUpdate,\n  {\n    readonly update: (\n      input: ServerSelfUpdateInput,\n      reportProgress?: (\n        stage: ServerSelfUpdateProgressStage,\n      ) => Effect.Effect<void, ServerSelfUpdateError>,\n      onHandoffAccepted?: () => Effect.Effect<void>,\n    ) => Effect.Effect<ServerSelfUpdateResult, ServerSelfUpdateError>;\n    readonly commitDesktopUpdate: (\n      requestId: string,\n      onHandoffAccepted?: () => Effect.Effect<void>,\n    ) => Effect.Effect<never, ServerSelfUpdateError>;\n  }\n>()(\"t3/cloud/selfUpdate/ServerSelfUpdate\") {}\n\n/**\n * A server starting from the runtime its launcher settled on means runtimes left by earlier\n * updates can go. The boot service says so through its IPC context. The SSH launcher and the\n * install script's `t3` start this home's pinned runtime directly, without one.\n */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/selfUpdate.ts",
+          "startLine": 52,
+          "endLine": 73,
+          "startOffset": 1994,
+          "endOffset": 2878,
+          "sha256": "f841dd6a65772414ec58abda03856bfa0f3a454a2ef18b5560d840440d84fa51",
+          "textSha256": "f841dd6a65772414ec58abda03856bfa0f3a454a2ef18b5560d840440d84fa51",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/selfUpdate.ts#L52-L73"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-7eb7b9bcbb6b9ba77bf7",
+      "title": "pruneRuntimesOnStart (selfUpdate.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const pruneRuntimesOnStart = Effect.fn(\"cloud.server_self_update.prune_on_start\")(\n  function* (input: { readonly baseDir: string; readonly managed: boolean }) {\n    const fs = yield* FileSystem.FileSystem;\n    const path = yield* Path.Path;\n    const platform = yield* HostProcess.Platform;\n    const executablePath = yield* HostProcess.ExecutablePath;\n    const { entryPath } = pinnedRuntimePaths(path, input.baseDir, packageJson.version, platform);\n    // The executable path is resolved, so it names the real path of a symlinked T3 home.\n    const realEntryPath = yield* fs.realPath(entryPath).pipe(Effect.orElseSucceed(() => entryPath));\n    if (!input.managed && executablePath !== entryPath && executablePath !== realEntryPath) {\n      return [];\n    }\n    const removed = yield* prunePinnedRuntimes({\n      baseDir: input.baseDir,\n      keep: [packageJson.version],\n    });\n    if (removed.length > 0) {\n      yield* Effect.logInfo(\"Removed unused t3 runtimes.\", { versions: removed });\n    }\n    return removed;\n  },\n);\n\n/** The client checks this when planning; the host checks again because its database may have\n * moved on since (another client updated it). Stable and Nightly each build their own commits,\n * so crossing tracks needs the target release to know every migration this database holds. */\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/selfUpdate.ts",
+          "startLine": 74,
+          "endLine": 99,
+          "startOffset": 2878,
+          "endOffset": 4200,
+          "sha256": "9bd2db949ffa58893edc761af04aa92392ce080a141c65ac884205d7811c87ab",
+          "textSha256": "9bd2db949ffa58893edc761af04aa92392ce080a141c65ac884205d7811c87ab",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/selfUpdate.ts#L74-L99"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-99b1ca82638c30836cc7",
+      "title": "trackSwitchBlockReason (selfUpdate.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function trackSwitchBlockReason(input: {\n  readonly serverVersion: string;\n  readonly targetVersion: string;\n  readonly targetDatabaseMigration: number | undefined;\n  /** Read only for a crossing; undefined when the database cannot be read. */\n  readonly databaseMigration: () => number | undefined;\n}): string | null {\n  if (!crossesReleaseTrack(input.serverVersion, input.targetVersion)) return null;\n  const databaseMigration = input.databaseMigration();\n  if (input.targetDatabaseMigration === undefined || databaseMigration === undefined) {\n    return `Cannot confirm this database works with t3@${input.targetVersion}. Switch tracks from Settings → About → Update track, which checks it first.`;\n  }\n  return input.targetDatabaseMigration < databaseMigration\n    ? `This database has changes t3@${input.targetVersion} does not support yet; it stays on this release.`\n    : null;\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/selfUpdate.ts",
+          "startLine": 100,
+          "endLine": 116,
+          "startOffset": 4200,
+          "endOffset": 5095,
+          "sha256": "b17f7e0f8062120871f58c1f6289fce319ea176686e26c0d25667725188b1226",
+          "textSha256": "b17f7e0f8062120871f58c1f6289fce319ea176686e26c0d25667725188b1226",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/selfUpdate.ts#L100-L116"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-24058fc8da20cb5583f0",
+      "title": "make (selfUpdate.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const make = Effect.fn(\"cloud.server_self_update.make\")(function* () {\n  const serverConfig = yield* ServerConfig.ServerConfig;\n  const desktopAppUpdate = yield* DesktopAppUpdate.DesktopAppUpdate;\n  const launcher = yield* ServiceLauncherClient.ServiceLauncherClient;\n  const runner = yield* ProcessRunner.ProcessRunner;\n  const fs = yield* FileSystem.FileSystem;\n  const path = yield* Path.Path;\n  const platform = yield* HostProcess.Platform;\n  const arch = yield* HostProcess.Architecture;\n  const httpClient = yield* HttpClient.HttpClient;\n  const releaseBaseUrl = Option.getOrUndefined(\n    yield* Config.String(CLI_RELEASE_BASE_URL_ENV).pipe(Config.option),\n  );\n  const inFlight = yield* Ref.make(false);\n\n  yield* pruneRuntimesOnStart({ baseDir: serverConfig.baseDir, managed: launcher.managed }).pipe(\n    Effect.forkScoped,\n  );\n\n  const capability: ServerSelfUpdateCapability | null =\n    serverConfig.mode === \"desktop\" ? \"desktop-managed\" : launcher.managed ? \"boot-service\" : null;\n  const failWith = (reason: string, cause?: unknown) =>\n    cause === undefined\n      ? new ServerSelfUpdateError({ reason })\n      : new ServerSelfUpdateError({ reason, cause });\n\n  const crossesTrackUnsafely = (input: ServerSelfUpdateInput) =>\n    trackSwitchBlockReason({\n      serverVersion: packageJson.version,\n      targetVersion: input.targetVersion,\n      targetDatabaseMigration: input.targetDatabaseMigration,\n      databaseMigration: () => databaseMigrationHead(serverConfig.dbPath),\n    });\n\n  const update: ServerSelfUpdate[\"Service\"][\"update\"] = Effect.fn(\n    \"cloud.server_self_update.update\",\n  )(function* (input, reportProgress = () => Effect.void, onHandoffAccepted = () => Effect.void) {\n    if (capability === \"desktop-managed\") {\n      const unsafeCrossing = input.channel === undefined ? null : crossesTrackUnsafely(input);\n      if (unsafeCrossing !== null) return yield* failWith(unsafeCrossing);\n      if (desktopAppUpdate.available) {\n        return yield* desktopAppUpdate.run(\n          reportProgress,\n          input.channel === undefined\n            ? undefined\n            : { channel: input.channel, targetVersion: input.targetVersion },\n        );\n      }\n      return yield* failWith(\n        \"This server is managed by the T3 Code desktop app on its machine; update the desktop app to update it.\",\n      );\n    }\n    if (capability === null) {\n      return yield* failWith(\n        \"Remote updates require the T3 Code background service. Run `t3 service install` on the server machine.\",\n      );\n    }\n\n    const unsafeCrossing = crossesTrackUnsafely(input);\n    if (unsafeCrossing !== null) return yield* failWith(unsafeCrossing);\n    const targetVersion = input.targetVersion.trim();\n    if (!isExactServiceVersion(targetVersion)) {\n      return yield* failWith(`'${targetVersion}' is not an exact t3 version.`);\n    }\n    if (yield* Ref.getAndSet(inFlight, true)) {\n      return yield* failWith(\"A server update is already in progress.\");\n    }\n\n    return yield* Effect.gen(function* () {\n      yield* reportProgress(\"downloading\");\n      const paths = yield* ensurePinnedRuntimeInstalled({\n        baseDir: serverConfig.baseDir,\n        version: targetVersion,\n        fs,\n        path,\n        runner,\n        httpClient,\n        platform,\n        arch,\n        releaseBaseUrl,\n        validate: (runtime) =>\n          runner\n            .run({\n              command: pinnedRuntimeCommand(runtime).command,\n              args: [\n                ...pinnedRuntimeCommand(runtime).args,\n                \"__service-preflight\",\n                \"--database-path\",\n                serverConfig.dbPath,\n                \"--launcher-protocol\",\n                String(SERVICE_LAUNCHER_PROTOCOL),\n              ],\n              timeout: PREFLIGHT_TIMEOUT,\n            })\n            .pipe(\n              Effect.mapError(\n                (cause) =>\n                  new PinnedRuntimeInstallError({\n                    step: \"running the staged service preflight\",\n                    cause,\n                  }),\n              ),\n              Effect.flatMap(\n                (\n                  result,\n                ): Effect.Effect<\n                  void,\n                  PinnedRuntimeInstallError | PinnedRuntimePreflightBlockedError\n                > => {\n                  if (result.code !== 0) {\n                    return Effect.fail(\n                      new PinnedRuntimeInstallError({\n                        step: \"running the staged service preflight\",\n                        exitCode: Number(result.code),\n                        stdoutLength: result.stdout.length,\n                        stderrLength: result.stderr.length,\n                      }),\n                    );\n                  }\n                  let parsed: unknown;\n                  try {\n                    parsed = JSON.parse(result.stdout.trim());\n                  } catch (cause) {\n                    return Effect.fail(\n                      new PinnedRuntimeInstallError({\n                        step: \"decoding the staged service preflight\",\n                        cause,\n                      }),\n                    );\n                  }\n                  const preflight = decodeServicePreflightResult(parsed);\n                  if (preflight === undefined || preflight.version !== targetVersion) {\n                    return Effect.fail(\n                      new PinnedRuntimeInstallError({\n                        step: \"verifying the staged service preflight\",\n                      }),\n                    );\n                  }\n                  return preflight.status === \"ready\"\n                    ? Effect.void\n                    : Effect.fail(\n                        new PinnedRuntimePreflightBlockedError({\n                          version: targetVersion,\n                          reason: preflight.reason,\n                        }),\n                      );\n                },\n              ),\n            ),\n      }).pipe(\n        Effect.mapError((error) =>\n          error._tag === \"PinnedRuntimePreflightBlockedError\"\n            ? failWith(error.reason, error)\n            : failWith(`Could not prepare t3@${targetVersion}.`, error),\n        ),\n      );\n\n      yield* reportProgress(\"installing\");\n      const updateId = yield* Effect.uninterruptible(\n        launcher.requestUpdate({ targetVersion, dbPath: serverConfig.dbPath }).pipe(\n          Effect.mapError((error) =>\n            failWith(\n              error._tag === \"ServiceLauncherRejectedError\"\n                ? error.reason\n                : \"Could not ask the service launcher to activate the prepared update.\",\n              error,\n            ),\n          ),\n          Effect.tap(() => onHandoffAccepted()),\n        ),\n      );\n\n      yield* Effect.logInfo(\"Server update prepared; handing off to the service launcher.\", {\n        updateId,\n        targetVersion,\n        runtimePath: paths.entryPath,\n      });\n      return { targetVersion, method: \"boot-service\" as const, updateId };\n    }).pipe(Effect.onError(() => Ref.set(inFlight, false)));\n  });\n\n  return ServerSelfUpdate.of({\n    update,\n    commitDesktopUpdate: Effect.fn(\"ServerSelfUpdate.commitDesktopUpdate\")(\n      function (requestId, onHandoffAccepted) {\n        return desktopAppUpdate.commit(requestId, onHandoffAccepted);\n      },\n    ),\n  });\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/selfUpdate.ts",
+          "startLine": 117,
+          "endLine": 307,
+          "startOffset": 5095,
+          "endOffset": 12447,
+          "sha256": "8b4772232a3c057d0ad76aa4c8d3d80e7c122621eeccb5097a1cafb423d108d7",
+          "textSha256": "8b4772232a3c057d0ad76aa4c8d3d80e7c122621eeccb5097a1cafb423d108d7",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/selfUpdate.ts#L117-L307"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-81ed9fea862cc603aae8",
+      "title": "layer (selfUpdate.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layer = Layer.effect(ServerSelfUpdate, make()).pipe(\n  Layer.provide(ProcessRunner.layer),\n);\n\n// The update outlives client sockets; progress offers to a closed queue are ignored.\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/selfUpdate.ts",
+          "startLine": 308,
+          "endLine": 312,
+          "startOffset": 12447,
+          "endOffset": 12641,
+          "sha256": "8f89661e37cf7de7c80a3c3d2dea1e97ab09e9b43f6b853b8d0b01f478820c7a",
+          "textSha256": "8f89661e37cf7de7c80a3c3d2dea1e97ab09e9b43f6b853b8d0b01f478820c7a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/selfUpdate.ts#L308-L312"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-254c6b5b29f1da8be6c9",
+      "title": "updateProgressStream (selfUpdate.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const updateProgressStream = (\n  selfUpdate: ServerSelfUpdate[\"Service\"],\n  input: ServerSelfUpdateInput,\n) =>\n  Stream.callback<ServerSelfUpdateProgressEvent, ServerSelfUpdateError>((queue) => {\n    const offer = (event: ServerSelfUpdateProgressEvent) =>\n      Queue.offer(queue, event).pipe(Effect.ignore);\n\n    return selfUpdate\n      .update(input, (stage) => offer({ type: \"progress\", stage }))\n      .pipe(\n        Effect.flatMap((result) => offer({ type: \"complete\", result })),\n        Effect.catchTags({\n          ServerSelfUpdateError: (error) => Queue.fail(queue, error).pipe(Effect.ignore),\n        }),\n        Effect.andThen(Queue.end(queue).pipe(Effect.ignore)),\n        Effect.forkDetach,\n      );\n  });\n",
+      "provenance": [
+        {
+          "file": "apps/server/src/cloud/selfUpdate.ts",
+          "startLine": 313,
+          "endLine": 331,
+          "startOffset": 12641,
+          "endOffset": 13367,
+          "sha256": "ce71ddfc2e2ae41203dc431f1757389165ff4ccb8dc834c593384db4e7d0f6d6",
+          "textSha256": "ce71ddfc2e2ae41203dc431f1757389165ff4ccb8dc834c593384db4e7d0f6d6",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/server/src/cloud/selfUpdate.ts#L313-L331"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-90900de46e698d846fa7",
+      "title": "PRERELEASE_VERSION_PATTERN (updateChannels.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const PRERELEASE_VERSION_PATTERN = /^[^-+]+-(?:nightly|preview)\\.\\d{8}\\.\\d+$/;\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/updates/updateChannels.ts",
+          "startLine": 2,
+          "endLine": 3,
+          "startOffset": 74,
+          "endOffset": 154,
+          "sha256": "340d7bd2f73185f2e2e0473bd47c28edbf7c6c8d258050bceb572f99728c9157",
+          "textSha256": "340d7bd2f73185f2e2e0473bd47c28edbf7c6c8d258050bceb572f99728c9157",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/updates/updateChannels.ts#L2-L3"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-c96427cdec3b11dabd19",
+      "title": "isNightlyDesktopVersion (updateChannels.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function isNightlyDesktopVersion(version: string): boolean {\n  return PRERELEASE_VERSION_PATTERN.test(version);\n}\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/updates/updateChannels.ts",
+          "startLine": 4,
+          "endLine": 6,
+          "startOffset": 154,
+          "endOffset": 275,
+          "sha256": "a5e7e1f6886ad8b87498b97fb6d04a4a887edb17a21b84f2c1891677bc476458",
+          "textSha256": "a5e7e1f6886ad8b87498b97fb6d04a4a887edb17a21b84f2c1891677bc476458",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/updates/updateChannels.ts#L4-L6"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-ac1b3f2377105629a0bc",
+      "title": "AutoUpdater (ElectronUpdater.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "type AutoUpdater = typeof autoUpdater;\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/electron/ElectronUpdater.ts",
+          "startLine": 9,
+          "endLine": 10,
+          "startOffset": 253,
+          "endOffset": 293,
+          "sha256": "6e5b707528dca2981794503685e8b6f15c1d68fd9417643ddc91ea67e4cf0485",
+          "textSha256": "6e5b707528dca2981794503685e8b6f15c1d68fd9417643ddc91ea67e4cf0485",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/electron/ElectronUpdater.ts#L9-L10"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-b944c311d94de5863eb2",
+      "title": "ElectronUpdaterFeedUrl (ElectronUpdater.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export type ElectronUpdaterFeedUrl = Parameters<AutoUpdater[\"setFeedURL\"]>[0];\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/electron/ElectronUpdater.ts",
+          "startLine": 11,
+          "endLine": 12,
+          "startOffset": 293,
+          "endOffset": 373,
+          "sha256": "748f274b83d3f77f4cfce53becee0ee2388903a589ed7f696e8171748c3e90cc",
+          "textSha256": "748f274b83d3f77f4cfce53becee0ee2388903a589ed7f696e8171748c3e90cc",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/electron/ElectronUpdater.ts#L11-L12"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-b4f1d75be9eeda297b19",
+      "title": "ElectronUpdaterCheckForUpdatesError (ElectronUpdater.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class ElectronUpdaterCheckForUpdatesError extends Schema.TaggedError<ElectronUpdaterCheckForUpdatesError>()(\n  \"ElectronUpdaterCheckForUpdatesError\",\n  {\n    channel: Schema.NullOr(Schema.String),\n    cause: Schema.Defect(),\n  },\n) {\n  override get message(): string {\n    return `Electron updater failed to check for updates on channel ${this.channel ?? \"default\"}.`;\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/electron/ElectronUpdater.ts",
+          "startLine": 13,
+          "endLine": 24,
+          "startOffset": 373,
+          "endOffset": 756,
+          "sha256": "c696a8b3b29f9ca8d2f0db1f67fd808c3907faec004168c6ead954c44a702c24",
+          "textSha256": "c696a8b3b29f9ca8d2f0db1f67fd808c3907faec004168c6ead954c44a702c24",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/electron/ElectronUpdater.ts#L13-L24"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-d1c71e2c2c411b3f9dfd",
+      "title": "ElectronUpdaterDownloadUpdateError (ElectronUpdater.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class ElectronUpdaterDownloadUpdateError extends Schema.TaggedError<ElectronUpdaterDownloadUpdateError>()(\n  \"ElectronUpdaterDownloadUpdateError\",\n  {\n    channel: Schema.NullOr(Schema.String),\n    cause: Schema.Defect(),\n  },\n) {\n  override get message(): string {\n    return `Electron updater failed to download the update on channel ${this.channel ?? \"default\"}.`;\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/electron/ElectronUpdater.ts",
+          "startLine": 25,
+          "endLine": 36,
+          "startOffset": 756,
+          "endOffset": 1138,
+          "sha256": "c4067b992a13a7a2c785ef9bdc5be8bdf072ce28376001d3045939cebc8588cf",
+          "textSha256": "c4067b992a13a7a2c785ef9bdc5be8bdf072ce28376001d3045939cebc8588cf",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/electron/ElectronUpdater.ts#L25-L36"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-1d657409915d0b97b23a",
+      "title": "ElectronUpdaterQuitAndInstallError (ElectronUpdater.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class ElectronUpdaterQuitAndInstallError extends Schema.TaggedError<ElectronUpdaterQuitAndInstallError>()(\n  \"ElectronUpdaterQuitAndInstallError\",\n  {\n    channel: Schema.NullOr(Schema.String),\n    isSilent: Schema.Boolean,\n    isForceRunAfter: Schema.Boolean,\n    cause: Schema.Defect(),\n  },\n) {\n  override get message(): string {\n    return `Electron updater failed to quit and install the update on channel ${this.channel ?? \"default\"} (silent: ${this.isSilent}, force run after: ${this.isForceRunAfter}).`;\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/electron/ElectronUpdater.ts",
+          "startLine": 37,
+          "endLine": 50,
+          "startOffset": 1138,
+          "endOffset": 1664,
+          "sha256": "38902b36e35243a06e61f7897b10eb564790e64f386426e3bbf2c91162330e4c",
+          "textSha256": "38902b36e35243a06e61f7897b10eb564790e64f386426e3bbf2c91162330e4c",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/electron/ElectronUpdater.ts#L37-L50"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-80982072f39348cb5a4c",
+      "title": "ElectronUpdaterError (ElectronUpdater.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const ElectronUpdaterError = Schema.Union([\n  ElectronUpdaterCheckForUpdatesError,\n  ElectronUpdaterDownloadUpdateError,\n  ElectronUpdaterQuitAndInstallError,\n]);\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/electron/ElectronUpdater.ts",
+          "startLine": 51,
+          "endLine": 55,
+          "startOffset": 1664,
+          "endOffset": 1834,
+          "sha256": "6fedffb387f4702baf15d94cf4a6e02451cf6e1050bef78e6b2a0f4e7c6763c5",
+          "textSha256": "6fedffb387f4702baf15d94cf4a6e02451cf6e1050bef78e6b2a0f4e7c6763c5",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/electron/ElectronUpdater.ts#L51-L55"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-b538c4aebf4ecf6398f3",
+      "title": "ElectronUpdater (ElectronUpdater.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class ElectronUpdater extends Context.Service<\n  ElectronUpdater,\n  {\n    readonly setFeedURL: (options: ElectronUpdaterFeedUrl) => Effect.Effect<void>;\n    readonly setAutoDownload: (value: boolean) => Effect.Effect<void>;\n    readonly setAutoInstallOnAppQuit: (value: boolean) => Effect.Effect<void>;\n    readonly setChannel: (channel: string) => Effect.Effect<void>;\n    readonly setAllowPrerelease: (value: boolean) => Effect.Effect<void>;\n    readonly allowDowngrade: Effect.Effect<boolean>;\n    readonly setAllowDowngrade: (value: boolean) => Effect.Effect<void>;\n    readonly setFullChangelog: (value: boolean) => Effect.Effect<void>;\n    readonly setDisableDifferentialDownload: (value: boolean) => Effect.Effect<void>;\n    readonly checkForUpdates: Effect.Effect<void, ElectronUpdaterCheckForUpdatesError>;\n    readonly downloadUpdate: Effect.Effect<void, ElectronUpdaterDownloadUpdateError>;\n    readonly quitAndInstall: (options: {\n      readonly isSilent: boolean;\n      readonly isForceRunAfter: boolean;\n    }) => Effect.Effect<void, ElectronUpdaterQuitAndInstallError>;\n    readonly on: <Args extends ReadonlyArray<unknown>>(\n      eventName: string,\n      listener: (...args: Args) => void,\n    ) => Effect.Effect<void, never, Scope.Scope>;\n  }\n>()(\"@t3tools/desktop/electron/ElectronUpdater\") {}\n\n/** @public */\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/electron/ElectronUpdater.ts",
+          "startLine": 58,
+          "endLine": 83,
+          "startOffset": 1904,
+          "endOffset": 3240,
+          "sha256": "7124713b9bc204341aafcc9058d75e89eb88efa7b9a0a6c6edc1494c9f0ebce8",
+          "textSha256": "7124713b9bc204341aafcc9058d75e89eb88efa7b9a0a6c6edc1494c9f0ebce8",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/electron/ElectronUpdater.ts#L58-L83"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-5058464a6fd5ec03b4f8",
+      "title": "make (ElectronUpdater.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const make = ElectronUpdater.of({\n  setFeedURL: Effect.fn(\"ElectronUpdater.setFeedURL\")(function (options) {\n    return Effect.suspend(() => {\n      autoUpdater.setFeedURL(options);\n      return Effect.void;\n    });\n  }),\n  setAutoDownload: Effect.fn(\"ElectronUpdater.setAutoDownload\")(function (value) {\n    return Effect.suspend(() => {\n      autoUpdater.autoDownload = value;\n      return Effect.void;\n    });\n  }),\n  setAutoInstallOnAppQuit: Effect.fn(\"ElectronUpdater.setAutoInstallOnAppQuit\")(function (value) {\n    return Effect.suspend(() => {\n      autoUpdater.autoInstallOnAppQuit = value;\n      return Effect.void;\n    });\n  }),\n  setChannel: Effect.fn(\"ElectronUpdater.setChannel\")(function (channel) {\n    return Effect.suspend(() => {\n      autoUpdater.channel = channel;\n      return Effect.void;\n    });\n  }),\n  setAllowPrerelease: Effect.fn(\"ElectronUpdater.setAllowPrerelease\")(function (value) {\n    return Effect.suspend(() => {\n      autoUpdater.allowPrerelease = value;\n      return Effect.void;\n    });\n  }),\n  allowDowngrade: Effect.sync(() => autoUpdater.allowDowngrade),\n  setAllowDowngrade: Effect.fn(\"ElectronUpdater.setAllowDowngrade\")(function (value) {\n    return Effect.suspend(() => {\n      autoUpdater.allowDowngrade = value;\n      return Effect.void;\n    });\n  }),\n  setFullChangelog: Effect.fn(\"ElectronUpdater.setFullChangelog\")(function (value) {\n    return Effect.suspend(() => {\n      autoUpdater.fullChangelog = value;\n      return Effect.void;\n    });\n  }),\n  setDisableDifferentialDownload: Effect.fn(\"ElectronUpdater.setDisableDifferentialDownload\")(\n    function (value) {\n      return Effect.suspend(() => {\n        autoUpdater.disableDifferentialDownload = value;\n        return Effect.void;\n      });\n    },\n  ),\n  checkForUpdates: Effect.suspend(() => {\n    const channel = autoUpdater.channel;\n    return Effect.tryPromise({\n      try: () => autoUpdater.checkForUpdates(),\n      catch: (cause) => new ElectronUpdaterCheckForUpdatesError({ channel, cause }),\n    }).pipe(Effect.asVoid);\n  }),\n  downloadUpdate: Effect.suspend(() => {\n    const channel = autoUpdater.channel;\n    return Effect.tryPromise({\n      try: () => autoUpdater.downloadUpdate(),\n      catch: (cause) => new ElectronUpdaterDownloadUpdateError({ channel, cause }),\n    }).pipe(Effect.asVoid);\n  }),\n  quitAndInstall: Effect.fn(\"ElectronUpdater.quitAndInstall\")(function ({\n    isSilent,\n    isForceRunAfter,\n  }) {\n    return Effect.suspend(() => {\n      const channel = autoUpdater.channel;\n      return Effect.try({\n        try: () => autoUpdater.quitAndInstall(isSilent, isForceRunAfter),\n        catch: (cause) =>\n          new ElectronUpdaterQuitAndInstallError({\n            channel,\n            isSilent,\n            isForceRunAfter,\n            cause,\n          }),\n      });\n    });\n  }),\n  on: Effect.fn(\"ElectronUpdater.on\")(function (eventName, listener) {\n    const eventTarget = autoUpdater as unknown as {\n      on: (eventName: string, listener: (...args: Array<unknown>) => void) => void;\n      removeListener: (eventName: string, listener: (...args: Array<unknown>) => void) => void;\n    };\n    const untypedListener = listener as unknown as (...args: Array<unknown>) => void;\n    return Effect.acquireRelease(\n      Effect.sync(() => {\n        eventTarget.on(eventName, untypedListener);\n      }),\n      () =>\n        Effect.sync(() => {\n          eventTarget.removeListener(eventName, untypedListener);\n        }),\n    ).pipe(Effect.asVoid);\n  }),\n});\n\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/electron/ElectronUpdater.ts",
+          "startLine": 84,
+          "endLine": 185,
+          "startOffset": 3240,
+          "endOffset": 6740,
+          "sha256": "e705293d1c8eec5c933515ef2be098efc030762faff7d88dcd902b4fd64b0491",
+          "textSha256": "e705293d1c8eec5c933515ef2be098efc030762faff7d88dcd902b4fd64b0491",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/electron/ElectronUpdater.ts#L84-L185"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-a662a6ffdfc7cc6c160b",
+      "title": "layer (ElectronUpdater.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const layer = Layer.succeed(ElectronUpdater, make);\n",
+      "provenance": [
+        {
+          "file": "apps/desktop/src/electron/ElectronUpdater.ts",
+          "startLine": 186,
+          "endLine": 186,
+          "startOffset": 6740,
+          "endOffset": 6799,
+          "sha256": "7b6bd747a901849574ea7054f8bd423a377d56df6e25227dc587ee62c44bf2dc",
+          "textSha256": "7b6bd747a901849574ea7054f8bd423a377d56df6e25227dc587ee62c44bf2dc",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/apps/desktop/src/electron/ElectronUpdater.ts#L186-L186"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-3dd9832ac8e1476eb5c6",
+      "title": "ClerkPublishableKeyPrefix (relayAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const ClerkPublishableKeyPrefix = Schema.Literals([\"pk_test\", \"pk_live\", \"unknown\"]);\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/relayAuth.ts",
+          "startLine": 3,
+          "endLine": 4,
+          "startOffset": 42,
+          "endOffset": 129,
+          "sha256": "0f60cd1909214a03067d64425b0775d39fa68a102f7c1554d3fd907c67876d0c",
+          "textSha256": "0f60cd1909214a03067d64425b0775d39fa68a102f7c1554d3fd907c67876d0c",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/relayAuth.ts#L3-L4"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-a3b8788392a53607611d",
+      "title": "ClerkPublishableKeyDecodeError (relayAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class ClerkPublishableKeyDecodeError extends Schema.TaggedError<ClerkPublishableKeyDecodeError>()(\n  \"ClerkPublishableKeyDecodeError\",\n  {\n    keyPrefix: ClerkPublishableKeyPrefix,\n    cause: Schema.Defect(),\n  },\n) {\n  override get message(): string {\n    return `Failed to decode Clerk publishable key (${this.keyPrefix}).`;\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/relayAuth.ts",
+          "startLine": 5,
+          "endLine": 16,
+          "startOffset": 129,
+          "endOffset": 470,
+          "sha256": "bbe87ed155704ba0b2e6f75957768facf0576eeca20d49d0a73fdf63d05802f2",
+          "textSha256": "bbe87ed155704ba0b2e6f75957768facf0576eeca20d49d0a73fdf63d05802f2",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/relayAuth.ts#L5-L16"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-c2dbbbe32611f621f37b",
+      "title": "ClerkPublishableKeyFrontendApiError (relayAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export class ClerkPublishableKeyFrontendApiError extends Schema.TaggedError<ClerkPublishableKeyFrontendApiError>()(\n  \"ClerkPublishableKeyFrontendApiError\",\n  {\n    keyPrefix: ClerkPublishableKeyPrefix,\n    frontendApi: Schema.String,\n    reason: Schema.Literals([\"empty\", \"contains-path\", \"invalid-url\"]),\n    cause: Schema.optional(Schema.Defect()),\n  },\n) {\n  override get message(): string {\n    return `Invalid Clerk frontend API decoded from publishable key (${this.keyPrefix}; ${this.reason}).`;\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/relayAuth.ts",
+          "startLine": 17,
+          "endLine": 30,
+          "startOffset": 470,
+          "endOffset": 980,
+          "sha256": "f9acb2350ae6f175b8497c639b2b26d43b7469a42800f6b85015d7b4dfc1e9b0",
+          "textSha256": "f9acb2350ae6f175b8497c639b2b26d43b7469a42800f6b85015d7b4dfc1e9b0",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/relayAuth.ts#L17-L30"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-2c50bcd182ec9354ff13",
+      "title": "parseClerkFrontendApi (relayAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function parseClerkFrontendApi(publishableKey: string): {\n  readonly hostname: string;\n  readonly url: string;\n} {\n  const keyPrefix = publishableKey.startsWith(\"pk_test_\")\n    ? \"pk_test\"\n    : publishableKey.startsWith(\"pk_live_\")\n      ? \"pk_live\"\n      : \"unknown\";\n  const encodedFrontendApi = publishableKey.split(\"_\").slice(2).join(\"_\");\n  let frontendApi: string;\n  try {\n    frontendApi = globalThis.atob(encodedFrontendApi).replace(/\\$$/u, \"\");\n  } catch (cause) {\n    throw new ClerkPublishableKeyDecodeError({ keyPrefix, cause });\n  }\n\n  if (frontendApi.length === 0) {\n    throw new ClerkPublishableKeyFrontendApiError({\n      keyPrefix,\n      frontendApi,\n      reason: \"empty\",\n    });\n  }\n  if (frontendApi.includes(\"/\")) {\n    throw new ClerkPublishableKeyFrontendApiError({\n      keyPrefix,\n      frontendApi,\n      reason: \"contains-path\",\n    });\n  }\n\n  const url = `https://${frontendApi}`;\n  try {\n    return { hostname: new URL(url).hostname, url };\n  } catch (cause) {\n    throw new ClerkPublishableKeyFrontendApiError({\n      keyPrefix,\n      frontendApi,\n      reason: \"invalid-url\",\n      cause,\n    });\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/relayAuth.ts",
+          "startLine": 31,
+          "endLine": 75,
+          "startOffset": 980,
+          "endOffset": 2118,
+          "sha256": "d2547f5857e9f7c635664993882c64912c3a43b16adc4ecd7d03e7f25fd5d30e",
+          "textSha256": "d2547f5857e9f7c635664993882c64912c3a43b16adc4ecd7d03e7f25fd5d30e",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/relayAuth.ts#L31-L75"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-d92e1bf2c77462355d8c",
+      "title": "clerkFrontendApiUrlFromPublishableKey (relayAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function clerkFrontendApiUrlFromPublishableKey(publishableKey: string): string {\n  return parseClerkFrontendApi(publishableKey).url;\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/relayAuth.ts",
+          "startLine": 76,
+          "endLine": 79,
+          "startOffset": 2118,
+          "endOffset": 2261,
+          "sha256": "a7999712b5327f91558ec8b6bb920ae510845a666183a219cf4cb0ba5e58a8e1",
+          "textSha256": "a7999712b5327f91558ec8b6bb920ae510845a666183a219cf4cb0ba5e58a8e1",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/relayAuth.ts#L76-L79"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-4760762a3f7b8a60240c",
+      "title": "clerkFrontendApiHostnameFromPublishableKey (relayAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function clerkFrontendApiHostnameFromPublishableKey(publishableKey: string): string {\n  return parseClerkFrontendApi(publishableKey).hostname;\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/relayAuth.ts",
+          "startLine": 80,
+          "endLine": 83,
+          "startOffset": 2261,
+          "endOffset": 2414,
+          "sha256": "8500495f3463e687a38799b2aee86e8ad80a1fc5feb5ffc1adcc6ea0599709cf",
+          "textSha256": "8500495f3463e687a38799b2aee86e8ad80a1fc5feb5ffc1adcc6ea0599709cf",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/relayAuth.ts#L80-L83"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-4d436adf7ee84fbff2d3",
+      "title": "relayClerkTokenOptions (relayAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function relayClerkTokenOptions(template: string) {\n  return {\n    template,\n    skipCache: true,\n  } as const;\n}\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/relayAuth.ts",
+          "startLine": 84,
+          "endLine": 89,
+          "startOffset": 2414,
+          "endOffset": 2535,
+          "sha256": "ab11172171a23c1eca727f1f9aedd6211ea61207000cf9a6597fbbb338d32878",
+          "textSha256": "ab11172171a23c1eca727f1f9aedd6211ea61207000cf9a6597fbbb338d32878",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/relayAuth.ts#L84-L89"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-ec8ac84499e64ea882e9",
+      "title": "normalizeSecureRelayUrl (relayUrl.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function normalizeSecureRelayUrl(value: string): string | null {\n  try {\n    const url = new URL(value.trim());\n    if (\n      url.protocol !== \"https:\" ||\n      url.username.length > 0 ||\n      url.password.length > 0 ||\n      url.search.length > 0 ||\n      url.hash.length > 0 ||\n      !/^\\/+$/u.test(url.pathname)\n    ) {\n      return null;\n    }\n    return url.origin;\n  } catch {\n    return null;\n  }\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/relayUrl.ts",
+          "startLine": 1,
+          "endLine": 19,
+          "startOffset": 0,
+          "endOffset": 416,
+          "sha256": "563ef03ff946f25d804bf62799a7b6ca3016c1db8ef28c67bc1e10a3deef20ba",
+          "textSha256": "563ef03ff946f25d804bf62799a7b6ca3016c1db8ef28c67bc1e10a3deef20ba",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/relayUrl.ts#L1-L19"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-cd11072e007170e9b073",
+      "title": "isSecureRelayUrl (relayUrl.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function isSecureRelayUrl(value: string): boolean {\n  return normalizeSecureRelayUrl(value) !== null;\n}\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/relayUrl.ts",
+          "startLine": 20,
+          "endLine": 22,
+          "startOffset": 416,
+          "endOffset": 527,
+          "sha256": "70c2ca5275b6d9e9b8e72b32c71b39406d9b2e443b927400794e0030ade3621a",
+          "textSha256": "70c2ca5275b6d9e9b8e72b32c71b39406d9b2e443b927400794e0030ade3621a",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/relayUrl.ts#L20-L22"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-209a0f98cbc09cc57018",
+      "title": "CONNECT_AUTH_STATE_PARAM (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CONNECT_AUTH_STATE_PARAM = \"state\";\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 3,
+          "endLine": 3,
+          "startOffset": 47,
+          "endOffset": 89,
+          "sha256": "f7b31ee60c35196bba61d470306d8bda98ac7553cdef03a1016191f8d6dac209",
+          "textSha256": "f7b31ee60c35196bba61d470306d8bda98ac7553cdef03a1016191f8d6dac209",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L3-L3"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-0fdf9779e13c45821a18",
+      "title": "CONNECT_AUTH_CHALLENGE_PARAM (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CONNECT_AUTH_CHALLENGE_PARAM = \"challenge\";\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 4,
+          "endLine": 4,
+          "startOffset": 89,
+          "endOffset": 139,
+          "sha256": "c7fd2676e5b03ab19c2e12b12b931c20e186bc09670a103e02688c26390a8c0c",
+          "textSha256": "c7fd2676e5b03ab19c2e12b12b931c20e186bc09670a103e02688c26390a8c0c",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L4-L4"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-c0968a131c059198936f",
+      "title": "CONNECT_AUTH_PORT_PARAM (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CONNECT_AUTH_PORT_PARAM = \"port\";\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 5,
+          "endLine": 5,
+          "startOffset": 139,
+          "endOffset": 179,
+          "sha256": "3fb463e244daf42b778ab316e501aecbfb67b70a2d08076ebcdbef836200039c",
+          "textSha256": "3fb463e244daf42b778ab316e501aecbfb67b70a2d08076ebcdbef836200039c",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L5-L5"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-90a19a735ccb0d2a88b5",
+      "title": "CONNECT_LOOPBACK_CALLBACK_PATH (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CONNECT_LOOPBACK_CALLBACK_PATH = \"/callback\";\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 6,
+          "endLine": 7,
+          "startOffset": 179,
+          "endOffset": 232,
+          "sha256": "e35c8ac37d780be8dfa42a9b781d49216c8d5a8e05c11d1b603fc689e2ee07fc",
+          "textSha256": "e35c8ac37d780be8dfa42a9b781d49216c8d5a8e05c11d1b603fc689e2ee07fc",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L6-L7"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-c3936bb48fe754c8f33a",
+      "title": "CONNECT_AUTHORIZE_PATH (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "const CONNECT_AUTHORIZE_PATH = \"/connect\";\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 8,
+          "endLine": 9,
+          "startOffset": 232,
+          "endOffset": 276,
+          "sha256": "24c0e276c4aa6bb14bcc0f56635c172f9f439d95dbe58698219be739043ee87d",
+          "textSha256": "24c0e276c4aa6bb14bcc0f56635c172f9f439d95dbe58698219be739043ee87d",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L8-L9"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-a7e0d0a8fc91beb5f526",
+      "title": "DEFAULT_HOSTED_APP_URL (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const DEFAULT_HOSTED_APP_URL = \"https://app.t3.codes\";\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 10,
+          "endLine": 11,
+          "startOffset": 276,
+          "endOffset": 339,
+          "sha256": "e038d60f8215db48b2c630277d9ec5e3791603f314bf281c7b286c11b581b35d",
+          "textSha256": "e038d60f8215db48b2c630277d9ec5e3791603f314bf281c7b286c11b581b35d",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L10-L11"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-c64647ff620606a13ed7",
+      "title": "CONNECT_OAUTH_SCOPES (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export const CONNECT_OAUTH_SCOPES = [\"openid\", \"profile\", \"email\", \"offline_access\"] as const;\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 12,
+          "endLine": 13,
+          "startOffset": 339,
+          "endOffset": 435,
+          "sha256": "03fcc5a599c64386d12756c4085e08ef67ff33fd9edd1308ffe07dbf24cd91d9",
+          "textSha256": "03fcc5a599c64386d12756c4085e08ef67ff33fd9edd1308ffe07dbf24cd91d9",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L12-L13"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-b2161ad75ae25659b241",
+      "title": "ConnectAuthorizeRequest (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export interface ConnectAuthorizeRequest {\n  readonly state: string;\n  readonly challenge: string;\n  readonly loopbackPort: number;\n}\n\n/** Route through /connect because Clerk's signed-out redirect can lose OAuth query parameters. */\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 14,
+          "endLine": 20,
+          "startOffset": 435,
+          "endOffset": 669,
+          "sha256": "a559e8bafac8837d13d9c171de7dd5e2cb93ed5bb1859f50f401ccf594b93ecf",
+          "textSha256": "a559e8bafac8837d13d9c171de7dd5e2cb93ed5bb1859f50f401ccf594b93ecf",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L14-L20"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-8a803710fc7059017432",
+      "title": "buildConnectAuthorizeRequestUrl (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function buildConnectAuthorizeRequestUrl(input: {\n  readonly hostedAppUrl: string;\n  readonly state: string;\n  readonly challenge: string;\n  readonly loopbackPort: number;\n}): string {\n  const url = new URL(CONNECT_AUTHORIZE_PATH, input.hostedAppUrl);\n  url.hash = new URLSearchParams([\n    [CONNECT_AUTH_STATE_PARAM, input.state],\n    [CONNECT_AUTH_CHALLENGE_PARAM, input.challenge],\n    [CONNECT_AUTH_PORT_PARAM, String(input.loopbackPort)],\n  ]).toString();\n  return url.toString();\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 21,
+          "endLine": 35,
+          "startOffset": 669,
+          "endOffset": 1165,
+          "sha256": "6a8b99a24e62021dabb803605f75d89988d806a31a67a9a28411c72940347739",
+          "textSha256": "6a8b99a24e62021dabb803605f75d89988d806a31a67a9a28411c72940347739",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L21-L35"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-0cd1388760aff05f4e4f",
+      "title": "readConnectAuthorizeRequest (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function readConnectAuthorizeRequest(url: URL): ConnectAuthorizeRequest | null {\n  const params = readHashParams(url);\n  const state = params.get(CONNECT_AUTH_STATE_PARAM)?.trim() ?? \"\";\n  const challenge = params.get(CONNECT_AUTH_CHALLENGE_PARAM)?.trim() ?? \"\";\n  const loopbackPort = parseLoopbackPort(params.get(CONNECT_AUTH_PORT_PARAM)?.trim() ?? \"\");\n  if (!state || !challenge || loopbackPort === null) {\n    return null;\n  }\n  return { state, challenge, loopbackPort };\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 36,
+          "endLine": 46,
+          "startOffset": 1165,
+          "endOffset": 1652,
+          "sha256": "0bbfcbc027ff1a4d4d44b6a9d2217c8785f6a41f60eb7d62ef86220bc1c90987",
+          "textSha256": "0bbfcbc027ff1a4d4d44b6a9d2217c8785f6a41f60eb7d62ef86220bc1c90987",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L36-L46"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-f89e37c2e3b864148ea5",
+      "title": "parseLoopbackPort (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "function parseLoopbackPort(value: string): number | null {\n  if (!/^\\d{1,5}$/.test(value)) {\n    return null;\n  }\n  const port = Number(value);\n  return port >= 1 && port <= 65535 ? port : null;\n}\n\n/** Must match the loopback redirect URI registered on the Clerk CLI OAuth app. */\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 47,
+          "endLine": 55,
+          "startOffset": 1652,
+          "endOffset": 1933,
+          "sha256": "a5ab01c643ca1a8c4f95a1aa1be480a1c5e63c65745079abd81004a43ef249aa",
+          "textSha256": "a5ab01c643ca1a8c4f95a1aa1be480a1c5e63c65745079abd81004a43ef249aa",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L47-L55"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-729deeacc51be8245870",
+      "title": "connectLoopbackRedirectUri (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function connectLoopbackRedirectUri(port: number): string {\n  return `http://127.0.0.1:${port}${CONNECT_LOOPBACK_CALLBACK_PATH}`;\n}\n\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 56,
+          "endLine": 59,
+          "startOffset": 1933,
+          "endOffset": 2073,
+          "sha256": "43694469a0de1ea4b3cc7d6f70fa844a4c5925fb0174fc3cc485acce69abc317",
+          "textSha256": "43694469a0de1ea4b3cc7d6f70fa844a4c5925fb0174fc3cc485acce69abc317",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L56-L59"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    },
+    {
+      "id": "network-69679d9181858b5ce0bb",
+      "title": "buildConnectClerkAuthorizeUrl (connectAuth.ts)",
+      "kind": "h",
+      "version": "0.1.6-nightly.20261031.3956",
+      "release": "v0.1.6-nightly.20261031.3956",
+      "upstreamCommit": "d92c437baa19409f99416a44f748f148f4317c65",
+      "text": "export function buildConnectClerkAuthorizeUrl(input: {\n  readonly authorizationEndpoint: string;\n  readonly clientId: string;\n  readonly redirectUri: string;\n  readonly scopes: ReadonlyArray<string>;\n  readonly state: string;\n  readonly challenge: string;\n}): string {\n  const url = new URL(input.authorizationEndpoint);\n  url.searchParams.set(\"client_id\", input.clientId);\n  url.searchParams.set(\"redirect_uri\", input.redirectUri);\n  url.searchParams.set(\"response_type\", \"code\");\n  url.searchParams.set(\"scope\", input.scopes.join(\" \"));\n  url.searchParams.set(\"state\", input.state);\n  url.searchParams.set(\"code_challenge\", input.challenge);\n  url.searchParams.set(\"code_challenge_method\", \"S256\");\n  return url.toString();\n}\n",
+      "provenance": [
+        {
+          "file": "packages/shared/src/connectAuth.ts",
+          "startLine": 60,
+          "endLine": 77,
+          "startOffset": 2073,
+          "endOffset": 2801,
+          "sha256": "a190af4a07873c99fef73d004a54dd271321fbc6bacf061e27ff4bf6cafc033b",
+          "textSha256": "a190af4a07873c99fef73d004a54dd271321fbc6bacf061e27ff4bf6cafc033b",
+          "url": "https://github.com/pingdotgg/t3code/blob/d92c437baa19409f99416a44f748f148f4317c65/packages/shared/src/connectAuth.ts#L60-L77"
+        }
+      ],
+      "details": {
+        "evidence": "public-source",
+        "observed": false,
+        "condition": "Cloud/analytics/update feature enabled and configured; actual destinations require a runtime capture.",
+        "summary": "Public endpoint/configuration source. Relay and Clerk origins can be supplied by build-time or runtime values; no installed endpoint is inferred."
+      }
+    }
+  ]
+}
