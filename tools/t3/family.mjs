@@ -1,7 +1,7 @@
-// A thread family on one machine, from statev2.sqlite (read-only): the seeds, everything whose lineage names a
-// family thread as root or parent, children found through subagents.child_thread_id and through nodes or subagents
-// whose payload names childThreadId, and the remoteChild hops to other machines. Plus every row that belongs to
-// those threads, for threads.json.
+import {createHash} from 'node:crypto';
+// A thread family on one machine, from statev2.sqlite (read-only): the walk below, the remoteChild hops to other
+// machines and the delegatedFrom hops from them, and every row that belongs to those threads, for threads.json
+// (message text stripped: lengths and hashes only).
 const parse = text => {try {return JSON.parse(text);} catch {return null;}};
 const placeholders = n => Array(n).fill('?').join(',');
 
@@ -14,43 +14,64 @@ function inChunks(db, sql, ids, size = 400) {
  return out;
 }
 
-// Seeds are T3 thread ids on this machine. Returns {threadIds, hops, roots}.
-export function resolveFamily(db, seeds) {
- const family = new Set(seeds);
+// Seeds are T3 thread ids; any thread of a family will do, and a seed that is not on this machine (a family thread
+// on another machine) is an upstream id. The walk goes up (lineage parent and root, and delegatedFrom on this
+// machine) and down: lineage root or parent in the family, subagents.child_thread_id, subagents.payload_json
+// .remoteChild (nodes never carry it), and every thread whose child-side delegatedFrom names a family or upstream
+// thread (delegations and t3_thread_launch / create_threads launches from a linked environment both stamp it, with
+// linkOrigin). Returns {threadIds, missing, upstream, hops (parent side), childHops (child side)}.
+export function resolveFamily(db, seeds, {environmentId = null} = {}) {
+ const isLocal = ids => new Set(ids.length ? inChunks(db, 'select thread_id from orchestration_v2_projection_threads where thread_id in (?)', ids).map(r => r.thread_id) : []);
+ const localSeeds = isLocal(seeds);
+ const upstream = seeds.filter(id => !localSeeds.has(id));
+ const family = new Set(localSeeds);
+ const named = new Set();
  const hops = new Map();
- const notePayload = (p, fromThreadId) => {
+ const notePayload = (p, row) => {
   if (!p) return;
-  if (p.childThreadId) family.add(p.childThreadId);
+  if (p.childThreadId) named.add(p.childThreadId);
   const rc = p.remoteChild;
   if (rc?.environmentId && rc?.threadId) {
    const key = `${rc.environmentId} ${rc.threadId}`;
-   if (!hops.has(key)) hops.set(key, {fromThreadId, nodeId: p.id || null, environmentId: rc.environmentId, threadId: rc.threadId, label: rc.label || null, runId: rc.runId || null,
-    title: p.title || null, provider: p.providerInstanceId || null, model: p.model || null, status: p.status || null, startedAt: p.startedAt || null, completedAt: p.completedAt || null});
+   if (!hops.has(key)) hops.set(key, {fromThreadId: row.thread_id, nodeId: row.parent_node_id || p.parentNodeId || null, subagentId: row.subagent_id || p.id || null, parentRunId: row.run_id || p.runId || null,
+    environmentId: rc.environmentId, threadId: rc.threadId, label: rc.label || null, runId: rc.runId || null,
+    title: p.title || null, provider: p.providerInstanceId || null, model: typeof p.model === 'string' ? p.model : p.modelSelection?.model || null, status: p.status || null,
+    startedAt: p.startedAt || null, completedAt: p.completedAt || null, delivery: row.completion_delivery_state ?? p.completionDelivery?.state ?? null, stoppedThere: rc.stoppedThere ?? null});
   }
  };
- for (let round = 0; round < 32; round++) {
+ const T = 'orchestration_v2_projection_threads';
+ for (let round = 0; round < 64; round++) {
   const before = family.size;
   const ids = [...family];
-  for (const r of inChunks(db, "select thread_id from orchestration_v2_projection_threads where json_extract(payload_json,'$.lineage.rootThreadId') in (?)", ids)) family.add(r.thread_id);
-  for (const r of inChunks(db, "select thread_id from orchestration_v2_projection_threads where json_extract(payload_json,'$.lineage.parentThreadId') in (?)", ids)) family.add(r.thread_id);
-  for (const r of inChunks(db, "select thread_id, child_thread_id, payload_json from orchestration_v2_projection_subagents where thread_id in (?)", ids)) {
-   if (r.child_thread_id) family.add(r.child_thread_id);
-   notePayload(parse(r.payload_json), r.thread_id);
+  // Up: lineage and same-machine delegatedFrom.
+  for (const r of inChunks(db, `select payload_json from ${T} where thread_id in (?)`, ids)) {
+   const p = parse(r.payload_json) || {};
+   for (const id of [p.lineage?.parentThreadId, p.lineage?.rootThreadId, p.delegatedFrom?.environmentId === environmentId ? p.delegatedFrom?.threadId : null]) if (id) named.add(id);
   }
-  for (const r of inChunks(db, "select thread_id, payload_json from orchestration_v2_projection_nodes where thread_id in (?) and (payload_json like '%childThreadId%' or payload_json like '%remoteChild%')", ids)) {
-   const p = parse(r.payload_json);
-   const walk = (v, depth = 0) => {
-    if (!v || typeof v !== 'object' || depth > 6) return;
-    if (v.childThreadId || v.remoteChild) notePayload(v, r.thread_id);
-    for (const x of Object.values(v)) walk(x, depth + 1);
-   };
-   walk(p);
+  for (const id of isLocal([...named].filter(id => !family.has(id)))) family.add(id);
+  // Down.
+  for (const r of inChunks(db, `select thread_id from ${T} where json_extract(payload_json,'$.lineage.rootThreadId') in (?)`, ids)) family.add(r.thread_id);
+  for (const r of inChunks(db, `select thread_id from ${T} where json_extract(payload_json,'$.lineage.parentThreadId') in (?)`, ids)) family.add(r.thread_id);
+  const anyIds = [...ids, ...upstream];
+  for (const r of inChunks(db, `select thread_id from ${T} where json_extract(payload_json,'$.delegatedFrom.threadId') in (?)`, anyIds)) family.add(r.thread_id);
+  for (const r of inChunks(db, 'select subagent_id, thread_id, run_id, parent_node_id, child_thread_id, completion_delivery_state, payload_json from orchestration_v2_projection_subagents where thread_id in (?)', ids)) {
+   if (r.child_thread_id) named.add(r.child_thread_id);
+   notePayload(parse(r.payload_json), r);
   }
+  for (const id of isLocal([...named].filter(id => !family.has(id)))) family.add(id);
   if (family.size === before) break;
  }
- // Only ids that are threads here (a childThreadId can name a thread this machine never had).
- const present = new Set(inChunks(db, 'select thread_id from orchestration_v2_projection_threads where thread_id in (?)', [...family]).map(r => r.thread_id));
- return {threadIds: [...family].filter(id => present.has(id)), missing: [...family].filter(id => !present.has(id)), hops: [...hops.values()]};
+ // Child side: a thread born here by a delegation or launch from another machine (no local parent).
+ const childHops = [];
+ for (const r of inChunks(db, `select thread_id, title, created_at, payload_json from ${T} where thread_id in (?)`, [...family])) {
+  const p = parse(r.payload_json) || {};
+  const df = p.delegatedFrom;
+  if (!df?.environmentId || df.environmentId === environmentId || p.lineage?.parentThreadId) continue;
+  childHops.push({fromEnvironmentId: df.environmentId, fromThreadId: df.threadId || null, threadId: r.thread_id, title: r.title || p.title || null, delegatedTitle: df.title || null,
+   provider: p.providerInstanceId || p.modelSelection?.instanceId || null, model: p.modelSelection?.model || null, createdAt: r.created_at || p.createdAt || null, linkOrigin: p.linkOrigin ? {label: p.linkOrigin.label || null, access: p.linkOrigin.access || null} : null});
+ }
+ const missing = [...named].filter(id => !family.has(id) && !upstream.includes(id) && !hops.has(`${environmentId} ${id}`));
+ return {threadIds: [...family], missing, upstream, hops: [...hops.values()], childHops};
 }
 
 // Threads active in a window (window mode): created before until and updated after since.
@@ -104,4 +125,23 @@ export function nativeSessions(rows) {
   if (ref?.nativeId) out.set(`${ref.driver} ${ref.nativeId}`, {driver: ref.driver || pt.driver || pt.provider, nativeId: ref.nativeId, threadId: pt.thread_id, providerThreadId: pt.provider_thread_id});
  }
  return [...out.values()];
+}
+
+// Message text: subagent prompt, result and progress (and a workflow agent's), plan step text, and any message or
+// content field a row may carry. The bound agent sessions and provider event logs hold the conversation; a row keeps
+// the text's length and the SHA-256 of its redacted form, so it still matches the call in the transcript.
+const MESSAGE_KEYS = new Set(['prompt', 'result', 'progress', 'text', 'content', 'message', 'messages']);
+export function stripMessageText(value, redactor, depth = 0) {
+ if (Array.isArray(value)) return value.map(v => stripMessageText(v, redactor, depth + 1));
+ if (!value || typeof value !== 'object' || depth > 12) return value;
+ const out = {};
+ for (const [k, v] of Object.entries(value)) {
+  if (MESSAGE_KEYS.has(k) && (typeof v === 'string' || (Array.isArray(v) && k === 'messages'))) {
+   const text = typeof v === 'string' ? v : JSON.stringify(v);
+   const red = redactor ? redactor.string(text) : text;
+   redactor?.count('message-text');
+   out[k] = {stripped: 'message-text', length: text.length, sha256: createHash('sha256').update(red, 'utf8').digest('hex')};
+  } else out[k] = stripMessageText(v, redactor, depth + 1);
+ }
+ return out;
 }

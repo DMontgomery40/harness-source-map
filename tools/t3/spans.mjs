@@ -1,6 +1,6 @@
 // T3 span logs (userdata/logs/server.trace.ndjson and desktop.trace.ndjson, each with up to 10 rotations).
-// Reads every rotation, keeps spans in the window that match the Contract A filter plus their ancestors, and
-// returns them normalized and redacted. Spans already in a bundle are re-redacted and unioned by spanId, so a span
+// Reads every rotation and keeps every span in the window (or, with the filter, the markers below plus their
+// ancestors), normalized and redacted. Spans already in a bundle are re-redacted and unioned by spanId, so a span
 // that has since rotated out of the log is not lost on a rerun.
 import {createReadStream, readdirSync, existsSync} from 'node:fs';
 import {createInterface} from 'node:readline';
@@ -42,6 +42,20 @@ export function idNeedles(ids) {
 
 const nanos = v => {try {return BigInt(v);} catch {return null;}};
 const startMs = span => {const n = nanos(span.startTimeUnixNano); return n === null ? null : Number(n / 1000000n);};
+const endMs = span => {const n = nanos(span.endTimeUnixNano); return n === null ? null : Number(n / 1000000n);};
+
+// Coverage of a span file that recorded none (a v1 part): the window, cut where no span ended for GAP_MS (a busy T3
+// server ends spans every few seconds, so a silence that long inside a window is spans the log had already lost).
+export const GAP_MS = 5 * 60000;
+export function endSegments(spans, sinceMs, untilMs) {return segmentsOf(spans.map(endMs), sinceMs, untilMs);}
+// The same over plain end times (ms).
+export function segmentsOf(endTimes, sinceMs, untilMs) {
+ const ends = endTimes.filter(e => e !== null && Number.isFinite(e) && e >= sinceMs && e <= untilMs);
+ ends.sort((a, b) => a - b);
+ const out = [];
+ for (const e of ends) {const last = out.at(-1); if (last && e - last[1] <= GAP_MS) last[1] = e; else out.push([e, e]);}
+ return out;
+}
 
 function normalize(span) {
  const out = {};
@@ -54,33 +68,43 @@ async function* lines(file) {
  for await (const line of rl) if (line) yield line;
 }
 
-// options: {files, sinceMs, untilMs, familyIds, all, existing (array of span objects already in the bundle), redactor}
+// options: {files, sinceMs, untilMs, familyIds, all, existing, redactor}. existing is [{spans, aliasKey}]: spans
+// already in a bundle (this one, or another bundle of the same family with its own alias key). T3's live log is read
+// first and its copy of a span wins; a span only a bundle still holds is kept, its aliases re-keyed to this bundle.
 export async function collectSpans({files, sinceMs, untilMs, familyIds = [], all = false, existing = [], redactor}) {
  const needles = idNeedles(familyIds);
  const byId = new Map();
- const stats = {files: files.length, read: 0, inWindow: 0, bad: 0, fromBundle: 0, kept: 0, ancestorsAdded: 0, earliestMs: null, latestMs: null};
- const consider = (span, raw) => {
+ const stats = {files: files.length, read: 0, inWindow: 0, bad: 0, fromBundle: 0, kept: 0, ancestorsAdded: 0, earliestMs: null, latestMs: null, liveEarliestMs: null, liveLatestMs: null, liveEarliestEndMs: null};
+ const consider = (span, raw, origin) => {
   const t = startMs(span);
   if (t !== null) {
    if (stats.earliestMs === null || t < stats.earliestMs) stats.earliestMs = t;
    if (stats.latestMs === null || t > stats.latestMs) stats.latestMs = t;
+   if (!origin) {
+    if (stats.liveEarliestMs === null || t < stats.liveEarliestMs) stats.liveEarliestMs = t;
+    if (stats.liveLatestMs === null || t > stats.liveLatestMs) stats.liveLatestMs = t;
+   }
   }
+  // T3 writes a span's line when the span ends, and rotation drops the oldest lines: the log holds every span that
+  // ended after its oldest line's end time, which is where this read's coverage begins.
+  const e = endMs(span);
+  if (!origin && e !== null && (stats.liveEarliestEndMs === null || e < stats.liveEarliestEndMs)) stats.liveEarliestEndMs = e;
   if (!span.spanId) return;
   const inWindow = t === null || ((sinceMs == null || t >= sinceMs) && (untilMs == null || t <= untilMs));
-  const prior = byId.get(span.spanId);
-  if (prior) return; // first copy wins (identical span records repeat across a merge)
+  if (byId.has(span.spanId)) return; // the live copy (read first) wins; identical records repeat across a merge
   const hit = all ? inWindow : inWindow && (isMarker(span) || (needles.length && needles.some(n => raw.includes(n))));
-  byId.set(span.spanId, {span: normalize(span), keep: hit, inWindow});
+  byId.set(span.spanId, {span: normalize(span), keep: hit, inWindow, origin});
   if (inWindow) stats.inWindow++;
+  if (origin) stats.fromBundle++;
  };
- for (const span of existing) {stats.fromBundle++; consider(span, JSON.stringify(span));}
  for (const file of files) {
   for await (const line of lines(file)) {
    stats.read++;
    let span; try {span = JSON.parse(line);} catch {stats.bad++; continue;}
-   consider(span, line);
+   consider(span, line, null);
   }
  }
+ for (const {spans, aliasKey} of existing) for (const span of spans) consider(span, JSON.stringify(span), {aliasKey});
  // (c) ancestors of kept spans, whichever file or window they are in.
  const kept = [...byId.values()].filter(e => e.keep);
  for (const e of kept) {
@@ -92,8 +116,10 @@ export async function collectSpans({files, sinceMs, untilMs, familyIds = [], all
    parent = p.span.parentSpanId;
   }
  }
+ // Live spans are redacted first, so the aliases they make are known when a bundle's spans are re-keyed.
  const out = [];
- for (const e of byId.values()) if (e.keep) out.push(redactor ? redactor.value(e.span) : e.span);
+ for (const e of byId.values()) if (e.keep && !e.origin) out.push(redactor ? redactor.value(e.span) : e.span);
+ for (const e of byId.values()) if (e.keep && e.origin) out.push(redactor ? redactor.value(e.origin.aliasKey ? JSON.parse(redactor.rekey(JSON.stringify(e.span), e.origin.aliasKey)) : e.span) : e.span);
  out.sort((a, b) => {const x = nanos(a.startTimeUnixNano) ?? 0n, y = nanos(b.startTimeUnixNano) ?? 0n; return x < y ? -1 : x > y ? 1 : 0;});
  stats.kept = out.length;
  return {spans: out, stats};

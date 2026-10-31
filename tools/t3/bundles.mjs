@@ -1,23 +1,27 @@
 // Finds T3 fleet bundles for the local Trace resolver. A bundle is served for its root thread id or any T3 thread
-// id it holds; every file is listed except the alias key. Symlinks are never followed.
+// id it holds; every file is listed except the alias key. Symlinks are never followed. When several bundles hold
+// the id (a v2 re-collection beside the v1 bundle it drew spans from), the newest format wins, then the newest.
 import {readdir, readFile, lstat} from 'node:fs/promises';
 import {join} from 'node:path';
-import {FORMAT, VERSION, ALIAS_KEY_FILE} from './bundle.mjs';
+import {FORMAT, READABLE_VERSIONS, ALIAS_KEY_FILE} from './bundle.mjs';
 
 const names = async dir => {try {return await readdir(dir, {withFileTypes: true});} catch {return [];}};
 
 export async function findT3Bundle(roots, id) {
  const want = String(id).toLowerCase();
+ let best = null;
+ const newest = b => (b.machines || []).map(m => m.mergedAt || m.collectedAt || '').sort().pop() || b.createdAt || '';
  for (const root of roots) for (const item of await names(root)) {
   if (!item.isDirectory()) continue;
   const dir = join(root, item.name);
   let bundle;
   try {bundle = JSON.parse(await readFile(join(dir, 'bundle.json'), 'utf8'));} catch {continue;}
-  if (bundle.format !== FORMAT || bundle.version !== VERSION) continue;
+  if (bundle.format !== FORMAT || !READABLE_VERSIONS.includes(bundle.version)) continue;
   const ids = [bundle.scope?.rootThreadId, ...(bundle.machines || []).flatMap(m => m.threadIds || [])].filter(Boolean).map(s => String(s).toLowerCase());
-  if (ids.includes(want)) return {dir, bundle};
+  if (!ids.includes(want)) continue;
+  if (!best || bundle.version > best.bundle.version || (bundle.version === best.bundle.version && newest(bundle) > newest(best.bundle))) best = {dir, bundle};
  }
- return null;
+ return best;
 }
 
 // Every regular file in a bundle folder, except the alias key.

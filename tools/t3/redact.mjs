@@ -6,7 +6,7 @@
 // URL parameters) and by exact value (T3's own secret store, auth tables, and the machine's .env/auth files).
 import {createHash, createHmac} from 'node:crypto';
 
-export const RULES = ['bearer', 'jwt', 'dpop', 'pairing-code', 'mcp-launch-credential', 'secret-value', 'relay-endpoint-key', 'email', 'account-id'];
+export const RULES = ['bearer', 'jwt', 'dpop', 'pairing-code', 'mcp-launch-credential', 'secret-value', 'relay-endpoint-key', 'email', 'account-id', 'client-hash', 'lan-address', 'hostname', 'message-text'];
 export const MIN_SECRET = 12;
 // Join keys are never added to the exact list, whatever field they were found in: removing one everywhere would
 // cut thread, environment, session or span joins across the whole bundle.
@@ -20,8 +20,17 @@ const ACCOUNT_KEY = /^(?:account[_-]?id|accountid|user[_-]?id|userid|org[_-]?id|
 const EMAIL_KEY = /^(?:e-?mail|email[_-]?address|user[_-]?email)$/i;
 const ruleForKey = key => /dpop/i.test(key) ? 'dpop' : /pairing/i.test(key) ? 'pairing-code' : /launch|mcp/i.test(key) ? 'mcp-launch-credential' : /^(?:authorization|bearer|access|refresh|id[_-]?token|session[_-]?token|token)/i.test(key) ? 'bearer' : 'secret-value';
 // URL parameters that carry credentials.
-const URL_PARAM = /([?&#](?:access_token|token|auth|code|pairing|pairing_code|pairingCode|pairingToken|key|api_key|apikey|secret|credential|sig|signature|dpop|jwt|session|ticket))=([^&#\s"'\\]{6,})/gi;
-const ruleForParam = name => /pair/i.test(name) ? 'pairing-code' : /dpop/i.test(name) ? 'dpop' : /jwt|token|auth|session/i.test(name) ? 'bearer' : 'secret-value';
+// A quote also opens a parameter: span attributes keep a bare query ("url.query":"wsTicket=…"). Any *ticket / *token
+// name counts, so camelCase names such as T3's desktop wsTicket are covered.
+const URL_PARAM = /([?&#"'](?:access_token|token|auth|code|pairing|pairing_code|pairingCode|pairingToken|key|api_key|apikey|secret|credential|sig|signature|dpop|jwt|session|ticket|[a-z_]*ticket|[a-z_]*token))=([^&#\s"'\\]{6,})/gi;
+const ruleForParam = name => /pair/i.test(name) ? 'pairing-code' : /dpop/i.test(name) ? 'dpop' : /jwt|token|auth|session|ticket/i.test(name) ? 'bearer' : 'secret-value';
+// T3's WebSocket URL names the connecting client by stable hashes (clientOwner, clientDevice; ws.ts): aliased, so
+// one client's connections still join within the bundle.
+const CLIENT_HASH = /([?&#"'](?:clientOwner|clientDevice))=([^&#\s"'\\]{4,})/g;
+// Private IPv4 addresses (LAN, CGNAT/tailnet, link-local): aliased <lan-…>, stable within a bundle. Loopback stays.
+const LAN = /(?<![\w.])(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3})(?!\d|\.\d)/g;
+// Alias markers a bundle writes with its own key (re-keyed when spans from another bundle are unioned in).
+const ALIAS_MARK = /\[redacted:(email|account-id|client-hash):([0-9a-f]{10})\]|<lan-([0-9a-f]{10})>/g;
 
 // Shapes. Each returns the replacement and reports the removed value so it is removed everywhere.
 const SHAPES = [
@@ -52,6 +61,7 @@ export class Redactor {
   this.counts = Object.fromEntries(RULES.map(r => [r, 0]));
   this.values = new Map();
   this.found = new Map(); // values discovered by shape during this run, for the final everywhere-pass
+  this.aliased = new Set(); // inputs aliased this run (memory only), to re-key another bundle's aliases
   for (const [v, rule] of values) this.addValue(v, rule);
  }
  addValue(value, rule = 'secret-value') {
@@ -64,7 +74,23 @@ export class Redactor {
   this._exact = null;
  }
  // HMAC alias for low-entropy private values; same input, same alias, within one bundle.
- alias(value) {return createHmac('sha256', this.aliasKey).update(value).digest('hex').slice(0, 10);}
+ alias(value) {this.aliased.add(value); return Redactor.hmac(this.aliasKey, value);}
+ static hmac(key, value) {return createHmac('sha256', key).update(value).digest('hex').slice(0, 10);}
+ lanAlias(ip) {this.count('lan-address'); return `<lan-${this.alias('lan:' + ip)}>`;}
+ hostAlias(host) {this.count('hostname'); return `<lan-${this.alias('host:' + String(host).toLowerCase())}>`;}
+ // Aliases written by another bundle's key, re-keyed to this one: an input this run also aliased maps to the
+ // same alias it has here; any other gets a stable alias of its own (it cannot join, and says so by kind only).
+ rekey(text, oldKey) {
+  if (!oldKey || oldKey.equals(this.aliasKey) || typeof text !== 'string') return text;
+  if (!this._rekey || !this._rekey.key.equals(oldKey) || this._rekey.size !== this.aliased.size) {
+   const map = new Map();
+   for (const v of this.aliased) map.set(Redactor.hmac(oldKey, v), Redactor.hmac(this.aliasKey, v));
+   this._rekey = {key: oldKey, size: this.aliased.size, map};
+  }
+  const {map} = this._rekey;
+  const to = a => map.get(a) || Redactor.hmac(this.aliasKey, `rekey:${a}`);
+  return text.replace(ALIAS_MARK, (m, rule, a, lan) => lan ? `<lan-${to(lan)}>` : `[redacted:${rule}:${to(a)}]`);
+ }
  // Relay endpoint keys are 64 random bits: an unsalted hash is not reversible and joins across machines' parts.
  static relayAlias(key) {return createHash('sha256').update(key).digest('hex').slice(0, 10);}
  _exactRe() {
@@ -91,6 +117,8 @@ export class Redactor {
   s = s.replace(RELAY, (m, prefix, key) => {this.count('relay-endpoint-key'); return `${prefix}-${Redactor.relayAlias(key)}.t3coderelay.com`;});
   s = s.replace(EMAIL, m => {if (EMAIL_ALLOW.test(m)) return m; this.count('email'); return `[redacted:email:${this.alias(m.toLowerCase())}]`;});
   s = s.replace(CLERK_ID, m => {this.count('account-id'); return `[redacted:account-id:${this.alias(m)}]`;});
+  s = s.replace(CLIENT_HASH, (m, name, value) => {if (value.startsWith('[redacted')) return m; this.count('client-hash'); return `${name}=[redacted:client-hash:${this.alias(value)}]`;});
+  s = s.replace(LAN, m => this.lanAlias(m));
   return s;
  }
  // "key": "value" pairs inside raw JSON text, plain or escaped once (JSON inside a JSON string).
