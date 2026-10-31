@@ -210,7 +210,10 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   const remote = environmentId && environmentId !== localEnv && !fam.length ? {threadId, environmentId} : null;
   const roots = await localRoots(t3Home, seeds, remote);
   if (roots.length) {
-   await storeHarvest({store: incoming, partsKey: pk, label: 'mac', gzip: true, agentSessions: true, repo}, {roots, onProgress: f => onProgress(0.05 + 0.45 * f)});
+   // The hourly harvest may hold the store: then its parts (at most an hour old) are used as they are.
+   try {
+    await storeHarvest({store: incoming, partsKey: pk, label: 'mac', gzip: true, agentSessions: true, repo, lockWaitMs: 20000}, {roots, onProgress: f => onProgress(0.05 + 0.45 * f)});
+   } catch (e) {if (!/held by another harvest/.test(e.message)) throw e;}
    parts = readParts(incoming);
    fam = familyParts(parts, {threadId, environmentId});
   }
@@ -244,7 +247,7 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   const credValues = credentialValues({home: homedir(), repo, t3Home: existsSync(t3Home) ? t3Home : null, db});
   db?.close();
   const hand = handBundle(repo, root.threadId);
-  await merge({merge: partDirs, out, partsKey: pk, credValues, repo, t3Home, gzip: true, ...(hand ? {spansFrom: [hand]} : {})});
+  await merge({merge: partDirs, out, partsKey: pk, credValues, repo, t3Home, gzip: true, trusted: localEnv ? [localEnv] : [], ...(hand ? {spansFrom: [hand]} : {})});
   onProgress(0.9);
   // Verify the whole bundle before it is served.
   const v = scanBundle(out, {values: credValues});

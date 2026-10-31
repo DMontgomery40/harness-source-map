@@ -615,7 +615,9 @@ async function merge(o) {
  const redactor = bundleRedactor(out, bundle, values, o);
  const fleet = redactor instanceof FamilyRedactor;
  // A fleet part's aliases are mapped to the family's before the line is redacted again here.
- const reline = l => redactor.string(fleet ? redactor.fromParts(l) : l);
+ // A part this machine collected itself (o.trusted: environment ids) was redacted with these same values: only its
+ // aliases are mapped.
+ const reline = (l, own) => own ? redactor.fromParts(l) : redactor.string(fleet ? redactor.fromParts(l) : l);
  for (const [v, kind] of credValues) if (!/git email/.test(kind)) redactor.addValue(v, 'secret-value');
  const fromBundles = (o.spansFrom || []).map(d => resolve(d)).map(d => ({dir: d, key: readAliasKey(d), bundle: readBundle(d, {anyVersion: true})}));
  for (const f of fromBundles) if (!f.key) throw new Error(`--spans-from ${f.dir} has no alias key; its aliases cannot be re-keyed`);
@@ -664,7 +666,8 @@ async function merge(o) {
    for (const f of bundleFiles(src)) {
     const rel = relative(part, f).split(sep).join('/').replace(/\.gz$/, '');
     if (DERIVED.test(rel)) continue;
-    const lines = [...bufferLines(fileBuffer(f))].map(reline);
+    const own = fleet && (o.trusted || []).includes(m.environmentId);
+    const lines = [...bufferLines(fileBuffer(f))].map(l => reline(l, own));
     const spanRel = SPAN_RELS.find(r => rel === `${mdir}/${r}`);
     if (spanRel === 'spans.ndjson') noteEnds(lines);
     if (spanRel) {writeSpans(spanRel, lines); done.add(spanRel);} else writer.lines(rel, lines);
@@ -799,7 +802,7 @@ export async function storeHarvest(o, {roots: given = null, onProgress = null} =
    verifyHits: results.filter(r => r.machine?.verify?.hitFiles).length, archive: archive?.report || null, archiveGaps: archive?.gaps || []};
   writeFileSync(join(dir, 'harvest.json'), JSON.stringify(record, null, 1) + '\n', {mode: 0o600});
   return {dir, environmentId, archive, results, record};
- });
+ }, o.lockWaitMs != null ? {waitMs: o.lockWaitMs} : {});
 }
 
 // Mark a machine unreachable with the reason (when a hop could not be collected).
