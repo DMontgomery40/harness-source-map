@@ -32,6 +32,12 @@ import { localFileSource } from "./local-session.js";
 //     A T3 Code fleet bundle (bundle.json with format "t3-fleet-bundle" among the files) loads as its family
 //     (fleet/load.js): one trace with every thread of the family, trace.family true, trace.fleet its side table.
 //     A .jsonl.gz or .json.gz file is read as the log it holds, so one session opens straight from a bundle.
+//   postMessage({ type: "fleet-net", id, thread?, waits? })   a loaded T3 family's network (fleet/net.js): its span
+//     archives are indexed the first time this is asked for, then kept for the load.
+//     -> { type: "fleet-net-progress", id, lines, machine }
+//     -> { type: "fleet-net", id, rate, rows? (one thread's peer rows), waits? (every forwarded wait, attributed) }
+//   postMessage({ type: "fleet-ladder", id, call })   one peer call's span ladder (fleet/ladder.js)
+//     -> { type: "fleet-ladder", id, ladder } | { type: "fleet-ladder", id, error }
 //   postMessage({ type: "text", ref, id? })
 //     -> { type: "text", ref, id, text }  the literal text of one block: its source line
 //        read by byte offset, then ref.path (JSON path into the line) and ref.range
@@ -68,8 +74,11 @@ import { findText } from "./find.js";
 import { buildHarnessModel } from "./harness/pieces.js";
 import { analyzeCapture } from "./network/capture.js";
 import { projectInstructions } from './network/instructions.js';
-import { isT3Bundle, plainEntry } from "./fleet/bundle.js";
+import { isT3Bundle, plainEntry, readMachines } from "./fleet/bundle.js";
 import { loadFamily } from "./fleet/load.js";
+import { indexSpans } from "./fleet/spans.js";
+import { buildNet, threadRows, hopCommand, attributeWaits } from "./fleet/net.js";
+import { buildLadder } from "./fleet/ladder.js";
 
 let sources = [];
 let index = null;
@@ -80,6 +89,28 @@ let findGen = 0;
 let harness = null; // { trace, promise, ms } for the loaded session
 let network = null; // { trace, store } for the attached capture
 let family = null; // { trace, bundle } while a T3 family is loaded (its span archive is read on demand)
+let familyNet = null; // the family's network (fleet/net.js), built from its span archives the first time it is asked for
+
+// The family's span archives indexed and joined, once per load. Progress is lines read across machines.
+function netOf(onProgress) {
+  if (!family) return Promise.reject(new Error("no T3 family is loaded"));
+  const fam = family;
+  familyNet ||= (async () => {
+    const machines = await readMachines(fam.bundle);
+    const spans = new Map();
+    let before = 0;
+    for (const m of machines) {
+      const e = fam.bundle.get(`${m.dir}spans.ndjson`);
+      if (!e) continue;
+      const ix = await indexSpans(e.source, { gz: /\.gz$/i.test(e.path), onProgress: n => onProgress(before + n, m.label) });
+      before += ix.lines;
+      spans.set(m.id, ix);
+    }
+    return { machines, spans, net: buildNet(machines, spans) };
+  })();
+  return familyNet;
+}
+const callKey = c => `${c.env}:${c.i}`;
 
 // A block's exact text, as the reader shows it (ref.path and ref.range applied), reading each log line once
 // for the blocks that share it.
@@ -117,7 +148,7 @@ self.onmessage = async (e) => {
       // A T3 Code fleet bundle opens as its family (fleet/load.js); anything else as one session, with a gzipped
       // log (as a bundle keeps them) read as the file it holds.
       let result;
-      family = null;
+      family = null; familyNet = null;
       if (await isT3Bundle(entries)) {
         result = await loadFamily(entries, { index, onProgress });
         family = { trace: result.trace, bundle: result.bundle };
@@ -216,6 +247,36 @@ self.onmessage = async (e) => {
     networkGeneration++;
     network = null;
     loaded=nativeLoaded;sources=nativeSources;harness=null;
+  } else if (m.type === "fleet-net") {
+    // A T3 family's network: the rows of one thread (its ridge's panel), or the waits of the whole family (fleet ground).
+    try {
+      let last = 0;
+      const { net } = await netOf((n, machine) => { const now = Date.now(); if (now - last > 120) { last = now; self.postMessage({ type: "fleet-net-progress", id: m.id, lines: n, machine }); } });
+      const label = net.label;
+      const out = { type: "fleet-net", id: m.id, rate: Object.fromEntries(Object.entries(net.rate).map(([k, v]) => [k.split(">").map(label).join(" → "), v])) };
+      if (m.thread) {
+        const t = family.trace.fleet.threads.find(x => x.id === m.thread);
+        const commands = family.trace.fleet.hops.filter(h => h.to === m.thread).map(h => hopCommand(h.fromNode)).filter(Boolean);
+        out.rows = threadRows(net, { thread: m.thread, env: t?.environmentId, commands }).map(g => ({ from: label(g.from), to: label(g.to), port: g.port, kind: g.kind, count: g.count, joined: g.joined, t0: g.t0, t1: g.t1, call: callKey(g.first) }));
+      }
+      if (m.waits) {
+        const fleet = family.trace.fleet;
+        out.waits = attributeWaits(net.waits, { familyThreads: fleet.threads.map(t => t.id), hops: fleet.hops })
+          .map(w => ({ from: label(w.from), to: label(w.to), t0: w.t0, t1: w.t1, family: w.family, attribution: w.attribution, call: callKey(w.call) }));
+      }
+      self.postMessage(out);
+    } catch (err) {
+      self.postMessage({ type: "fleet-net", id: m.id, error: String((err && err.message) || err) });
+    }
+  } else if (m.type === "fleet-ladder") {
+    try {
+      const { net, spans } = await netOf(() => {});
+      const call = net.calls.find(c => callKey(c) === m.call);
+      if (!call) throw new Error("that call is not in the family's spans");
+      self.postMessage({ type: "fleet-ladder", id: m.id, ladder: buildLadder(net, spans, call) });
+    } catch (err) {
+      self.postMessage({ type: "fleet-ladder", id: m.id, error: String((err && err.message) || err) });
+    }
   } else if (m.type === "find-cancel") {
     findGen++;
   } else if (m.type === "text") {

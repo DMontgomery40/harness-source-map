@@ -243,7 +243,8 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     })),
     threads: [...threads.values()].map(t => ({ id: t.id, machine: nameOf(t.env), environmentId: t.env, title: t.title, provider: PRODUCTS[t.provider] || t.provider || null, lab: labOf(t, evidence.get(t.id)).lab,
       agentId: agentOfThread.get(t.id) || null, late: t.late, native: t.native ? { nativeId: t.native.nativeId, product: t.native.product, path: t.native.path } : null })),
-    hops: (bundle.hops || []).map(h => ({ from: h.from?.threadId, to: h.to?.threadId, fromMachine: nameOf(h.from?.environmentId), toMachine: nameOf(h.to?.environmentId), title: h.title, status: h.status, startedAt: ms(h.startedAt), completedAt: ms(h.completedAt) })),
+    hops: (bundle.hops || []).map(h => ({ from: h.from?.threadId, to: h.to?.threadId, fromNode: h.from?.nodeId || null, fromEnv: h.from?.environmentId, toEnv: h.to?.environmentId,
+      fromMachine: nameOf(h.from?.environmentId), toMachine: nameOf(h.to?.environmentId), title: h.title, status: h.status, startedAt: ms(h.startedAt), completedAt: ms(h.completedAt) })),
   };
   const times = out.agents.flatMap(a => (a.requests || []).map(r => r.t));
   for (const v of out.voids) times.push(v.from, v.to);

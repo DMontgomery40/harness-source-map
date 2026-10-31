@@ -23,6 +23,7 @@ import { productLabel } from './products.js';
 import { filterRows, agentRows } from "./fleet/controls.js";
 import { fleetKeys, cycle, isFiltered } from "./fleet/filter.js";
 import { breakWords } from "./fleet/breaks.js";
+import { renderLadder } from "./fleet/ladder.js";
 
 const params = new URLSearchParams(location.search);
 const $ = s => document.querySelector(s);
@@ -258,6 +259,11 @@ function getWorker() {
     } else if (data.type === "network-error") {
       if(data.id!==pendingNetwork?.id)return;
       pendingNetwork?.reject(new Error(data.message)); pendingNetwork = null;
+    } else if (data.type === "fleet-net-progress") {
+      pendingFleet.get(data.id)?.onProgress?.(data);
+    } else if (data.type === "fleet-net" || data.type === "fleet-ladder") {
+      const p = pendingFleet.get(data.id);
+      if (p) { pendingFleet.delete(data.id); if (data.error) p.reject(new Error(data.error)); else p.resolve(data); }
     } else if (data.type === "network-body") {
       const p = pendingBody.get(data.id);
       if (p) { pendingBody.delete(data.id); if (data.error) p.reject(new Error(data.error)); else p.resolve({ text: data.text, mode: data.mode, cut: data.cut }); }
@@ -1163,6 +1169,48 @@ function buildHud() {
   fam.onclick = () => openT3Family(t.t3Family.rootThreadId);
 }
 
+// ---------- T3 family: the network from its span archives (worker, fleet/net.js) ----------
+const pendingFleet = new Map();
+let fleetSeq = 0;
+function fleetRequest(message, onProgress) {
+  const id = ++fleetSeq;
+  return new Promise((resolve, reject) => {
+    pendingFleet.set(id, { resolve, reject, onProgress });
+    getWorker().postMessage({ ...message, id });
+  });
+}
+// A family ridge's network fold: its peer calls, held waits and calls out, grouped by link; a row opens its span
+// ladder in the reader. The spans are read the first time a fold opens.
+function fleetNetSection(agent) {
+  if (!S.trace?.family || !agent.thread || text !== workerText) return null;
+  const body = el("div", { class: "fleet-net-body" }, el("p", { class: "m", text: "Opens the family's span archives: peer calls, waits and routes between the machines." }));
+  const box = el("details", { class: "fleet-net" }, el("summary", { text: "Network" }), body);
+  let asked = false;
+  box.addEventListener("toggle", async () => {
+    if (!box.open || asked) return;
+    asked = true;
+    body.replaceChildren(el("p", { class: "m", text: "Reading the family's spans…" }));
+    try {
+      const r = await fleetRequest({ type: "fleet-net", thread: agent.thread }, p => body.replaceChildren(el("p", { class: "m", text: `Reading the family's spans: ${fmtInt(p.lines)} lines (${p.machine})…` })));
+      if (!r.rows.length) return body.replaceChildren(el("p", { class: "m", text: "No peer calls of this thread are in the collected spans." }));
+      body.replaceChildren(el("ul", { class: "items" }, r.rows.map(g => el("li", {}, el("button", { type: "button", class: "item", onclick: () => openLadder(g.call),
+        title: "Open this call's span ladder" },
+        el("span", { class: "tool", text: `${g.from} → ${g.to} · ${g.kind}` }),
+        el("span", { class: "meta", text: `${fmtInt(g.count)}${g.joined < g.count ? ` (${fmtInt(g.joined)} joined)` : ""} · :${g.port} · ${fmtClock(g.t0)}–${fmtClock(g.t1)}` }))))));
+    } catch (e) { asked = false; body.replaceChildren(el("p", { class: "m", text: e.message || String(e) })); }
+  });
+  return box;
+}
+async function openLadder(call) {
+  const panel = $("#panel");
+  panel.replaceChildren(el("p", { class: "m", text: "Building the span ladder…" }));
+  try {
+    const { ladder } = await fleetRequest({ type: "fleet-ladder", call });
+    panel.replaceChildren(el("div", { class: "fleet-ladder" }, ...renderLadder(el, ladder, { fmtWhen, onBack: () => { shownKey = null; render(false); } })));
+    panel.scrollTop = 0;
+  } catch (e) { panel.replaceChildren(el("p", { class: "m", text: e.message || String(e) })); }
+}
+
 // ---------- T3 family: the machine and lab filter, and each thread's own session ----------
 function buildFleetFilter() {
   $("#fleet-filter")?.remove();
@@ -1451,6 +1499,7 @@ const A = {
   // a T3 family ridge's panel rows (fleet/controls.js), and the way into its own session
   fleetRows: agent => agentRows(S.trace, agent, A),
   ownSession: agent => (ownSessionFiles(agent) ? () => openOwnSession(agent) : null),
+  fleetNetwork: agent => fleetNetSection(agent),
   focusAction: (id, i) => set({ level: 2, agentId: id, reqIdx: i, stratum: null, block: null,
     inspector: 'action', callIndex: null, mapPinned: S.mode === '3d' && (S.level === 0 || S.mapPinned) }, focusAt(id, i)),
   showCallPart: part => { S.callPart = part; saveViewSoon(); },

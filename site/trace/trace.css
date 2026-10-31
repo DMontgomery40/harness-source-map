@@ -751,3 +751,17 @@ button:disabled { opacity: .4; cursor: default; }
 .fleet-filter button[aria-pressed=true] { color: var(--accent); background: #1a3533; border-color: #395d55; }
 .tip .fleet-where { color: #9fe6ff; }
 .fleet-kv { margin-top: 4px; }
+
+/* A family ridge's network fold and the span ladder in the reader (fleet/ladder.js) */
+.fleet-net { margin-top: 10px; }
+.fleet-net summary { cursor: pointer; color: var(--ink-3); font-size: 12.5px; }
+.fleet-ladder .fl-side { margin: 12px 0 4px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.fleet-ladder .fl-row { display: grid; grid-template-columns: minmax(0, 44%) 1fr 64px; gap: 8px; align-items: center; font-size: 12px; min-height: 18px; }
+.fleet-ladder .fl-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2, #d5dce5); }
+.fleet-ladder .fl-track { position: relative; height: 8px; background: #ffffff0d; border-radius: 2px; }
+.fleet-ladder .fl-track i { position: absolute; top: 0; bottom: 0; border-radius: 2px; background: #8fd8c4; }
+.fleet-ladder .fl-receiver .fl-track i { background: #9fe6ff; }
+.fleet-ladder .fl-clamped .fl-track i { background: #ff9a8a; }
+.fleet-ladder .fl-ms { text-align: right; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.fleet-ladder .fl-band { margin: 8px 0; padding: 6px 8px; border-left: 2px solid #395d55; font-size: 12px; color: var(--ink-3); }
+.fleet-ladder .fl-clock { border-color: #5b6b80; }
