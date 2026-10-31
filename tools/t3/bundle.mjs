@@ -88,3 +88,41 @@ export function writeBundle(dir, bundle) {
  ensureDir(dir);
  writeFileSync(join(dir, 'bundle.json'), JSON.stringify(bundle, null, 1) + '\n', {mode: 0o600});
 }
+
+// Contract A v2 structure. Returns a list of problems (empty when the bundle is well formed).
+export function validateBundle(b) {
+ const errs = [];
+ const isIso = v => typeof v === 'string' && !Number.isNaN(Date.parse(v));
+ const need = (ok, what) => {if (!ok) errs.push(what);};
+ need(b && b.format === FORMAT, `format is ${FORMAT}`);
+ need(b?.version === VERSION, `version is ${VERSION}`);
+ need(typeof b?.collector?.version === 'string', 'collector.version');
+ need(isIso(b?.createdAt), 'createdAt');
+ need(b?.scope && ['family', 'window'].includes(b.scope.mode) && isIso(b.scope.since) && isIso(b.scope.until), 'scope {mode, since, until}');
+ need(Array.isArray(b?.machines), 'machines[]');
+ need(Array.isArray(b?.hops), 'hops[]');
+ need(Array.isArray(b?.gaps), 'gaps[]');
+ need(Array.isArray(b?.redaction?.rules) && b.redaction.counts && typeof b.redaction.counts === 'object', 'redaction {rules, counts}');
+ for (const [i, m] of (b?.machines || []).entries()) {
+  const at = `machines[${i}]`;
+  need(typeof m.environmentId === 'string' && m.environmentId.length > 0, `${at}.environmentId`);
+  need(['collected', 'unreachable', 'not-collected'].includes(m.status), `${at}.status`);
+  need(Array.isArray(m.files), `${at}.files[]`);
+  need(Array.isArray(m.gaps), `${at}.gaps[]`);
+  if (m.status !== 'collected') {need(m.gaps?.length > 0, `${at} says why it was not collected`); continue;}
+  need(isIso(m.collectedAt), `${at}.collectedAt`);
+  need(Array.isArray(m.parts), `${at}.parts[]`);
+  for (const [j, p] of (m.parts || []).entries()) need(p && isIso(p.window?.since) && isIso(p.window?.until) && typeof p.collector === 'string' && (p.collectedAt === null || isIso(p.collectedAt)), `${at}.parts[${j}] {collectedAt, window {since, until}, collector}`);
+  need(m.clock && 'collectorNowMs' in m.clock && 'machineNowMs' in m.clock, `${at}.clock {collectorNowMs, machineNowMs}`);
+  need(Array.isArray(m.threadIds), `${at}.threadIds[]`);
+  for (const f of m.files || []) need(typeof f === 'string' && f.startsWith(`machines/${m.environmentId}/`), `${at}.files under machines/${m.environmentId}/`);
+ }
+ for (const [i, h] of (b?.hops || []).entries()) {
+  const at = `hops[${i}]`;
+  need(h.from?.environmentId && 'threadId' in (h.from || {}) && 'nodeId' in (h.from || {}), `${at}.from {environmentId, threadId, nodeId}`);
+  need(h.to?.environmentId && h.to?.threadId && 'label' in h.to && 'runId' in h.to, `${at}.to {environmentId, threadId, label, runId}`);
+  need(['parent', 'child', 'both'].includes(h.evidence), `${at}.evidence parent|child|both`);
+  for (const k of ['title', 'provider', 'model', 'status', 'startedAt', 'completedAt']) need(k in h, `${at}.${k}`);
+ }
+ return errs;
+}
