@@ -4,7 +4,7 @@ import {largeHarEntries, captureEntryMatches} from './trace-har.mjs';
 import {readFileSync} from 'node:fs';
 import {createServer} from 'node:http';
 import {readdir, lstat, realpath, readFile, open} from 'node:fs/promises';
-import {join, resolve, relative, extname, dirname, basename} from 'node:path';
+import {join, resolve, relative, extname, dirname, basename, isAbsolute} from 'node:path';
 import {homedir, tmpdir} from 'node:os';
 import {randomBytes} from 'node:crypto';
 import {fileURLToPath, pathToFileURL} from 'node:url';
@@ -17,6 +17,7 @@ import {createDesktopRecorder} from './capture/desktop-capture.mjs';
 import {fileCapture} from './capture/file-capture.mjs';
 import {sessionContext} from './sources/context.mjs';
 import {findT3Bundle, bundleFileList} from './t3/bundles.mjs';
+import {ALIAS_KEY_FILE} from './t3/bundle.mjs';
 
 export const PORT = 8766;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -96,11 +97,29 @@ const defaultDatabases=[...configuredPaths('opencodeDatabases'),process.env.OPEN
 const defaultT3Roots=[...configuredPaths('t3Bundles'),fileURLToPath(new URL('../private/sessions/t3/',import.meta.url))];
 const defaultCaptureRoots=[...configuredPaths('captureRoots'),join(homedir(),'.harness-source-map','captures'),fileURLToPath(new URL('../private/research',import.meta.url)),...(process.env.TRACE_CAPTURE_ROOTS||'').split(process.platform==='win32'?';':':').filter(Boolean)];
 
-// A T3 thread id names its family's bundle as written, else once percent-decoded (T3 resolves its own links so).
-async function t3Family(roots,id){
+// A T3 thread id names its family's bundle as written, else once percent-decoded (T3 resolves its own links so). A
+// v2 link names its environment too: then the bundle must hold that thread on that machine.
+const ENVIRONMENT_ID=/^[A-Za-z0-9-]{1,64}$/;
+export function holdsThreadOn(bundle,environmentId,threadId){
+ const want=String(threadId).toLowerCase();
+ if(bundle.scope?.rootEnvironmentId===environmentId && String(bundle.scope?.rootThreadId||'').toLowerCase()===want)return true;
+ return (bundle.machines||[]).some(m=>m.environmentId===environmentId && (m.threadIds||[]).some(t=>String(t).toLowerCase()===want));
+}
+async function t3Family(roots,id,environmentId=null){
  let decoded=null;try{decoded=decodeURIComponent(id);}catch{/* not escaped */}
- for(const candidate of new Set([id,decoded].filter(Boolean))){const hit=await findT3Bundle(roots,candidate);if(hit)return hit;}
+ for(const candidate of new Set([id,decoded].filter(Boolean))){
+  const hit=await findT3Bundle(roots,candidate);
+  if(hit && (!environmentId || holdsThreadOn(hit.bundle,environmentId,candidate)))return hit;
+  if(hit)return {mismatch:true};
+ }
  return null;
+}
+// A file of a bundle the resolver may serve: inside the folder it was found in (lexically and after symlinks), and
+// never the bundle's alias key.
+async function servable(base,path){
+ const rel=relative(base,path);
+ if(!rel || rel.startsWith('..') || isAbsolute(rel) || basename(path)===ALIAS_KEY_FILE)return false;
+ try{const real=await realpath(path),realBase=await realpath(base);return within(realBase,real) && basename(real)!==ALIAS_KEY_FILE && (await lstat(real)).isFile();}catch{return false;}
 }
 // A harness session that ran in a collected T3 family: the bundle's agent-sessions index names it by its native id.
 // Returns the family's root thread, the session's own T3 thread and machine, and the session's files in the bundle
@@ -112,13 +131,15 @@ async function t3Session(roots,id){
   try{bundle=JSON.parse(await readFile(join(dir,'bundle.json'),'utf8'));}catch{continue;}
   if(bundle.format!=='t3-fleet-bundle')continue;
   for(const m of bundle.machines||[]){
-   const base=join(dir,'machines',m.environmentId,'agent-sessions');
+   const base=await realpath(join(dir,'machines',m.environmentId,'agent-sessions')).catch(()=>null);if(!base)continue;
    let index;try{index=JSON.parse(await readFile(join(base,'index.json'),'utf8'));}catch{continue;}
-   const hit=index.find(e=>String(e.nativeId).toLowerCase()===id && /\.jsonl$/.test(e.path) && !/\/subagents\//.test(e.path));
+   if(!Array.isArray(index))continue;
+   const hit=index.find(e=>String(e.nativeId).toLowerCase()===id && typeof e.path==='string' && /\.jsonl$/.test(e.path) && !/\/subagents\//.test(e.path));
    if(!hit)continue;
+   // the index is data from another machine: a path that leaves agent-sessions (or names the alias key) is never served
    const files=[];
-   for(const e of index.filter(e=>e.threadId===hit.threadId && (e.nativeId===hit.nativeId || e.path.includes(hit.nativeId)))){
-    for(const path of [join(base,e.path),join(base,e.path)+'.gz'])if(await lstat(path).then(x=>x.isFile(),()=>false)&&within(dir,await realpath(path))){files.push(path);break;}
+   for(const e of index.filter(e=>e.threadId===hit.threadId && typeof e.path==='string' && (e.nativeId===hit.nativeId || e.path.includes(hit.nativeId)))){
+    for(const path of [resolve(base,e.path),resolve(base,e.path)+'.gz'])if(await servable(base,path)){files.push(path);break;}
    }
    return {dir,base,product:hit.product,files,label:m.label,pointer:{rootThreadId:bundle.scope?.rootThreadId||null,threadId:hit.threadId,environmentId:m.environmentId,machine:m.label}};
   }
@@ -239,19 +260,23 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
     }
     if(url.pathname==='/v1/session' && req.method==='POST'){
      const body=await readBody(req);if(body===null)return reply(413,{error:'Request too large'});if(!body)return reply(400,{error:'Invalid request'});
-     let {id,captures}=body;
+     let {id,captures,environmentId}=body;
      // A T3-only thread id (mcp:launch:…, thread:…) is compared with bundle contents only, never used as a path.
      const t3id=typeof id==='string'&&!sessionId(id)?t3ThreadId(id):null;
      id=sessionId(id);if(!id&&!t3id)return reply(400,{error:'Invalid session ID'});
+     if(environmentId!=null && (typeof environmentId!=='string' || !ENVIRONMENT_ID.test(environmentId)))return reply(400,{error:'Invalid environment ID'});
      // A T3 thread id with a fleet bundle: the bundle's files (the page opens them as the thread's T3 family).
-     const t3=t3Roots.length?await t3Family(t3Roots,id||t3id):null;
+     const t3=t3Roots.length?await t3Family(t3Roots,id||t3id,environmentId||null):null;
+     if(t3?.mismatch)return reply(404,{error:'A collected T3 bundle holds that thread, but not on the environment the link names.'});
+     if(environmentId && !t3)return reply(404,{error:'No T3 bundle collected on this machine holds that thread. Collect its family (node tools/t3/collect.mjs), then open it again.'});
      if(t3){
       const now=Date.now();for(const [key,value] of tickets)if(value.expires<now)tickets.delete(key);
-      const files=[];
-      for(const path of await bundleFileList(t3.dir)){
-       const entry=await fileEntry(t3.dir,path),token=randomBytes(24).toString('hex');
-       tickets.set(token,{entry,root:t3.dir,expires:now+24*60*60*1000});
-       files.push({path:relative(t3.dir,path).split('\\').join('/'),kind:'t3-bundle',size:entry.source.size,url:'/v1/file/'+token});
+      const files=[],dir=await realpath(t3.dir);
+      for(const path of await bundleFileList(dir)){
+       if(!await servable(dir,path))continue;
+       const entry=await fileEntry(dir,path),token=randomBytes(24).toString('hex');
+       tickets.set(token,{entry,root:dir,expires:now+24*60*60*1000});
+       files.push({path:relative(dir,path).split('\\').join('/'),kind:'t3-bundle',size:entry.source.size,url:'/v1/file/'+token});
       }
       return reply(200,{id:id||t3id,product:'t3code',files,warnings:[...(t3.bundle.gaps||[])].slice(0,200)});
      }
@@ -265,8 +290,8 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
       const now=Date.now();for(const [key,value] of tickets)if(value.expires<now)tickets.delete(key);
       const files=[];
       for(const path of inFamily.files){
-       const entry=await fileEntry(inFamily.dir,path),token=randomBytes(24).toString('hex');
-       tickets.set(token,{entry,root:inFamily.dir,expires:now+24*60*60*1000});
+       const entry=await fileEntry(inFamily.base,path),token=randomBytes(24).toString('hex');
+       tickets.set(token,{entry,root:inFamily.base,expires:now+24*60*60*1000});
        files.push({path:relative(inFamily.base,path).split('\\').join('/'),kind:'t3-session',size:entry.source.size,url:'/v1/file/'+token});
       }
       return reply(200,{id,product:inFamily.product,files,t3:inFamily.pointer,warnings:[`This session ran on ${inFamily.label}; it is read from the T3 family's collected copy.`]});
@@ -335,7 +360,11 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
      if(!ticket || ticket.expires<Date.now())return reply(404,{error:'Session file expired; reopen the session'});
      const start=Number(url.searchParams.get('start')),end=Number(url.searchParams.get('end'));
      if(!url.searchParams.has('start')||!url.searchParams.has('end')||!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<0||end<start||end>ticket.entry.source.size||end-start>16*1024*1024)return reply(400,{error:'Invalid range'});
-     if(!ticket.entry.memory && !within(ticket.root,await realpath(ticket.entry.path)))return reply(403,{error:'Outside session root'});
+     if(!ticket.entry.memory){
+      const real=await realpath(ticket.entry.path).catch(()=>null);
+      // checked again when served: the file may have been swapped for a link since the ticket was issued
+      if(!real || !within(await realpath(ticket.root).catch(()=>ticket.root),real) || basename(real)===ALIAS_KEY_FILE)return reply(403,{error:'Outside session root'});
+     }
      const bytes=await ticket.entry.source.slice(start,end);res.writeHead(200,{'Content-Type':'application/octet-stream','Content-Length':bytes.length});return res.end(bytes);
     }
     return reply(404,{error:'Not found'});

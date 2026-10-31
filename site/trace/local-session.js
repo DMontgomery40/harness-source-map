@@ -3,13 +3,14 @@
 const BASE = 'http://127.0.0.1:8766';
 const headers = {'X-Trace-Request':'1'};
 
-export async function openLocalSession(id, {fetcher=fetch,base=BASE}={}) {
+// environmentId: a T3 v2 thread link's environment; the resolver then opens the thread only on that machine.
+export async function openLocalSession(id, {fetcher=fetch,base=BASE,environmentId=null}={}) {
   let health;
   try {health=await fetcher(base+'/health',{credentials:'omit',redirect:'error',signal:AbortSignal.timeout(800)});}
   catch {return null;}
   if(!health.ok)return null;
   try {if((await health.json()).service!=='trace-local')return null;}catch{return null;}
-  const result=await fetcher(base+'/v1/session',{method:'POST',credentials:'omit',redirect:'error',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({id,captures:true})});
+  const result=await fetcher(base+'/v1/session',{method:'POST',credentials:'omit',redirect:'error',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({id,captures:true,...(environmentId?{environmentId}:{})})});
   if(!result.ok){const error=await result.json().catch(()=>({}));throw new Error(error.error||'Could not open the local session');}
   const manifest=await result.json();
   const files = manifest.files.map(file=>{
