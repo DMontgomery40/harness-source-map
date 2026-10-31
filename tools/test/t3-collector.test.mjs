@@ -136,7 +136,8 @@ test('real bundles carry no unredacted wsTicket (opt-in)', {skip: !process.env.T
   const leaks = [];
   for (const dir of readdirSync(root)) for (const f of bundleFiles(join(root, dir))) {
     const text = f.endsWith('.gz') ? execFileSync('gzip', ['-dc', f], {maxBuffer: 1 << 30}).toString() : readFileSync(f, 'utf8');
-    for (const m of text.matchAll(/wsTicket=([^&#\s"'\\]{6,})/g)) if (!m[1].startsWith('[redacted')) leaks.push(f);
+    // Token-shaped values only: agent sessions about this very bug mention wsTicket=<JWT>, ${jwt} and the like.
+    for (const m of text.matchAll(/wsTicket=([A-Za-z0-9._~+\/=-]{16,})/g)) leaks.push(f);
   }
   assert.deepEqual([...new Set(leaks)], []);
 });
