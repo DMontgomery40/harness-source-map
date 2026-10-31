@@ -15,6 +15,8 @@ import { createGeometry, topsOf } from "./landscape-geometry.js";
 import { BASE_H, landscapeRule, crestEvents, placeLabel, modelSwitches, mapDetail, cappedMarkerHeight, terrainPlacement, playheadEnd, cutXAt, agentPlayhead } from "./scene-rules.js";
 import { shouldRefreshDetail, shouldRedrawNavigator } from "./scene-rules.js";
 import { matcher, isFiltered } from "./fleet/filter.js";
+import { findBreaks } from "./fleet/breaks.js";
+import { buildVoids } from "./fleet/voids.js";
 
 const H = BASE_H;         // world height of the tallest context
 const STAGE_Z0 = 15;
@@ -765,28 +767,37 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   // spawn and return links: luminous threads arcing over the valley. They are drawn at a constant
   // pixel width with an antialiased core and a soft halo, so they stay clean lines at every zoom
   // instead of sub-pixel strips that break into streaks; each fades in and out at its ends.
+  // A link may also carry explicit ends (from, to: [x, y, z]) and, as a lineage break (design §5), cut: the fraction
+  // of the path drawn before it breaks off with a crisp tip, back: drawn from the child toward the parent (a result
+  // that never arrived), brk: drawn over the ridges with an opacity floor.
   function ribbons(list, widthOf, colorOf) {
-    const pos = [], nxt = [], side = [], at = [], wpx = [], col = [], idx = [], ag = [], ev = [];
+    const pos = [], nxt = [], side = [], at = [], wpx = [], col = [], idx = [], ag = [], ev = [], bk = [];
     const c = new THREE.Color();
     const p0 = new THREE.Vector3(), p1 = new THREE.Vector3(), pc = new THREE.Vector3();
     const bez = (t, out) => { const u = 1 - t; return out.set(u * u * p0.x + 2 * u * t * pc.x + t * t * p1.x, u * u * p0.y + 2 * u * t * pc.y + t * t * p1.y, u * u * p0.z + 2 * u * t * pc.z + t * t * p1.z); };
     const q = new THREE.Vector3(), qn = new THREE.Vector3();
     for (const l of list) {
-      if (l.child.kind !== "subagent") continue;
-      const ci = l.type === "spawn" ? l.seg.i0 : l.seg.i1;
-      p0.set(xOf(l.parent, l.parentReq), crest(l.parent, l.parentReq), zOf(l.parent, l.parentReq) - (l.parent.kind === "root" ? 1.2 : 0.4));
-      p1.set(xOf(l.child, ci), crest(l.child, ci), laneZ(Math.max(0, l.seg.lane)) - 0.3);
+      if (l.from) { p0.fromArray(l.from); p1.fromArray(l.to); }
+      else {
+        if (l.child.kind !== "subagent") continue;
+        const ci = l.type === "spawn" ? l.seg.i0 : l.seg.i1;
+        p0.set(xOf(l.parent, l.parentReq), crest(l.parent, l.parentReq), zOf(l.parent, l.parentReq) - (l.parent.kind === "root" ? 1.2 : 0.4));
+        p1.set(xOf(l.child, ci), crest(l.child, ci), laneZ(Math.max(0, l.seg.lane)) - 0.3);
+      }
       pc.set((p0.x + p1.x) / 2, Math.max(p0.y, p1.y) + 0.6, (p0.z + p1.z) / 2);
       const w = widthOf(l);
       c.set(colorOf(l));
-      const ai = agentIndex.get(l.child.id);
+      const ai = l.child ? agentIndex.get(l.child.id) : -1;
       const evX = Math.max(p0.x, p1.x); // the link appears once the playhead's cut has passed both ends
-      const N = 32, v0 = pos.length / 3;
+      const N = 32, v0 = pos.length / 3, cut = l.cut ?? 1;
+      const tt = k => (l.back ? 1 - (k / N) * cut : (k / N) * cut);
+      if (l.samples) l.samples.length = 0;
       for (let k = 0; k <= N; k++) {
-        bez(k / N, q);
+        bez(tt(k), q);
+        if (l.samples && k % 4 === 0) l.samples.push(q.clone());
         // the next point along the curve gives the screen direction; the last one looks back and flips
-        if (k < N) bez((k + 1) / N, qn); else { bez((k - 1) / N, qn); qn.sub(q).negate().add(q); }
-        for (const sd of [-1, 1]) { pos.push(q.x, q.y, q.z); nxt.push(qn.x, qn.y, qn.z); side.push(sd); at.push(k / N); wpx.push(w); col.push(c.r, c.g, c.b); ag.push(ai); ev.push(evX); }
+        if (k < N) bez(tt(k + 1), qn); else { bez(tt(k - 1), qn); qn.sub(q).negate().add(q); }
+        for (const sd of [-1, 1]) { pos.push(q.x, q.y, q.z); nxt.push(qn.x, qn.y, qn.z); side.push(sd); at.push(k / N); wpx.push(w); col.push(c.r, c.g, c.b); ag.push(ai); ev.push(evX); bk.push(l.brk ? 1 : 0); }
         if (k < N) { const a = v0 + k * 2; idx.push(a, a + 2, a + 3, a, a + 3, a + 1); }
       }
     }
@@ -799,19 +810,20 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
     g.setAttribute("aAgent", new THREE.Float32BufferAttribute(ag, 1));
     g.setAttribute("aEventX", new THREE.Float32BufferAttribute(ev, 1));
+    g.setAttribute("aBreak", new THREE.Float32BufferAttribute(bk, 1));
     g.setIndex(idx);
     const mesh = new THREE.Mesh(g, new THREE.ShaderMaterial({
       uniforms: { uOpacity: { value: 0.3 }, uHover: linkHover, uRes: pinUniforms.uRes, uDpr: pinUniforms.uDpr, uCutX: cutU.uCutX, uAgents: shared.uAgents },
       // in a T3 family a link fades with its child ridge when the machine filter leaves that ridge out
       defines: trace.family ? { FLEET: "" } : {},
-      vertexShader: `attribute vec3 color; attribute vec3 aNext; attribute float aSide; attribute float aT; attribute float aW; attribute float aAgent; attribute float aEventX;
+      vertexShader: `attribute vec3 color; attribute vec3 aNext; attribute float aSide; attribute float aT; attribute float aW; attribute float aAgent; attribute float aEventX; attribute float aBreak; varying float vBreak;
         uniform float uHover; uniform vec2 uRes; uniform float uDpr; uniform float uCutX;
         varying vec3 vC; varying float vOn; varying float vSide; varying float vT; varying float vHalf; varying float vW; varying float vFade;
         uniform highp sampler2D uAgents;
         void main(){
-          vFade = 0.0;
+          vFade = 0.0; vBreak = aBreak;
 #ifdef FLEET
-          vFade = texelFetch(uAgents, ivec2(int(aAgent + 0.5), 1), 0).w;
+          if (aAgent >= 0.0) vFade = texelFetch(uAgents, ivec2(int(aAgent + 0.5), 1), 0).w;
 #endif
           if (aEventX > uCutX) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); vC = vec3(0.0); vOn = 0.0; vSide = 0.0; vT = 0.0; vHalf = 1.0; vW = 0.0; return; }
           vC = color; vOn = abs(aAgent - uHover) < 0.5 ? 1.0 : 0.0; vSide = aSide; vT = aT;
@@ -824,13 +836,15 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
           a.xy += vec2(-d.y, d.x) * aSide * vHalf * 2.0 / uRes * a.w;
           gl_Position = a;
         }`,
-      fragmentShader: `uniform float uOpacity; varying vec3 vC; varying float vOn; varying float vSide; varying float vT; varying float vHalf; varying float vW; varying float vFade;
+      fragmentShader: `uniform float uOpacity; varying vec3 vC; varying float vOn; varying float vSide; varying float vT; varying float vHalf; varying float vW; varying float vFade; varying float vBreak;
         void main(){
           float d = abs(vSide) * vHalf;
           float core = clamp(vW * 0.5 + 0.5 - d, 0.0, 1.0);
           float halo = 0.1 * exp(-d * d / max(1.0, vW * vW));
           float ends = mix(smoothstep(0.0, 0.14, vT) * smoothstep(1.0, 0.94, vT), 1.0, vOn);
-          float a = max(core, halo) * mix(uOpacity, 1.0, vOn) * ends * (1.0 - 0.9 * vFade);
+          // a break keeps its crisp cut tip and reads at first glance (an opacity floor)
+          if (vBreak > 0.5) ends = smoothstep(0.0, 0.14, vT);
+          float a = max(core, halo) * max(mix(uOpacity, 1.0, vOn), 0.8 * vBreak) * ends * (1.0 - 0.9 * vFade);
           if (a <= 0.002) discard;
           gl_FragColor = vec4(vC * (1.0 + 0.3 * vOn), a);
           #include <colorspace_fragment>
@@ -842,9 +856,42 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   }
   const linkHover = { value: -1 };
   const maxReport = Math.max(1, ...L.links.map(l => l.size || 0));
-  const spawnLinks = ribbons(L.links.filter(l => l.type === "spawn"), () => 1, () => "#aab8cc");
-  const returnLinks = ribbons(L.links.filter(l => l.type === "return"), l => 1 + 2.4 * Math.sqrt((l.size || 0) / maxReport), () => STRATA[STRATUM_INDEX.agents].color);
-  world.add(spawnLinks, returnLinks);
+  // A T3 family: a spawn line that crosses machines is cool cyan and a little wider. Where T3's lineage disagrees
+  // with the evidence (fleet/breaks.js) the disagreement is drawn: T3's claimed parent line leaves that parent and
+  // breaks off in mid-air (warm red); a result T3 disposed rises from the child toward its parent and breaks off
+  // halfway (pale). Breaks are drawn over the ridges, so they read at first glance.
+  const breaks = trace.family ? findBreaks(trace) : [];
+  const disposed = new Set(breaks.filter(b => b.kind === "disposed").map(b => b.agentId));
+  const crossMachine = l => !!(l.child.machine && l.parent.machine && l.child.machine !== l.parent.machine);
+  const breakList = [];
+  for (const b of breaks) {
+    if (b.kind === "claimed-parent") {
+      const p = agents[agentIndex.get(b.claimed)], child = agents[agentIndex.get(b.agentId)], inf = child && L.info.get(child.id);
+      if (!p?.requests.length || !inf?.segments.length) continue;
+      let pr = 0; while (pr + 1 < p.requests.length && p.requests[pr + 1].t <= child.requests[0].t) pr++;
+      breakList.push({ type: "spawn", parent: p, child, seg: inf.segments[0], parentReq: pr, cut: 0.46, brk: true, color: "#ff9a8a", break: b, samples: [] });
+    }
+  }
+  for (const l of L.links) if (l.type === "return" && disposed.has(l.child.id)) breakList.push({ ...l, back: true, cut: 0.55, brk: true, color: "#9cc9ff", break: breaks.find(b => b.kind === "disposed" && b.agentId === l.child.id), samples: [] });
+  const spawnLinks = ribbons(L.links.filter(l => l.type === "spawn"), l => (crossMachine(l) ? 1.3 : 1), l => (crossMachine(l) ? "#9fe6ff" : "#aab8cc"));
+  const returnLinks = ribbons(L.links.filter(l => l.type === "return" && !disposed.has(l.child.id)), l => 1 + 2.4 * Math.sqrt((l.size || 0) / maxReport), () => STRATA[STRATUM_INDEX.agents].color);
+  const breakLinks = ribbons(breakList, () => 2.6, l => l.color);
+  Object.assign(breakLinks.material, { depthTest: false });
+  breakLinks.renderOrder = 7;
+  world.add(spawnLinks, returnLinks, breakLinks);
+  // Voids (fleet/voids.js), each with the spawn line from the parent T3 records (one mesh each, so it follows the
+  // filter with its void).
+  const voids = buildVoids({ L, W, laneZ, depth: SUB_DEPTH, shared, haze: HAZE });
+  world.add(voids.group);
+  for (const it of voids.items) {
+    const p = agents[agentIndex.get(it.void.parent)];
+    if (!p?.requests.length) continue;
+    let pr = 0; while (pr + 1 < p.requests.length && p.requests[pr + 1].t <= it.void.from) pr++;
+    const link = ribbons([{ from: [xOf(p, pr), crest(p, pr), zOf(p, pr) - (p.kind === "root" ? 1.2 : 0.4)], to: [it.x0, it.top, it.z - 0.3] }], () => 1.3, () => (p.machine !== it.void.machine ? "#9fe6ff" : "#aab8cc"));
+    link.material.uniforms.uOpacity.value = 0.22;
+    it.meshes.push(link);
+    world.add(link);
+  }
 
   // compaction and shrink markers (root ridge front)
   const markLines = [];
@@ -1245,7 +1292,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     });
     agentTex.needsUpdate = true;
     cairns.visible = level === 0;
-    spawnLinks.visible = returnLinks.visible = level === 0;
+    spawnLinks.visible = returnLinks.visible = breakLinks.visible = voids.group.visible = level === 0;
     pins.visible = level === 0;
     flags.visible = level === 0 && (lens === "context" || lens === "egress") && fleetMatch(L.root);
     warnMesh.visible = level === 0 && lens === "inflow";
@@ -1259,6 +1306,8 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   }
   // Other family forms (voids, breaks, fleet ground) register how they follow the filter and the level.
   const fleetFades = [], fleetFramePoints = [];
+  fleetFades.push(match => voids.fade(match));
+  fleetFramePoints.push(match => voids.points(match));
   // The sink animates each ridge's row-2 value toward its target (instant with reduced motion).
   const sink = { from: new Float32Array(AW), to: new Float32Array(AW), t0: 0, on: false };
   const sinkAt = i => agentData[(2 * AW + i) * 4];
@@ -1903,6 +1952,19 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
       }
       if (best) return { kind: "action", agentId: best.a.id, reqIdx: best.i };
     }
+    // A lineage break is drawn over the ridges, so it is picked first: near its drawn path on screen.
+    if (breakLinks.visible) {
+      let bb = null, bd = 7;
+      for (const l of breakList) {
+        if (l.child && !fleetMatch(l.child)) continue;
+        for (let k = 1; k < l.samples.length; k++) {
+          const [ax, ay] = toScreen(l.samples[k - 1]), [bx, by] = toScreen(l.samples[k]);
+          const dd = segDist(px, py, ax, ay, bx, by);
+          if (dd < bd) { bd = dd; bb = l; }
+        }
+      }
+      if (bb) return { kind: "break", agentId: bb.child?.id || null, reqIdx: 0, break: bb.break };
+    }
     let best = null;
     // Slice each row with planes parallel to its face; a point on a slice is inside the block when it
     // is under the slope's height at that distance behind the face (the slope's depth varies with height).
@@ -1927,6 +1989,8 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
         for (const f of [0, 0.1, 0.2, 0.32, 0.45, 0.6, 0.78]) test(row, row.maxDepth * f, seg);
       }
     }
+    const vh = voids.group.visible ? voids.pick(o, d, fleetMatch) : null;
+    if (vh && (!best || vh.t < best.t)) best = { t: vh.t, kind: "void", agentId: null, reqIdx: 0, void: vh.item.void, break: breaks.find(b => b.thread === vh.item.void.thread) || null };
     for (const s of sideReqs) {
       if (!fleetMatch(s.a)) continue;
       const t = (SIDE_Z + 0.55 - o.z) / d.z;
@@ -1950,7 +2014,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5) { down = null; return; }
     down = null;
     const hit = pickAt(e.clientX, e.clientY);
-    if (!hit) return;
+    if (!hit || hit.kind === "void" || (hit.kind === "break" && !hit.agentId)) return; // their words are on hover
     if (hit.kind === "stratum") onPick({ level: 3, agentId: hit.agentId, reqIdx: hit.reqIdx, stratum: hit.stratum });
     else if (hit.kind === "core") onPick({ level: 2, agentId: hit.agentId, reqIdx: hit.reqIdx });
     else if (hit.kind === "action") onPick({ level: 2, agentId: hit.agentId, reqIdx: hit.reqIdx, intent: 'action' });

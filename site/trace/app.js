@@ -22,6 +22,7 @@ import { createHelp } from "./help/help.js";
 import { productLabel } from './products.js';
 import { filterRows, agentRows } from "./fleet/controls.js";
 import { fleetKeys, cycle, isFiltered } from "./fleet/filter.js";
+import { breakWords } from "./fleet/breaks.js";
 
 const params = new URLSearchParams(location.search);
 const $ = s => document.querySelector(s);
@@ -1835,6 +1836,22 @@ function renderFlat() {
 function showTip(hit) {
   const tip = $("#tip");
   if (!hit) { tip.hidden = true; return; }
+  // A T3 family's void or lineage break: what T3 claims and what the evidence shows, only on hover.
+  if (hit.kind === "void" || hit.kind === "break") {
+    const v = hit.void, b = hit.break, a = hit.agentId ? agentById(hit.agentId) : null;
+    const name = v?.title || a?.name || "thread";
+    const where = v ? [v.machine, v.provider, v.model].filter(Boolean).join(" · ") : a ? [a.machine, a.provider, a.model].filter(Boolean).join(" · ") : "";
+    const at = t => (t ? fmtWhen(t) : "unknown");
+    const kids = [el("b", { text: name }), where ? el("div", { class: "m fleet-where", text: where }) : null];
+    if (b) kids.push(el("div", { text: breakWords(b) }), ...b.evidence.map(e => el("div", { class: "m", text: `${e.what}${e.value ? `: ${e.value}` : ""}${e.at ? ` · ${at(e.at)}` : ""}` })));
+    else if (v) kids.push(el("div", { text: v.why === "no-usage" ? "Its provider log shows activity but no model calls, so there is no height to draw." : "No session of this thread is in the bundle." }),
+      el("div", { class: "m", text: `T3 says ${v.status || "nothing"} · ${at(v.from)} to ${at(v.to)}` }));
+    tip.replaceChildren(...kids.filter(Boolean));
+    tip.hidden = false;
+    const x = Math.min(innerWidth - 330, hit.x + 14), y = Math.min(innerHeight - 140, hit.y + 14);
+    tip.style.left = `${x}px`; tip.style.top = `${y}px`;
+    return;
+  }
   const a = agentById(hit.agentId);
   const r = a?.requests[hit.reqIdx];
   if (!r) { tip.hidden = true; return; }
