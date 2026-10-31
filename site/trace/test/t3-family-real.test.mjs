@@ -166,6 +166,35 @@ for (const dir of dirs) {
       if (want.launchJoins != null) assert.equal(n("launch-join"), want.launchJoins);
     });
 
+    // [P1] every launch line left the launching thread's main ridge, though most launches were made by its Workflow
+    // agents: a launched thread leaves the ridge of the agent whose transcript made the call, at that call.
+    await t.test("a launch leaves the ridge of the agent whose transcript made the call, at the call", () => {
+      const byId = new Map(trace.agents.map(a => [a.id, a]));
+      const plain = p => String(p || "").replace(/^agent-sessions\//, "").replace(/\.gz$/, "");
+      const callIn = (r, id) => r && (r.action?.callId === id ? r.action : (r.action?.all || []).find(x => x.callId === id));
+      let checked = 0, fromSubagent = 0;
+      for (const h of (b.bundle.hops || []).filter(h => h.kind === "launch" && h.join?.callId)) {
+        const ridge = trace.agents.find(a => a.thread === h.to.threadId && a.t3);
+        const v = !ridge && trace.voids.find(x => x.thread === h.to.threadId);
+        if (!ridge && !v) continue; // a native subagent thread: drawn inside its own parent's session
+        const parent = byId.get(ridge ? ridge.parentId : v.parent);
+        const at = ridge ? ridge.spawn?.parentRequest : v.parentRequest;
+        assert.ok(parent && at != null, `the launch of ${h.to.threadId.slice(0, 24)} has a caller request`);
+        // the request on the caller's ridge holds the launch call itself, read from the transcript the hop names
+        const act = callIn(parent.requests[at], h.join.callId);
+        assert.ok(act, "the caller's request made the launch call");
+        const file = trace.files[act.args?.file]?.name || "";
+        assert.ok(file.replace(/\.gz$/, "").endsWith(plain(h.join.path)), "the call is in the transcript the hop names");
+        if (/\/subagents\//.test(h.join.path)) { fromSubagent++; assert.notEqual(parent.kind, "root", "a subagent's launch leaves the subagent's ridge"); }
+        if (h.join.calledAt) assert.ok(Math.abs(parent.requests[at].t - Date.parse(h.join.calledAt)) < 120000, "the line leaves at the call");
+        checked++;
+      }
+      // every drawn launched thread was checked (a native subagent thread is drawn in its parent's session instead)
+      const drawn = (b.bundle.hops || []).filter(h => h.kind === "launch" && h.join?.callId && (trace.agents.some(a => a.thread === h.to.threadId && a.t3) || trace.voids.some(x => x.thread === h.to.threadId)));
+      assert.equal(checked, drawn.length);
+      if (want.launchesFromSubagents != null) assert.equal(fromSubagent, want.launchesFromSubagents);
+    });
+
     // [P1] the family path skipped the credential rules: a key in the root title reached trace.title.
     await t.test("a credential planted in the bundle's rows never reaches the family trace", async () => {
       const root = machines.find(m => (m.rows?.threads || []).some(r => r.thread_id === b.bundle.scope.rootThreadId));

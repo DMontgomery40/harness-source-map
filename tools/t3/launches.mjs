@@ -95,7 +95,15 @@ export function launchesInLines(lines) {
    }
   }
  }
- return out;
+ // A transcript can hold one call more than once: Claude Code writes each request's messages again in
+ // api-request-blob lines, which carry no timestamp. One launch per call and thread: the occurrence with a time (the
+ // earliest), else the first.
+ const once = new Map();
+ for (const l of out) {
+  const k = `${l.callId}\u0000${l.threadId}`, had = once.get(k);
+  if (!had || (!had.at && l.at) || (had.at && l.at && l.at < had.at)) once.set(k, l);
+ }
+ return [...once.values()];
 }
 
 // Every launch in one machine's agent-sessions folder (a part's machines/<env>/agent-sessions): each transcript
@@ -126,7 +134,7 @@ export function partLaunches(part, cacheDir) {
  if (cacheFile) {try {mkdirSync(dirname(cacheFile), {recursive: true, mode: 0o700}); writeFileSync(cacheFile, JSON.stringify({version: LAUNCH_CACHE_VERSION, stamp, launches}) + '\n', {mode: 0o600});} catch {}}
  return launches;
 }
-export const LAUNCH_CACHE_VERSION = 1;
+export const LAUNCH_CACHE_VERSION = 2;
 
 // A launch as a hop (Contract A hops[], kind "launch"). The target machine is the one whose store holds the thread:
 // the link's environment, else the one the call asked for (T3 has answered a create_threads call aimed at another

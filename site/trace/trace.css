@@ -749,6 +749,8 @@ button:disabled { opacity: .4; cursor: default; }
 .fleet-filter button { font: inherit; font-size: 12px; line-height: 1; padding: 6px 9px; border-radius: 7px; border: 1px solid #a0b4c829; background: transparent; color: var(--ink-3); cursor: pointer; }
 .fleet-filter button:hover { color: var(--ink); border-color: #c8d7e659; }
 .fleet-filter button[aria-pressed=true] { color: var(--accent); background: #1a3533; border-color: #395d55; }
+/* a machine whose parts were served stale (the harvest held its store): the coverage-gap hatch, quiet */
+.fleet-filter button.stale { background-image: repeating-linear-gradient(135deg, #a0b4c81f 0 2px, transparent 2px 6px); border-style: dashed; }
 .tip .fleet-where { color: #9fe6ff; }
 .fleet-kv { margin-top: 4px; }
 

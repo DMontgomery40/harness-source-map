@@ -9,7 +9,7 @@
 // A machine that sent nothing yet is listed not collected (collect.mjs finishBundle). Builds are kept under
 // private/sessions/t3/fleet/<root>/<stamp>/; a build newer than every input and younger than maxAgeMs is reused.
 import {existsSync, readdirSync, readFileSync, writeFileSync, statSync, rmSync, renameSync, copyFileSync, mkdirSync} from 'node:fs';
-import {homedir} from 'node:os';
+import {homedir, availableParallelism} from 'node:os';
 import {join, relative, sep, dirname} from 'node:path';
 import {openReadOnly} from './sqlite.mjs';
 import {resolveFamily} from './family.mjs';
@@ -166,7 +166,7 @@ const DERIVED = /^(?:net\.ndjson|spans\.idx\.json|spans\.ndjson|desktop-spans\.n
 
 // One machine's parts of the family as one part folder (aliases unchanged: all are the fleet parts key's), with the
 // archive's spans for [sinceMs, untilMs] and its coverage there.
-export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId}) {
+export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId, stale = []}) {
  const env = machineParts[0].environmentId, store = machineParts[0].store;
  const mdir = join(out, 'machines', env);
  ensureDir(mdir);
@@ -208,6 +208,14 @@ export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId}
   files: [],
  };
  if (!entry.parts.length) entry.gaps.push(`no archived spans of this machine cover the family's window (${iso(sinceMs)} .. ${iso(untilMs)})`);
+ // Parts the assembler could not refresh (the hourly harvest held the store): what their threads did after the part
+ // was taken is not in the bundle. {since: the oldest such part, until: the newest change T3 records after it}.
+ if (stale.length) {
+  const since = stale.map(x => x.partCollectedAt).filter(Boolean).sort()[0] || iso(sinceMs);
+  const until = iso(Date.now()), lastChange = stale.map(x => x.changedAt).filter(Boolean).sort().pop() || null;
+  entry.stale = {since, until, lastChange, why: 'harvest-held', roots: stale.length, missing: stale.filter(x => !x.partCollectedAt).length};
+  entry.gaps.push(`stale: the hourly harvest held this machine's store when the family was opened, so ${stale.length} of its thread groups could not be collected again; what they did after ${since} is not in this bundle${lastChange ? ` (T3 records changes until ${lastChange})` : ''}`);
+ }
  const b = emptyBundle({...ordered[0].bundle.scope});
  b.collector = {version: COLLECTOR_VERSION, aliasScheme: 'fleet-parts', partsKeyId};
  b.machines = [entry];
@@ -248,9 +256,10 @@ export function latestBuild(familyDir) {
 // changed after their part was taken (the hourly harvest keeps the rest). A build is reused, across resolver restarts
 // too, while its inputs are the same: the same parts (by collection time), the same assembly version, and every
 // machine's span archive either unchanged or already past the family's window when the build was made.
-export const ASSEMBLY_VERSION = 2;
+export const ASSEMBLY_VERSION = 3;
+const MERGE_WORKERS = Math.max(1, Math.min(8, (availableParallelism?.() || 4) - 1));
 const OPEN_REUSE_MS = 5 * 60000;
-export async function assembleFamily({threadId, environmentId = null, repo = mainRepo(), t3Home = join(homedir(), '.t3'), partsKey = null, onProgress = () => {}, maxAgeMs = null, refreshLocal = true} = {}) {
+export async function assembleFamily({threadId, environmentId = null, repo = mainRepo(), t3Home = join(homedir(), '.t3'), partsKey = null, onProgress = () => {}, maxAgeMs = null, refreshLocal = true, mergeWorkers = MERGE_WORKERS} = {}) {
  const incoming = incomingDir(repo);
  const pk = partsKey || readKeyFile(partsKeyFile());
  // Wall time of each step, in assembly.json (and the resolver's log), to see where a cold open goes.
@@ -264,8 +273,27 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
  let fam = familyParts(parts, {threadId, environmentId});
  mark('readParts');
  onProgress(0.05);
+ // A build younger than OPEN_REUSE_MS whose stored parts are all still the ones it used is served before any local
+ // collection: an active family's threads change all the time, so it would otherwise be collected and rebuilt on
+ // every open. A build that served stale parts of this machine (the harvest held its store) is not, once the
+ // store is free.
+ if (fam.length) {
+  const r0 = familyRoot(fam);
+  const last0 = latestBuild(join(fleetDir(repo), slug(`${r0.environmentId.slice(0, 8)}-${r0.threadId}`)));
+  const a0 = last0 && readJson(join(last0, 'assembly.json'));
+  const age0 = a0 ? Date.now() - Date.parse(a0.builtAt) : Infinity;
+  const current = a0 && fam.every(p => a0.inputs?.[relative(incoming, p.dir)] === p.entry.collectedAt);
+  const held = localEnv && existsSync(join(incoming, localEnv, '.lock'));
+  if (a0 && a0.version === ASSEMBLY_VERSION && age0 < OPEN_REUSE_MS && (maxAgeMs == null || age0 < maxAgeMs) && current && (!a0.stale?.length || held)) {
+   onProgress(1);
+   return {dir: last0, bundle: readBundle(last0), root: r0, reused: true};
+  }
+ }
  // This machine's part of the family: its roots of every thread found so far (the thread itself when it is this
- // machine's, or the link names no machine), collected where the store lacks them or they changed since.
+ // machine's, or the link names no machine), collected where the store lacks them or they changed since. When the
+ // hourly harvest holds the store, the stored parts are used as they are and each one that changed since it was
+ // taken is recorded as stale: a gap of the machine in the bundle, never silent.
+ let staleParts = [];
  if (refreshLocal && localEnv) {
   const harvested = new Set();
   for (let round = 0; round < 4; round++) {
@@ -283,8 +311,16 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
    // The hourly harvest may hold the store: then its parts (at most an hour old) are used as they are, after a short
    // wait.
    try {
-    await storeHarvest({store: incoming, partsKey: pk, label: 'mac', gzip: true, agentSessions: true, repo, lockWaitMs: 3000}, {roots: stale, onProgress: f => onProgress(0.05 + 0.4 * f)});
-   } catch (e) {if (!/held by another harvest/.test(e.message)) throw e; break;}
+    const h = await storeHarvest({store: incoming, partsKey: pk, label: 'mac', gzip: true, agentSessions: true, repo, lockWaitMs: 3000}, {roots: stale, onProgress: f => onProgress(0.05 + 0.4 * f)});
+    timings.localArchive = (timings.localArchive || 0) + (h.timings?.archive || 0);
+    timings.localCollect = (timings.localCollect || 0) + (h.timings?.collect || 0);
+   } catch (e) {
+    if (!/held by another harvest/.test(e.message)) throw e;
+    const changed = new Map(local.map(r => [r.root, r.updatedAt || null]));
+    staleParts = stale.map(r => ({root: r, partCollectedAt: mine.get(r)?.entry.collectedAt || null, changedAt: changed.get(r) || null, why: 'harvest-held'}));
+    mark('localHarvest');
+    break;
+   }
    mark('localHarvest');
    parts = allParts();
    fam = familyParts(parts, {threadId, environmentId});
@@ -311,7 +347,7 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
  const archived = a && Object.entries(archives).every(([env, at]) => a.archives?.[env] === at || (a.window?.until && a.archives?.[env] && Date.parse(a.window.until) <= Date.parse(a.archives[env])));
  // A family with a run still open is rebuilt once its build is five minutes old (its spans keep coming).
  const age = a ? Date.now() - Date.parse(a.builtAt) : Infinity;
- if (a && a.version === ASSEMBLY_VERSION && same(a.inputs, inputs) && archived && (!open || age < OPEN_REUSE_MS) && (maxAgeMs == null || age < maxAgeMs)) {
+ if (a && a.version === ASSEMBLY_VERSION && same(a.inputs, inputs) && archived && (!staleParts.length || a.stale?.length) && (!open || age < OPEN_REUSE_MS) && (maxAgeMs == null || age < maxAgeMs)) {
   onProgress(1);
   return {dir: last, bundle: readBundle(last), root, reused: true};
  }
@@ -324,7 +360,7 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   const byEnv = new Map();
   for (const p of fam) {if (!byEnv.has(p.environmentId)) byEnv.set(p.environmentId, []); byEnv.get(p.environmentId).push(p);}
   const partDirs = [];
-  for (const [env, ps] of byEnv) partDirs.push(combineMachine(ps, join(tmp, 'parts', env), {sinceMs, untilMs, partsKeyId: keyId(pk)}));
+  for (const [env, ps] of byEnv) partDirs.push(combineMachine(ps, join(tmp, 'parts', env), {sinceMs, untilMs, partsKeyId: keyId(pk), stale: env === localEnv ? staleParts : []}));
   mark('combine');
   onProgress(0.6);
   // The bundle, with the family's own key.
@@ -341,7 +377,8 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   const hand = handBundle(repo, root.threadId);
   mark('prepare');
   // The merge's per-machine scan is skipped: the whole bundle is verified below, before it is served.
-  await merge({merge: partDirs, out, partsKey: pk, credValues, repo, t3Home, gzip: true, trusted: localEnv ? [localEnv] : [], verifyParts: false, fastSpans: true, gzipLevel: 1, spanWindow: {sinceMs, untilMs}, spansFromCache: join(cache, 'spans-from'), ...(hand ? {spansFrom: [hand]} : {})});
+  // The merge's files are shared out to worker threads (collect.mjs mergePool), one machine at a time.
+  await merge({merge: partDirs, out, partsKey: pk, credValues, repo, t3Home, gzip: true, trusted: localEnv ? [localEnv] : [], verifyParts: false, fastSpans: true, gzipLevel: 1, spanWindow: {sinceMs, untilMs}, spansFromCache: join(cache, 'spans-from'), workers: mergeWorkers, ...(hand ? {spansFrom: [hand]} : {})});
   mark('merge');
   onProgress(0.9);
   // Verify the whole bundle before it is served.
@@ -350,7 +387,7 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   if (Object.keys(v.hits).length) throw new Error(`the assembled bundle failed verification (${Object.keys(v.hits).length} files with hits); not served`);
   const bundle = readBundle(out);
   writeFileSync(join(out, 'assembly.json'), JSON.stringify({version: ASSEMBLY_VERSION, builtAt: new Date().toISOString(), root, requested: {threadId, environmentId}, window: {since: iso(sinceMs), until: iso(untilMs), open, lastActivity: Number.isFinite(lastMs) ? iso(lastMs) : null},
-   timings: {...timings, totalMs: Date.now() - t0}, inputs, archives, launches: bundle.hops.filter(h => h.kind === 'launch').length, spansFrom: hand ? relative(t3Root(repo), hand) : null, verify: {files: v.files, bytes: v.bytes, hitFiles: 0}}, null, 1) + '\n', {mode: 0o600});
+   timings: {...timings, totalMs: Date.now() - t0}, inputs, archives, stale: staleParts, launches: bundle.hops.filter(h => h.kind === 'launch').length, spansFrom: hand ? relative(t3Root(repo), hand) : null, verify: {files: v.files, bytes: v.bytes, hitFiles: 0}}, null, 1) + '\n', {mode: 0o600});
   const final = join(familyDir, stamp);
   renameSync(out, final);
   // Keep the two newest builds (a page may still be reading the previous one).

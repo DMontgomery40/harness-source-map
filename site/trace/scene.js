@@ -29,6 +29,9 @@ const RINGS = 9;
 // A T3 family's machine filter (fleet/filter.js): how far a filtered-out ridge recedes toward the fog, how low it
 // sinks (a fraction of its height), and how long the sink takes.
 const FLEET_FADE = 0.62, FLEET_SINK = 0.9, FLEET_SINK_MS = 300;
+// A lineage break's opacity floor: it reads at first glance. A launch join (ours, amber) is common, scores in a busy
+// family, so its floor is low: breaks show at first glance, but quietly.
+export const BREAK_FLOOR = 0.9, LAUNCH_FLOOR = 0.32, LAUNCH_COLOR = "#ffcf7a";
 const FOG = new THREE.Color("#0a141e");
 const LIGHT = new THREE.Vector3(-0.38, 0.62, 0.69).normalize();
 
@@ -800,7 +803,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
         if (l.samples && k % 4 === 0) l.samples.push(q.clone());
         // the next point along the curve gives the screen direction; the last one looks back and flips
         if (k < N) bez(tt(k + 1), qn); else { bez(tt(k - 1), qn); qn.sub(q).negate().add(q); }
-        for (const sd of [-1, 1]) { pos.push(q.x, q.y, q.z); nxt.push(qn.x, qn.y, qn.z); side.push(sd); at.push(k / N); wpx.push(w); col.push(c.r, c.g, c.b); ag.push(ai); ev.push(evX); bk.push(l.brk ? 1 : 0); }
+        for (const sd of [-1, 1]) { pos.push(q.x, q.y, q.z); nxt.push(qn.x, qn.y, qn.z); side.push(sd); at.push(k / N); wpx.push(w); col.push(c.r, c.g, c.b); ag.push(ai); ev.push(evX); bk.push(l.brk ? l.floor ?? BREAK_FLOOR : 0); }
         if (k < N) { const a = v0 + k * 2; idx.push(a, a + 2, a + 3, a, a + 3, a + 1); }
       }
     }
@@ -816,7 +819,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     g.setAttribute("aBreak", new THREE.Float32BufferAttribute(bk, 1));
     g.setIndex(idx);
     const mesh = new THREE.Mesh(g, new THREE.ShaderMaterial({
-      uniforms: { uOpacity: { value: 0.3 }, uHover: linkHover, uRes: pinUniforms.uRes, uDpr: pinUniforms.uDpr, uCutX: cutU.uCutX, uAgents: shared.uAgents },
+      uniforms: { uOpacity: { value: 0.3 }, uHover: linkHover, uRes: pinUniforms.uRes, uDpr: pinUniforms.uDpr, uCutX: cutU.uCutX, uAgents: shared.uAgents, uFiltered: linkFiltered },
       // in a T3 family a link fades with its child ridge when the machine filter leaves that ridge out
       defines: trace.family ? { FLEET: "" } : {},
       vertexShader: `attribute vec3 color; attribute vec3 aNext; attribute float aSide; attribute float aT; attribute float aW; attribute float aAgent; attribute float aEventX; attribute float aBreak; varying float vBreak;
@@ -839,15 +842,17 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
           a.xy += vec2(-d.y, d.x) * aSide * vHalf * 2.0 / uRes * a.w;
           gl_Position = a;
         }`,
-      fragmentShader: `uniform float uOpacity; varying vec3 vC; varying float vOn; varying float vSide; varying float vT; varying float vHalf; varying float vW; varying float vFade; varying float vBreak;
+      fragmentShader: `uniform float uOpacity; uniform float uFiltered; varying vec3 vC; varying float vOn; varying float vSide; varying float vT; varying float vHalf; varying float vW; varying float vFade; varying float vBreak;
         void main(){
           float d = abs(vSide) * vHalf;
           float core = clamp(vW * 0.5 + 0.5 - d, 0.0, 1.0);
           float halo = 0.1 * exp(-d * d / max(1.0, vW * vW));
           float ends = mix(smoothstep(0.0, 0.14, vT) * smoothstep(1.0, 0.94, vT), 1.0, vOn);
-          // a break keeps its crisp cut tip and reads at first glance (an opacity floor)
-          if (vBreak > 0.5) ends = smoothstep(0.0, 0.14, vT);
-          float a = max(core, halo) * max(mix(uOpacity, 1.0, vOn), 0.9 * vBreak) * ends * (1.0 - 0.9 * vFade);
+          // a break keeps its crisp cut tip and reads at first glance: an opacity floor (vBreak), quiet for a
+          // launch join, which a machine filter that keeps its ridge lifts to full
+          float floorA = 0.0;
+          if (vBreak > 0.0) { ends = smoothstep(0.0, 0.14, vT); floorA = mix(vBreak, max(vBreak, ${BREAK_FLOOR.toFixed(2)}), uFiltered * (1.0 - vFade)); }
+          float a = max(core, halo) * max(mix(uOpacity, 1.0, vOn), floorA) * ends * (1.0 - 0.9 * vFade);
           if (a <= 0.002) discard;
           gl_FragColor = vec4(vC * (1.0 + 0.3 * vOn), a);
           #include <colorspace_fragment>
@@ -858,6 +863,8 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     return mesh;
   }
   const linkHover = { value: -1 };
+  // 1 while a machine or lab filter is on (setFilter): the launch joins it keeps lit go to full strength
+  const linkFiltered = { value: 0 };
   const maxReport = Math.max(1, ...L.links.map(l => l.size || 0));
   // A T3 family: a spawn line that crosses machines is cool cyan and a little wider. Where T3's lineage disagrees
   // with the evidence (fleet/breaks.js) the disagreement is drawn: T3's claimed parent line leaves that parent and
@@ -879,12 +886,14 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   // A launched thread (launch-join): the spawn line is ours, drawn from the launching agent, and it stops short of the
   // child, whose own T3 row names no parent (amber).
   const launched = new Map(breaks.filter(b => b.kind === "launch-join" && b.agentId).map(b => [b.agentId, b]));
-  for (const l of L.links) if (l.type === "spawn" && launched.has(l.child.id)) breakList.push({ ...l, cut: 0.8, brk: true, color: "#ffcf7a", break: launched.get(l.child.id), samples: [] });
+  // A family can hold scores of launches: their lines are quiet at first glance (LAUNCH_FLOOR, thinner), full on
+  // hover, and full where a machine filter keeps them lit.
+  for (const l of L.links) if (l.type === "spawn" && launched.has(l.child.id)) breakList.push({ ...l, cut: 0.8, brk: true, floor: LAUNCH_FLOOR, color: LAUNCH_COLOR, break: launched.get(l.child.id), samples: [] });
   const spawnLinks = ribbons(L.links.filter(l => l.type === "spawn" && !launched.has(l.child.id)), l => (crossMachine(l) ? 1.3 : 1), l => (crossMachine(l) ? "#9fe6ff" : "#aab8cc"));
   const returnLinks = ribbons(L.links.filter(l => l.type === "return" && !disposed.has(l.child.id)), l => 1 + 2.4 * Math.sqrt((l.size || 0) / maxReport), () => STRATA[STRATUM_INDEX.agents].color);
   // T3's claimed parent is the widest stroke on the scene, so the one break that says T3's lineage is wrong is found
   // without hovering
-  const breakLinks = ribbons(breakList, l => (l.cut === 0.46 ? 3.4 : 2.6), l => l.color);
+  const breakLinks = ribbons(breakList, l => (l.cut === 0.46 ? 3.4 : l.floor === LAUNCH_FLOOR ? 1.6 : 2.6), l => l.color);
   Object.assign(breakLinks.material, { depthTest: false });
   breakLinks.renderOrder = 7;
   world.add(spawnLinks, returnLinks, breakLinks);
@@ -895,8 +904,12 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   for (const it of voids.items) {
     const p = agents[agentIndex.get(it.void.parent)];
     if (!p?.requests.length) continue;
-    let pr = 0; while (pr + 1 < p.requests.length && p.requests[pr + 1].t <= it.void.from) pr++;
-    const link = ribbons([{ from: [xOf(p, pr), crest(p, pr), zOf(p, pr) - (p.kind === "root" ? 1.2 : 0.4)], to: [it.x0, it.top, it.z - 0.3] }], () => 1.3, () => (p.machine !== it.void.machine ? "#9fe6ff" : "#aab8cc"));
+    // a launched void leaves its caller at the request that made the call (fleet/family.js launchCallers)
+    let pr = 0;
+    if (it.void.parentRequest != null) pr = Math.min(it.void.parentRequest, p.requests.length - 1);
+    else while (pr + 1 < p.requests.length && p.requests[pr + 1].t <= it.void.from) pr++;
+    const launch = !!it.void.launch;
+    const link = ribbons([{ from: [xOf(p, pr), crest(p, pr), zOf(p, pr) - (p.kind === "root" ? 1.2 : 0.4)], to: [it.x0, it.top, it.z - 0.3], ...(launch ? { cut: 0.8, brk: true, floor: LAUNCH_FLOOR } : {}) }], () => 1.3, () => (launch ? LAUNCH_COLOR : p.machine !== it.void.machine ? "#9fe6ff" : "#aab8cc"));
     link.material.uniforms.uOpacity.value = 0.22;
     it.meshes.push(link);
     world.add(link);
@@ -1111,7 +1124,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   buildL0Labels();
   // A T3 family's fleet ground (fleet/ground.js): built only for a layout grouped by machine.
   const fleetGround = L.terraces?.length ? buildGround({ L, W, laneZ, subDepth: SUB_DEPTH, rootBack, shared, haze: HAZE, cut: m => cutByX(m),
-    coverage: Object.fromEntries((trace.fleet?.machines || []).map(m => [m.label, m.parts || []])), label: (t, cls, pos, c) => label(t, cls, pos, c, labelGroups.l0) }) : null;
+    coverage: Object.fromEntries((trace.fleet?.machines || []).map(m => [m.label, m.parts || []])), stale: Object.fromEntries((trace.fleet?.machines || []).filter(m => m.stale).map(m => [m.label, m.stale])), label: (t, cls, pos, c) => label(t, cls, pos, c, labelGroups.l0) }) : null;
   if (fleetGround) { world.add(fleetGround.group); fleetFades.push(match => fleetGround.fade(match)); }
 
   // ---- L1: core samples of the focused agent ----
@@ -2153,6 +2166,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
       if (!trace.family) return;
       fleetFilter = isFiltered(f) ? { machine: f.machine || null, lab: f.lab || null } : null;
       fleetMatch = matcher(fleetFilter);
+      linkFiltered.value = fleetFilter ? 1 : 0;
       for (let i = 0; i < AW; i++) { sink.from[i] = sinkAt(i); sink.to[i] = fleetMatch(agents[i]) ? 0 : 1; }
       sink.t0 = performance.now(); sink.on = true;
       if (level === 0) applyFocusEmphasis(0);
