@@ -17,7 +17,11 @@ import {createDesktopRecorder} from './capture/desktop-capture.mjs';
 import {fileCapture} from './capture/file-capture.mjs';
 import {sessionContext} from './sources/context.mjs';
 import {findT3Bundle, bundleFileList} from './t3/bundles.mjs';
-import {ALIAS_KEY_FILE} from './t3/bundle.mjs';
+import {ALIAS_KEY_FILE, partsKeyFile} from './t3/bundle.mjs';
+import {assembleFamily, readParts, storesHold, incomingDir, fleetBuilds, t3Root} from './t3/assemble.mjs';
+import {mainRepo} from './t3/collect.mjs';
+import {openReadOnly} from './t3/sqlite.mjs';
+import {existsSync} from 'node:fs';
 
 export const PORT = 8766;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -94,7 +98,36 @@ const localConfigs=localConfigFiles.flatMap(file=>{try{return [JSON.parse(readFi
 const configuredPaths=key=>localConfigs.flatMap(config=>Array.isArray(config[key])?config[key].filter(p=>typeof p==='string'&&p.startsWith('/')):[]);
 const defaultDatabases=[...configuredPaths('opencodeDatabases'),process.env.OPENCODE_DB ? resolve(dataRoot,process.env.OPENCODE_DB) : join(dataRoot,'opencode.db')];
 // T3 fleet bundles written by tools/t3/collect.mjs (private, never published).
-const defaultT3Roots=[...configuredPaths('t3Bundles'),fileURLToPath(new URL('../private/sessions/t3/',import.meta.url))];
+// T3 fleet bundles: hand-collected ones (tools/t3/collect.mjs) and the fleet harvest's stores and builds, in the main
+// checkout's private/ (a worktree has none of its own). Private, never published.
+const defaultT3Repo=mainRepo();
+const defaultT3Roots=[...new Set([...configuredPaths('t3Bundles'),fileURLToPath(new URL('../private/sessions/t3/',import.meta.url)),t3Root(defaultT3Repo)+'/'])];
+
+// Assembles T3 families from the fleet harvest on request (tools/t3/assemble.mjs): one job per thread at a time, its
+// progress readable while it runs. A thread is T3's when this machine's T3 database or a harvested part holds it.
+export function createAssembler({repo=defaultT3Repo,t3Home=join(homedir(),'.t3'),assemble=assembleFamily}={}){
+ const jobs=new Map();
+ let partsAt=0,parts=[];
+ const freshParts=()=>{if(Date.now()-partsAt>20000){parts=readParts(incomingDir(repo));partsAt=Date.now();}return parts;};
+ async function isThread(threadId){
+  if(storesHold(freshParts(),threadId))return true;
+  let db;try{db=await openReadOnly(join(t3Home,'userdata','statev2.sqlite'));}catch{return false;}
+  try{return db.all('select 1 from orchestration_v2_projection_threads where thread_id = ? limit 1',threadId).length>0;}catch{return false;}finally{db.close();}
+ }
+ function job(threadId,environmentId){
+  const key=`${environmentId||''}\u0000${threadId}`;
+  let j=jobs.get(key);
+  if(j && (!j.settled || Date.now()-j.settledAt<15000))return j;
+  j={progress:0,settled:false};
+  j.promise=assemble({threadId,environmentId,repo,t3Home,onProgress:f=>{j.progress=Math.max(j.progress,f);}})
+   .then(r=>{partsAt=0;return r;})
+   .finally(()=>{j.settled=true;j.settledAt=Date.now();setTimeout(()=>{if(jobs.get(key)===j)jobs.delete(key);},15000).unref?.();});
+  j.promise.catch(()=>{});
+  jobs.set(key,j);
+  return j;
+ }
+ return {enabled:existsSync(partsKeyFile()),isThread,job};
+}
 const defaultCaptureRoots=[...configuredPaths('captureRoots'),join(homedir(),'.harness-source-map','captures'),fileURLToPath(new URL('../private/research',import.meta.url)),...(process.env.TRACE_CAPTURE_ROOTS||'').split(process.platform==='win32'?';':':').filter(Boolean)];
 
 // A T3 thread id names its family's bundle as written, else once percent-decoded (T3 resolves its own links so). A
@@ -124,13 +157,15 @@ async function servable(base,path){
 // A harness session that ran in a collected T3 family: the bundle's agent-sessions index names it by its native id.
 // Returns the family's root thread, the session's own T3 thread and machine, and the session's files in the bundle
 // (served when the session ran on another machine, so it is not in this one's folders). Any bundle version.
-async function t3Session(roots,id){
- // every bundle holding the session; the newest format wins, then the newest collection (as findT3Bundle chooses)
+async function t3Session(roots,id,builds=[]){
+ // every bundle holding the session (hand-collected, and the newest build of each assembled family); the newest
+ // format wins, then the newest collection (as findT3Bundle chooses)
  let best=null;
  const newest=b=>(b.machines||[]).map(m=>m.mergedAt||m.collectedAt||'').sort().pop()||b.createdAt||'';
- for(const root of roots)for(const item of await names(root)){
-  if(!item.isDirectory())continue;
-  const dir=join(root,item.name);let bundle;
+ const dirs=[];
+ for(const root of roots)for(const item of await names(root))if(item.isDirectory())dirs.push(join(root,item.name));
+ for(const dir of [...dirs,...builds]){
+  let bundle;
   try{bundle=JSON.parse(await readFile(join(dir,'bundle.json'),'utf8'));}catch{continue;}
   if(bundle.format!=='t3-fleet-bundle')continue;
   for(const m of bundle.machines||[]){
@@ -152,7 +187,7 @@ async function t3Session(roots,id){
  return best;
 }
 
-export function createTraceServer({roots=defaultRoots,captureRoots=roots===defaultRoots?defaultCaptureRoots:[],opencodeDatabases=roots===defaultRoots?defaultDatabases:[],t3Roots=roots===defaultRoots?defaultT3Roots:[],siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){
+export function createTraceServer({roots=defaultRoots,captureRoots=roots===defaultRoots?defaultCaptureRoots:[],opencodeDatabases=roots===defaultRoots?defaultDatabases:[],t3Roots=roots===defaultRoots?defaultT3Roots:[],t3Assembler=roots===defaultRoots?createAssembler():null,t3Builds=roots===defaultRoots?()=>fleetBuilds(defaultT3Repo):()=>[],siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){
  const tickets=new Map();
  // The family of a session id, found the same way for the manifest and for its local sources (kept briefly,
  // so the Sources lens doesn't walk every project folder on each read).
@@ -265,32 +300,50 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
     }
     if(url.pathname==='/v1/session' && req.method==='POST'){
      const body=await readBody(req);if(body===null)return reply(413,{error:'Request too large'});if(!body)return reply(400,{error:'Invalid request'});
-     let {id,captures,environmentId}=body;
+     let {id,captures,environmentId,progress}=body;
      // A T3-only thread id (mcp:launch:…, thread:…) is compared with bundle contents only, never used as a path.
      const t3id=typeof id==='string'&&!sessionId(id)?t3ThreadId(id):null;
      id=sessionId(id);if(!id&&!t3id)return reply(400,{error:'Invalid session ID'});
      if(environmentId!=null && (typeof environmentId!=='string' || !ENVIRONMENT_ID.test(environmentId)))return reply(400,{error:'Invalid environment ID'});
-     // A T3 thread id with a fleet bundle: the bundle's files (the page opens them as the thread's T3 family).
-     const t3=t3Roots.length?await t3Family(t3Roots,id||t3id,environmentId||null):null;
-     if(t3?.mismatch)return reply(404,{error:'A collected T3 bundle holds that thread, but not on the environment the link names.'});
-     if(environmentId && !t3)return reply(404,{error:'No T3 bundle collected on this machine holds that thread. Collect its family (node tools/t3/collect.mjs), then open it again.'});
-     if(t3){
+     // A T3 thread id: its family's bundle files (the page opens them as the thread's T3 family).
+     const serveBundle=async(bundleDir,bundle,warnings=[])=>{
       const now=Date.now();for(const [key,value] of tickets)if(value.expires<now)tickets.delete(key);
-      const files=[],dir=await realpath(t3.dir);
+      const files=[],dir=await realpath(bundleDir);
       for(const path of await bundleFileList(dir)){
        if(!await servable(dir,path))continue;
        const entry=await fileEntry(dir,path),token=randomBytes(24).toString('hex');
        tickets.set(token,{entry,root:dir,expires:now+24*60*60*1000});
        files.push({path:relative(dir,path).split('\\').join('/'),kind:'t3-bundle',size:entry.source.size,url:'/v1/file/'+token});
       }
-      return reply(200,{id:id||t3id,product:'t3code',files,warnings:[...(t3.bundle.gaps||[])].slice(0,200)});
+      return reply(200,{id:id||t3id,product:'t3code',files,warnings:[...warnings,...(bundle.gaps||[])].slice(0,200)});
+     };
+     const threadId=t3id||id;
+     // The fleet harvest first: the family is assembled now from every machine's latest parts and this machine's
+     // live part. A page that asks for progress gets 202 and its fraction until the bundle is ready.
+     let assemblyError=null;
+     if(t3Assembler?.enabled && (environmentId || t3id || await t3Assembler.isThread(threadId))){
+      const job=t3Assembler.job(threadId,environmentId||null);
+      const settled=job.promise.then(r=>({r}),e=>({e}));
+      const done=progress===true?await Promise.race([settled,new Promise(r=>setTimeout(r,1200,null))]):await settled;
+      if(!done)return reply(202,{pending:true,progress:Math.round(job.progress*1000)/1000});
+      if(done.e){assemblyError=done.e;console.error('T3 family assembly failed:',done.e);}
+      else if(done.r){
+       if(environmentId && !holdsThreadOn(done.r.bundle,environmentId,threadId))return reply(404,{error:'That T3 family holds this thread, but not on the environment the link names.'});
+       return serveBundle(done.r.dir,done.r.bundle);
+      }
      }
-     if(!id)return reply(404,{error:'No T3 bundle collected on this machine holds that thread. Collect its family (node tools/t3/collect.mjs), then open it again.'});
+     // A hand-collected bundle.
+     const t3=t3Roots.length?await t3Family(t3Roots,id||t3id,environmentId||null):null;
+     if(t3?.mismatch)return reply(404,{error:'A collected T3 bundle holds that thread, but not on the environment the link names.'});
+     if(t3)return serveBundle(t3.dir,t3.bundle,assemblyError?[`The family could not be assembled from the fleet harvest (${String(assemblyError.message||assemblyError).slice(0,200)}); showing an earlier collection.`]:[]);
+     const notYet=assemblyError?`Could not assemble that T3 family: ${String(assemblyError.message||assemblyError).slice(0,300)}`
+      :'No machine has reported that T3 thread yet. Every machine sends its T3 families each hour; open it again after the next harvest.';
+     if(environmentId || !id)return reply(assemblyError?500:404,{error:notYet});
      found.delete(id);
      const hit=await findSession(id);
      // A harness session that ran in a collected T3 family says so (the page offers "Show its T3 family"); one that
      // ran on another machine is read from the bundle's copy.
-     const inFamily=t3Roots.length?await t3Session(t3Roots,id):null;
+     const inFamily=t3Roots.length?await t3Session(t3Roots,id,t3Builds()):null;
      if(!hit&&inFamily?.files.length){
       const now=Date.now();for(const [key,value] of tickets)if(value.expires<now)tickets.delete(key);
       const files=[];

@@ -4,13 +4,22 @@ const BASE = 'http://127.0.0.1:8766';
 const headers = {'X-Trace-Request':'1'};
 
 // environmentId: a T3 v2 thread link's environment; the resolver then opens the thread only on that machine.
-export async function openLocalSession(id, {fetcher=fetch,base=BASE,environmentId=null}={}) {
+// A T3 family is assembled on request from every machine's harvest; while that runs the resolver answers 202 with
+// its progress, which goes to onProgress(fraction), and the request is repeated until the family is ready.
+export async function openLocalSession(id, {fetcher=fetch,base=BASE,environmentId=null,onProgress=null,pollMs=700}={}) {
   let health;
   try {health=await fetcher(base+'/health',{credentials:'omit',redirect:'error',signal:AbortSignal.timeout(800)});}
   catch {return null;}
   if(!health.ok)return null;
   try {if((await health.json()).service!=='trace-local')return null;}catch{return null;}
-  const result=await fetcher(base+'/v1/session',{method:'POST',credentials:'omit',redirect:'error',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({id,captures:true,...(environmentId?{environmentId}:{})})});
+  const ask=()=>fetcher(base+'/v1/session',{method:'POST',credentials:'omit',redirect:'error',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({id,captures:true,progress:true,...(environmentId?{environmentId}:{})})});
+  let result=await ask();
+  while(result.status===202){
+    const state=await result.json().catch(()=>({}));
+    if(onProgress&&Number.isFinite(state.progress))onProgress(Math.max(0,Math.min(1,state.progress)));
+    await new Promise(r=>setTimeout(r,pollMs));
+    result=await ask();
+  }
   if(!result.ok){const error=await result.json().catch(()=>({}));throw new Error(error.error||'Could not open the local session');}
   const manifest=await result.json();
   const files = manifest.files.map(file=>{
