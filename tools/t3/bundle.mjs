@@ -4,6 +4,7 @@
 import {mkdirSync, writeFileSync, readFileSync, existsSync, chmodSync, rmSync} from 'node:fs';
 import {gzip, GZIP_OVER, linesBuffer} from './gz.mjs';
 import {randomBytes} from 'node:crypto';
+import {homedir} from 'node:os';
 import {dirname, join, relative, sep} from 'node:path';
 
 export const FORMAT = 't3-fleet-bundle';
@@ -31,6 +32,23 @@ export function aliasKey(dir, {keyFile} = {}) {
  if (existsSync(own)) return parse(readFileSync(own, 'utf8'));
  const key = randomBytes(32);
  ensureDir(dir); writeFileSync(own, key.toString('hex') + '\n', {mode: 0o600});
+ return key;
+}
+
+// The fleet parts key: one 32-byte key on every machine of the fleet, outside any checkout, mode 0600. Harvested
+// parts are aliased with it (redact.mjs FamilyRedactor); it is never written into a part or a bundle. It is made once
+// on the Mac (makePartsKey) and each VM's installer copies it over the ssh link the VM already has to the Mac.
+export const partsKeyFile = () => process.env.T3_PARTS_KEY_FILE || join(process.env.XDG_CONFIG_HOME || join(homedir(), '.config'), 'harness-source-map', 't3-parts.key');
+export function readKeyFile(file) {
+ const hex = readFileSync(file, 'utf8').trim();
+ if (!/^[0-9a-f]{64}$/.test(hex)) throw new Error(`${file} must hold 64 hex characters`);
+ return Buffer.from(hex, 'hex');
+}
+export function makePartsKey(file = partsKeyFile()) {
+ if (existsSync(file)) return readKeyFile(file);
+ ensureDir(dirname(file));
+ const key = randomBytes(32);
+ writeFileSync(file, key.toString('hex') + '\n', {mode: 0o600, flag: 'wx'});
  return key;
 }
 

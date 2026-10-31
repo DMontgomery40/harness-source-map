@@ -7,9 +7,9 @@
 import {execFileSync} from 'node:child_process';
 import {readFileSync, readdirSync, statSync, existsSync} from 'node:fs';
 import {join, relative, sep} from 'node:path';
-import {forbiddenMatcher} from '../privacy/published-scan.mjs';
 import {secretValues} from './secrets.mjs';
 import {fileBuffer, bufferChunks} from './gz.mjs';
+import {ExactSet} from './exact.mjs';
 
 const read = file => {try {return readFileSync(file, 'utf8');} catch {return '';}};
 
@@ -59,11 +59,14 @@ export function* bundleFiles(dir) {
 export const fileChunks = file => bufferChunks(fileBuffer(file));
 
 // A scanner over text: {kind: count} for every credential value and token shape found.
+// Values are found the way forbiddenMatcher (privacy/published-scan.mjs) finds them, one count per distinct value in
+// a text, with exact.mjs's one-pass matcher.
 export function scanner(values) {
- const match = forbiddenMatcher(values);
+ const kinds = new Map(values);
+ const set = new ExactSet(kinds.keys());
  return text => {
   const hits = {};
-  for (const {kind} of match(text)) hits[kind] = (hits[kind] || 0) + 1;
+  for (const v of new Set([...set.find(text)].map(([, v]) => v))) hits[kinds.get(v)] = (hits[kinds.get(v)] || 0) + 1;
   for (const [kind, re] of TOKEN_SHAPES) {const n = (text.match(re) || []).length; if (n) hits[`shape:${kind}`] = (hits[`shape:${kind}`] || 0) + n;}
   return hits;
  };
