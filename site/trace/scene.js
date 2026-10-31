@@ -847,7 +847,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
           float ends = mix(smoothstep(0.0, 0.14, vT) * smoothstep(1.0, 0.94, vT), 1.0, vOn);
           // a break keeps its crisp cut tip and reads at first glance (an opacity floor)
           if (vBreak > 0.5) ends = smoothstep(0.0, 0.14, vT);
-          float a = max(core, halo) * max(mix(uOpacity, 1.0, vOn), 0.8 * vBreak) * ends * (1.0 - 0.9 * vFade);
+          float a = max(core, halo) * max(mix(uOpacity, 1.0, vOn), 0.9 * vBreak) * ends * (1.0 - 0.9 * vFade);
           if (a <= 0.002) discard;
           gl_FragColor = vec4(vC * (1.0 + 0.3 * vOn), a);
           #include <colorspace_fragment>
@@ -878,7 +878,9 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   for (const l of L.links) if (l.type === "return" && disposed.has(l.child.id)) breakList.push({ ...l, back: true, cut: 0.55, brk: true, color: "#9cc9ff", break: breaks.find(b => b.kind === "disposed" && b.agentId === l.child.id), samples: [] });
   const spawnLinks = ribbons(L.links.filter(l => l.type === "spawn"), l => (crossMachine(l) ? 1.3 : 1), l => (crossMachine(l) ? "#9fe6ff" : "#aab8cc"));
   const returnLinks = ribbons(L.links.filter(l => l.type === "return" && !disposed.has(l.child.id)), l => 1 + 2.4 * Math.sqrt((l.size || 0) / maxReport), () => STRATA[STRATUM_INDEX.agents].color);
-  const breakLinks = ribbons(breakList, () => 2.6, l => l.color);
+  // T3's claimed parent is the widest stroke on the scene, so the one break that says T3's lineage is wrong is found
+  // without hovering
+  const breakLinks = ribbons(breakList, l => (l.cut === 0.46 ? 3.4 : 2.6), l => l.color);
   Object.assign(breakLinks.material, { depthTest: false });
   breakLinks.renderOrder = 7;
   world.add(spawnLinks, returnLinks, breakLinks);

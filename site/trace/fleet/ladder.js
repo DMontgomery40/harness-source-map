@@ -25,8 +25,9 @@ export function buildLadder(net, spans, call, label = net.label) {
   const receiver = [];
   if (join) {
     const rix = spans.get(join.env);
+    // the receiving chain is indented under the caller's, its depth limit counted from the receiving span
     const walk = (i, d, floor) => {
-      if (receiver.length >= MAX_ROWS || d > MAX_DEPTH) return;
+      if (receiver.length >= MAX_ROWS || d - caller.length > MAX_DEPTH) return;
       let t0 = rix.t0[i] - shift, t1 = rix.t1[i] - shift, clamped = false;
       if (t0 < floor) { t1 += floor - t0; t0 = floor; clamped = true; }
       receiver.push({ side: "receiver", depth: d, name: rix.name(i), kind: rix.kind(i), t0, t1, clamped });

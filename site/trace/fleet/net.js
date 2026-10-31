@@ -4,8 +4,9 @@
 // (the orchestration thread ids in its delegateTask subtree: the long-lived ancestors above it are written only when
 // they end), and each link's clock offset bounded by its joined pairs.
 //
-// A v2 bundle's net.ndjson.gz (collector) carries the same facts precomputed; a v1 bundle is derived here, in the
-// worker, from fleet/spans.js indexes. Coverage always comes from each machine part's collected window.
+// Derived here, in the worker, from fleet/spans.js indexes of the bundle's span archives (the collector's v2
+// net.ndjson.gz is meant to carry the same facts precomputed; it is not read yet). Coverage always comes from each
+// machine part's collected window, never from a merged span file's first and last span.
 const WAIT_MS = 45000;
 const ANCHORS = new Set(["OrchestratorMcpService.delegateTask", "RemoteDelegation.followOnce"]);
 const PEER_URL = /^http:\/\/127\.0\.0\.1:(\d+)(\/[^?#]*)?/;
@@ -100,11 +101,17 @@ export function buildNet(machines, spans) {
   const waits = [...waitCalls.values()].map(c => { const ix = spans.get(c.env); return { from: c.env, to: c.to, t0: ix.t0[c.call], t1: ix.t1[c.call], threads: c.threads, call: c }; })
     .filter(w => w.t1 - w.t0 >= WAIT_MS).sort((a, b) => a.t0 - b.t0);
 
-  // Join rate per directed link, inside the receiver's collected span range.
+  // Join rate per directed link: every caller span, those inside a collected window of the receiver's part (start and
+  // end: a span is written when it ends, so a call still open when the part was taken has no receiving span yet),
+  // and those joined to a receiving span.
+  const windows = new Map(machines.map(m => [m.id, (m.part?.parts?.length ? m.part.parts.map(p => p.window) : [m.part?.window]).filter(Boolean)
+    .map(w => [Date.parse(w.since), Date.parse(w.until)])]));
   const rate = {};
   for (const c of calls) {
-    const k = `${c.env}>${c.to}`, r = rate[k] ||= { calls: 0, joined: 0 };
-    r.calls++; if (c.joins?.length) r.joined++;
+    const k = `${c.env}>${c.to}`, r = rate[k] ||= { calls: 0, inWindow: 0, joined: 0 };
+    r.calls++;
+    if ((windows.get(c.to) || []).some(([a, b]) => c.t0 >= a && c.t1 <= b)) r.inWindow++;
+    if (c.joins?.length) r.joined++;
   }
   return { calls, joins, waits, clock, rate, label: env => label.get(env) || String(env).slice(0, 8) };
 }

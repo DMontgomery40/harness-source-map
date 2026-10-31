@@ -15,6 +15,8 @@ import { parseT3EventLines, threadLines } from "../adapters/t3-events.js";
 import { findBreaks } from "../fleet/breaks.js";
 import { fleetKeys, matcher, litAgents } from "../fleet/filter.js";
 import { buildLayout } from "../minimap.js";
+import { indexSpans } from "../fleet/spans.js";
+import { buildNet } from "../fleet/net.js";
 
 const dirs = (process.env.T3_BUNDLE || "").split(":").filter(Boolean);
 const expect = process.env.T3_EXPECT ? JSON.parse(process.env.T3_EXPECT) : {};
@@ -92,6 +94,19 @@ for (const dir of dirs) {
       if (want.disposed != null) assert.equal(n("disposed"), want.disposed);
       if (want.claimedParent != null) assert.equal(n("claimed-parent"), want.claimedParent);
       if (want.claimedRun != null) assert.equal(n("claimed-run"), want.claimedRun);
+    });
+
+    await t.test("every peer call inside the receiver's collected window joins its receiving span", async () => {
+      const spans = new Map();
+      for (const m of machines) { const e = b.get(`${m.dir}spans.ndjson`); if (e) spans.set(m.id, await indexSpans(e.source, { gz: /\.gz$/.test(e.path) })); }
+      const net = buildNet(machines, spans);
+      const links = Object.values(net.rate).filter(r => r.inWindow);
+      assert.ok(links.length, "the family has peer calls");
+      for (const r of links) assert.equal(r.joined, r.inWindow);
+      // the forwarded waits this family owns by the thread ids in their delegateTask subtree
+      const fam = new Set((b.bundle.machines || []).flatMap(m => m.threadIds || []));
+      const owned = net.waits.filter(w => w.threads.some(id => fam.has(id))).length;
+      if (want.familyWaits != null) assert.equal(owned, want.familyWaits);
     });
 
     await t.test("the filter's lit set is exactly the machine's threads, and it moves no ridge", () => {
