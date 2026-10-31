@@ -25,20 +25,23 @@ export function restoreLandscape(S, view) {
 }
 
 // ctx: { L (with L.terraces), W, laneZ, subDepth, rootBack, shared, haze, coverage: machine -> [{ since, until }],
+//        stale: machine -> { since, until } (parts served unrefreshed),
 //        label(text, cls, pos, center), cut(material) }
-export function buildGround({ L, W, laneZ, subDepth, rootBack, shared, haze, coverage, label, cut }) {
+export function buildGround({ L, W, laneZ, subDepth, rootBack, shared, haze, coverage, stale = {}, label, cut }) {
   const group = new THREE.Group();
   const terraces = [];
   const kerbZ = t => laneZ(t.lane1) + 1.9;
   const backZ = (t, i) => (i === 0 ? -rootBack - 3 : laneZ(t.lane0) - subDepth - 1.4);
-  const slab = (tint, cov) => new THREE.ShaderMaterial({
-    uniforms: { uFog: shared.uFog, uFocusDist: shared.uFocusDist, uTint: { value: new THREE.Color(tint) }, uFade: { value: 0 }, uCov: { value: cov } },
+  const slab = (tint, cov, stale) => new THREE.ShaderMaterial({
+    uniforms: { uFog: shared.uFog, uFocusDist: shared.uFocusDist, uTint: { value: new THREE.Color(tint) }, uFade: { value: 0 }, uCov: { value: cov }, uStale: { value: stale } },
     vertexShader: `varying vec3 vW; varying float vD; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vec4 mv = viewMatrix * w; vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
-    fragmentShader: `${haze} uniform vec3 uFog; uniform vec3 uTint; uniform float uFade; uniform vec2 uCov[${MAX_PARTS}]; varying vec3 vW; varying float vD;
+    fragmentShader: `${haze} uniform vec3 uFog; uniform vec3 uTint; uniform float uFade; uniform vec2 uCov[${MAX_PARTS}]; uniform vec2 uStale; varying vec3 vW; varying float vD;
       void main(){
-        // outside every collected span window of the machine the floor is hatched dark: nothing was collected there
+        // outside every collected span window of the machine the floor is hatched dark: nothing was collected there;
+        // so is the span its stale parts miss (served unrefreshed: the harvest held the store)
         float out0 = 1.0;
         for (int k = 0; k < ${MAX_PARTS}; k++) if (vW.x >= uCov[k].x && vW.x <= uCov[k].y) out0 = 0.0;
+        if (vW.x >= uStale.x && vW.x <= uStale.y) out0 = 1.0;
         float s = fract((vW.x + vW.z) * 0.9); float line = 1.0 - smoothstep(0.06, 0.16, abs(s - 0.5));
         vec3 c = out0 > 0.5 ? mix(vec3(0.020, 0.025, 0.034), vec3(0.20, 0.23, 0.28), line * 0.45) : uTint;
         gl_FragColor = vec4(mix(c, uFog, haze(vW, vD)), 0.92 * (1.0 - 0.6 * uFade));
@@ -51,7 +54,9 @@ export function buildGround({ L, W, laneZ, subDepth, rootBack, shared, haze, cov
     // each collected part's window (v2 machines have several, with gaps between them), as world x ranges
     const parts = (coverage?.[t.machine] || []).filter(p => p.since != null).sort((a, b) => a.since - b.since).slice(0, MAX_PARTS);
     const cov = Array.from({ length: MAX_PARTS }, (_, k) => parts[k] ? new THREE.Vector2(L.X(parts[k].since) * W, parts[k].until ? L.X(parts[k].until) * W + 0.01 : 1e9) : new THREE.Vector2(1e9, -1e9));
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(W + 10, z1 - z0).rotateX(-Math.PI / 2), slab(i % 2 ? "#0e151e" : "#101923", cov));
+    const st = stale?.[t.machine];
+    const staleX = st?.since != null ? new THREE.Vector2(L.X(st.since) * W, st.until != null ? L.X(st.until) * W + 0.01 : 1e9) : new THREE.Vector2(1e9, -1e9);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(W + 10, z1 - z0).rotateX(-Math.PI / 2), slab(i % 2 ? "#0e151e" : "#101923", cov, staleX));
     floor.position.set(W / 2, 0.005, (z0 + z1) / 2);
     floor.renderOrder = -1;
     const kerb = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-4, 0.06, z1), new THREE.Vector3(W + 5, 0.06, z1)]),

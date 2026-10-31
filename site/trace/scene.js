@@ -1124,7 +1124,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   buildL0Labels();
   // A T3 family's fleet ground (fleet/ground.js): built only for a layout grouped by machine.
   const fleetGround = L.terraces?.length ? buildGround({ L, W, laneZ, subDepth: SUB_DEPTH, rootBack, shared, haze: HAZE, cut: m => cutByX(m),
-    coverage: Object.fromEntries((trace.fleet?.machines || []).map(m => [m.label, m.parts || []])), label: (t, cls, pos, c) => label(t, cls, pos, c, labelGroups.l0) }) : null;
+    coverage: Object.fromEntries((trace.fleet?.machines || []).map(m => [m.label, m.parts || []])), stale: Object.fromEntries((trace.fleet?.machines || []).filter(m => m.stale).map(m => [m.label, m.stale])), label: (t, cls, pos, c) => label(t, cls, pos, c, labelGroups.l0) }) : null;
   if (fleetGround) { world.add(fleetGround.group); fleetFades.push(match => fleetGround.fade(match)); }
 
   // ---- L1: core samples of the focused agent ----

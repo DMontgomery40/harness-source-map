@@ -598,6 +598,52 @@ function bundleRedactor(out, bundle, values, o = {}) {
  return new FamilyRedactor({familyKey: key, partsKey, values});
 }
 
+// A pool of merge workers (merge-worker.mjs) for a fleet assembly: a machine's files go to the next free worker,
+// largest first. run(tasks) resolves with each task and its reply once all are done.
+async function mergePool(n, data) {
+ const {Worker} = await import('node:worker_threads');
+ const workers = Array.from({length: n}, () => new Worker(new URL('./merge-worker.mjs', import.meta.url), {workerData: data}));
+ let seq = 0;
+ const run = tasks => new Promise((resolve, reject) => {
+  const queue = [...tasks].sort((a, b) => b.size - a.size), results = [];
+  let open = 0, failed = false;
+  const fail = e => {if (!failed) {failed = true; reject(e);}};
+  const onError = e => fail(e);
+  const done = () => {for (const w of workers) w.off('error', onError); resolve(results);};
+  const next = w => {
+   if (failed) return;
+   const t = queue.shift();
+   if (!t) {if (!open) done(); return;}
+   open++;
+   const id = ++seq;
+   const on = msg => {
+    if (msg.id !== id) return;
+    w.off('message', on);
+    open--;
+    if (msg.error) return fail(new Error(`merge worker: ${msg.error}`));
+    results.push({...t, ...msg});
+    next(w);
+   };
+   w.on('message', on);
+   w.postMessage({id, src: t.src, rel: t.rel, mode: t.mode});
+  };
+  if (!queue.length) return resolve([]);
+  for (const w of workers) w.on('error', onError);
+  for (const w of workers) next(w);
+ });
+ return {run, close: () => Promise.all(workers.map(w => w.terminate()))};
+}
+
+// The everywhere-pass over a file a worker wrote: values promoted after it was written are removed from it too.
+function rewriteExact(path, redactor, level) {
+ const lines = [...bufferLines(fileBuffer(path))];
+ let changed = false;
+ const out = lines.map(l => {const r = redactor.exactOnly(l); if (r !== l) changed = true; return r;});
+ if (!changed) return;
+ const buf = linesBuffer(out);
+ writeFileSync(path, path.endsWith('.gz') ? gzip(buf, level) : buf, {mode: 0o600});
+}
+
 const DERIVED = /\/(?:net\.ndjson|spans\.idx\.json)(?:\.gz)?$/;
 async function merge(o) {
  if (!o.out) throw new Error('--merge needs --out <bundleDir>');
@@ -619,9 +665,13 @@ async function merge(o) {
  // aliases are mapped.
  const reline = (l, own) => own ? redactor.fromParts(l) : redactor.string(fleet ? redactor.fromParts(l) : l);
  for (const [v, kind] of credValues) if (!/git email/.test(kind)) redactor.addValue(v, 'secret-value');
+ // A fleet assembly (o.workers) shares each machine's files out to worker threads; the spans, the bundle record and
+ // the derived files stay here.
+ const pool = fleet && o.workers > 1 ? await mergePool(o.workers, {out, familyKey: key.toString('hex'), partsKey: redactor.partsKey.toString('hex'), values: [...redactor.values], credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6}) : null;
  const fromBundles = (o.spansFrom || []).map(d => resolve(d)).map(d => ({dir: d, key: readAliasKey(d), bundle: readBundle(d, {anyVersion: true})}));
  for (const f of fromBundles) if (!f.key) throw new Error(`--spans-from ${f.dir} has no alias key; its aliases cannot be re-keyed`);
  const results = [];
+ try {
  for (const partDir of o.merge) {
   const part = resolve(partDir);
   let pb = readBundle(part);
@@ -700,7 +750,7 @@ async function merge(o) {
    // (the earliest end among them is where its log's retention began).
    let partMinEnd = null;
    const noteEnds = lines => {for (const l of lines) {const m = l && l.match(/"endTimeUnixNano":"(\d+)"/); if (m) {const e = Number(BigInt(m[1]) / 1000000n); if (partMinEnd === null || e < partMinEnd) partMinEnd = e;}}};
-   const done = new Set();
+   const done = new Set(), tasks = [];
    for (const f of bundleFiles(src)) {
     const rel = relative(part, f).split(sep).join('/').replace(/\.gz$/, '');
     if (DERIVED.test(rel)) continue;
@@ -709,14 +759,25 @@ async function merge(o) {
     // assembly (o.fastSpans) it gets this machine's exact values and its aliases mapped; an older part gets the
     // whole pass. The assembled bundle is verified whole before it is served.
     const same = fleet && o.fastSpans && Array.isArray(m.sourceCollectors) && m.sourceCollectors.length > 0 && m.sourceCollectors.every(v => v === COLLECTOR_VERSION);
-    const lines = [...bufferLines(fileBuffer(f))].map(l => own ? reline(l, true) : same ? redactor.exactOnly(redactor.fromParts(l)) : reline(l, false));
     const spanRel = SPAN_RELS.find(r => rel === `${mdir}/${r}`);
+    if (pool && !spanRel) {tasks.push({src: f, rel, mode: own ? 'own' : same ? 'same' : 'full', size: statSync(f).size}); continue;}
+    const lines = [...bufferLines(fileBuffer(f))].map(l => own ? reline(l, true) : same ? redactor.exactOnly(redactor.fromParts(l)) : reline(l, false));
     if (spanRel === 'spans.ndjson') noteEnds(lines);
     if (spanRel) {writeSpans(spanRel, lines); done.add(spanRel);} else writer.lines(rel, lines);
    }
    for (const rel of SPAN_RELS) if (!done.has(rel) && (priorSpans[rel].length || oldSpans[rel].some(x => x.spans === null || x.spans.length))) writeSpans(rel, []);
    if (priorEntry) m.threadIds = [...new Set([...(priorEntry.threadIds || []), ...(m.threadIds || [])])];
+   // The workers' files: their redaction counts, the values their shapes revealed (promoted below, with the
+   // spans'), and the files the guard would not write.
+   const pooled = tasks.length ? await pool.run(tasks) : [];
+   for (const r of pooled) {
+    for (const [k, n] of Object.entries(r.counts)) redactor.counts[k] = (redactor.counts[k] || 0) + n;
+    for (const [v, rule] of r.found) if (!redactor.values.has(v)) redactor.found.set(v, rule);
+    gaps.push(...r.gaps);
+   }
    const {promoted} = writer.flush();
+   // a value promoted now is removed from the workers' files too (the everywhere-pass, as PartWriter does)
+   if (promoted) for (const r of pooled) if (r.written) rewriteExact(r.written, redactor, o.gzipLevel || 6);
    const verify = o.verifyParts === false ? {files: 0, bytes: 0, hits: {}, deferred: 'the whole bundle is verified after the merge'} : scanBundle(out, {values: credValues, only: [mdir]});
    const own = (m.parts || priorParts(m, 'part')).map(p => p.source !== 'live' || p.basis === 'span-end' || partMinEnd === null ? p
     : {...p, window: {since: iso(Math.max(Date.parse(p.window.since), partMinEnd)), until: p.window.until}, basis: 'span-end', recomputed: 'from the part spans at merge'});
@@ -739,6 +800,7 @@ async function merge(o) {
    if (i >= 0 && bundle.machines[i].status !== 'collected') bundle.machines[i] = m;
   }
  }
+ } finally {await pool?.close();}
  if (!o.noDerive) writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6});
  finishBundle(bundle);
  writeBundle(out, bundle);
@@ -830,10 +892,12 @@ export async function storeHarvest(o, {roots: given = null, onProgress = null} =
   const redactor = new Redactor({aliasKey: partsKey, values});
   for (const [v, kind] of credValues) if (!/git email/.test(kind)) redactor.addValue(v, 'secret-value');
   const started = new Date().toISOString();
+  const tArchive = Date.now();
   const archive = o.noArchive ? null : await updateArchive({logsDir: join(t3Home, 'userdata', 'logs'), dir, redactor, retainDays: o.retainDays || 14,
    makeWriter: () => {const gaps = []; const writer = new PartWriter(dir, redactor, {gzip: true}); guardWriter(writer, scanner(credValues), credValues, redactor, gaps); return {writer, gaps};}});
   const clock = clockReading(o);
   const results = [];
+  const tCollect = Date.now();
   for (const [i, root] of roots.entries()) {
    onProgress?.(i / Math.max(1, roots.length));
    try {results.push(await collect({...o, root, out: join(dir, 'families', slug(root)), partsKey, noSpans: true, noDerive: true, clock, since: undefined, until: undefined}));}
@@ -843,7 +907,8 @@ export async function storeHarvest(o, {roots: given = null, onProgress = null} =
    roots: roots.length, collected: results.filter(r => !r.error).length, errors: results.filter(r => r.error).map(r => ({root: r.root, error: r.error})),
    verifyHits: results.filter(r => r.machine?.verify?.hitFiles).length, archive: archive?.report || null, archiveGaps: archive?.gaps || []};
   writeFileSync(join(dir, 'harvest.json'), JSON.stringify(record, null, 1) + '\n', {mode: 0o600});
-  return {dir, environmentId, archive, results, record};
+  // wall time of the archive update and of the roots' collection (the assembler logs them)
+  return {dir, environmentId, archive, results, record, timings: {archive: tCollect - tArchive, collect: Date.now() - tCollect}};
  }, o.lockWaitMs != null ? {waitMs: o.lockWaitMs} : {});
 }
 

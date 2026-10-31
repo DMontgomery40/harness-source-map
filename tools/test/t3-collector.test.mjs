@@ -3,7 +3,7 @@
 // counts and structure only. Ids are read at runtime; none is written here.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {existsSync, mkdtempSync, rmSync, readdirSync, statSync, readFileSync} from 'node:fs';
+import {existsSync, mkdtempSync, rmSync, readdirSync, statSync, readFileSync, mkdirSync, symlinkSync, writeFileSync} from 'node:fs';
 import {homedir, tmpdir} from 'node:os';
 import {join, dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -15,7 +15,7 @@ import {readBundle, ALIAS_KEY_FILE, emptyBundle, validateBundle, VERSION} from '
 import {bundleFileList, findT3Bundle} from '../t3/bundles.mjs';
 import {Redactor, FamilyRedactor, familyKey, ALIAS_MARK} from '../t3/redact.mjs';
 import {ExactSet} from '../t3/exact.mjs';
-import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir, addLaunchHops} from '../t3/assemble.mjs';
+import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir, addLaunchHops, assembleFamily} from '../t3/assemble.mjs';
 import {readNdjsonLines} from '../t3/gz.mjs';
 import {stripMessageText} from '../t3/family.mjs';
 import {classifyName, classifySpan, cutParts, EDGE_KINDS, ROLES} from '../t3/net.mjs';
@@ -275,6 +275,52 @@ test('launched threads join their launcher\'s family by the launch call\'s own r
    } finally {d.close();}
   }
  } finally {rmSync(cache, {recursive: true, force: true});}
+});
+
+// [P2] a family opened while the hourly harvest held this machine's store was served with the stored parts and no
+// word that they were stale. Run against a scratch copy of the stores (links to the real ones) whose own machine
+// folder holds a live lock, so the real store is never written.
+test('a family opened while the harvest holds this machine\'s store marks its changed parts stale (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : (!existsSync(incomingDir(mainRepo)) || !existsSync(db)) && 'no fleet harvest or T3 home on this machine', timeout: 1800000}, async () => {
+ const env = readFileSync(join(t3Home, 'userdata', 'environment-id'), 'utf8').trim();
+ const store = incomingDir(mainRepo), mine = join(store, env);
+ if (!existsSync(mine)) return;
+ // a root of this machine whose threads changed after its part was taken (the smallest such part)
+ const d = await openReadOnly(db);
+ let pick = null;
+ try {
+  const parts = readParts(store);
+  for (const p of parts.filter(p => p.environmentId === env).sort((a, b) => a.threadIds.size - b.threadIds.size)) {
+   const ids = [...p.threadIds].slice(0, 400);
+   const last = d.all(`select max(updated_at) at from orchestration_v2_projection_threads where thread_id in (${ids.map(() => '?').join(',')})`, ...ids)[0]?.at;
+   if (last && Date.parse(last) > Date.parse(p.entry.collectedAt)) {pick = p; break;}
+  }
+ } finally {d.close();}
+ if (!pick) return; // nothing of this machine changed since the last harvest
+ const tmp = mkdtempSync(join(tmpdir(), 't3-stale-'));
+ const lockOf = join(mine, '.lock');
+ const before = existsSync(join(mine, 'harvest.json')) ? statSync(join(mine, 'harvest.json')).mtimeMs : null;
+ try {
+  const inc = incomingDir(tmp);
+  mkdirSync(join(inc, env), {recursive: true});
+  for (const e of readdirSync(store)) if (e !== env) symlinkSync(join(store, e), join(inc, e));
+  for (const n of readdirSync(mine)) if (n !== '.lock') symlinkSync(join(mine, n), join(inc, env, n));
+  mkdirSync(join(inc, env, '.lock'));
+  writeFileSync(join(inc, env, '.lock', 'pid'), String(process.pid)); // a live owner: the harvest "holds" the store
+  const r = await assembleFamily({threadId: pick.root, environmentId: env, repo: tmp});
+  const m = r.bundle.machines.find(x => x.environmentId === env);
+  assert.ok(m.stale && m.stale.roots >= 1 && m.stale.why === 'harvest-held', 'the machine records its stale parts');
+  assert.ok(Date.parse(m.stale.since) <= Date.parse(m.stale.until));
+  assert.ok(m.gaps.some(g => g.startsWith('stale: ')) && r.bundle.gaps.some(g => g.includes('stale: ')), 'and says so as a gap of the bundle');
+  const a = JSON.parse(readFileSync(join(r.dir, 'assembly.json'), 'utf8'));
+  assert.ok(a.stale.some(x => x.root === pick.root && x.partCollectedAt === pick.entry.collectedAt), 'assembly.json names the stale part');
+  // served again while the store is still held: the same stale build, not a silent one
+  const again = await assembleFamily({threadId: pick.root, environmentId: env, repo: tmp});
+  assert.equal(again.dir, r.dir);
+ } finally {
+  rmSync(tmp, {recursive: true, force: true});
+ }
+ assert.ok(!existsSync(lockOf) || readFileSync(join(lockOf, 'pid'), 'utf8').trim() !== String(process.pid), 'the real store was never locked by the test');
+ assert.equal(existsSync(join(mine, 'harvest.json')) ? statSync(join(mine, 'harvest.json')).mtimeMs : null, before, 'nor written');
 });
 
 test('message text in rows is stripped to its length and a hash', () => {

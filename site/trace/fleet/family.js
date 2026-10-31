@@ -389,7 +389,9 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
       t3Version: m.environment?.serverVersion || null,
       parts: (m.part.parts?.length ? m.part.parts : [{ collectedAt: m.part.collectedAt, window: m.part.window }]).map(p => ({ since: ms(p.window?.since), until: ms(p.window?.until), collectedAt: ms(p.collectedAt) })).filter(p => p.since != null),
       peerLinks: (m.peerLinks || []).map(l => ({ to: l.environment_id, label: nameOf(l.environment_id), port: Number(String((l.urls_json || [])[0] || "").split(":").pop()) || null, access: l.access || null, fenced: !!l.fenced })),
-      clock: m.part.clock || null
+      clock: m.part.clock || null,
+      // parts the assembler served unrefreshed (the hourly harvest held the store): nothing after since is in the bundle
+      stale: m.part.stale ? { since: ms(m.part.stale.since), until: ms(m.part.stale.until), lastChange: ms(m.part.stale.lastChange), roots: m.part.stale.roots || 0, why: m.part.stale.why || null } : null
     })),
     threads: [...threads.values()].map(t => ({ id: t.id, machine: nameOf(t.env), environmentId: t.env, title: t.title, provider: PRODUCTS[t.provider] || t.provider || null, lab: labOf(t, evidence.get(t.id)).lab,
       agentId: agentOfThread.get(t.id) || null, uncollected: t.uncollected || null, native: t.native ? { nativeId: t.native.nativeId, product: t.native.product, path: t.native.path } : null })),
