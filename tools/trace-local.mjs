@@ -105,7 +105,7 @@ const defaultT3Roots=[...new Set([...configuredPaths('t3Bundles'),fileURLToPath(
 
 // Assembles T3 families from the fleet harvest on request (tools/t3/assemble.mjs): one job per thread at a time, its
 // progress readable while it runs. A thread is T3's when this machine's T3 database or a harvested part holds it.
-export function createAssembler({repo=defaultT3Repo,t3Home=join(homedir(),'.t3'),assemble=assembleFamily}={}){
+export function createAssembler({repo=defaultT3Repo,t3Home=join(homedir(),'.t3'),assemble=assembleFamily,enabled=null}={}){
  const jobs=new Map();
  let partsAt=0,parts=[];
  const freshParts=()=>{if(Date.now()-partsAt>20000){parts=readParts(incomingDir(repo));partsAt=Date.now();}return parts;};
@@ -126,7 +126,7 @@ export function createAssembler({repo=defaultT3Repo,t3Home=join(homedir(),'.t3')
   jobs.set(key,j);
   return j;
  }
- return {enabled:existsSync(partsKeyFile()),isThread,job};
+ return {enabled:enabled??existsSync(partsKeyFile()),isThread,job};
 }
 const defaultCaptureRoots=[...configuredPaths('captureRoots'),join(homedir(),'.harness-source-map','captures'),fileURLToPath(new URL('../private/research',import.meta.url)),...(process.env.TRACE_CAPTURE_ROOTS||'').split(process.platform==='win32'?';':':').filter(Boolean)];
 
