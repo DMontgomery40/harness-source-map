@@ -356,6 +356,7 @@ function writeDerived(out, bundle, {redactor, credValues, gzip = true}) {
  for (const m of ready) {
   const d = derived.get(m.environmentId);
   if (!d) continue;
+  m.parts = d.parts;
   const gaps = [];
   const writer = new PartWriter(out, redactor, {gzip});
   guardWriter(writer, scanner(credValues), credValues, redactor, gaps);

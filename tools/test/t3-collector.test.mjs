@@ -15,7 +15,7 @@ import {readBundle, ALIAS_KEY_FILE, emptyBundle, validateBundle, VERSION} from '
 import {bundleFileList, findT3Bundle} from '../t3/bundles.mjs';
 import {Redactor} from '../t3/redact.mjs';
 import {stripMessageText} from '../t3/family.mjs';
-import {classifyName, classifySpan, EDGE_KINDS, ROLES} from '../t3/net.mjs';
+import {classifyName, classifySpan, cutParts, EDGE_KINDS, ROLES} from '../t3/net.mjs';
 import {splitLines, splitName} from '../t3/facts.mjs';
 import {endSegments, GAP_MS} from '../t3/spans.mjs';
 import {GZIP_OVER} from '../t3/gz.mjs';
@@ -215,6 +215,10 @@ test('coverage parts come from part windows, a v1 entry from its earliest held s
  assert.ok(GAP_MS >= 60000);
  const live = {collectedAt: '2026-01-01T03:00:00.000Z', window: {since: '2026-01-01T01:30:00.000Z', until: '2026-01-01T03:00:00.000Z'}, collector: '2', source: 'live'};
  assert.equal(unionParts(priorParts(v1, 'x'), [live], [live]).length, 2);
+ // A part without the span-end basis is cut to where the machine's spans end; one with it is kept as recorded.
+ const ends = ['01:31:00', '01:33:00', '02:10:00', '02:50:00'].map(t => ({end: Date.parse(`2026-01-01T${t}.000Z`)}));
+ const cut = cutParts([{...live, basis: undefined}, {...live, basis: 'span-end'}], ends);
+ assert.deepEqual(cut.map(p => [p.window.since.slice(11, 19), p.window.until.slice(11, 19), p.basis]), [['01:31:00', '01:33:00', 'span-end'], ['02:10:00', '02:10:00', 'span-end'], ['02:50:00', '02:50:00', 'span-end'], ['01:30:00', '03:00:00', 'span-end']]);
 });
 
 test('the role classifier is total over span names in the pinned T3 source and maps the design §7 boundaries', () => {

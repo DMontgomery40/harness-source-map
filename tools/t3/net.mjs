@@ -9,6 +9,7 @@
 //              command ids found in its OrchestratorMcpService.delegateTask subtree
 //   bin        per minute and edge kind: spans and errors
 import {fileBuffer, bufferLines} from './gz.mjs';
+import {segmentsOf} from './spans.mjs';
 import {existsSync, readFileSync} from 'node:fs';
 import {join} from 'node:path';
 
@@ -97,19 +98,29 @@ function peerLinks(dir) {
  return {rows, hosts};
 }
 
+// A coverage part recorded without the span-end basis (a start-time live part, or a window from a v1 entry) is cut
+// to where this machine's spans actually end inside it, split at silences of GAP_MS.
+export function cutParts(parts, spans) {
+ const ends = spans.map(s => s.end);
+ return (parts || []).flatMap(p => {
+  if (p.basis === 'span-end' || !p.window?.since || !p.window?.until) return [p];
+  return segmentsOf(ends, Date.parse(p.window.since), Date.parse(p.window.until)).map(([a, b]) => ({...p, window: {since: iso(a), until: iso(b)}, basis: 'span-end', recomputed: 'cut to the bundle spans, split at 5-minute silences'}));
+ });
+}
+
 const WAIT_CHAIN = ['PeerForwarding.forward', 'PeerForwarding.waitForThread', 'RemoteDelegation.followOnce', 'RemoteDelegation.delegate', 'OrchestratorMcpService.delegateTask'];
 
 // Derive every collected machine's rows. machines: [{environmentId, label, dir, parts, ownPort}]. Returns
 // Map environmentId -> {rows, index}.
 export function deriveNet(machines) {
- const loaded = machines.map(m => ({...m, ...readSpans(m.dir), links: peerLinks(m.dir)}));
+ const loaded = machines.map(m => {const r = readSpans(m.dir); return {...m, ...r, parts: cutParts(m.parts, r.spans), links: peerLinks(m.dir)};});
  // Receiving spans everywhere, by the caller span id they name.
  const receivers = new Map();
  for (const m of loaded) for (const s of m.spans) if (s.kind === 'server' && s.parentSpanId && s.attributes?.['http.request.method']) {
   const list = receivers.get(s.parentSpanId) || [];
   list.push({m, s}); receivers.set(s.parentSpanId, list);
  }
- const coverage = new Map(machines.map(m => [m.environmentId, (m.parts || []).map(p => p.window).filter(w => w?.since && w?.until).map(w => [Date.parse(w.since), Date.parse(w.until)])]));
+ const coverage = new Map(loaded.map(m => [m.environmentId, (m.parts || []).map(p => p.window).filter(w => w?.since && w?.until).map(w => [Date.parse(w.since), Date.parse(w.until)])]));
  const covered = (env, t) => (coverage.get(env) || []).some(([a, b]) => t >= a && t <= b);
  const out = new Map();
  for (const m of loaded) {
@@ -175,7 +186,7 @@ export function deriveNet(machines) {
     chain, chainComplete: WAIT_CHAIN.every(n => chain.includes(n)), delegateTaskSpanId: task?.spanId || null, threadIds: [...threadIds], commandIds: [...commandIds]});
   }
   rows.push(...[...bins.values()].sort((x, y) => x.minute < y.minute ? -1 : x.minute > y.minute ? 1 : x.kind < y.kind ? -1 : 1));
-  out.set(m.environmentId, {rows, index: m.index});
+  out.set(m.environmentId, {rows, index: m.index, parts: m.parts});
  }
  return out;
 }

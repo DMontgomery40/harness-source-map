@@ -47,9 +47,10 @@ const endMs = span => {const n = nanos(span.endTimeUnixNano); return n === null 
 // Coverage of a span file that recorded none (a v1 part): the window, cut where no span ended for GAP_MS (a busy T3
 // server ends spans every few seconds, so a silence that long inside a window is spans the log had already lost).
 export const GAP_MS = 5 * 60000;
-export function endSegments(spans, sinceMs, untilMs) {
- const ends = [];
- for (const s of spans) {const e = endMs(s); if (e !== null && e >= sinceMs && e <= untilMs) ends.push(e);}
+export function endSegments(spans, sinceMs, untilMs) {return segmentsOf(spans.map(endMs), sinceMs, untilMs);}
+// The same over plain end times (ms).
+export function segmentsOf(endTimes, sinceMs, untilMs) {
+ const ends = endTimes.filter(e => e !== null && Number.isFinite(e) && e >= sinceMs && e <= untilMs);
  ends.sort((a, b) => a - b);
  const out = [];
  for (const e of ends) {const last = out.at(-1); if (last && e - last[1] <= GAP_MS) last[1] = e; else out.push([e, e]);}
