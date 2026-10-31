@@ -69,10 +69,7 @@ test('real bundles in private/ are well formed, credential-free, and served by t
  let sql = null; try {sql = await openReadOnly(db);} catch {}
  const values = credentialValues({home, repo: mainRepo, t3Home: existsSync(t3Home) ? t3Home : null, db: sql});
  sql?.close();
- const server = createTraceServer({roots: {}, t3Roots: [bundleRoot]});
- await new Promise(r => server.listen(0, '127.0.0.1', r));
- t.after(() => new Promise(r => server.close(r)));
- const base = 'http://127.0.0.1:' + server.address().port;
+ // Scans first: they block the event loop for a while, which would expire an idle keep-alive socket mid-test.
  for (const dir of realBundles()) {
   const b = readBundle(dir);
   assert.ok(b.machines.length >= 1);
@@ -83,6 +80,13 @@ test('real bundles in private/ are well formed, credential-free, and served by t
   }
   const scan = scanBundle(dir, {values});
   assert.equal(Object.keys(scan.hits).length, 0, `credential hits in ${Object.keys(scan.hits).length} files`);
+ }
+ const server = createTraceServer({roots: {}, t3Roots: [bundleRoot]});
+ await new Promise(r => server.listen(0, '127.0.0.1', r));
+ t.after(() => new Promise(r => server.close(r)));
+ const base = 'http://127.0.0.1:' + server.address().port;
+ for (const dir of realBundles()) {
+  const b = readBundle(dir);
   if (!/^[0-9a-f-]{36}$/i.test(b.scope.rootThreadId || '')) continue;
   const res = await fetch(base + '/v1/session', {method: 'POST', headers: {Origin: base, 'X-Trace-Request': '1', 'Content-Type': 'application/json'}, body: JSON.stringify({id: b.scope.rootThreadId})});
   assert.equal(res.status, 200);
