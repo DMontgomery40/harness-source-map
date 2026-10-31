@@ -17,6 +17,23 @@ const payload = r => (r && typeof r.payload_json === "string" ? safeJson(r.paylo
 function safeJson(s) { try { return JSON.parse(s); } catch { return {}; } }
 const ms = v => (v == null ? null : Number.isFinite(Date.parse(v)) ? Date.parse(v) : null);
 
+// Why no collected part holds a hop's child thread:
+//   late           the hop began after (or while) its machine's part was taken: RACE_MS before the part's last
+//                  collection still counts, as the collector lists a part's threads before it finishes
+//   missing        the part was taken well after the hop began, and has no row for the child
+//   unreachable    the machine could not be reached; not-collected: the machine has no part
+//   unreadable     the machine's part is there but its thread rows could not be read
+const RACE_MS = 120e3;
+export function uncollectedChild(hopStart, machine) {
+  if (!machine) return "not-collected";
+  if (machine.status && machine.status !== "collected") return machine.status === "unreachable" ? "unreachable" : "not-collected";
+  if (!machine.rows) return "unreadable";
+  const p = machine.part || {};
+  const taken = Math.max(...[p.collectedAt, ...(p.parts || []).map(x => x.collectedAt)].map(ms).filter(Number.isFinite));
+  if (!Number.isFinite(taken) || hopStart == null) return "missing";
+  return hopStart > taken - RACE_MS ? "late" : "missing";
+}
+
 // T3 names a thread's provider log events.<slug>.log, the slug cut at 80 characters.
 export const logSlug = id => String(id).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
 
@@ -60,20 +77,25 @@ export function familyThreads(bundle, machines) {
       if (t) t.runs.push({ id: r.run_id, ordinal: r.ordinal, status: r.status, requestedAt: ms(r.requested_at), completedAt: ms(r.completed_at) });
     }
   }
-  // Hops (the parent side's remoteChild, as the collector lists them): the parent of a remote child, and the
-  // late hops whose child thread was never collected (it started after its machine's part was taken).
+  // Hops (the parent side's remoteChild, as the collector lists them): the parent of a remote child, and the hops
+  // whose child thread no collected part holds, each with why (uncollectedChild below).
   for (const h of bundle.hops || []) {
     const hop = { from: h.from?.threadId || null, fromEnv: h.from?.environmentId || null, status: h.status || null, startedAt: ms(h.startedAt), completedAt: ms(h.completedAt), title: h.title || "", evidence: h.evidence || null };
     let t = threads.get(h.to?.threadId);
     if (!t) {
       t = { id: h.to.threadId, env: h.to.environmentId, title: h.title || "", provider: h.provider || null, model: h.model || null, created: hop.startedAt,
-        parent: hop.from, parentEnv: hop.fromEnv, origin: "hop", childSide: false, linkOrigin: false, hop: null, task: null, late: true, native: null, museSession: null, runs: [] };
+        parent: hop.from, parentEnv: hop.fromEnv, origin: "hop", childSide: false, linkOrigin: false, hop: null, task: null, native: null, museSession: null, runs: [],
+        uncollected: uncollectedChild(hop.startedAt, machines.find(x => x.id === h.to?.environmentId)) };
       threads.set(t.id, t);
     }
     t.hop = hop;
     t.parentSide = true;
     if (!t.parent) { t.parent = hop.from; t.parentEnv = hop.fromEnv; t.origin = "remoteChild"; }
     t.provider ||= h.provider || null; t.model ||= h.model || null;
+    // v2 hops carry the parent side's own account (delivery, the parent run's end): kept when no task row says it
+    if (h.delivery || h.parentRun) t.hopTask = { status: h.status || null, delivery: h.delivery || null, startedAt: hop.startedAt, completedAt: hop.completedAt,
+      parentThreadId: hop.from, parentRunEnd: ms(h.parentRun?.completedAt), parentRunStatus: h.parentRun?.status || null };
+    t.subagentId = h.subagentId || null;
   }
   // T3's task rows on the parent side: the status and delivery T3 claims, and when the parent's run settled.
   for (const m of machines) {
@@ -89,6 +111,7 @@ export function familyThreads(bundle, machines) {
         parentThreadId: r.thread_id || null, parentRunEnd: run ? ms(run.completed_at) : null, parentRunStatus: run?.status || null };
     }
   }
+  for (const t of threads.values()) if (!t.task && t.hopTask) t.task = t.hopTask;
   // Each thread's own session file (agent-sessions/index.json; a subagent file belongs to its root's session).
   for (const m of machines) for (const e of m.sessions || []) {
     if (!/\.jsonl$/.test(e.path) || /\/subagents\//.test(e.path)) continue;
@@ -98,15 +121,18 @@ export function familyThreads(bundle, machines) {
   return threads;
 }
 
-// The provider log entry for a thread on its machine: the index lists it under the thread, or (an uncollected or
-// MCP-launched thread) its name carries the thread's slug.
+// The provider log of a thread on its machine, as { path (under provider-events/), shared }: its own split file
+// (v2 cuts a shared log per thread), else the log the index lists under it (shared when it lists several threads:
+// lines then carry their thread), else (an uncollected or MCP-launched thread) the log named with its slug.
 export function eventLogFor(machine, threadId) {
+  const split = (machine?.splits || []).find(e => e.threadId === threadId && e.file);
+  if (split) return { path: split.file, shared: false, split: true };
   const list = machine?.events || [];
   const named = list.find(e => (e.threads || []).includes(threadId));
-  if (named) return { ...named, shared: (named.threads || []).length > 1 };
+  if (named) return { path: named.name, shared: (named.threads || []).length > 1, split: false };
   const slug = logSlug(threadId);
   const bySlug = list.find(e => e.name === `events.${slug}.log`);
-  return bySlug ? { ...bySlug, shared: false } : null;
+  return bySlug ? { path: bySlug.name, shared: false, split: false } : null;
 }
 
 // Native transcripts show who really made a delegation: a subagent's delegate_task call, matched to the hop by
@@ -131,12 +157,30 @@ export function transcriptParents(sessions, threads) {
   return out;
 }
 
-// Walk an object and shift every BlockRef's file index (refs are { file, offset, ... } anywhere in an agent).
-function shiftRefs(o, base) {
-  if (!o || typeof o !== "object" || !base) return;
-  if (Array.isArray(o)) { for (const x of o) shiftRefs(x, base); return; }
+// Walk an object and shift every BlockRef's file index (refs are { file, offset, ... } anywhere in an agent). An
+// adapter shares one ref object between places (a block and the action that read it); structuredClone keeps that
+// sharing, so each object is shifted once.
+export function shiftRefs(o, base, seen = new WeakSet()) {
+  if (!o || typeof o !== "object" || !base || seen.has(o)) return;
+  seen.add(o);
+  if (Array.isArray(o)) { for (const x of o) shiftRefs(x, base, seen); return; }
   if (typeof o.file === "number" && typeof o.offset === "number") o.file += base;
-  for (const k in o) if (o[k] && typeof o[k] === "object") shiftRefs(o[k], base);
+  for (const k in o) if (o[k] && typeof o[k] === "object") shiftRefs(o[k], base, seen);
+}
+
+// The longest silence a thread's provider log records inside the span T3 claims for it: a gap between two of its
+// lines, or the tail from its last line to when the log was collected (or the claimed end, if sooner). Silence is
+// only what the log covers; a span after the log was taken is unknown, never silent.
+export function silenceIn(ev, from, to, collectedAt) {
+  // each gap: [start, end, how it ends] — "line" (the log's next line) or "collected" (the log was taken)
+  const gaps = (ev.gaps || []).map(([x, y]) => [x, y, "line"]);
+  if (ev.lastActivity != null && collectedAt != null && collectedAt > ev.lastActivity) gaps.push([ev.lastActivity, Math.min(to, collectedAt), "collected"]);
+  let best = null;
+  for (const [a0, b0, endsBy] of gaps) {
+    const a = Math.max(a0, from), b = Math.min(b0, to);
+    if (b > a && (!best || b - a > best.to - best.from)) best = { from: a, to: b, endsBy: b0 > to ? "claimed-end" : endsBy };
+  }
+  return best;
 }
 
 // The merged family trace.
@@ -166,7 +210,8 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     const prefix = isRoot ? "" : `${t.id}::`;
     const ids = new Map(tr.agents.map(a => [a.id, prefix + a.id]));
     const main = tr.agents.find(a => a.kind === "root") || tr.agents[0];
-    out.files.push(...tr.files.map(f => ({ ...f, name: `${nameOf(t.env)}/${f.name}` })));
+    // each session's files sit where load.js put its sources: the file table is indexed by source, not by this order
+    tr.files.forEach((f, i) => { out.files[fileBase + i] = { ...f, name: `${nameOf(t.env)}/${f.name}` }; });
     const ev = evidence.get(t.id) || null;
     const where = { machine: nameOf(t.env), environmentId: t.env, provider: PRODUCTS[t.provider] || t.provider || null, ...labOf(t, ev), thread: t.id, session: t.native?.nativeId || (tr.product === "t3-events" ? "provider-event log" : null) };
     const agents = [];
@@ -209,8 +254,8 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     if (seen) main.evidence.transcriptParent = seen.agentId;
   }
 
-  // Voids: threads T3 recorded with no ridge to draw. The span with evidence of activity is drawn hatched; the
-  // span T3 still claims after it is a hollow frame.
+  // Voids: threads T3 recorded with no ridge to draw. Where the provider log shows activity the void is hatched;
+  // a silence it records inside the claimed span is a hollow frame; with no log at all nothing is known (dark).
   for (const t of threads.values()) {
     if (parsed.has(t.id)) continue;
     if (/^thread:provider:[^:]+:native-thread:/.test(t.id)) continue; // a native subagent: a ridge in its parent's session
@@ -219,13 +264,15 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     const ev = evidence.get(t.id) || null;
     const from = t.task?.startedAt ?? t.hop?.startedAt ?? t.created ?? ev?.firstActivity ?? null;
     const claimedEnd = t.task?.completedAt ?? t.hop?.completedAt ?? null;
-    const to = claimedEnd ?? (t.late ? ms(bundle.scope?.until) : until);
+    const to = claimedEnd ?? (t.uncollected ? ms(bundle.scope?.until) : until);
     if (from == null || to == null || !(to > from)) continue;
+    const logTaken = Math.max(...[part.collectedAt, ...(part.parts || []).map(x => x.collectedAt)].map(ms).filter(Number.isFinite));
     out.voids.push({
       thread: t.id, machine: nameOf(t.env), environmentId: t.env, provider: PRODUCTS[t.provider] || t.provider || null, model: t.model, ...labOf(t, ev),
       title: t.title, from, to, firstEvidence: ev?.firstActivity ?? null, lastEvidence: ev?.lastActivity ?? null, status: t.task?.status || t.hop?.status || null,
       delivery: t.task?.delivery || null, parent: agentOfThread.get(t.parent) || rootAgent, parentThreadId: t.parent,
-      why: t.late ? "late" : ev?.lines ? "no-usage" : t.native ? "unparsed" : "no-evidence", claimedEnd
+      why: t.uncollected || (ev?.lines ? "no-usage" : t.native ? "unparsed" : "no-evidence"), claimedEnd,
+      silence: ev?.lines ? silenceIn(ev, from, to, Number.isFinite(logTaken) ? logTaken : null) : null
     });
   }
 
@@ -242,8 +289,8 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
       clock: m.part.clock || null
     })),
     threads: [...threads.values()].map(t => ({ id: t.id, machine: nameOf(t.env), environmentId: t.env, title: t.title, provider: PRODUCTS[t.provider] || t.provider || null, lab: labOf(t, evidence.get(t.id)).lab,
-      agentId: agentOfThread.get(t.id) || null, late: t.late, native: t.native ? { nativeId: t.native.nativeId, product: t.native.product, path: t.native.path } : null })),
-    hops: (bundle.hops || []).map(h => ({ from: h.from?.threadId, to: h.to?.threadId, fromNode: h.from?.nodeId || null, fromEnv: h.from?.environmentId, toEnv: h.to?.environmentId,
+      agentId: agentOfThread.get(t.id) || null, uncollected: t.uncollected || null, native: t.native ? { nativeId: t.native.nativeId, product: t.native.product, path: t.native.path } : null })),
+    hops: (bundle.hops || []).map(h => ({ from: h.from?.threadId, to: h.to?.threadId, fromNode: h.from?.nodeId || null, subagentId: h.subagentId || null, fromEnv: h.from?.environmentId, toEnv: h.to?.environmentId,
       fromMachine: nameOf(h.from?.environmentId), toMachine: nameOf(h.to?.environmentId), title: h.title, status: h.status, startedAt: ms(h.startedAt), completedAt: ms(h.completedAt) })),
   };
   const times = out.agents.flatMap(a => (a.requests || []).map(r => r.t));

@@ -5,7 +5,8 @@
 // Each break: { kind, agentId | null, thread, machine, title, at, evidence: [{ what, at?, value? }] }.
 //   disposed        T3 disposed a child's result: the child completed after its parent's run settled (#26907)
 //   claimed-parent  T3 recorded a parent the child's transcript contradicts: a subagent made the call (cf. #16808)
-//   claimed-run     T3 claims a run that left no evidence after its last provider line (#24324)
+//   claimed-run     T3 claims a run whose own provider log records a long silence inside it (#24324); a thread with
+//                   no log, or a span the log does not cover, is unknown and never a break
 //   late            a hop that began after its machine's part was collected: nothing of it in the bundle
 //   one-sided       only one side records a cross-machine link (the child's or the parent's)
 //   stale-parent    the recorded parent is not in the family (deleted, or gone on its machine; #26766)
@@ -56,14 +57,18 @@ export function findBreaks(trace) {
   for (const v of trace.voids || []) {
     const base = { agentId: null, thread: v.thread, machine: v.machine, title: v.title, void: v };
     if (v.why === "late") {
-      out.push({ ...base, kind: "late", at: v.from, evidence: [{ what: "hop started", at: v.from }, { what: "machine's part collected before it", value: v.machine }] });
+      out.push({ ...base, kind: "late", at: v.from, evidence: [{ what: "hop started", at: v.from }, { what: "its machine's part was taken as it began, without the child", value: v.machine }] });
       continue;
     }
-    const seen = v.lastEvidence ?? v.firstEvidence ?? v.from;
-    if (v.to - seen > CLAIM_MS && v.status !== "completed") {
-      out.push({ ...base, kind: "claimed-run", at: seen, evidence: [
+    // A claimed run is a break only where the thread's own provider log shows activity and then records nothing for
+    // a long stretch of the span T3 claims (fleet/family.js silenceIn). No log, or a stretch the log does not cover,
+    // is unknown: never a break.
+    const s = v.silence;
+    if (v.lastEvidence != null && s && s.to - s.from > CLAIM_MS && v.status !== "completed") {
+      out.push({ ...base, kind: "claimed-run", at: s.from, silence: s, evidence: [
         { what: "T3 status", value: v.status },
-        { what: "last provider line", at: v.lastEvidence },
+        { what: "provider log silent from", at: s.from },
+        { what: { "claimed-end": "to T3's claimed end", line: "until its next line", collected: "until the log was collected" }[s.endsBy] || "until", at: s.to },
         { what: "claimed until", at: v.to }
       ] });
     }
@@ -76,10 +81,24 @@ export function breakWords(b) {
   return {
     "disposed": "T3 never delivered this result: the child finished after its parent's run had settled, and T3 disposed it.",
     "claimed-parent": "T3 files this thread under a parent that didn't make the call: the delegation is in a subagent's transcript.",
-    "claimed-run": "T3 still claims this run, but its provider log went silent: nothing ran in the hollow span.",
+    "claimed-run": "T3 claims this run, but its provider log records nothing in the hollow span: no event from the agent until it ended.",
     "late": "This delegation began after its machine was collected: nothing of it is in the bundle.",
     "one-sided": "Only one side of this cross-machine link records it.",
     "stale-parent": "The parent T3 records for this thread is gone from the family.",
     "claimed-end": "T3 marked this thread done while its session was still making requests."
   }[b.kind] || "T3's lineage disagrees with the evidence here.";
+}
+
+// Hover words for a void: why there is no ridge, said as what the bundle shows.
+export function voidWords(v) {
+  return {
+    "no-usage": "Its provider log shows activity but no model calls, so there is no height to draw.",
+    "unparsed": "Its session is in the bundle but could not be read.",
+    "no-evidence": "No session or provider log of this thread is in the bundle: nothing is known of what it did.",
+    "late": "This delegation began as its machine was being collected: the child is not in the bundle.",
+    "missing": "Its machine was collected after this delegation began, without the child thread.",
+    "unreachable": "Its machine could not be reached when the family was collected.",
+    "not-collected": "Its machine was not collected.",
+    "unreadable": "Its machine was collected, but its thread rows could not be read."
+  }[v.why] || "No ridge can be drawn for this thread.";
 }

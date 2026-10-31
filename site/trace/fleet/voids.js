@@ -28,17 +28,20 @@ export function buildVoids({ L, W, laneZ, depth, shared, haze }) {
     const v = lv.void;
     const z = laneZ(lv.lane);
     const x0 = L.X(v.from) * W, x1 = Math.max(x0 + MIN_W, L.X(v.to) * W);
-    const seen = Math.min(v.to, Math.max(v.from, v.lastEvidence ?? v.from));
-    const xe = Math.min(x1, L.X(seen) * W);
+    // the silence the thread's own log records inside the claimed span (a hollow frame); evidence of activity is
+    // pale hatch; a thread with no log, or one never collected, is dark hatch: nothing is known there
+    const sil = v.silence && v.lastEvidence != null ? [Math.max(x0, L.X(v.silence.from) * W), Math.min(x1, L.X(v.silence.to) * W)] : null;
+    const xe = sil ? sil[0] : x1;
     const meshes = [];
-    if (v.why === "late") {
+    if (v.lastEvidence == null) {
       meshes.push(new THREE.Mesh(box(x0, x1, z, H * 0.5), hatch(true)));
     } else {
-      if (xe - x0 > 0.05 || x1 - x0 <= MIN_W + 0.01) meshes.push(new THREE.Mesh(box(x0, Math.max(xe, x0 + MIN_W), z, H), hatch(false)));
-      if (x1 - xe > 0.3) {
-        const frame = new THREE.LineSegments(new THREE.EdgesGeometry(box(xe, x1, z, H)), new THREE.LineBasicMaterial({ color: "#dfe8f2", transparent: true, opacity: 0.85 }));
-        const floor = new THREE.Mesh(new THREE.PlaneGeometry(x1 - xe, depth).rotateX(-Math.PI / 2).translate((xe + x1) / 2, 0.02, z - depth / 2), hatch(false));
+      if (!sil || sil[0] - x0 > 0.05) meshes.push(new THREE.Mesh(box(x0, Math.max(sil ? sil[0] : x1, x0 + MIN_W), z, H), hatch(false)));
+      if (sil && sil[1] - sil[0] > 0.3) {
+        const frame = new THREE.LineSegments(new THREE.EdgesGeometry(box(sil[0], sil[1], z, H)), new THREE.LineBasicMaterial({ color: "#dfe8f2", transparent: true, opacity: 0.85 }));
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(sil[1] - sil[0], depth).rotateX(-Math.PI / 2).translate((sil[0] + sil[1]) / 2, 0.02, z - depth / 2), hatch(false));
         meshes.push(frame, floor);
+        if (x1 - sil[1] > 0.05) meshes.push(new THREE.Mesh(box(sil[1], x1, z, H), hatch(false)));
       }
     }
     for (const m of meshes) { m.renderOrder = 2; group.add(m); }

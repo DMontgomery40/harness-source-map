@@ -68,6 +68,11 @@ export async function openBundle(entries, prefix = bundlePrefix(entries)) {
   };
 }
 
+export function providerLogs(index) {
+  if (Array.isArray(index)) return { events: index, splits: [] };
+  return { events: Array.isArray(index?.logs) ? index.logs : [], splits: Array.isArray(index?.split) ? index.split : [] };
+}
+
 // The machine parts of the bundle, each with its T3 rows and file listings. Every read tolerates a missing file
 // (a machine that was unreachable, or a v2 file a v1 bundle lacks).
 export async function readMachines(b) {
@@ -80,7 +85,8 @@ export async function readMachines(b) {
       environment: await safe("environment.json"),
       rows: await safe("threads.json"),
       sessions: (await safe("agent-sessions/index.json")) || [],
-      events: (await safe("provider-events/index.json")) || [],
+      // provider logs: v1 lists them; v2 is { logs, split }, split naming the per-thread file cut from a shared log
+      ...providerLogs(await safe("provider-events/index.json")),
       peerLinks: (await safe("peer-links.json")) || [],
     });
   }

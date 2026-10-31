@@ -22,9 +22,9 @@ import { createHelp } from "./help/help.js";
 import { productLabel } from './products.js';
 import { filterRows, agentRows } from "./fleet/controls.js";
 import { fleetKeys, cycle, isFiltered } from "./fleet/filter.js";
-import { breakWords } from "./fleet/breaks.js";
+import { breakWords, voidWords } from "./fleet/breaks.js";
 import { renderLadder } from "./fleet/ladder.js";
-import { landscapeState } from "./fleet/ground.js";
+import { restoreLandscape } from "./fleet/ground.js";
 
 const params = new URLSearchParams(location.search);
 const $ = s => document.querySelector(s);
@@ -716,7 +716,8 @@ async function openPasted(info, btn, hint, fresh = false) {
     btn.disabled = true;
     setProgress(0, "Opening the session…");
     try {
-      const files = await openLocalSession(info.id);
+      // a v2 T3 link names its environment: the resolver opens the thread only there
+      const files = await openLocalSession(info.id, { environmentId: info.product === "t3code" ? info.environmentId || null : null });
       if (files) return await loadFiles(files, info.id);
     } catch (error) {
       return showError(error.message);
@@ -1198,8 +1199,9 @@ function fleetNetSection(agent) {
     body.replaceChildren(el("p", { class: "m", text: "Reading the family's spans…" }));
     try {
       const r = await fleetRequest({ type: "fleet-net", thread: agent.thread }, p => body.replaceChildren(el("p", { class: "m", text: `Reading the family's spans: ${fmtInt(p.lines)} lines (${p.machine})…` })));
-      if (!r.rows.length) return body.replaceChildren(el("p", { class: "m", text: "No peer calls of this thread are in the collected spans." }));
-      body.replaceChildren(el("ul", { class: "items" }, r.rows.map(g => el("li", {}, el("button", { type: "button", class: "item", onclick: () => openLadder(g.call),
+      const note = r.rejected ? el("p", { class: "m", text: `${fmtInt(r.rejected)} span line${r.rejected === 1 ? "" : "s"} of the family's archives could not be read; calls in them are missing here.` }) : null;
+      if (!r.rows.length) return body.replaceChildren(el("p", { class: "m", text: "No peer calls of this thread are in the collected spans." }), ...(note ? [note] : []));
+      body.replaceChildren(...(note ? [note] : []), el("ul", { class: "items" }, r.rows.map(g => el("li", {}, el("button", { type: "button", class: "item", onclick: () => openLadder(g.call),
         title: "Open this call's span ladder" },
         el("span", { class: "tool", text: `${g.from} → ${g.to} · ${g.kind}` }),
         el("span", { class: "meta", text: `${fmtInt(g.count)}${g.joined < g.count ? ` (${fmtInt(g.joined)} joined)` : ""} · :${g.port} · ${fmtClock(g.t0)}–${fmtClock(g.t1)}` }))))));
@@ -1460,7 +1462,9 @@ function saveViewSoon() {
 }
 function restoreView(view) {
   clearTimeout(viewTimer);
-  view = { ...view, state: landscapeState(view.state) }; // a saved view never brings back the fleet ground
+  // a saved view never brings back the fleet ground, and Back or Forward leave it (rebuilt ungrouped)
+  const ground = restoreLandscape(S, view);
+  view = ground.view;
   mapReturn = view.mapReturn || null;
   const pb = transport?.playback;
   if (pb && Number.isFinite(view.P) && view.P !== pb.P) transport.seek(view.P);
@@ -1475,7 +1479,8 @@ function restoreView(view) {
     if (view.camera) scene?.restoreView(view.camera);
     if (!view.panel) $('#panel').scrollTop = view.scroll || 0;
   };
-  if (modeChanged) setMode(S.mode).then(finish);
+  if (ground.rebuild) { scene?.dispose(); scene = null; setMode(S.mode).then(() => { buildFleetFilter(); finish(); }); }
+  else if (modeChanged) setMode(S.mode).then(finish);
   else finish();
 }
 
@@ -1902,7 +1907,7 @@ function renderFlat() {
   // The chart takes what the caption leaves of the free area.
   const h = Math.max(140, Math.min(640, innerHeight - ins.top - ins.bottom - caption.offsetHeight - 14));
   if (S.level === 0) {
-    renderOverview(svgHost, S.trace, S.layout, { width: w, height: h, full: true, lens: mapLens(),
+    renderOverview(svgHost, S.trace, S.layout, { width: w, height: h, full: true, lens: mapLens(), filter: S.fleetFilter,
       onPick: p => (p.reqIdx != null ? A.focusAgent(p.agentId, p.reqIdx) : A.focusAgent(p.agentId)) });
   } else if (S.agent) {
     renderAgentColumns(svgHost, S.agent, { width: w, height: h, reqIdx: S.reqIdx, onPick: i => A.focusRequest(S.agent.id, i) });
@@ -1920,7 +1925,7 @@ function showTip(hit) {
     const at = t => (t ? fmtWhen(t) : "unknown");
     const kids = [el("b", { text: name }), where ? el("div", { class: "m fleet-where", text: where }) : null];
     if (b) kids.push(el("div", { text: breakWords(b) }), ...b.evidence.map(e => el("div", { class: "m", text: `${e.what}${e.value ? `: ${e.value}` : ""}${e.at ? ` · ${at(e.at)}` : ""}` })));
-    else if (v) kids.push(el("div", { text: v.why === "no-usage" ? "Its provider log shows activity but no model calls, so there is no height to draw." : "No session of this thread is in the bundle." }),
+    else if (v) kids.push(el("div", { text: voidWords(v) }),
       el("div", { class: "m", text: `T3 says ${v.status || "nothing"} · ${at(v.from)} to ${at(v.to)}` }));
     tip.replaceChildren(...kids.filter(Boolean));
     tip.hidden = false;

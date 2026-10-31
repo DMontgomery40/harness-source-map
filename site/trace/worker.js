@@ -126,6 +126,8 @@ function blockReader(trace, ix) {
   };
 }
 
+const redactedReader = (read, str) => async (ai, bi) => str(await read(ai, bi));
+
 self.onmessage = async (e) => {
   const m = e.data || {};
   if (m.type === "index") {
@@ -151,7 +153,7 @@ self.onmessage = async (e) => {
       family = null; familyNet = null;
       if (await isT3Bundle(entries)) {
         result = await loadFamily(entries, { index, onProgress });
-        family = { trace: result.trace, bundle: result.bundle };
+        family = { trace: result.trace, bundle: result.bundle, redact: result.redact };
       } else {
         const plain = await Promise.all(entries.map(e => (/\.jsonl?\.gz$/i.test(e.path) ? plainEntry(e) : e)));
         result = await loadTrace(plain, { root: m.root || null, index, onProgress });
@@ -172,9 +174,11 @@ self.onmessage = async (e) => {
     let last = 0;
     try {
       if (!loaded) throw new Error("no session loaded");
+      // a family's snippets pass its credential rules (fleet/redact.js) like everything else it shows
+      const shown = family && loaded === family.trace ? family.redact.hits : (hits) => hits;
       const res = await findText(loaded, sources, m.q, {
         index, cancelled: () => gen !== findGen,
-        onHits: (hits) => self.postMessage({ type: "find-hits", id: m.id, hits }),
+        onHits: (hits) => self.postMessage({ type: "find-hits", id: m.id, hits: shown(hits) }),
         onProgress: (done, total) => { const now = Date.now(); if (done === total || now - last > 80) { last = now; self.postMessage({ type: "find-progress", id: m.id, done, total }); } },
       });
       self.postMessage({ type: "find-done", id: m.id, ...res });
@@ -191,7 +195,7 @@ self.onmessage = async (e) => {
         fresh = true;
         harness = { trace, ms: 0 };
         harness.promise = buildHarnessModel({
-          trace, index: ix, literals: indexFor(m.literals || null, trace.product), readText: blockReader(trace, ix),
+          trace, index: ix, literals: indexFor(m.literals || null, trace.product), readText: family && trace === family.trace ? redactedReader(blockReader(trace, ix), family.redact.str) : blockReader(trace, ix),
           onProgress: (p) => { const now = Date.now(); if (p.done === p.total || now - last > 80) { last = now; self.postMessage({ type: "harness-progress", done: p.done, total: p.total }); } },
         }).then((model) => { harness.ms = Date.now() - t0; return model; });
       }
@@ -251,14 +255,17 @@ self.onmessage = async (e) => {
     // A T3 family's network: the rows of one thread (its ridge's panel), or the waits of the whole family (fleet ground).
     try {
       let last = 0;
-      const { net } = await netOf((n, machine) => { const now = Date.now(); if (now - last > 120) { last = now; self.postMessage({ type: "fleet-net-progress", id: m.id, lines: n, machine }); } });
+      const { net, spans } = await netOf((n, machine) => { const now = Date.now(); if (now - last > 120) { last = now; self.postMessage({ type: "fleet-net-progress", id: m.id, lines: n, machine }); } });
       // machines by the names the family trace gives them (the terraces and the filter use the same)
       const names = new Map((family.trace.fleet?.machines || []).map(x => [x.id, x.label]));
       const label = env => names.get(env) || net.label(env);
-      const out = { type: "fleet-net", id: m.id, rate: Object.fromEntries(Object.entries(net.rate).map(([k, v]) => [k.split(">").map(label).join(" → "), v])) };
+      // span lines the index could not read (fleet/spans.js), so the page can say the network is incomplete
+      const rejected = [...spans.values()].reduce((n, ix) => n + ix.rejected.count, 0);
+      const out = { type: "fleet-net", id: m.id, rejected, rate: Object.fromEntries(Object.entries(net.rate).map(([k, v]) => [k.split(">").map(label).join(" → "), v])) };
       if (m.thread) {
         const t = family.trace.fleet.threads.find(x => x.id === m.thread);
-        const commands = family.trace.fleet.hops.filter(h => h.to === m.thread).map(h => hopCommand(h.fromNode)).filter(Boolean);
+        // a v2 hop names the delegation's node in subagentId (its from.nodeId is the parent run's root)
+        const commands = family.trace.fleet.hops.filter(h => h.to === m.thread).map(h => hopCommand(h.subagentId) || hopCommand(h.fromNode)).filter(Boolean);
         out.rows = threadRows(net, { thread: m.thread, env: t?.environmentId, commands }).map(g => ({ from: label(g.from), to: label(g.to), port: g.port, kind: g.kind, count: g.count, joined: g.joined, t0: g.t0, t1: g.t1, call: callKey(g.first) }));
       }
       if (m.waits) {
@@ -286,7 +293,8 @@ self.onmessage = async (e) => {
     try {
       const src = sources[m.ref.file];
       if (!src) throw new Error("unknown file index " + m.ref.file);
-      self.postMessage({ type: "text", ref: m.ref, id: m.id, text: await readRef(src, m.ref, index) });
+      const text = await readRef(src, m.ref, index);
+      self.postMessage({ type: "text", ref: m.ref, id: m.id, text: family && loaded === family.trace ? family.redact.str(text) : text });
     } catch (err) {
       self.postMessage({ type: "error", id: m.id, message: String((err && err.message) || err) });
     }

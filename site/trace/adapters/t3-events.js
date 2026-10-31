@@ -62,7 +62,10 @@ export function t3EventsTrace(lines, { id, name, model = null } = {}) {
       window: [0, 0], strata: {}, action: null
     });
   }
-  const evidence = { firstActivity: first, lastActivity: last, lines: lines.length, lab };
+  // gaps of a minute or more between consecutive lines: where the log records nothing
+  const gaps = [];
+  for (let i = 1; i < lines.length; i++) if (lines[i].t - lines[i - 1].t >= 60e3) gaps.push([lines[i - 1].t, lines[i].t]);
+  const evidence = { firstActivity: first, lastActivity: last, lines: lines.length, lab, gaps };
   if (!requests.length) return { trace: null, evidence };
   const agent = { id, parentId: null, kind: "root", name, model: requests[0].model, depth: 0, spawn: null, requests, blocks: [], asks: [], compactions: [], bursts: [], harnessSource: "unknown" };
   return {

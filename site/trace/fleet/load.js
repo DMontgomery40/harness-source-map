@@ -8,6 +8,7 @@ import { loadTrace } from "../loader.js";
 import { openBundle, readMachines } from "./bundle.js";
 import { familyThreads, eventLogFor, buildFamilyTrace } from "./family.js";
 import { parseT3EventLines, threadLines, t3EventsTrace } from "../adapters/t3-events.js";
+import { familyRedactor } from "./redact.js";
 
 // The files of one native session inside a machine's agent-sessions folder: Claude Code's <id>.jsonl with its
 // same-named folder (subagents, tool results), or every Codex/ChatGPT rollout there (the loader narrows to the
@@ -23,29 +24,26 @@ function sessionFiles(b, machine, native) {
 export async function loadFamily(entries, { index = null, onProgress = () => {} } = {}) {
   const b = await openBundle(entries);
   const machines = await readMachines(b);
+  // the credential rules for everything this family hands the page (fleet/redact.js); sources stay as they are
+  const redact = familyRedactor(b.bundle, machines);
   const threads = familyThreads(b.bundle, machines);
   const byId = new Map(machines.map(m => [m.id, m]));
   const work = [...threads.values()].filter(t => !/^thread:provider:[^:]+:native-thread:/.test(t.id));
   onProgress({ phase: "family", done: 0, total: work.length, found: { machines: machines.length, threads: threads.size, hops: (b.bundle.hops || []).length } });
 
   const parsed = new Map(), evidence = new Map(), sources = [];
-  const logs = new Map(); // provider log name per machine -> parsed lines
+  const logs = new Map(); // `${machine}/${path}` -> parsed lines: each file read once, a split file per thread
   let done = 0;
   for (const t of work) {
     const m = byId.get(t.env);
     // The thread's provider log: evidence of activity for every thread, and the ridge for one with no session.
     const log = m && eventLogFor(m, t.id);
     if (log) {
-      const key = `${m.id}/${log.name}`;
-      if (!logs.has(key)) {
-        // v2 bundles cut shared logs per thread (provider-events/split/<thread>.log); v1 lines carry their thread
-        const split = log.shared ? await b.text(`${m.dir}provider-events/split/${t.id}.log`).catch(() => null) : null;
-        logs.set(key, split != null ? { lines: parseT3EventLines(split), split: true } : { lines: parseT3EventLines((await b.text(`${m.dir}provider-events/${log.name}`)) || ""), split: false });
-      }
-      const { lines, split } = logs.get(key);
-      const mine = threadLines(lines, { threadId: t.id, sessionId: t.museSession, shared: log.shared && !split });
+      const key = `${m.id}/${log.path}`;
+      if (!logs.has(key)) logs.set(key, parseT3EventLines((await b.text(`${m.dir}provider-events/${log.path}`).catch(() => null)) || ""));
+      const mine = threadLines(logs.get(key), { threadId: t.id, sessionId: t.museSession, shared: log.shared });
       const fromLog = t3EventsTrace(mine, { id: `t3-events:${t.id}`, name: t.title, model: t.model });
-      evidence.set(t.id, fromLog.evidence);
+      evidence.set(t.id, { ...fromLog.evidence, log: log.path });
       if (!t.native && fromLog.trace) { parsed.set(t.id, { trace: fromLog.trace, fileBase: sources.length }); }
     }
     if (t.native && m) {
@@ -60,12 +58,13 @@ export async function loadFamily(entries, { index = null, onProgress = () => {} 
         evidence.set(t.id, { ...(evidence.get(t.id) || {}), parseError: String(error?.message || error) });
       }
     }
-    onProgress({ phase: "family", done: ++done, total: work.length, file: t.title });
+    onProgress({ phase: "family", done: ++done, total: work.length, file: redact.str(t.title) });
   }
   onProgress({ phase: "build", done: work.length, total: work.length });
   const trace = buildFamilyTrace({ bundle: b.bundle, machines, parsed, evidence });
   for (const [id, e] of evidence) if (e.parseError) trace.notes.push(`${threads.get(id)?.title || id}: its session could not be read (${e.parseError}); drawn as a void`);
+  redact.trace(trace);
   trace.candidates = [];
   trace.reference = index ? { site: index.site, origin: index.origin, pages: index.pages?.length || 0 } : null;
-  return { trace, sources, bundle: b };
+  return { trace, sources, bundle: b, redact };
 }

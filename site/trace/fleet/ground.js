@@ -15,6 +15,13 @@ export function landscapeState(state) {
   const { [GROUND_KEY]: _, ...rest } = state;
   return rest;
 }
+// Restoring any view (Back, Forward) leaves the fleet ground: the grouping is switched off and, when it was on, the
+// caller rebuilds the ungrouped landscape (app.js restoreView). Returns { view, rebuild }.
+export function restoreLandscape(S, view) {
+  const rebuild = !!S[GROUND_KEY];
+  S[GROUND_KEY] = false;
+  return { view: { ...view, state: landscapeState(view.state) }, rebuild };
+}
 
 // ctx: { L (with L.terraces), W, laneZ, subDepth, rootBack, shared, haze, coverage: machine -> [{ since, until }],
 //        label(text, cls, pos, center), cut(material) }
