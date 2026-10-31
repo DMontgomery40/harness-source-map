@@ -2,7 +2,7 @@
 
 Release v0.1.6-nightly.20261031.3956, commit `d92c437baa19409f99416a44f748f148f4317c65`. Pinned public source evidence, not observed model delivery. Runtime settings and tool capabilities control activation. Templates retain upstream substitutions; no local values or private sessions are inputs.
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 1
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -71,7 +71,7 @@ import {
 import * as ProviderContinuationRequests from "@t3tools/provider-core/server/ProviderContinuationRequests";
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 2
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -121,7 +121,7 @@ export const ClaudeProviderCapabilitiesV2 = {
     canCreateEmptyThread: true,
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 3
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -216,7 +216,7 @@ function queryRunnerError(cause: unknown, method: string): ClaudeAgentSdkQueryRu
     : new ClaudeAgentSdkQueryRunnerError({ cause, method });
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 4
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 4
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -263,7 +263,7 @@ function makeClaudeAgentSdkProtocolLogger(input: {
   if (nativeEventLogger === undefined) {
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 5
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 5
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -341,7 +341,7 @@ export const layerQueryRunner: Layer.Layer<
   ClaudeAgentSdkQueryRunner,
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 6
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 6
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -421,7 +421,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
                   processExited = true;
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 7
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 7
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -466,7 +466,7 @@ export function claudeToolSearchOverride(value: string | undefined): "true" | un
 }
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 8
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 8
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -544,7 +544,7 @@ export function makeClaudeQueryOptions(input: {
   const selectedTools = input.tools ?? CLAUDE_CODE_PRESET_TOOLS;
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 9
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 9
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -648,7 +648,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
  */
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 10
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 10
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -801,7 +801,7 @@ function providerSession(input: {
 }
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 11
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 11
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -916,7 +916,7 @@ const CLAUDE_KNOWN_TOOL_CLASSIFICATIONS: Record<
     readonly requestKind: ProviderRequestKind;
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 12
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 12
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -961,7 +961,7 @@ const readClaudeTaskList = Effect.fnUntraced(
       });
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 13
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 13
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1006,7 +1006,7 @@ export const makeClaudeAdapterV2 = Effect.fn("makeClaudeAdapterV2")(function* (
     adapterOptions.settings.customModels,
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 14
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 14
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1051,7 +1051,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
   const localSettingsDirectory = Effect.fn("ClaudeAdapterV2.localSettingsDirectory")(function* (
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 15
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 15
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1118,7 +1118,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
     getCapabilities: Effect.fn("ClaudeAdapterV2.getCapabilities")(function () {
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 16
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 16
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1163,7 +1163,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
                 }).pipe(Effect.orDie);
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 17
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 17
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1208,7 +1208,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
             const live = existing;
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 18
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 18
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1263,7 +1263,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
               options: queryOptions,
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 19
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 19
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1308,7 +1308,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
                     : { providerTurnId: forkInput.providerTurnId }),
 ```
 
-## orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 20
+## apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 20
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1361,7 +1361,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 );
 ```
 
-## orchestration-v2/Adapters/CodexAdapterV2.ts · launch 1
+## apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1408,7 +1408,7 @@ import { expandHomePath } from "@t3tools/provider-core/server/pathExpansion";
 import { buildCodexAdditionalContext } from "../../provider/CodexDeveloperInstructions.ts";
 ```
 
-## orchestration-v2/Adapters/CodexAdapterV2.ts · launch 2
+## apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1496,7 +1496,7 @@ const decodeCodexChildThread = Schema.decodeUnknownEffect(
       id: Schema.String,
 ```
 
-## orchestration-v2/Adapters/CodexAdapterV2.ts · launch 3
+## apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1583,7 +1583,7 @@ function redactCodexProtocolValue(value: unknown): unknown {
         (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
 ```
 
-## orchestration-v2/Adapters/CodexAdapterV2.ts · launch 4
+## apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 4
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1634,7 +1634,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
         return yield* Effect.service(CodexClient.CodexAppServerClient).pipe(
 ```
 
-## orchestration-v2/Adapters/CodexAdapterV2.ts · launch 5
+## apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 5
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1693,7 +1693,7 @@ export const makeCodexAdapterV2 = Effect.fn("makeCodexAdapterV2")(function* (
     threadId === null ? Effect.succeed(undefined) : mcpSessions.read(threadId);
 ```
 
-## orchestration-v2/Adapters/CodexAdapterV2.ts · launch 6
+## apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 6
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1738,7 +1738,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
                         },
 ```
 
-## orchestration-v2/Adapters/CodexAdapterV2.ts · launch 7
+## apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 7
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1783,7 +1783,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
             const advisory =
 ```
 
-## orchestration-v2/Adapters/CodexAdapterV2.ts · launch 8
+## apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 8
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1828,7 +1828,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
                 nativeThreadId == null
 ```
 
-## orchestration-v2/Adapters/CodexAdapterV2.ts · launch 9
+## apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 9
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1873,7 +1873,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
                   status: "idle" as const,
 ```
 
-## src/provider/codexLaunchArgs.ts · launch 1
+## apps/server/src/provider/codexLaunchArgs.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1923,7 +1923,7 @@ export const codexExecLaunchArgs = (launchArgs?: string) => {
 };
 ```
 
-## src/provider/CodexProvider.ts · launch 1
+## apps/server/src/provider/CodexProvider.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -1970,7 +1970,7 @@ import {
   providerModelsFromSettings,
 ```
 
-## src/provider/CodexProvider.ts · launch 2
+## apps/server/src/provider/CodexProvider.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2015,7 +2015,7 @@ const codexProcessEnvironment = Effect.fn("codexProcessEnvironment")(function* (
     ? expandHomePath(input.homePath, yield* HostProcess.HomeDirectory)
 ```
 
-## src/provider/CodexProvider.ts · launch 3
+## apps/server/src/provider/CodexProvider.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2079,7 +2079,7 @@ const probeCodexAppServerProvider = Effect.fn("probeCodexAppServerProvider")(fun
   const versionMatch = initialize.userAgent.match(/\/([^\s]+)/);
 ```
 
-## src/provider/CodexProvider.ts · launch 4
+## apps/server/src/provider/CodexProvider.ts · launch 4
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2144,7 +2144,7 @@ const makePendingCodexProvider = Effect.fn("CodexProvider.makePendingCodexProvid
   if (!codexSettings.enabled) {
 ```
 
-## src/provider/CodexProvider.ts · launch 5
+## apps/server/src/provider/CodexProvider.ts · launch 5
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2242,7 +2242,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 
 ```
 
-## provider/Drivers/ClaudeDriver.ts · launch 1
+## apps/server/src/provider/Drivers/ClaudeDriver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2287,7 +2287,7 @@ export const ClaudeDriver: ProviderDriver<ClaudeSettings, ClaudeDriverEnv, Path.
   configSchema: ClaudeSettings,
 ```
 
-## provider/Drivers/ClaudeDriver.ts · launch 2
+## apps/server/src/provider/Drivers/ClaudeDriver.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2332,7 +2332,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
         instanceId,
 ```
 
-## provider/Drivers/ClaudeExecutable.ts · launch 1
+## apps/server/src/provider/Drivers/ClaudeExecutable.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2377,7 +2377,7 @@ export const resolveClaudeSdkExecutablePath = Effect.fn("resolveClaudeSdkExecuta
     );
 ```
 
-## provider/Drivers/ClaudeHome.ts · launch 1
+## apps/server/src/provider/Drivers/ClaudeHome.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2437,7 +2437,7 @@ export const makeClaudeCapabilitiesCacheKey = Effect.fn("makeClaudeCapabilitiesC
     config: Pick<ClaudeSettings, "binaryPath" | "homePath">,
 ```
 
-## provider/Drivers/ClaudeSkills.ts · launch 1
+## apps/server/src/provider/Drivers/ClaudeSkills.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2500,7 +2500,7 @@ const findRepositoryRoot = Effect.fn("findRepositoryRoot")(function* (
     const isRoot = yield* fileSystem
 ```
 
-## provider/Drivers/ClaudeSkills.ts · launch 2
+## apps/server/src/provider/Drivers/ClaudeSkills.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2545,7 +2545,7 @@ const readSkillSettings = Effect.fn("readSkillSettings")(function* (
       Effect.tapError((cause) =>
 ```
 
-## provider/Drivers/ClaudeSkills.ts · launch 3
+## apps/server/src/provider/Drivers/ClaudeSkills.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2590,7 +2590,7 @@ const discoverPluginSkillRoots = Effect.fn("discoverPluginSkillRoots")(function*
   for (const [key, entries] of Object.entries(installed.plugins).sort()) {
 ```
 
-## provider/Drivers/ClaudeSkills.ts · launch 4
+## apps/server/src/provider/Drivers/ClaudeSkills.ts · launch 4
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2698,7 +2698,7 @@ export const discoverClaudeSkills = Effect.fn("discoverClaudeSkills")(function* 
 
 ```
 
-## provider/Drivers/CodexDriver.ts · launch 1
+## apps/server/src/provider/Drivers/CodexDriver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2746,7 +2746,7 @@ export type CodexDriverEnv =
   | CodexInstallation.CodexInstallation
 ```
 
-## provider/Drivers/CodexDriver.ts · launch 2
+## apps/server/src/provider/Drivers/CodexDriver.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2791,7 +2791,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
           new ProviderDriverError({
 ```
 
-## provider/Drivers/CodexDriver.ts · launch 3
+## apps/server/src/provider/Drivers/CodexDriver.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2868,7 +2868,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
               const before = (yield* snapshot.getSnapshot).usageLimits?.checkedAt;
 ```
 
-## provider/Drivers/CodexManagedProvider.ts · launch 1
+## apps/server/src/provider/Drivers/CodexManagedProvider.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2913,7 +2913,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
   const check = Effect.gen(function* () {
 ```
 
-## provider/Drivers/CodexManagedProvider.ts · launch 2
+## apps/server/src/provider/Drivers/CodexManagedProvider.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -2955,7 +2955,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 });
 ```
 
-## src/server/adapter.ts · launch 1
+## packages/provider-acp-registry/src/server/adapter.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3000,7 +3000,7 @@ export function registerMistralVibeAcpExtensions(context: AcpAdapterV2ExtensionC
   return context.runtime.handleExtNotification(
 ```
 
-## src/server/adapter.ts · launch 2
+## packages/provider-acp-registry/src/server/adapter.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3045,7 +3045,7 @@ export const makeAcpRegistryAdapterV2 = Effect.fn("makeAcpRegistryAdapterV2")(fu
   // Local installs launch the `copilot` binary directly with no registry id.
 ```
 
-## src/server/adapter.ts · launch 3
+## packages/provider-acp-registry/src/server/adapter.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3090,7 +3090,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
       ? { registerExtensions: registerMistralVibeAcpExtensions }
 ```
 
-## src/server/adapter.ts · launch 4
+## packages/provider-acp-registry/src/server/adapter.ts · launch 4
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3135,7 +3135,7 @@ export const AcpRegistryAdapterV2Driver: ProviderAdapterDriver<
   configSchema: AcpRegistrySettings,
 ```
 
-## src/server/adapter.ts · launch 5
+## packages/provider-acp-registry/src/server/adapter.ts · launch 5
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3179,7 +3179,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 };
 ```
 
-## src/server/driver.ts · launch 1
+## packages/provider-acp-registry/src/server/driver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3280,7 +3280,7 @@ export const checkAcpRegistryProviderReadiness = Effect.fn(
 });
 ```
 
-## src/server/driver.ts · launch 2
+## packages/provider-acp-registry/src/server/driver.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3325,7 +3325,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
             configuration: runtimeCoordinator.value.getLiveConfiguration(instanceId),
 ```
 
-## src/server/driver.ts · launch 3
+## packages/provider-acp-registry/src/server/driver.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3370,7 +3370,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 
 ```
 
-## src/server/driver.ts · launch 4
+## packages/provider-acp-registry/src/server/driver.ts · launch 4
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3466,7 +3466,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
             ? logout.pipe(
 ```
 
-## src/server/adapter.ts · launch 1
+## packages/provider-acp/src/server/adapter.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3526,7 +3526,7 @@ function nativeThreadId(
 function makeProviderThread(input: {
 ```
 
-## src/server/adapter.ts · launch 2
+## packages/provider-acp/src/server/adapter.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3571,7 +3571,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 function pathFromToolCall(toolCall: AcpToolCallState): string | undefined {
 ```
 
-## src/server/adapter.ts · launch 3
+## packages/provider-acp/src/server/adapter.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3621,7 +3621,7 @@ function providerRequestKind(kind: string | "unknown"): ProviderRequestKind {
       return "file-read";
 ```
 
-## src/server/adapter.ts · launch 4
+## packages/provider-acp/src/server/adapter.ts · launch 4
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3709,7 +3709,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
         const sessionScopedId = (sessionId: string, nativeId: string): string =>
 ```
 
-## src/server/driver.ts · launch 1
+## packages/provider-core/src/server/driver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3751,7 +3751,7 @@ export type ProviderUsageReaderEnv<Driver> =
   Driver extends ProviderDriver<any, any, infer UsageR> ? UsageR : never;
 ```
 
-## src/server/instanceEnvironment.ts · launch 1
+## packages/provider-core/src/server/instanceEnvironment.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3788,7 +3788,7 @@ export const mergeProviderInstanceEnvironment = Effect.fn(function* (
 });
 ```
 
-## src/server/adapter.ts · launch 1
+## packages/provider-cursor/src/server/adapter.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3941,7 +3941,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
               typeof value.totalDiagnostics === "number" ? value.totalDiagnostics : 0,
 ```
 
-## src/server/adapter.ts · launch 2
+## packages/provider-cursor/src/server/adapter.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -3986,7 +3986,7 @@ export const makeCursorAdapterV2 = Effect.fn("makeCursorAdapterV2")(function* (
     }),
 ```
 
-## src/server/adapter.ts · launch 3
+## packages/provider-cursor/src/server/adapter.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4031,7 +4031,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
           const nodeId =
 ```
 
-## src/server/CursorSdk.ts · launch 1
+## packages/provider-cursor/src/server/CursorSdk.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4076,7 +4076,7 @@ function onUnhandledRejection(reason: unknown): void {
     return;
 ```
 
-## src/server/driver.ts · launch 1
+## packages/provider-cursor/src/server/driver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4121,7 +4121,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
                 : new CursorAgentSdk.CursorAgentSdkRunnerError({ method: "open", cause }),
 ```
 
-## src/server/adapter.ts · launch 1
+## packages/provider-fx/src/server/adapter.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4190,7 +4190,7 @@ export const makeFxAdapterV2 = Effect.fn("makeFxAdapterV2")(function* (
     ...(options.nativeLogging === undefined ? {} : { nativeLogging: options.nativeLogging }),
 ```
 
-## src/server/adapter.ts · launch 2
+## packages/provider-fx/src/server/adapter.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4234,7 +4234,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 });
 ```
 
-## src/server/driver.ts · launch 1
+## packages/provider-fx/src/server/driver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4263,7 +4263,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 };
 ```
 
-## src/server/adapter.ts · launch 1
+## packages/provider-grok/src/server/adapter.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4308,7 +4308,7 @@ const registerGrokAcpExtensions: NonNullable<AcpAdapterV2Flavor["registerExtensi
     Effect.andThen(registerXAiSubagentFinished(runtime, finishSubagent)),
 ```
 
-## src/server/adapter.ts · launch 2
+## packages/provider-grok/src/server/adapter.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4381,7 +4381,7 @@ export const makeGrokAdapterV2 = Effect.fn("makeGrokAdapterV2")(function* (
     ...(options.nativeLogging === undefined ? {} : { nativeLogging: options.nativeLogging }),
 ```
 
-## src/server/adapter.ts · launch 3
+## packages/provider-grok/src/server/adapter.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4426,7 +4426,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 };
 ```
 
-## src/server/driver.ts · launch 1
+## packages/provider-grok/src/server/driver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4471,7 +4471,7 @@ export const GrokDriver: ProviderDriver<GrokSettings, GrokDriverEnv, Path.Path> 
   create: Effect.fn("GrokDriver.create")(function* ({
 ```
 
-## src/server/driver.ts · launch 2
+## packages/provider-grok/src/server/driver.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4516,7 +4516,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
     const textGeneration = yield* makeGrokTextGeneration(effectiveConfig, processEnv);
 ```
 
-## src/server/probeEnvironment.ts · launch 1
+## packages/provider-grok/src/server/probeEnvironment.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4531,7 +4531,7 @@ export function grokProbeEnvironment(environment: NodeJS.ProcessEnv): NodeJS.Pro
 }
 ```
 
-## src/server/adapter.ts · launch 1
+## packages/provider-muse/src/server/adapter.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4576,7 +4576,7 @@ interface ActiveTurn {
   flushScheduled: boolean;
 ```
 
-## src/server/adapter.ts · launch 2
+## packages/provider-muse/src/server/adapter.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4624,7 +4624,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
               (error) =>
 ```
 
-## src/server/adapter.ts · launch 3
+## packages/provider-muse/src/server/adapter.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4669,7 +4669,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
           thread &&
 ```
 
-## src/server/driver.ts · launch 1
+## packages/provider-muse/src/server/driver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4714,7 +4714,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
           Effect.orDie,
 ```
 
-## src/server/driver.ts · launch 2
+## packages/provider-muse/src/server/driver.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4777,7 +4777,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 };
 ```
 
-## src/server/sdk.ts · launch 1
+## packages/provider-muse/src/server/sdk.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4947,7 +4947,7 @@ export async function createMuseSdkHost(
     const host = await Promise.race([
 ```
 
-## src/server/adapter.ts · launch 1
+## packages/provider-opencode/src/server/adapter.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -4992,7 +4992,7 @@ export function makeOpenCodeProtocolLogger(input: {
   readonly threadId: ThreadId;
 ```
 
-## src/server/adapter.ts · launch 2
+## packages/provider-opencode/src/server/adapter.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5037,7 +5037,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
               },
 ```
 
-## src/server/adapter.ts · launch 3
+## packages/provider-opencode/src/server/adapter.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5076,7 +5076,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 };
 ```
 
-## src/server/driver.ts · launch 1
+## packages/provider-opencode/src/server/driver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5121,7 +5121,7 @@ function selectOpenCodeRuntimeAdapter(input: {
   const pick = <PE>(probed: Effect.Effect<ProbedOpenCode | undefined, PE>) =>
 ```
 
-## src/server/driver.ts · launch 2
+## packages/provider-opencode/src/server/driver.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5166,7 +5166,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
       config,
 ```
 
-## src/server/driver.ts · launch 3
+## packages/provider-opencode/src/server/driver.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5211,7 +5211,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
           if (stream._tag === "Some") {
 ```
 
-## src/server/driver.ts · launch 4
+## packages/provider-opencode/src/server/driver.ts · launch 4
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5282,7 +5282,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
             Effect.timeoutOption("10 seconds"),
 ```
 
-## src/server/driver.ts · launch 5
+## packages/provider-opencode/src/server/driver.ts · launch 5
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5327,7 +5327,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
     const snapshot = yield* makeManagedServerProvider<ProviderSnapshotSettings<OpenCodeSettings>>({
 ```
 
-## src/server/adapter.ts · launch 1
+## packages/provider-pi/src/server/adapter.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5398,7 +5398,7 @@ function piToolOutput(result: unknown, toolName: string): unknown {
     ? rawContent
 ```
 
-## src/server/adapter.ts · launch 2
+## packages/provider-pi/src/server/adapter.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5464,7 +5464,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
         cwd,
 ```
 
-## src/server/adapter.ts · launch 3
+## packages/provider-pi/src/server/adapter.ts · launch 3
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5509,7 +5509,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
         const shared = {
 ```
 
-## src/server/adapter.ts · launch 4
+## packages/provider-pi/src/server/adapter.ts · launch 4
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5570,7 +5570,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
                 const file = recordString(state, "sessionFile");
 ```
 
-## src/server/adapter.ts · launch 5
+## packages/provider-pi/src/server/adapter.ts · launch 5
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5607,7 +5607,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
 };
 ```
 
-## src/server/driver.ts · launch 1
+## packages/provider-pi/src/server/driver.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5652,7 +5652,7 @@ const withInstanceIdentity =
     continuation: { groupKey: input.continuationGroupKey },
 ```
 
-## src/server/driver.ts · launch 2
+## packages/provider-pi/src/server/driver.ts · launch 2
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 
@@ -5697,7 +5697,7 @@ Launch/SDK options source window; flags and environment remain unexpanded upstre
     );
 ```
 
-## provider-pi/src/settings.ts · launch 1
+## packages/provider-pi/src/settings.ts · launch 1
 
 Launch/SDK options source window; flags and environment remain unexpanded upstream expressions.
 

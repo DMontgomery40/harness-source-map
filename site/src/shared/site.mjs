@@ -9,7 +9,8 @@ export const SITE = {
     "claude-code": { path: "claude-code", label: "Claude Code", legacyHost: "ccprompts.dtmont.com" },
     codex: { path: "codex", label: "Codex/ChatGPT", legacyHost: "gpt6aeon.dtmont.com" },
     opencode: { path: "opencode", label: "OpenCode" },
-    cursor: { path: "cursor", label: "Cursor" }
+    cursor: { path: "cursor", label: "Cursor" },
+    t3code: { path: "t3code", label: "T3 Code" }
   }
 };
 

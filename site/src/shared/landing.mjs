@@ -28,6 +28,10 @@ const CHOICES = [
     kicker: "Anysphere",
     title: "Cursor",
     line: "Agent instructions, approval prompts, tool schemas, the AgentService request path, reasoning events and configuration from the shipped desktop app and Agent CLI, plus Binwalk and package scans."
+  },
+  {
+    id: "t3code", kicker: "Orchestrator", title: "T3 Code",
+    line: "An orchestrator that runs the other harnesses. The orchestration instructions, MCP tools, provider delivery, launch settings and network configuration it adds, read from release-pinned public source."
   }
 ];
 
@@ -104,7 +108,7 @@ export function renderLanding({ cardFile = "social-card.png" } = {}) {
     <h1>What the agent harness puts in front of the model.</h1>
     <p class="dek">The prompts, reminders, tool descriptions and settings that Claude Code, Codex/ChatGPT, OpenCode and Cursor send, read from shipped apps and public source, each with its provenance.</p>
     ${searchField()}
-    <h2 id="pick">Which harness?</h2>
+    <h2 id="pick">Which harness or orchestrator?</h2>
     <nav class="choices" aria-labelledby="pick">${cards}
     </nav>
     <section class="trace" aria-labelledby="trace-title">

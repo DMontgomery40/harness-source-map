@@ -7,7 +7,7 @@
   "items": [
     {
       "id": "launch-15b711777efb760bcf48",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 1",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -34,7 +34,7 @@
     },
     {
       "id": "launch-e3d7989f4267fe9d0eec",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 2",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -61,7 +61,7 @@
     },
     {
       "id": "launch-ffc45b9eb117028d531a",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 3",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -88,7 +88,7 @@
     },
     {
       "id": "launch-043e5a3f49671c890703",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 4",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 4",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -115,7 +115,7 @@
     },
     {
       "id": "launch-f2c1283507330220395e",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 5",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 5",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -142,7 +142,7 @@
     },
     {
       "id": "launch-acbe99a335730b91085b",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 6",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 6",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -169,7 +169,7 @@
     },
     {
       "id": "launch-a14754d4b76d2f90b954",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 7",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 7",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -196,7 +196,7 @@
     },
     {
       "id": "launch-2e5772f732da0c1568de",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 8",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 8",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -223,7 +223,7 @@
     },
     {
       "id": "launch-3d47d6747059555672bd",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 9",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 9",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -250,7 +250,7 @@
     },
     {
       "id": "launch-86fa68f3863ae607f448",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 10",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 10",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -277,7 +277,7 @@
     },
     {
       "id": "launch-1e8a83216d9c3d5f4505",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 11",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 11",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -304,7 +304,7 @@
     },
     {
       "id": "launch-c931112a6f2bb9cb53d9",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 12",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 12",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -331,7 +331,7 @@
     },
     {
       "id": "launch-cbbb1d57cf8a16b2bbad",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 13",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 13",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -358,7 +358,7 @@
     },
     {
       "id": "launch-cc17e997a89c00858252",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 14",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 14",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -385,7 +385,7 @@
     },
     {
       "id": "launch-27e5fe4d6ef3481deab4",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 15",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 15",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -412,7 +412,7 @@
     },
     {
       "id": "launch-e013d927e61f7cd61004",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 16",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 16",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -439,7 +439,7 @@
     },
     {
       "id": "launch-b4f42979eb1a615dabc7",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 17",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 17",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -466,7 +466,7 @@
     },
     {
       "id": "launch-da1150f4786dcee3296d",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 18",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 18",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -493,7 +493,7 @@
     },
     {
       "id": "launch-9dfb58712e93157972cc",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 19",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 19",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -520,7 +520,7 @@
     },
     {
       "id": "launch-e4c15ada28d1bbcd498d",
-      "title": "orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 20",
+      "title": "apps/server/src/orchestration-v2/Adapters/ClaudeAdapterV2.ts · launch 20",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -547,7 +547,7 @@
     },
     {
       "id": "launch-5b4af5af5142d5a0576e",
-      "title": "orchestration-v2/Adapters/CodexAdapterV2.ts · launch 1",
+      "title": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -574,7 +574,7 @@
     },
     {
       "id": "launch-1b5b7ec2297d9a1b87b0",
-      "title": "orchestration-v2/Adapters/CodexAdapterV2.ts · launch 2",
+      "title": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -601,7 +601,7 @@
     },
     {
       "id": "launch-29ba2250177008080d73",
-      "title": "orchestration-v2/Adapters/CodexAdapterV2.ts · launch 3",
+      "title": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -628,7 +628,7 @@
     },
     {
       "id": "launch-a9bd5e5b40eca283a4db",
-      "title": "orchestration-v2/Adapters/CodexAdapterV2.ts · launch 4",
+      "title": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 4",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -655,7 +655,7 @@
     },
     {
       "id": "launch-eb8882472b2f9d78d1cd",
-      "title": "orchestration-v2/Adapters/CodexAdapterV2.ts · launch 5",
+      "title": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 5",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -682,7 +682,7 @@
     },
     {
       "id": "launch-f2d9c9461b8ef845551f",
-      "title": "orchestration-v2/Adapters/CodexAdapterV2.ts · launch 6",
+      "title": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 6",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -709,7 +709,7 @@
     },
     {
       "id": "launch-97d47508f74dd53e7d1b",
-      "title": "orchestration-v2/Adapters/CodexAdapterV2.ts · launch 7",
+      "title": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 7",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -736,7 +736,7 @@
     },
     {
       "id": "launch-4158c49242e1c16d17e1",
-      "title": "orchestration-v2/Adapters/CodexAdapterV2.ts · launch 8",
+      "title": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 8",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -763,7 +763,7 @@
     },
     {
       "id": "launch-0c83c458eb1f7b18571a",
-      "title": "orchestration-v2/Adapters/CodexAdapterV2.ts · launch 9",
+      "title": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts · launch 9",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -790,7 +790,7 @@
     },
     {
       "id": "launch-3e60a1fa46475b26dfaf",
-      "title": "src/provider/codexLaunchArgs.ts · launch 1",
+      "title": "apps/server/src/provider/codexLaunchArgs.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -817,7 +817,7 @@
     },
     {
       "id": "launch-d344dca9fa3678fa7007",
-      "title": "src/provider/CodexProvider.ts · launch 1",
+      "title": "apps/server/src/provider/CodexProvider.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -844,7 +844,7 @@
     },
     {
       "id": "launch-bfb2c12f31965ba1137e",
-      "title": "src/provider/CodexProvider.ts · launch 2",
+      "title": "apps/server/src/provider/CodexProvider.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -871,7 +871,7 @@
     },
     {
       "id": "launch-3222fc19f5ac99a5a02c",
-      "title": "src/provider/CodexProvider.ts · launch 3",
+      "title": "apps/server/src/provider/CodexProvider.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -898,7 +898,7 @@
     },
     {
       "id": "launch-d51e3e770f864465c814",
-      "title": "src/provider/CodexProvider.ts · launch 4",
+      "title": "apps/server/src/provider/CodexProvider.ts · launch 4",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -925,7 +925,7 @@
     },
     {
       "id": "launch-80997c021302e3b7a6a9",
-      "title": "src/provider/CodexProvider.ts · launch 5",
+      "title": "apps/server/src/provider/CodexProvider.ts · launch 5",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -952,7 +952,7 @@
     },
     {
       "id": "launch-b8b79543641aa452b669",
-      "title": "provider/Drivers/ClaudeDriver.ts · launch 1",
+      "title": "apps/server/src/provider/Drivers/ClaudeDriver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -979,7 +979,7 @@
     },
     {
       "id": "launch-2523de50ae6937d62778",
-      "title": "provider/Drivers/ClaudeDriver.ts · launch 2",
+      "title": "apps/server/src/provider/Drivers/ClaudeDriver.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1006,7 +1006,7 @@
     },
     {
       "id": "launch-e6d86c11d08a13f6c7e7",
-      "title": "provider/Drivers/ClaudeExecutable.ts · launch 1",
+      "title": "apps/server/src/provider/Drivers/ClaudeExecutable.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1033,7 +1033,7 @@
     },
     {
       "id": "launch-890f2d9ed8effe08bccb",
-      "title": "provider/Drivers/ClaudeHome.ts · launch 1",
+      "title": "apps/server/src/provider/Drivers/ClaudeHome.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1060,7 +1060,7 @@
     },
     {
       "id": "launch-bc7847be8d965e8a1ab9",
-      "title": "provider/Drivers/ClaudeSkills.ts · launch 1",
+      "title": "apps/server/src/provider/Drivers/ClaudeSkills.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1087,7 +1087,7 @@
     },
     {
       "id": "launch-048a37ae5ada0e8e6399",
-      "title": "provider/Drivers/ClaudeSkills.ts · launch 2",
+      "title": "apps/server/src/provider/Drivers/ClaudeSkills.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1114,7 +1114,7 @@
     },
     {
       "id": "launch-433a5165d1e9f622f279",
-      "title": "provider/Drivers/ClaudeSkills.ts · launch 3",
+      "title": "apps/server/src/provider/Drivers/ClaudeSkills.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1141,7 +1141,7 @@
     },
     {
       "id": "launch-07d0b75387b6e8de7cc0",
-      "title": "provider/Drivers/ClaudeSkills.ts · launch 4",
+      "title": "apps/server/src/provider/Drivers/ClaudeSkills.ts · launch 4",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1168,7 +1168,7 @@
     },
     {
       "id": "launch-2cf8acc548ba94565a4d",
-      "title": "provider/Drivers/CodexDriver.ts · launch 1",
+      "title": "apps/server/src/provider/Drivers/CodexDriver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1195,7 +1195,7 @@
     },
     {
       "id": "launch-d8510fc6e2d614e561a7",
-      "title": "provider/Drivers/CodexDriver.ts · launch 2",
+      "title": "apps/server/src/provider/Drivers/CodexDriver.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1222,7 +1222,7 @@
     },
     {
       "id": "launch-25e5ae30f7213637e788",
-      "title": "provider/Drivers/CodexDriver.ts · launch 3",
+      "title": "apps/server/src/provider/Drivers/CodexDriver.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1249,7 +1249,7 @@
     },
     {
       "id": "launch-4da8179c8133a68dfd56",
-      "title": "provider/Drivers/CodexManagedProvider.ts · launch 1",
+      "title": "apps/server/src/provider/Drivers/CodexManagedProvider.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1276,7 +1276,7 @@
     },
     {
       "id": "launch-6a625e70e115a5224f44",
-      "title": "provider/Drivers/CodexManagedProvider.ts · launch 2",
+      "title": "apps/server/src/provider/Drivers/CodexManagedProvider.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1303,7 +1303,7 @@
     },
     {
       "id": "launch-7fefa183ac7c784b9be3",
-      "title": "src/server/adapter.ts · launch 1",
+      "title": "packages/provider-acp-registry/src/server/adapter.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1330,7 +1330,7 @@
     },
     {
       "id": "launch-e1e892cb92d5be61d955",
-      "title": "src/server/adapter.ts · launch 2",
+      "title": "packages/provider-acp-registry/src/server/adapter.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1357,7 +1357,7 @@
     },
     {
       "id": "launch-c880c5da24f085db7d6e",
-      "title": "src/server/adapter.ts · launch 3",
+      "title": "packages/provider-acp-registry/src/server/adapter.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1384,7 +1384,7 @@
     },
     {
       "id": "launch-45bc52eb0e4c38c66cb2",
-      "title": "src/server/adapter.ts · launch 4",
+      "title": "packages/provider-acp-registry/src/server/adapter.ts · launch 4",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1411,7 +1411,7 @@
     },
     {
       "id": "launch-87e976880ac1d6872855",
-      "title": "src/server/adapter.ts · launch 5",
+      "title": "packages/provider-acp-registry/src/server/adapter.ts · launch 5",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1438,7 +1438,7 @@
     },
     {
       "id": "launch-a83d4366260ff3d65ee2",
-      "title": "src/server/driver.ts · launch 1",
+      "title": "packages/provider-acp-registry/src/server/driver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1465,7 +1465,7 @@
     },
     {
       "id": "launch-7b556cea9723c3accf62",
-      "title": "src/server/driver.ts · launch 2",
+      "title": "packages/provider-acp-registry/src/server/driver.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1492,7 +1492,7 @@
     },
     {
       "id": "launch-82aacd278c68ce0dfa43",
-      "title": "src/server/driver.ts · launch 3",
+      "title": "packages/provider-acp-registry/src/server/driver.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1519,7 +1519,7 @@
     },
     {
       "id": "launch-b1b8479260415c46ab93",
-      "title": "src/server/driver.ts · launch 4",
+      "title": "packages/provider-acp-registry/src/server/driver.ts · launch 4",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1546,7 +1546,7 @@
     },
     {
       "id": "launch-287d89513b652b64a8bd",
-      "title": "src/server/adapter.ts · launch 1",
+      "title": "packages/provider-acp/src/server/adapter.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1573,7 +1573,7 @@
     },
     {
       "id": "launch-761564ddf3be207c4105",
-      "title": "src/server/adapter.ts · launch 2",
+      "title": "packages/provider-acp/src/server/adapter.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1600,7 +1600,7 @@
     },
     {
       "id": "launch-1ff4f1676305da507a17",
-      "title": "src/server/adapter.ts · launch 3",
+      "title": "packages/provider-acp/src/server/adapter.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1627,7 +1627,7 @@
     },
     {
       "id": "launch-32110c4f1483be59f47f",
-      "title": "src/server/adapter.ts · launch 4",
+      "title": "packages/provider-acp/src/server/adapter.ts · launch 4",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1654,7 +1654,7 @@
     },
     {
       "id": "launch-e374390a5d40ae67b076",
-      "title": "src/server/driver.ts · launch 1",
+      "title": "packages/provider-core/src/server/driver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1681,7 +1681,7 @@
     },
     {
       "id": "launch-26b1a92e191ca70d0795",
-      "title": "src/server/instanceEnvironment.ts · launch 1",
+      "title": "packages/provider-core/src/server/instanceEnvironment.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1708,7 +1708,7 @@
     },
     {
       "id": "launch-15b43fc968614d7b8421",
-      "title": "src/server/adapter.ts · launch 1",
+      "title": "packages/provider-cursor/src/server/adapter.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1735,7 +1735,7 @@
     },
     {
       "id": "launch-353ef6ea6f06afdeab45",
-      "title": "src/server/adapter.ts · launch 2",
+      "title": "packages/provider-cursor/src/server/adapter.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1762,7 +1762,7 @@
     },
     {
       "id": "launch-760242df9902b994f9f6",
-      "title": "src/server/adapter.ts · launch 3",
+      "title": "packages/provider-cursor/src/server/adapter.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1789,7 +1789,7 @@
     },
     {
       "id": "launch-4f1238c9bc82e2526ea3",
-      "title": "src/server/CursorSdk.ts · launch 1",
+      "title": "packages/provider-cursor/src/server/CursorSdk.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1816,7 +1816,7 @@
     },
     {
       "id": "launch-2f2565acd0713e73c344",
-      "title": "src/server/driver.ts · launch 1",
+      "title": "packages/provider-cursor/src/server/driver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1843,7 +1843,7 @@
     },
     {
       "id": "launch-659e039c13978e4dfdd4",
-      "title": "src/server/adapter.ts · launch 1",
+      "title": "packages/provider-fx/src/server/adapter.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1870,7 +1870,7 @@
     },
     {
       "id": "launch-d9945ad3400c9bb4eb76",
-      "title": "src/server/adapter.ts · launch 2",
+      "title": "packages/provider-fx/src/server/adapter.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1897,7 +1897,7 @@
     },
     {
       "id": "launch-993cdd3fa78b707474bf",
-      "title": "src/server/driver.ts · launch 1",
+      "title": "packages/provider-fx/src/server/driver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1924,7 +1924,7 @@
     },
     {
       "id": "launch-4cc9b2ecb2f6cb2531b9",
-      "title": "src/server/adapter.ts · launch 1",
+      "title": "packages/provider-grok/src/server/adapter.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1951,7 +1951,7 @@
     },
     {
       "id": "launch-f6b935d8be1bf21bb80b",
-      "title": "src/server/adapter.ts · launch 2",
+      "title": "packages/provider-grok/src/server/adapter.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -1978,7 +1978,7 @@
     },
     {
       "id": "launch-613408db1c91fbb643ac",
-      "title": "src/server/adapter.ts · launch 3",
+      "title": "packages/provider-grok/src/server/adapter.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2005,7 +2005,7 @@
     },
     {
       "id": "launch-40ce6f137461473bb34d",
-      "title": "src/server/driver.ts · launch 1",
+      "title": "packages/provider-grok/src/server/driver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2032,7 +2032,7 @@
     },
     {
       "id": "launch-1e625fb675abbcec0ea7",
-      "title": "src/server/driver.ts · launch 2",
+      "title": "packages/provider-grok/src/server/driver.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2059,7 +2059,7 @@
     },
     {
       "id": "launch-81633d72adb2137c0ff2",
-      "title": "src/server/probeEnvironment.ts · launch 1",
+      "title": "packages/provider-grok/src/server/probeEnvironment.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2086,7 +2086,7 @@
     },
     {
       "id": "launch-4ee4c0b14833441cf2ee",
-      "title": "src/server/adapter.ts · launch 1",
+      "title": "packages/provider-muse/src/server/adapter.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2113,7 +2113,7 @@
     },
     {
       "id": "launch-76650ceb55140ec54932",
-      "title": "src/server/adapter.ts · launch 2",
+      "title": "packages/provider-muse/src/server/adapter.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2140,7 +2140,7 @@
     },
     {
       "id": "launch-dd1f52be3e7948fe595a",
-      "title": "src/server/adapter.ts · launch 3",
+      "title": "packages/provider-muse/src/server/adapter.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2167,7 +2167,7 @@
     },
     {
       "id": "launch-dcf365988b1dfb2c175c",
-      "title": "src/server/driver.ts · launch 1",
+      "title": "packages/provider-muse/src/server/driver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2194,7 +2194,7 @@
     },
     {
       "id": "launch-af2b7d4f035972f3a097",
-      "title": "src/server/driver.ts · launch 2",
+      "title": "packages/provider-muse/src/server/driver.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2221,7 +2221,7 @@
     },
     {
       "id": "launch-39f4e1dccffdfa030ccf",
-      "title": "src/server/sdk.ts · launch 1",
+      "title": "packages/provider-muse/src/server/sdk.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2248,7 +2248,7 @@
     },
     {
       "id": "launch-958e5d724ebf8dcb28c0",
-      "title": "src/server/adapter.ts · launch 1",
+      "title": "packages/provider-opencode/src/server/adapter.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2275,7 +2275,7 @@
     },
     {
       "id": "launch-52349c8e9dd251c399b7",
-      "title": "src/server/adapter.ts · launch 2",
+      "title": "packages/provider-opencode/src/server/adapter.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2302,7 +2302,7 @@
     },
     {
       "id": "launch-7af0c5d1cbdf0eb6e091",
-      "title": "src/server/adapter.ts · launch 3",
+      "title": "packages/provider-opencode/src/server/adapter.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2329,7 +2329,7 @@
     },
     {
       "id": "launch-43b4d97bcef79bca695b",
-      "title": "src/server/driver.ts · launch 1",
+      "title": "packages/provider-opencode/src/server/driver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2356,7 +2356,7 @@
     },
     {
       "id": "launch-233534ba62962dfa066f",
-      "title": "src/server/driver.ts · launch 2",
+      "title": "packages/provider-opencode/src/server/driver.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2383,7 +2383,7 @@
     },
     {
       "id": "launch-511fb55f39708a0132c7",
-      "title": "src/server/driver.ts · launch 3",
+      "title": "packages/provider-opencode/src/server/driver.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2410,7 +2410,7 @@
     },
     {
       "id": "launch-75eb9bc6e9c6c29c2062",
-      "title": "src/server/driver.ts · launch 4",
+      "title": "packages/provider-opencode/src/server/driver.ts · launch 4",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2437,7 +2437,7 @@
     },
     {
       "id": "launch-14600b9bf10ffc85331b",
-      "title": "src/server/driver.ts · launch 5",
+      "title": "packages/provider-opencode/src/server/driver.ts · launch 5",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2464,7 +2464,7 @@
     },
     {
       "id": "launch-d18c5784de8dd460d7af",
-      "title": "src/server/adapter.ts · launch 1",
+      "title": "packages/provider-pi/src/server/adapter.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2491,7 +2491,7 @@
     },
     {
       "id": "launch-a51b49c90bd186fd6f52",
-      "title": "src/server/adapter.ts · launch 2",
+      "title": "packages/provider-pi/src/server/adapter.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2518,7 +2518,7 @@
     },
     {
       "id": "launch-c76aa6771291ac3565bb",
-      "title": "src/server/adapter.ts · launch 3",
+      "title": "packages/provider-pi/src/server/adapter.ts · launch 3",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2545,7 +2545,7 @@
     },
     {
       "id": "launch-5a01a6a591c70100ac82",
-      "title": "src/server/adapter.ts · launch 4",
+      "title": "packages/provider-pi/src/server/adapter.ts · launch 4",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2572,7 +2572,7 @@
     },
     {
       "id": "launch-bbd5a6f72dbd089cb532",
-      "title": "src/server/adapter.ts · launch 5",
+      "title": "packages/provider-pi/src/server/adapter.ts · launch 5",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2599,7 +2599,7 @@
     },
     {
       "id": "launch-06f20ceef6d7466787fc",
-      "title": "src/server/driver.ts · launch 1",
+      "title": "packages/provider-pi/src/server/driver.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2626,7 +2626,7 @@
     },
     {
       "id": "launch-25489d160db4a98f08d7",
-      "title": "src/server/driver.ts · launch 2",
+      "title": "packages/provider-pi/src/server/driver.ts · launch 2",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
@@ -2653,7 +2653,7 @@
     },
     {
       "id": "launch-235273ed0829a6701230",
-      "title": "provider-pi/src/settings.ts · launch 1",
+      "title": "packages/provider-pi/src/settings.ts · launch 1",
       "kind": "setting",
       "version": "0.1.6-nightly.20261031.3956",
       "release": "v0.1.6-nightly.20261031.3956",
