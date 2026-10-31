@@ -600,6 +600,7 @@ function bundleRedactor(out, bundle, values, o = {}) {
 
 // A pool of merge workers (merge-worker.mjs) for a fleet assembly: a machine's files go to the next free worker,
 // largest first. run(tasks) resolves with each task and its reply once all are done.
+const STALL_MS = 10 * 60000;
 async function mergePool(n, data) {
  const {Worker} = await import('node:worker_threads');
  const workers = Array.from({length: n}, () => new Worker(new URL('./merge-worker.mjs', import.meta.url), {workerData: data}));
@@ -609,9 +610,13 @@ async function mergePool(n, data) {
   let open = 0, failed = false;
   const fail = e => {if (!failed) {failed = true; off(); reject(e);}};
   const onError = e => fail(e);
-  // a worker that exits mid-run (out of memory, killed) fails the run: never a merge that waits forever
+  // A worker that exits mid-run (out of memory, killed) fails the run, and so does a run in which no worker has
+  // answered for STALL_MS (a hang seen once under the CPU profiler, not explained): the merge then fails and the
+  // resolver serves an earlier collection with the error, instead of a page waiting on it for ever.
   const onExit = code => fail(new Error(`a merge worker exited (code ${code}) with files still to merge`));
-  const off = () => {for (const w of workers) {w.off('error', onError); w.off('exit', onExit);}};
+  let last = Date.now();
+  const watch = setInterval(() => {if (open && Date.now() - last > STALL_MS) fail(new Error(`no merge worker answered for ${Math.round(STALL_MS / 60000)} minutes`));}, 15000);
+  const off = () => {clearInterval(watch); for (const w of workers) {w.off('error', onError); w.off('exit', onExit);}};
   const done = () => {off(); resolve(results);};
   const next = w => {
    if (failed) return;
@@ -623,6 +628,7 @@ async function mergePool(n, data) {
     if (msg.id !== id) return;
     w.off('message', on);
     open--;
+    last = Date.now();
     if (msg.error) return fail(new Error(`merge worker: ${msg.error}`));
     results.push({...t, ...msg});
     next(w);
@@ -630,7 +636,7 @@ async function mergePool(n, data) {
    w.on('message', on);
    w.postMessage({id, src: t.src, rel: t.rel, mode: t.mode});
   };
-  if (!queue.length) return resolve([]);
+  if (!queue.length) {off(); return resolve([]);}
   for (const w of workers) {w.on('error', onError); w.on('exit', onExit);}
   for (const w of workers) next(w);
  });
