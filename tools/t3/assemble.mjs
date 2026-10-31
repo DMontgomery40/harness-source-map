@@ -55,7 +55,8 @@ export function familyParts(parts, {threadId, environmentId = null}) {
  const key = (e, t) => `${e}\u0000${t}`;
  const known = new Set(), loose = new Set([threadId]);
  const inFamily = new Set();
- const holds = p => [...p.threadIds].some(t => known.has(key(p.environmentId, t)) || (!environmentId && loose.has(t)));
+ const ends = h => [key(h.from.environmentId, h.from.threadId), key(h.to.environmentId, h.to.threadId)];
+ const holds = p => [...p.threadIds].some(t => known.has(key(p.environmentId, t)) || (!environmentId && loose.has(t))) || p.hops.some(h => ends(h).some(k => known.has(k)));
  if (environmentId) known.add(key(environmentId, threadId));
  for (let changed = true; changed;) {
   changed = false;
@@ -77,11 +78,14 @@ export function familyRoot(fam) {
  return r ? {environmentId: r.environmentId, threadId: r.root} : null;
 }
 
-// This machine's local roots of every thread of the family (seeds may be any machine's thread ids).
-async function localRoots(t3Home, seeds) {
+// This machine's local roots of every thread of the family (seeds may be any machine's thread ids). A thread on
+// another machine that no store holds yet is found through this machine's own hop to it (a subagent row whose
+// remoteChild names it), so its family opens with that machine marked not collected.
+async function localRoots(t3Home, seeds, remote = null) {
  let db; try {db = await openReadOnly(join(t3Home, 'userdata', 'statev2.sqlite'));} catch {return [];}
  try {
   const environmentId = readFileSync(join(t3Home, 'userdata', 'environment-id'), 'utf8').trim();
+  if (remote) for (const r of db.all("select thread_id from orchestration_v2_projection_subagents where json_extract(payload_json,'$.remoteChild.threadId') = ? and json_extract(payload_json,'$.remoteChild.environmentId') = ?", remote.threadId, remote.environmentId)) seeds = [...seeds, r.thread_id];
   const fam = resolveFamily(db, seeds, {environmentId});
   if (!fam.threadIds.length) return [];
   const roots = new Set();
@@ -202,8 +206,9 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   const a = last && readJson(join(last, 'assembly.json'));
   if (a && Date.now() - Date.parse(a.builtAt) < maxAgeMs && fam.every(p => p.mtimeMs <= Date.parse(a.builtAt))) {onProgress(1); return {dir: last, bundle: readBundle(last), root: early, reused: true};}
  }
- if (refreshLocal && localEnv && seeds.length) {
-  const roots = await localRoots(t3Home, seeds);
+ if (refreshLocal && localEnv && (seeds.length || environmentId)) {
+  const remote = environmentId && environmentId !== localEnv && !fam.length ? {threadId, environmentId} : null;
+  const roots = await localRoots(t3Home, seeds, remote);
   if (roots.length) {
    await storeHarvest({store: incoming, partsKey: pk, label: 'mac', gzip: true, agentSessions: true, repo}, {roots, onProgress: f => onProgress(0.05 + 0.45 * f)});
    parts = readParts(incoming);

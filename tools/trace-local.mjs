@@ -328,7 +328,9 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
       if(!done)return reply(202,{pending:true,progress:Math.round(job.progress*1000)/1000});
       if(done.e){assemblyError=done.e;console.error('T3 family assembly failed:',done.e);}
       else if(done.r){
-       if(environmentId && !holdsThreadOn(done.r.bundle,environmentId,threadId))return reply(404,{error:'That T3 family holds this thread, but not on the environment the link names.'});
+       // the thread itself, or a hop to it from a machine whose part is in (its own machine has not sent it yet)
+       const reached=(done.r.bundle.hops||[]).some(h=>h.to?.environmentId===environmentId&&h.to?.threadId===threadId);
+       if(environmentId && !holdsThreadOn(done.r.bundle,environmentId,threadId) && !reached)return reply(404,{error:'That T3 family holds this thread, but not on the environment the link names.'});
        return serveBundle(done.r.dir,done.r.bundle);
       }
      }
