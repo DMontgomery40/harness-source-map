@@ -482,6 +482,7 @@ function networkBody(entry, part) {
 async function loadFiles(files, root) {
   if (!files || !files.length) return;
   const sourceWarnings=files.warnings||[];
+  const t3Family=files.t3||null; // the T3 family a resolver-opened session ran in, when collected
   const claim=loads.begin();claim.onCancel(cancelWorkerLoad);
   if(!files.every(file=>file.publicExample)){exampleAbort?.abort();publicExample=null;$("#example-banner").hidden=true;const url=new URL(location.href);url.searchParams.delete("example");history.replaceState(null,"",url);}
   // A T3 Code fleet bundle is one family, not a pick of sessions: its files go to the worker as they are, with no
@@ -504,7 +505,7 @@ async function loadFiles(files, root) {
   const { hars, logs: rest } = await splitCaptures(files);
   if(!claim.current())return;
   files = rest;
-  const logs = files.filter(f => /\.(jsonl|json)$/i.test(f.path));
+  const logs = files.filter(f => /\.(jsonl|json)(\.gz)?$/i.test(f.path)); // a T3 bundle keeps its logs gzipped
   if (hars.length && !logs.length) return showError(HAR_ALONE);
   if (!logs.length) return showError("No .jsonl session logs or native OpenCode or Cursor desktop .json exports in what was dropped.");
   if (root === undefined) {
@@ -518,7 +519,7 @@ async function loadFiles(files, root) {
     const trace = await parseInWorker(files, root,claim.current);
     if(!claim.current())return;
     trace.sourceWarnings = sourceWarnings;
-    trace.t3Family = files.t3 || null; // the T3 family this session ran in, when the resolver has it collected
+    trace.t3Family = t3Family;
     text = workerText;
     await start(trace,claim.current);
     if(!claim.current())return;
