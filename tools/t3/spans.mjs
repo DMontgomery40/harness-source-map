@@ -42,6 +42,19 @@ export function idNeedles(ids) {
 
 const nanos = v => {try {return BigInt(v);} catch {return null;}};
 const startMs = span => {const n = nanos(span.startTimeUnixNano); return n === null ? null : Number(n / 1000000n);};
+const endMs = span => {const n = nanos(span.endTimeUnixNano); return n === null ? null : Number(n / 1000000n);};
+
+// Coverage of a span file that recorded none (a v1 part): the window, cut where no span ended for GAP_MS (a busy T3
+// server ends spans every few seconds, so a silence that long inside a window is spans the log had already lost).
+export const GAP_MS = 5 * 60000;
+export function endSegments(spans, sinceMs, untilMs) {
+ const ends = [];
+ for (const s of spans) {const e = endMs(s); if (e !== null && e >= sinceMs && e <= untilMs) ends.push(e);}
+ ends.sort((a, b) => a - b);
+ const out = [];
+ for (const e of ends) {const last = out.at(-1); if (last && e - last[1] <= GAP_MS) last[1] = e; else out.push([e, e]);}
+ return out;
+}
 
 function normalize(span) {
  const out = {};
@@ -60,7 +73,7 @@ async function* lines(file) {
 export async function collectSpans({files, sinceMs, untilMs, familyIds = [], all = false, existing = [], redactor}) {
  const needles = idNeedles(familyIds);
  const byId = new Map();
- const stats = {files: files.length, read: 0, inWindow: 0, bad: 0, fromBundle: 0, kept: 0, ancestorsAdded: 0, earliestMs: null, latestMs: null, liveEarliestMs: null, liveLatestMs: null};
+ const stats = {files: files.length, read: 0, inWindow: 0, bad: 0, fromBundle: 0, kept: 0, ancestorsAdded: 0, earliestMs: null, latestMs: null, liveEarliestMs: null, liveLatestMs: null, liveEarliestEndMs: null};
  const consider = (span, raw, origin) => {
   const t = startMs(span);
   if (t !== null) {
@@ -71,6 +84,10 @@ export async function collectSpans({files, sinceMs, untilMs, familyIds = [], all
     if (stats.liveLatestMs === null || t > stats.liveLatestMs) stats.liveLatestMs = t;
    }
   }
+  // T3 writes a span's line when the span ends, and rotation drops the oldest lines: the log holds every span that
+  // ended after its oldest line's end time, which is where this read's coverage begins.
+  const e = endMs(span);
+  if (!origin && e !== null && (stats.liveEarliestEndMs === null || e < stats.liveEarliestEndMs)) stats.liveEarliestEndMs = e;
   if (!span.spanId) return;
   const inWindow = t === null || ((sinceMs == null || t >= sinceMs) && (untilMs == null || t <= untilMs));
   if (byId.has(span.spanId)) return; // the live copy (read first) wins; identical records repeat across a merge

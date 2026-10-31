@@ -17,6 +17,7 @@ import {Redactor} from '../t3/redact.mjs';
 import {stripMessageText} from '../t3/family.mjs';
 import {classifyName, classifySpan, EDGE_KINDS, ROLES} from '../t3/net.mjs';
 import {splitLines, splitName} from '../t3/facts.mjs';
+import {endSegments, GAP_MS} from '../t3/spans.mjs';
 import {GZIP_OVER} from '../t3/gz.mjs';
 import {createTraceServer} from '../trace-local.mjs';
 
@@ -206,6 +207,12 @@ test('a hop seen from both sides is evidence "both", T3 parent claim first, and 
 test('coverage parts come from part windows, a v1 entry from its earliest held span', () => {
  const v1 = {status: 'collected', collectedAt: '2026-01-01T02:00:00.000Z', window: {since: '2026-01-01T00:00:00.000Z', until: '2026-01-01T02:00:00.000Z'}, spanCoverage: {'spans.ndjson': {earliest: '2026-01-01T01:00:00.000Z'}}};
  assert.deepEqual(priorParts(v1, 'spans-from fake').map(p => p.window), [{since: '2026-01-01T01:00:00.000Z', until: '2026-01-01T02:00:00.000Z'}]);
+ // With the v1 entry's own spans: coverage is cut where no span ended for GAP_MS (spans the log had lost).
+ const at = iso => String(BigInt(Date.parse(iso)) * 1000000n);
+ const fakeSpans = ['01:00:10', '01:01:00', '01:02:00', '01:30:00', '01:31:00'].map(t => ({endTimeUnixNano: at(`2026-01-01T${t}.000Z`)}));
+ assert.deepEqual(priorParts(v1, 'spans-from fake', fakeSpans).map(p => p.window), [{since: '2026-01-01T01:00:10.000Z', until: '2026-01-01T01:02:00.000Z'}, {since: '2026-01-01T01:30:00.000Z', until: '2026-01-01T01:31:00.000Z'}]);
+ assert.equal(endSegments(fakeSpans, 0, Date.parse('2026-01-01T01:00:30.000Z')).length, 1);
+ assert.ok(GAP_MS >= 60000);
  const live = {collectedAt: '2026-01-01T03:00:00.000Z', window: {since: '2026-01-01T01:30:00.000Z', until: '2026-01-01T03:00:00.000Z'}, collector: '2', source: 'live'};
  assert.equal(unionParts(priorParts(v1, 'x'), [live], [live]).length, 2);
 });

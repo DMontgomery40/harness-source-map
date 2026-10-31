@@ -11,7 +11,7 @@ import {fileURLToPath} from 'node:url';
 import {openReadOnly} from './sqlite.mjs';
 import {secretValues} from './secrets.mjs';
 import {Redactor, RULES} from './redact.mjs';
-import {collectSpans, spanFiles, readNdjson} from './spans.mjs';
+import {collectSpans, spanFiles, readNdjson, endSegments} from './spans.mjs';
 import {PartWriter, aliasKey, readAliasKey, readBundle, emptyBundle, writeBundle, slug, yyyymmdd, ensureDir, COLLECTOR_VERSION, VERSION} from './bundle.mjs';
 import {resolveFamily, threadsInWindow, familyRows, nativeSessions, stripMessageText} from './family.mjs';
 import {lineThreadMap, splitLines, splitName, worktreeFacts} from './facts.mjs';
@@ -283,16 +283,21 @@ function clockReading(o) {
  } catch (e) {return {collectorNowMs: null, machineNowMs: Date.now(), rttMs: null, source: `ssh ${o.clockFrom} failed: ${String(e.message || e).split('\n')[0].slice(0, 120)}`};}
 }
 
-// Coverage parts for a machine entry from another bundle (v2: its parts; v1: its window, from the earliest span it
-// held, since spans before that had rotated out of T3's log when it was collected).
-function priorParts(entry, source) {
+// Coverage parts for a machine entry from another bundle. A v2 entry records its parts. A v1 entry recorded only its
+// window, and its earliest span can be an ancestor kept from long before; so its coverage is cut from its own server
+// spans (by end time, split at silences of GAP_MS) when they are given, else it is the window from the earliest span.
+function priorParts(entry, source, spans = null) {
  if (!entry || entry.status !== 'collected') return [];
  if (Array.isArray(entry.parts) && entry.parts.length) return entry.parts.map(p => ({...p, source: p.source === 'live' ? source : p.source}));
  const w = entry.window, earliest = entry.spanCoverage?.['spans.ndjson']?.earliest;
  if (!w?.since || !w?.until) return [];
+ const base = {collectedAt: entry.collectedAt || null, collector: entry.collector || '1', source};
+ if (spans) return endSegments(spans, Date.parse(w.since), Date.parse(w.until)).map(([a, b]) => ({...base, window: {since: iso(a), until: iso(b)}, derived: 'v1 span ends, split at 5-minute silences'}));
  const since = earliest && Date.parse(earliest) > Date.parse(w.since) ? earliest : w.since;
- return [{collectedAt: entry.collectedAt || null, window: {since, until: w.until}, collector: entry.collector || '1', source}];
+ return [{...base, window: {since, until: w.until}}];
 }
+// Prior parts kept on a re-run: its own earlier collections; parts from --spans-from bundles are recomputed.
+const keptParts = entry => (entry?.parts || []).filter(p => !String(p.source || '').startsWith('spans-from'));
 const partKey = p => `${p.window?.since} ${p.window?.until} ${p.collectedAt}`;
 const unionParts = (...lists) => {const m = new Map(); for (const p of lists.flat()) if (p?.window) m.set(partKey(p), p); return [...m.values()].sort((a, b) => (a.window.since < b.window.since ? -1 : 1));};
 
@@ -429,17 +434,19 @@ async function collect(o) {
  for (const f of fromBundles) if (!f.key) throw new Error(`--spans-from ${f.dir} has no alias key; its aliases cannot be re-keyed`);
  for (const [base, rel] of [['server.trace.ndjson', 'spans.ndjson'], ['desktop.trace.ndjson', 'desktop-spans.ndjson']]) {
   const files = spanFiles(logs, base);
-  const existing = [{spans: readNdjson(join(out, mdir, rel)), aliasKey: null}, ...fromBundles.map(f => ({spans: readNdjson(join(f.dir, mdir, rel)), aliasKey: f.key}))].filter(e => e.spans.length);
+  const fromSpans = fromBundles.map(f => ({spans: readNdjson(join(f.dir, mdir, rel)), aliasKey: f.key, f}));
+  if (rel === 'spans.ndjson') for (const x of fromSpans) x.f.parts = priorParts(x.f.bundle?.machines.find(m => m.environmentId === environmentId), `spans-from ${basename(x.f.dir)}`, x.spans);
+  const existing = [{spans: readNdjson(join(out, mdir, rel)), aliasKey: null}, ...fromSpans].filter(e => e.spans.length);
   if (!files.length && !existing.length) continue;
   const {spans, stats} = await collectSpans({files, sinceMs, untilMs, familyIds, all: !o.filterSpans, existing, redactor});
   writer.ndjson(`${mdir}/${rel}`, spans);
   spanSets[rel] = stats; counts[rel === 'spans.ndjson' ? 'spans' : 'desktopSpans'] = spans.length;
   if (rel === 'spans.ndjson' && stats.liveEarliestMs !== null && stats.liveEarliestMs > sinceMs + 60000) gaps.push(`server spans before ${iso(stats.liveEarliestMs)} had rotated out of T3's log (window starts ${iso(sinceMs)}); ${stats.fromBundle} spans came from earlier collections (see parts)`);
  }
- // This collection's coverage: the window, from the earliest span still in T3's log.
+ // This collection's coverage: the window, from the oldest line still in T3's log (by its span's end time).
  const live = spanSets['spans.ndjson'];
- const part = {collectedAt: new Date().toISOString(), window: live?.liveEarliestMs != null ? {since: iso(Math.max(sinceMs, live.liveEarliestMs)), until: iso(untilMs)} : null, collector: COLLECTOR_VERSION, source: 'live'};
- const parts = unionParts(priorEntry?.parts || priorParts(priorEntry, 'earlier-run'), ...fromBundles.map(f => priorParts(f.bundle?.machines.find(m => m.environmentId === environmentId), `spans-from ${basename(f.dir)}`)), part.window ? [part] : []);
+ const part = {collectedAt: new Date().toISOString(), window: live?.liveEarliestEndMs != null ? {since: iso(Math.max(sinceMs, live.liveEarliestEndMs)), until: iso(untilMs)} : null, collector: COLLECTOR_VERSION, source: 'live'};
+ const parts = unionParts(keptParts(priorEntry), ...fromBundles.map(f => f.parts || []), part.window ? [part] : []);
 
  const env = environmentFacts(t3Home, {label: o.label, redactor});
  if (o.only !== 'spans') {
@@ -528,7 +535,7 @@ async function collect(o) {
  const machine = {
   environmentId, label: env.label, collectedAt: part.collectedAt, status: 'collected', role: bundle.scope.rootEnvironmentId === environmentId ? 'root' : 'hop', collector: COLLECTOR_VERSION,
   window: {since: iso(sinceMs), until: iso(untilMs)}, parts, clock, threadIds: [...new Set([...(priorEntry?.threadIds || []), ...fam.threadIds])], seeds, upstream: fam.upstream,
-  spanCoverage: Object.fromEntries(Object.entries(spanSets).map(([k, s]) => [k, {earliest: s.earliestMs && iso(s.earliestMs), latest: s.latestMs && iso(s.latestMs), liveEarliest: s.liveEarliestMs && iso(s.liveEarliestMs), read: s.read, fromBundle: s.fromBundle, kept: s.kept, filter: o.filterSpans ? 'contract-a' : 'all'}])),
+  spanCoverage: Object.fromEntries(Object.entries(spanSets).map(([k, s]) => [k, {earliest: s.earliestMs && iso(s.earliestMs), latest: s.latestMs && iso(s.latestMs), liveEarliest: s.liveEarliestMs && iso(s.liveEarliestMs), liveEarliestEnd: s.liveEarliestEndMs && iso(s.liveEarliestEndMs), read: s.read, fromBundle: s.fromBundle, kept: s.kept, filter: o.filterSpans ? 'contract-a' : 'all'}])),
   counts, gaps,
   redaction: {counts: {...redactor.counts}, promotedValues: promoted},
   verify: {files: verify.files, bytes: verify.bytes, hitFiles: Object.keys(verify.hits).length, hits: verify.hits, joinKeysMissing: missing.length},
@@ -631,7 +638,7 @@ async function merge(o) {
    if (priorEntry) m.threadIds = [...new Set([...(priorEntry.threadIds || []), ...(m.threadIds || [])])];
    const {promoted} = writer.flush();
    const verify = scanBundle(out, {values: credValues, only: [mdir]});
-   const parts = unionParts(m.parts || priorParts(m, 'part'), priorEntry?.parts || priorParts(priorEntry, 'earlier-merge'), ...fromBundles.map(f => priorParts(f.bundle?.machines.find(x => x.environmentId === m.environmentId), `spans-from ${basename(f.dir)}`)));
+   const parts = unionParts(m.parts || priorParts(m, 'part'), keptParts(priorEntry), ...fromBundles.map((f, i) => priorParts(f.bundle?.machines.find(x => x.environmentId === m.environmentId), `spans-from ${basename(f.dir)}`, oldSpans['spans.ndjson'][i].spans)));
    const merged = {...m, role: m.environmentId === bundle.scope.rootEnvironmentId ? 'root' : 'hop', parts, gaps, spanSources: fromCounts,
     redaction: {counts: Object.fromEntries(RULES.map(r => [r, (m.redaction?.counts?.[r] || 0) + (redactor.counts[r] || 0)])), promotedValues: (m.redaction?.promotedValues || 0) + promoted, mergeRepass: {...redactor.counts}},
     verify: {...m.verify, mergedOn: hostname().split('.')[0], files: verify.files, bytes: verify.bytes, hitFiles: Object.keys(verify.hits).length, hits: verify.hits}, mergedAt: new Date().toISOString()};
