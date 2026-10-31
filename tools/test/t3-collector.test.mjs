@@ -15,7 +15,7 @@ import {readBundle, ALIAS_KEY_FILE, emptyBundle, validateBundle, VERSION} from '
 import {bundleFileList, findT3Bundle} from '../t3/bundles.mjs';
 import {Redactor, FamilyRedactor, familyKey, ALIAS_MARK} from '../t3/redact.mjs';
 import {ExactSet} from '../t3/exact.mjs';
-import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir} from '../t3/assemble.mjs';
+import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir, addLaunchHops} from '../t3/assemble.mjs';
 import {readNdjsonLines} from '../t3/gz.mjs';
 import {stripMessageText} from '../t3/family.mjs';
 import {classifyName, classifySpan, cutParts, EDGE_KINDS, ROLES} from '../t3/net.mjs';
@@ -234,6 +234,43 @@ test('fleet stores: every family joins across machines and its newest build is c
   for (const f of bundleFiles(dir)) if (!/spans/.test(f)) for (const l of readNdjsonLines(f.replace(/\.gz$/, ''))) for (const m of l.matchAll(ALIAS_MARK)) if (partMarks.has(m[0])) left++;
   assert.equal(left, 0, `${dir}: part-key aliases left in the build`);
  }
+});
+
+// [P1] threads launched with t3_thread_launch / create_threads across a peer link never joined their family: T3
+// records no parent for them, and the walk followed only remoteChild and delegatedFrom.
+test('launched threads join their launcher\'s family by the launch call\'s own result, never by time (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : !existsSync(incomingDir(mainRepo)) && 'no fleet harvest on this machine', timeout: 600000}, async () => {
+ const cache = mkdtempSync(join(tmpdir(), 't3-launches-'));
+ try {
+  const parts = addLaunchHops(readParts(incomingDir(mainRepo)), cache);
+  const launches = parts.flatMap(p => p.hops.filter(h => h.kind === 'launch').map(h => ({p, h})));
+  assert.ok(launches.length, 'the stores hold launches');
+  const holds = (t, e) => parts.some(q => q.environmentId === e && q.threadIds.has(t));
+  let held = 0;
+  for (const {p, h} of launches) {
+   assert.ok(['t3_thread_launch', 'create_threads'].includes(h.join.tool), 'only a launch tool joins');
+   assert.ok(h.join.callId && h.join.paths.length && h.join.paths.every(x => x.startsWith('agent-sessions/')), 'each join names its call and transcript');
+   assert.equal(h.from.environmentId, p.environmentId);
+   assert.ok(p.threadIds.has(h.from.threadId), 'the launcher is a thread of the part');
+   assert.equal(h.join.held, holds(h.to.threadId, h.to.environmentId));
+   if (!h.join.held) continue;
+   held++;
+   // opening the launched thread opens the launcher's family, and the launcher's root is the family's root
+   const fam = familyParts(parts, {threadId: h.to.threadId, environmentId: h.to.environmentId});
+   assert.ok(fam.includes(p), 'the launched thread\'s family holds its launcher');
+   assert.notDeepEqual(familyRoot(fam), {environmentId: h.to.environmentId, threadId: h.to.threadId}, 'a launched thread is never its family\'s root');
+  }
+  assert.ok(held, 'some launched thread is in a store');
+  // every thread of this machine that T3 launched from a linked machine and that a launch result names is joined
+  if (existsSync(db)) {
+   const d = await openReadOnly(db);
+   try {
+    const env = readFileSync(join(t3Home, 'userdata', 'environment-id'), 'utf8').trim();
+    const named = new Set(launches.filter(x => x.h.to.environmentId === env).map(x => x.h.to.threadId));
+    const linked = d.all("select thread_id from orchestration_v2_projection_threads where json_extract(payload_json,'$.linkOrigin') is not null and json_extract(payload_json,'$.lineage.parentThreadId') is null and json_extract(payload_json,'$.delegatedFrom') is null").map(r => r.thread_id);
+    for (const t of linked.filter(t => named.has(t))) assert.ok(familyParts(parts, {threadId: t, environmentId: env}).some(p => p.environmentId !== env), 'a linked launch joins a family on its launching machine');
+   } finally {d.close();}
+  }
+ } finally {rmSync(cache, {recursive: true, force: true});}
 });
 
 test('message text in rows is stripped to its length and a hash', () => {

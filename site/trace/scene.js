@@ -876,7 +876,11 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     }
   }
   for (const l of L.links) if (l.type === "return" && disposed.has(l.child.id)) breakList.push({ ...l, back: true, cut: 0.55, brk: true, color: "#9cc9ff", break: breaks.find(b => b.kind === "disposed" && b.agentId === l.child.id), samples: [] });
-  const spawnLinks = ribbons(L.links.filter(l => l.type === "spawn"), l => (crossMachine(l) ? 1.3 : 1), l => (crossMachine(l) ? "#9fe6ff" : "#aab8cc"));
+  // A launched thread (launch-join): the spawn line is ours, drawn from the launching agent, and it stops short of the
+  // child, whose own T3 row names no parent (amber).
+  const launched = new Map(breaks.filter(b => b.kind === "launch-join" && b.agentId).map(b => [b.agentId, b]));
+  for (const l of L.links) if (l.type === "spawn" && launched.has(l.child.id)) breakList.push({ ...l, cut: 0.8, brk: true, color: "#ffcf7a", break: launched.get(l.child.id), samples: [] });
+  const spawnLinks = ribbons(L.links.filter(l => l.type === "spawn" && !launched.has(l.child.id)), l => (crossMachine(l) ? 1.3 : 1), l => (crossMachine(l) ? "#9fe6ff" : "#aab8cc"));
   const returnLinks = ribbons(L.links.filter(l => l.type === "return" && !disposed.has(l.child.id)), l => 1 + 2.4 * Math.sqrt((l.size || 0) / maxReport), () => STRATA[STRATUM_INDEX.agents].color);
   // T3's claimed parent is the widest stroke on the scene, so the one break that says T3's lineage is wrong is found
   // without hovering

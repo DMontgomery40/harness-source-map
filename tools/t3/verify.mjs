@@ -99,3 +99,30 @@ export function missingJoinKeys(dir, keys, {only} = {}) {
  }
  return [...left];
 }
+
+// scanBundle across worker threads (the files shared out by size): the same scan and the same result, for a bundle
+// of hundreds of megabytes that a page is waiting on. Falls back to scanBundle where workers are unavailable.
+export async function scanBundleParallel(dir, {values, only, workers = null} = {}) {
+ const {Worker} = await import('node:worker_threads');
+ const {availableParallelism} = await import('node:os');
+ const files = [];
+ for (const file of bundleFiles(dir)) {
+  const rel = relative(dir, file).split(sep).join('/');
+  if (only && !only.some(p => rel === p || rel.startsWith(p.endsWith('/') ? p : p + '/'))) continue;
+  files.push({file, rel, size: statSync(file).size});
+ }
+ const n = Math.max(1, Math.min(workers || Math.min(8, (availableParallelism?.() || 4) - 1), files.length));
+ if (n < 2) return scanBundle(dir, {values, only});
+ const lots = Array.from({length: n}, () => ({size: 0, files: []}));
+ for (const f of [...files].sort((a, b) => b.size - a.size)) {const lot = lots.reduce((x, y) => (y.size < x.size ? y : x)); lot.files.push(f); lot.size += f.size;}
+ const run = lot => new Promise((resolve, reject) => {
+  const w = new Worker(new URL('./verify-worker.mjs', import.meta.url), {workerData: {values, files: lot.files.map(f => f.file)}});
+  w.once('message', resolve); w.once('error', reject);
+  w.once('exit', code => {if (code) reject(new Error(`verify worker exited ${code}`));});
+ });
+ const results = await Promise.all(lots.filter(l => l.files.length).map(run));
+ const out = {files: files.length, bytes: files.reduce((s, f) => s + f.size, 0), hits: {}};
+ const relOf = new Map(files.map(f => [f.file, f.rel]));
+ for (const r of results) for (const [file, hits] of Object.entries(r)) out.hits[relOf.get(file)] = hits;
+ return out;
+}

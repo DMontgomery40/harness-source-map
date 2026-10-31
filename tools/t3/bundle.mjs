@@ -78,7 +78,8 @@ export function emptyBundle(scope) {
 // as an array so no single string nears V8's cap); flush() runs the everywhere-pass then writes. Output at or over
 // GZIP_OVER is written as <rel>.gz (unless gzip is off); the other form of the same file is removed.
 export class PartWriter {
- constructor(bundleDir, redactor, {gzip: useGzip = true} = {}) {this.dir = bundleDir; this.redactor = redactor; this.files = new Map(); this.gzip = useGzip;}
+ // level: the gzip level (6; an assembly a page is waiting on writes 1, about three times faster).
+ constructor(bundleDir, redactor, {gzip: useGzip = true, level = 6} = {}) {this.dir = bundleDir; this.redactor = redactor; this.files = new Map(); this.gzip = useGzip; this.level = level;}
  put(rel, text) {this.files.set(rel.split(sep).join('/'), text);}
  lines(rel, lines) {this.files.set(rel.split(sep).join('/'), {lines});}
  json(rel, value) {this.put(rel, JSON.stringify(value, null, 1) + '\n');}
@@ -93,7 +94,7 @@ export class PartWriter {
    const path = compress ? plain + '.gz' : plain;
    ensureDir(dirname(path));
    rmSync(compress ? plain : plain + '.gz', {force: true});
-   writeFileSync(path, compress ? gzip(final) : final, {mode: 0o600});
+   writeFileSync(path, compress ? gzip(final, this.level) : final, {mode: 0o600});
    try {chmodSync(path, 0o600);} catch {}
    written.push(relative(this.dir, path).split(sep).join('/'));
   }

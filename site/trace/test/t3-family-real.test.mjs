@@ -63,12 +63,17 @@ for (const dir of dirs) {
       assert.equal(trace.fleet.hops.length, (b.bundle.hops || []).length);
       if (want.hops != null) assert.equal(trace.fleet.hops.length, want.hops);
       if (want.agents != null) assert.equal(trace.agents.length, want.agents);
-      for (const th of threads.values()) {
-        const ridge = trace.agents.some(a => a.thread === th.id && (a.kind === "root" || a.t3));
+      // [P1] a thread that moved provider kept only its first session; a native subagent whose parent was a
+      // Workflow's own thread, or whose parent's session was not drawn, had no form at all.
+      for (const th of trace.fleet.threads) {
+        const ridge = th.agentId != null && trace.agents.some(a => a.id === th.agentId);
         const voided = trace.voids.some(v => v.thread === th.id);
-        const native = /^thread:provider:[^:]+:native-thread:/.test(th.id);
-        assert.ok(ridge || voided || native, `thread ${trace.fleet.threads.findIndex(x => x.id === th.id)} has no form`);
+        assert.ok(ridge || voided, `thread ${trace.fleet.threads.indexOf(th)} has no form`);
       }
+      // every session the bundle holds for a thread is drawn: the first as its ridge, the rest beside it
+      const mainSessions = machines.flatMap(m => (m.sessions || []).filter(e => /\.jsonl$/.test(e.path) && !/\/subagents\//.test(e.path) && threads.has(e.threadId)).map(e => `${e.threadId} ${e.nativeId}`));
+      const drawn = new Set(trace.agents.filter(a => a.kind === "root" || a.t3 || a.continuation).map(a => `${a.thread} ${a.session}`));
+      for (const k of new Set(mainSessions)) assert.ok(drawn.has(k) || trace.notes.some(n => /could not be read/.test(n)), `a session of thread ${k.split(" ")[0].slice(0, 8)} is drawn`);
       assert.ok(ms < 30000, `family parse took ${Math.round(ms)} ms`);
     });
 
@@ -86,8 +91,10 @@ for (const dir of dirs) {
       for (const a of trace.agents) for (const r of refsOf(a)) {
         const name = trace.files[r.file]?.name || "";
         assert.ok(name.startsWith(`${a.machine}/machines/${a.environmentId}/agent-sessions/`), "a ref reads its own machine's sessions");
+        // a thread with several sessions: each ridge reads its own (a.session), the first or a continuation
         const native = own.get(a.thread)?.native;
-        if (native) assert.ok(native.product === "codex" ? /\/rollout-[^/]+\.jsonl$/.test(name) : name.includes(native.nativeId), "a ref reads its own thread's session");
+        const session = a.session && a.session !== "provider-event log" ? a.session : native?.nativeId;
+        if (native) assert.ok(native.product === "codex" && !a.continuation && session === native.nativeId ? /\/rollout-[^/]+\.jsonl$/.test(name) : name.includes(session) || /\/rollout-[^/]+\.jsonl$/.test(name), "a ref reads its own thread's session");
       }
       const unique = new Map();
       for (const a of trace.agents) for (const r of refsOf(a)) unique.set(`${r.file}:${r.offset}:${r.length}:${JSON.stringify(r.path || null)}:${JSON.stringify(r.range || null)}`, r);
@@ -103,7 +110,9 @@ for (const dir of dirs) {
     // [P2] split per-thread logs were cached under the shared log's key, so one thread's lines stood for all.
     await t.test("Muse ridges come from each thread's own provider log, one request per call", async () => {
       const counts = [];
-      for (const th of collected.filter(x => x.provider === "muse")) {
+      // a native Muse subagent (thread:provider:muse:native-thread:…) has no log of its own: its events are in its
+      // parent thread's log, and it is drawn inside that thread's session
+      for (const th of collected.filter(x => x.provider === "muse" && !/^thread:provider:/.test(x.id))) {
         const m = machines.find(x => x.id === th.env), log = eventLogFor(m, th.id);
         assert.ok(log, "a Muse thread has its provider log");
         const lines = threadLines(parseT3EventLines(await b.text(`${m.dir}provider-events/${log.path}`)), { threadId: th.id, sessionId: th.museSession, shared: log.shared });
@@ -147,6 +156,14 @@ for (const dir of dirs) {
       if (want.claimedParent != null) assert.equal(n("claimed-parent"), want.claimedParent);
       if (want.claimedRun != null) assert.equal(n("claimed-run"), want.claimedRun);
       if (want.late != null) assert.equal(n("late"), want.late);
+      // a launched thread is a launch-join break, never a one-sided one
+      for (const h of (b.bundle.hops || []).filter(h => h.kind === "launch")) {
+        const th = threads.get(h.to.threadId);
+        if (th?.origin !== "launch") continue;
+        assert.ok(breaks.some(x => x.kind === "launch-join" && x.thread === th.id), "a launched thread is drawn as a launch join");
+        assert.ok(!breaks.some(x => x.kind === "one-sided" && x.thread === th.id));
+      }
+      if (want.launchJoins != null) assert.equal(n("launch-join"), want.launchJoins);
     });
 
     // [P1] the family path skipped the credential rules: a key in the root title reached trace.title.
@@ -183,7 +200,9 @@ for (const dir of dirs) {
       }
       const net = buildNet(machines, spans);
       const links = Object.values(net.rate).filter(r => r.inWindow);
-      assert.ok(links.length, "the family has peer calls");
+      // a family older than the span archive may have spans on one machine only: no call then falls in a receiver's
+      // coverage, and there is nothing to join
+      if (spans.size >= 2 && [...spans.values()].filter(ix => ix.n > 0).length >= 2) assert.ok(links.length, "the family has peer calls");
       for (const r of links) assert.equal(r.inWindowJoined, r.inWindow);
       // v2 bundles carry the collector's own joins (net.ndjson): the same pairs, span for span
       for (const m of machines) {
@@ -203,7 +222,7 @@ for (const dir of dirs) {
         assert.ok(f >= lo - 1e-6 && f <= hi + 1e-6, `fit ${f} outside [${lo}, ${hi}]`);
         checked++;
       }
-      assert.ok(checked > 100, "joined pairs were checked");
+      if (links.length) assert.ok(checked > 100, "joined pairs were checked");
       for (const link of Object.values(net.clock)) for (const p of link.infeasible) assert.ok(p.why, "an infeasible pair says why");
       const fam = new Set((b.bundle.machines || []).flatMap(m => m.threadIds || []));
       const owned = net.waits.filter(w => w.threads.some(id => fam.has(id))).length;

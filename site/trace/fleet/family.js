@@ -64,7 +64,7 @@ export function familyThreads(bundle, machines) {
         parentEnv: p.lineage?.parentThreadId ? m.id : p.delegatedFrom?.environmentId || null,
         origin: p.lineage?.parentThreadId ? "lineage" : p.delegatedFrom ? "delegatedFrom" : null,
         childSide: !!p.delegatedFrom, linkOrigin: !!p.linkOrigin,
-        hop: null, task: null, late: false, native: null, museSession: null, runs: []
+        hop: null, task: null, late: false, native: null, natives: [], nativeRef: null, museSession: null, runs: []
       });
     }
     // the provider's own session id for each thread (Muse's session id, Claude's session uuid)
@@ -80,13 +80,23 @@ export function familyThreads(bundle, machines) {
   // Hops (the parent side's remoteChild, as the collector lists them): the parent of a remote child, and the hops
   // whose child thread no collected part holds, each with why (uncollectedChild below).
   for (const h of bundle.hops || []) {
-    const hop = { from: h.from?.threadId || null, fromEnv: h.from?.environmentId || null, status: h.status || null, startedAt: ms(h.startedAt), completedAt: ms(h.completedAt), title: h.title || "", evidence: h.evidence || null };
+    const hop = { from: h.from?.threadId || null, fromEnv: h.from?.environmentId || null, status: h.status || null, startedAt: ms(h.startedAt), completedAt: ms(h.completedAt), title: h.title || "", evidence: h.evidence || null, kind: h.kind || null };
     let t = threads.get(h.to?.threadId);
     if (!t) {
       t = { id: h.to.threadId, env: h.to.environmentId, title: h.title || "", provider: h.provider || null, model: h.model || null, created: hop.startedAt,
-        parent: hop.from, parentEnv: hop.fromEnv, origin: "hop", childSide: false, linkOrigin: false, hop: null, task: null, native: null, museSession: null, runs: [],
+        parent: hop.from, parentEnv: hop.fromEnv, origin: "hop", childSide: false, linkOrigin: false, hop: null, task: null, native: null, natives: [], nativeRef: null, museSession: null, runs: [],
         uncollected: uncollectedChild(hop.startedAt, machines.find(x => x.id === h.to?.environmentId)) };
       threads.set(t.id, t);
+    }
+    // A launch (t3_thread_launch, create_threads): T3 records no parent on either side; the join is the launching
+    // agent's own call result in its transcript (tools/t3/launches.mjs). A lineage break: joined by our evidence.
+    if (h.kind === "launch") {
+      t.launch = { from: hop.from, fromEnv: hop.fromEnv, tool: h.join?.tool || null, at: ms(h.join?.at || h.startedAt), path: h.join?.paths?.[0] || h.join?.path || null,
+        linkEnvironmentId: h.join?.linkEnvironmentId || null, requestedEnvironmentId: h.join?.requestedEnvironmentId || null, linkOrigin: t.linkOrigin };
+      if (!t.parent) { t.parent = hop.from; t.parentEnv = hop.fromEnv; t.origin = "launch"; }
+      t.hop ||= hop;
+      t.provider ||= h.provider || null; t.model ||= h.model || null;
+      continue;
     }
     t.hop = hop;
     t.parentSide = true;
@@ -106,17 +116,25 @@ export function familyThreads(bundle, machines) {
       const t = childId && threads.get(childId);
       if (!t) continue;
       if (p.remoteChild) t.parentSide = true;
+      // a provider-native subagent's own id in its parent's session (Claude Code's agent id, or a Workflow's task id)
+      if (p.nativeTaskRef?.nativeId) t.nativeRef = p.nativeTaskRef.nativeId;
       const run = runs.get(r.run_id);
       t.task = { status: r.status || null, delivery: r.completion_delivery_state || null, startedAt: ms(r.started_at), completedAt: ms(r.completed_at),
         parentThreadId: r.thread_id || null, parentRunEnd: run ? ms(run.completed_at) : null, parentRunStatus: run?.status || null };
     }
   }
   for (const t of threads.values()) if (!t.task && t.hopTask) t.task = t.hopTask;
-  // Each thread's own session file (agent-sessions/index.json; a subagent file belongs to its root's session).
+  // Each thread's own session files (agent-sessions/index.json; a subagent file belongs to its root's session). A
+  // thread can hold several: T3 moved it to another provider (a Codex/ChatGPT rollout, then a Claude Code session),
+  // or the provider started a new session for it. Every one is kept; native is the first listed until load.js
+  // orders them by their first request.
   for (const m of machines) for (const e of m.sessions || []) {
     if (!/\.jsonl$/.test(e.path) || /\/subagents\//.test(e.path)) continue;
     const t = threads.get(e.threadId);
-    if (t && !t.native) t.native = { nativeId: e.nativeId, product: e.product, path: e.path, env: m.id };
+    if (!t || t.natives.some(n => n.product === e.product && n.nativeId === e.nativeId)) continue;
+    const n = { nativeId: e.nativeId, product: e.product, path: e.path, env: m.id };
+    t.natives.push(n);
+    t.native ||= n;
   }
   return threads;
 }
@@ -190,6 +208,7 @@ export function silenceIn(ev, from, to, collectedAt) {
 //   parsed: thread id -> { trace, fileBase } for each thread whose session (or provider log) gave a trace; fileBase
 //     is where its files start in the merged file table (load.js concatenates the sources in the same order)
 //   evidence: thread id -> { firstActivity, lastActivity, lab, lines } from the thread's provider log
+const NATIVE = /^thread:provider:[^:]+:native-thread:/;
 export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map() }) {
   const threads = familyThreads(bundle, machines);
   const names = machineNames(machines);
@@ -204,18 +223,20 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
   const agentOfThread = new Map();
   const labOf = (t, ev) => (ev?.lab && LOG_LABS[ev.lab] ? { lab: LOG_LABS[ev.lab], labEvidence: "provider-log" } : LABS[t.provider] ? { lab: LABS[t.provider], labEvidence: "driver-map" } : { lab: null, labEvidence: null });
 
-  // Sessions in a stable order: the root first, then by when T3 created each thread.
+  // Sessions in a stable order: the root first, then by when T3 created each thread. A thread's later sessions
+  // (parsed.more: it moved to another provider, or its provider began a new session) follow its first.
   const order = [root, ...[...threads.values()].filter(t => t !== root && parsed.has(t.id)).sort((a, b) => (a.created || 0) - (b.created || 0) || a.id.localeCompare(b.id))];
-  for (const t of order) {
-    const { trace: tr, fileBase } = parsed.get(t.id);
-    const isRoot = t === root;
-    const prefix = isRoot ? "" : `${t.id}::`;
+  const addSession = (t, { trace: tr, fileBase, native = null }, continuation) => {
+    const isRoot = t === root && !continuation;
+    const prefix = isRoot ? "" : continuation ? `${t.id}::${native?.nativeId || fileBase}::` : `${t.id}::`;
     const ids = new Map(tr.agents.map(a => [a.id, prefix + a.id]));
     const main = tr.agents.find(a => a.kind === "root") || tr.agents[0];
     // each session's files sit where load.js put its sources: the file table is indexed by source, not by this order
     tr.files.forEach((f, i) => { out.files[fileBase + i] = { ...f, name: `${nameOf(t.env)}/${f.name}` }; });
     const ev = evidence.get(t.id) || null;
-    const where = { machine: nameOf(t.env), environmentId: t.env, provider: PRODUCTS[t.provider] || t.provider || null, ...labOf(t, ev), thread: t.id, session: t.native?.nativeId || (tr.product === "t3-events" ? "provider-event log" : null) };
+    const nat = native || t.native;
+    const where = { machine: nameOf(t.env), environmentId: t.env, provider: PRODUCTS[t.provider] || t.provider || null, ...labOf(t, ev), thread: t.id, session: nat?.nativeId || (tr.product === "t3-events" ? "provider-event log" : null) };
+    if (continuation && nat) where.provider = nat.product === "codex" ? PRODUCTS.codex : nat.product === "claude-code" ? PRODUCTS.claudeAgent : where.provider;
     const agents = [];
     for (const a of tr.agents) {
       const b = structuredClone(a);
@@ -223,13 +244,20 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
       b.id = ids.get(a.id);
       if (a.parentId) b.parentId = ids.get(a.parentId) || prefix + a.parentId;
       Object.assign(b, where, { model: b.model || t.model || b.requests?.[0]?.model || null });
-      if (a === main && !isRoot) {
+      if (a === main && continuation) {
+        // the same T3 thread, carried on in another session: a ridge beside the thread's first, never a T3 child
+        b.kind = "subagent";
+        b.name = `${t.title || b.name} · ${where.provider || "session"} ${String(nat?.nativeId || "").slice(0, 8)}`.trim();
+        delete b.spawn; delete b.returns;
+        b.parentId = agentOfThread.get(t.id);
+        b.continuation = { thread: t.id, session: nat?.nativeId || null };
+      } else if (a === main && !isRoot) {
         b.kind = "subagent";
         b.name = t.title || b.name;
         delete b.spawn; delete b.returns;
         b.t3 = { status: t.task?.status || t.hop?.status || null, delivery: t.task?.delivery || null, parentThreadId: t.parent, parentRunEnd: t.task?.parentRunEnd ?? null, parentRunStatus: t.task?.parentRunStatus ?? null,
           startedAt: t.task?.startedAt ?? t.hop?.startedAt ?? null, completedAt: t.task?.completedAt ?? t.hop?.completedAt ?? null, origin: t.origin, childSide: t.childSide, parentSide: !!t.parentSide,
-          runs: t.runs.slice().sort((x, y) => x.ordinal - y.ordinal) };
+          launch: t.launch || null, runs: t.runs.slice().sort((x, y) => x.ordinal - y.ordinal) };
         const rs = b.requests || [];
         b.evidence = { transcriptParent: null, firstActivity: ev?.firstActivity ?? rs[0]?.t ?? null, lastActivity: Math.max(ev?.lastActivity ?? -Infinity, rs.at(-1)?.t ?? -Infinity) };
         if (!Number.isFinite(b.evidence.lastActivity)) b.evidence.lastActivity = null;
@@ -237,17 +265,47 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
       agents.push(b);
     }
     out.agents.push(...agents);
-    agentOfThread.set(t.id, ids.get(main.id));
-    sessions.push({ thread: t, agents, mainId: ids.get(main.id) });
+    if (!continuation) agentOfThread.set(t.id, ids.get(main.id));
+    sessions.push({ thread: t, agents, mainId: ids.get(main.id), continuation });
     if (isRoot) Object.assign(out, { product: tr.product, version: tr.version, contextWindow: tr.contextWindow });
     for (const n of tr.notes || []) out.notes.push(isRoot ? n : `${nameOf(t.env)} · ${t.title}: ${n}`);
+  };
+  for (const t of order) {
+    const entry = parsed.get(t.id);
+    addSession(t, entry, false);
+    for (const more of entry.more || []) addSession(t, more, true);
+  }
+
+  // A provider-native subagent thread (Claude Code's Agent or Workflow agents, Muse's) is a ridge inside the session
+  // of its nearest drawn ancestor (a Workflow's agents hang from the Workflow's own native thread): the agent whose
+  // own id T3 recorded (nativeTaskRef), else the agent whose description is the thread's title, taken in order of
+  // creation when several share it. A Workflow thread (its agents' parent) points at its first agent.
+  const taken = new Set();
+  const drawnAncestor = t => { for (let x = t, n = 0; x && n < 32; x = threads.get(x.parent), n++) if (x.parent && parsed.has(x.parent)) return x.parent; return null; };
+  const natives = [...threads.values()].filter(t => NATIVE.test(t.id) && drawnAncestor(t)).sort((a, b) => (a.created || 0) - (b.created || 0));
+  const inParent = t => sessions.filter(s => s.thread.id === drawnAncestor(t)).flatMap(s => s.agents.filter(a => a.kind === "subagent" && a.id !== s.mainId && !a.continuation));
+  for (const t of natives) {
+    const pool = inParent(t).filter(a => !taken.has(a.id));
+    // Claude Code records the agent id (or a Workflow's task id); Codex/ChatGPT "<call id>:<its own thread id>"
+    const refs = t.nativeRef ? [...new Set([t.nativeRef, String(t.nativeRef).split(":").pop()])] : [];
+    const ref = pool.find(a => refs.some(r => a.id === r || a.id.endsWith(`::${r}`)));
+    const byTitle = !ref && t.title ? pool.filter(a => a.description === t.title || a.name === t.title).sort((x, y) => (x.requests?.[0]?.t ?? Infinity) - (y.requests?.[0]?.t ?? Infinity))[0] : null;
+    const a = ref || byTitle;
+    if (!a) continue;
+    taken.add(a.id);
+    a.t3Thread = t.id;
+    agentOfThread.set(t.id, a.id);
+  }
+  for (const t of natives) if (!agentOfThread.has(t.id)) {
+    const child = natives.find(c => c.parent === t.id && agentOfThread.has(c.id));
+    if (child) agentOfThread.set(t.id, agentOfThread.get(child.id));
   }
 
   // Parents: the transcript's caller where it made the delegation, else T3's recorded parent, else the root.
   const byTranscript = transcriptParents(sessions, threads);
   const rootAgent = agentOfThread.get(rootId);
   for (const s of sessions) {
-    if (s.thread === root) continue;
+    if (s.thread === root || s.continuation) continue;
     const main = s.agents.find(a => a.id === s.mainId);
     const claimed = agentOfThread.get(s.thread.parent) || null;
     const seen = byTranscript.get(s.thread.id);
@@ -260,7 +318,7 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
   // a silence it records inside the claimed span is a hollow frame; with no log at all nothing is known (dark).
   for (const t of threads.values()) {
     if (parsed.has(t.id)) continue;
-    if (/^thread:provider:[^:]+:native-thread:/.test(t.id)) continue; // a native subagent: a ridge in its parent's session
+    if (NATIVE.test(t.id) && drawnAncestor(t)) continue; // a native subagent: a ridge in its drawn ancestor's session
     const m = machineOf(t.env), part = m?.part || {};
     const until = ms(part.window?.until) || ms(part.collectedAt) || ms(bundle.scope?.until);
     const ev = evidence.get(t.id) || null;
@@ -273,7 +331,7 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
       thread: t.id, machine: nameOf(t.env), environmentId: t.env, provider: PRODUCTS[t.provider] || t.provider || null, model: t.model, ...labOf(t, ev),
       title: t.title, from, to, firstEvidence: ev?.firstActivity ?? null, lastEvidence: ev?.lastActivity ?? null, status: t.task?.status || t.hop?.status || null,
       delivery: t.task?.delivery || null, parent: agentOfThread.get(t.parent) || rootAgent, parentThreadId: t.parent,
-      why: t.uncollected || (ev?.lines ? "no-usage" : t.native ? "unparsed" : "no-evidence"), claimedEnd,
+      why: t.uncollected || (ev?.lines ? "no-usage" : t.native ? "unparsed" : "no-evidence"), claimedEnd, launch: t.launch || null,
       silence: ev?.lines ? silenceIn(ev, from, to, Number.isFinite(logTaken) ? logTaken : null) : null
     });
   }
@@ -293,7 +351,7 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     threads: [...threads.values()].map(t => ({ id: t.id, machine: nameOf(t.env), environmentId: t.env, title: t.title, provider: PRODUCTS[t.provider] || t.provider || null, lab: labOf(t, evidence.get(t.id)).lab,
       agentId: agentOfThread.get(t.id) || null, uncollected: t.uncollected || null, native: t.native ? { nativeId: t.native.nativeId, product: t.native.product, path: t.native.path } : null })),
     hops: (bundle.hops || []).map(h => ({ from: h.from?.threadId, to: h.to?.threadId, fromNode: h.from?.nodeId || null, subagentId: h.subagentId || null, fromEnv: h.from?.environmentId, toEnv: h.to?.environmentId,
-      fromMachine: nameOf(h.from?.environmentId), toMachine: nameOf(h.to?.environmentId), title: h.title, status: h.status, startedAt: ms(h.startedAt), completedAt: ms(h.completedAt) })),
+      fromMachine: nameOf(h.from?.environmentId), toMachine: nameOf(h.to?.environmentId), title: h.title, status: h.status, startedAt: ms(h.startedAt), completedAt: ms(h.completedAt), kind: h.kind || null })),
   };
   const times = out.agents.flatMap(a => (a.requests || []).map(r => r.t));
   for (const v of out.voids) times.push(v.from, v.to);
