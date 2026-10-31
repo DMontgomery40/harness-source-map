@@ -98,3 +98,25 @@ test('real bundles in private/ are well formed, credential-free, and served by t
   assert.equal([...bundleFiles(dir)].length, manifest.files.length);
  }
 });
+
+// T3's desktop authenticates its WebSocket with ?wsTicket=…; spans keep it in url.full and, as a bare
+// "wsTicket=…", in url.query. The rule test uses the shape only, with an obviously fake value.
+test('URL credential rule covers camelCase *Ticket names and bare query attributes', async () => {
+  const {Redactor} = await import('../t3/redact.mjs');
+  const r = new Redactor({aliasKey: Buffer.alloc(32, 1)});
+  const fake = 'FAKE-not-a-real-ticket-0000';
+  const out = r.string(`{"url.full":"http://127.0.0.1:3773/ws?wsTicket=${fake}","url.query":"wsTicket=${fake}"}`);
+  assert.ok(!out.includes(fake), 'ticket value removed');
+  assert.equal((out.match(/wsTicket=\[redacted:bearer\]/g) || []).length, 2);
+});
+
+test('real bundles carry no unredacted wsTicket (opt-in)', {skip: !process.env.T3_REAL_TESTS}, () => {
+  const root = resolve(here, '../../private/sessions/t3');
+  if (!existsSync(root)) return;
+  const leaks = [];
+  for (const dir of readdirSync(root)) for (const f of bundleFiles(join(root, dir))) {
+    const text = f.endsWith('.gz') ? execFileSync('gzip', ['-dc', f], {maxBuffer: 1 << 30}).toString() : readFileSync(f, 'utf8');
+    for (const m of text.matchAll(/wsTicket=([^&#\s"'\\]{6,})/g)) if (!m[1].startsWith('[redacted')) leaks.push(f);
+  }
+  assert.deepEqual([...new Set(leaks)], []);
+});

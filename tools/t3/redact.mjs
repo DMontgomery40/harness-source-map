@@ -20,8 +20,10 @@ const ACCOUNT_KEY = /^(?:account[_-]?id|accountid|user[_-]?id|userid|org[_-]?id|
 const EMAIL_KEY = /^(?:e-?mail|email[_-]?address|user[_-]?email)$/i;
 const ruleForKey = key => /dpop/i.test(key) ? 'dpop' : /pairing/i.test(key) ? 'pairing-code' : /launch|mcp/i.test(key) ? 'mcp-launch-credential' : /^(?:authorization|bearer|access|refresh|id[_-]?token|session[_-]?token|token)/i.test(key) ? 'bearer' : 'secret-value';
 // URL parameters that carry credentials.
-const URL_PARAM = /([?&#](?:access_token|token|auth|code|pairing|pairing_code|pairingCode|pairingToken|key|api_key|apikey|secret|credential|sig|signature|dpop|jwt|session|ticket))=([^&#\s"'\\]{6,})/gi;
-const ruleForParam = name => /pair/i.test(name) ? 'pairing-code' : /dpop/i.test(name) ? 'dpop' : /jwt|token|auth|session/i.test(name) ? 'bearer' : 'secret-value';
+// A quote also opens a parameter: span attributes keep a bare query ("url.query":"wsTicket=…"). Any *ticket / *token
+// name counts, so camelCase names such as T3's desktop wsTicket are covered.
+const URL_PARAM = /([?&#"'](?:access_token|token|auth|code|pairing|pairing_code|pairingCode|pairingToken|key|api_key|apikey|secret|credential|sig|signature|dpop|jwt|session|ticket|[a-z_]*ticket|[a-z_]*token))=([^&#\s"'\\]{6,})/gi;
+const ruleForParam = name => /pair/i.test(name) ? 'pairing-code' : /dpop/i.test(name) ? 'dpop' : /jwt|token|auth|session|ticket/i.test(name) ? 'bearer' : 'secret-value';
 
 // Shapes. Each returns the replacement and reports the removed value so it is removed everywhere.
 const SHAPES = [
