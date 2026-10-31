@@ -292,7 +292,14 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
     if((url.pathname==='/v1/sources'||url.pathname==='/v1/source') && req.method==='POST'){
      const body=await readBody(req);if(body===null)return reply(413,{error:'Request too large'});if(!body)return reply(400,{error:'Invalid request'});
      const id=sessionId(body.id);if(!id)return reply(400,{error:'Invalid session ID'});
-     const hit=await findSession(id);if(!hit)return reply(404,{error:'Session not found on this machine'});
+     const hit=await findSession(id);
+     if(!hit){
+      // A session of a T3 family that ran on another machine (a family rooted on a VM opens with its root's session
+      // from the bundle): its local sources are on that machine. Said, not a 404 the page logs as an error.
+      const away=url.pathname==='/v1/sources'&&t3Roots.length?await t3Session(t3Roots,id,t3Builds()):null;
+      if(away)return reply(200,{unavailable:true,reason:`This session ran on ${away.label||'another machine'}, not on this one: its local sources are on that machine.`});
+      return reply(404,{error:'Session not found on this machine'});
+     }
      if(url.pathname==='/v1/sources')return reply(200,await sourcesReport(hit.session,{home}));
      if(typeof body.source!=='string'||!/^[a-z0-9.-]{1,80}$/.test(body.source))return reply(400,{error:'Invalid source'});
      const offset=Number.isSafeInteger(body.offset)&&body.offset>=0?body.offset:0;const part=typeof body.part==='string'?body.part:null;
