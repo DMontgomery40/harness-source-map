@@ -492,7 +492,9 @@ function agentPanel(trace, agent, S, A) {
     kv([["Model", modelsUsed(agent)], ["Requests", fmtInt(s.requests)], ["Peak context", fmtTok(s.peak)], ["Fresh tokens", fmtTok(s.fresh)],
       ["Bursts", fmtInt(agent.bursts?.length || 1)], ...(agent.spawn ? [["Spawned at", `${fmtWhen(agent.spawn.t)}`]] : [])]),
     el("p", { class: "hint", text: S.followingMap ? "Zoom closer to explore this agent’s requests." : TOUCH ? "Each column is one request; its height is the exact context. Tap one to open it."
-      : "Each column is one request; its height is the exact context. ← → move between requests, Enter opens one, Esc goes back." })
+      : "Each column is one request; its height is the exact context. ← → move between requests, Enter opens one, Esc goes back." }),
+    // a T3 family's ridge: where it ran, what T3 says of it, its own session and its network (fleet/controls.js)
+    ...(A.fleetRows?.(agent) || [])
   ];
   if (agent.spawn && agent.parentId) {
     const p = trace.agents.find(a => a.id === agent.parentId);

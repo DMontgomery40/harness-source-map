@@ -742,3 +742,12 @@ button:disabled { opacity: .4; cursor: default; }
 .linkbtn.wire-jump { display: block; text-align: left; margin: 2px 0 6px; overflow-wrap: anywhere; }
 /* A block's reader opens inside the row that opened it (panels.js blockGroups). */
 .groups .items.blocks .reader { margin: 6px 0 10px; }
+
+/* A T3 family's machine and lab filter: plain toggles under the lens buttons (fleet/controls.js) */
+.fleet-filter { display: flex; flex-direction: column; gap: 6px; margin: 0 12px 8px; }
+.fleet-filter .ff-row { display: flex; flex-wrap: wrap; gap: 4px; }
+.fleet-filter button { font: inherit; font-size: 12px; line-height: 1; padding: 6px 9px; border-radius: 7px; border: 1px solid #a0b4c829; background: transparent; color: var(--ink-3); cursor: pointer; }
+.fleet-filter button:hover { color: var(--ink); border-color: #c8d7e659; }
+.fleet-filter button[aria-pressed=true] { color: var(--accent); background: #1a3533; border-color: #395d55; }
+.tip .fleet-where { color: #9fe6ff; }
+.fleet-kv { margin-top: 4px; }

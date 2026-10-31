@@ -20,6 +20,8 @@ import { sourcesLens, SOURCES_LENS } from "./sources/panel.js";
 import { EXAMPLE_ID, loadPublicExample, createLoadOwnership } from "./example-loader.js";
 import { createHelp } from "./help/help.js";
 import { productLabel } from './products.js';
+import { filterRows, agentRows } from "./fleet/controls.js";
+import { fleetKeys, cycle, isFiltered } from "./fleet/filter.js";
 
 const params = new URLSearchParams(location.search);
 const $ = s => document.querySelector(s);
@@ -27,7 +29,9 @@ const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const S = {
   trace: null, layout: null, level: 0, agentId: null, agent: null, reqIdx: null, stratum: null, block: null,
-  lens: "context", mode: "3d", custodyFn: null, reading: false, detailedLabels: false, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args'
+  lens: "context", mode: "3d", custodyFn: null, reading: false, detailedLabels: false, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args',
+  // A T3 family: the machine/lab filter, and the family an own session was opened from (its crumb back)
+  fleetFilter: null, familyReturn: null
 };
 let scene = null;
 let palette = null; // search and keyboard shortcuts (palette.js)
@@ -334,7 +338,7 @@ let bodySeq = 0;
 const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode or Cursor desktop .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
 
 // A T3 Code fleet bundle among the files: what the resolver serves for a T3 thread, or a dropped bundle folder.
-const isBundleFiles = files => files.some(f => f.kind === "t3-bundle") || (files.some(f => /(^|\/)bundle\.json$/.test(f.path)) && files.some(f => /(^|\/)machines\/[^/]+\/threads\.json(\.gz)?$/.test(f.path)));
+const isBundleFiles = files => files.some(f => /(^|\/)bundle\.json$/.test(f.path)) && files.some(f => /(^|\/)machines\/[^/]+\/threads\.json(\.gz)?$/.test(f.path));
 
 // Captures among picked files: .har files, HAR-shaped .json files, and Cursor's
 // private decoded AgentService sidecar (a session .json remains separate).
@@ -913,7 +917,7 @@ async function start(trace,current=()=>true) {
   viewHistory?.dispose(); viewHistory = null;
   clearCapture(); // a capture belongs to the session it was attached to
   S.sources = null; S.sourceOpen = new Map(); sourcesSeq++;
-  Object.assign(S, { level: 0, agentId: null, reqIdx: null, stratum: null, block: null, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args' });
+  Object.assign(S, { level: 0, agentId: null, reqIdx: null, stratum: null, block: null, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args', fleetFilter: null, familyReturn: null });
   forgetPanels(); shownKey = null;
   const referenceIndex = await loadIndex();
   if(!current())return;
@@ -1151,10 +1155,58 @@ function buildHud() {
     st.sideFresh ? stat(fmtTok(st.sideFresh), "Side calls & reviews") : null].filter(Boolean));
   symbolLegend();
   buildLenses();
+  buildFleetFilter();
   // A harness session that ran inside a collected T3 family: one quiet way to its family, never opened unasked.
   const fam = $("#t3-family");
   fam.hidden = !t.t3Family || !!t.family;
   fam.onclick = () => openT3Family(t.t3Family.rootThreadId);
+}
+
+// ---------- T3 family: the machine and lab filter, and each thread's own session ----------
+function buildFleetFilter() {
+  $("#fleet-filter")?.remove();
+  if (!S.trace?.family) return;
+  const nav = filterRows(S.trace, S.fleetFilter, {
+    set: (f, opts) => setFleetFilter(f, opts),
+    preview: f => scene?.setFilter(f ?? S.fleetFilter, { dur: 0 }),
+  });
+  if (nav) $("#lenses").after(nav);
+}
+// The filter is a view of the landscape, not a place: it is kept off history and saved views.
+function setFleetFilter(f, { frame = false } = {}) {
+  S.fleetFilter = isFiltered(f) ? { machine: f.machine || null, lab: f.lab || null } : null;
+  buildFleetFilter();
+  scene?.setFilter(S.fleetFilter, { frame });
+  if (S.mode === "2d") renderFlat();
+}
+// The files of one family thread's own harness session, inside the bundle the family came from.
+function ownSessionFiles(agent) {
+  const th = S.trace?.fleet?.threads?.find(t => t.id === agent.thread);
+  if (!th?.native || !lastFiles) return null;
+  const dir = `machines/${th.environmentId}/agent-sessions/`, stem = th.native.path.replace(/\.jsonl$/, "");
+  const files = lastFiles.filter(f => {
+    const rel = f.path.slice(f.path.indexOf("machines/"));
+    if (!rel.startsWith(dir)) return false;
+    const p = rel.slice(dir.length).replace(/\.gz$/, "");
+    return th.native.product === "codex" ? /\/rollout-[^/]+\.jsonl$/.test(p) : p === th.native.path || p.startsWith(`${stem}/`);
+  });
+  return files.length ? { files, nativeId: th.native.nativeId } : null;
+}
+// "Open its own session": that thread's own landscape, with a crumb back to the family.
+async function openOwnSession(agent) {
+  const own = ownSessionFiles(agent);
+  if (!own) return;
+  const back = { files: lastFiles, title: S.trace.title, machine: agent.machine, name: agent.name };
+  backToLoader();
+  const trace = await loadFiles(own.files, own.nativeId);
+  if (trace) { S.familyReturn = back; renderCrumbs(); }
+}
+async function backToFamily(machine = null) {
+  const back = S.familyReturn;
+  if (!back) return;
+  backToLoader();
+  const trace = await loadFiles(back.files, null);
+  if (trace && machine) setFleetFilter({ machine });
 }
 
 // Opens a T3 family through the local resolver, from a session that ran in it.
@@ -1395,6 +1447,9 @@ function pick(p) {
   set({ mapPinned, level: 1, agentId: p.agentId, reqIdx: p.reqIdx ?? 0, stratum: null, block: null }, mapPinned ? focusAt(p.agentId, p.reqIdx ?? 0) : undefined);
 }
 const A = {
+  // a T3 family ridge's panel rows (fleet/controls.js), and the way into its own session
+  fleetRows: agent => agentRows(S.trace, agent, A),
+  ownSession: agent => (ownSessionFiles(agent) ? () => openOwnSession(agent) : null),
   focusAction: (id, i) => set({ level: 2, agentId: id, reqIdx: i, stratum: null, block: null,
     inspector: 'action', callIndex: null, mapPinned: S.mode === '3d' && (S.level === 0 || S.mapPinned) }, focusAt(id, i)),
   showCallPart: part => { S.callPart = part; saveViewSoon(); },
@@ -1501,6 +1556,13 @@ function onKey(e) {
   if (palette?.handleKey(e)) return;
   if (e.target.closest && e.target.closest("input, textarea, select, [role=separator], [contenteditable=true]")) return;
   if (e.metaKey || e.ctrlKey || e.altKey) return;
+  // In a T3 family at the landscape, Esc first clears the machine filter; m / ⇧M step through the machines.
+  if (e.key === "Escape" && S.level === 0 && isFiltered(S.fleetFilter)) { e.preventDefault(); setFleetFilter(null); return; }
+  if ((e.key === "m" || e.key === "M") && S.trace.family && S.level === 0) {
+    e.preventDefault();
+    setFleetFilter({ ...(S.fleetFilter || {}), machine: cycle(fleetKeys(S.trace).machines, S.fleetFilter?.machine || null, e.key === "M" ? -1 : 1) });
+    return;
+  }
   if (e.key === "Escape") { e.preventDefault(); up(); return; }
   if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && S.level >= 1 && S.agent) {
     e.preventDefault();
@@ -1607,7 +1669,9 @@ function showReader() {
 
 function renderCrumbs() {
   const c = $("#crumbs");
-  const parts = [["Session", overview]];
+  // An own session opened from a T3 family: the family, its machine, then this session.
+  const fam = S.familyReturn;
+  const parts = fam ? [["T3 family", () => backToFamily()], [fam.machine, () => backToFamily(fam.machine)], [clipName(fam.name || "Session"), overview]] : [["Session", overview]];
   if (S.level >= 1 && S.agent) parts.push([S.agent.kind === "root" ? "Main thread" : S.agent.name || S.agent.id, () => set({ level: 1, stratum: null, block: null })]);
   if (S.level >= 2 && S.reqIdx != null) parts.push([`Request ${S.reqIdx + 1}`, () => set({ level: 2, stratum: null, block: null })]);
   if (S.level >= 3 && S.stratum) parts.push([STRATA[STRATUM_INDEX[S.stratum]].name, () => set({ block: null })]);

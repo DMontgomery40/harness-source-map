@@ -14,6 +14,7 @@ import { blockPart } from "./model.js";
 import { createGeometry, topsOf } from "./landscape-geometry.js";
 import { BASE_H, landscapeRule, crestEvents, placeLabel, modelSwitches, mapDetail, cappedMarkerHeight, terrainPlacement, playheadEnd, cutXAt, agentPlayhead } from "./scene-rules.js";
 import { shouldRefreshDetail, shouldRedrawNavigator } from "./scene-rules.js";
+import { matcher, isFiltered } from "./fleet/filter.js";
 
 const H = BASE_H;         // world height of the tallest context
 const STAGE_Z0 = 15;
@@ -22,6 +23,9 @@ const MASSIF = Number(new URLSearchParams(location.search).get("massif") ?? 2); 
 const VIEW = (() => { const q = new URLSearchParams(location.search); return { az: Number(q.get("az") ?? -25), el: Number(q.get("el") ?? 40), fov: Number(q.get("fov") ?? 34), paz: Number(q.get("paz") ?? -32), pel: Number(q.get("pel") ?? 42), caz: Number(q.get("caz") ?? -16), cel: Number(q.get("cel") ?? 22), cpaz: Number(q.get("cpaz") ?? -30), cpel: Number(q.get("cpel") ?? 30) }; })();
 const SP = 0.62, CORE_R = 0.24, H1 = 12, LIFT_R = 1.25, LIFT_H = 13;
 const RINGS = 9;
+// A T3 family's machine filter (fleet/filter.js): how far a filtered-out ridge recedes toward the fog, how low it
+// sinks (a fraction of its height), and how long the sink takes.
+const FLEET_FADE = 0.62, FLEET_SINK = 0.9, FLEET_SINK_MS = 300;
 const FOG = new THREE.Color("#0a141e");
 const LIGHT = new THREE.Vector3(-0.38, 0.62, 0.69).normalize();
 
@@ -55,6 +59,10 @@ void main() {
 #ifdef AGENTS
   vSolid = texelFetch(uAgents, ivec2(int(aAgent + 0.5), 0), 0);
   vAg = texelFetch(uAgents, ivec2(int(aAgent + 0.5), 1), 0);
+#ifdef FLEET_SINK
+  // a ridge the machine filter leaves out sinks toward its footprint (row 2: 0 standing, 1 sunk)
+  p.y *= 1.0 - ${FLEET_SINK.toFixed(2)} * texelFetch(uAgents, ivec2(int(aAgent + 0.5), 2), 0).x;
+#endif
 #else
   vSolid = vec4(0.0);
   vAg = vec4(1.0, 0.0, 0.0, 0.0);
@@ -350,10 +358,14 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   const agentIndex = new Map(agents.map((a, i) => [a.id, i]));
   const rootInfo = L.info.get(L.root.id);
 
-  // ---- per-agent state texture: row 0 = solid colour (rgb) + mix (a); row 1 = emphasis, hidden, x-ray skip, fade ----
+  // ---- per-agent state texture: row 0 = solid colour (rgb) + mix (a); row 1 = emphasis, hidden, x-ray skip, fade;
+  // row 2 (a T3 family only) = how far the machine filter has sunk the ridge ----
   const AW = Math.max(1, agents.length);
-  const agentData = new Float32Array(AW * 2 * 4);
-  const agentTex = new THREE.DataTexture(agentData, AW, 2, THREE.RGBAFormat, THREE.FloatType);
+  const ROWS = trace.family ? 3 : 2;
+  const agentData = new Float32Array(AW * ROWS * 4);
+  const agentTex = new THREE.DataTexture(agentData, AW, ROWS, THREE.RGBAFormat, THREE.FloatType);
+  // the ridge materials of a family sink; any other session's shaders are unchanged
+  const SINK_DEF = trace.family ? { FLEET_SINK: "" } : {};
   agentTex.minFilter = agentTex.magFilter = THREE.NearestFilter;
   for (let i = 0; i < AW; i++) {
     agentData[(AW + i) * 4] = 1;
@@ -490,7 +502,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
       if (computeNormals) g.computeVertexNormals();
       return g;
     };
-    const mat = strataMaterial({ AGENTS: "", CUT: "" }, cutU);
+    const mat = strataMaterial({ AGENTS: "", CUT: "", ...SINK_DEF }, cutU);
     const fm = new THREE.Mesh(mk(front, false), mat);
     const sm = new THREE.Mesh(mk(slope, true), mat);
     // Neighbouring requests differ in height, so the slope's computed normals swing column by column;
@@ -508,7 +520,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   const world = new THREE.Group();
   world.add(frontMesh, slopeMesh);
   // Keep occluded agent crests legible when the user orbits behind another row.
-  const xrayMat = strataMaterial({ AGENTS: "", XRAY: "", CUT: "" }, cutU);
+  const xrayMat = strataMaterial({ AGENTS: "", XRAY: "", CUT: "", ...SINK_DEF }, cutU);
   Object.assign(xrayMat, { transparent: true, depthWrite: false, depthFunc: THREE.GreaterDepth, side: THREE.FrontSide });
   const xray = new THREE.Mesh(frontMesh.geometry, xrayMat);
   xray.frustumCulled = false;
@@ -517,7 +529,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   // The floor is polished: the terrain stands on its own soft reflection instead of floating in the
   // dark. The floor writes no depth, so the mirrored copy below it shows through wherever nothing
   // above the floor is nearer; everything above the floor is always nearer along the same ray.
-  const reflectMat = strataMaterial({ AGENTS: "", REFLECT: "", CUT: "" }, cutU);
+  const reflectMat = strataMaterial({ AGENTS: "", REFLECT: "", CUT: "", ...SINK_DEF }, cutU);
   Object.assign(reflectMat, { transparent: true, depthWrite: false });
   const mirror = new THREE.Group();
   mirror.scale.y = -1;
@@ -668,6 +680,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     const list = [];
     beamPick.length = 0;
     for (const act of allActs) {
+      if (!fleetMatch(act.a)) continue; // a ridge the machine filter leaves out keeps no beacons
       // Every tool call is a pin on the crest: tall red beacons left the machine, amber wrote
       // locally, short blue read. The egress lens drops reads; the other lenses keep beacons only.
       const show = act.cls === "outward" || (act.cls === "write" && (lens === "context" || lens === "egress")) || (act.cls === "read" && lens === "context");
@@ -741,6 +754,13 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     cairns.frustumCulled = false;
     world.add(cairns);
   }
+  // A T3 family's machine filter folds away the side calls of the ridges it leaves out.
+  const cairnMatrices = sideReqs.map((s, n) => { const m = new THREE.Matrix4(); cairns.getMatrixAt(n, m); return m; });
+  const foldCairns = match => {
+    const zero = new THREE.Matrix4().makeScale(0, 0, 0);
+    sideReqs.forEach((s, n) => cairns.setMatrixAt(n, match(s.a) ? cairnMatrices[n] : zero));
+    cairns.instanceMatrix.needsUpdate = true;
+  };
 
   // spawn and return links: luminous threads arcing over the valley. They are drawn at a constant
   // pixel width with an antialiased core and a soft halo, so they stay clean lines at every zoom
@@ -781,11 +801,18 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     g.setAttribute("aEventX", new THREE.Float32BufferAttribute(ev, 1));
     g.setIndex(idx);
     const mesh = new THREE.Mesh(g, new THREE.ShaderMaterial({
-      uniforms: { uOpacity: { value: 0.3 }, uHover: linkHover, uRes: pinUniforms.uRes, uDpr: pinUniforms.uDpr, uCutX: cutU.uCutX },
+      uniforms: { uOpacity: { value: 0.3 }, uHover: linkHover, uRes: pinUniforms.uRes, uDpr: pinUniforms.uDpr, uCutX: cutU.uCutX, uAgents: shared.uAgents },
+      // in a T3 family a link fades with its child ridge when the machine filter leaves that ridge out
+      defines: trace.family ? { FLEET: "" } : {},
       vertexShader: `attribute vec3 color; attribute vec3 aNext; attribute float aSide; attribute float aT; attribute float aW; attribute float aAgent; attribute float aEventX;
         uniform float uHover; uniform vec2 uRes; uniform float uDpr; uniform float uCutX;
-        varying vec3 vC; varying float vOn; varying float vSide; varying float vT; varying float vHalf; varying float vW;
+        varying vec3 vC; varying float vOn; varying float vSide; varying float vT; varying float vHalf; varying float vW; varying float vFade;
+        uniform highp sampler2D uAgents;
         void main(){
+          vFade = 0.0;
+#ifdef FLEET
+          vFade = texelFetch(uAgents, ivec2(int(aAgent + 0.5), 1), 0).w;
+#endif
           if (aEventX > uCutX) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); vC = vec3(0.0); vOn = 0.0; vSide = 0.0; vT = 0.0; vHalf = 1.0; vW = 0.0; return; }
           vC = color; vOn = abs(aAgent - uHover) < 0.5 ? 1.0 : 0.0; vSide = aSide; vT = aT;
           vec4 a = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
@@ -797,13 +824,13 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
           a.xy += vec2(-d.y, d.x) * aSide * vHalf * 2.0 / uRes * a.w;
           gl_Position = a;
         }`,
-      fragmentShader: `uniform float uOpacity; varying vec3 vC; varying float vOn; varying float vSide; varying float vT; varying float vHalf; varying float vW;
+      fragmentShader: `uniform float uOpacity; varying vec3 vC; varying float vOn; varying float vSide; varying float vT; varying float vHalf; varying float vW; varying float vFade;
         void main(){
           float d = abs(vSide) * vHalf;
           float core = clamp(vW * 0.5 + 0.5 - d, 0.0, 1.0);
           float halo = 0.1 * exp(-d * d / max(1.0, vW * vW));
           float ends = mix(smoothstep(0.0, 0.14, vT) * smoothstep(1.0, 0.94, vT), 1.0, vOn);
-          float a = max(core, halo) * mix(uOpacity, 1.0, vOn) * ends;
+          float a = max(core, halo) * mix(uOpacity, 1.0, vOn) * ends * (1.0 - 0.9 * vFade);
           if (a <= 0.002) discard;
           gl_FragColor = vec4(vC * (1.0 + 0.3 * vOn), a);
           #include <colorspace_fragment>
@@ -1198,7 +1225,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     miniTex.image.data.set(overviewAgentData(agentData, agents, next));
     miniTex.needsUpdate = true;
     layoutBeams(next);
-    flags.visible = next === "context" || next === "egress";
+    flags.visible = (next === "context" || next === "egress") && fleetMatch(L.root);
     warnMesh.visible = next === "inflow";
     // Arcs stay faint until their agent is hovered, except in the subagents lens.
     spawnLinks.material.uniforms.uOpacity.value = next === "agents" ? 0.85 : 0.1;
@@ -1207,25 +1234,39 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     dirty = 3;
   }
   let focusAgentId = null;
-  const baseEm = a => (focusAgentId && a.id !== focusAgentId ? 0.28 : 1);
+  // The machine filter of a T3 family (setFilter): the ridges it leaves out lose emphasis, fade and sink.
+  let fleetFilter = null, fleetMatch = () => true;
+  const baseEm = a => (focusAgentId && a.id !== focusAgentId ? 0.28 : fleetMatch(a) ? 1 : 0.22);
   function applyFocusEmphasis(level) {
     agents.forEach((a, i) => {
-      agentData[(AW + i) * 4] = level === 0 ? (lens === "agents" && a.kind === "root" ? 0.35 : 1) : 0.1;
+      agentData[(AW + i) * 4] = level === 0 ? (lens === "agents" && a.kind === "root" ? 0.35 : fleetMatch(a) ? 1 : 0.22) : 0.1;
       agentData[(AW + i) * 4 + 1] = level > 0 && a.id === focusAgentId ? 1 : 0;
-      agentData[(AW + i) * 4 + 3] = level > 0 && a.id !== focusAgentId ? 1 : 0;
+      agentData[(AW + i) * 4 + 3] = level > 0 && a.id !== focusAgentId ? 1 : level === 0 && !fleetMatch(a) ? FLEET_FADE : 0;
     });
     agentTex.needsUpdate = true;
     cairns.visible = level === 0;
     spawnLinks.visible = returnLinks.visible = level === 0;
     pins.visible = level === 0;
-    flags.visible = level === 0 && (lens === "context" || lens === "egress");
+    flags.visible = level === 0 && (lens === "context" || lens === "egress") && fleetMatch(L.root);
     warnMesh.visible = level === 0 && lens === "inflow";
     labelGroups.l0.visible = level === 0;
     ruler.visible = level === 0;
-    eventLines.visible = level === 0;
+    eventLines.visible = level === 0 && fleetMatch(L.root);
     xray.visible = level === 0 && detail.level < 2;
     labelGroups.map.visible = level === 0;
-    cliffLines.visible = level === 0;
+    cliffLines.visible = level === 0 && fleetMatch(L.root);
+    for (const f of fleetFades) f(level === 0 ? fleetMatch : () => false, level);
+  }
+  // Other family forms (voids, breaks, fleet ground) register how they follow the filter and the level.
+  const fleetFades = [], fleetFramePoints = [];
+  // The sink animates each ridge's row-2 value toward its target (instant with reduced motion).
+  const sink = { from: new Float32Array(AW), to: new Float32Array(AW), t0: 0, on: false };
+  const sinkAt = i => agentData[(2 * AW + i) * 4];
+  function stepSink(now) {
+    const k = reducedMotion ? 1 : Math.min(1, (now - sink.t0) / FLEET_SINK_MS), e = ease(k);
+    for (let i = 0; i < AW; i++) agentData[(2 * AW + i) * 4] = sink.from[i] + (sink.to[i] - sink.from[i]) * e;
+    agentTex.needsUpdate = true;
+    if (k >= 1) sink.on = false;
   }
 
   // ---- camera ----
@@ -1412,7 +1453,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   }
   // The overview shares the very same vertex buffers as the landscape. Its agent
   // texture stays visible when the inspector extracts an individual core.
-  const miniData = new Float32Array(agentData.length);
+  const miniData = new Float32Array(AW * 2 * 4);
   for (let i=0; i<AW; i++) miniData[(AW+i)*4]=1;
   const miniTex = new THREE.DataTexture(miniData, AW, 2, THREE.RGBAFormat, THREE.FloatType);
   miniTex.needsUpdate=true;
@@ -1653,7 +1694,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   function nearbyRuns() {
     const runs = [];
     for (const agent of agents) {
-      if (!rowZ.has(agent.id)) continue;
+      if (!rowZ.has(agent.id) || !fleetMatch(agent)) continue; // the map's labels and focus follow the filter
       for (let i0 = 0; i0 < agent.requests.length; i0 += 64) {
         const n = Math.min(64, agent.requests.length - i0), run = { agent, i0, x: new Float64Array(n), y: new Float64Array(n), z: new Float64Array(n) };
         for (let k = 0; k < n; k++) { run.x[k] = xOf(agent, i0 + k); run.y[k] = crest(agent, i0 + k); run.z[k] = zOf(agent, i0 + k) + 0.1; }
@@ -1882,10 +1923,12 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
       const reach = 30 + row.maxDepth * 3;
       for (const seg of row.segs) {
         if (xr < seg.x0 * W - reach || xr > seg.x1 * W + reach) continue;
+        if (!fleetMatch(seg.agent)) continue; // a sunk ridge is not where its full height would be
         for (const f of [0, 0.1, 0.2, 0.32, 0.45, 0.6, 0.78]) test(row, row.maxDepth * f, seg);
       }
     }
     for (const s of sideReqs) {
+      if (!fleetMatch(s.a)) continue;
       const t = (SIDE_Z + 0.55 - o.z) / d.z;
       if (!(t > 0)) continue;
       const x = o.x + d.x * t, y = o.y + d.y * t;
@@ -1936,6 +1979,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     }
     if (stage.agent && stage.dur && now - stage.t0 <= stage.dur + 50) { placeCores((now - stage.t0) / stage.dur); dirty = 2; }
     if (lifted.visible && lift.dur && now - lift.t0 <= lift.dur + 50) { stepLift((now - lift.t0) / lift.dur); dirty = 2; }
+    if (sink.on) { stepSink(now); dirty = Math.max(dirty, 2); }
     if (controls.update()) dirty = Math.max(dirty, 1);
     shared.uFocusDist.value = camera.position.distanceTo(controls.target);
     if (hoverQueued) {
@@ -2027,6 +2071,42 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     },
     zoom: zoomMap,
     setLabelDetail(value) { detailedLabels = !!value; dirty = 3; },
+    // A T3 family's machine or lab filter ({ machine, lab }, or null for all): the chosen ridges stay lit, the rest
+    // recede and sink to their footprints. frame: fit the lit ridges (the chosen machine pressed again).
+    setFilter(f, { frame = false, dur = 700 } = {}) {
+      if (!trace.family) return;
+      fleetFilter = isFiltered(f) ? { machine: f.machine || null, lab: f.lab || null } : null;
+      fleetMatch = matcher(fleetFilter);
+      for (let i = 0; i < AW; i++) { sink.from[i] = sinkAt(i); sink.to[i] = fleetMatch(agents[i]) ? 0 : 1; }
+      sink.t0 = performance.now(); sink.on = true;
+      if (level === 0) applyFocusEmphasis(0);
+      agentTex.needsUpdate = true;
+      const mini = overviewAgentData(agentData, agents, lens);
+      agents.forEach((a, i) => { if (!fleetMatch(a)) { mini[(AW + i) * 4] = 0.22; mini[(AW + i) * 4 + 3] = FLEET_FADE; } });
+      miniTex.image.data.set(mini);
+      miniTex.needsUpdate = true;
+      layoutBeams(lens);
+      foldCairns(fleetMatch);
+      nearbyGeom = null; clusterCache = null;
+      navVersion++; detailAt = -Infinity; sentFocusKey = ""; dirty = 3;
+      if (frame && level === 0) {
+        const pts = [];
+        if (fleetFilter) for (const row of rows) for (const seg of row.segs) {
+          if (!fleetMatch(seg.agent)) continue;
+          for (let i = seg.i0; i <= seg.i1; i++) {
+            const h = crest(seg.agent, i), x = xOf(seg.agent, i);
+            pts.push(new THREE.Vector3(x - seg.taper, h + 1.5, row.z), new THREE.Vector3(x + seg.taper, 0, row.z - row.depthOf(h)), new THREE.Vector3(x, 0, row.z + 2));
+          }
+        }
+        for (const p of fleetFramePoints) pts.push(...p(fleetMatch));
+        if (pts.length) {
+          const box = new THREE.Box3().setFromPoints(pts);
+          const f2 = fit(null, dirFrom(VIEW.az, VIEW.el), box.getCenter(new THREE.Vector3()), pts, { l: 60, r: 40, t: 60, b: 40 });
+          flyTo(f2.pos, f2.tgt, dur);
+        } else frameL0(dur);
+      }
+    },
+    getFilter() { return fleetFilter; },
     setInsets(v, preserveView = false) {
       const changed = JSON.stringify(v) !== JSON.stringify(insets);
       insets = v;
