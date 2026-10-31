@@ -7,15 +7,14 @@ import {createHash} from 'node:crypto';
 import {homedir, hostname, platform, arch, tmpdir} from 'node:os';
 import {join, resolve, dirname, relative, sep, basename} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {gunzipSync} from 'node:zlib';
 import {openReadOnly} from './sqlite.mjs';
 import {secretValues} from './secrets.mjs';
 import {Redactor, RULES} from './redact.mjs';
 import {collectSpans, spanFiles, readNdjson} from './spans.mjs';
 import {PartWriter, aliasKey, readBundle, emptyBundle, writeBundle, slug, yyyymmdd, ensureDir, COLLECTOR_VERSION} from './bundle.mjs';
 import {resolveFamily, threadsInWindow, familyRows, nativeSessions} from './family.mjs';
-import {credentialValues, scanner, scanBundle, missingJoinKeys, bundleFiles, fileText} from './verify.mjs';
-import {gzip} from './gz.mjs';
+import {credentialValues, scanner, scanBundle, missingJoinKeys, bundleFiles} from './verify.mjs';
+import {fileBuffer, bufferLines, lineChunks} from './gz.mjs';
 
 const USAGE = `T3 fleet collector: writes a private, credential-free bundle (plan Contract A).
 
@@ -27,6 +26,8 @@ const USAGE = `T3 fleet collector: writes a private, credential-free bundle (pla
       Every thread active in the window on this machine.
   node tools/t3/collect.mjs --merge <partDir> --out <bundleDir>
       Add another machine's part to a bundle (re-redacted and verified with this machine's values).
+  node tools/t3/collect.mjs --unreachable <environmentId> --reason <text> --out <bundleDir>
+      Record that a machine could not be collected, and why.
   node tools/t3/collect.mjs --verify <bundleDir>
       Scan a bundle for credential values and token shapes (kinds and counts only).
 
@@ -41,6 +42,8 @@ Options:
   --no-gzip                write large files plain (default: files of 256 KB or more as .gz)
   --only spans             write only spans, desktop spans and bundle.json (for a fast rescue run)
   --no-agent-sessions      skip the bound Claude Code / Codex/ChatGPT session files
+  --spans-from <bundleDir> also union this machine's spans from another bundle (spans that rotated out of T3's
+                           log since that bundle was collected); pair it with that bundle's --alias-key-file
 `;
 
 function args(argv) {
@@ -65,6 +68,9 @@ function args(argv) {
   else if (a === '--no-agent-sessions') o.agentSessions = false;
   else if (a === '--merge') o.merge = next();
   else if (a === '--verify') o.verify = next();
+  else if (a === '--spans-from') (o.spansFrom ||= []).push(next());
+  else if (a === '--unreachable') o.unreachable = next();
+  else if (a === '--reason') o.reason = next();
   else throw new Error(`Unknown argument ${a}\n\n${USAGE}`);
  }
  return o;
@@ -220,22 +226,25 @@ const rotations = (dir, base) => {try {return readdirSync(dir).filter(n => n ===
 // Before a file is written, scan its final text. A hit is scrubbed by the verifier's own shapes and exact values,
 // then scanned again; a file that still hits is not written and becomes a gap.
 function guardWriter(writer, scan, values, redactor, gaps) {
- const exact = new Map(values);
+ const exact = [...new Map(values).keys()];
+ const scrub = line => {
+  for (const v of exact) if (line.includes(v)) {line = line.split(v).join('[redacted:secret-value]'); redactor.count('secret-value');}
+  return redactor.string(line);
+ };
+ const hitsOf = lines => {const hits = {}; for (const chunk of lineChunks(lines)) for (const [k, n] of Object.entries(scan(chunk))) hits[k] = (hits[k] || 0) + n; return hits;};
  const flush = writer.flush.bind(writer);
  writer.flush = () => {
-  for (const [rel, text] of [...writer.files]) {
-   let final = text, hits = scan(final);
+  for (const [rel, entry] of [...writer.files]) {
+   let lines = typeof entry === 'string' ? entry.split('\n') : entry.lines;
+   if (!Object.keys(hitsOf(lines)).length) continue;
+   lines = lines.map(scrub);
+   const hits = hitsOf(lines);
    if (Object.keys(hits).length) {
-    for (const [v] of exact) if (final.includes(v)) {final = final.split(v).join('[redacted:secret-value]'); redactor.count('secret-value');}
-    final = redactor.string(final);
-    hits = scan(final);
-    if (Object.keys(hits).length) {
-     writer.files.delete(rel);
-     gaps.push(`${rel} not written: the pre-write scan still found ${Object.entries(hits).map(([k, n]) => `${n} ${k}`).join(', ')}`);
-     continue;
-    }
-    writer.files.set(rel, final);
+    writer.files.delete(rel);
+    gaps.push(`${rel} not written: the pre-write scan still found ${Object.entries(hits).map(([k, n]) => `${n} ${k}`).join(', ')}`);
+    continue;
    }
+   writer.files.set(rel, typeof entry === 'string' ? lines.join('\n') : {lines});
   }
   return flush();
  };
@@ -292,7 +301,7 @@ async function collect(o) {
  const spanSets = {};
  for (const [base, rel] of [['server.trace.ndjson', 'spans.ndjson'], ['desktop.trace.ndjson', 'desktop-spans.ndjson']]) {
   const files = spanFiles(logs, base);
-  const existing = readNdjson(join(out, mdir, rel));
+  const existing = [join(out, mdir, rel), ...(o.spansFrom || []).map(d => join(resolve(d), mdir, rel))].flatMap(f => readNdjson(f));
   if (!files.length && !existing.length) continue;
   const {spans, stats} = await collectSpans({files, sinceMs, untilMs, familyIds, all: !o.filterSpans, existing, redactor});
   writer.ndjson(`${mdir}/${rel}`, spans);
@@ -324,8 +333,7 @@ async function collect(o) {
   const plogs = providerLogs(join(logs, 'provider'), fam.threadIds, {sinceMs, untilMs});
   const providerIndex = [];
   for (const p of plogs) {
-   const text = (read(p.file) || '').split('\n').map(l => redactor.string(l)).join('\n');
-   writer.put(`${mdir}/provider-events/${p.name}`, text);
+   writer.lines(`${mdir}/provider-events/${p.name}`, [...bufferLines(readFileSync(p.file))].map(l => redactor.string(l)));
    providerIndex.push({name: p.name, reason: p.reason, threads: p.threads, bytes: statSync(p.file).size});
    if (p.reason === 'family' && p.name.replace(/^events\./, '').replace(/\.log.*$/, '').length === 80) gaps.push(`provider log ${p.name} is shared: T3 cuts log names at 80 characters, so it can hold several delegated threads (lines carry their threadId)`);
   }
@@ -348,8 +356,7 @@ async function collect(o) {
    const agent = agentSessionFiles(home, sessions);
    const index = [];
    for (const f of agent.files) {
-    const text = (read(f.file) || '').split('\n').map(l => redactor.string(l)).join('\n');
-    writer.put(`${mdir}/agent-sessions/${f.rel}`, text);
+    writer.lines(`${mdir}/agent-sessions/${f.rel}`, [...bufferLines(readFileSync(f.file))].map(l => redactor.string(l)));
     index.push({product: f.product, path: f.rel, threadId: f.session.threadId, nativeId: f.session.nativeId, bytes: statSync(f.file).size});
    }
    writer.json(`${mdir}/agent-sessions/index.json`, index);
@@ -432,11 +439,27 @@ async function merge(o) {
   const gaps = [...(m.gaps || [])];
   const writer = new PartWriter(out, redactor, {gzip: o.gzip !== false});
   guardWriter(writer, scanner(credValues), credValues, redactor, gaps);
+  // Spans the bundle already holds for this machine are kept (a re-collected part may have lost rotated spans).
+  const priorSpans = Object.fromEntries(['spans.ndjson', 'desktop-spans.ndjson'].map(rel => [rel, readNdjson(join(out, mdir, rel))]));
+  const priorEntry = bundle.machines.find(x => x.environmentId === m.environmentId && x.status === 'collected');
   rmSync(join(out, mdir), {recursive: true, force: true});
   for (const f of bundleFiles(src)) {
    const rel = relative(part, f).split(sep).join('/').replace(/\.gz$/, '');
-   writer.put(rel, fileText(f).split('\n').map(l => redactor.string(l)).join('\n'));
+   const lines = [...bufferLines(fileBuffer(f))].map(l => redactor.string(l));
+   const spanRel = Object.keys(priorSpans).find(r => rel === `${mdir}/${r}`);
+   if (spanRel && priorSpans[spanRel].length) {
+    const byId = new Map();
+    for (const l of lines) {if (!l) continue; try {const sp = JSON.parse(l); if (sp.spanId) byId.set(sp.spanId, sp);} catch {}}
+    for (const sp of priorSpans[spanRel]) if (sp.spanId && !byId.has(sp.spanId)) byId.set(sp.spanId, redactor.value(sp));
+    const nano = sp => {try {return BigInt(sp.startTimeUnixNano);} catch {return 0n;}};
+    const all = [...byId.values()].sort((a, b) => {const x = nano(a), y = nano(b); return x < y ? -1 : x > y ? 1 : 0;});
+    m.counts = {...m.counts, [spanRel === 'spans.ndjson' ? 'spans' : 'desktopSpans']: all.length};
+    writer.ndjson(rel, all);
+    delete priorSpans[spanRel];
+   } else writer.lines(rel, lines);
   }
+  for (const [rel, spans] of Object.entries(priorSpans)) if (spans.length) writer.ndjson(`${mdir}/${rel}`, spans.map(sp => redactor.value(sp)));
+  if (priorEntry) m.threadIds = [...new Set([...(priorEntry.threadIds || []), ...(m.threadIds || [])])];
   const {promoted} = writer.flush();
   const files = [...bundleFiles(join(out, mdir))].map(f => relative(out, f).split(sep).join('/')).sort();
   const verify = scanBundle(out, {values: credValues, only: [mdir]});
@@ -502,6 +525,7 @@ async function main() {
   return;
  }
  if (o.merge) {const r = await merge(o); console.log(report(r.bundle, r.out)); return;}
+ if (o.unreachable) {if (!o.out || !o.reason) throw new Error('--unreachable needs --out and --reason'); markUnreachable(resolve(o.out), o.unreachable, o.reason); console.log(report(readBundle(resolve(o.out)), resolve(o.out))); return;}
  const r = await collect(o);
  console.log(report(r.bundle, r.out));
  if (r.hops.length) console.log(`remote hops to collect next:\n${r.hops.map(h => `  ${h.label || '?'} ${h.environmentId} thread ${h.threadId} ${h.startedAt || '?'} .. ${h.completedAt || 'running'}`).join('\n')}`);

@@ -6,10 +6,10 @@
 // Home paths, the user name and session ids are not credentials: a private bundle keeps them as paths and join keys.
 import {execFileSync} from 'node:child_process';
 import {readFileSync, readdirSync, statSync, existsSync} from 'node:fs';
-import {gunzipSync} from 'node:zlib';
 import {join, relative, sep} from 'node:path';
 import {forbiddenMatcher} from '../privacy/published-scan.mjs';
 import {secretValues} from './secrets.mjs';
+import {fileBuffer, bufferChunks} from './gz.mjs';
 
 const read = file => {try {return readFileSync(file, 'utf8');} catch {return '';}};
 
@@ -55,10 +55,8 @@ export function* bundleFiles(dir) {
  }
 }
 
-export const fileText = file => {
- const buf = readFileSync(file);
- return (file.endsWith('.gz') ? gunzipSync(buf) : buf).toString('utf8');
-};
+// A file's text in chunks that end at line ends (gunzipped when .gz).
+export const fileChunks = file => bufferChunks(fileBuffer(file));
 
 // A scanner over text: {kind: count} for every credential value and token shape found.
 export function scanner(values) {
@@ -78,9 +76,9 @@ export function scanBundle(dir, {values, only} = {}) {
  for (const file of bundleFiles(dir)) {
   const rel = relative(dir, file).split(sep).join('/');
   if (only && !only.some(p => rel === p || rel.startsWith(p.endsWith('/') ? p : p + '/'))) continue;
-  const text = fileText(file);
   out.files++; out.bytes += statSync(file).size;
-  const hits = scan(text);
+  const hits = {};
+  for (const chunk of fileChunks(file)) for (const [k, n] of Object.entries(scan(chunk))) hits[k] = (hits[k] || 0) + n;
   if (Object.keys(hits).length) out.hits[rel] = hits;
  }
  return out;
@@ -94,8 +92,7 @@ export function missingJoinKeys(dir, keys, {only} = {}) {
   if (!left.size) break;
   const rel = relative(dir, file).split(sep).join('/');
   if (only && !only.some(p => rel.startsWith(p))) continue;
-  const text = fileText(file);
-  for (const k of [...left]) if (text.includes(k) || text.includes(encodeURIComponent(k))) left.delete(k);
+  for (const text of fileChunks(file)) for (const k of [...left]) if (text.includes(k) || text.includes(encodeURIComponent(k))) left.delete(k);
  }
  return [...left];
 }

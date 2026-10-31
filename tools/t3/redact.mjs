@@ -16,7 +16,7 @@ const escape = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const marker = rule => `[redacted:${rule}]`;
 // Field names whose string value is a credential, whatever it looks like.
 const CREDENTIAL_KEY = /^(?:authorization|proxy-authorization|cookie|set-cookie|x-api-key|api[_-]?key|apikey|access[_-]?token|refresh[_-]?token|id[_-]?token|token|auth[_-]?token|bearer|secret|client[_-]?secret|password|passwd|credential|credentials|private[_-]?key|signing[_-]?key|session[_-]?token|dpop|pairing[_-]?code|pairing[_-]?token|launch[_-]?credential|mcp[_-]?token|relay[_-]?credential|t3code[_a-z]*token)$/i;
-const ACCOUNT_KEY = /^(?:account[_-]?id|accountid|user[_-]?id|userid|org[_-]?id|orgid|organization[_-]?id|organizationid|chatgpt[_-]?account[_-]?id|subject|linked[_-]?user[_-]?id)$/i;
+const ACCOUNT_KEY = /^(?:account[_-]?id|accountid|user[_-]?id|userid|org[_-]?id|orgid|organization[_-]?id|organizationid|chatgpt[_-]?account[_-]?id|linked[_-]?user[_-]?id)$/i;
 const EMAIL_KEY = /^(?:e-?mail|email[_-]?address|user[_-]?email)$/i;
 const ruleForKey = key => /dpop/i.test(key) ? 'dpop' : /pairing/i.test(key) ? 'pairing-code' : /launch|mcp/i.test(key) ? 'mcp-launch-credential' : /^(?:authorization|bearer|access|refresh|id[_-]?token|session[_-]?token|token)/i.test(key) ? 'bearer' : 'secret-value';
 // URL parameters that carry credentials.
@@ -58,6 +58,8 @@ export class Redactor {
   if (typeof value !== 'string') return;
   const v = value.trim();
   if (v.length < MIN_SECRET || this.values.has(v) || JOIN_KEY.test(v)) return;
+  // An address found in a secret file is still an email: aliased, so it joins, rather than masked as a token.
+  if (/^[^\s@"]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v)) rule = 'email';
   this.values.set(v, rule);
   this._exact = null;
  }
