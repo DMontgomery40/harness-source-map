@@ -196,6 +196,8 @@ export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId}
  const harvest = readJson(join(store, 'harvest.json'));
  const entry = {
   ...newest, status: 'collected', role: 'hop', collector: COLLECTOR_VERSION,
+  // the collector versions that harvested the parts (the merge redacts a part from an older one in full)
+  sourceCollectors: [...new Set(ordered.map(p => p.entry.collector || p.bundle.collector?.version || null))],
   threadIds: [...new Set(ordered.flatMap(p => [...p.threadIds]))],
   seeds: [...new Set(ordered.flatMap(p => p.entry.seeds || []))],
   window: {since: iso(sinceMs), until: iso(untilMs)},

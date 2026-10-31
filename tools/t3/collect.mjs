@@ -708,7 +708,7 @@ async function merge(o) {
     // A part another machine harvested with this collector version already passed every shape rule there: at
     // assembly (o.fastSpans) it gets this machine's exact values and its aliases mapped; an older part gets the
     // whole pass. The assembled bundle is verified whole before it is served.
-    const same = fleet && o.fastSpans && pb.collector?.version === COLLECTOR_VERSION && (m.collector || pb.collector?.version) === COLLECTOR_VERSION;
+    const same = fleet && o.fastSpans && Array.isArray(m.sourceCollectors) && m.sourceCollectors.length > 0 && m.sourceCollectors.every(v => v === COLLECTOR_VERSION);
     const lines = [...bufferLines(fileBuffer(f))].map(l => own ? reline(l, true) : same ? redactor.exactOnly(redactor.fromParts(l)) : reline(l, false));
     const spanRel = SPAN_RELS.find(r => rel === `${mdir}/${r}`);
     if (spanRel === 'spans.ndjson') noteEnds(lines);
