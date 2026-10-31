@@ -65,6 +65,17 @@ Join keys, all found on a real four-machine fleet (2026-10-31):
 - **Remote delegation.** The parent side's task records `remoteChild {environmentId, threadId, label}`. The child thread
   on the other machine has `linkOrigin {sessionId, label, access}` and a null `parentThreadId`, so the parent side's
   record is the only thread-level link to it.
+- **Launches.** A thread made with `t3_thread_launch` or `create_threads` has no T3 parent on either machine: a null
+  `parentThreadId`, no `delegatedFrom`, and, when launched across a peer link, only `linkOrigin` (which names the
+  launching machine's link, not the thread). The launching agent's own call result is the join: it returns the new
+  thread's id and its `t3-thread://` link. Assembly reads each part's transcripts for those results
+  (`tools/t3/launches.mjs`, Claude Code `tool_use`/`tool_result`, Codex/ChatGPT `McpToolCall`) and adds a hop of kind
+  `launch`. Its target is the machine whose store holds the thread (T3 has answered a `create_threads` call aimed at
+  another machine with a link to its own). No other mention of a thread id, and never time alone, joins it. Trace
+  draws it as the `launch-join` lineage break.
+- **Several sessions per thread.** A thread that moved provider (a Codex/ChatGPT rollout, then a Claude Code session)
+  is bound to each in turn. Every session is drawn: the earliest as the thread's ridge, the rest as continuation
+  ridges beside it. A provider-native subagent thread maps to its agent in its nearest drawn ancestor's session.
 - **Spans.** W3C trace context crosses peer links. The receiving server's `POST /mcp` span has the caller's `traceId`,
   and its `parentSpanId` is a span on the calling machine, so the span graph joins across machines with no extra keys.
   One caller can keep a single `traceId` for 30 minutes or more, so the layer joins spans on `parentSpanId`, not on

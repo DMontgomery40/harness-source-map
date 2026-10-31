@@ -30,7 +30,9 @@ It is **not** about token cost or the fact that context is re-read every turn. D
   `com.dtmont.t3-harvest` on the Mac, user timer `t3-harvest.timer` on each VM, both from the clone `~/harness-t3-harvest`).
   Install or update with `tools/t3/install-harvest.sh` (VMs: `--push mac`); remove with `--remove`. VMs push their stores
   into `private/sessions/t3/incoming/<environmentId>/` on the Mac. The Trace resolver assembles a family when it is opened
-  (`tools/t3/assemble.mjs`) into `private/sessions/t3/fleet/`. Nobody collects a family by hand.
+  (`tools/t3/assemble.mjs`) into `private/sessions/t3/fleet/`. It collects only the Mac's changed roots, joins
+  launched threads by their launch call's result (`tools/t3/launches.mjs`), and reuses a build while its inputs are
+  unchanged (`assembly.json` records its inputs and step timings). Nobody collects a family by hand.
 - **Video pipelines:** `video/teaser`, `video/explainer`, `video/tour`. Their media is in `private/video/`.
 - **Docs:** `docs/specs`, `docs/plans`, `docs/harness-layer.md`.
 - **Private (gitignored, local only):** `private/sessions` (frozen Claude Code and Codex/ChatGPT

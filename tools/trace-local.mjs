@@ -120,7 +120,7 @@ export function createAssembler({repo=defaultT3Repo,t3Home=join(homedir(),'.t3')
   if(j && (!j.settled || Date.now()-j.settledAt<15000))return j;
   j={progress:0,settled:false};
   j.promise=assemble({threadId,environmentId,repo,t3Home,onProgress:f=>{j.progress=Math.max(j.progress,f);}})
-   .then(r=>{partsAt=0;return r;})
+   .then(r=>{partsAt=0;if(r&&!r.reused){try{const a=JSON.parse(readFileSync(join(r.dir,'assembly.json'),'utf8'));console.log(`T3 family assembled in ${a.timings?.totalMs} ms: ${JSON.stringify(a.timings)}`);}catch{}}return r;})
    .finally(()=>{j.settled=true;j.settledAt=Date.now();setTimeout(()=>{if(jobs.get(key)===j)jobs.delete(key);},15000).unref?.();});
   j.promise.catch(()=>{});
   jobs.set(key,j);
