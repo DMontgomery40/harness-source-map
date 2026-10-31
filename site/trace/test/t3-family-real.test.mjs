@@ -177,6 +177,15 @@ for (const dir of dirs) {
       const links = Object.values(net.rate).filter(r => r.inWindow);
       assert.ok(links.length, "the family has peer calls");
       for (const r of links) assert.equal(r.inWindowJoined, r.inWindow);
+      // v2 bundles carry the collector's own joins (net.ndjson): the same pairs, span for span
+      for (const m of machines) {
+        const text = await b.text(`${m.dir}net.ndjson`).catch(() => null);
+        if (!text) continue;
+        const theirs = new Set(text.split("\n").filter(Boolean).map(l => JSON.parse(l)).filter(r => r.type === "join").map(r => `${r.caller.spanId}>${r.receiver.spanId}`));
+        const ix = spans.get(m.id);
+        const mine = new Set(net.joins.filter(j => j.call.env === m.id).map(j => `${ix.hex(ix.id(j.call.i))}>${spans.get(j.env).hex(spans.get(j.env).id(j.i))}`));
+        assert.deepEqual(mine, theirs, `${m.label}: joins match the collector's`);
+      }
       let checked = 0;
       for (const j of net.joins) {
         const link = net.clock[`${j.call.env}>${j.env}`], lo = j.s1 - j.call.t1, hi = j.s0 - j.call.t0, epoch = epochOf(spans, j);
