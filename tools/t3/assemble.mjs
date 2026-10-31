@@ -125,7 +125,7 @@ export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId}
   for (const f of bundleFiles(src)) {
    const rel = relative(src, f).split(sep).join('/'), plain = rel.replace(/\.gz$/, '');
    if (DERIVED.test(plain)) continue;
-   if (UNIONS[plain]) {const v = readJson(f); if (v) {if (!json.has(plain)) json.set(plain, []); json.get(plain).push(v);}}
+   if (UNIONS[plain]) {let v = null; try {v = JSON.parse(readBuffer(join(src, plain)).toString('utf8'));} catch {} if (v) {if (!json.has(plain)) json.set(plain, []); json.get(plain).push(v);}}
    else if (LINE_UNIONS.has(plain)) {const buf = readBuffer(join(src, plain)); if (buf) {if (!lines.has(plain)) lines.set(plain, new Set()); for (const l of buf.toString('utf8').split('\n')) if (l) lines.get(plain).add(l);}}
    else {for (const old of [plain, plain + '.gz']) copies.delete(old); copies.set(rel, f);}
   }

@@ -225,6 +225,7 @@ test('fleet stores: every family joins across machines and its newest build is c
   const b = readBundle(dir);
   assert.deepEqual(validateBundle(b), [], dir);
   assert.equal(b.collector.aliasScheme, 'fleet-family');
+  for (const m of b.machines.filter(x => x.status === 'collected')) assert.ok(m.files.some(f => /\/threads\.json(\.gz)?$/.test(f)), `${dir}: ${m.label} has its threads`);
   assert.deepEqual(scanBundle(dir, {values}).hits, {}, dir);
   const a = JSON.parse(readFileSync(join(dir, 'assembly.json'), 'utf8'));
   const partMarks = new Set();
