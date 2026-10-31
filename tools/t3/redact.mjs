@@ -5,6 +5,7 @@
 // Credentials are found by their shape in context (Bearer/DPoP headers, JWTs, sk- keys, credential-named fields and
 // URL parameters) and by exact value (T3's own secret store, auth tables, and the machine's .env/auth files).
 import {createHash, createHmac} from 'node:crypto';
+import {ExactSet} from './exact.mjs';
 
 export const RULES = ['bearer', 'jwt', 'dpop', 'pairing-code', 'mcp-launch-credential', 'secret-value', 'relay-endpoint-key', 'email', 'account-id', 'client-hash', 'lan-address', 'hostname', 'message-text'];
 export const MIN_SECRET = 12;
@@ -29,8 +30,11 @@ const ruleForParam = name => /pair/i.test(name) ? 'pairing-code' : /dpop/i.test(
 const CLIENT_HASH = /([?&#"'](?:clientOwner|clientDevice))=([^&#\s"'\\]{4,})/g;
 // Private IPv4 addresses (LAN, CGNAT/tailnet, link-local): aliased <lan-…>, stable within a bundle. Loopback stays.
 const LAN = /(?<![\w.])(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3})(?!\d|\.\d)/g;
-// Alias markers a bundle writes with its own key (re-keyed when spans from another bundle are unioned in).
-const ALIAS_MARK = /\[redacted:(email|account-id|client-hash):([0-9a-f]{10})\]|<lan-([0-9a-f]{10})>/g;
+// Alias markers a bundle writes with its own key (re-keyed when spans from another bundle are unioned in, and
+// mapped from the fleet parts key to a family's key at assembly): emails, account ids, client hashes, LAN addresses
+// and hostnames (<lan-…>), and worktree paths (<path-…>, facts.mjs).
+export const ALIAS_MARK = /\[redacted:(email|account-id|client-hash):([0-9a-f]{10})\]|<(lan|path)-([0-9a-f]{10})>/g;
+const remark = to => (m, r, a, k, b) => r ? `[redacted:${r}:${to(a)}]` : `<${k}-${to(b)}>`;
 
 // Shapes. Each returns the replacement and reports the removed value so it is removed everywhere.
 const SHAPES = [
@@ -74,7 +78,8 @@ export class Redactor {
   this._exact = null;
  }
  // HMAC alias for low-entropy private values; same input, same alias, within one bundle.
- alias(value) {this.aliased.add(value); return Redactor.hmac(this.aliasKey, value);}
+ alias(value) {this.aliased.add(value); return this.aliasOf(value);}
+ aliasOf(value) {return Redactor.hmac(this.aliasKey, value);}
  static hmac(key, value) {return createHmac('sha256', key).update(value).digest('hex').slice(0, 10);}
  lanAlias(ip) {this.count('lan-address'); return `<lan-${this.alias('lan:' + ip)}>`;}
  hostAlias(host) {this.count('hostname'); return `<lan-${this.alias('host:' + String(host).toLowerCase())}>`;}
@@ -84,20 +89,18 @@ export class Redactor {
   if (!oldKey || oldKey.equals(this.aliasKey) || typeof text !== 'string') return text;
   if (!this._rekey || !this._rekey.key.equals(oldKey) || this._rekey.size !== this.aliased.size) {
    const map = new Map();
-   for (const v of this.aliased) map.set(Redactor.hmac(oldKey, v), Redactor.hmac(this.aliasKey, v));
+   for (const v of this.aliased) map.set(Redactor.hmac(oldKey, v), this.aliasOf(v));
    this._rekey = {key: oldKey, size: this.aliased.size, map};
   }
   const {map} = this._rekey;
   const to = a => map.get(a) || Redactor.hmac(this.aliasKey, `rekey:${a}`);
-  return text.replace(ALIAS_MARK, (m, rule, a, lan) => lan ? `<lan-${to(lan)}>` : `[redacted:${rule}:${to(a)}]`);
+  return text.replace(ALIAS_MARK, remark(to));
  }
  // Relay endpoint keys are 64 random bits: an unsalted hash is not reversible and joins across machines' parts.
  static relayAlias(key) {return createHash('sha256').update(key).digest('hex').slice(0, 10);}
+ // Every exact value, longest first (exact.mjs: one rolling-hash pass, not a regex of thousands of alternatives).
  _exactRe() {
-  if (this._exact === null) {
-   const list = [...this.values.keys()].sort((a, b) => b.length - a.length);
-   this._exact = list.length ? new RegExp(list.map(escape).join('|'), 'g') : undefined;
-  }
+  if (this._exact === null) this._exact = this.values.size ? new ExactSet(this.values.keys()) : undefined;
   return this._exact;
  }
  count(rule, n = 1) {this.counts[rule] = (this.counts[rule] || 0) + n;}
@@ -106,7 +109,7 @@ export class Redactor {
  string(s) {
   if (typeof s !== 'string' || s.length < 6) return s;
   const exact = this._exactRe();
-  if (exact) s = s.replace(exact, m => this._exactMark(m));
+  if (exact) s = exact.replace(s, m => this._exactMark(m));
   for (const {re, fn} of SHAPES) s = s.replace(re, (...args) => {const r = fn(...args); this.count(r.rule); this.note(r.value, r.rule); return r.out;});
   s = s.replace(URL_PARAM, (m, name, value) => {
    if (value.startsWith('[redacted')) return m;
@@ -159,10 +162,33 @@ export class Redactor {
  exactOnly(s) {
   const exact = this._exactRe();
   if (!exact || typeof s !== 'string') return s;
-  return s.replace(exact, m => this._exactMark(m));
+  return exact.replace(s, m => this._exactMark(m));
  }
  _exactMark(m) {
   const rule = this.values.get(m) || 'secret-value'; this.count(rule);
   return rule === 'account-id' || rule === 'email' ? `[redacted:${rule}:${this.alias(rule === 'email' ? m.toLowerCase() : m)}]` : marker(rule);
  }
+}
+
+// ---- fleet parts and family bundles ------------------------------------------------------------------------------
+// Harvested parts (every machine, every family) are aliased with one fleet parts key, so a part can be written before
+// anyone knows which family it will join. A family bundle has its own key, derived from the parts key and the
+// family's root; its aliases are a function of the part alias: alias(v) = H(familyKey, 'part:' + H(partsKey, v)).
+// So a part's markers map to the family's exactly (fromParts), a value first aliased at assembly lands on the same
+// alias, and two family bundles share no alias for the same value.
+export function familyKey(partsKey, rootEnvironmentId, rootThreadId) {
+ return createHmac('sha256', partsKey).update(`t3-family-bundle\0${rootEnvironmentId}\0${rootThreadId}`).digest();
+}
+export const keyId = key => createHash('sha256').update(key).digest('hex').slice(0, 12);
+
+export class FamilyRedactor extends Redactor {
+ constructor({familyKey: fk, partsKey, values} = {}) {
+  if (!partsKey || partsKey.length < 16) throw new Error('A family redactor needs the fleet parts key');
+  super({aliasKey: fk, values});
+  this.partsKey = partsKey;
+ }
+ partAlias(a) {return Redactor.hmac(this.aliasKey, `part:${a}`);}
+ aliasOf(value) {return this.partAlias(Redactor.hmac(this.partsKey, value));}
+ // A part's alias markers (written with the parts key), mapped to this family's.
+ fromParts(text) {return typeof text === 'string' ? text.replace(ALIAS_MARK, remark(a => this.partAlias(a))) : text;}
 }

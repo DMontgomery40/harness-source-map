@@ -682,7 +682,7 @@ function describePaste(v) {
       el("p", { text: "Subagents and guardian reviews are separate files in the date folders from that day on." }));
   } else if (info.product === "t3code") {
     what = `T3 Code thread ${info.id.length > 40 ? `${info.id.slice(0, 37)}…` : info.id}${info.environmentId ? ` on environment ${info.environmentId.slice(0, 8)}` : ""}.`;
-    where.push(el("p", { text: "A T3 thread spans the harness sessions of every agent it ran, on every machine. The local resolver opens its family from a bundle collected with node tools/t3/collect.mjs; you can also drop the bundle folder." }));
+    where.push(el("p", { text: "A T3 thread spans the harness sessions of every agent it ran, on every machine. Every machine sends its part of each family to this Mac hourly, and the local resolver assembles the family when you open it; you can also drop a bundle folder." }));
   } else if (info.product === 'opencode' || info.product === 'cursor') {
     what = `${productLabel(info.product)} session ${info.id}.`;
     where.push(el("p", {text:"The local resolver reads the native session store and matching recording folders. Without it, choose a folder containing the session export and its network capture."}));
@@ -718,7 +718,7 @@ async function openPasted(info, btn, hint, fresh = false) {
     setProgress(0, "Opening the session…");
     try {
       // a v2 T3 link names its environment: the resolver opens the thread only there
-      const files = await openLocalSession(info.id, { environmentId: info.product === "t3code" ? info.environmentId || null : null });
+      const files = await openLocalSession(info.id, { environmentId: info.product === "t3code" ? info.environmentId || null : null, onProgress: f => setProgress(f, null) });
       if (files) return await loadFiles(files, info.id);
     } catch (error) {
       return showError(error.message);
@@ -1290,12 +1290,15 @@ async function backToFamily(machine = null) {
 async function openT3Family(rootThreadId) {
   const btn = $("#t3-family");
   btn.disabled = true;
+  // While the resolver assembles the family, its progress shows in the loader.
+  let back = false;
+  const toLoader = () => { if (!back) { backToLoader(); back = true; } };
   try {
-    const files = await openLocalSession(rootThreadId);
+    const files = await openLocalSession(rootThreadId, { onProgress: f => { const first = !back; toLoader(); setProgress(f, first ? "Opening the session…" : null); } });
     if (!files) return netStatus("The local resolver didn't answer: start it with npm --prefix site run trace:local.", "error");
-    backToLoader();
+    toLoader();
     await loadFiles(files, null);
-  } catch (e) { netStatus(e.message || String(e), "error"); }
+  } catch (e) { if (back) showError(e.message || String(e)); else netStatus(e.message || String(e), "error"); }
   finally { btn.disabled = false; }
 }
 // The four questions, "What went over the wire" while a network capture is attached, and "Everything on this

@@ -13,7 +13,10 @@ import {openReadOnly} from '../t3/sqlite.mjs';
 import {credentialValues, scanBundle, bundleFiles} from '../t3/verify.mjs';
 import {readBundle, ALIAS_KEY_FILE, emptyBundle, validateBundle, VERSION} from '../t3/bundle.mjs';
 import {bundleFileList, findT3Bundle} from '../t3/bundles.mjs';
-import {Redactor} from '../t3/redact.mjs';
+import {Redactor, FamilyRedactor, familyKey, ALIAS_MARK} from '../t3/redact.mjs';
+import {ExactSet} from '../t3/exact.mjs';
+import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir} from '../t3/assemble.mjs';
+import {readNdjsonLines} from '../t3/gz.mjs';
 import {stripMessageText} from '../t3/family.mjs';
 import {classifyName, classifySpan, cutParts, EDGE_KINDS, ROLES} from '../t3/net.mjs';
 import {splitLines, splitName} from '../t3/facts.mjs';
@@ -177,6 +180,60 @@ test('aliases unioned from another bundle are re-keyed to this bundle', () => {
  const unknown = rekeyed.match(/\[redacted:email:([0-9a-f]{10})\]$/)[1];
  assert.notEqual(unknown, oldText.match(/\[redacted:email:([0-9a-f]{10})\]$/)[1], 'an unseen alias still changes key');
  assert.equal(now.rekey(oldText, fakeKey(6)), oldText, 'same key: unchanged');
+});
+
+test('a family bundle\'s aliases are a function of the fleet part aliases, for every marker kind', () => {
+ const parts = fakeKey(7), fam = new FamilyRedactor({familyKey: familyKey(parts, 'env-a', 'thread-a'), partsKey: parts});
+ const other = new FamilyRedactor({familyKey: familyKey(parts, 'env-a', 'thread-b'), partsKey: parts});
+ const part = new Redactor({aliasKey: parts});
+ const text = 'mail someone@fake-domain.test from 192.168.0.9 on host-x ?clientOwner=abcdef12 user_' + 'a'.repeat(24);
+ const partText = part.string(text) + ' ' + part.hostAlias('host-x') + ` <path-${part.alias('path:/fake/worktree')}>`;
+ const mapped = fam.fromParts(partText);
+ // the same value aliased first at assembly lands on the mapped alias
+ assert.equal(mapped, fam.string(text) + ' ' + fam.hostAlias('host-x') + ` <path-${fam.alias('path:/fake/worktree')}>`);
+ // no part-key marker survives, path markers included, and two families share no alias
+ const partMarks = new Set([...partText.matchAll(ALIAS_MARK)].map(m => m[0]));
+ assert.equal(partMarks.size, 6);
+ for (const m of mapped.matchAll(ALIAS_MARK)) assert.ok(!partMarks.has(m[0]), m[0]);
+ const otherMarks = new Set([...other.fromParts(partText).matchAll(ALIAS_MARK)].map(m => m[0]));
+ for (const m of mapped.matchAll(ALIAS_MARK)) assert.ok(!otherMarks.has(m[0]), 'families do not share aliases');
+});
+
+test('the exact-value matcher finds what one alternation regex of the values finds', () => {
+ const esc = v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+ for (let round = 0; round < 200; round++) {
+  const vals = Array.from({length: 1 + (round % 30)}, (_, i) => `v${round}x${i}`.padEnd(6 + (i % 11), String.fromCharCode(97 + (i % 26))));
+  vals.push(vals[0] + 'tail', vals[0].slice(0, 6));
+  const words = []; for (let i = 0; i < 50; i++) words.push(i % 3 ? `w${i * round}` : vals[(i * 7 + round) % vals.length]);
+  const text = words.join(round % 2 ? '' : ' ');
+  const re = new RegExp([...new Set(vals)].sort((a, b) => b.length - a.length).map(esc).join('|'), 'g');
+  assert.equal(new ExactSet(vals).replace(text, m => `<${m.length}>`), text.replace(re, m => `<${m.length}>`));
+ }
+});
+
+test('fleet stores: every family joins across machines and its newest build is credential-free, with no part alias left (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : !existsSync(incomingDir(mainRepo)) && 'no fleet harvest on this machine', timeout: 600000}, () => {
+ const parts = readParts(incomingDir(mainRepo));
+ assert.ok(parts.length, 'the stores hold parts');
+ for (const p of parts.slice(0, 50)) {
+  const fam = familyParts(parts, {threadId: p.root, environmentId: p.environmentId});
+  assert.ok(fam.includes(p));
+  const root = familyRoot(fam);
+  assert.ok(fam.some(q => q.environmentId === root.environmentId && q.root === root.threadId), 'the root is a part\'s local root');
+ }
+ const values = credentialValues({home: homedir(), repo: mainRepo, t3Home: existsSync(t3Home) ? t3Home : null, db: null});
+ for (const dir of fleetBuilds(mainRepo)) {
+  const b = readBundle(dir);
+  assert.deepEqual(validateBundle(b), [], dir);
+  assert.equal(b.collector.aliasScheme, 'fleet-family');
+  for (const m of b.machines.filter(x => x.status === 'collected')) assert.ok(m.files.some(f => /\/threads\.json(\.gz)?$/.test(f)), `${dir}: ${m.label} has its threads`);
+  assert.deepEqual(scanBundle(dir, {values}).hits, {}, dir);
+  const a = JSON.parse(readFileSync(join(dir, 'assembly.json'), 'utf8'));
+  const partMarks = new Set();
+  for (const rel of Object.keys(a.inputs)) for (const f of bundleFiles(join(incomingDir(mainRepo), rel))) if (!/spans/.test(f)) for (const l of readNdjsonLines(f.replace(/\.gz$/, ''))) for (const m of l.matchAll(ALIAS_MARK)) partMarks.add(m[0]);
+  let left = 0;
+  for (const f of bundleFiles(dir)) if (!/spans/.test(f)) for (const l of readNdjsonLines(f.replace(/\.gz$/, ''))) for (const m of l.matchAll(ALIAS_MARK)) if (partMarks.has(m[0])) left++;
+  assert.equal(left, 0, `${dir}: part-key aliases left in the build`);
+ }
 });
 
 test('message text in rows is stripped to its length and a hash', () => {

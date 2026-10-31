@@ -2,7 +2,7 @@
 // T3 fleet collector (plan Contract A). Writes this machine's part of a private bundle for a thread family or a
 // time window, with credentials removed before anything reaches disk, and merges other machines' parts.
 // Usage: node tools/t3/collect.mjs --help
-import {existsSync, readFileSync, readdirSync, statSync, rmSync} from 'node:fs';
+import {existsSync, readFileSync, readdirSync, statSync, rmSync, mkdirSync, writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {homedir, hostname, platform, arch} from 'node:os';
@@ -10,14 +10,16 @@ import {join, resolve, dirname, relative, sep, basename} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {openReadOnly} from './sqlite.mjs';
 import {secretValues} from './secrets.mjs';
-import {Redactor, RULES} from './redact.mjs';
+import {Redactor, FamilyRedactor, RULES, keyId} from './redact.mjs';
 import {collectSpans, spanFiles, readNdjson, endSegments} from './spans.mjs';
-import {PartWriter, aliasKey, readAliasKey, readBundle, emptyBundle, writeBundle, slug, yyyymmdd, ensureDir, COLLECTOR_VERSION, VERSION} from './bundle.mjs';
+import {PartWriter, aliasKey, readAliasKey, readBundle, emptyBundle, writeBundle, slug, yyyymmdd, ensureDir, partsKeyFile, readKeyFile, COLLECTOR_VERSION, VERSION} from './bundle.mjs';
+import {updateArchive} from './archive.mjs';
 import {resolveFamily, threadsInWindow, familyRows, nativeSessions, stripMessageText} from './family.mjs';
 import {lineThreadMap, splitLines, splitName, worktreeFacts} from './facts.mjs';
 import {deriveNet} from './net.mjs';
 import {credentialValues, scanner, scanBundle, missingJoinKeys, bundleFiles} from './verify.mjs';
 import {fileBuffer, bufferLines, lineChunks} from './gz.mjs';
+import {ExactSet} from './exact.mjs';
 
 const USAGE = `T3 fleet collector: writes a private, credential-free bundle (plan Contract A).
 
@@ -34,6 +36,11 @@ const USAGE = `T3 fleet collector: writes a private, credential-free bundle (pla
   node tools/t3/collect.mjs --harvest [--since <ISO>] [options]
       Re-collect this machine's part of every family active since --since (default: the last 65 minutes) into
       its bundle, unioning spans already there, so spans are kept before T3's log rotates them out (~1 hour).
+  node tools/t3/collect.mjs --harvest --store <incomingDir> [--since <ISO>] [--clock-from <sshHost>]
+      The fleet harvest (tools/t3/harvest-run.sh runs it hourly): every span still in T3's logs into this machine's
+      span archive, and this machine's part of every family active since --since, span-less, into
+      <incomingDir>/<environmentId>/, all aliased with the fleet parts key (--parts-key-file). The Trace resolver
+      assembles families from these stores (tools/t3/assemble.mjs).
   node tools/t3/collect.mjs --derive <bundleDir>
       Rewrite net.ndjson and spans.idx.json for every collected machine of a bundle.
   node tools/t3/collect.mjs --unreachable <environmentId> --reason <text> --out <bundleDir>
@@ -48,6 +55,10 @@ Options:
   --label <name>           this machine's label (default: hostname)
   --alias-key-file <file>  this bundle's alias key, for a part collected on another machine (aliases join across
                            the bundle's parts; each bundle has its own key)
+  --parts-key-file <file>  the fleet parts key, used and never copied into a folder (with --store; default
+                           ~/.config/harness-source-map/t3-parts.key)
+  --no-spans               collect no spans (a harvested part: its spans are in the machine's span archive)
+  --retain-days <n>        with --store: keep archived span segments this many days (default 14)
   --repo <dir>             main checkout whose .env values are removed (default: this repo's main worktree)
   --filter-spans           keep only Contract A's span filter (default: every span in the window)
   --no-gzip                write large files plain (default: files of 256 KB or more as .gz)
@@ -83,6 +94,10 @@ function args(argv) {
   else if (a === '--no-agent-sessions') o.agentSessions = false;
   else if (a === '--merge') (o.merge ||= []).push(next());
   else if (a === '--harvest') o.harvest = true;
+  else if (a === '--store') o.store = next();
+  else if (a === '--parts-key-file') o.partsKeyFile = next();
+  else if (a === '--no-spans') o.noSpans = true;
+  else if (a === '--retain-days') o.retainDays = Number(next());
   else if (a === '--derive') o.derive = next();
   else if (a === '--no-derive') o.noDerive = true;
   else if (a === '--clock-from') o.clockFrom = next();
@@ -245,11 +260,8 @@ const rotations = (dir, base) => {try {return readdirSync(dir).filter(n => n ===
 // Before a file is written, scan its final text. A hit is scrubbed by the verifier's own shapes and exact values,
 // then scanned again; a file that still hits is not written and becomes a gap.
 function guardWriter(writer, scan, values, redactor, gaps) {
- const exact = [...new Map(values).keys()];
- const scrub = line => {
-  for (const v of exact) if (line.includes(v)) {line = line.split(v).join('[redacted:secret-value]'); redactor.count('secret-value');}
-  return redactor.string(line);
- };
+ const exact = new ExactSet(new Map(values).keys());
+ const scrub = line => redactor.string(exact.replace(line, () => {redactor.count('secret-value'); return '[redacted:secret-value]';}));
  const hitsOf = lines => {const hits = {}; for (const chunk of lineChunks(lines)) for (const [k, n] of Object.entries(scan(chunk))) hits[k] = (hits[k] || 0) + n; return hits;};
  const flush = writer.flush.bind(writer);
  writer.flush = () => {
@@ -410,7 +422,8 @@ async function collect(o) {
  const rootRow = rows.threads.find(t => t.thread_id === rootThreadId);
  const out = resolve(o.out || defaultOut(repo, rootThreadId, rootRow?.created_at || iso(sinceMs)));
  ensureDir(out);
- const key = aliasKey(out, {keyFile: o.aliasKeyFile});
+ // A harvested part uses the fleet parts key as given and never writes it into the folder.
+ const key = o.partsKey || aliasKey(out, {keyFile: o.aliasKeyFile});
 
  // Redaction: this machine's exact values plus every shape rule; verification with leak-check's values too.
  const values = secretValues({t3Home, home, repo, db});
@@ -424,7 +437,7 @@ async function collect(o) {
  const counts = {};
  const prior = readBundle(out);
  const priorEntry = prior?.machines.find(m => m.environmentId === environmentId);
- const clock = clockReading(o);
+ const clock = o.clock || clockReading(o);
 
  // Spans: every span in the window (Contract A's filter only with --filter-spans), unioned with spans this bundle
  // already holds and with --spans-from bundles (re-keyed), so a span that has rotated out of T3's log is kept.
@@ -433,7 +446,7 @@ async function collect(o) {
  const spanSets = {};
  const fromBundles = (o.spansFrom || []).map(d => resolve(d)).map(d => ({dir: d, key: readAliasKey(d), bundle: readBundle(d, {anyVersion: true})}));
  for (const f of fromBundles) if (!f.key) throw new Error(`--spans-from ${f.dir} has no alias key; its aliases cannot be re-keyed`);
- for (const [base, rel] of [['server.trace.ndjson', 'spans.ndjson'], ['desktop.trace.ndjson', 'desktop-spans.ndjson']]) {
+ for (const [base, rel] of o.noSpans ? [] : [['server.trace.ndjson', 'spans.ndjson'], ['desktop.trace.ndjson', 'desktop-spans.ndjson']]) {
   const files = spanFiles(logs, base);
   const fromSpans = fromBundles.map(f => ({spans: readNdjson(join(f.dir, mdir, rel)), aliasKey: f.key, f}));
   if (rel === 'spans.ndjson') for (const x of fromSpans) x.f.parts = priorParts(x.f.bundle?.machines.find(m => m.environmentId === environmentId), `spans-from ${basename(x.f.dir)}`, x.spans);
@@ -527,7 +540,7 @@ async function collect(o) {
 
  // Bundle record.
  const bundle = prior || emptyBundle({rootEnvironmentId: environmentId, rootThreadId, since: iso(sinceMs), until: iso(untilMs), mode});
- bundle.collector = {version: COLLECTOR_VERSION, aliasKeyId: aliasKeyId(key)};
+ bundle.collector = {version: COLLECTOR_VERSION, aliasKeyId: aliasKeyId(key), ...(o.partsKey ? {aliasScheme: 'fleet-parts', partsKeyId: aliasKeyId(key)} : {})};
  if (bundle.scope.rootEnvironmentId === environmentId) {bundle.scope.since = iso(Math.min(ms(bundle.scope.since), sinceMs)); bundle.scope.until = iso(Math.max(ms(bundle.scope.until), untilMs));}
  // Verify on disk: credential values and token shapes, and that join keys survived.
  const verify = scanBundle(out, {values: credValues, only: [mdir]});
@@ -541,6 +554,7 @@ async function collect(o) {
   redaction: {counts: {...redactor.counts}, promotedValues: promoted},
   verify: {files: verify.files, bytes: verify.bytes, hitFiles: Object.keys(verify.hits).length, hits: verify.hits, joinKeysMissing: missing.length},
   only: o.only || null,
+  ...(o.noSpans ? {spans: 'archive'} : {}),
  };
  machineFiles(out, machine);
  const at = bundle.machines.findIndex(m => m.environmentId === environmentId);
@@ -574,6 +588,16 @@ function finishBundle(bundle) {
 
 // ---- merge other machines' parts --------------------------------------------------------------------------------
 
+// The redactor for writing into a bundle: a family bundle assembled from fleet parts (aliasScheme 'fleet-family')
+// derives its aliases from the parts key (redact.mjs FamilyRedactor); any other bundle uses its own key.
+function bundleRedactor(out, bundle, values, o = {}) {
+ const key = aliasKey(out);
+ if (bundle?.collector?.aliasScheme !== 'fleet-family') return new Redactor({aliasKey: key, values});
+ const partsKey = o.partsKey || readKeyFile(o.partsKeyFile || partsKeyFile());
+ if (bundle.collector.partsKeyId && bundle.collector.partsKeyId !== keyId(partsKey)) throw new Error(`${out} was assembled with another fleet parts key`);
+ return new FamilyRedactor({familyKey: key, partsKey, values});
+}
+
 const DERIVED = /\/(?:net\.ndjson|spans\.idx\.json)(?:\.gz)?$/;
 async function merge(o) {
  if (!o.out) throw new Error('--merge needs --out <bundleDir>');
@@ -586,18 +610,25 @@ async function merge(o) {
  let db = null;
  try {db = await openReadOnly(join(t3Home, 'userdata', 'statev2.sqlite'));} catch {}
  const values = existsSync(t3Home) ? secretValues({t3Home, home, repo, db}) : new Map();
- const credValues = credentialValues({home, repo, t3Home: existsSync(t3Home) ? t3Home : null, db});
+ const credValues = o.credValues || credentialValues({home, repo, t3Home: existsSync(t3Home) ? t3Home : null, db});
  db?.close();
- const redactor = new Redactor({aliasKey: key, values});
+ const redactor = bundleRedactor(out, bundle, values, o);
+ const fleet = redactor instanceof FamilyRedactor;
+ // A fleet part's aliases are mapped to the family's before the line is redacted again here.
+ // A part this machine collected itself (o.trusted: environment ids) was redacted with these same values: only its
+ // aliases are mapped.
+ const reline = (l, own) => own ? redactor.fromParts(l) : redactor.string(fleet ? redactor.fromParts(l) : l);
  for (const [v, kind] of credValues) if (!/git email/.test(kind)) redactor.addValue(v, 'secret-value');
  const fromBundles = (o.spansFrom || []).map(d => resolve(d)).map(d => ({dir: d, key: readAliasKey(d), bundle: readBundle(d, {anyVersion: true})}));
  for (const f of fromBundles) if (!f.key) throw new Error(`--spans-from ${f.dir} has no alias key; its aliases cannot be re-keyed`);
  const results = [];
  for (const partDir of o.merge) {
   const part = resolve(partDir);
-  const pb = readBundle(part);
+  let pb = readBundle(part);
   if (!pb) throw new Error(`No part bundle at ${part}`);
-  if (pb.collector?.aliasKeyId && pb.collector.aliasKeyId !== aliasKeyId(key)) throw new Error(`The part at ${part} was collected with a different alias key; rerun it with this bundle's --alias-key-file`);
+  if (fleet) {if (pb.collector?.aliasScheme !== 'fleet-parts' || pb.collector.partsKeyId !== keyId(redactor.partsKey)) throw new Error(`The part at ${part} was not harvested with this fleet's parts key`);}
+  else if (pb.collector?.aliasKeyId && pb.collector.aliasKeyId !== aliasKeyId(key)) throw new Error(`The part at ${part} was collected with a different alias key; rerun it with this bundle's --alias-key-file`);
+  if (fleet) pb = JSON.parse(redactor.fromParts(JSON.stringify(pb))); // titles and gaps in the part record
   for (const m of pb.machines.filter(x => x.status === 'collected')) {
    const mdir = `machines/${m.environmentId}`;
    const src = join(part, mdir);
@@ -635,7 +666,8 @@ async function merge(o) {
    for (const f of bundleFiles(src)) {
     const rel = relative(part, f).split(sep).join('/').replace(/\.gz$/, '');
     if (DERIVED.test(rel)) continue;
-    const lines = [...bufferLines(fileBuffer(f))].map(l => redactor.string(l));
+    const own = fleet && (o.trusted || []).includes(m.environmentId);
+    const lines = [...bufferLines(fileBuffer(f))].map(l => reline(l, own));
     const spanRel = SPAN_RELS.find(r => rel === `${mdir}/${r}`);
     if (spanRel === 'spans.ndjson') noteEnds(lines);
     if (spanRel) {writeSpans(spanRel, lines); done.add(spanRel);} else writer.lines(rel, lines);
@@ -682,7 +714,7 @@ async function derive(o) {
  const credValues = credentialValues({home, repo, t3Home: existsSync(t3Home) ? t3Home : null, db});
  const values = existsSync(t3Home) ? secretValues({t3Home, home, repo, db}) : new Map();
  db?.close();
- const redactor = new Redactor({aliasKey: aliasKey(out), values});
+ const redactor = bundleRedactor(out, bundle, values, o);
  writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false});
  finishBundle(bundle);
  writeBundle(out, bundle);
@@ -704,6 +736,73 @@ async function harvest(o) {
   catch (e) {results.push({root, error: String(e.message || e).split('\n')[0]});}
  }
  return results;
+}
+
+// ---- the fleet harvest store ------------------------------------------------------------------------------------
+
+// One writer per machine store at a time (the hourly harvest and the resolver's on-demand refresh): a lock folder
+// naming its owner's pid. A lock whose owner is gone, or that is older than 30 minutes, is taken over.
+export async function withStoreLock(dir, fn, {waitMs = 15 * 60000} = {}) {
+ const lock = join(dir, '.lock');
+ ensureDir(dir);
+ const t0 = Date.now();
+ for (;;) {
+  try {mkdirSync(lock, {mode: 0o700}); writeFileSync(join(lock, 'pid'), String(process.pid)); break;}
+  catch (e) {
+   if (e.code !== 'EEXIST') throw e;
+   let stale = false;
+   const st = statSync(lock, {throwIfNoEntry: false});
+   const age = st ? Date.now() - st.mtimeMs : 0;
+   const pid = Number(read(join(lock, 'pid')));
+   if (age > 30 * 60000) stale = true;
+   else if (pid) {try {process.kill(pid, 0);} catch (k) {if (k.code === 'ESRCH') stale = true;}}
+   else if (age > 60000) stale = true;
+   if (stale) {rmSync(lock, {recursive: true, force: true}); continue;}
+   if (Date.now() - t0 > waitMs) throw new Error(`${dir} is held by another harvest (pid ${pid || '?'})`);
+   await new Promise(r => setTimeout(r, 1000));
+  }
+ }
+ try {return await fn();} finally {rmSync(lock, {recursive: true, force: true});}
+}
+
+// The fleet harvest into a store (<store>/<environmentId>/): every span T3's logs still hold into the machine's span
+// archive (archive.mjs), then a span-less part for each family root (the ones active since --since, or the roots
+// given), into families/<root>/; everything aliased with the fleet parts key, which is never written into the store.
+export async function storeHarvest(o, {roots: given = null, onProgress = null} = {}) {
+ const home = homedir();
+ const t3Home = resolve(o.t3Home || process.env.T3CODE_HOME || join(home, '.t3'));
+ const environmentId = read(join(t3Home, 'userdata', 'environment-id'))?.trim();
+ if (!environmentId) throw new Error(`No environment-id under ${t3Home}/userdata`);
+ const dir = join(resolve(o.store), environmentId);
+ const partsKey = o.partsKey || readKeyFile(o.partsKeyFile || partsKeyFile());
+ return withStoreLock(dir, async () => {
+  const repo = o.repo || mainRepo();
+  const db = await openReadOnly(join(t3Home, 'userdata', 'statev2.sqlite'));
+  let roots, values, credValues;
+  try {
+   const since = o.since ? ms(o.since) : Date.now() - 65 * 60000;
+   roots = given || [...new Set(db.all("select json_extract(payload_json,'$.lineage.rootThreadId') root from orchestration_v2_projection_threads where updated_at >= ? and deleted_at is null", iso(since)).map(r => r.root).filter(Boolean))];
+   values = secretValues({t3Home, home, repo, db});
+   credValues = credentialValues({home, repo, t3Home, db});
+  } finally {db.close();}
+  const redactor = new Redactor({aliasKey: partsKey, values});
+  for (const [v, kind] of credValues) if (!/git email/.test(kind)) redactor.addValue(v, 'secret-value');
+  const started = new Date().toISOString();
+  const archive = o.noArchive ? null : await updateArchive({logsDir: join(t3Home, 'userdata', 'logs'), dir, redactor, retainDays: o.retainDays || 14,
+   makeWriter: () => {const gaps = []; const writer = new PartWriter(dir, redactor, {gzip: true}); guardWriter(writer, scanner(credValues), credValues, redactor, gaps); return {writer, gaps};}});
+  const clock = clockReading(o);
+  const results = [];
+  for (const [i, root] of roots.entries()) {
+   onProgress?.(i / Math.max(1, roots.length));
+   try {results.push(await collect({...o, root, out: join(dir, 'families', slug(root)), partsKey, noSpans: true, noDerive: true, clock, since: undefined, until: undefined}));}
+   catch (e) {results.push({root, error: String(e.message || e).split('\n')[0]});}
+  }
+  const record = {environmentId, label: o.label || hostname().split('.')[0], partsKeyId: keyId(partsKey), collector: COLLECTOR_VERSION, startedAt: started, harvestedAt: new Date().toISOString(),
+   roots: roots.length, collected: results.filter(r => !r.error).length, errors: results.filter(r => r.error).map(r => ({root: r.root, error: r.error})),
+   verifyHits: results.filter(r => r.machine?.verify?.hitFiles).length, archive: archive?.report || null, archiveGaps: archive?.gaps || []};
+  writeFileSync(join(dir, 'harvest.json'), JSON.stringify(record, null, 1) + '\n', {mode: 0o600});
+  return {dir, environmentId, archive, results, record};
+ }, o.lockWaitMs != null ? {waitMs: o.lockWaitMs} : {});
 }
 
 // Mark a machine unreachable with the reason (when a hop could not be collected).
@@ -747,6 +846,15 @@ async function main() {
  }
  if (o.merge) {const r = await merge(o); console.log(report(r.bundle, r.out)); return;}
  if (o.derive) {const r = await derive(o); console.log(report(r.bundle, r.out)); return;}
+ if (o.harvest && o.store) {
+  const r = await storeHarvest(o);
+  const {record} = r;
+  console.log(`harvest ${record.label} (${record.environmentId}) into ${r.dir}: ${record.collected}/${record.roots} family parts, ${record.errors.length} errors, ${record.verifyHits} with verify hits`);
+  for (const [kind, a] of Object.entries(record.archive || {})) console.log(`  ${kind} spans: read ${a.read}, added ${a.added} into ${a.segmentsWritten} segments, covering ${a.interval ? `${a.interval.since}..${a.interval.until}` : 'nothing'}`);
+  for (const e of record.errors) console.log(`  ${e.root}: ${e.error}`);
+  if (record.errors.length || record.verifyHits || record.archiveGaps.length) process.exitCode = 1;
+  return;
+ }
  if (o.harvest) {
   const rs = await harvest(o);
   for (const r of rs) console.log(r.error ? `harvest ${r.root}: ${r.error}` : report(r.bundle, r.out));
@@ -761,4 +869,4 @@ async function main() {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(e => {console.error(e.message); process.exit(2);});
-export {collect, merge, derive, harvest, args, finishBundle, mergeHop, priorParts, unionParts, USAGE};
+export {collect, merge, derive, harvest, args, finishBundle, mergeHop, priorParts, unionParts, mainRepo, USAGE};

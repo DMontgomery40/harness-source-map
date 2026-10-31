@@ -66,3 +66,10 @@ export function readNdjsonAny(file) {
  for (const l of bufferLines(buf)) {if (!l) continue; try {out.push(JSON.parse(l));} catch {}}
  return out;
 }
+
+// Every non-empty line of a bundle file written plain or as .gz (none when neither exists), unparsed.
+export function* readNdjsonLines(file) {
+ const buf = readBuffer(file);
+ if (!buf) return;
+ for (const l of bufferLines(buf)) if (l) yield l;
+}

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp, rm, mkdir, writeFile, symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {createTraceServer} from '../trace-local.mjs';
+import {createTraceServer, createAssembler} from '../trace-local.mjs';
 
 test('the resolver takes T3 thread ids and says when no collected bundle holds one', async t => {
  const dir = await mkdtemp(join(tmpdir(), 't3-trace-local-'));
@@ -18,7 +18,9 @@ test('the resolver takes T3 thread ids and says when no collected bundle holds o
  for (const id of [`mcp:launch:${'ab12'.repeat(16)}`, 'thread:delegated-task:command%3Amcp%3Aabc%3Adelegate-task%3Asome-task']) {
   const res = await call(id);
   assert.equal(res.status, 404);
-  assert.match((await res.json()).error, /T3 bundle/);
+  const {error} = await res.json();
+  assert.match(error, /No machine has reported that T3 thread/);
+  assert.doesNotMatch(error, /collect\.mjs|node tools/, 'never asks anyone to run a command');
  }
  for (const id of ['../../secret', 'thread:../../x', '/etc/passwd']) assert.equal((await call(id)).status, 400);
 });
@@ -83,4 +85,31 @@ test('a v2 T3 link opens its thread only on the environment it names', async t =
  assert.match((await wrong.json()).error, /not on the environment/);
  assert.equal((await post({id: THREAD, environmentId: '../x'})).status, 400);
  assert.equal((await post({id: THREAD})).status, 200); // a v1 link (no environment) still opens it
+});
+
+test('a T3 family being assembled answers 202 with its progress to a page that asks, and waits for one that does not', async t => {
+ const root = await mkdtemp(join(tmpdir(), 't3-trace-local-'));
+ t.after(() => rm(root, {recursive: true, force: true}));
+ let finish;
+ const calls = [];
+ const t3Assembler = createAssembler({enabled: true, repo: root, assemble: ({threadId, environmentId, onProgress}) => {calls.push({threadId, environmentId}); onProgress(0.4); return new Promise(r => {finish = r;});}});
+ const server = createTraceServer({roots: {codex: join(root, 'codex'), 'claude-code': join(root, 'claude')}, t3Roots: [], t3Assembler});
+ await new Promise(r => server.listen(0, '127.0.0.1', r));
+ t.after(() => new Promise(r => server.close(r)));
+ const base = 'http://127.0.0.1:' + server.address().port;
+ const post = body => fetch(base + '/v1/session', {method: 'POST', headers: {Origin: base, 'X-Trace-Request': '1', 'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+ const body = {id: THREAD, environmentId: ENV};
+ const first = await post({...body, progress: true});
+ assert.equal(first.status, 202);
+ assert.deepEqual(await first.json(), {pending: true, progress: 0.4});
+ const again = await post({...body, progress: true});
+ assert.equal(again.status, 202);
+ assert.equal(calls.length, 1, 'one assembly per thread at a time');
+ // an older page (no progress flag) waits for the same job; nothing assembled anywhere: the new message
+ const waiting = post(body);
+ finish(null);
+ const res = await waiting;
+ assert.equal(res.status, 404);
+ assert.match((await res.json()).error, /No machine has reported that T3 thread/);
+ assert.equal(calls.length, 1);
 });

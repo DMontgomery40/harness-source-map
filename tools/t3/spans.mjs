@@ -57,7 +57,7 @@ export function segmentsOf(endTimes, sinceMs, untilMs) {
  return out;
 }
 
-function normalize(span) {
+export function normalize(span) {
  const out = {};
  for (const k of KEEP_FIELDS) if (span[k] !== undefined) out[k] = span[k];
  return out;
