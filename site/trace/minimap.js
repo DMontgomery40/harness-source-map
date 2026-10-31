@@ -13,6 +13,7 @@ export function buildLayout(trace) {
     for (const r of a.requests) times.push(r.t);
     for (const b of a.bursts || []) times.push(b.a, b.b);
   }
+  for (const v of trace.voids || []) times.push(v.from, v.to);
   // The session's own start and end anchor the axis, so a long idle head or tail (a thread
   // reopened days later with no requests) shows as a compressed, labelled gap.
   for (const t of [trace.started, trace.ended]) if (Number.isFinite(t)) times.push(t);
@@ -62,18 +63,22 @@ export function buildLayout(trace) {
     if (a.kind === "subagent") segs.push(...segments);
   }
 
-  // Pack subagent bursts into lanes; an agent keeps its lane when it can.
-  segs.sort((p, q) => p.x0 - q.x0);
+  // Pack subagent bursts into lanes; an agent keeps its lane when it can. A T3 family's voids (threads with
+  // nothing to draw a ridge from, fleet/family.js) take lanes in the same field, so they sit among the ridges.
+  const voids = (trace.voids || []).map(v => ({ void: v, x0: X(v.from), x1: X(v.to), lane: -1 }));
+  const packed = voids.length ? [...segs, ...voids] : segs;
+  packed.sort((p, q) => p.x0 - q.x0);
   const laneEnd = [];
   const pad = 0.006;
   const lastLane = new Map();
-  for (const s of segs) {
-    const want = lastLane.get(s.agent.id);
+  for (const s of packed) {
+    const key = s.void ? `void:${s.void.thread}` : s.agent.id;
+    const want = lastLane.get(key);
     let lane = want != null && laneEnd[want] + pad < s.x0 ? want : laneEnd.findIndex(e => e + pad < s.x0);
     if (lane < 0) { lane = laneEnd.length; laneEnd.push(0); }
     laneEnd[lane] = Math.max(s.x1, s.x0 + 0.002);
     s.lane = lane;
-    lastLane.set(s.agent.id, lane);
+    lastLane.set(key, lane);
   }
 
   // Spawn and return links between an agent's bursts and its parent's requests.
@@ -130,7 +135,7 @@ export function buildLayout(trace) {
   const hours = [];
   const start = new Date(t0); start.setMinutes(step < 3600e3 ? Math.floor(start.getMinutes() / (step / 60e3)) * (step / 60e3) : 0, 0, 0);
   for (let t = start.getTime() + step; t < t1; t += step) if (!gaps.some(g => t > g.a && t < g.b)) hours.push(t);
-  return { t0, t1, X, gaps, info, root, lanes: laneEnd.length, links, yMax, hours, byId };
+  return { t0, t1, X, gaps, info, root, lanes: laneEnd.length, links, yMax, hours, byId, voids };
 }
 
 // ---------- SVG overview ----------

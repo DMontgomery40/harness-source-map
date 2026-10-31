@@ -9,7 +9,7 @@ import {homedir, tmpdir} from 'node:os';
 import {randomBytes} from 'node:crypto';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {nativeOpenCode, nativeCursor, memoryEntry} from './trace-native.mjs';
-import {sessionId, OPENCODE_ID} from '../site/trace/paste.js';
+import {sessionId, OPENCODE_ID, t3ThreadId} from '../site/trace/paste.js';
 import {narrowByHint} from '../site/trace/loader.js';
 import {SITE, siteOrigin} from '../site/src/shared/site.mjs';
 import {sourcesReport, readSource} from './sources/index.mjs';
@@ -95,6 +95,36 @@ const defaultDatabases=[...configuredPaths('opencodeDatabases'),process.env.OPEN
 // T3 fleet bundles written by tools/t3/collect.mjs (private, never published).
 const defaultT3Roots=[...configuredPaths('t3Bundles'),fileURLToPath(new URL('../private/sessions/t3/',import.meta.url))];
 const defaultCaptureRoots=[...configuredPaths('captureRoots'),join(homedir(),'.harness-source-map','captures'),fileURLToPath(new URL('../private/research',import.meta.url)),...(process.env.TRACE_CAPTURE_ROOTS||'').split(process.platform==='win32'?';':':').filter(Boolean)];
+
+// A T3 thread id names its family's bundle as written, else once percent-decoded (T3 resolves its own links so).
+async function t3Family(roots,id){
+ let decoded=null;try{decoded=decodeURIComponent(id);}catch{/* not escaped */}
+ for(const candidate of new Set([id,decoded].filter(Boolean))){const hit=await findT3Bundle(roots,candidate);if(hit)return hit;}
+ return null;
+}
+// A harness session that ran in a collected T3 family: the bundle's agent-sessions index names it by its native id.
+// Returns the family's root thread, the session's own T3 thread and machine, and the session's files in the bundle
+// (served when the session ran on another machine, so it is not in this one's folders). Any bundle version.
+async function t3Session(roots,id){
+ for(const root of roots)for(const item of await names(root)){
+  if(!item.isDirectory())continue;
+  const dir=join(root,item.name);let bundle;
+  try{bundle=JSON.parse(await readFile(join(dir,'bundle.json'),'utf8'));}catch{continue;}
+  if(bundle.format!=='t3-fleet-bundle')continue;
+  for(const m of bundle.machines||[]){
+   const base=join(dir,'machines',m.environmentId,'agent-sessions');
+   let index;try{index=JSON.parse(await readFile(join(base,'index.json'),'utf8'));}catch{continue;}
+   const hit=index.find(e=>String(e.nativeId).toLowerCase()===id && /\.jsonl$/.test(e.path) && !/\/subagents\//.test(e.path));
+   if(!hit)continue;
+   const files=[];
+   for(const e of index.filter(e=>e.threadId===hit.threadId && (e.nativeId===hit.nativeId || e.path.includes(hit.nativeId)))){
+    for(const path of [join(base,e.path),join(base,e.path)+'.gz'])if(await lstat(path).then(x=>x.isFile(),()=>false)&&within(dir,await realpath(path))){files.push(path);break;}
+   }
+   return {dir,base,product:hit.product,files,label:m.label,pointer:{rootThreadId:bundle.scope?.rootThreadId||null,threadId:hit.threadId,environmentId:m.environmentId,machine:m.label}};
+  }
+ }
+ return null;
+}
 
 export function createTraceServer({roots=defaultRoots,captureRoots=roots===defaultRoots?defaultCaptureRoots:[],opencodeDatabases=roots===defaultRoots?defaultDatabases:[],t3Roots=roots===defaultRoots?defaultT3Roots:[],siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){
  const tickets=new Map();
@@ -210,9 +240,11 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
     if(url.pathname==='/v1/session' && req.method==='POST'){
      const body=await readBody(req);if(body===null)return reply(413,{error:'Request too large'});if(!body)return reply(400,{error:'Invalid request'});
      let {id,captures}=body;
-     id=sessionId(id);if(!id)return reply(400,{error:'Invalid session ID'});
-     // A T3 thread id with a fleet bundle: the bundle's files (the page reads them as one T3 session).
-     const t3=t3Roots.length?await findT3Bundle(t3Roots,id):null;
+     // A T3-only thread id (mcp:launch:…, thread:…) is compared with bundle contents only, never used as a path.
+     const t3id=typeof id==='string'&&!sessionId(id)?t3ThreadId(id):null;
+     id=sessionId(id);if(!id&&!t3id)return reply(400,{error:'Invalid session ID'});
+     // A T3 thread id with a fleet bundle: the bundle's files (the page opens them as the thread's T3 family).
+     const t3=t3Roots.length?await t3Family(t3Roots,id||t3id):null;
      if(t3){
       const now=Date.now();for(const [key,value] of tickets)if(value.expires<now)tickets.delete(key);
       const files=[];
@@ -221,10 +253,24 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
        tickets.set(token,{entry,root:t3.dir,expires:now+24*60*60*1000});
        files.push({path:relative(t3.dir,path).split('\\').join('/'),kind:'t3-bundle',size:entry.source.size,url:'/v1/file/'+token});
       }
-      return reply(200,{id,product:'t3code',files,warnings:[...(t3.bundle.gaps||[])].slice(0,200)});
+      return reply(200,{id:id||t3id,product:'t3code',files,warnings:[...(t3.bundle.gaps||[])].slice(0,200)});
      }
+     if(!id)return reply(404,{error:'No T3 bundle collected on this machine holds that thread. Collect its family (node tools/t3/collect.mjs), then open it again.'});
      found.delete(id);
      const hit=await findSession(id);
+     // A harness session that ran in a collected T3 family says so (the page offers "Show its T3 family"); one that
+     // ran on another machine is read from the bundle's copy.
+     const inFamily=t3Roots.length?await t3Session(t3Roots,id):null;
+     if(!hit&&inFamily?.files.length){
+      const now=Date.now();for(const [key,value] of tickets)if(value.expires<now)tickets.delete(key);
+      const files=[];
+      for(const path of inFamily.files){
+       const entry=await fileEntry(inFamily.dir,path),token=randomBytes(24).toString('hex');
+       tickets.set(token,{entry,root:inFamily.dir,expires:now+24*60*60*1000});
+       files.push({path:relative(inFamily.base,path).split('\\').join('/'),kind:'t3-session',size:entry.source.size,url:'/v1/file/'+token});
+      }
+      return reply(200,{id,product:inFamily.product,files,t3:inFamily.pointer,warnings:[`This session ran on ${inFamily.label}; it is read from the T3 family's collected copy.`]});
+     }
      if(!hit)return reply(404,{error:'Session not found on this machine'});
      const {session,root}=hit;
      if(captures===true && ['codex','claude-code'].includes(session.product))await fileLooseCaptures(session,roots,home,captureDirs);
@@ -282,7 +328,7 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
       const token=randomBytes(24).toString('hex');tickets.set(token,{entry,root:entry.root||root,expires:now+24*60*60*1000});
       return {path:entry.publicPath||(entry.memory?entry.path:relative(entry.root||root,entry.path).split('\\').join('/')),kind:entry.kind,size:entry.source.size,url:'/v1/file/'+token};
      });
-     return reply(200,{id,product:session.product,files,warnings:[...new Set(warnings)]});
+     return reply(200,{id,product:session.product,files,warnings:[...new Set(warnings)],...(inFamily?{t3:inFamily.pointer}:{})});
     }
     if(url.pathname.startsWith('/v1/file/') && req.method==='GET'){
      const ticket=tickets.get(url.pathname.slice('/v1/file/'.length));

@@ -1021,7 +1021,8 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     const nSub = agents.filter(a => a.kind === "subagent").length;
     // A quiet label along the front edge of the subagent field.
     if (L.lanes) {
-      label(`subagents (${nSub})`, "row quiet", new THREE.Vector3(W * 0.5, 0, fieldFront), [0.5, 1], g);
+      // a T3 family's remote delegates are threads, not subagents
+      label(`${trace.family ? "threads & subagents" : "subagents"} (${nSub})`, "row quiet", new THREE.Vector3(W * 0.5, 0, fieldFront), [0.5, 1], g);
     }
   }
   buildL0Labels();

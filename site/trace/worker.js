@@ -29,6 +29,9 @@ import { localFileSource } from "./local-session.js";
 //     ~/.codex/sessions or ~/.claude/projects pick, its files are chosen by path and
 //     only the few candidate children are sniffed (see loader.js narrowByHint). Without
 //     `root`, every .jsonl is sniffed and trace.candidates lists the sessions found.
+//     A T3 Code fleet bundle (bundle.json with format "t3-fleet-bundle" among the files) loads as its family
+//     (fleet/load.js): one trace with every thread of the family, trace.family true, trace.fleet its side table.
+//     A .jsonl.gz or .json.gz file is read as the log it holds, so one session opens straight from a bundle.
 //   postMessage({ type: "text", ref, id? })
 //     -> { type: "text", ref, id, text }  the literal text of one block: its source line
 //        read by byte offset, then ref.path (JSON path into the line) and ref.range
@@ -65,6 +68,8 @@ import { findText } from "./find.js";
 import { buildHarnessModel } from "./harness/pieces.js";
 import { analyzeCapture } from "./network/capture.js";
 import { projectInstructions } from './network/instructions.js';
+import { isT3Bundle, plainEntry } from "./fleet/bundle.js";
+import { loadFamily } from "./fleet/load.js";
 
 let sources = [];
 let index = null;
@@ -74,6 +79,7 @@ let networkGeneration = 0;
 let findGen = 0;
 let harness = null; // { trace, promise, ms } for the loaded session
 let network = null; // { trace, store } for the attached capture
+let family = null; // { trace, bundle } while a T3 family is loaded (its span archive is read on demand)
 
 // A block's exact text, as the reader shows it (ref.path and ref.range applied), reading each log line once
 // for the blocks that share it.
@@ -103,15 +109,23 @@ self.onmessage = async (e) => {
         return { path, source: f.local ? localFileSource(f.local) : fileSource(file, f.handle, f.frozen) };
       });
       let last = 0;
-      const { trace, sources: s } = await loadTrace(entries, {
-        root: m.root || null,
-        index,
-        onProgress: (p) => {
-          const now = Date.now();
-          const frequent = p.phase === "parse" || p.phase === "narrow";
-          if (!frequent || p.fileDone || p.final || now - last > 80) { last = now; self.postMessage({ type: "progress", ...p }); }
-        },
-      });
+      const onProgress = (p) => {
+        const now = Date.now();
+        const frequent = p.phase === "parse" || p.phase === "narrow" || p.phase === "family";
+        if (!frequent || p.fileDone || p.final || now - last > 80) { last = now; self.postMessage({ type: "progress", ...p }); }
+      };
+      // A T3 Code fleet bundle opens as its family (fleet/load.js); anything else as one session, with a gzipped
+      // log (as a bundle keeps them) read as the file it holds.
+      let result;
+      family = null;
+      if (await isT3Bundle(entries)) {
+        result = await loadFamily(entries, { index, onProgress });
+        family = { trace: result.trace, bundle: result.bundle };
+      } else {
+        const plain = await Promise.all(entries.map(e => (/\.jsonl?\.gz$/i.test(e.path) ? plainEntry(e) : e)));
+        result = await loadTrace(plain, { root: m.root || null, index, onProgress });
+      }
+      const { trace, sources: s } = result;
       sources = s;
       loaded = trace;
       nativeLoaded = trace; nativeSources = s;

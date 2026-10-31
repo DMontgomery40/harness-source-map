@@ -218,6 +218,13 @@ function getWorker() {
         } else setProgress(data.total ? 0.08 * data.done / data.total : null, `Finding the session: ${fmtInt(data.done)} of ${fmtInt(data.total)} files checked`);
         return;
       }
+      if (data.phase === "family") {
+        // A T3 family: one harness session (or provider log) per thread, read one after another.
+        const f = data.found;
+        setProgress(data.total ? 0.04 + 0.9 * data.done / data.total : 0.04, f ? `Found a T3 family: ${fmtInt(f.threads)} threads on ${fmtInt(f.machines)} machines. Reading their sessions…`
+          : `Reading thread ${fmtInt(data.done)} of ${fmtInt(data.total)}${data.file ? ` · ${clipName(data.file)}` : ""}`);
+        return;
+      }
       const what = { scan: "Finding sessions", parse: "Reading", build: "Building the landscape", done: "Done" }[data.phase] || "Reading";
       const file = data.file ? ` · ${String(data.file).split("/").pop()}` : "";
       setProgress(frac, data.total ? `${what}: ${mb(data.done)} of ${mb(data.total)}${file}` : `${what}…`);
@@ -325,6 +332,9 @@ let networkSeq = 0;
 const pendingBody = new Map();
 let bodySeq = 0;
 const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode or Cursor desktop .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
+
+// A T3 Code fleet bundle among the files: what the resolver serves for a T3 thread, or a dropped bundle folder.
+const isBundleFiles = files => files.some(f => f.kind === "t3-bundle") || (files.some(f => /(^|\/)bundle\.json$/.test(f.path)) && files.some(f => /(^|\/)machines\/[^/]+\/threads\.json(\.gz)?$/.test(f.path)));
 
 // Captures among picked files: .har files, HAR-shaped .json files, and Cursor's
 // private decoded AgentService sidecar (a session .json remains separate).
@@ -460,6 +470,23 @@ async function loadFiles(files, root) {
   const sourceWarnings=files.warnings||[];
   const claim=loads.begin();claim.onCancel(cancelWorkerLoad);
   if(!files.every(file=>file.publicExample)){exampleAbort?.abort();publicExample=null;$("#example-banner").hidden=true;const url=new URL(location.href);url.searchParams.delete("example");history.replaceState(null,"",url);}
+  // A T3 Code fleet bundle is one family, not a pick of sessions: its files go to the worker as they are, with no
+  // capture sniffing (the bundle's span archive is hundreds of MB) and no pasted-id check.
+  if (isBundleFiles(files)) {
+    setProgress(0, "Opening the T3 family…");
+    lastFiles = files; lastCaptures = [];
+    try {
+      const trace = await parseInWorker(files, null, claim.current);
+      if(!claim.current())return;
+      trace.sourceWarnings = sourceWarnings;
+      text = workerText;
+      await start(trace, claim.current);
+    } catch (e) {
+      if(!claim.current() || e.name==="AbortError")return;
+      return showError(e.message || String(e));
+    } finally {claim.finish();}
+    return S.trace;
+  }
   const { hars, logs: rest } = await splitCaptures(files);
   if(!claim.current())return;
   files = rest;
@@ -477,6 +504,7 @@ async function loadFiles(files, root) {
     const trace = await parseInWorker(files, root,claim.current);
     if(!claim.current())return;
     trace.sourceWarnings = sourceWarnings;
+    trace.t3Family = files.t3 || null; // the T3 family this session ran in, when the resolver has it collected
     text = workerText;
     await start(trace,claim.current);
     if(!claim.current())return;
@@ -636,6 +664,9 @@ function describePaste(v) {
     what = `Codex/ChatGPT thread started ${fmtWhen(info.ms)}.`;
     where.push(el("p", { text: "Its log (the file name uses local time):" }), pathRow(`~/.codex/sessions/${day}/rollout-${stamp}-${info.id}.jsonl`),
       el("p", { text: "Subagents and guardian reviews are separate files in the date folders from that day on." }));
+  } else if (info.product === "t3code") {
+    what = `T3 Code thread ${info.id.length > 40 ? `${info.id.slice(0, 37)}…` : info.id}${info.environmentId ? ` on environment ${info.environmentId.slice(0, 8)}` : ""}.`;
+    where.push(el("p", { text: "A T3 thread spans the harness sessions of every agent it ran, on every machine. The local resolver opens its family from a bundle collected with node tools/t3/collect.mjs; you can also drop the bundle folder." }));
   } else if (info.product === 'opencode' || info.product === 'cursor') {
     what = `${productLabel(info.product)} session ${info.id}.`;
     where.push(el("p", {text:"The local resolver reads the native session store and matching recording folders. Without it, choose a folder containing the session export and its network capture."}));
@@ -645,10 +676,11 @@ function describePaste(v) {
     where.push(el("p", { text: "Its log, and the same-named folder that holds its subagents:" }), pathRow(file), pathRow(file.replace(/\.jsonl$/, "/")));
   }
   const hint = el("p", { class: "open-hint", text: "" });
-  const btn = el("button", { class: "btn primary open", type: "button", text: "Open this session and its subagents" });
+  const btn = el("button", { class: "btn primary open", type: "button", text: info.product === "t3code" ? "Open this thread's T3 family" : "Open this session and its subagents" });
   btn.addEventListener("click", () => openPasted(info, btn, hint));
   out.append(el("p", { text: what }), el("div", { class: "open-row" }, btn, hint),
     el("details", {}, el("summary", { text: "Where the files are" }), ...where));
+  if (info.product === "t3code") { hint.textContent = "Opens through the local resolver."; return; }
   storedHandle(info.product).then(h => {
     hint.textContent = pickedRoots.has(info.product) || h ? "Opens from the folder you picked before."
       : "Opens through the local resolver, or asks for a session export folder.";
@@ -676,6 +708,8 @@ async function openPasted(info, btn, hint, fresh = false) {
     } finally { btn.disabled = false; }
     $("#progress").hidden = true;
   }
+  // A T3 family exists only as a collected bundle, served by the local resolver (or dropped as a folder).
+  if (info.product === "t3code") return showError("T3 families open through the local resolver: start it with npm --prefix site run trace:local, then paste the link again. Or drop the collected bundle folder.");
   const mem = !fresh && pickedRoots.get(info.product);
   if (mem) return await holdsPaste(mem, info.id) ? loadFiles(narrowPicked(mem, info), info.id) : missingPaste(mem);
   if (typeof window.showDirectoryPicker === "function") {
@@ -867,7 +901,9 @@ function normalize(trace) {
     for (const b of a.blocks) b.t = ms(b.t);
   }
   trace.agents = trace.agents.filter(a => a.requests.length || a.kind === "root");
-  const all = trace.agents.flatMap(a => a.requests.map(r => r.t));
+  // A T3 family's voids (threads T3 recorded with nothing to draw a ridge from) keep their place on the time axis.
+  for (const v of trace.voids || []) for (const k of ["from", "to", "firstEvidence", "lastEvidence", "claimedEnd"]) if (v[k] != null) v[k] = ms(v[k]);
+  const all = [...trace.agents.flatMap(a => a.requests.map(r => r.t)), ...(trace.voids || []).flatMap(v => [v.from, v.to])];
   trace.started = ms(trace.started) || Math.min(...all);
   trace.ended = ms(trace.ended) || Math.max(...all);
   return trace;
@@ -1084,7 +1120,7 @@ function setupResizer() {
 // The header's eyebrow names the product and the view: the landscape, or the harness layer over it.
 function setSessionKind() {
   if (!S.trace) return;
-  $("#session-kind").textContent = `${productLabel(S.trace.product)} / ${S.mode === "harness" ? "Harness layer" : "Session landscape"}`;
+  $("#session-kind").textContent = `${S.trace.family ? "T3 Code family" : productLabel(S.trace.product)} / ${S.mode === "harness" ? "Harness layer" : "Session landscape"}`;
 }
 
 function buildHud() {
@@ -1108,12 +1144,30 @@ function buildHud() {
   $("#stats").replaceChildren(...[
     stat(fmtDur(st.wall), "Duration"),
     stat(fmtInt(st.rootRequests), "Main requests"),
-    st.subagents ? stat(fmtInt(st.subagents), `subagents, ${fmtInt(st.subRequests)} requests`) : null,
+    // A T3 family's remote delegates are threads, not subagents.
+    st.subagents ? stat(fmtInt(st.subagents), `${t.family ? `threads & subagents on ${fmtInt(t.fleet?.machines?.length || 1)} machines` : "subagents"}, ${fmtInt(st.subRequests)} requests`) : null,
     st.subFresh ? stat(`${fmtTok(st.rootFresh)} vs ${fmtTok(st.subFresh)}`, "Fresh · main / agents") : stat(fmtTok(st.rootFresh), "fresh tokens"),
     stat(`${Math.round(st.cacheShare * 100)}%`, "Context from cache"),
     st.sideFresh ? stat(fmtTok(st.sideFresh), "Side calls & reviews") : null].filter(Boolean));
   symbolLegend();
   buildLenses();
+  // A harness session that ran inside a collected T3 family: one quiet way to its family, never opened unasked.
+  const fam = $("#t3-family");
+  fam.hidden = !t.t3Family || !!t.family;
+  fam.onclick = () => openT3Family(t.t3Family.rootThreadId);
+}
+
+// Opens a T3 family through the local resolver, from a session that ran in it.
+async function openT3Family(rootThreadId) {
+  const btn = $("#t3-family");
+  btn.disabled = true;
+  try {
+    const files = await openLocalSession(rootThreadId);
+    if (!files) return netStatus("The local resolver didn't answer: start it with npm --prefix site run trace:local.", "error");
+    backToLoader();
+    await loadFiles(files, null);
+  } catch (e) { netStatus(e.message || String(e), "error"); }
+  finally { btn.disabled = false; }
 }
 // The four questions, "What went over the wire" while a network capture is attached, and "Everything on this
 // machine" (the session's local sources). Keys 1–6 follow this order.
@@ -1738,6 +1792,8 @@ function showTip(hit) {
     kids.push(el("div", { class: "m", text: top ? `largest layer: ${top.name} ≈ ${fmtTok(top.tokens)}` : "split unknown: the log has no blocks for this request" }));
     if (r.action && r.action.kind === "tool") kids.push(el("div", { text: `${r.action.tool}${r.action.target ? `: ${r.action.target.slice(0, 80)}` : ""}` }));
   }
+  // In a T3 family every ridge says where it ran: the machine, the product and the model.
+  if (a.machine) kids.splice(1, 0, el("div", { class: "m fleet-where", text: [a.machine, a.provider, a.model].filter(Boolean).join(" · ") }));
   tip.replaceChildren(...kids.filter(Boolean));
   tip.hidden = false;
   const x = Math.min(innerWidth - 330, hit.x + 14), y = Math.min(innerHeight - 110, hit.y + 14);

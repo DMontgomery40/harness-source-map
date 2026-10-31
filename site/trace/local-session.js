@@ -17,7 +17,9 @@ export async function openLocalSession(id, {fetcher=fetch,base=BASE}={}) {
     if(url.origin!==new URL(base).origin || !url.pathname.startsWith('/v1/file/'))throw new Error('Invalid local session file');
     return {path:file.path,kind:file.kind,local:{path:file.path,size:file.size,url:url.href}};
   });
-  return Object.assign(files,{warnings:Array.isArray(manifest.warnings)?manifest.warnings:[]});
+  // product 't3code': the files are a T3 family's bundle. t3: the T3 family a harness session ran in, if collected.
+  const t3=manifest.t3&&typeof manifest.t3.rootThreadId==='string'?{rootThreadId:manifest.t3.rootThreadId,threadId:String(manifest.t3.threadId||''),environmentId:String(manifest.t3.environmentId||''),machine:String(manifest.t3.machine||'')}:null;
+  return Object.assign(files,{warnings:Array.isArray(manifest.warnings)?manifest.warnings:[],product:manifest.product||null,t3});
 }
 
 // Whether the resolver answers this page: { ok: true, version } | { ok: false, blocked, prompt }. `blocked`
