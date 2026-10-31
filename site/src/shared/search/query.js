@@ -30,7 +30,8 @@ const PRODUCT_ALIASES = new Map([
   ["claude-code", "claude-code"], ["claude", "claude-code"], ["cc", "claude-code"], ["claudecode", "claude-code"],
   ["codex", "codex"], ["chatgpt", "codex"], ["openai", "codex"], ["codex-chatgpt", "codex"], ["codex/chatgpt", "codex"],
   ["opencode", "opencode"], ["open-code", "opencode"],
-  ["cursor", "cursor"], ["cursor-agent", "cursor"]
+  ["cursor", "cursor"], ["cursor-agent", "cursor"],
+  ["t3code", "t3code"], ["t3-code", "t3code"], ["t3", "t3code"]
 ]);
 
 const low = s => String(s ?? "").toLowerCase();
