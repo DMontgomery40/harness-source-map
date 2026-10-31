@@ -72,27 +72,15 @@ export function buildNet(machines, spans) {
     }
   }
 
-  // Clock: per link, the offset (receiver minus caller) each joined pair bounds to [s1 - c1, s0 - c0]; a piecewise
-  // fit with 10-minute knots, and how many pairs fall outside it.
+  // Clock: per link, the offset (receiver minus caller) each joined pair bounds to [s1 - c1, s0 - c0], fitted per
+  // clock epoch (the caller's and receiver's server processes, by service.instance.id where their traces say) by
+  // boundedFit, which stays inside every bound.
   const clock = {};
   const links = new Map();
   for (const j of joins) { const k = `${j.call.env}>${j.env}`; (links.get(k) || links.set(k, []).get(k)).push(j); }
   for (const [k, list] of links) {
-    const pairs = list.map(j => ({ t: j.call.t0, lo: j.s1 - j.call.t1, hi: j.s0 - j.call.t0 })).filter(p => p.lo <= p.hi).sort((a, b) => a.t - b.t);
-    if (!pairs.length) continue;
-    const KNOT = 10 * 60e3, knots = [];
-    for (let t = pairs[0].t; t <= pairs.at(-1).t + KNOT; t += KNOT) {
-      const bin = pairs.filter(p => p.t >= t && p.t < t + KNOT);
-      if (!bin.length) continue;
-      const lo = Math.max(...bin.map(p => p.lo)), hi = Math.min(...bin.map(p => p.hi));
-      const mids = bin.map(p => (p.lo + p.hi) / 2).sort((a, b) => a - b);
-      knots.push({ t: t + KNOT / 2, offsetMs: lo <= hi ? (lo + hi) / 2 : mids[mids.length >> 1], lo, hi, pairs: bin.length });
-    }
-    const fitAt = t => offsetAt(knots, t);
-    const outside = pairs.filter(p => { const f = fitAt(p.t); return f < p.lo - 0.5 || f > p.hi + 0.5; }).length;
-    const res = pairs.map(p => Math.abs(fitAt(p.t) - (p.lo + p.hi) / 2)).sort((a, b) => a - b);
     const [from, to] = k.split(">");
-    clock[k] = { from, to, pairs: pairs.length, knots, outside, residualMs: res[Math.floor(0.95 * (res.length - 1))] };
+    clock[k] = linkClock(from, to, list.map(j => ({ t: j.call.t0, lo: j.s1 - j.call.t1, hi: j.s0 - j.call.t0, epoch: epochOf(spans, j) })));
   }
 
   // Waits: one row per forwarded 50 s chunk (its PeerMcpClient.call), with its owner thread ids.
@@ -108,12 +96,74 @@ export function buildNet(machines, spans) {
     .map(w => [Date.parse(w.since), Date.parse(w.until)])]));
   const rate = {};
   for (const c of calls) {
-    const k = `${c.env}>${c.to}`, r = rate[k] ||= { calls: 0, inWindow: 0, joined: 0 };
+    const k = `${c.env}>${c.to}`, r = rate[k] ||= { calls: 0, inWindow: 0, inWindowJoined: 0, joined: 0 };
+    const inside = (windows.get(c.to) || []).some(([a, b]) => c.t0 >= a && c.t1 <= b);
     r.calls++;
-    if ((windows.get(c.to) || []).some(([a, b]) => c.t0 >= a && c.t1 <= b)) r.inWindow++;
-    if (c.joins?.length) r.joined++;
+    if (inside) r.inWindow++;
+    if (c.joins?.length) { r.joined++; if (inside) r.inWindowJoined++; }
   }
   return { calls, joins, waits, clock, rate, label: env => label.get(env) || String(env).slice(0, 8) };
+}
+
+// A joined pair's clock epoch: the two server processes, where known.
+export const epochOf = (spans, j) => `${spans.get(j.call.env).instance(j.call.i) ?? "?"}>${spans.get(j.env).instance(j.i) ?? "?"}`;
+
+// A link's clock from its joined pairs ({ t, lo, hi, epoch }): one bounded fit per epoch, the pairs no fit can
+// satisfy listed with why, and the fit's distance from each pair's midpoint (median and 95th percentile).
+export function linkClock(from, to, pairs) {
+  const byEpoch = new Map();
+  for (const p of pairs) (byEpoch.get(p.epoch ?? "") || byEpoch.set(p.epoch ?? "", []).get(p.epoch ?? "")).push(p);
+  const epochs = [], infeasible = [], res = [];
+  for (const [epoch, list] of byEpoch) {
+    const fit = boundedFit(list);
+    infeasible.push(...fit.infeasible.map(p => ({ ...p, epoch })));
+    if (!fit.knots.length) continue;
+    epochs.push({ epoch, since: list.reduce((m, p) => Math.min(m, p.t), Infinity), until: list.reduce((m, p) => Math.max(m, p.t), -Infinity), pairs: list.length, knots: fit.knots });
+    for (const p of list) if (p.lo <= p.hi) res.push(Math.abs(offsetAt(fit.knots, p.t) - (p.lo + p.hi) / 2));
+  }
+  res.sort((a, b) => a - b);
+  epochs.sort((a, b) => a.since - b.since);
+  return { from, to, pairs: pairs.length, epochs, infeasible, residualMs: res.length ? res[Math.floor(0.95 * (res.length - 1))] : null, medianResidualMs: res.length ? res[res.length >> 1] : null };
+}
+// The link's fitted offset at t, in the epoch given (else the epoch covering t, else the nearest).
+export function linkOffsetAt(link, t, epoch = null) {
+  if (!link?.epochs?.length) return 0;
+  const e = link.epochs.find(x => x.epoch === epoch) || link.epochs.find(x => t >= x.since && t <= x.until)
+    || link.epochs.reduce((best, x) => (Math.min(Math.abs(t - x.since), Math.abs(t - x.until)) < Math.min(Math.abs(t - best.since), Math.abs(t - best.until)) ? x : best));
+  return offsetAt(e.knots, t);
+}
+
+// A piecewise-linear offset that stays inside every pair's bound [lo, hi]: the longest straight segment that fits
+// all its pairs (a cone of feasible slopes from the last knot), then a knot at the last pair that fit, and so on.
+// Any set of non-empty bounds at distinct times is satisfied exactly. A pair whose bound is empty (lo > hi), or
+// that contradicts another pair at the same instant, is not fitted and is returned in `infeasible` with why.
+export function boundedFit(pairs) {
+  const infeasible = [];
+  const byT = new Map();
+  for (const p of pairs) {
+    if (!(p.lo <= p.hi)) { infeasible.push({ t: p.t, lo: p.lo, hi: p.hi, why: "empty bound (lo > hi)" }); continue; }
+    const q = byT.get(p.t);
+    if (!q) { byT.set(p.t, { t: p.t, lo: p.lo, hi: p.hi }); continue; }
+    const lo = Math.max(q.lo, p.lo), hi = Math.min(q.hi, p.hi);
+    if (lo <= hi) { q.lo = lo; q.hi = hi; } else infeasible.push({ t: p.t, lo: p.lo, hi: p.hi, why: "contradicts another pair at the same instant" });
+  }
+  const pts = [...byT.values()].sort((a, b) => a.t - b.t);
+  if (!pts.length) return { knots: [], infeasible };
+  const knots = [{ t: pts[0].t, offsetMs: (pts[0].lo + pts[0].hi) / 2 }];
+  let k = knots[0], smin = -Infinity, smax = Infinity, last = null;
+  for (let j = 1; j < pts.length; j++) {
+    const p = pts[j], dt = p.t - k.t;
+    const lo = Math.max(smin, (p.lo - k.offsetMs) / dt), hi = Math.min(smax, (p.hi - k.offsetMs) / dt);
+    if (lo <= hi) { smin = lo; smax = hi; last = p; continue; }
+    // p does not fit the current segment: end it at the last pair that did, and start the next segment there
+    const s = (smin + smax) / 2;
+    k = { t: last.t, offsetMs: k.offsetMs + s * (last.t - k.t) };
+    knots.push(k);
+    smin = -Infinity; smax = Infinity; last = null;
+    j--;
+  }
+  if (last) knots.push({ t: last.t, offsetMs: k.offsetMs + ((smin + smax) / 2) * (last.t - k.t) });
+  return { knots, infeasible };
 }
 
 // The fitted offset at t: linear between knots, flat beyond them.

@@ -3,7 +3,7 @@
 // Host the receiver saw), the receiver's chain (its POST /mcp joined on parentSpanId, and what ran under it), and a
 // clock band: the joined pair's own offset bound, the link's fitted offset, and the correction applied. A receiving
 // span the correction would still start before its caller is clamped and flagged.
-import { offsetAt } from "./net.js";
+import { linkOffsetAt, epochOf } from "./net.js";
 
 const MAX_ROWS = 240, MAX_DEPTH = 7;
 
@@ -18,7 +18,7 @@ export function buildLadder(net, spans, call, label = net.label) {
   const caller = chain.map((i, d) => ({ side: "caller", depth: d, name: cix.name(i), kind: cix.kind(i), t0: cix.t0[i], t1: cix.t1[i] }));
   const join = call.joins?.[0] || null;
   const link = join ? net.clock[`${call.env}>${join.env}`] : null;
-  const fit = link ? offsetAt(link.knots, call.t0) : 0;
+  const fit = link ? linkOffsetAt(link, call.t0, epochOf(spans, join)) : 0;
   const lo = join ? join.s1 - call.t1 : null, hi = join ? join.s0 - call.t0 : null;
   // the pair's own bound is exact for this row: the link's fit is used only inside it
   const shift = join ? Math.min(hi, Math.max(lo, fit)) : 0;
@@ -43,7 +43,7 @@ export function buildLadder(net, spans, call, label = net.label) {
       // the carrier is said only when the caller's link URL and the receiver's Host agree
       carrier: join?.host && join.host.endsWith(`:${call.port}`) ? `SSH mesh :${call.port}; the receiver's Host ${join.host} confirms` : join ? "loopback; carrier unknown" : null,
     },
-    clock: join ? { pair: [lo, hi], fit, shift, pairs: link?.pairs || 0, residualMs: link?.residualMs ?? null, outside: link?.outside ?? 0, inside: fit >= lo - 0.5 && fit <= hi + 0.5 } : null,
+    clock: join ? { pair: [lo, hi], fit, shift, pairs: link?.pairs || 0, epochs: link?.epochs?.length || 0, infeasible: link?.infeasible?.length || 0, residualMs: link?.residualMs ?? null, inside: fit >= lo - 0.5 && fit <= hi + 0.5 } : null,
     unjoined: !join,
   };
 }
@@ -70,7 +70,7 @@ export function renderLadder(el, L, { fmtWhen, onBack }) {
   if (L.receiver.length) kids.push(el("p", { class: "fl-side", text: `Receiver · ${L.to}` }), ...L.receiver.map(bar));
   if (L.clock) {
     const [lo, hi] = L.clock.pair;
-    kids.push(band("fl-clock", `Clock · this pair bounds ${L.to} − ${L.from} to [${lo.toFixed(1)}, ${hi.toFixed(1)}] ms. The link's fit here is ${L.clock.fit.toFixed(1)} ms over ${L.clock.pairs} pairs (95th-percentile residual ${L.clock.residualMs?.toFixed(1) ?? "?"} ms)${L.clock.inside ? "" : ", outside this pair's bound"}; receiver times are shifted by ${L.clock.shift.toFixed(1)} ms.`));
+    kids.push(band("fl-clock", `Clock · this pair bounds ${L.to} − ${L.from} to [${lo.toFixed(1)}, ${hi.toFixed(1)}] ms. The link's fit, inside every pair's bound over ${L.clock.pairs} pairs in ${L.clock.epochs} server epoch${L.clock.epochs === 1 ? "" : "s"}, is ${L.clock.fit.toFixed(1)} ms here${L.clock.infeasible ? `; ${L.clock.infeasible} pair${L.clock.infeasible === 1 ? "" : "s"} no fit can satisfy` : ""}; receiver times are shifted by ${L.clock.shift.toFixed(1)} ms.`));
   }
   return kids;
 }
