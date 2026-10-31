@@ -21,6 +21,8 @@ export const KEYS = [
   { id: "mode", group: "View", keys: ["v"], label: "Switch between the 3D and 2D view", command: "Switch 3D / 2D view", bind: { v: 0 } },
   { id: "harness", group: "View", keys: ["h"], label: "Show or hide the harness layer", command: "Show / hide the harness layer", bind: { h: 0 } },
   { id: "landmarks", group: "View", keys: ["l"], label: "Show or hide landmark labels", command: "Show / hide landmarks", bind: { l: 0 } },
+  { app: true, group: "View", keys: ["m", "⇧M"], label: "In a T3 family: light the next / previous machine (Esc lights all)" },
+  { app: true, group: "View", keys: ["t"], label: "In a T3 family: group the landscape by machine (the fleet ground), or back" },
   { id: "widen", group: "View", keys: ["w"], label: "Expand or compact the reader", command: "Expand / compact the reader", bind: { w: 0 } },
   { id: "play", group: "Playback", keys: ["Space"], label: "Play or pause", command: "Play or pause", detail: "Playback", bind: { " ": 0 } },
   { id: "stepBack", group: "Playback", keys: [","], label: "Previous request", command: "Previous request", detail: "Playback", bind: { ",": -1 } },

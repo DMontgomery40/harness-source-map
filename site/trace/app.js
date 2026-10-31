@@ -20,6 +20,11 @@ import { sourcesLens, SOURCES_LENS } from "./sources/panel.js";
 import { EXAMPLE_ID, loadPublicExample, createLoadOwnership } from "./example-loader.js";
 import { createHelp } from "./help/help.js";
 import { productLabel } from './products.js';
+import { filterRows, agentRows } from "./fleet/controls.js";
+import { fleetKeys, cycle, isFiltered } from "./fleet/filter.js";
+import { breakWords, voidWords } from "./fleet/breaks.js";
+import { renderLadder } from "./fleet/ladder.js";
+import { restoreLandscape } from "./fleet/ground.js";
 
 const params = new URLSearchParams(location.search);
 const $ = s => document.querySelector(s);
@@ -27,7 +32,11 @@ const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const S = {
   trace: null, layout: null, level: 0, agentId: null, agent: null, reqIdx: null, stratum: null, block: null,
-  lens: "context", mode: "3d", custodyFn: null, reading: false, detailedLabels: false, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args'
+  lens: "context", mode: "3d", custodyFn: null, reading: false, detailedLabels: false, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args',
+  // A T3 family: the machine/lab filter, and the family an own session was opened from (its crumb back)
+  fleetFilter: null, familyReturn: null,
+  // B, the fleet ground: lanes grouped by machine. Only ever switched on from the family landscape, never restored.
+  ground: false
 };
 let scene = null;
 let palette = null; // search and keyboard shortcuts (palette.js)
@@ -218,6 +227,13 @@ function getWorker() {
         } else setProgress(data.total ? 0.08 * data.done / data.total : null, `Finding the session: ${fmtInt(data.done)} of ${fmtInt(data.total)} files checked`);
         return;
       }
+      if (data.phase === "family") {
+        // A T3 family: one harness session (or provider log) per thread, read one after another.
+        const f = data.found;
+        setProgress(data.total ? 0.04 + 0.9 * data.done / data.total : 0.04, f ? `Found a T3 family: ${fmtInt(f.threads)} threads on ${fmtInt(f.machines)} machines. Reading their sessions…`
+          : `Reading thread ${fmtInt(data.done)} of ${fmtInt(data.total)}${data.file ? ` · ${clipName(data.file)}` : ""}`);
+        return;
+      }
       const what = { scan: "Finding sessions", parse: "Reading", build: "Building the landscape", done: "Done" }[data.phase] || "Reading";
       const file = data.file ? ` · ${String(data.file).split("/").pop()}` : "";
       setProgress(frac, data.total ? `${what}: ${mb(data.done)} of ${mb(data.total)}${file}` : `${what}…`);
@@ -246,6 +262,11 @@ function getWorker() {
     } else if (data.type === "network-error") {
       if(data.id!==pendingNetwork?.id)return;
       pendingNetwork?.reject(new Error(data.message)); pendingNetwork = null;
+    } else if (data.type === "fleet-net-progress") {
+      pendingFleet.get(data.id)?.onProgress?.(data);
+    } else if (data.type === "fleet-net" || data.type === "fleet-ladder") {
+      const p = pendingFleet.get(data.id);
+      if (p) { pendingFleet.delete(data.id); if (data.error) p.reject(new Error(data.error)); else p.resolve(data); }
     } else if (data.type === "network-body") {
       const p = pendingBody.get(data.id);
       if (p) { pendingBody.delete(data.id); if (data.error) p.reject(new Error(data.error)); else p.resolve({ text: data.text, mode: data.mode, cut: data.cut }); }
@@ -325,6 +346,9 @@ let networkSeq = 0;
 const pendingBody = new Map();
 let bodySeq = 0;
 const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode or Cursor desktop .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
+
+// A T3 Code fleet bundle among the files: what the resolver serves for a T3 thread, or a dropped bundle folder.
+const isBundleFiles = files => files.some(f => /(^|\/)bundle\.json$/.test(f.path)) && files.some(f => /(^|\/)machines\/[^/]+\/threads\.json(\.gz)?$/.test(f.path));
 
 // Captures among picked files: .har files, HAR-shaped .json files, and Cursor's
 // private decoded AgentService sidecar (a session .json remains separate).
@@ -458,12 +482,31 @@ function networkBody(entry, part) {
 async function loadFiles(files, root) {
   if (!files || !files.length) return;
   const sourceWarnings=files.warnings||[];
+  const t3Family=files.t3||null; // the T3 family a resolver-opened session ran in, when collected
   const claim=loads.begin();claim.onCancel(cancelWorkerLoad);
   if(!files.every(file=>file.publicExample)){exampleAbort?.abort();publicExample=null;$("#example-banner").hidden=true;const url=new URL(location.href);url.searchParams.delete("example");history.replaceState(null,"",url);}
+  // A T3 Code fleet bundle is one family, not a pick of sessions: its files go to the worker as they are, with no
+  // capture sniffing (the bundle's span archive is hundreds of MB) and no pasted-id check.
+  if (isBundleFiles(files)) {
+    setProgress(0, "Opening the T3 family…");
+    lastFiles = files; lastCaptures = [];
+    try {
+      const trace = await parseInWorker(files, null, claim.current);
+      if(!claim.current())return;
+      // the bundle's gaps, as the worker redacted them (the resolver's copy of them is not shown)
+      trace.sourceWarnings = trace.familyGaps || [];
+      text = workerText;
+      await start(trace, claim.current);
+    } catch (e) {
+      if(!claim.current() || e.name==="AbortError")return;
+      return showError(e.message || String(e));
+    } finally {claim.finish();}
+    return S.trace;
+  }
   const { hars, logs: rest } = await splitCaptures(files);
   if(!claim.current())return;
   files = rest;
-  const logs = files.filter(f => /\.(jsonl|json)$/i.test(f.path));
+  const logs = files.filter(f => /\.(jsonl|json)(\.gz)?$/i.test(f.path)); // a T3 bundle keeps its logs gzipped
   if (hars.length && !logs.length) return showError(HAR_ALONE);
   if (!logs.length) return showError("No .jsonl session logs or native OpenCode or Cursor desktop .json exports in what was dropped.");
   if (root === undefined) {
@@ -477,6 +520,7 @@ async function loadFiles(files, root) {
     const trace = await parseInWorker(files, root,claim.current);
     if(!claim.current())return;
     trace.sourceWarnings = sourceWarnings;
+    trace.t3Family = t3Family;
     text = workerText;
     await start(trace,claim.current);
     if(!claim.current())return;
@@ -636,6 +680,9 @@ function describePaste(v) {
     what = `Codex/ChatGPT thread started ${fmtWhen(info.ms)}.`;
     where.push(el("p", { text: "Its log (the file name uses local time):" }), pathRow(`~/.codex/sessions/${day}/rollout-${stamp}-${info.id}.jsonl`),
       el("p", { text: "Subagents and guardian reviews are separate files in the date folders from that day on." }));
+  } else if (info.product === "t3code") {
+    what = `T3 Code thread ${info.id.length > 40 ? `${info.id.slice(0, 37)}…` : info.id}${info.environmentId ? ` on environment ${info.environmentId.slice(0, 8)}` : ""}.`;
+    where.push(el("p", { text: "A T3 thread spans the harness sessions of every agent it ran, on every machine. The local resolver opens its family from a bundle collected with node tools/t3/collect.mjs; you can also drop the bundle folder." }));
   } else if (info.product === 'opencode' || info.product === 'cursor') {
     what = `${productLabel(info.product)} session ${info.id}.`;
     where.push(el("p", {text:"The local resolver reads the native session store and matching recording folders. Without it, choose a folder containing the session export and its network capture."}));
@@ -645,10 +692,11 @@ function describePaste(v) {
     where.push(el("p", { text: "Its log, and the same-named folder that holds its subagents:" }), pathRow(file), pathRow(file.replace(/\.jsonl$/, "/")));
   }
   const hint = el("p", { class: "open-hint", text: "" });
-  const btn = el("button", { class: "btn primary open", type: "button", text: "Open this session and its subagents" });
+  const btn = el("button", { class: "btn primary open", type: "button", text: info.product === "t3code" ? "Open this thread's T3 family" : "Open this session and its subagents" });
   btn.addEventListener("click", () => openPasted(info, btn, hint));
   out.append(el("p", { text: what }), el("div", { class: "open-row" }, btn, hint),
     el("details", {}, el("summary", { text: "Where the files are" }), ...where));
+  if (info.product === "t3code") { hint.textContent = "Opens through the local resolver."; return; }
   storedHandle(info.product).then(h => {
     hint.textContent = pickedRoots.has(info.product) || h ? "Opens from the folder you picked before."
       : "Opens through the local resolver, or asks for a session export folder.";
@@ -669,13 +717,16 @@ async function openPasted(info, btn, hint, fresh = false) {
     btn.disabled = true;
     setProgress(0, "Opening the session…");
     try {
-      const files = await openLocalSession(info.id);
+      // a v2 T3 link names its environment: the resolver opens the thread only there
+      const files = await openLocalSession(info.id, { environmentId: info.product === "t3code" ? info.environmentId || null : null });
       if (files) return await loadFiles(files, info.id);
     } catch (error) {
       return showError(error.message);
     } finally { btn.disabled = false; }
     $("#progress").hidden = true;
   }
+  // A T3 family exists only as a collected bundle, served by the local resolver (or dropped as a folder).
+  if (info.product === "t3code") return showError("T3 families open through the local resolver: start it with npm --prefix site run trace:local, then paste the link again. Or drop the collected bundle folder.");
   const mem = !fresh && pickedRoots.get(info.product);
   if (mem) return await holdsPaste(mem, info.id) ? loadFiles(narrowPicked(mem, info), info.id) : missingPaste(mem);
   if (typeof window.showDirectoryPicker === "function") {
@@ -867,7 +918,9 @@ function normalize(trace) {
     for (const b of a.blocks) b.t = ms(b.t);
   }
   trace.agents = trace.agents.filter(a => a.requests.length || a.kind === "root");
-  const all = trace.agents.flatMap(a => a.requests.map(r => r.t));
+  // A T3 family's voids (threads T3 recorded with nothing to draw a ridge from) keep their place on the time axis.
+  for (const v of trace.voids || []) for (const k of ["from", "to", "firstEvidence", "lastEvidence", "claimedEnd"]) if (v[k] != null) v[k] = ms(v[k]);
+  const all = [...trace.agents.flatMap(a => a.requests.map(r => r.t)), ...(trace.voids || []).flatMap(v => [v.from, v.to])];
   trace.started = ms(trace.started) || Math.min(...all);
   trace.ended = ms(trace.ended) || Math.max(...all);
   return trace;
@@ -877,7 +930,7 @@ async function start(trace,current=()=>true) {
   viewHistory?.dispose(); viewHistory = null;
   clearCapture(); // a capture belongs to the session it was attached to
   S.sources = null; S.sourceOpen = new Map(); sourcesSeq++;
-  Object.assign(S, { level: 0, agentId: null, reqIdx: null, stratum: null, block: null, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args' });
+  Object.assign(S, { level: 0, agentId: null, reqIdx: null, stratum: null, block: null, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args', fleetFilter: null, familyReturn: null, ground: false });
   forgetPanels(); shownKey = null;
   const referenceIndex = await loadIndex();
   if(!current())return;
@@ -996,8 +1049,10 @@ async function setMode(mode, current = () => !!S.trace) {
       // 0x0 through scene.js's ResizeObserver, and the 3D view came back blank (found in the mock).
       $("#stage").style.visibility = mode === "harness" ? "hidden" : "";
       if (!scene) {
-        scene = createScene($("#stage"), { trace: S.trace, layout: S.layout, reducedMotion, onHover: showTip, onPick: pick, onMapFocus: followMap, onViewChange: saveViewSoon });
+        scene = createScene($("#stage"), { trace: S.trace, layout: S.ground ? buildLayout(S.trace, { groupBy: "machine" }) : S.layout, reducedMotion, onHover: showTip, onPick: pick, onMapFocus: followMap, onViewChange: saveViewSoon });
         window.__trace.scene = scene;
+        if (S.fleetFilter) scene.setFilter(S.fleetFilter, { dur: 0 });
+        if (S.ground) groundRibs();
         scene.setLabelDetail(S.detailedLabels);
         if (transport.playback) scene.setPlayhead({ P: transport.playback.P, playing: false });
         scene.onUserCamera?.(() => userCamera("hands"));
@@ -1084,7 +1139,7 @@ function setupResizer() {
 // The header's eyebrow names the product and the view: the landscape, or the harness layer over it.
 function setSessionKind() {
   if (!S.trace) return;
-  $("#session-kind").textContent = `${productLabel(S.trace.product)} / ${S.mode === "harness" ? "Harness layer" : "Session landscape"}`;
+  $("#session-kind").textContent = `${S.trace.family ? "T3 Code family" : productLabel(S.trace.product)} / ${S.mode === "harness" ? "Harness layer" : "Session landscape"}`;
 }
 
 function buildHud() {
@@ -1108,12 +1163,140 @@ function buildHud() {
   $("#stats").replaceChildren(...[
     stat(fmtDur(st.wall), "Duration"),
     stat(fmtInt(st.rootRequests), "Main requests"),
-    st.subagents ? stat(fmtInt(st.subagents), `subagents, ${fmtInt(st.subRequests)} requests`) : null,
+    // A T3 family's remote delegates are threads, not subagents.
+    st.subagents ? stat(fmtInt(st.subagents), `${t.family ? `threads & subagents on ${fmtInt(t.fleet?.machines?.length || 1)} machines` : "subagents"}, ${fmtInt(st.subRequests)} requests`) : null,
     st.subFresh ? stat(`${fmtTok(st.rootFresh)} vs ${fmtTok(st.subFresh)}`, "Fresh · main / agents") : stat(fmtTok(st.rootFresh), "fresh tokens"),
     stat(`${Math.round(st.cacheShare * 100)}%`, "Context from cache"),
     st.sideFresh ? stat(fmtTok(st.sideFresh), "Side calls & reviews") : null].filter(Boolean));
   symbolLegend();
   buildLenses();
+  buildFleetFilter();
+  // A harness session that ran inside a collected T3 family: one quiet way to its family, never opened unasked.
+  const fam = $("#t3-family");
+  fam.hidden = !t.t3Family || !!t.family;
+  fam.onclick = () => openT3Family(t.t3Family.rootThreadId);
+}
+
+// ---------- T3 family: the network from its span archives (worker, fleet/net.js) ----------
+const pendingFleet = new Map();
+let fleetSeq = 0;
+function fleetRequest(message, onProgress) {
+  const id = ++fleetSeq;
+  return new Promise((resolve, reject) => {
+    pendingFleet.set(id, { resolve, reject, onProgress });
+    getWorker().postMessage({ ...message, id });
+  });
+}
+// A family ridge's network fold: its peer calls, held waits and calls out, grouped by link; a row opens its span
+// ladder in the reader. The spans are read the first time a fold opens.
+function fleetNetSection(agent) {
+  if (!S.trace?.family || !agent.thread || text !== workerText) return null;
+  const body = el("div", { class: "fleet-net-body" }, el("p", { class: "m", text: "Opens the family's span archives: peer calls, waits and routes between the machines." }));
+  const box = el("details", { class: "fleet-net" }, el("summary", { text: "Network" }), body);
+  let asked = false;
+  box.addEventListener("toggle", async () => {
+    if (!box.open || asked) return;
+    asked = true;
+    body.replaceChildren(el("p", { class: "m", text: "Reading the family's spans…" }));
+    try {
+      const r = await fleetRequest({ type: "fleet-net", thread: agent.thread }, p => body.replaceChildren(el("p", { class: "m", text: `Reading the family's spans: ${fmtInt(p.lines)} lines (${p.machine})…` })));
+      const note = r.rejected ? el("p", { class: "m", text: `${fmtInt(r.rejected)} span line${r.rejected === 1 ? "" : "s"} of the family's archives could not be read; calls in them are missing here.` }) : null;
+      if (!r.rows.length) return body.replaceChildren(el("p", { class: "m", text: "No peer calls of this thread are in the collected spans." }), ...(note ? [note] : []));
+      body.replaceChildren(...(note ? [note] : []), el("ul", { class: "items" }, r.rows.map(g => el("li", {}, el("button", { type: "button", class: "item", onclick: () => openLadder(g.call),
+        title: "Open this call's span ladder" },
+        el("span", { class: "tool", text: `${g.from} → ${g.to} · ${g.kind}` }),
+        el("span", { class: "meta", text: `${fmtInt(g.count)}${g.joined < g.count ? ` (${fmtInt(g.joined)} joined)` : ""} · :${g.port} · ${fmtClock(g.t0)}–${fmtClock(g.t1)}` }))))));
+    } catch (e) { asked = false; body.replaceChildren(el("p", { class: "m", text: e.message || String(e) })); }
+  });
+  return box;
+}
+async function openLadder(call) {
+  const panel = $("#panel");
+  panel.replaceChildren(el("p", { class: "m", text: "Building the span ladder…" }));
+  try {
+    const { ladder } = await fleetRequest({ type: "fleet-ladder", call });
+    panel.replaceChildren(el("div", { class: "fleet-ladder" }, ...renderLadder(el, ladder, { fmtWhen, onBack: () => { shownKey = null; render(false); } })));
+    panel.scrollTop = 0;
+  } catch (e) { panel.replaceChildren(el("p", { class: "m", text: e.message || String(e) })); }
+}
+
+// ---------- T3 family: the machine and lab filter, and each thread's own session ----------
+function buildFleetFilter() {
+  $("#fleet-filter")?.remove();
+  if (!S.trace?.family) return;
+  const nav = filterRows(S.trace, S.fleetFilter, {
+    set: (f, opts) => setFleetFilter(f, opts),
+    preview: f => scene?.setFilter(f ?? S.fleetFilter, { dur: 0 }),
+    ground: S.mode === "3d" ? { on: S.ground, toggle: () => setGround(!S.ground) } : null,
+  });
+  if (nav) $("#lenses").after(nav);
+}
+// The filter is a view of the landscape, not a place: it is kept off history and saved views.
+function setFleetFilter(f, { frame = false } = {}) {
+  S.fleetFilter = isFiltered(f) ? { machine: f.machine || null, lab: f.lab || null } : null;
+  buildFleetFilter();
+  scene?.setFilter(S.fleetFilter, { frame });
+  if (S.mode === "2d") renderFlat();
+}
+// B, the fleet ground: the same landscape rebuilt with its lanes grouped into one terrace per machine; the waits
+// between machines arrive as ribs once the family's spans are read.
+async function setGround(on) {
+  if (!S.trace?.family || S.mode !== "3d" || S.level !== 0 || on === S.ground) return;
+  S.ground = on;
+  scene?.dispose(); scene = null;
+  await setMode("3d");
+  buildFleetFilter();
+  if (transport?.playback) scene?.setPlayhead({ P: transport.playback.P, playing: false });
+  render(false);
+}
+async function groundRibs() {
+  const want = scene;
+  try {
+    const r = await fleetRequest({ type: "fleet-net", waits: true });
+    if (scene === want && S.ground) scene.setRibs(r.waits);
+  } catch (e) { netStatus(`The fleet ground has no waits: ${e.message || e}`, "error"); }
+}
+// The files of one family thread's own harness session, inside the bundle the family came from.
+function ownSessionFiles(agent) {
+  const th = S.trace?.fleet?.threads?.find(t => t.id === agent.thread);
+  if (!th?.native || !lastFiles) return null;
+  const dir = `machines/${th.environmentId}/agent-sessions/`, stem = th.native.path.replace(/\.jsonl$/, "");
+  const files = lastFiles.filter(f => {
+    const rel = f.path.slice(f.path.indexOf("machines/"));
+    if (!rel.startsWith(dir)) return false;
+    const p = rel.slice(dir.length).replace(/\.gz$/, "");
+    return th.native.product === "codex" ? /\/rollout-[^/]+\.jsonl$/.test(p) : p === th.native.path || p.startsWith(`${stem}/`);
+  });
+  return files.length ? { files, nativeId: th.native.nativeId } : null;
+}
+// "Open its own session": that thread's own landscape, with a crumb back to the family.
+async function openOwnSession(agent) {
+  const own = ownSessionFiles(agent);
+  if (!own) return;
+  const back = { files: lastFiles, title: S.trace.title, machine: agent.machine, name: agent.name };
+  backToLoader();
+  const trace = await loadFiles(own.files, own.nativeId);
+  if (trace) { S.familyReturn = back; renderCrumbs(); }
+}
+async function backToFamily(machine = null) {
+  const back = S.familyReturn;
+  if (!back) return;
+  backToLoader();
+  const trace = await loadFiles(back.files, null);
+  if (trace && machine) setFleetFilter({ machine });
+}
+
+// Opens a T3 family through the local resolver, from a session that ran in it.
+async function openT3Family(rootThreadId) {
+  const btn = $("#t3-family");
+  btn.disabled = true;
+  try {
+    const files = await openLocalSession(rootThreadId);
+    if (!files) return netStatus("The local resolver didn't answer: start it with npm --prefix site run trace:local.", "error");
+    backToLoader();
+    await loadFiles(files, null);
+  } catch (e) { netStatus(e.message || String(e), "error"); }
+  finally { btn.disabled = false; }
 }
 // The four questions, "What went over the wire" while a network capture is attached, and "Everything on this
 // machine" (the session's local sources). Keys 1–6 follow this order.
@@ -1280,6 +1463,9 @@ function saveViewSoon() {
 }
 function restoreView(view) {
   clearTimeout(viewTimer);
+  // a saved view never brings back the fleet ground, and Back or Forward leave it (rebuilt ungrouped)
+  const ground = restoreLandscape(S, view);
+  view = ground.view;
   mapReturn = view.mapReturn || null;
   const pb = transport?.playback;
   if (pb && Number.isFinite(view.P) && view.P !== pb.P) transport.seek(view.P);
@@ -1294,7 +1480,8 @@ function restoreView(view) {
     if (view.camera) scene?.restoreView(view.camera);
     if (!view.panel) $('#panel').scrollTop = view.scroll || 0;
   };
-  if (modeChanged) setMode(S.mode).then(finish);
+  if (ground.rebuild) { scene?.dispose(); scene = null; setMode(S.mode).then(() => { buildFleetFilter(); finish(); }); }
+  else if (modeChanged) setMode(S.mode).then(finish);
   else finish();
 }
 
@@ -1341,6 +1528,10 @@ function pick(p) {
   set({ mapPinned, level: 1, agentId: p.agentId, reqIdx: p.reqIdx ?? 0, stratum: null, block: null }, mapPinned ? focusAt(p.agentId, p.reqIdx ?? 0) : undefined);
 }
 const A = {
+  // a T3 family ridge's panel rows (fleet/controls.js), and the way into its own session
+  fleetRows: agent => agentRows(S.trace, agent, A),
+  ownSession: agent => (ownSessionFiles(agent) ? () => openOwnSession(agent) : null),
+  fleetNetwork: agent => fleetNetSection(agent),
   focusAction: (id, i) => set({ level: 2, agentId: id, reqIdx: i, stratum: null, block: null,
     inspector: 'action', callIndex: null, mapPinned: S.mode === '3d' && (S.level === 0 || S.mapPinned) }, focusAt(id, i)),
   showCallPart: part => { S.callPart = part; saveViewSoon(); },
@@ -1447,6 +1638,14 @@ function onKey(e) {
   if (palette?.handleKey(e)) return;
   if (e.target.closest && e.target.closest("input, textarea, select, [role=separator], [contenteditable=true]")) return;
   if (e.metaKey || e.ctrlKey || e.altKey) return;
+  // In a T3 family at the landscape, Esc first clears the machine filter; m / ⇧M step through the machines.
+  if (e.key === "Escape" && S.level === 0 && isFiltered(S.fleetFilter)) { e.preventDefault(); setFleetFilter(null); return; }
+  if (e.key === "t" && S.trace.family && S.level === 0 && S.mode === "3d") { e.preventDefault(); setGround(!S.ground); return; }
+  if ((e.key === "m" || e.key === "M") && S.trace.family && S.level === 0) {
+    e.preventDefault();
+    setFleetFilter({ ...(S.fleetFilter || {}), machine: cycle(fleetKeys(S.trace).machines, S.fleetFilter?.machine || null, e.key === "M" ? -1 : 1) });
+    return;
+  }
   if (e.key === "Escape") { e.preventDefault(); up(); return; }
   if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && S.level >= 1 && S.agent) {
     e.preventDefault();
@@ -1553,7 +1752,9 @@ function showReader() {
 
 function renderCrumbs() {
   const c = $("#crumbs");
-  const parts = [["Session", overview]];
+  // An own session opened from a T3 family: the family, its machine, then this session.
+  const fam = S.familyReturn;
+  const parts = fam ? [["T3 family", () => backToFamily()], [fam.machine, () => backToFamily(fam.machine)], [clipName(fam.name || "Session"), overview]] : [["Session", overview]];
   if (S.level >= 1 && S.agent) parts.push([S.agent.kind === "root" ? "Main thread" : S.agent.name || S.agent.id, () => set({ level: 1, stratum: null, block: null })]);
   if (S.level >= 2 && S.reqIdx != null) parts.push([`Request ${S.reqIdx + 1}`, () => set({ level: 2, stratum: null, block: null })]);
   if (S.level >= 3 && S.stratum) parts.push([STRATA[STRATUM_INDEX[S.stratum]].name, () => set({ block: null })]);
@@ -1707,7 +1908,7 @@ function renderFlat() {
   // The chart takes what the caption leaves of the free area.
   const h = Math.max(140, Math.min(640, innerHeight - ins.top - ins.bottom - caption.offsetHeight - 14));
   if (S.level === 0) {
-    renderOverview(svgHost, S.trace, S.layout, { width: w, height: h, full: true, lens: mapLens(),
+    renderOverview(svgHost, S.trace, S.layout, { width: w, height: h, full: true, lens: mapLens(), filter: S.fleetFilter,
       onPick: p => (p.reqIdx != null ? A.focusAgent(p.agentId, p.reqIdx) : A.focusAgent(p.agentId)) });
   } else if (S.agent) {
     renderAgentColumns(svgHost, S.agent, { width: w, height: h, reqIdx: S.reqIdx, onPick: i => A.focusRequest(S.agent.id, i) });
@@ -1717,6 +1918,22 @@ function renderFlat() {
 function showTip(hit) {
   const tip = $("#tip");
   if (!hit) { tip.hidden = true; return; }
+  // A T3 family's void or lineage break: what T3 claims and what the evidence shows, only on hover.
+  if (hit.kind === "void" || hit.kind === "break") {
+    const v = hit.void, b = hit.break, a = hit.agentId ? agentById(hit.agentId) : null;
+    const name = v?.title || a?.name || "thread";
+    const where = v ? [v.machine, v.provider, v.model].filter(Boolean).join(" · ") : a ? [a.machine, a.provider, a.model].filter(Boolean).join(" · ") : "";
+    const at = t => (t ? fmtWhen(t) : "unknown");
+    const kids = [el("b", { text: name }), where ? el("div", { class: "m fleet-where", text: where }) : null];
+    if (b) kids.push(el("div", { text: breakWords(b) }), ...b.evidence.map(e => el("div", { class: "m", text: `${e.what}${e.value ? `: ${e.value}` : ""}${e.at ? ` · ${at(e.at)}` : ""}` })));
+    else if (v) kids.push(el("div", { text: voidWords(v) }),
+      el("div", { class: "m", text: `T3 says ${v.status || "nothing"} · ${at(v.from)} to ${at(v.to)}` }));
+    tip.replaceChildren(...kids.filter(Boolean));
+    tip.hidden = false;
+    const x = Math.min(innerWidth - 330, hit.x + 14), y = Math.min(innerHeight - 140, hit.y + 14);
+    tip.style.left = `${x}px`; tip.style.top = `${y}px`;
+    return;
+  }
   const a = agentById(hit.agentId);
   const r = a?.requests[hit.reqIdx];
   if (!r) { tip.hidden = true; return; }
@@ -1738,6 +1955,8 @@ function showTip(hit) {
     kids.push(el("div", { class: "m", text: top ? `largest layer: ${top.name} ≈ ${fmtTok(top.tokens)}` : "split unknown: the log has no blocks for this request" }));
     if (r.action && r.action.kind === "tool") kids.push(el("div", { text: `${r.action.tool}${r.action.target ? `: ${r.action.target.slice(0, 80)}` : ""}` }));
   }
+  // In a T3 family every ridge says where it ran: the machine, the product and the model.
+  if (a.machine) kids.splice(1, 0, el("div", { class: "m fleet-where", text: [a.machine, a.provider, a.model].filter(Boolean).join(" · ") }));
   tip.replaceChildren(...kids.filter(Boolean));
   tip.hidden = false;
   const x = Math.min(innerWidth - 330, hit.x + 14), y = Math.min(innerHeight - 110, hit.y + 14);

@@ -93,6 +93,7 @@ button { font: inherit; color: inherit; }
 .error .error-actions .btn { color: var(--ink); }
 .find { margin: 22px 0 0; }
 .find-label { display: block; font-weight: 650; margin: 0 0 6px; }
+.find-note { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-3); }
 .paste {
   width: 100%; font: 14px var(--mono); color: var(--ink); background: #0b0f15;
   border: 1px solid var(--line-2); border-radius: 8px; padding: 10px 12px;
@@ -465,6 +466,8 @@ button:disabled { opacity: .4; cursor: default; }
 }
 .side-heading { display: flex; align-items: center; justify-content: space-between; min-height: 45px; padding: 12px 18px 8px; }
 .text-control { border: 0; background: none; color: var(--link); font-size: 12px; cursor: pointer; padding: 2px 0; }
+.t3-family { display: block; margin-top: 2px; color: var(--ink-3); }
+.t3-family:hover { color: var(--link); }
 .text-control:hover { color: var(--accent); }
 .lenses { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px; border: 0; padding: 5px; margin: 0 12px 8px; border-radius: 12px; background: #07111c; }
 .lenses button { position: relative; flex-direction: row; justify-content: flex-start; gap: 8px; padding: 7px 9px; font-size: 12px; min-height: 40px; border-radius: 8px; color: var(--ink-3); }
@@ -739,3 +742,26 @@ button:disabled { opacity: .4; cursor: default; }
 .linkbtn.wire-jump { display: block; text-align: left; margin: 2px 0 6px; overflow-wrap: anywhere; }
 /* A block's reader opens inside the row that opened it (panels.js blockGroups). */
 .groups .items.blocks .reader { margin: 6px 0 10px; }
+
+/* A T3 family's machine and lab filter: plain toggles under the lens buttons (fleet/controls.js) */
+.fleet-filter { display: flex; flex-direction: column; gap: 6px; margin: 0 12px 8px; }
+.fleet-filter .ff-row { display: flex; flex-wrap: wrap; gap: 4px; }
+.fleet-filter button { font: inherit; font-size: 12px; line-height: 1; padding: 6px 9px; border-radius: 7px; border: 1px solid #a0b4c829; background: transparent; color: var(--ink-3); cursor: pointer; }
+.fleet-filter button:hover { color: var(--ink); border-color: #c8d7e659; }
+.fleet-filter button[aria-pressed=true] { color: var(--accent); background: #1a3533; border-color: #395d55; }
+.tip .fleet-where { color: #9fe6ff; }
+.fleet-kv { margin-top: 4px; }
+
+/* A family ridge's network fold and the span ladder in the reader (fleet/ladder.js) */
+.fleet-net { margin-top: 10px; }
+.fleet-net summary { cursor: pointer; color: var(--ink-3); font-size: 12.5px; }
+.fleet-ladder .fl-side { margin: 12px 0 4px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.fleet-ladder .fl-row { display: grid; grid-template-columns: minmax(0, 44%) 1fr 64px; gap: 8px; align-items: center; font-size: 12px; min-height: 18px; }
+.fleet-ladder .fl-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2, #d5dce5); }
+.fleet-ladder .fl-track { position: relative; height: 8px; background: #ffffff0d; border-radius: 2px; }
+.fleet-ladder .fl-track i { position: absolute; top: 0; bottom: 0; border-radius: 2px; background: #8fd8c4; }
+.fleet-ladder .fl-receiver .fl-track i { background: #9fe6ff; }
+.fleet-ladder .fl-clamped .fl-track i { background: #ff9a8a; }
+.fleet-ladder .fl-ms { text-align: right; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.fleet-ladder .fl-band { margin: 8px 0; padding: 6px 8px; border-left: 2px solid #395d55; font-size: 12px; color: var(--ink-3); }
+.fleet-ladder .fl-clock { border-color: #5b6b80; }

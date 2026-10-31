@@ -3,13 +3,14 @@
 const BASE = 'http://127.0.0.1:8766';
 const headers = {'X-Trace-Request':'1'};
 
-export async function openLocalSession(id, {fetcher=fetch,base=BASE}={}) {
+// environmentId: a T3 v2 thread link's environment; the resolver then opens the thread only on that machine.
+export async function openLocalSession(id, {fetcher=fetch,base=BASE,environmentId=null}={}) {
   let health;
   try {health=await fetcher(base+'/health',{credentials:'omit',redirect:'error',signal:AbortSignal.timeout(800)});}
   catch {return null;}
   if(!health.ok)return null;
   try {if((await health.json()).service!=='trace-local')return null;}catch{return null;}
-  const result=await fetcher(base+'/v1/session',{method:'POST',credentials:'omit',redirect:'error',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({id,captures:true})});
+  const result=await fetcher(base+'/v1/session',{method:'POST',credentials:'omit',redirect:'error',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({id,captures:true,...(environmentId?{environmentId}:{})})});
   if(!result.ok){const error=await result.json().catch(()=>({}));throw new Error(error.error||'Could not open the local session');}
   const manifest=await result.json();
   const files = manifest.files.map(file=>{
@@ -17,7 +18,9 @@ export async function openLocalSession(id, {fetcher=fetch,base=BASE}={}) {
     if(url.origin!==new URL(base).origin || !url.pathname.startsWith('/v1/file/'))throw new Error('Invalid local session file');
     return {path:file.path,kind:file.kind,local:{path:file.path,size:file.size,url:url.href}};
   });
-  return Object.assign(files,{warnings:Array.isArray(manifest.warnings)?manifest.warnings:[]});
+  // product 't3code': the files are a T3 family's bundle. t3: the T3 family a harness session ran in, if collected.
+  const t3=manifest.t3&&typeof manifest.t3.rootThreadId==='string'?{rootThreadId:manifest.t3.rootThreadId,threadId:String(manifest.t3.threadId||''),environmentId:String(manifest.t3.environmentId||''),machine:String(manifest.t3.machine||'')}:null;
+  return Object.assign(files,{warnings:Array.isArray(manifest.warnings)?manifest.warnings:[],product:manifest.product||null,t3});
 }
 
 // Whether the resolver answers this page: { ok: true, version } | { ok: false, blocked, prompt }. `blocked`

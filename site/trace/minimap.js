@@ -2,17 +2,21 @@
 // 2D SVG overview used when motion is reduced or WebGL is unavailable.
 // The 3D corner navigator shares the actual scene meshes (map-overview.js).
 import { STRATA, STATUS, MODEL_COLORS, modelFamily, freshTokens, fmtTok, fmtClock, fmtDur, fmtTick, spansDays, blockTokens, unloggedShrinks, el } from "./panels.js";
+import { fleetKeys, matcher, isFiltered } from "./fleet/filter.js";
 
 const GAP_MS = 20 * 60e3;   // idle stretches longer than this are compressed
 const BURST_MS = 10 * 60e3; // a subagent pause longer than this starts a new burst
 
 // ---------- layout ----------
-export function buildLayout(trace) {
+// groupBy "machine" (a T3 family's fleet ground, fleet/ground.js): the lanes are grouped into one band per machine,
+// the root's machine first, one empty lane between machines; L.terraces lists each band. x is the same either way.
+export function buildLayout(trace, { groupBy = null } = {}) {
   const times = [];
   for (const a of trace.agents) {
     for (const r of a.requests) times.push(r.t);
     for (const b of a.bursts || []) times.push(b.a, b.b);
   }
+  for (const v of trace.voids || []) times.push(v.from, v.to);
   // The session's own start and end anchor the axis, so a long idle head or tail (a thread
   // reopened days later with no requests) shows as a compressed, labelled gap.
   for (const t of [trace.started, trace.ended]) if (Number.isFinite(t)) times.push(t);
@@ -62,19 +66,40 @@ export function buildLayout(trace) {
     if (a.kind === "subagent") segs.push(...segments);
   }
 
-  // Pack subagent bursts into lanes; an agent keeps its lane when it can.
-  segs.sort((p, q) => p.x0 - q.x0);
+  // Pack subagent bursts into lanes; an agent keeps its lane when it can. A T3 family's voids (threads with
+  // nothing to draw a ridge from, fleet/family.js) take lanes in the same field, so they sit among the ridges.
+  const voids = (trace.voids || []).map(v => ({ void: v, x0: X(v.from), x1: X(v.to), lane: -1 }));
+  const packed = voids.length ? [...segs, ...voids] : segs;
+  packed.sort((p, q) => p.x0 - q.x0);
   const laneEnd = [];
   const pad = 0.006;
   const lastLane = new Map();
-  for (const s of segs) {
-    const want = lastLane.get(s.agent.id);
-    let lane = want != null && laneEnd[want] + pad < s.x0 ? want : laneEnd.findIndex(e => e + pad < s.x0);
-    if (lane < 0) { lane = laneEnd.length; laneEnd.push(0); }
-    laneEnd[lane] = Math.max(s.x1, s.x0 + 0.002);
-    s.lane = lane;
-    lastLane.set(s.agent.id, lane);
-  }
+  const pack = (list, base) => {
+    const ends = [];
+    for (const s of list) {
+      const key = s.void ? `void:${s.void.thread}` : s.agent.id;
+      const want = lastLane.get(key);
+      let lane = want != null && ends[want] + pad < s.x0 ? want : ends.findIndex(e => e + pad < s.x0);
+      if (lane < 0) { lane = ends.length; ends.push(0); }
+      ends[lane] = Math.max(s.x1, s.x0 + 0.002);
+      s.lane = base + lane;
+      lastLane.set(key, lane);
+    }
+    return ends;
+  };
+  const terraces = [];
+  if (groupBy === "machine" && trace.family) {
+    let base = 0;
+    const machineOf = s => (s.void ? s.void.machine : s.agent.machine);
+    for (const machine of fleetKeys(trace).machines) {
+      const n = Math.max(1, pack(packed.filter(s => machineOf(s) === machine), base).length);
+      terraces.push({ machine, lane0: base, lane1: base + n - 1 });
+      for (let k = 0; k < n; k++) laneEnd.push(1);
+      base += n + 1;
+      laneEnd.push(1); // the valley between two machines
+    }
+    if (laneEnd.length) laneEnd.pop();
+  } else laneEnd.push(...pack(packed, 0));
 
   // Spawn and return links between an agent's bursts and its parent's requests.
   const links = [];
@@ -130,7 +155,7 @@ export function buildLayout(trace) {
   const hours = [];
   const start = new Date(t0); start.setMinutes(step < 3600e3 ? Math.floor(start.getMinutes() / (step / 60e3)) * (step / 60e3) : 0, 0, 0);
   for (let t = start.getTime() + step; t < t1; t += step) if (!gaps.some(g => t > g.a && t < g.b)) hours.push(t);
-  return { t0, t1, X, gaps, info, root, lanes: laneEnd.length, links, yMax, hours, byId };
+  return { t0, t1, X, gaps, info, root, lanes: laneEnd.length, links, yMax, hours, byId, voids, terraces };
 }
 
 // ---------- SVG overview ----------
@@ -161,6 +186,9 @@ export function renderOverview(host, trace, L, opts) {
   const py = v => top + areaH - v / yMax * areaH;
   const root = L.root;
   const rinfo = L.info.get(root.id);
+  // A T3 family's machine or lab filter (opts.filter): what it leaves out recedes, as in the 3D landscape.
+  const filtered = isFiltered(opts.filter), lit = matcher(opts.filter), OUT = 0.12;
+  const rootDim = filtered && !lit(root) ? 0.2 : 1;
   const g = S("g");
   svg.append(g);
 
@@ -183,7 +211,7 @@ export function renderOverview(host, trace, L, opts) {
         let d = "";
         idx.forEach((i, j) => { d += `${j ? "L" : "M"}${px(rinfo.xs[i]).toFixed(1)},${py(topv[j]).toFixed(1)}`; });
         for (let j = idx.length - 1; j >= 0; j--) d += `L${px(rinfo.xs[idx[j]]).toFixed(1)},${py(base[j]).toFixed(1)}`;
-        g.append(S("path", { d: d + "Z", fill: s.color, "fill-opacity": lensDim(s.key) }));
+        g.append(S("path", { d: d + "Z", fill: s.color, "fill-opacity": lensDim(s.key) * rootDim, ...(rootDim < 1 ? { class: "fleet-out" } : {}) }));
       }
       base = topv;
     }
@@ -223,14 +251,14 @@ export function renderOverview(host, trace, L, opts) {
   const askY0 = top - (full ? 26 : 12), askY1 = top - (full ? 12 : 5);
   for (const a of root.asks) {
     const x = px(L.X(a.t));
-    g.append(S("line", { x1: x, x2: x, y1: askY0, y2: askY1, stroke: STRATA[2].color, "stroke-width": 2 }));
+    g.append(S("line", { x1: x, x2: x, y1: askY0, y2: askY1, stroke: STRATA[2].color, "stroke-width": 2, "stroke-opacity": rootDim }));
   }
   // outward rail
   const railY = top + areaH + railH / 2 + (full ? 4 : 2);
   const acts = [];
   for (const a of [root]) a.requests.forEach((r, i) => { if (r.action?.class === "outward" || (opts.lens === "egress" && r.action?.class === "write")) acts.push([a, r, i]); });
   for (const [a, r, i] of acts) {
-    g.append(S("circle", { cx: px(L.info.get(a.id).xs[i]), cy: railY, r: full ? 4 : 2.2, fill: STATUS[r.action.class].color }));
+    g.append(S("circle", { cx: px(L.info.get(a.id).xs[i]), cy: railY, r: full ? 4 : 2.2, fill: STATUS[r.action.class].color, "fill-opacity": rootDim }));
   }
   // subagent lanes
   const lane0 = railY + railH / 2 + (full ? 6 : 2);
@@ -242,18 +270,27 @@ export function renderOverview(host, trace, L, opts) {
       let fresh = 0;
       for (let i = s.i0; i <= s.i1; i++) fresh += freshTokens(a.requests[i]);
       const x0 = px(s.x0), x1 = Math.max(px(s.x1), x0 + 3);
+      const on = !filtered || lit(a);
       const r = S("rect", { x: x0, y: lane0 + s.lane * laneH, width: x1 - x0, height: laneBar, rx: full ? 2 : 1, fill: col,
-        "fill-opacity": (0.5 + 0.5 * Math.min(1, Math.log10(Math.max(fresh, 1)) / 7)).toFixed(2), "data-agent": id, class: "lane" });
+        "fill-opacity": on ? (0.5 + 0.5 * Math.min(1, Math.log10(Math.max(fresh, 1)) / 7)).toFixed(2) : OUT, "data-agent": id, class: on ? "lane" : "lane fleet-out" });
       r.append(S("title", {}, `${a.name}: ${fmtTok(fresh)} fresh tokens`));
       g.append(r);
-      if (full && x1 - x0 > 7 * (a.name || "").length + 8 && laneH >= 10) g.append(S("text", { x: x0 + 4, y: lane0 + s.lane * laneH + laneH - 4, class: "bar" }, a.name));
+      if (full && x1 - x0 > 7 * (a.name || "").length + 8 && laneH >= 10) g.append(S("text", { x: x0 + 4, y: lane0 + s.lane * laneH + laneH - 4, class: "bar", ...(on ? {} : { opacity: OUT }) }, a.name));
     }
+  }
+  // a T3 family's voids: threads with no ridge, outlined on their lane (dark when nothing of them was collected)
+  for (const v of L.voids || []) {
+    const x0 = px(v.x0), x1 = Math.max(px(v.x1), x0 + 3), on = !filtered || lit(v.void);
+    const r = S("rect", { x: x0, y: lane0 + v.lane * laneH, width: x1 - x0, height: laneBar, rx: full ? 2 : 1, fill: "none",
+      stroke: v.void.lastEvidence == null ? "#5c6676" : "#dfe8f2", "stroke-opacity": on ? 0.85 : OUT, "data-thread": v.void.thread, class: on ? "void" : "void fleet-out" });
+    r.append(S("title", {}, v.void.title || "thread"));
+    g.append(r);
   }
   // labels and hour ticks (full view only)
   if (full) {
     g.append(S("text", { x: left - 8, y: askY1 - 2, "text-anchor": "end", class: "lab" }, "your asks"));
     g.append(S("text", { x: left - 8, y: railY + 4, "text-anchor": "end", class: "lab" }, "left the machine"));
-    if (L.lanes) g.append(S("text", { x: left - 8, y: lane0 + 9, "text-anchor": "end", class: "lab" }, "subagents"));
+    if (L.lanes) g.append(S("text", { x: left - 8, y: lane0 + 9, "text-anchor": "end", class: "lab" }, trace.family ? "threads & subagents" : "subagents"));
     const long = spansDays(trace);
     // Long idle stretches get their duration on the axis row; hour ticks keep clear of them.
     const taken = [];

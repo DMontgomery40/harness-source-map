@@ -144,6 +144,7 @@ export function createHelp(ctx) {
         p("Trace reads Claude Code, Codex/ChatGPT and Cursor session logs and native OpenCode exports from your computer. Nothing is uploaded; the files are read in this tab."),
         steps([
           ["Paste an id or a link", "A Claude Code session id (from the log's file name, or /status), or a Codex/ChatGPT link or thread id. Trace works out which folder the log is in."],
+          ["Or a T3 Code thread link", "A T3 Code thread spans many harness sessions, often on several machines. Paste its t3-thread:// link and the local resolver opens the whole family (collected with node tools/t3/collect.mjs)."],
           ["Pick the folder once", "The first time, choose ~/.claude/projects (Claude Code) or ~/.codex/sessions (Codex/ChatGPT). Chrome remembers it, so the next paste opens straight away."],
           ["Or drop the files", "A native OpenCode or Cursor desktop .json export, a Cursor Agent or Codex/ChatGPT .jsonl, or a Claude Code session's .jsonl with its same-named folder so its subagents come too. Drop a recorded Cursor or OpenCode folder to open its session and HAR together."],
         ]),
