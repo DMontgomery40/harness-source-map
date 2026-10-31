@@ -7,15 +7,18 @@ import {randomBytes} from 'node:crypto';
 import {dirname, join, relative, sep} from 'node:path';
 
 export const FORMAT = 't3-fleet-bundle';
-export const VERSION = 1;
-export const COLLECTOR_VERSION = '1';
+export const VERSION = 2;
+export const COLLECTOR_VERSION = '2';
+// Bundle versions this code reads: v1 bundles are read only as a source of spans (--spans-from) and by the resolver.
+export const READABLE_VERSIONS = [1, 2];
 export const ALIAS_KEY_FILE = '.alias-key';
 
 export function slug(id) {return String(id).replace(/[^A-Za-z0-9-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);}
 export const yyyymmdd = iso => (iso || new Date().toISOString()).slice(0, 10).replace(/-/g, '');
 
-// The per-bundle HMAC key for email and account-id aliases. Created once; a VM part can reuse it with
-// --alias-key-file so its aliases join with this bundle's.
+// The per-bundle HMAC key for every alias (emails, account ids, client hashes, LAN addresses, paths). Created once
+// per bundle and never shared between bundles; a VM part of the same bundle reuses it with --alias-key-file so its
+// aliases join with this bundle's.
 export function aliasKey(dir, {keyFile} = {}) {
  const own = join(dir, ALIAS_KEY_FILE);
  const parse = text => {const hex = text.trim(); if (!/^[0-9a-f]{64}$/.test(hex)) throw new Error('Alias key file must hold 64 hex characters'); return Buffer.from(hex, 'hex');};
@@ -33,12 +36,20 @@ export function aliasKey(dir, {keyFile} = {}) {
 
 export function ensureDir(dir) {mkdirSync(dir, {recursive: true, mode: 0o700});}
 
-export function readBundle(dir) {
+export function readBundle(dir, {anyVersion = false} = {}) {
  const file = join(dir, 'bundle.json');
  if (!existsSync(file)) return null;
  const b = JSON.parse(readFileSync(file, 'utf8'));
- if (b.format !== FORMAT || b.version !== VERSION) throw new Error(`${file} is not a ${FORMAT} v${VERSION} bundle`);
+ if (b.format !== FORMAT || !(anyVersion ? READABLE_VERSIONS.includes(b.version) : b.version === VERSION)) throw new Error(`${file} is not a ${FORMAT} v${VERSION} bundle`);
  return b;
+}
+
+// A bundle's own alias key, if it has one (read only; never created here).
+export function readAliasKey(dir) {
+ const own = join(dir, ALIAS_KEY_FILE);
+ if (!existsSync(own)) return null;
+ const hex = readFileSync(own, 'utf8').trim();
+ return /^[0-9a-f]{64}$/.test(hex) ? Buffer.from(hex, 'hex') : null;
 }
 
 export function emptyBundle(scope) {
