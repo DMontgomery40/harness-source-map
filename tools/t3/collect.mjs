@@ -445,7 +445,7 @@ async function collect(o) {
  }
  // This collection's coverage: the window, from the oldest line still in T3's log (by its span's end time).
  const live = spanSets['spans.ndjson'];
- const part = {collectedAt: new Date().toISOString(), window: live?.liveEarliestEndMs != null ? {since: iso(Math.max(sinceMs, live.liveEarliestEndMs)), until: iso(untilMs)} : null, collector: COLLECTOR_VERSION, source: 'live'};
+ const part = {collectedAt: new Date().toISOString(), window: live?.liveEarliestEndMs != null ? {since: iso(Math.max(sinceMs, live.liveEarliestEndMs)), until: iso(untilMs)} : null, collector: COLLECTOR_VERSION, source: 'live', basis: 'span-end'};
  const parts = unionParts(keptParts(priorEntry), ...fromBundles.map(f => f.parts || []), part.window ? [part] : []);
 
  const env = environmentFacts(t3Home, {label: o.label, redactor});
@@ -626,19 +626,26 @@ async function merge(o) {
     m.counts = {...m.counts, [rel === 'spans.ndjson' ? 'spans' : 'desktopSpans']: all.length};
     writer.ndjson(`${mdir}/${rel}`, all);
    };
+   // A live part taken before coverage was based on span ends: its window is cut again from the part's own spans
+   // (the earliest end among them is where its log's retention began).
+   let partMinEnd = null;
+   const noteEnds = lines => {for (const l of lines) {const m = l && l.match(/"endTimeUnixNano":"(\d+)"/); if (m) {const e = Number(BigInt(m[1]) / 1000000n); if (partMinEnd === null || e < partMinEnd) partMinEnd = e;}}};
    const done = new Set();
    for (const f of bundleFiles(src)) {
     const rel = relative(part, f).split(sep).join('/').replace(/\.gz$/, '');
     if (DERIVED.test(rel)) continue;
     const lines = [...bufferLines(fileBuffer(f))].map(l => redactor.string(l));
     const spanRel = SPAN_RELS.find(r => rel === `${mdir}/${r}`);
+    if (spanRel === 'spans.ndjson') noteEnds(lines);
     if (spanRel) {writeSpans(spanRel, lines); done.add(spanRel);} else writer.lines(rel, lines);
    }
    for (const rel of SPAN_RELS) if (!done.has(rel) && (priorSpans[rel].length || oldSpans[rel].some(x => x.spans.length))) writeSpans(rel, []);
    if (priorEntry) m.threadIds = [...new Set([...(priorEntry.threadIds || []), ...(m.threadIds || [])])];
    const {promoted} = writer.flush();
    const verify = scanBundle(out, {values: credValues, only: [mdir]});
-   const parts = unionParts(m.parts || priorParts(m, 'part'), keptParts(priorEntry), ...fromBundles.map((f, i) => priorParts(f.bundle?.machines.find(x => x.environmentId === m.environmentId), `spans-from ${basename(f.dir)}`, oldSpans['spans.ndjson'][i].spans)));
+   const own = (m.parts || priorParts(m, 'part')).map(p => p.source !== 'live' || p.basis === 'span-end' || partMinEnd === null ? p
+    : {...p, window: {since: iso(Math.max(Date.parse(p.window.since), partMinEnd)), until: p.window.until}, basis: 'span-end', recomputed: 'from the part spans at merge'});
+   const parts = unionParts(own, keptParts(priorEntry).filter(p => p.source !== 'live' || p.basis === 'span-end' || p.collectedAt !== own.find(x => x.source === 'live')?.collectedAt), ...fromBundles.map((f, i) => priorParts(f.bundle?.machines.find(x => x.environmentId === m.environmentId), `spans-from ${basename(f.dir)}`, oldSpans['spans.ndjson'][i].spans)));
    const merged = {...m, role: m.environmentId === bundle.scope.rootEnvironmentId ? 'root' : 'hop', parts, gaps, spanSources: fromCounts,
     redaction: {counts: Object.fromEntries(RULES.map(r => [r, (m.redaction?.counts?.[r] || 0) + (redactor.counts[r] || 0)])), promotedValues: (m.redaction?.promotedValues || 0) + promoted, mergeRepass: {...redactor.counts}},
     verify: {...m.verify, mergedOn: hostname().split('.')[0], files: verify.files, bytes: verify.bytes, hitFiles: Object.keys(verify.hits).length, hits: verify.hits}, mergedAt: new Date().toISOString()};
