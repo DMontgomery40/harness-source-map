@@ -16,6 +16,7 @@ import {sourcesReport, readSource} from './sources/index.mjs';
 import {createDesktopRecorder} from './capture/desktop-capture.mjs';
 import {fileCapture} from './capture/file-capture.mjs';
 import {sessionContext} from './sources/context.mjs';
+import {findT3Bundle, bundleFileList} from './t3/bundles.mjs';
 
 export const PORT = 8766;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -91,9 +92,11 @@ const localConfigFiles=[join(homedir(),'.harness-source-map','trace-local.json')
 const localConfigs=localConfigFiles.flatMap(file=>{try{return [JSON.parse(readFileSync(file,'utf8'))];}catch{return [];}});
 const configuredPaths=key=>localConfigs.flatMap(config=>Array.isArray(config[key])?config[key].filter(p=>typeof p==='string'&&p.startsWith('/')):[]);
 const defaultDatabases=[...configuredPaths('opencodeDatabases'),process.env.OPENCODE_DB ? resolve(dataRoot,process.env.OPENCODE_DB) : join(dataRoot,'opencode.db')];
+// T3 fleet bundles written by tools/t3/collect.mjs (private, never published).
+const defaultT3Roots=[...configuredPaths('t3Bundles'),fileURLToPath(new URL('../private/sessions/t3/',import.meta.url))];
 const defaultCaptureRoots=[...configuredPaths('captureRoots'),join(homedir(),'.harness-source-map','captures'),fileURLToPath(new URL('../private/research',import.meta.url)),...(process.env.TRACE_CAPTURE_ROOTS||'').split(process.platform==='win32'?';':':').filter(Boolean)];
 
-export function createTraceServer({roots=defaultRoots,captureRoots=roots===defaultRoots?defaultCaptureRoots:[],opencodeDatabases=roots===defaultRoots?defaultDatabases:[],siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){
+export function createTraceServer({roots=defaultRoots,captureRoots=roots===defaultRoots?defaultCaptureRoots:[],opencodeDatabases=roots===defaultRoots?defaultDatabases:[],t3Roots=roots===defaultRoots?defaultT3Roots:[],siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){
  const tickets=new Map();
  // The family of a session id, found the same way for the manifest and for its local sources (kept briefly,
  // so the Sources lens doesn't walk every project folder on each read).
@@ -208,6 +211,18 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
      const body=await readBody(req);if(body===null)return reply(413,{error:'Request too large'});if(!body)return reply(400,{error:'Invalid request'});
      let {id,captures}=body;
      id=sessionId(id);if(!id)return reply(400,{error:'Invalid session ID'});
+     // A T3 thread id with a fleet bundle: the bundle's files (the page reads them as one T3 session).
+     const t3=t3Roots.length?await findT3Bundle(t3Roots,id):null;
+     if(t3){
+      const now=Date.now();for(const [key,value] of tickets)if(value.expires<now)tickets.delete(key);
+      const files=[];
+      for(const path of await bundleFileList(t3.dir)){
+       const entry=await fileEntry(t3.dir,path),token=randomBytes(24).toString('hex');
+       tickets.set(token,{entry,root:t3.dir,expires:now+24*60*60*1000});
+       files.push({path:relative(t3.dir,path).split('\\').join('/'),kind:'t3-bundle',size:entry.source.size,url:'/v1/file/'+token});
+      }
+      return reply(200,{id,product:'t3code',files,warnings:[...(t3.bundle.gaps||[])].slice(0,200)});
+     }
      found.delete(id);
      const hit=await findSession(id);
      if(!hit)return reply(404,{error:'Session not found on this machine'});

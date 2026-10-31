@@ -440,7 +440,7 @@ async function merge(o) {
   const {promoted} = writer.flush();
   const files = [...bundleFiles(join(out, mdir))].map(f => relative(out, f).split(sep).join('/')).sort();
   const verify = scanBundle(out, {values: credValues, only: [mdir]});
-  const merged = {...m, files, sizes: Object.fromEntries(files.map(f => [f, statSync(join(out, f)).size])), gaps,
+  const merged = {...m, role: m.environmentId === bundle.scope.rootEnvironmentId ? 'root' : 'hop', files, sizes: Object.fromEntries(files.map(f => [f, statSync(join(out, f)).size])), gaps,
    redaction: {counts: Object.fromEntries(RULES.map(r => [r, (m.redaction?.counts?.[r] || 0) + (redactor.counts[r] || 0)])), promotedValues: (m.redaction?.promotedValues || 0) + promoted, mergeRepass: {...redactor.counts}},
    verify: {...m.verify, mergedOn: hostname().split('.')[0], files: verify.files, bytes: verify.bytes, hitFiles: Object.keys(verify.hits).length, hits: verify.hits}, mergedAt: new Date().toISOString()};
   for (const r of RULES) redactor.counts[r] = 0;
