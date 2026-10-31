@@ -170,11 +170,13 @@ export function shiftRefs(o, base, seen = new WeakSet()) {
 
 // The longest silence a thread's provider log records inside the span T3 claims for it: a gap between two of its
 // lines, or the tail from its last line to when the log was collected (or the claimed end, if sooner). Silence is
-// only what the log covers; a span after the log was taken is unknown, never silent.
+// only what the log covers and could have shown: a span after the log was taken, or inside a request the provider
+// logs only the start and end of, is unknown, never silent.
 export function silenceIn(ev, from, to, collectedAt) {
   // each gap: [start, end, how it ends] — "line" (the log's next line) or "collected" (the log was taken)
   const gaps = (ev.gaps || []).map(([x, y]) => [x, y, "line"]);
-  if (ev.lastActivity != null && collectedAt != null && collectedAt > ev.lastActivity) gaps.push([ev.lastActivity, Math.min(to, collectedAt), "collected"]);
+  // the tail is silence only if no request was left open at the last line (fleet t3-events: request-only logs)
+  if (ev.lastActivity != null && !ev.openAtEnd && collectedAt != null && collectedAt > ev.lastActivity) gaps.push([ev.lastActivity, Math.min(to, collectedAt), "collected"]);
   let best = null;
   for (const [a0, b0, endsBy] of gaps) {
     const a = Math.max(a0, from), b = Math.min(b0, to);

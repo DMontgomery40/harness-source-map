@@ -8,7 +8,9 @@ import { createRedactor } from "../network/redact.js";
 // Keys whose values are ids, refs or enums the page joins on: never rewritten.
 const KEEP = new Set(["id", "parentId", "agentId", "thread", "threadId", "parentThreadId", "environmentId", "rootThreadId", "rootEnvironmentId",
   "session", "nativeId", "file", "offset", "length", "kind", "product", "type", "callId", "requestId", "messageId", "fromNode", "subagentId",
-  "from", "to", "fromEnv", "toEnv", "parent", "parentAgent", "transcriptParent", "claimed", "actual", "epoch"]);
+  "from", "to", "fromEnv", "toEnv", "parent", "parentAgent", "transcriptParent", "claimed", "actual", "epoch",
+  // bundle paths the page matches files on (a thread's own session)
+  "path"]);
 
 // bundle: bundle.json; machines: fleet/bundle.js readMachines (their thread rows are where identity fields live)
 export function familyRedactor(bundle, machines) {
@@ -28,7 +30,13 @@ export function familyRedactor(bundle, machines) {
     str,
     // every string of a family trace, in place, except join ids and refs
     trace(t) { scrub(t, str, null, new WeakSet()); return t; },
-    hits: hits => hits.map(h => ({ ...h, snippet: h.snippet && { before: str(h.snippet.before), match: str(h.snippet.match), after: str(h.snippet.after) } })),
+    // search snippets, redacted; a hit whose match the rules removed is dropped, so a search cannot confirm a guess
+    hits: (hits, query = "") => hits.flatMap(h => {
+      if (!h.snippet) return [h];
+      const match = str(h.snippet.match);
+      if (query && !String(match).toLowerCase().includes(String(query).toLowerCase())) return [];
+      return [{ ...h, snippet: { before: str(h.snippet.before), match, after: str(h.snippet.after) } }];
+    }),
   };
 }
 

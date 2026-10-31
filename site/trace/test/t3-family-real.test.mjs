@@ -81,6 +81,14 @@ for (const dir of dirs) {
         // f.name is "<machine>/<path in the bundle>"; a source is named by its path (or the file's full path)
         assert.ok(sources[i].name.endsWith(f.name.slice(f.name.indexOf("/") + 1)), `file ${i} names its own source`);
       });
+      // and each reference reads a file of its own agent's session, not another thread's
+      const own = new Map(trace.fleet.threads.map(x => [x.id, x]));
+      for (const a of trace.agents) for (const r of refsOf(a)) {
+        const name = trace.files[r.file]?.name || "";
+        assert.ok(name.startsWith(`${a.machine}/machines/${a.environmentId}/agent-sessions/`), "a ref reads its own machine's sessions");
+        const native = own.get(a.thread)?.native;
+        if (native) assert.ok(native.product === "codex" ? /\/rollout-[^/]+\.jsonl$/.test(name) : name.includes(native.nativeId), "a ref reads its own thread's session");
+      }
       const unique = new Map();
       for (const a of trace.agents) for (const r of refsOf(a)) unique.set(`${r.file}:${r.offset}:${r.length}:${JSON.stringify(r.path || null)}:${JSON.stringify(r.range || null)}`, r);
       assert.ok(unique.size > 100, "the family has block text");

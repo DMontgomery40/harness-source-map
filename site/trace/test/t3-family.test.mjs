@@ -10,6 +10,7 @@ import { familyRedactor } from "../fleet/redact.js";
 import { indexSpans } from "../fleet/spans.js";
 import { memorySource, providerLogs } from "../fleet/bundle.js";
 import { boundedFit, offsetAt } from "../fleet/net.js";
+import { parseT3EventLines, t3EventsTrace } from "../adapters/t3-events.js";
 import { landscapeState, restoreLandscape } from "../fleet/ground.js";
 import { createViewHistory } from "../navigation.js";
 import { readFileSync } from "node:fs";
@@ -118,6 +119,9 @@ test("a family's credential rules remove keys and identity values but keep join 
   assert.equal(trace.fleet.rootThreadId, THREAD);
   assert.deepEqual(trace.agents[0].blocks[0].ref, { file: 3, offset: 10, length: 5 });
   assert.ok(!R.str(`reader text ${FAKE}`).includes(FAKE));
+  // a search for the key itself finds nothing: the hit would confirm the guess
+  assert.deepEqual(R.hits([{ agentId: "a", block: 1, snippet: { before: "x ", match: FAKE, after: " y" } }], FAKE), []);
+  assert.equal(R.hits([{ agentId: "a", block: 1, snippet: { before: "x ", match: "deploy", after: " y" } }], "deploy").length, 1);
   assert.deepEqual(R.hits([{ agentId: "a", block: 1, snippet: { before: "x ", match: FAKE, after: " y" } }])[0].snippet.match.includes(FAKE), false);
 });
 
@@ -177,4 +181,18 @@ test("the clock fit stays inside every pair's bound and names the pairs no fit c
     assert.ok(f >= p.lo - 1e-9 && f <= p.hi + 1e-9, `t ${p.t}: ${f} outside [${p.lo}, ${p.hi}]`);
   }
   assert.deepEqual(infeasible.map(x => x.why).sort(), ["contradicts another pair at the same instant", "empty bound (lo > hi)"]);
+});
+
+// A provider that logs only request events records nothing while a request is open (Antigravity: a prompt that
+// worked for minutes is one started line and one succeeded line): that span is unknown, never silence.
+test("a gap inside an open request is not silence", () => {
+  const line = (iso, method, status) => `[${iso}] NTIVE: ${JSON.stringify({ observedAt: iso, event: { kind: "request", provider: "fake", createdAt: iso, threadId: "t", payload: { method, status } } })}`;
+  const log = [line("2026-01-01T00:00:00Z", "session/new", "started"), line("2026-01-01T00:00:01Z", "session/new", "succeeded"),
+    line("2026-01-01T00:05:00Z", "session/prompt", "started"), line("2026-01-01T00:12:00Z", "session/prompt", "succeeded"),
+    line("2026-01-01T00:20:00Z", "session/prompt", "started")].join("\n");
+  const { evidence } = t3EventsTrace(parseT3EventLines(log), { id: "x", name: "x" });
+  // 00:00:01 to 00:05:00 nothing was open: silence; the prompt 00:05 to 00:12 was open: unknown
+  assert.deepEqual(evidence.gaps.map(([a, b]) => [new Date(a).toISOString().slice(11, 19), new Date(b).toISOString().slice(11, 19)]), [["00:00:01", "00:05:00"], ["00:12:00", "00:20:00"]]);
+  assert.equal(evidence.openAtEnd, true);
+  assert.equal(silenceIn(evidence, Date.parse("2026-01-01T00:04:00Z"), Date.parse("2026-01-01T01:00:00Z"), Date.parse("2026-01-01T02:00:00Z")).to, Date.parse("2026-01-01T00:20:00Z"));
 });

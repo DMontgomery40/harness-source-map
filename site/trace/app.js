@@ -493,7 +493,8 @@ async function loadFiles(files, root) {
     try {
       const trace = await parseInWorker(files, null, claim.current);
       if(!claim.current())return;
-      trace.sourceWarnings = sourceWarnings;
+      // the bundle's gaps, as the worker redacted them (the resolver's copy of them is not shown)
+      trace.sourceWarnings = trace.familyGaps || [];
       text = workerText;
       await start(trace, claim.current);
     } catch (e) {

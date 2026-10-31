@@ -12,11 +12,17 @@ const NEEDS_ATTRS = /"(?:kind":"(?:client|server)"|orchestration_v2\.(?:thread|c
 // The fields the index keeps, from the fast head match or from a parsed span of any key order.
 const HEX = /^[0-9a-f]{1,16}$/i, NANOS = /^\d+$/;
 const spanHead = m => (m ? { name: m[1], traceId: m[2], spanId: m[3], parentSpanId: m[4] || null, kind: m[5], start: m[6], end: m[7] } : null);
+// OTLP writes a span's kind as a name, a SPAN_KIND_* constant or its number (1 internal … 5 consumer).
+export function spanKind(k) {
+  if (typeof k === "number") return KINDS[k - 1] || "internal";
+  const s = String(k || "").toLowerCase().replace(/^span_kind_/, "");
+  return KINDS.includes(s) ? s : /^\d+$/.test(s) ? KINDS[Number(s) - 1] || "internal" : "internal";
+}
 export function spanFields(o) {
   if (!o || typeof o !== "object" || !HEX.test(String(o.spanId || ""))) return null;
   const start = String(o.startTimeUnixNano ?? ""), end = String(o.endTimeUnixNano ?? "");
   if (!NANOS.test(start) || !NANOS.test(end)) return null;
-  return { name: String(o.name ?? ""), traceId: String(o.traceId ?? ""), spanId: String(o.spanId), parentSpanId: HEX.test(String(o.parentSpanId || "")) ? String(o.parentSpanId) : null, kind: String(o.kind || "internal"), start, end };
+  return { name: String(o.name ?? ""), traceId: String(o.traceId ?? ""), spanId: String(o.spanId), parentSpanId: HEX.test(String(o.parentSpanId || "")) ? String(o.parentSpanId) : null, kind: spanKind(o.kind), start, end };
 }
 
 // Lines of a (possibly gzipped) source, streamed in 4 MB reads.

@@ -63,6 +63,8 @@ export async function loadFamily(entries, { index = null, onProgress = () => {} 
   onProgress({ phase: "build", done: work.length, total: work.length });
   const trace = buildFamilyTrace({ bundle: b.bundle, machines, parsed, evidence });
   for (const [id, e] of evidence) if (e.parseError) trace.notes.push(`${threads.get(id)?.title || id}: its session could not be read (${e.parseError}); drawn as a void`);
+  // the collector's gaps (what a part could not collect), shown as the family's recording notes, redacted with it
+  trace.familyGaps = (b.bundle.gaps || []).slice(0, 200).map(String);
   redact.trace(trace);
   trace.candidates = [];
   trace.reference = index ? { site: index.site, origin: index.origin, pages: index.pages?.length || 0 } : null;

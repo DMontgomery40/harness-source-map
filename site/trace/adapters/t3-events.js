@@ -62,10 +62,21 @@ export function t3EventsTrace(lines, { id, name, model = null } = {}) {
       window: [0, 0], strata: {}, action: null
     });
   }
-  // gaps of a minute or more between consecutive lines: where the log records nothing
-  const gaps = [];
-  for (let i = 1; i < lines.length; i++) if (lines[i].t - lines[i - 1].t >= 60e3) gaps.push([lines[i - 1].t, lines[i].t]);
-  const evidence = { firstActivity: first, lastActivity: last, lines: lines.length, lab, gaps };
+  // Gaps of a minute or more between consecutive lines where the log would have shown activity. A provider that
+  // logs only request events (Antigravity: started, then succeeded or failed, nothing in between, even for a
+  // prompt that worked for minutes) records nothing while a request is open, so a gap inside an open request is
+  // unknown, not silence. `openAtEnd`: a request was still open at the last line.
+  const gaps = [], open = new Map();
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (i && l.t - lines[i - 1].t >= 60e3 && ![...open.values()].some(n => n > 0)) gaps.push([lines[i - 1].t, l.t]);
+    if (l.kind === "request" && l.method) {
+      if (l.status === "started") open.set(l.method, (open.get(l.method) || 0) + 1);
+      else if (l.status) open.set(l.method, Math.max(0, (open.get(l.method) || 0) - 1));
+    }
+  }
+  const openAtEnd = [...open.values()].some(n => n > 0);
+  const evidence = { firstActivity: first, lastActivity: last, lines: lines.length, lab, gaps, openAtEnd };
   if (!requests.length) return { trace: null, evidence };
   const agent = { id, parentId: null, kind: "root", name, model: requests[0].model, depth: 0, spawn: null, requests, blocks: [], asks: [], compactions: [], bursts: [], harnessSource: "unknown" };
   return {

@@ -125,6 +125,9 @@ async function servable(base,path){
 // Returns the family's root thread, the session's own T3 thread and machine, and the session's files in the bundle
 // (served when the session ran on another machine, so it is not in this one's folders). Any bundle version.
 async function t3Session(roots,id){
+ // every bundle holding the session; the newest format wins, then the newest collection (as findT3Bundle chooses)
+ let best=null;
+ const newest=b=>(b.machines||[]).map(m=>m.mergedAt||m.collectedAt||'').sort().pop()||b.createdAt||'';
  for(const root of roots)for(const item of await names(root)){
   if(!item.isDirectory())continue;
   const dir=join(root,item.name);let bundle;
@@ -141,10 +144,12 @@ async function t3Session(roots,id){
    for(const e of index.filter(e=>e.threadId===hit.threadId && typeof e.path==='string' && (e.nativeId===hit.nativeId || e.path.includes(hit.nativeId)))){
     for(const path of [resolve(base,e.path),resolve(base,e.path)+'.gz'])if(await servable(base,path)){files.push(path);break;}
    }
-   return {dir,base,product:hit.product,files,label:m.label,pointer:{rootThreadId:bundle.scope?.rootThreadId||null,threadId:hit.threadId,environmentId:m.environmentId,machine:m.label}};
+   const found={dir,base,product:hit.product,files,label:m.label,bundle,pointer:{rootThreadId:bundle.scope?.rootThreadId||null,threadId:hit.threadId,environmentId:m.environmentId,machine:m.label}};
+   if(!best||(bundle.version||0)>(best.bundle.version||0)||((bundle.version||0)===(best.bundle.version||0)&&newest(bundle)>newest(best.bundle)))best=found;
+   break;
   }
  }
- return null;
+ return best;
 }
 
 export function createTraceServer({roots=defaultRoots,captureRoots=roots===defaultRoots?defaultCaptureRoots:[],opencodeDatabases=roots===defaultRoots?defaultDatabases:[],t3Roots=roots===defaultRoots?defaultT3Roots:[],siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){

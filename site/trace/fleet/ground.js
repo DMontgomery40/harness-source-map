@@ -9,6 +9,7 @@
 import * as THREE from "../vendor/three.module.min.js";
 
 export const GROUND_KEY = "ground";
+const MAX_PARTS = 8; // collected parts per machine the floor shades (a machine is collected a few times at most)
 // The state a view restores: never the fleet ground.
 export function landscapeState(state) {
   if (!state || !(GROUND_KEY in state)) return state;
@@ -31,12 +32,13 @@ export function buildGround({ L, W, laneZ, subDepth, rootBack, shared, haze, cov
   const kerbZ = t => laneZ(t.lane1) + 1.9;
   const backZ = (t, i) => (i === 0 ? -rootBack - 3 : laneZ(t.lane0) - subDepth - 1.4);
   const slab = (tint, cov) => new THREE.ShaderMaterial({
-    uniforms: { uFog: shared.uFog, uFocusDist: shared.uFocusDist, uTint: { value: new THREE.Color(tint) }, uFade: { value: 0 }, uCov0: { value: cov[0] }, uCov1: { value: cov[1] } },
+    uniforms: { uFog: shared.uFog, uFocusDist: shared.uFocusDist, uTint: { value: new THREE.Color(tint) }, uFade: { value: 0 }, uCov: { value: cov } },
     vertexShader: `varying vec3 vW; varying float vD; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vec4 mv = viewMatrix * w; vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
-    fragmentShader: `${haze} uniform vec3 uFog; uniform vec3 uTint; uniform float uFade; uniform float uCov0; uniform float uCov1; varying vec3 vW; varying float vD;
+    fragmentShader: `${haze} uniform vec3 uFog; uniform vec3 uTint; uniform float uFade; uniform vec2 uCov[${MAX_PARTS}]; varying vec3 vW; varying float vD;
       void main(){
-        // outside the machine's collected span window the floor is hatched dark: nothing of it was collected there
-        float out0 = step(vW.x, uCov0) + step(uCov1, vW.x);
+        // outside every collected span window of the machine the floor is hatched dark: nothing was collected there
+        float out0 = 1.0;
+        for (int k = 0; k < ${MAX_PARTS}; k++) if (vW.x >= uCov[k].x && vW.x <= uCov[k].y) out0 = 0.0;
         float s = fract((vW.x + vW.z) * 0.9); float line = 1.0 - smoothstep(0.06, 0.16, abs(s - 0.5));
         vec3 c = out0 > 0.5 ? mix(vec3(0.020, 0.025, 0.034), vec3(0.20, 0.23, 0.28), line * 0.45) : uTint;
         gl_FragColor = vec4(mix(c, uFog, haze(vW, vD)), 0.92 * (1.0 - 0.6 * uFade));
@@ -46,8 +48,9 @@ export function buildGround({ L, W, laneZ, subDepth, rootBack, shared, haze, cov
   });
   (L.terraces || []).forEach((t, i) => {
     const z0 = backZ(t, i), z1 = kerbZ(t);
-    const parts = coverage?.[t.machine] || [];
-    const cov = parts.length ? [L.X(Math.min(...parts.map(p => p.since))) * W, Math.max(...parts.map(p => p.until)) ? L.X(Math.max(...parts.map(p => p.until))) * W + 0.01 : 1e9] : [1e9, -1e9];
+    // each collected part's window (v2 machines have several, with gaps between them), as world x ranges
+    const parts = (coverage?.[t.machine] || []).filter(p => p.since != null).sort((a, b) => a.since - b.since).slice(0, MAX_PARTS);
+    const cov = Array.from({ length: MAX_PARTS }, (_, k) => parts[k] ? new THREE.Vector2(L.X(parts[k].since) * W, parts[k].until ? L.X(parts[k].until) * W + 0.01 : 1e9) : new THREE.Vector2(1e9, -1e9));
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(W + 10, z1 - z0).rotateX(-Math.PI / 2), slab(i % 2 ? "#0e151e" : "#101923", cov));
     floor.position.set(W / 2, 0.005, (z0 + z1) / 2);
     floor.renderOrder = -1;

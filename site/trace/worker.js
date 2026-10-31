@@ -178,7 +178,7 @@ self.onmessage = async (e) => {
       const shown = family && loaded === family.trace ? family.redact.hits : (hits) => hits;
       const res = await findText(loaded, sources, m.q, {
         index, cancelled: () => gen !== findGen,
-        onHits: (hits) => self.postMessage({ type: "find-hits", id: m.id, hits: shown(hits) }),
+        onHits: (hits) => { const kept = shown(hits, m.q); if (kept.length) self.postMessage({ type: "find-hits", id: m.id, hits: kept }); },
         onProgress: (done, total) => { const now = Date.now(); if (done === total || now - last > 80) { last = now; self.postMessage({ type: "find-progress", id: m.id, done, total }); } },
       });
       self.postMessage({ type: "find-done", id: m.id, ...res });
