@@ -63,12 +63,17 @@ for (const dir of dirs) {
       assert.equal(trace.fleet.hops.length, (b.bundle.hops || []).length);
       if (want.hops != null) assert.equal(trace.fleet.hops.length, want.hops);
       if (want.agents != null) assert.equal(trace.agents.length, want.agents);
-      for (const th of threads.values()) {
-        const ridge = trace.agents.some(a => a.thread === th.id && (a.kind === "root" || a.t3));
+      // [P1] a thread that moved provider kept only its first session; a native subagent whose parent was a
+      // Workflow's own thread, or whose parent's session was not drawn, had no form at all.
+      for (const th of trace.fleet.threads) {
+        const ridge = th.agentId != null && trace.agents.some(a => a.id === th.agentId);
         const voided = trace.voids.some(v => v.thread === th.id);
-        const native = /^thread:provider:[^:]+:native-thread:/.test(th.id);
-        assert.ok(ridge || voided || native, `thread ${trace.fleet.threads.findIndex(x => x.id === th.id)} has no form`);
+        assert.ok(ridge || voided, `thread ${trace.fleet.threads.indexOf(th)} has no form`);
       }
+      // every session the bundle holds for a thread is drawn: the first as its ridge, the rest beside it
+      const mainSessions = machines.flatMap(m => (m.sessions || []).filter(e => /\.jsonl$/.test(e.path) && !/\/subagents\//.test(e.path) && threads.has(e.threadId)).map(e => `${e.threadId} ${e.nativeId}`));
+      const drawn = new Set(trace.agents.filter(a => a.kind === "root" || a.t3 || a.continuation).map(a => `${a.thread} ${a.session}`));
+      for (const k of new Set(mainSessions)) assert.ok(drawn.has(k) || trace.notes.some(n => /could not be read/.test(n)), `a session of thread ${k.split(" ")[0].slice(0, 8)} is drawn`);
       assert.ok(ms < 30000, `family parse took ${Math.round(ms)} ms`);
     });
 
@@ -147,6 +152,14 @@ for (const dir of dirs) {
       if (want.claimedParent != null) assert.equal(n("claimed-parent"), want.claimedParent);
       if (want.claimedRun != null) assert.equal(n("claimed-run"), want.claimedRun);
       if (want.late != null) assert.equal(n("late"), want.late);
+      // a launched thread is a launch-join break, never a one-sided one
+      for (const h of (b.bundle.hops || []).filter(h => h.kind === "launch")) {
+        const th = threads.get(h.to.threadId);
+        if (th?.origin !== "launch") continue;
+        assert.ok(breaks.some(x => x.kind === "launch-join" && x.thread === th.id), "a launched thread is drawn as a launch join");
+        assert.ok(!breaks.some(x => x.kind === "one-sided" && x.thread === th.id));
+      }
+      if (want.launchJoins != null) assert.equal(n("launch-join"), want.launchJoins);
     });
 
     // [P1] the family path skipped the credential rules: a key in the root title reached trace.title.

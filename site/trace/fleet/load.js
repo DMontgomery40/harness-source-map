@@ -46,23 +46,38 @@ export async function loadFamily(entries, { index = null, onProgress = () => {} 
       evidence.set(t.id, { ...fromLog.evidence, log: log.path });
       if (!t.native && fromLog.trace) { parsed.set(t.id, { trace: fromLog.trace, fileBase: sources.length }); }
     }
-    if (t.native && m) {
-      const files = await Promise.all(sessionFiles(b, m, t.native).map(p => b.entry(p)));
-      try {
-        const { trace, sources: s } = await loadTrace(files.filter(Boolean), { root: t.native.nativeId, index });
+    // Every session of the thread (it may have moved provider, or its provider began a new session): the earliest
+    // is its ridge, each later one a continuation ridge beside it (fleet/family.js).
+    if (t.natives?.length && m) {
+      const got = [];
+      for (const native of t.natives) {
+        const files = await Promise.all(sessionFiles(b, m, native).map(p => b.entry(p)));
+        try {
+          const { trace, sources: s } = await loadTrace(files.filter(Boolean), { root: native.nativeId, index });
+          const first = Math.min(...trace.agents.flatMap(a => (a.requests || []).slice(0, 1).map(r => r.t)).filter(Number.isFinite));
+          got.push({ trace, sources: s, native, first: Number.isFinite(first) ? first : Infinity });
+        } catch (error) {
+          // a session the adapter can't read: noted; the thread stays a void when none of its sessions reads
+          evidence.set(t.id, { ...(evidence.get(t.id) || {}), parseError: String(error?.message || error) });
+        }
+      }
+      if (got.length) {
+        got.sort((x, y) => x.first - y.first);
         parsed.delete(t.id);
-        parsed.set(t.id, { trace, fileBase: sources.length });
-        sources.push(...s);
-      } catch (error) {
-        // a session the adapter can't read: the thread stays a void, with the reason in the notes
-        evidence.set(t.id, { ...(evidence.get(t.id) || {}), parseError: String(error?.message || error) });
+        const entries = got.map(g => { const e = { trace: g.trace, fileBase: sources.length, native: g.native }; sources.push(...g.sources); return e; });
+        t.native = entries[0].native;
+        parsed.set(t.id, { ...entries[0], more: entries.slice(1) });
+        if (evidence.get(t.id)?.parseError) evidence.set(t.id, { ...evidence.get(t.id), parseError: null, partialParseError: evidence.get(t.id).parseError });
       }
     }
     onProgress({ phase: "family", done: ++done, total: work.length, file: redact.str(t.title) });
   }
   onProgress({ phase: "build", done: work.length, total: work.length });
   const trace = buildFamilyTrace({ bundle: b.bundle, machines, parsed, evidence });
-  for (const [id, e] of evidence) if (e.parseError) trace.notes.push(`${threads.get(id)?.title || id}: its session could not be read (${e.parseError}); drawn as a void`);
+  for (const [id, e] of evidence) {
+    if (e.parseError) trace.notes.push(`${threads.get(id)?.title || id}: its session could not be read (${e.parseError}); drawn as a void`);
+    else if (e.partialParseError) trace.notes.push(`${threads.get(id)?.title || id}: one of its sessions could not be read (${e.partialParseError})`);
+  }
   // the collector's gaps (what a part could not collect), shown as the family's recording notes, redacted with it
   trace.familyGaps = (b.bundle.gaps || []).slice(0, 200).map(String);
   redact.trace(trace);

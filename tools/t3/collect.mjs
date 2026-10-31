@@ -18,7 +18,7 @@ import {resolveFamily, threadsInWindow, familyRows, nativeSessions, stripMessage
 import {lineThreadMap, splitLines, splitName, worktreeFacts} from './facts.mjs';
 import {deriveNet} from './net.mjs';
 import {credentialValues, scanner, scanBundle, missingJoinKeys, bundleFiles} from './verify.mjs';
-import {fileBuffer, bufferLines, lineChunks} from './gz.mjs';
+import {fileBuffer, bufferLines, lineChunks, gzip, linesBuffer} from './gz.mjs';
 import {ExactSet} from './exact.mjs';
 
 const USAGE = `T3 fleet collector: writes a private, credential-free bundle (plan Contract A).
@@ -361,7 +361,7 @@ function machineFiles(out, m) {
  m.files = [...bundleFiles(join(out, mdir))].map(f => relative(out, f).split(sep).join('/')).sort();
  m.sizes = Object.fromEntries(m.files.map(f => [f, statSync(join(out, f)).size]));
 }
-function writeDerived(out, bundle, {redactor, credValues, gzip = true}) {
+function writeDerived(out, bundle, {redactor, credValues, gzip = true, level = 6}) {
  const ready = bundle.machines.filter(m => m.status === 'collected' && existsSync(join(out, 'machines', m.environmentId)));
  const own = m => {try {return JSON.parse(readFileSync(join(out, 'machines', m.environmentId, 'environment.json'), 'utf8')).exposure?.port ?? null;} catch {return null;}};
  const derived = deriveNet(ready.map(m => ({environmentId: m.environmentId, label: m.label, dir: join(out, 'machines', m.environmentId), parts: m.parts || [], ownPort: own(m)})));
@@ -370,7 +370,7 @@ function writeDerived(out, bundle, {redactor, credValues, gzip = true}) {
   if (!d) continue;
   m.parts = d.parts;
   const gaps = [];
-  const writer = new PartWriter(out, redactor, {gzip});
+  const writer = new PartWriter(out, redactor, {gzip, level});
   guardWriter(writer, scanner(credValues), credValues, redactor, gaps);
   const mdir = `machines/${m.environmentId}`;
   writer.ndjson(`${mdir}/net.ndjson`, d.rows);
@@ -635,17 +635,18 @@ async function merge(o) {
    if (!existsSync(src)) throw new Error(`Part lists ${m.environmentId} but has no ${mdir}`);
    // Re-redact with this machine's values (line by line), then write through the guarded writer.
    const gaps = [...(m.gaps || [])];
-   const writer = new PartWriter(out, redactor, {gzip: o.gzip !== false});
+   const writer = new PartWriter(out, redactor, {gzip: o.gzip !== false, level: o.gzipLevel || 6});
    guardWriter(writer, scanner(credValues), credValues, redactor, gaps);
    // Spans: the part's copy wins; then spans the bundle already holds for this machine (a re-collected part may
    // have lost rotated spans); then --spans-from bundles, re-keyed.
    const SPAN_RELS = ['spans.ndjson', 'desktop-spans.ndjson'];
    const priorSpans = Object.fromEntries(SPAN_RELS.map(rel => [rel, readNdjson(join(out, mdir, rel))]));
-   const oldSpans = Object.fromEntries(SPAN_RELS.map(rel => [rel, fromBundles.map(f => ({key: f.key, spans: readNdjson(join(f.dir, mdir, rel))}))]));
+   const oldSpans = Object.fromEntries(SPAN_RELS.map(rel => [rel, fromBundles.map(f => ({key: f.key, spans: o.fastSpans ? null : readNdjson(join(f.dir, mdir, rel))}))]));
    const priorEntry = bundle.machines.find(x => x.environmentId === m.environmentId && x.status === 'collected');
    rmSync(join(out, mdir), {recursive: true, force: true});
    const fromCounts = {};
    const writeSpans = (rel, partLines) => {
+    if (o.fastSpans) return writeSpansFast(rel, partLines);
     const byId = new Map();
     for (const l of partLines) {if (!l) continue; try {const sp = JSON.parse(l); if (sp.spanId) byId.set(sp.spanId, sp);} catch {}}
     const fromPart = byId.size;
@@ -658,6 +659,43 @@ async function merge(o) {
     m.counts = {...m.counts, [rel === 'spans.ndjson' ? 'spans' : 'desktopSpans']: all.length};
     writer.ndjson(`${mdir}/${rel}`, all);
    };
+   // The assembly's span union (o.fastSpans): lines are kept as text (no parse per span), keyed by span id and
+   // ordered by start time read from the line; spans from --spans-from bundles are kept inside o.spanWindow, re-keyed
+   // and redacted as text.
+   const credPrint = createHash('sha256').update(credValues.map(([v]) => v).sort().join('\u0000')).digest('hex');
+   const SPAN_ID = /"spanId":"([^"]+)"/, START = /"startTimeUnixNano":"(\d+)"/, END = /"endTimeUnixNano":"(\d+)"/;
+   const nanoKey = l => (START.exec(l)?.[1] || '').padStart(20, '0');
+   const inWindow = l => {if (!o.spanWindow) return true; const e = END.exec(l)?.[1] || START.exec(l)?.[1]; if (!e) return true; const t = Number(BigInt(e) / 1000000n); return t >= o.spanWindow.sinceMs && t <= o.spanWindow.untilMs;};
+   const writeSpansFast = (rel, partLines) => {
+    const byId = new Map();
+    for (const l of partLines) {if (!l) continue; const id = SPAN_ID.exec(l)?.[1]; if (id && !byId.has(id)) byId.set(id, l);}
+    const fromPart = byId.size;
+    for (const sp of priorSpans[rel]) if (sp.spanId && !byId.has(sp.spanId)) byId.set(sp.spanId, JSON.stringify(redactor.value(sp)));
+    const fromPrior = byId.size - fromPart;
+    for (const f of fromBundles) {
+     const file = [join(f.dir, mdir, rel), join(f.dir, mdir, rel + '.gz')].find(x => existsSync(x));
+     if (!file) continue;
+     // A --spans-from bundle does not change: its spans, re-keyed to this bundle and redacted with this machine's
+     // values, are kept (o.spansFromCache) for the next build with the same key and values.
+     const st = statSync(file);
+     const cacheFile = o.spansFromCache && join(o.spansFromCache, `${createHash('sha256').update([file, st.size, st.mtimeMs, aliasKeyId(key), credPrint, COLLECTOR_VERSION].join('\u0000')).digest('hex').slice(0, 24)}.ndjson.gz`);
+     const cached = cacheFile && existsSync(cacheFile);
+     const fresh = [];
+     for (const l of bufferLines(fileBuffer(cached ? cacheFile : file))) {
+      const id = l && SPAN_ID.exec(l)?.[1];
+      if (!id) continue;
+      const line = cached ? l : redactor.string(redactor.rekey(l, f.key));
+      if (!cached) fresh.push(line);
+      if (byId.has(id) || !inWindow(line)) continue;
+      byId.set(id, line);
+     }
+     if (cacheFile && !cached && fresh.length) {try {mkdirSync(o.spansFromCache, {recursive: true, mode: 0o700}); writeFileSync(cacheFile, gzip(linesBuffer(fresh), 1), {mode: 0o600});} catch {}}
+    }
+    fromCounts[rel] = {part: fromPart, prior: fromPrior, spansFrom: byId.size - fromPart - fromPrior};
+    const all = [...byId.values()].map(l => [nanoKey(l), l]).sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).map(x => x[1]);
+    m.counts = {...m.counts, [rel === 'spans.ndjson' ? 'spans' : 'desktopSpans']: all.length};
+    writer.lines(`${mdir}/${rel}`, all);
+   };
    // A live part taken before coverage was based on span ends: its window is cut again from the part's own spans
    // (the earliest end among them is where its log's retention began).
    let partMinEnd = null;
@@ -667,15 +705,19 @@ async function merge(o) {
     const rel = relative(part, f).split(sep).join('/').replace(/\.gz$/, '');
     if (DERIVED.test(rel)) continue;
     const own = fleet && (o.trusted || []).includes(m.environmentId);
-    const lines = [...bufferLines(fileBuffer(f))].map(l => reline(l, own));
+    // A part another machine harvested with this collector version already passed every shape rule there: at
+    // assembly (o.fastSpans) it gets this machine's exact values and its aliases mapped; an older part gets the
+    // whole pass. The assembled bundle is verified whole before it is served.
+    const same = fleet && o.fastSpans && pb.collector?.version === COLLECTOR_VERSION && (m.collector || pb.collector?.version) === COLLECTOR_VERSION;
+    const lines = [...bufferLines(fileBuffer(f))].map(l => own ? reline(l, true) : same ? redactor.exactOnly(redactor.fromParts(l)) : reline(l, false));
     const spanRel = SPAN_RELS.find(r => rel === `${mdir}/${r}`);
     if (spanRel === 'spans.ndjson') noteEnds(lines);
     if (spanRel) {writeSpans(spanRel, lines); done.add(spanRel);} else writer.lines(rel, lines);
    }
-   for (const rel of SPAN_RELS) if (!done.has(rel) && (priorSpans[rel].length || oldSpans[rel].some(x => x.spans.length))) writeSpans(rel, []);
+   for (const rel of SPAN_RELS) if (!done.has(rel) && (priorSpans[rel].length || oldSpans[rel].some(x => x.spans === null || x.spans.length))) writeSpans(rel, []);
    if (priorEntry) m.threadIds = [...new Set([...(priorEntry.threadIds || []), ...(m.threadIds || [])])];
    const {promoted} = writer.flush();
-   const verify = scanBundle(out, {values: credValues, only: [mdir]});
+   const verify = o.verifyParts === false ? {files: 0, bytes: 0, hits: {}, deferred: 'the whole bundle is verified after the merge'} : scanBundle(out, {values: credValues, only: [mdir]});
    const own = (m.parts || priorParts(m, 'part')).map(p => p.source !== 'live' || p.basis === 'span-end' || partMinEnd === null ? p
     : {...p, window: {since: iso(Math.max(Date.parse(p.window.since), partMinEnd)), until: p.window.until}, basis: 'span-end', recomputed: 'from the part spans at merge'});
    const parts = unionParts(own, keptParts(priorEntry).filter(p => p.source !== 'live' || p.basis === 'span-end' || p.collectedAt !== own.find(x => x.source === 'live')?.collectedAt), ...fromBundles.map((f, i) => priorParts(f.bundle?.machines.find(x => x.environmentId === m.environmentId), `spans-from ${basename(f.dir)}`, oldSpans['spans.ndjson'][i].spans)));
@@ -697,7 +739,7 @@ async function merge(o) {
    if (i >= 0 && bundle.machines[i].status !== 'collected') bundle.machines[i] = m;
   }
  }
- if (!o.noDerive) writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false});
+ if (!o.noDerive) writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6});
  finishBundle(bundle);
  writeBundle(out, bundle);
  return {out, results, bundle};

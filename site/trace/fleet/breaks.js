@@ -11,6 +11,8 @@
 //   one-sided       only one side records a cross-machine link (the child's or the parent's)
 //   stale-parent    the recorded parent is not in the family (deleted, or gone on its machine; #26766)
 //   claimed-end     T3's completedAt falls before the session's own last request (#26907, #27700)
+//   launch-join     a thread launched with t3_thread_launch or create_threads: T3 records no parent for it on either
+//                   machine; the family holds it because the launching agent's own call returned its id
 const SETTLE_MS = 5000, CLAIM_MS = 60000;
 
 export function findBreaks(trace) {
@@ -46,8 +48,9 @@ export function findBreaks(trace) {
     if (Number.isFinite(done) && last && last - done > SETTLE_MS) {
       out.push({ ...base, kind: "claimed-end", at: done, evidence: [{ what: "T3 completed", at: done }, { what: "session's last request", at: last }] });
     }
+    if (c.launch) out.push({ ...base, kind: "launch-join", at: c.launch.at ?? a.requests?.[0]?.t ?? null, evidence: launchEvidence(c.launch, byId.get(a.parentId)?.name) });
     const parentAgent = byId.get(a.parentId);
-    if (parentAgent && parentAgent.machine !== a.machine && !(c.childSide && c.parentSide)) {
+    if (parentAgent && parentAgent.machine !== a.machine && !(c.childSide && c.parentSide) && !c.launch) {
       out.push({ ...base, kind: "one-sided", at: a.requests?.[0]?.t ?? null, side: c.childSide ? "child" : "parent", evidence: [{ what: c.childSide ? "only the child records the link (delegatedFrom)" : "only the parent records the link (remoteChild)" }] });
     }
     if (c.parentThreadId && !known.has(c.parentThreadId)) {
@@ -56,6 +59,7 @@ export function findBreaks(trace) {
   }
   for (const v of trace.voids || []) {
     const base = { agentId: null, thread: v.thread, machine: v.machine, title: v.title, void: v };
+    if (v.launch) out.push({ ...base, kind: "launch-join", at: v.launch.at ?? v.from, evidence: launchEvidence(v.launch, null) });
     if (v.why === "late") {
       out.push({ ...base, kind: "late", at: v.from, evidence: [{ what: "hop started", at: v.from }, { what: "its machine's part was taken as it began, without the child", value: v.machine }] });
       continue;
@@ -76,6 +80,16 @@ export function findBreaks(trace) {
   return out.sort((x, y) => (x.at ?? 0) - (y.at ?? 0));
 }
 
+// What joins a launched thread: T3's empty lineage, and the call that returned its id.
+function launchEvidence(l, parentName) {
+  return [
+    { what: "T3 parent link", value: "none (no lineage parent, no delegatedFrom)" },
+    { what: `${l.tool || "launch"} result in the transcript of`, value: parentName || l.from || "?", at: l.at },
+    ...(l.linkOrigin ? [{ what: "its row's linkOrigin names the launching machine's link" }] : []),
+    ...(l.requestedEnvironmentId && l.linkEnvironmentId && l.requestedEnvironmentId !== l.linkEnvironmentId ? [{ what: "the call asked for another machine than the link names", value: l.requestedEnvironmentId }] : [])
+  ];
+}
+
 // Hover words for one break, plain and short: what T3 says, and what the evidence shows.
 export function breakWords(b) {
   return {
@@ -85,7 +99,8 @@ export function breakWords(b) {
     "late": "This delegation began after its machine was collected: nothing of it is in the bundle.",
     "one-sided": "Only one side of this cross-machine link records it.",
     "stale-parent": "The parent T3 records for this thread is gone from the family.",
-    "claimed-end": "T3 marked this thread done while its session was still making requests."
+    "claimed-end": "T3 marked this thread done while its session was still making requests.",
+    "launch-join": "Joined by our evidence: T3 has no parent link. The launching agent's own call returned this thread's id."
   }[b.kind] || "T3's lineage disagrees with the evidence here.";
 }
 

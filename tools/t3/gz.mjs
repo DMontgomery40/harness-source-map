@@ -8,7 +8,7 @@ import {existsSync, readFileSync} from 'node:fs';
 export const GZIP_OVER = 256 * 1024;
 export const CHUNK = 32 * 1024 * 1024;
 
-export const gzip = data => gzipSync(typeof data === 'string' ? Buffer.from(data, 'utf8') : data, {level: 6});
+export const gzip = (data, level = 6) => gzipSync(typeof data === 'string' ? Buffer.from(data, 'utf8') : data, {level});
 
 // A file's bytes, gunzipped when it ends .gz.
 export const fileBuffer = file => {const buf = readFileSync(file); return file.endsWith('.gz') ? gunzipSync(buf) : buf;};
