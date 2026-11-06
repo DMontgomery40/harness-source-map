@@ -59,20 +59,39 @@ new T3 releases; the builder decides between the stable and nightly channels, an
 
 ### 4.1 Joining a thread family across machines
 
-Join keys, all found on a real four-machine fleet (2026-10-31):
+Join keys from the fleet investigation, qualified against upstream releases
+`v0.1.7-nightly.20261103.4106` (`e1e520c93c99`) and `v0.1.8-nightly.20261104.4192`
+(`7f6f47b27b44`). The source-map extraction remains separately pinned to 0.1.6; it must not be used to assert newer
+runtime behavior. The identity of a thread is its environment ID together with its thread ID.
 - **Local family.** Each thread row in `statev2.sqlite` keeps its lineage in `orchestration_v2_projection_threads.payload_json`:
   `lineage.parentThreadId`, `rootThreadId`, `relationshipToParent`, `delegatedFrom` and `forkedFrom`.
-- **Remote delegation.** The parent side's task records `remoteChild {environmentId, threadId, label}`. The child thread
-  on the other machine has `linkOrigin {sessionId, label, access}` and a null `parentThreadId`, so the parent side's
-  record is the only thread-level link to it.
-- **Launches.** A thread made with `t3_thread_launch` or `create_threads` has no T3 parent on either machine: a null
-  `parentThreadId`, no `delegatedFrom`, and, when launched across a peer link, only `linkOrigin` (which names the
-  launching machine's link, not the thread). The launching agent's own call result is the join: it returns the new
-  thread's id and its `t3-thread://` link. Assembly reads each part's transcripts for those results
-  (`tools/t3/launches.mjs`, Claude Code `tool_use`/`tool_result`, Codex/ChatGPT `McpToolCall`) and adds a hop of kind
-  `launch`. Its target is the machine whose store holds the thread (T3 has answered a `create_threads` call aimed at
-  another machine with a link to its own). No other mention of a thread id, and never time alone, joins it. Trace
-  draws it as the `launch-join` lineage break.
+- **Remote delegation.** The parent task records `remoteChild {environmentId, threadId, label, runId?}`. Remote
+  `delegate_task` also supplies `delegatedFrom {environmentId, threadId, title}` to the child. These are complementary
+  thread-level links. `linkOrigin {sessionId, label, access}` identifies the paired MCP session and its permissions;
+  derived work inherits it, so it cannot establish a parent thread. The delegation implementation is identical in
+  both checked releases. [Source](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/peer/RemoteDelegation.ts#L256-L307).
+- **Recorded thread creation.** `create_threads` creates ordinary local threads, then records a `thread_created`
+  item on the parent's timeline. Its row names the parent thread/run/node; its payload names the target thread/run,
+  provider and model. The family walk follows this relation in both directions and exports only allowlisted metadata
+  as `threads.json.threadCreations`. The collector emits a `launch` hop with `join.by: "turn-item"` and the item ID.
+  Missing target rows remain explicit gaps. Older schemas without the table still resolve other family links.
+  These releases do not forward `create_threads` to `target.environmentId`; the returned link and owning environment
+  are evidence of where it ran. [Creation](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/mcp/OrchestratorMcpService.ts#L2777-L2940),
+  [timeline record](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/orchestration-v2/Orchestrator.ts#L8713-L8747).
+- **Other launches.** General `t3_thread_launch` calls need not stamp a thread parent. Keep the launching agent's own
+  successful call/result join as a fallback: it returns the new thread ID and `t3-thread://` link. Assembly reads
+  each part's transcripts for those results (`tools/t3/launches.mjs`, Claude Code `tool_use`/`tool_result`,
+  Codex/ChatGPT `McpToolCall`) and adds a hop of kind `launch`. No unrelated mention of an ID, shared link, or time
+  overlap joins a family. A launch relation remains distinct from a delegated subagent relation.
+- **Environment qualification.** Known remote seeds travel as `{environmentId, threadId}` pairs; a coincident local
+  thread ID is not the same thread. Legacy unqualified upstream IDs are accepted only when child-side evidence names
+  one parent environment. Conflicting environments produce an ambiguity gap without guessed membership.
+- **Metadata freshness.** Each machine part records `familyMetadata.version` independently of the credential
+  redaction version, and records whether its DB has the thread-creation table. The existing on-demand local refresh
+  upgrades older parts even when their threads have not changed; older remote parts remain readable with an explicit
+  coverage gap until the ordinary harvest refreshes them. An inspected older DB without the table is marked
+  `threadCreations: "unavailable"`, not repeatedly scheduled for an impossible schema upgrade. There is no automatic
+  historical fleet backfill and no manual family collection.
 - **Several sessions per thread.** A thread that moved provider (a Codex/ChatGPT rollout, then a Claude Code session)
   is bound to each in turn. Every session is drawn: the earliest as the thread's ridge, the rest as continuation
   ridges beside it. A provider-native subagent thread maps to its agent in its nearest drawn ancestor's session.
@@ -80,9 +99,10 @@ Join keys, all found on a real four-machine fleet (2026-10-31):
   and its `parentSpanId` is a span on the calling machine, so the span graph joins across machines with no extra keys.
   One caller can keep a single `traceId` for 30 minutes or more, so the layer joins spans on `parentSpanId`, not on
   `traceId` alone.
-- **Agent session.** Each T3 thread is bound to a provider session (`active_provider_thread_id` and the
-  provider-session-binding projections). That session is the Claude Code session id or the Codex/ChatGPT thread id that
-  Trace's existing adapters already open.
+- **Agent session.** T3 thread IDs, task/node IDs, run IDs, provider-session IDs and provider-thread IDs are separate
+  namespaces. Provider-thread rows map the app thread and provider session to `nativeThreadRef {driver, nativeId,
+  strength}`. That native ID locates the Claude Code session or Codex/ChatGPT rollout opened by Trace's adapters;
+  a T3 provider-session ID is not automatically a native conversation ID.
 
 ### 4.2 The edges
 
@@ -94,6 +114,31 @@ Join keys, all found on a real four-machine fleet (2026-10-31):
 | 4 | T3 server ↔ agent process | stdio: Claude stream-json, the Codex app-server's JSON-RPC, ACP, Muse | The provider event logs `logs/provider/events.<threadId>.log`. Spans: `CodexAppServerProtocol.request`, `AcpClient.*`, `museLaunch`. |
 | 5 | Agent → T3's MCP | Loopback HTTP `/mcp` with a per-launch credential | `McpHttpServer.*` and `tools/call` spans, plus `logs/provider/events.mcp-launch-*.log` |
 | 6 | Agent → model API | HTTPS | The existing network capture of that agent (Claude Code, Codex/ChatGPT, OpenCode, Cursor), attached to its node |
+
+Transport evidence is separate from task lineage. The checked releases expose primary, bearer, relay and SSH
+connection targets, all keyed by environment ID, and allow alternate routes to the same environment. Desktop SSH
+starts or reuses the remote server, forwards a local port to its remote loopback port with `ssh -N -L`, and uses the
+normal HTTP/WebSocket connection through that port. It does not require a `peer_environment_links` row.
+[Connection targets](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/client-runtime/src/connection/model.ts#L5-L54),
+[SSH forwarding](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/ssh/src/tunnel.ts#L1139-L1163),
+[SSH authorization](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/client-runtime/src/connection/resolver.ts#L198-L262).
+
+T3 Connect obtains an environment endpoint and authorization from the relay. The server's managed Cloudflare
+connector exposes that existing environment; it does not create a new thread or agent. Connect authorization can
+also be used over a direct endpoint. Server-to-server peer calls independently use HTTP MCP at the selected peer
+URL, which must answer with the expected environment ID. Thus a tunnel hostname, SSH alias or link row is a route,
+not a family key. [Connect authorization](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/client-runtime/src/authorization/service.ts#L260-L300),
+[direct endpoint](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/client-runtime/src/authorization/service.ts#L471-L487),
+[Cloudflare connector](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/cloud/ManagedEndpointRuntime.ts#L659-L720),
+[peer client](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/peer/PeerMcpClient.ts#L97-L175).
+
+The local DB can establish thread and provider relationships regardless of how a client reached it. Retained spans
+can establish observed routes, but the encrypted desktop catalog is not decrypted by collection. Removed routes,
+expired pairings, unharvested environments and rotated spans cannot be reconstructed from current peer links alone.
+The current network derivation reads server spans and retains broad legacy name classifications; it does not yet
+derive a complete desktop SSH route history from the separately preserved desktop spans. Keep this coverage limit
+visible when interpreting network edges. It does not mean that agents already harvested from their environment's
+DB are missing. A transport-classification correction requires its own regression validation.
 
 ### 4.3 Sources on each machine
 
@@ -122,6 +167,15 @@ touched, the bundle holds:
 - its thread rows;
 - the build and config files above;
 - the bound agent sessions.
+
+The fleet harvest transfers changed files incrementally. Its receiver installs data before publishing each
+bundle manifest, and removes the obsolete plain or gzip representation after installing its replacement.
+Assembly reads the representation named by the producer's `machines[].files` manifest. This also recovers older
+stores containing both forms without modifying either original. Ambiguous representations without a manifest,
+or a missing declared file, are integrity errors; filesystem timestamps do not establish which bytes are current.
+Before publishing or reusing an assembled bundle, every collected machine's declared thread inventory must match
+its thread rows, and every indexed root session must bind to a collected thread. Cache identity includes the file
+manifest and thread inventory as well as collection time. A valid subset of the rows cannot pass as a complete family.
 
 It removes credentials before writing anything (§4.6). It reaches other machines through T3's own linked environments
 or over SSH. On macOS, a process T3 starts lacks the

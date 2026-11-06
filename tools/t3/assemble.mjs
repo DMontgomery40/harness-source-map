@@ -11,14 +11,15 @@
 import {existsSync, readdirSync, readFileSync, writeFileSync, statSync, rmSync, renameSync, copyFileSync, mkdirSync, openSync, closeSync} from 'node:fs';
 import {homedir, availableParallelism} from 'node:os';
 import {join, relative, sep, dirname} from 'node:path';
+import {createHash, randomUUID} from 'node:crypto';
 import {openReadOnly} from './sqlite.mjs';
-import {resolveFamily} from './family.mjs';
+import {resolveFamily, FAMILY_METADATA_VERSION} from './family.mjs';
 import {storeHarvest, merge, mainRepo} from './collect.mjs';
 import {readBundle, writeBundle, emptyBundle, ensureDir, slug, readKeyFile, partsKeyFile, ALIAS_KEY_FILE, COLLECTOR_VERSION, FORMAT, READABLE_VERSIONS} from './bundle.mjs';
 import {familyKey, keyId} from './redact.mjs';
 import {credentialValues, scanBundle, scanBundleParallel, bundleFiles} from './verify.mjs';
 import {spansInWindow, coverageParts, SPAN_LOGS} from './archive.mjs';
-import {readBuffer, bufferLines, lineChunks} from './gz.mjs';
+import {readBuffer, fileBuffer, resolveBundleFile, bufferLines, lineChunks} from './gz.mjs';
 import {partLaunches, launchHop} from './launches.mjs';
 
 const iso = ms => new Date(ms).toISOString();
@@ -27,6 +28,37 @@ export const t3Root = repo => join(repo, 'private', 'sessions', 't3');
 export const incomingDir = repo => join(t3Root(repo), 'incoming');
 export const fleetDir = repo => join(t3Root(repo), 'fleet');
 const dirs = d => {try {return readdirSync(d, {withFileTypes: true}).filter(e => e.isDirectory() && !e.name.startsWith('.')).map(e => e.name);} catch {return [];}};
+
+const partOptions = p => ({base: p.dir, files: p.entry.files});
+const partIdentity = p => `${p.entry.collectedAt}:${createHash('sha256').update(JSON.stringify([p.entry.files, p.entry.sizes, [...p.threadIds], p.entry.familyMetadata])).digest('hex')}`;
+const needsFamilyMetadata = p => p?.entry.familyMetadata?.version !== FAMILY_METADATA_VERSION;
+
+export function rootsNeedingRefresh(local, mine, harvested = new Set()) {
+ return local.filter(r => !harvested.has(r.root) && (needsFamilyMetadata(mine.get(r.root)) ||
+  (r.updatedAt && Date.parse(r.updatedAt) > Date.parse(mine.get(r.root).entry.collectedAt)))).map(r => r.root);
+}
+
+// Every collected thread and indexed root session must survive assembly. A self-consistent subset of the
+// rows is insufficient: the manifest is an independent inventory, and silent loss cannot become a cached build.
+export function assertMachineInventory(rows, threadIds, sessions = []) {
+ const declared = new Set(threadIds || []), actual = new Set((rows?.threads || []).map(r => r.thread_id));
+ const missing = [...declared].filter(id => !actual.has(id)).length;
+ const extra = [...actual].filter(id => !declared.has(id)).length;
+ if (!Array.isArray(rows?.threads) || missing || extra || actual.size !== rows.threads.length) throw new Error(`Thread inventory mismatch (${missing} missing, ${extra} unexpected); not served`);
+ if (!Array.isArray(sessions)) throw new Error('Session inventory is not an array; not served');
+ const orphan = sessions.filter(e => /\.jsonl$/.test(e.path || '') && !/\/subagents\//.test(e.path) && !actual.has(e.threadId)).length;
+ if (orphan) throw new Error(`Session inventory mismatch (${orphan} root sessions without a thread); not served`);
+}
+
+export function assertBundleInventory(dir, bundle) {
+ for (const m of bundle.machines || []) {
+  if (m.status !== 'collected') continue;
+  const options = {base: dir, files: m.files}, mdir = join(dir, 'machines', m.environmentId);
+  const rows = readBuffer(join(mdir, 'threads.json'), options);
+  const sessions = readBuffer(join(mdir, 'agent-sessions/index.json'), options);
+  assertMachineInventory(rows && JSON.parse(rows), m.threadIds, sessions ? JSON.parse(sessions) : []);
+ }
+}
 
 // ---- the stores --------------------------------------------------------------------------------------------------
 
@@ -79,15 +111,32 @@ export function familyRoot(fam) {
  return r ? {environmentId: r.environmentId, threadId: r.root} : null;
 }
 
-// This machine's local roots of every thread of the family (seeds may be any machine's thread ids). A thread on
+// Preserve (environment, thread) identities while finding this machine's roots. A remote id is never a local
+// seed, even when an unrelated local thread happens to have the same id.
+export function localFamilySeeds(fam, {threadId, environmentId, localEnv}) {
+ const refs = [
+  {environmentId: environmentId || localEnv, threadId},
+  ...fam.flatMap(p => [...p.threadIds].map(threadId => ({environmentId: p.environmentId, threadId}))),
+  ...fam.flatMap(p => p.hops.flatMap(h => [h.from, h.to])),
+ ];
+ const seeds = new Set(), upstream = new Map();
+ for (const r of refs) {
+  if (!r?.threadId || !r.environmentId) continue;
+  if (r.environmentId === localEnv) seeds.add(r.threadId);
+  else upstream.set(`${r.environmentId}\u0000${r.threadId}`, {environmentId: r.environmentId, threadId: r.threadId});
+ }
+ return {seeds: [...seeds], upstreamThreads: [...upstream.values()]};
+}
+
+// This machine's local roots of the family's qualified endpoints. A thread on
 // another machine that no store holds yet is found through this machine's own hop to it (a subagent row whose
 // remoteChild names it), so its family opens with that machine marked not collected.
-async function localRoots(t3Home, seeds, remote = null) {
+async function localRoots(t3Home, seeds, remote = null, upstreamThreads = []) {
  let db; try {db = await openReadOnly(join(t3Home, 'userdata', 'statev2.sqlite'));} catch {return [];}
  try {
   const environmentId = readFileSync(join(t3Home, 'userdata', 'environment-id'), 'utf8').trim();
   if (remote) for (const r of db.all("select thread_id from orchestration_v2_projection_subagents where json_extract(payload_json,'$.remoteChild.threadId') = ? and json_extract(payload_json,'$.remoteChild.environmentId') = ?", remote.threadId, remote.environmentId)) seeds = [...seeds, r.thread_id];
-  const fam = resolveFamily(db, seeds, {environmentId});
+  const fam = resolveFamily(db, seeds, {environmentId, upstreamThreads});
   if (!fam.threadIds.length) return [];
   const roots = new Map(); // root -> the newest updated_at among its threads
   const ids = fam.threadIds, inFamily = new Set(ids);
@@ -108,6 +157,15 @@ async function localRoots(t3Home, seeds, remote = null) {
 // becomes a hop of that part, so familyParts joins the launched thread's part to it. A launch whose thread the part
 // already holds on its own machine is T3's own link, not a join of ours, and is left out. Read once per part version
 // (cached under fleet/.launches).
+export function mergeLaunchEvidence(recorded, transcript) {
+ const prior = recorded.join || {}, seen = transcript.join || {};
+ const paths = [...new Set([...(prior.paths || []), prior.path, ...(seen.paths || []), seen.path].filter(Boolean))];
+ // Retain the primary recorded provenance. Top-level call fields remain available to existing readers;
+ // the nested transcript record says which evidence supplied them when the primary join is a turn item.
+ recorded.join = {...seen, ...prior, paths};
+ if (prior.by && prior.by !== 'transcript') recorded.join.transcript = {...seen, paths};
+}
+
 export function addLaunchHops(parts, cacheDir) {
  const held = new Set(parts.flatMap(p => [...p.threadIds].map(t => `${p.environmentId}\u0000${t}`)));
  const holds = (t, e) => held.has(`${e}\u0000${t}`);
@@ -117,9 +175,9 @@ export function addLaunchHops(parts, cacheDir) {
   const launches = partLaunches(p, cacheDir).filter(l => p.threadIds.has(l.callerThreadId)).sort((a, b) => ((a.at || '') < (b.at || '') ? -1 : 1));
   for (const l of launches) {
    const h = launchHop(l, holds);
-   if (h.to.environmentId === p.environmentId && p.threadIds.has(h.to.threadId)) continue;
    const had = byKey.get(key(h));
-   if (had) {if (had.kind === 'launch' && !had.join.paths.includes(l.path)) had.join.paths.push(l.path); continue;}
+   if (had) {if (had.kind === 'launch') mergeLaunchEvidence(had, h); continue;}
+   if (h.to.environmentId === p.environmentId && p.threadIds.has(h.to.threadId)) continue;
    h.join.paths = [l.path];
    byKey.set(key(h), h);
    p.hops.push(h);
@@ -133,12 +191,12 @@ export function addLaunchHops(parts, cacheDir) {
 const OPEN = new Set(['running', 'preparing', 'starting', 'queued', 'pending', 'waiting']);
 export function partActivity(p, cacheDir) {
  const mdir = join(p.dir, 'machines', p.environmentId);
- const f = ['threads.json', 'threads.json.gz'].map(n => join(mdir, n)).find(x => existsSync(x));
+ const f = resolveBundleFile(join(mdir, 'threads.json'), partOptions(p));
  if (!f) return {lastMs: null, active: false};
- const st = statSync(f), stamp = `${st.size}:${st.mtimeMs}`;
+ const st = statSync(f), stamp = `manifest-v1:${relative(p.dir, f)}:${st.size}:${st.mtimeMs}`;
  const cacheFile = cacheDir && join(cacheDir, p.environmentId, `${relative(join(p.store, 'families'), p.dir).split(sep).join('__')}.json`);
  if (cacheFile && existsSync(cacheFile)) {const c = readJson(cacheFile); if (c?.stamp === stamp) return c.activity;}
- let rows = null; try {rows = JSON.parse(readBuffer(f.replace(/\.gz$/, '')).toString('utf8'));} catch {}
+ const rows = JSON.parse(fileBuffer(f).toString('utf8'));
  let lastMs = null, active = false;
  const later = v => {const t = Date.parse(v || ''); if (Number.isFinite(t) && (lastMs === null || t > lastMs)) lastMs = t;};
  for (const t of rows?.threads || []) later(t.updated_at);
@@ -155,8 +213,24 @@ export const ACTIVITY_MARGIN_MS = 15 * 60000;
 
 const ID_KEYS = row => Object.entries(row).filter(([k]) => /(^|_)id$/.test(k)).map(([k, v]) => `${k}=${typeof v === 'string' ? v : JSON.stringify(v)}`).join('|') || JSON.stringify(row);
 const unionBy = (lists, keyOf) => {const m = new Map(); for (const list of lists) for (const x of list || []) m.set(keyOf(x), x); return [...m.values()];};
+// Keys of the projection tables exported by familyRows (SQLite primary keys). Foreign IDs can change across
+// collections, e.g. a thread switching providers: they must not turn the updated row into a duplicate thread.
+const ROW_KEYS = {
+ threads: ['thread_id'], legacyThreads: ['thread_id'], runs: ['run_id'], runAttempts: ['attempt_id'],
+ nodes: ['node_id'], subagents: ['subagent_id'], providerSessions: ['provider_session_id'],
+ bindings: ['provider_session_id', 'thread_id'], providerThreads: ['provider_thread_id'], providerTurns: ['provider_turn_id'],
+ threadSessions: ['thread_id'], sessionRuntime: ['thread_id'], contextHandoffs: ['context_handoff_id'],
+ contextTransfers: ['context_transfer_id'], runtimeRequests: ['runtime_request_id'], plans: ['plan_id'],
+ launchWorkflows: ['command_id'], projects: ['project_id'], threadCreations: ['turn_item_id'],
+};
+const rowKey = table => row => {
+ const keys = ROW_KEYS[table];
+ if (!keys) return ID_KEYS(row);
+ if (keys.some(k => row[k] == null)) throw new Error(`Missing primary key in ${table} inventory`);
+ return JSON.stringify(keys.map(k => row[k]));
+};
 const UNIONS = {
- 'threads.json': vs => Object.fromEntries([...new Set(vs.flatMap(Object.keys))].map(t => [t, unionBy(vs.map(v => v[t]), ID_KEYS)])),
+ 'threads.json': vs => Object.fromEntries([...new Set(vs.flatMap(Object.keys))].map(t => [t, unionBy(vs.map(v => v[t]), rowKey(t))])),
  'agent-sessions/index.json': vs => unionBy(vs, e => e.path),
  'provider-events/index.json': vs => ({logs: unionBy(vs.map(v => v.logs), e => e.name), split: unionBy(vs.map(v => v.split), e => e.file)}),
  'worktrees.json': vs => ({threads: unionBy(vs.map(v => v.threads), t => t.threadId), repos: unionBy(vs.map(v => v.repos), r => r.projectId)}),
@@ -187,12 +261,20 @@ export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId,
  const json = new Map(), lines = new Map(), copies = new Map();
  for (const p of ordered) {
   const src = join(p.dir, 'machines', env);
-  if (!existsSync(src)) continue;
-  for (const f of bundleFiles(src)) {
+  const options = partOptions(p);
+  const rows = readBuffer(join(src, 'threads.json'), options);
+  const sessions = readBuffer(join(src, 'agent-sessions/index.json'), options);
+  assertMachineInventory(rows && JSON.parse(rows), p.threadIds, sessions ? JSON.parse(sessions) : []);
+  const logical = new Set((p.entry.files || []).map(f => {
+   if (typeof f !== 'string' || !f.startsWith(`machines/${env}/`) || f.split('/').some(x => x === '..' || x === '.')) throw new Error('Invalid machine file in manifest');
+   return f.replace(/\.gz$/, '');
+  }));
+  for (const name of logical) {
+   const f = resolveBundleFile(join(p.dir, name), options);
    const rel = relative(src, f).split(sep).join('/'), plain = rel.replace(/\.gz$/, '');
    if (DERIVED.test(plain)) continue;
-   if (UNIONS[plain]) {let v = null; try {v = JSON.parse(readBuffer(join(src, plain)).toString('utf8'));} catch {} if (v) {if (!json.has(plain)) json.set(plain, []); json.get(plain).push(v);}}
-   else if (LINE_UNIONS.has(plain)) {const buf = readBuffer(join(src, plain)); if (buf) {if (!lines.has(plain)) lines.set(plain, new Set()); for (const l of bufferLines(buf)) if (l) lines.get(plain).add(l);}}
+   if (UNIONS[plain]) {const v = JSON.parse(fileBuffer(f)); if (!json.has(plain)) json.set(plain, []); json.get(plain).push(v);}
+   else if (LINE_UNIONS.has(plain)) {const buf = fileBuffer(f); if (!lines.has(plain)) lines.set(plain, new Set()); for (const l of bufferLines(buf)) if (l) lines.get(plain).add(l);}
    else {for (const old of [plain, plain + '.gz']) copies.delete(old); copies.set(rel, f);}
   }
  }
@@ -204,11 +286,13 @@ export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId,
   counts[rel === 'spans.ndjson' ? 'spans' : 'desktopSpans'] = writeLines(join(mdir, rel), spansInWindow(store, kind, sinceMs, untilMs));
  }
  const newest = ordered.at(-1).entry;
+ const legacyMetadata = ordered.filter(needsFamilyMetadata).length;
  const harvest = readJson(join(store, 'harvest.json'));
  const entry = {
   ...newest, status: 'collected', role: 'hop', collector: COLLECTOR_VERSION,
   // the collector versions that harvested the parts (the merge redacts a part from an older one in full)
   sourceCollectors: [...new Set(ordered.map(p => p.entry.collector || p.bundle.collector?.version || null))],
+  familyMetadata: legacyMetadata ? undefined : newest.familyMetadata,
   threadIds: [...new Set(ordered.flatMap(p => [...p.threadIds]))],
   seeds: [...new Set(ordered.flatMap(p => p.entry.seeds || []))],
   window: {since: iso(sinceMs), until: iso(untilMs)},
@@ -216,8 +300,9 @@ export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId,
   gaps: [...new Set(ordered.flatMap(p => p.entry.gaps || []))],
   counts: {...newest.counts, ...counts, threads: undefined},
   harvest: {parts: ordered.length, localRoots: ordered.map(p => p.root), lastHarvestAt: harvest?.harvestedAt || null, partsCollectedAt: ordered.map(p => p.entry.collectedAt)},
-  files: [],
+  files: [...bundleFiles(mdir)].map(f => relative(out, f).split(sep).join('/')).sort(),
  };
+ if (legacyMetadata) entry.gaps.push(`family metadata: ${legacyMetadata} harvested parts predate recorded thread-creation inspection; additional launch relationships may be absent until their machines refresh them`);
  if (!entry.parts.length) entry.gaps.push(`no archived spans of this machine cover the family's window (${iso(sinceMs)} .. ${iso(untilMs)})`);
  // Parts the assembler could not refresh (the hourly harvest held the store): what their threads did after the part
  // was taken is not in the bundle. {since: the oldest such part, until: the newest change T3 records after it}.
@@ -232,6 +317,7 @@ export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId,
  b.machines = [entry];
  const seen = new Set();
  b.hops = ordered.flatMap(p => p.hops).filter(h => {const k = `${h.from.environmentId} ${h.to.environmentId} ${h.to.threadId} ${h.evidence}`; if (seen.has(k)) return false; seen.add(k); return true;});
+ assertBundleInventory(out, b);
  writeBundle(out, b);
  return out;
 }
@@ -267,7 +353,7 @@ export function latestBuild(familyDir) {
 // changed after their part was taken (the hourly harvest keeps the rest). A build is reused, across resolver restarts
 // too, while its inputs are the same: the same parts (by collection time), the same assembly version, and every
 // machine's span archive either unchanged or already past the family's window when the build was made.
-export const ASSEMBLY_VERSION = 3;
+export const ASSEMBLY_VERSION = 4;
 const MERGE_WORKERS = Math.max(1, Math.min(8, (availableParallelism?.() || 4) - 1));
 const OPEN_REUSE_MS = 5 * 60000;
 export async function assembleFamily({threadId, environmentId = null, repo = mainRepo(), t3Home = join(homedir(), '.t3'), partsKey = null, onProgress = () => {}, maxAgeMs = null, refreshLocal = true, mergeWorkers = MERGE_WORKERS} = {}) {
@@ -293,11 +379,14 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   const last0 = latestBuild(join(fleetDir(repo), slug(`${r0.environmentId.slice(0, 8)}-${r0.threadId}`)));
   const a0 = last0 && readJson(join(last0, 'assembly.json'));
   const age0 = a0 ? Date.now() - Date.parse(a0.builtAt) : Infinity;
-  const current = a0 && fam.every(p => a0.inputs?.[relative(incoming, p.dir)] === p.entry.collectedAt);
+  const current = a0 && Object.keys(a0.inputs || {}).length === fam.length && fam.every(p => a0.inputs?.[relative(incoming, p.dir)] === partIdentity(p));
   const held = localEnv && existsSync(join(incoming, localEnv, '.lock'));
-  if (a0 && a0.version === ASSEMBLY_VERSION && age0 < OPEN_REUSE_MS && (maxAgeMs == null || age0 < maxAgeMs) && current && (!a0.stale?.length || held)) {
+  const metadataStale = refreshLocal && localEnv && fam.some(p => p.environmentId === localEnv && needsFamilyMetadata(p));
+  if (a0 && a0.version === ASSEMBLY_VERSION && age0 < OPEN_REUSE_MS && (maxAgeMs == null || age0 < maxAgeMs) && current && !metadataStale && (!a0.stale?.length || held)) {
+   const bundle = readBundle(last0);
+   assertBundleInventory(last0, bundle);
    onProgress(1);
-   return {dir: last0, bundle: readBundle(last0), root: r0, reused: true};
+   return {dir: last0, bundle, root: r0, reused: true};
   }
  }
  // This machine's part of the family: its roots of every thread found so far (the thread itself when it is this
@@ -308,13 +397,13 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
  if (refreshLocal && localEnv) {
   const harvested = new Set();
   for (let round = 0; round < 4; round++) {
-   const seeds = [...new Set([...(!environmentId || environmentId === localEnv ? [threadId] : []), ...fam.flatMap(p => [...p.threadIds]), ...fam.flatMap(p => p.hops.flatMap(h => [h.from.threadId, h.to.threadId]))].filter(Boolean))];
-   if (!seeds.length && !environmentId) break;
+   const {seeds, upstreamThreads} = localFamilySeeds(fam, {threadId, environmentId, localEnv});
+   if (!seeds.length && !upstreamThreads.length) break;
    const remote = environmentId && environmentId !== localEnv && !fam.length ? {threadId, environmentId} : null;
-   const local = await localRoots(t3Home, seeds, remote);
+   const local = await localRoots(t3Home, seeds, remote, upstreamThreads);
    mark('localRoots');
    const mine = new Map(parts.filter(p => p.environmentId === localEnv).map(p => [p.root, p]));
-   const stale = local.filter(r => !harvested.has(r.root) && (!mine.has(r.root) || (r.updatedAt && Date.parse(r.updatedAt) > Date.parse(mine.get(r.root).entry.collectedAt)))).map(r => r.root);
+   const stale = rootsNeedingRefresh(local, mine, harvested);
    timings.localRoots = local.length;
    timings.staleRoots = (timings.staleRoots || 0) + stale.length;
    if (!stale.length) break;
@@ -348,7 +437,7 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
  const lastMs = Math.max(...activity.map(a => a.lastMs).filter(Number.isFinite));
  const open = activity.some(a => a.active);
  const untilMs = Math.max(sinceMs, open || !Number.isFinite(lastMs) ? Date.now() : Math.min(Date.now(), lastMs + ACTIVITY_MARGIN_MS));
- const inputs = Object.fromEntries(fam.map(p => [relative(incoming, p.dir), p.entry.collectedAt]));
+ const inputs = Object.fromEntries(fam.map(p => [relative(incoming, p.dir), partIdentity(p)]));
  const archives = Object.fromEntries([...new Set(fam.map(p => p.environmentId))].map(env => [env, readJson(join(incoming, env, 'harvest.json'))?.harvestedAt || null]));
  mark('window');
  // A build with the same inputs is reused.
@@ -359,11 +448,13 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
  // A family with a run still open is rebuilt once its build is five minutes old (its spans keep coming).
  const age = a ? Date.now() - Date.parse(a.builtAt) : Infinity;
  if (a && a.version === ASSEMBLY_VERSION && same(a.inputs, inputs) && archived && (!staleParts.length || a.stale?.length) && (!open || age < OPEN_REUSE_MS) && (maxAgeMs == null || age < maxAgeMs)) {
+  const bundle = readBundle(last);
+  assertBundleInventory(last, bundle);
   onProgress(1);
-  return {dir: last, bundle: readBundle(last), root, reused: true};
+  return {dir: last, bundle, root, reused: true};
  }
  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
- const tmp = join(familyDir, `.build-${stamp}-${process.pid}`);
+ const tmp = join(familyDir, `.build-${stamp}-${process.pid}-${randomUUID()}`);
  rmSync(tmp, {recursive: true, force: true});
  ensureDir(tmp);
  try {
@@ -389,7 +480,7 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   mark('prepare');
   // The merge's per-machine scan is skipped: the whole bundle is verified below, before it is served.
   // The merge's files are shared out to worker threads (collect.mjs mergePool), one machine at a time.
-  await merge({merge: partDirs, out, partsKey: pk, credValues, repo, t3Home, gzip: true, trusted: localEnv ? [localEnv] : [], verifyParts: false, fastSpans: true, gzipLevel: 1, spanWindow: {sinceMs, untilMs}, spansFromCache: join(cache, 'spans-from'), workers: mergeWorkers, ...(hand ? {spansFrom: [hand]} : {})});
+  const merged = await merge({merge: partDirs, out, partsKey: pk, credValues, repo, t3Home, gzip: true, trusted: localEnv ? [localEnv] : [], verifyParts: false, fastSpans: true, gzipLevel: 1, spanWindow: {sinceMs, untilMs}, spansFromCache: join(cache, 'spans-from'), workers: mergeWorkers, ...(hand ? {spansFrom: [hand]} : {})});
   mark('merge');
   onProgress(0.9);
   // Verify the whole bundle before it is served.
@@ -397,8 +488,9 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   mark('verify');
   if (Object.keys(v.hits).length) throw new Error(`the assembled bundle failed verification (${Object.keys(v.hits).length} files with hits); not served`);
   const bundle = readBundle(out);
+  assertBundleInventory(out, bundle);
   writeFileSync(join(out, 'assembly.json'), JSON.stringify({version: ASSEMBLY_VERSION, builtAt: new Date().toISOString(), root, requested: {threadId, environmentId}, window: {since: iso(sinceMs), until: iso(untilMs), open, lastActivity: Number.isFinite(lastMs) ? iso(lastMs) : null},
-   timings: {...timings, totalMs: Date.now() - t0}, inputs, archives, stale: staleParts, launches: bundle.hops.filter(h => h.kind === 'launch').length, spansFrom: hand ? relative(t3Root(repo), hand) : null, verify: {files: v.files, bytes: v.bytes, hitFiles: 0}}, null, 1) + '\n', {mode: 0o600});
+   timings: {...timings, totalMs: Date.now() - t0}, mergeTimings: merged.timings, inputs, archives, stale: staleParts, launches: bundle.hops.filter(h => h.kind === 'launch').length, spansFrom: hand ? relative(t3Root(repo), hand) : null, verify: {files: v.files, bytes: v.bytes, hitFiles: 0}}, null, 1) + '\n', {mode: 0o600});
   const final = join(familyDir, stamp);
   renameSync(out, final);
   // Keep the two newest builds (a page may still be reading the previous one).

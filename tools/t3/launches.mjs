@@ -1,9 +1,8 @@
 // Threads an agent launched with T3's own tools (t3_thread_launch, create_threads), read from the agent's own
-// transcript. T3 records no parent for such a thread: on the machine that runs it, its row has a null
-// lineage.parentThreadId, no delegatedFrom, and (when launched across a peer link) only linkOrigin, which names the
-// launching machine but not the thread. So the family walk (family.mjs) cannot reach it. The launching call's
-// result can: it returns the new thread's id and its t3-thread:// link. Each launch found here becomes a hop with
-// kind "launch" (a lineage break in the design's sense: joined by our evidence, T3 has no parent link).
+// transcript. A launch need not set lineage.parentThreadId. Some releases also record child-side delegatedFrom
+// or a parent-side thread_created turn item; this transcript evidence covers launches independently of those
+// projections and identifies the actual calling agent. The launch result returns the new thread's id and its
+// t3-thread:// link. Each launch found here becomes a hop with kind "launch" and its explicit evidence source.
 //
 // Only a launch tool's own result counts. A thread id or link anywhere else (a t3_thread_read result, a prompt, a
 // message) proves nothing about who launched it, and time alone never joins a thread.
@@ -15,7 +14,7 @@
 //                 response_item function_call {name, call_id, arguments} with function_call_output {call_id, output}
 import {readdirSync, statSync, existsSync, readFileSync, writeFileSync, mkdirSync} from 'node:fs';
 import {join, relative, sep, dirname} from 'node:path';
-import {fileBuffer, bufferLines} from './gz.mjs';
+import {fileBuffer, readBuffer, resolveBundleFile, bufferLines} from './gz.mjs';
 
 export const LAUNCH_TOOLS = /(?:^|__|\.)(t3_thread_launch|create_threads)$/;
 const NAME_HINT = /t3_thread_launch|create_threads/;
@@ -108,12 +107,13 @@ export function launchesInLines(lines) {
 
 // Every launch in one machine's agent-sessions folder (a part's machines/<env>/agent-sessions): each transcript
 // (.jsonl, plain or .gz), attributed to the T3 thread its index entry binds. Returns [{callerThreadId, path, ...}].
-export function launchesInSessions(sessionsDir) {
- const index = (() => {try {return JSON.parse(fileBuffer(existsSync(join(sessionsDir, 'index.json')) ? join(sessionsDir, 'index.json') : join(sessionsDir, 'index.json.gz')).toString('utf8'));} catch {return [];}})();
+export function launchesInSessions(sessionsDir, options) {
+ const bytes = readBuffer(join(sessionsDir, 'index.json'), options);
+ const index = bytes ? JSON.parse(bytes) : [];
  const out = [];
  for (const e of Array.isArray(index) ? index : []) {
   if (!/\.jsonl$/.test(e.path || '')) continue;
-  const file = [join(sessionsDir, e.path), join(sessionsDir, e.path + '.gz')].find(f => existsSync(f));
+  const file = resolveBundleFile(join(sessionsDir, e.path), options);
   if (!file) continue;
   let launches;
   try {launches = launchesInLines(bufferLines(fileBuffer(file)));} catch {continue;}
@@ -127,14 +127,16 @@ export function launchesInSessions(sessionsDir) {
 export function partLaunches(part, cacheDir) {
  const sdir = join(part.dir, 'machines', part.environmentId, 'agent-sessions');
  if (!existsSync(sdir)) return [];
- const stamp = [join(part.dir, 'bundle.json'), join(sdir, 'index.json')].map(f => {try {const s = statSync(f); return `${s.size}:${s.mtimeMs}`;} catch {return '-';}}).join('|');
+ const options = {base: part.dir, files: part.entry.files};
+ const index = resolveBundleFile(join(sdir, 'index.json'), options);
+ const stamp = [join(part.dir, 'bundle.json'), index].map(f => {try {const s = statSync(f); return `${f}:${s.size}:${s.mtimeMs}`;} catch {return '-';}}).join('|');
  const cacheFile = cacheDir && join(cacheDir, part.environmentId, `${relative(join(part.store, 'families'), part.dir).split(sep).join('__')}.json`);
  if (cacheFile && existsSync(cacheFile)) {try {const c = JSON.parse(readFileSync(cacheFile, 'utf8')); if (c.stamp === stamp && c.version === LAUNCH_CACHE_VERSION) return c.launches;} catch {}}
- const launches = launchesInSessions(sdir).map(l => ({...l, callerEnvironmentId: part.environmentId}));
+ const launches = launchesInSessions(sdir, options).map(l => ({...l, callerEnvironmentId: part.environmentId}));
  if (cacheFile) {try {mkdirSync(dirname(cacheFile), {recursive: true, mode: 0o700}); writeFileSync(cacheFile, JSON.stringify({version: LAUNCH_CACHE_VERSION, stamp, launches}) + '\n', {mode: 0o600});} catch {}}
  return launches;
 }
-export const LAUNCH_CACHE_VERSION = 2;
+export const LAUNCH_CACHE_VERSION = 3;
 
 // A launch as a hop (Contract A hops[], kind "launch"). The target machine is the one whose store holds the thread:
 // the link's environment, else the one the call asked for (T3 has answered a create_threads call aimed at another

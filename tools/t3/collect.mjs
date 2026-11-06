@@ -19,6 +19,7 @@ import {lineThreadMap, splitLines, splitName, worktreeFacts} from './facts.mjs';
 import {deriveNet} from './net.mjs';
 import {credentialValues, scanner, scanBundle, missingJoinKeys, bundleFiles} from './verify.mjs';
 import {fileBuffer, bufferLines, lineChunks, gzip, linesBuffer} from './gz.mjs';
+import {fileLines, writeLineFile} from './stream.mjs';
 import {ExactSet} from './exact.mjs';
 
 const USAGE = `T3 fleet collector: writes a private, credential-free bundle (plan Contract A).
@@ -342,6 +343,21 @@ function parentHops(fam, environmentId, rows, redactor) {
    evidence: 'parent'};
  });
 }
+// A thread_created turn item records the parent and target explicitly, including launches by generic providers
+// whose transcript has no provider-native tool-call join. It proves lineage, independently of network routes.
+export function createdThreadHops(fam, environmentId, label, rows, redactor) {
+ const runs = new Map(rows.runs.map(r => [r.run_id, r]));
+ return (fam.createdThreads || []).map(h => {
+  const run = runs.get(h.parentRunId), childRun = runs.get(h.runId);
+  return {kind: 'launch', evidence: 'parent',
+   from: {environmentId, threadId: h.fromThreadId, nodeId: h.nodeId},
+   to: {environmentId, threadId: h.threadId, label, runId: h.runId},
+   title: redactor.string(h.title || ''), provider: h.provider, model: h.model,
+   status: childRun?.status || null, startedAt: h.startedAt, completedAt: h.completedAt,
+   parentRun: run ? {runId: run.run_id, status: run.status, completedAt: run.completed_at || null} : null,
+   join: {by: 'turn-item', table: 'orchestration_v2_projection_turn_items', turnItemId: h.turnItemId}};
+ });
+}
 function childHops(fam, environmentId, label, rows, redactor) {
  const runsOf = id => rows.runs.filter(r => r.thread_id === id).sort((a, b) => (a.ordinal ?? 0) - (b.ordinal ?? 0));
  const updated = new Map(rows.threads.map(t => [t.thread_id, t.updated_at]));
@@ -361,13 +377,11 @@ function machineFiles(out, m) {
  m.files = [...bundleFiles(join(out, mdir))].map(f => relative(out, f).split(sep).join('/')).sort();
  m.sizes = Object.fromEntries(m.files.map(f => [f, statSync(join(out, f)).size]));
 }
-function writeDerived(out, bundle, {redactor, credValues, gzip = true, level = 6}) {
+async function writeDerived(out, bundle, {redactor, credValues, gzip = true, level = 6}) {
  const ready = bundle.machines.filter(m => m.status === 'collected' && existsSync(join(out, 'machines', m.environmentId)));
  const own = m => {try {return JSON.parse(readFileSync(join(out, 'machines', m.environmentId, 'environment.json'), 'utf8')).exposure?.port ?? null;} catch {return null;}};
- const derived = deriveNet(ready.map(m => ({environmentId: m.environmentId, label: m.label, dir: join(out, 'machines', m.environmentId), parts: m.parts || [], ownPort: own(m)})));
- for (const m of ready) {
-  const d = derived.get(m.environmentId);
-  if (!d) continue;
+ await deriveNet(ready.map(m => ({environmentId: m.environmentId, label: m.label, dir: join(out, 'machines', m.environmentId), parts: m.parts || [], ownPort: own(m)})), {onMachine: async (environmentId, d) => {
+  const m = ready.find(m => m.environmentId === environmentId);
   m.parts = d.parts;
   const gaps = [];
   const writer = new PartWriter(out, redactor, {gzip, level});
@@ -380,7 +394,7 @@ function writeDerived(out, bundle, {redactor, credValues, gzip = true, level = 6
   m.net = {rows: d.rows.length, peerCalls: c['peer-call'] || 0, joins: c.join || 0, misses: c.miss || 0, missesInCoverage: d.rows.filter(r => r.type === 'miss' && r.inReceiverCoverage).length, waits: c.wait || 0, bins: c.bin || 0, indexed: Object.keys(d.index).length};
   m.gaps = [...(m.gaps || []).filter(g => !g.startsWith('derived')), ...gaps.map(g => `derived: ${g}`)];
   machineFiles(out, m);
- }
+ }});
 }
 
 // ---- collect one machine ---------------------------------------------------------------------------------------
@@ -409,9 +423,10 @@ async function collect(o) {
   if (!o.since || !o.until) throw new Error('--window needs --since and --until');
   seeds = threadsInWindow(db, iso(ms(o.since)), iso(ms(o.until))); mode = 'window';
  } else throw new Error(`Give --root, --threads or --window\n\n${USAGE}`);
- const fam = resolveFamily(db, seeds, {environmentId});
+ const fam = resolveFamily(db, seeds, {environmentId, upstreamThreads: o.upstreamThreads || []});
  if (!fam.threadIds.length) throw new Error(`None of the seed threads, and no thread delegated from them, is on ${dbFile}`);
  for (const id of fam.missing) gaps.push(`thread ${id} is named by a family row but is not on this machine`);
+ for (const item of fam.ambiguousUpstream || []) gaps.push(`upstream thread ${item.threadId} is named on ${item.environmentIds.length} environments; its machine is ambiguous, so no family edge was inferred`);
  const rows = familyRows(db, fam.threadIds);
  // The family's root here: the --root seed's own root (the walk goes up), else the first seed.
  const rootOf = id => rows.threads.find(t => t.thread_id === id)?.payload_json?.lineage?.rootThreadId || id;
@@ -434,7 +449,7 @@ async function collect(o) {
  const writer = new PartWriter(out, redactor, {gzip: o.gzip});
  guardWriter(writer, scan, credValues, redactor, gaps);
  const mdir = `machines/${environmentId}`;
- const counts = {};
+ const counts = {ambiguousUpstream: fam.ambiguousUpstream?.length || 0};
  const prior = readBundle(out);
  const priorEntry = prior?.machines.find(m => m.environmentId === environmentId);
  const clock = o.clock || clockReading(o);
@@ -556,14 +571,17 @@ async function collect(o) {
   only: o.only || null,
   ...(o.noSpans ? {spans: 'archive'} : {}),
  };
+ // A metadata version certifies an inspected threads file, never a spans-only refresh.
+ const familyMetadata = o.only === 'spans' ? priorEntry?.familyMetadata : fam.familyMetadata;
+ if (familyMetadata) machine.familyMetadata = familyMetadata;
  machineFiles(out, machine);
  const at = bundle.machines.findIndex(m => m.environmentId === environmentId);
  if (at >= 0) bundle.machines[at] = machine; else bundle.machines.push(machine);
  // Hops this machine found, from either side; machines they reach are listed as not collected until merged.
- addHops(bundle, [...parentHops(fam, environmentId, rows, redactor), ...childHops(fam, environmentId, env.label, rows, redactor)]);
+ addHops(bundle, [...parentHops(fam, environmentId, rows, redactor), ...childHops(fam, environmentId, env.label, rows, redactor), ...createdThreadHops(fam, environmentId, env.label, rows, redactor)]);
  for (const h of bundle.hops) if (h.to.environmentId !== environmentId && !bundle.machines.some(m => m.environmentId === h.to.environmentId)) bundle.machines.push({environmentId: h.to.environmentId, label: h.to.label, status: 'not-collected', files: [], gaps: [`reached by remoteChild from ${env.label}; no part merged yet`]});
  for (const h of bundle.hops) if (h.from.environmentId !== environmentId && !bundle.machines.some(m => m.environmentId === h.from.environmentId)) bundle.machines.push({environmentId: h.from.environmentId, label: null, status: 'not-collected', files: [], gaps: [`named by delegatedFrom on ${env.label}; no part merged yet`]});
- if (!o.noDerive) writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip});
+ if (!o.noDerive) await writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip});
  finishBundle(bundle);
  writeBundle(out, bundle);
  return {out, machine, bundle, hops: fam.hops, before};
@@ -658,6 +676,7 @@ function rewriteExact(path, redactor, level) {
 
 const DERIVED = /\/(?:net\.ndjson|spans\.idx\.json)(?:\.gz)?$/;
 async function merge(o) {
+ const started = Date.now(), timings = {spanUnionMs: 0, workerFilesMs: 0, everywhereMs: 0, deriveMs: 0};
  if (!o.out) throw new Error('--merge needs --out <bundleDir>');
  const out = resolve(o.out);
  const bundle = readBundle(out);
@@ -707,7 +726,7 @@ async function merge(o) {
    const priorEntry = bundle.machines.find(x => x.environmentId === m.environmentId && x.status === 'collected');
    rmSync(join(out, mdir), {recursive: true, force: true});
    const fromCounts = {};
-   const writeSpans = (rel, partLines) => {
+   const writeSpans = async (rel, partLines) => {
     if (o.fastSpans) return writeSpansFast(rel, partLines);
     const byId = new Map();
     for (const l of partLines) {if (!l) continue; try {const sp = JSON.parse(l); if (sp.spanId) byId.set(sp.spanId, sp);} catch {}}
@@ -727,7 +746,8 @@ async function merge(o) {
    const SPAN_ID = /"spanId":"([^"]+)"/, START = /"startTimeUnixNano":"(\d+)"/, END = /"endTimeUnixNano":"(\d+)"/;
    const nanoKey = l => (START.exec(l)?.[1] || '').padStart(20, '0');
    const inWindow = l => {if (!o.spanWindow) return true; const e = END.exec(l)?.[1] || START.exec(l)?.[1]; if (!e) return true; const t = Number(BigInt(e) / 1000000n); return t >= o.spanWindow.sinceMs && t <= o.spanWindow.untilMs;};
-   const writeSpansFast = (rel, partLines) => {
+   const writeSpansFast = async (rel, partLines) => {
+    const started = Date.now();
     const byId = new Map();
     for (const l of partLines) {if (!l) continue; const id = SPAN_ID.exec(l)?.[1]; if (id && !byId.has(id)) byId.set(id, l);}
     const fromPart = byId.size;
@@ -771,13 +791,16 @@ async function merge(o) {
     fromCounts[rel] = {part: fromPart, prior: fromPrior, spansFrom: byId.size - fromPart - fromPrior};
     const all = [...byId.values()].map(l => [nanoKey(l), l]).sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).map(x => x[1]);
     m.counts = {...m.counts, [rel === 'spans.ndjson' ? 'spans' : 'desktopSpans']: all.length};
+    // The sorted sequence owns the lines now; release duplicate lookup/array storage before streaming output.
+    byId.clear(); partLines.length = 0;
     // With workers, the union (already redacted) is handed to one as a file: its guard scan and gzip run there,
     // beside the machine's other files. The file is in the build's own folder, outside the bundle.
     if (pool) {
      const tmpFile = join(dirname(out), `.spans-${m.environmentId}-${rel}`);
-     writeFileSync(tmpFile, linesBuffer(all), {mode: 0o600});
+     await writeLineFile(tmpFile, all);
      tasks.push({src: tmpFile, rel: `${mdir}/${rel}`, mode: 'none', size: statSync(tmpFile).size, tmp: true});
     } else writer.lines(`${mdir}/${rel}`, all);
+    timings.spanUnionMs += Date.now() - started;
    };
    // A live part taken before coverage was based on span ends: its window is cut again from the part's own spans
    // (the earliest end among them is where its log's retention began).
@@ -794,27 +817,32 @@ async function merge(o) {
     const same = fleet && o.fastSpans && Array.isArray(m.sourceCollectors) && m.sourceCollectors.length > 0 && m.sourceCollectors.every(v => v === COLLECTOR_VERSION);
     const spanRel = SPAN_RELS.find(r => rel === `${mdir}/${r}`);
     if (pool && !spanRel) {tasks.push({src: f, rel, mode: own ? 'own' : same ? 'same' : 'full', size: statSync(f).size}); continue;}
-    const lines = [...bufferLines(fileBuffer(f))].map(l => own ? reline(l, true) : same ? redactor.exactOnly(redactor.fromParts(l)) : reline(l, false));
+    const lines = [];
+    for await (const l of fileLines(f)) lines.push(own ? reline(l, true) : same ? redactor.exactOnly(redactor.fromParts(l)) : reline(l, false));
     if (spanRel === 'spans.ndjson') noteEnds(lines);
-    if (spanRel) {writeSpans(spanRel, lines); done.add(spanRel);} else writer.lines(rel, lines);
+    if (spanRel) {await writeSpans(spanRel, lines); done.add(spanRel);} else writer.lines(rel, lines);
    }
-   for (const rel of SPAN_RELS) if (!done.has(rel) && (priorSpans[rel].length || oldSpans[rel].some(x => x.spans === null || x.spans.length))) writeSpans(rel, []);
+   for (const rel of SPAN_RELS) if (!done.has(rel) && (priorSpans[rel].length || oldSpans[rel].some(x => x.spans === null || x.spans.length))) await writeSpans(rel, []);
    if (priorEntry) m.threadIds = [...new Set([...(priorEntry.threadIds || []), ...(m.threadIds || [])])];
    // The workers' files: their redaction counts, the values their shapes revealed (promoted below, with the
    // spans'), and the files the guard would not write.
+   const workersStarted = Date.now();
    const pooled = tasks.length ? await pool.run(tasks) : [];
+   timings.workerFilesMs += Date.now() - workersStarted;
    for (const t of tasks) if (t.tmp) rmSync(t.src, {force: true});
    for (const r of pooled) {
     for (const [k, n] of Object.entries(r.counts)) redactor.counts[k] = (redactor.counts[k] || 0) + n;
     for (const [v, rule] of r.found) if (!redactor.values.has(v)) redactor.found.set(v, rule);
     gaps.push(...r.gaps);
    }
+   const everywhereStarted = Date.now();
    const known = pool ? new Set(redactor.values.keys()) : null;
    const {promoted} = writer.flush();
    // a value promoted now is removed from the workers' files too (the everywhere-pass, as PartWriter does), and
    // the workers know it for the next machines
    if (promoted) for (const r of pooled) if (r.written) rewriteExact(r.written, redactor, o.gzipLevel || 6);
    if (promoted && pool) pool.addValues([...redactor.values].filter(([v]) => !known.has(v)));
+   timings.everywhereMs += Date.now() - everywhereStarted;
    const verify = o.verifyParts === false ? {files: 0, bytes: 0, hits: {}, deferred: 'the whole bundle is verified after the merge'} : scanBundle(out, {values: credValues, only: [mdir]});
    const own = (m.parts || priorParts(m, 'part')).map(p => p.source !== 'live' || p.basis === 'span-end' || partMinEnd === null ? p
     : {...p, window: {since: iso(Math.max(Date.parse(p.window.since), partMinEnd)), until: p.window.until}, basis: 'span-end', recomputed: 'from the part spans at merge'});
@@ -838,10 +866,13 @@ async function merge(o) {
   }
  }
  } finally {await pool?.close();}
- if (!o.noDerive) writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6});
+ const deriveStarted = Date.now();
+ if (!o.noDerive) await writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6});
  finishBundle(bundle);
  writeBundle(out, bundle);
- return {out, results, bundle};
+ timings.deriveMs = Date.now() - deriveStarted;
+ timings.totalMs = Date.now() - started;
+ return {out, results, bundle, timings};
 }
 
 // Rewrite the derived files of a bundle (after a merge run with --no-derive, or a classifier change).
@@ -856,7 +887,7 @@ async function derive(o) {
  const values = existsSync(t3Home) ? secretValues({t3Home, home, repo, db}) : new Map();
  db?.close();
  const redactor = bundleRedactor(out, bundle, values, o);
- writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false});
+ await writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false});
  finishBundle(bundle);
  writeBundle(out, bundle);
  return {out, bundle};

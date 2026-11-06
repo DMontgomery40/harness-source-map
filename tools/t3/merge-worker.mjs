@@ -7,10 +7,11 @@
 // workerData: {out, familyKey (hex), partsKey (hex), values: [[value, rule]], credValues: [[value, kind]], gzip, level}
 // Task: {id, src, rel, mode: 'own' | 'same' | 'full' | 'none'}. Reply: {id, written | null, counts, found: [[value, rule]], gaps}.
 import {parentPort, workerData} from 'node:worker_threads';
-import {writeFileSync, rmSync, chmodSync} from 'node:fs';
+import {writeFileSync, rmSync, chmodSync, statSync} from 'node:fs';
 import {join, dirname} from 'node:path';
 import {FamilyRedactor} from './redact.mjs';
-import {scanner} from './verify.mjs';
+import {scanner, scanFileStream} from './verify.mjs';
+import {copyFileStream} from './stream.mjs';
 import {ExactSet} from './exact.mjs';
 import {fileBuffer, bufferLines, bufferChunks, lineChunks, gzip, linesBuffer, GZIP_OVER} from './gz.mjs';
 import {ensureDir} from './bundle.mjs';
@@ -28,20 +29,26 @@ const reline = {
  none: l => l, // already redacted here (the merge's span union): only the guard and the write
 };
 
-parentPort.on('message', task => {
+parentPort.on('message', async task => {
  // values the merge promoted after an earlier machine (as one thread's redactor would have them by now)
  if (task.addValues) {for (const [v, rule] of task.addValues) redactor.addValue(v, rule); return;}
  try {
   for (const k of Object.keys(redactor.counts)) redactor.counts[k] = 0;
   redactor.found.clear();
   const gaps = [];
-  const buf = fileBuffer(task.src);
-  // already redacted (the span union, hundreds of megabytes): scanned in chunks and written as it is, unless the
-  // guard finds something; then it takes the line path below like any file
-  if (task.mode === 'none' && ![...bufferChunks(buf)].some(chunk => Object.keys(scan(chunk)).length)) {
-   parentPort.postMessage({id: task.id, written: writeBuffer(task.rel, buf), counts: {...redactor.counts}, found: [], gaps});
+  // Span unions are already redacted. Scan and gzip them through bounded streams instead of expanding the
+  // complete archive into a Buffer and an array of chunk strings. A hit retains the existing scrub path.
+  if (task.mode === 'none' && !Object.keys(await scanFileStream(task.src, {scan})).length) {
+   const plain = join(w.out, task.rel);
+   const compress = w.gzip && statSync(task.src).size >= GZIP_OVER;
+   const path = compress ? plain + '.gz' : plain;
+   ensureDir(dirname(path));
+   rmSync(compress ? plain : plain + '.gz', {force: true});
+   await copyFileStream(task.src, path, {gzip: compress, level: w.level});
+   parentPort.postMessage({id: task.id, written: path, counts: {...redactor.counts}, found: [], gaps});
    return;
   }
+  const buf = fileBuffer(task.src);
   let lines = [...bufferLines(buf)].map(reline[task.mode]);
   let written = null;
   if (Object.keys(hitsOf(lines)).length) {

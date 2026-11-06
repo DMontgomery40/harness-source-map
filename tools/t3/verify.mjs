@@ -10,6 +10,7 @@ import {join, relative, sep} from 'node:path';
 import {secretValues} from './secrets.mjs';
 import {fileBuffer, bufferChunks} from './gz.mjs';
 import {ExactSet} from './exact.mjs';
+import {fileTextChunks} from './stream.mjs';
 
 const read = file => {try {return readFileSync(file, 'utf8');} catch {return '';}};
 
@@ -102,7 +103,7 @@ export function missingJoinKeys(dir, keys, {only} = {}) {
 
 // scanBundle across worker threads (the files shared out by size): the same scan and the same result, for a bundle
 // of hundreds of megabytes that a page is waiting on. Falls back to scanBundle where workers are unavailable.
-export async function scanBundleParallel(dir, {values, only, workers = null} = {}) {
+export async function scanBundleParallel(dir, {values, only, workers = null, memoryBudgetBytes = 512 * 1024 * 1024} = {}) {
  const {Worker} = await import('node:worker_threads');
  const {availableParallelism} = await import('node:os');
  const files = [];
@@ -111,8 +112,15 @@ export async function scanBundleParallel(dir, {values, only, workers = null} = {
   if (only && !only.some(p => rel === p || rel.startsWith(p.endsWith('/') ? p : p + '/'))) continue;
   files.push({file, rel, size: statSync(file).size});
  }
- const n = Math.max(1, Math.min(workers || Math.min(8, (availableParallelism?.() || 4) - 1), files.length));
- if (n < 2) return scanBundle(dir, {values, only});
+ // A worker holds raw chunks, decoded strings and scanner temporaries; reserve four chunk sizes per worker.
+ // A single unusually long line may exceed the reservation, but independent files never multiply by CPU count.
+ const memoryWorkers = Math.max(1, Math.floor(memoryBudgetBytes / (4 * 32 * 1024 * 1024)));
+ const n = Math.max(1, Math.min(workers || Math.min(8, (availableParallelism?.() || 4) - 1), memoryWorkers, files.length));
+ if (n < 2) {
+  const out = {files: files.length, bytes: files.reduce((s, f) => s + f.size, 0), hits: {}};
+  for (const f of files) {const hits = await scanFileStream(f.file, {values}); if (Object.keys(hits).length) out.hits[f.rel] = hits;}
+  return out;
+ }
  const lots = Array.from({length: n}, () => ({size: 0, files: []}));
  for (const f of [...files].sort((a, b) => b.size - a.size)) {const lot = lots.reduce((x, y) => (y.size < x.size ? y : x)); lot.files.push(f); lot.size += f.size;}
  const run = lot => new Promise((resolve, reject) => {
@@ -125,4 +133,11 @@ export async function scanBundleParallel(dir, {values, only, workers = null} = {
  const relOf = new Map(files.map(f => [f.file, f.rel]));
  for (const r of results) for (const [file, hits] of Object.entries(r)) out.hits[relOf.get(file)] = hits;
  return out;
+}
+
+// Same line-aligned chunks and scanner counts as scanBundle, without whole-file gzip expansion.
+export async function scanFileStream(file, {values, scan = scanner(values)} = {}) {
+ const hits = {};
+ for await (const chunk of fileTextChunks(file)) for (const [k, n] of Object.entries(scan(chunk))) hits[k] = (hits[k] || 0) + n;
+ return hits;
 }

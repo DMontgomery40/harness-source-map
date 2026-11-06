@@ -18,6 +18,7 @@ import {fileCapture} from './capture/file-capture.mjs';
 import {sessionContext} from './sources/context.mjs';
 import {findT3Bundle, bundleFileList} from './t3/bundles.mjs';
 import {ALIAS_KEY_FILE, partsKeyFile} from './t3/bundle.mjs';
+import {readBuffer, resolveBundleFile} from './t3/gz.mjs';
 import {assembleFamily, readParts, storesHold, incomingDir, fleetBuilds, t3Root} from './t3/assemble.mjs';
 import {mainRepo} from './t3/collect.mjs';
 import {openReadOnly} from './t3/sqlite.mjs';
@@ -107,6 +108,8 @@ const defaultT3Roots=[...new Set([...configuredPaths('t3Bundles'),fileURLToPath(
 // progress readable while it runs. A thread is T3's when this machine's T3 database or a harvested part holds it.
 export function createAssembler({repo=defaultT3Repo,t3Home=join(homedir(),'.t3'),assemble=assembleFamily,enabled=null}={}){
  const jobs=new Map();
+ // Heavy family builds share one resolver budget. A queued member of the same family reuses the completed build.
+ let assemblyTail=Promise.resolve();
  let partsAt=0,parts=[];
  const freshParts=()=>{if(Date.now()-partsAt>20000){parts=readParts(incomingDir(repo));partsAt=Date.now();}return parts;};
  async function isThread(threadId){
@@ -119,10 +122,10 @@ export function createAssembler({repo=defaultT3Repo,t3Home=join(homedir(),'.t3')
   let j=jobs.get(key);
   if(j && (!j.settled || Date.now()-j.settledAt<15000))return j;
   j={progress:0,settled:false};
-  j.promise=assemble({threadId,environmentId,repo,t3Home,onProgress:f=>{j.progress=Math.max(j.progress,f);}})
+  j.promise=assemblyTail.then(()=>assemble({threadId,environmentId,repo,t3Home,onProgress:f=>{j.progress=Math.max(j.progress,f);}}))
    .then(r=>{partsAt=0;if(r&&!r.reused){try{const a=JSON.parse(readFileSync(join(r.dir,'assembly.json'),'utf8'));console.log(`T3 family assembled in ${a.timings?.totalMs} ms: ${JSON.stringify(a.timings)}`);}catch{}}return r;})
    .finally(()=>{j.settled=true;j.settledAt=Date.now();setTimeout(()=>{if(jobs.get(key)===j)jobs.delete(key);},15000).unref?.();});
-  j.promise.catch(()=>{});
+  assemblyTail=j.promise.catch(()=>{});
   jobs.set(key,j);
   return j;
  }
@@ -157,7 +160,7 @@ async function servable(base,path){
 // A harness session that ran in a collected T3 family: the bundle's agent-sessions index names it by its native id.
 // Returns the family's root thread, the session's own T3 thread and machine, and the session's files in the bundle
 // (served when the session ran on another machine, so it is not in this one's folders). Any bundle version.
-async function t3Session(roots,id,builds=[]){
+export async function t3Session(roots,id,builds=[]){
  // every bundle holding the session (hand-collected, and the newest build of each assembled family); the newest
  // format wins, then the newest collection (as findT3Bundle chooses)
  let best=null;
@@ -168,16 +171,23 @@ async function t3Session(roots,id,builds=[]){
   let bundle;
   try{bundle=JSON.parse(await readFile(join(dir,'bundle.json'),'utf8'));}catch{continue;}
   if(bundle.format!=='t3-fleet-bundle')continue;
+  const bundleBase=await realpath(dir).catch(()=>null);if(!bundleBase)continue;
   for(const m of bundle.machines||[]){
-   const base=await realpath(join(dir,'machines',m.environmentId,'agent-sessions')).catch(()=>null);if(!base)continue;
-   let index;try{index=JSON.parse(await readFile(join(base,'index.json'),'utf8'));}catch{continue;}
+   const base=await realpath(join(dir,'machines',m.environmentId,'agent-sessions')).catch(()=>null);if(!base||!within(bundleBase,base))continue;
+   const selection={base:bundleBase,...(Array.isArray(m.files)?{files:m.files}:{})};
+   let index;
+   try{
+    const path=resolveBundleFile(join(base,'index.json'),selection);
+    if(!path||!await servable(base,path))continue;
+    index=JSON.parse(readBuffer(join(base,'index.json'),selection));
+   }catch{continue;}
    if(!Array.isArray(index))continue;
    const hit=index.find(e=>String(e.nativeId).toLowerCase()===id && typeof e.path==='string' && /\.jsonl$/.test(e.path) && !/\/subagents\//.test(e.path));
    if(!hit)continue;
    // the index is data from another machine: a path that leaves agent-sessions (or names the alias key) is never served
    const files=[];
    for(const e of index.filter(e=>e.threadId===hit.threadId && typeof e.path==='string' && (e.nativeId===hit.nativeId || e.path.includes(hit.nativeId)))){
-    for(const path of [resolve(base,e.path),resolve(base,e.path)+'.gz'])if(await servable(base,path)){files.push(path);break;}
+    try{const path=resolveBundleFile(resolve(base,e.path),selection);if(path&&await servable(base,path))files.push(path);}catch{/* ambiguous or missing manifest member is not served */}
    }
    const found={dir,base,product:hit.product,files,label:m.label,bundle,pointer:{rootThreadId:bundle.scope?.rootThreadId||null,threadId:hit.threadId,environmentId:m.environmentId,machine:m.label}};
    if(!best||(bundle.version||0)>(best.bundle.version||0)||((bundle.version||0)===(best.bundle.version||0)&&newest(bundle)>newest(best.bundle)))best=found;

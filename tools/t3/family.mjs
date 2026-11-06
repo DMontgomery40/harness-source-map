@@ -14,19 +14,58 @@ function inChunks(db, sql, ids, size = 400) {
  return out;
 }
 
+// Collection coverage changes independently of credential-redaction compatibility (COLLECTOR_VERSION).
+export const FAMILY_METADATA_VERSION = 1;
+const CREATIONS = 'orchestration_v2_projection_turn_items';
+const CREATION_FIELDS = ['id', 'threadId', 'runId', 'nodeId', 'providerThreadId', 'providerTurnId', 'parentItemId', 'ordinal', 'type', 'status', 'title', 'startedAt', 'completedAt', 'updatedAt', 'targetThreadId', 'targetRunId', 'targetProviderInstanceId', 'targetModel'];
+// Only this timeline item's identity and target metadata are exported. Do not copy arbitrary turn-item bodies.
+function threadCreations(db, ids, {tables, byTarget = false} = {}) {
+ if (!tables.has(CREATIONS) || !ids.length) return [];
+ const field = byTarget ? "json_extract(payload_json,'$.targetThreadId')" : 'thread_id';
+ return inChunks(db, `select turn_item_id, thread_id, run_id, node_id, type, status, updated_at, payload_json from ${CREATIONS} where type = 'thread_created' and ${field} in (?)`, ids).flatMap(row => {
+  const p = parse(row.payload_json);
+  if (p?.type !== 'thread_created' || typeof p.targetThreadId !== 'string' || !p.targetThreadId || (p.threadId !== undefined && p.threadId !== row.thread_id)) return [];
+  const payload = Object.fromEntries(CREATION_FIELDS.filter(k => k in p && (p[k] === null || ['string', 'number'].includes(typeof p[k]))).map(k => [k, p[k]]));
+  return [{...row, payload_json: payload}];
+ });
+}
+
 // Seeds are T3 thread ids; any thread of a family will do, and a seed that is not on this machine (a family thread
-// on another machine) is an upstream id. The walk goes up (lineage parent and root, and delegatedFrom on this
-// machine) and down: lineage root or parent in the family, subagents.child_thread_id, subagents.payload_json
-// .remoteChild (nodes never carry it), and every thread whose child-side delegatedFrom names a family or upstream
-// thread (delegations and t3_thread_launch / create_threads launches from a linked environment both stamp it, with
-// linkOrigin). Returns {threadIds, missing, upstream, hops (parent side), childHops (child side)}.
-export function resolveFamily(db, seeds, {environmentId = null} = {}) {
+// on another machine) is a legacy upstream id. Prefer upstreamThreads with explicit environmentId/threadId pairs.
+// The walk follows local lineage, subagents, and recorded thread_created items in both directions. Remote
+// delegations have parent-side remoteChild and child-side delegatedFrom; a general launch need not have either.
+// Legacy upstream ids join only when their delegatedFrom evidence names one unambiguous environment.
+export function resolveFamily(db, seeds, {environmentId = null, upstreamThreads = []} = {}) {
+ const tables = new Set(db.tables());
  const isLocal = ids => new Set(ids.length ? inChunks(db, 'select thread_id from orchestration_v2_projection_threads where thread_id in (?)', ids).map(r => r.thread_id) : []);
  const localSeeds = isLocal(seeds);
  const upstream = seeds.filter(id => !localSeeds.has(id));
+ const qualified = new Map();
+ const addUpstream = (env, id) => {if (typeof env !== 'string' || !env || typeof id !== 'string' || !id) return; if (!qualified.has(id)) qualified.set(id, new Set()); qualified.get(id).add(env);};
+ for (const ref of upstreamThreads) addUpstream(ref.environmentId, ref.threadId);
+ const ambiguousUpstream = [];
+ const legacy = upstream.filter(id => !qualified.has(id));
+ const candidates = new Map();
+ for (const row of inChunks(db, "select json_extract(payload_json,'$.delegatedFrom.threadId') parent, json_extract(payload_json,'$.delegatedFrom.environmentId') environment from orchestration_v2_projection_threads where json_extract(payload_json,'$.delegatedFrom.threadId') in (?)", legacy)) {
+  if (!row.environment) continue;
+  if (!candidates.has(row.parent)) candidates.set(row.parent, new Set());
+  candidates.get(row.parent).add(row.environment);
+ }
+ for (const [id, envs] of candidates) {
+  if (envs.size === 1) addUpstream([...envs][0], id);
+  else ambiguousUpstream.push({threadId: id, environmentIds: [...envs].sort()});
+ }
  const family = new Set(localSeeds);
  const named = new Set();
  const hops = new Map();
+ const createdThreads = new Map();
+ const noteCreation = row => {
+  const p = row.payload_json;
+  named.add(row.thread_id); named.add(p.targetThreadId);
+  createdThreads.set(row.turn_item_id, {fromThreadId: row.thread_id, nodeId: row.node_id || null, parentRunId: row.run_id || null, turnItemId: row.turn_item_id,
+   threadId: p.targetThreadId, runId: p.targetRunId || null, provider: p.targetProviderInstanceId || null, model: p.targetModel || null,
+   title: p.title || null, startedAt: p.startedAt || null, completedAt: p.completedAt || null});
+ };
  const notePayload = (p, row) => {
   if (!p) return;
   if (p.childThreadId) named.add(p.childThreadId);
@@ -52,8 +91,12 @@ export function resolveFamily(db, seeds, {environmentId = null} = {}) {
   // Down.
   for (const r of inChunks(db, `select thread_id from ${T} where json_extract(payload_json,'$.lineage.rootThreadId') in (?)`, ids)) family.add(r.thread_id);
   for (const r of inChunks(db, `select thread_id from ${T} where json_extract(payload_json,'$.lineage.parentThreadId') in (?)`, ids)) family.add(r.thread_id);
-  const anyIds = [...ids, ...upstream];
-  for (const r of inChunks(db, `select thread_id from ${T} where json_extract(payload_json,'$.delegatedFrom.threadId') in (?)`, anyIds)) family.add(r.thread_id);
+  const anyIds = [...new Set([...ids, ...qualified.keys()])];
+  for (const r of inChunks(db, `select thread_id, json_extract(payload_json,'$.delegatedFrom.threadId') parent, json_extract(payload_json,'$.delegatedFrom.environmentId') environment from ${T} where json_extract(payload_json,'$.delegatedFrom.threadId') in (?)`, anyIds)) {
+   if ((r.environment === environmentId && family.has(r.parent)) || qualified.get(r.parent)?.has(r.environment)) family.add(r.thread_id);
+  }
+  for (const row of threadCreations(db, ids, {tables})) noteCreation(row);
+  for (const row of threadCreations(db, ids, {tables, byTarget: true})) noteCreation(row);
   for (const r of inChunks(db, 'select subagent_id, thread_id, run_id, parent_node_id, child_thread_id, completion_delivery_state, payload_json from orchestration_v2_projection_subagents where thread_id in (?)', ids)) {
    if (r.child_thread_id) named.add(r.child_thread_id);
    notePayload(parse(r.payload_json), r);
@@ -71,7 +114,8 @@ export function resolveFamily(db, seeds, {environmentId = null} = {}) {
    provider: p.providerInstanceId || p.modelSelection?.instanceId || null, model: p.modelSelection?.model || null, createdAt: r.created_at || p.createdAt || null, linkOrigin: p.linkOrigin ? {label: p.linkOrigin.label || null, access: p.linkOrigin.access || null} : null});
  }
  const missing = [...named].filter(id => !family.has(id) && !upstream.includes(id) && !hops.has(`${environmentId} ${id}`));
- return {threadIds: [...family], missing, upstream, hops: [...hops.values()], childHops};
+ return {threadIds: [...family], missing, upstream, ambiguousUpstream, hops: [...hops.values()], childHops, createdThreads: [...createdThreads.values()],
+  familyMetadata: {version: FAMILY_METADATA_VERSION, threadCreations: tables.has(CREATIONS) ? 'available' : 'unavailable'}};
 }
 
 // Threads active in a window (window mode): created before until and updated after since.
@@ -97,6 +141,7 @@ export function familyRows(db, threadIds) {
  const PS = 'orchestration_v2_projection_provider_sessions', SUB = 'orchestration_v2_projection_subagents', CT = 'orchestration_v2_projection_context_transfers';
  return {
   threads,
+  threadCreations: threadCreations(db, threadIds, {tables}),
   legacyThreads: q('projection_threads', 'select * from projection_threads where thread_id in (?)'),
   runs: q('orchestration_v2_projection_runs', 'select * from orchestration_v2_projection_runs where thread_id in (?)'),
   runAttempts: q('orchestration_v2_projection_run_attempts', 'select * from orchestration_v2_projection_run_attempts where thread_id in (?)'),

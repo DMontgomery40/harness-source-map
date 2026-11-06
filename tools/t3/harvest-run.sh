@@ -64,7 +64,7 @@ if [ -n "${T3_HARVEST_PUSH:-}" ]; then
   N="$(wc -l < "$LIST" | tr -d ' ')"
   if [ "$N" -gt 0 ]; then
     REMOTE="${T3_HARVEST_REMOTE:-harness-source-map/private/sessions/t3/incoming}"
-    RECV='set -e; umask 077; d="$1/$2"; s="$1/.staging-$2-$$"; mkdir -p "$s" "$d"; tar -xzf - -C "$s"; (cd "$s" && find . -type f) | while IFS= read -r f; do mkdir -p "$d/$(dirname "$f")"; mv "$s/$f" "$d/$f"; done; rm -r "$s"; echo received'
+    RECV="$(cat "$CODE/tools/t3/receive-harvest.sh")"
     if (cd "$DIR" && tar -czf - -T "$LIST") | ssh -o BatchMode=yes -o ConnectTimeout=20 "$T3_HARVEST_PUSH" "sh -c $(printf %q "$RECV") recv $(printf %q "$REMOTE") $(printf %q "$ENV_ID")"; then
       mv "$NEXT" "$MARK"
       log "pushed $N files to $T3_HARVEST_PUSH:$REMOTE/$ENV_ID"
