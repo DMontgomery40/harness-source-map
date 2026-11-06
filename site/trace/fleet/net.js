@@ -1,80 +1,158 @@
 // The network of a T3 family from its machines' span archives (design §7, §8): the peer calls between T3 servers
-// (PeerMcpClient → POST to 127.0.0.1:<mesh port> → the receiver's POST /mcp, joined on parentSpanId → spanId), the
-// forwarded waits (a PeerMcpClient.call of 45 s or more: one 50 s chunk of a held wait), who each call belongs to
-// (the orchestration thread ids in its delegateTask subtree: the long-lived ancestors above it are written only when
-// they end), and each link's clock offset bounded by its joined pairs.
+// (PeerMcpClient → POST to a peer link's loopback port → the receiver's POST /mcp), the forwarded waits among them,
+// what each call's own spans say about which orchestration thread and command it served, and each link's clock
+// offset bounded by its joined pairs.
 //
-// Derived here, in the worker, from fleet/spans.js indexes of the bundle's span archives (the collector's v2
-// net.ndjson.gz is meant to carry the same facts precomputed; it is not read yet). Coverage always comes from each
-// machine part's collected window, never from a merged span file's first and last span.
-const WAIT_MS = 45000;
-const ANCHORS = new Set(["OrchestratorMcpService.delegateTask", "RemoteDelegation.followOnce"]);
-const PEER_URL = /^http:\/\/127\.0\.0\.1:(\d+)(\/[^?#]*)?/;
+// What the spans establish, and what they do not:
+//   join         a receiving server span on another environment whose trace id and parent span id are the caller
+//                span's: "matched" when exactly one such span is in the route's target, "ambiguous" with several,
+//                "route-conflict" when the only ones are in another environment than the peer link's route names,
+//                "unjoined" with none (which alone says nothing about lost traffic: the receiver's window, a span
+//                not yet ended, or uncollected work all leave a call unjoined)
+//   owners       thread and command ids written in spans, qualified by the environment whose archive holds them:
+//                "direct-span" on the call's own ancestry, "anchor-subtree" elsewhere under the delegateTask (or
+//                followOnce) span above it, which is association within that subtree, not exclusive ownership
+//   wait         "recorded-wait" when the call runs under PeerForwarding.waitForThread (or its receiver ran the
+//                t3_thread_wait tool), "long-call-candidate" for a PeerMcpClient.call of 45 s or more with no such
+//                record (a duration, not an operation), else "not-wait"
+//   transport    the route's environments and loopback port; the carrier (SSH tunnel, T3 Connect) is not recorded
+//                by a matching Host and is never inferred; transport never establishes task lineage
+// Membership of a family is decided only from qualified owner ids (attributeWaits, callMembership); a wait with no
+// owner ids that a recorded hop's endpoints and time are consistent with stays "unknown", flagged consistent.
+//
+// Derived here, in the worker, from fleet/spans.js indexes. Coverage always comes from each machine part's collected
+// window, never from a merged span file's first and last span.
+import { threadKey, commandKey, callKey, waitKey, spanKey } from "./keys.js";
 
-// machines: [{ id, label, peerLinks: [{ environment_id, urls_json }] }] (fleet/bundle.js readMachines);
-// spans: Map env -> fleet/spans.js index. Returns the summary the page shows, and a handle for the ladder.
+export const WAIT_MS = 45000;
+const ANCHORS = new Set(["OrchestratorMcpService.delegateTask", "RemoteDelegation.followOnce"]);
+// A peer endpoint from a URL, parsed as a URL (any path, query or fragment; an explicit port, else the scheme's
+// default; IPv6 in brackets): { host, port, path }, the host exactly as written (lowercased, no brackets). Hosts are
+// compared exactly: 127.0.0.1, ::1 and localhost are three hosts here, since nothing recorded says they are one.
+export function peerEndpoint(value) {
+  let u;
+  try { u = new URL(String(value ?? "")); } catch { return null; }
+  if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+  const host = u.hostname.replace(/^\[|\]$/g, "").toLowerCase(), port = u.port ? Number(u.port) : u.protocol === "https:" ? 443 : 80;
+  if (!host || !Number.isInteger(port) || port < 1 || port > 65535) return null;
+  return { host, port, path: u.pathname || "/" };
+}
+export const hostPort = e => `${e.host.includes(":") ? `[${e.host}]` : e.host}:${e.port}`;
+const WAIT_OP = "PeerForwarding.waitForThread", WAIT_TOOL = "t3_thread_wait";
+// the forwarded wait's chunk in the public implementation (PeerForwarding FORWARDED_WAIT_CHUNK_MS)
+export const WAIT_CHUNK_MS = 50000;
+
+// machines: [{ id, label, part, peerLinks: [{ environment_id, urls_json }] }] (fleet/bundle.js readNetMachines);
+// spans: Map env -> fleet/spans.js index. Returns the summary the page shows, and handles for ladders and evidence.
 export function buildNet(machines, spans) {
   const label = new Map(machines.map(m => [m.id, m.label]));
-  const port = new Map(); // `${caller env}:${port}` -> target env
+  // a peer link's route: the caller environment and the exact endpoint it calls -> the target environment
+  const routes = new Map(), routeKey = (env, e) => JSON.stringify([env, e.host, e.port]);
   for (const m of machines) for (const l of m.peerLinks || []) for (const u of l.urls_json || []) {
-    const p = Number(String(u).split(":").pop());
-    if (p) port.set(`${m.id}:${p}`, l.environment_id);
+    const e = peerEndpoint(u);
+    if (e) routes.set(routeKey(m.id, e), l.environment_id);
   }
   const ancestorsOf = (ix, i, k = 40) => { const out = []; for (let p = ix.parent[i]; p >= 0 && k--; p = ix.parent[p]) out.push(p); return out; };
 
-  // Caller side: client spans to a peer's mesh port.
+  // Caller side: client spans to a peer link's endpoint (host and port as the link records them).
   const calls = [];
   for (const [env, ix] of spans) {
     for (const [i, a] of ix.attrs) {
       if (ix.kind(i) !== "client") continue;
-      const u = PEER_URL.exec(String(a["url.full"] || ""));
-      const to = u && port.get(`${env}:${u[1]}`);
+      const u = peerEndpoint(a["url.full"]);
+      const to = u && routes.get(routeKey(env, u));
       if (!to) continue;
       const anc = ancestorsOf(ix, i);
-      const call = anc.find(p => ix.name(p) === "PeerMcpClient.call");
-      const held = call != null && ix.t1[call] - ix.t0[call] >= WAIT_MS;
-      const anchor = anc.find(p => ANCHORS.has(ix.name(p)) && ix.name(p) === "OrchestratorMcpService.delegateTask") ?? anc.find(p => ANCHORS.has(ix.name(p))) ?? null;
-      calls.push({ env, to, port: Number(u[1]), i, call: call ?? null, anchor, t0: ix.t0[i], t1: ix.t1[i], path: u[2] || "/", method: a["http.request.method"] || null,
-        status: a["http.response.status_code"] ?? null, wait: held || anc.some(p => /^(RemoteDelegation\.followOnce|PeerForwarding\.waitForThread)$/.test(ix.name(p))),
-        via: anc.map(p => ix.name(p)).filter(n => /^(Peer|Remote|McpToolAccess|OrchestratorMcp)/.test(n)).slice(0, 6) });
+      const callSpan = anc.find(p => ix.name(p) === "PeerMcpClient.call") ?? null;
+      const anchor = anc.find(p => ix.name(p) === "OrchestratorMcpService.delegateTask") ?? anc.find(p => ANCHORS.has(ix.name(p))) ?? null;
+      const chain = anc.map(p => ix.name(p));
+      const traceId = ix.trace(i), spanId = ix.spanId(i);
+      calls.push({ key: callKey(env, traceId, spanId), env, to, host: u.host, port: u.port, endpoint: hostPort(u), i, traceId, spanId, callSpan, anchor, anchorName: anchor != null ? ix.name(anchor) : null,
+        t0: ix.t0[i], t1: ix.t1[i], path: u.path, method: a["http.request.method"] || null, status: a["http.response.status_code"] ?? null,
+        recordedWaitOp: chain.includes(WAIT_OP), via: chain.filter(n => /^(Peer|Remote|McpToolAccess|OrchestratorMcp)/.test(n)).slice(0, 6) });
     }
   }
-  // Ownership: the thread ids written anywhere in each anchor's subtree.
+
+  // Owners: thread and command ids in spans, qualified by their environment. On the call's own ancestry (the call
+  // and its ancestors up to its anchor) they are direct; elsewhere under the anchor they are the subtree's.
   for (const [env, ix] of spans) {
-    const anchors = new Map(calls.filter(c => c.env === env && c.anchor != null).map(c => [c.anchor, { threads: new Set(), commands: new Set() }]));
-    if (!anchors.size) continue;
+    const mine = calls.filter(c => c.env === env);
+    if (!mine.length) continue;
+    const subtree = new Map(mine.filter(c => c.anchor != null).map(c => [c.anchor, { threads: new Map(), commands: new Map() }]));
     for (const [i, a] of ix.attrs) {
       const th = a["orchestration_v2.thread_id"], cmd = a["orchestration_v2.command_id"];
       if (!th && !cmd) continue;
       for (const p of [i, ...ancestorsOf(ix, i)]) {
-        const own = anchors.get(p);
-        if (own) { if (th) own.threads.add(String(th)); if (cmd) own.commands.add(String(cmd)); break; }
+        const own = subtree.get(p);
+        if (!own) continue;
+        if (th && !own.threads.has(String(th))) own.threads.set(String(th), i);
+        if (cmd && !own.commands.has(String(cmd))) own.commands.set(String(cmd), i);
+        break;
       }
     }
-    for (const c of calls) if (c.env === env && c.anchor != null) { const own = anchors.get(c.anchor); c.threads = [...own.threads]; c.commands = [...own.commands]; }
+    for (const c of mine) {
+      const threads = new Map(), commands = new Map();
+      for (const p of [c.i, ...ancestorsOf(ix, c.i)]) {
+        const a = ix.attrs.get(p);
+        if (a?.["orchestration_v2.thread_id"] && !threads.has(String(a["orchestration_v2.thread_id"]))) threads.set(String(a["orchestration_v2.thread_id"]), { basis: "direct-span", span: p });
+        if (a?.["orchestration_v2.command_id"] && !commands.has(String(a["orchestration_v2.command_id"]))) commands.set(String(a["orchestration_v2.command_id"]), { basis: "direct-span", span: p });
+        if (p === c.anchor) break;
+      }
+      const own = c.anchor != null ? subtree.get(c.anchor) : null;
+      if (own) {
+        for (const [id, span] of own.threads) if (!threads.has(id)) threads.set(id, { basis: "anchor-subtree", span });
+        for (const [id, span] of own.commands) if (!commands.has(id)) commands.set(id, { basis: "anchor-subtree", span });
+      }
+      c.owners = {
+        threads: [...threads].map(([id, o]) => ({ id, key: threadKey(env, id), environmentId: env, basis: o.basis, span: o.span })),
+        commands: [...commands].map(([id, o]) => ({ id, key: commandKey(env, id), environmentId: env, basis: o.basis, span: o.span })),
+      };
+    }
   }
-  for (const c of calls) { c.threads ||= []; c.commands ||= []; }
+  for (const c of calls) c.owners ||= { threads: [], commands: [] };
 
-  // Receiver side: a span whose parent id is a caller span on another machine.
-  const byCaller = new Map();
-  for (const c of calls) byCaller.set(`${c.env}:${spans.get(c.env).id(c.i)}`, c);
+  // Receiver side: server spans whose parent is not in their own archive, by (trace, parent span id).
+  const receivers = new Map();
+  for (const [env, ix] of spans) for (const [i, pid] of ix.foreign) {
+    if (ix.kind(i) !== "server") continue;
+    const k = `${ix.trace(i)}\u0000${ix.hex(pid)}`;
+    (receivers.get(k) || receivers.set(k, []).get(k)).push({ env, i });
+  }
   const joins = [];
-  for (const [env, ix] of spans) {
-    for (const [i, pid] of ix.foreign) {
-      for (const [cenv] of spans) {
-        if (cenv === env) continue;
-        const c = byCaller.get(`${cenv}:${pid}`);
-        if (!c) continue;
-        const a = ix.attrs.get(i) || {};
-        const j = { call: c, env, i, s0: ix.t0[i], s1: ix.t1[i], host: a["server.address"] ? `${a["server.address"]}:${a["server.port"] ?? ""}` : null, ua: String(a["user_agent.original"] || "").slice(0, 32), route: a["http.route"] || a["url.path"] || null };
-        joins.push(j); (c.joins ||= []).push(j);
-      }
-    }
+  for (const c of calls) {
+    const found = (receivers.get(`${c.traceId}\u0000${c.spanId}`) || []).filter(r => r.env !== c.env);
+    const inTarget = found.filter(r => r.env === c.to);
+    const cand = inTarget.length ? inTarget : found;
+    c.candidates = found.map(r => r.env);
+    if (!found.length) { c.join = { status: "unjoined", basis: "same-trace-and-parent-span", candidates: 0 }; continue; }
+    if (!inTarget.length) { c.join = { status: "route-conflict", basis: "same-trace-and-parent-span", candidates: found.length, environments: [...new Set(found.map(r => r.env))] }; continue; }
+    if (cand.length > 1) { c.join = { status: "ambiguous", basis: "same-trace-and-parent-span", candidates: cand.length }; continue; }
+    const r = cand[0], rix = spans.get(r.env), a = rix.attrs.get(r.i) || {};
+    const j = { call: c, env: r.env, i: r.i, traceId: rix.trace(r.i), spanId: rix.spanId(r.i), s0: rix.t0[r.i], s1: rix.t1[r.i],
+      host: a["server.address"] ? `${a["server.address"]}:${a["server.port"] ?? ""}` : null, ua: String(a["user_agent.original"] || "").slice(0, 32), route: a["http.route"] || a["url.path"] || null,
+      tool: receiverTool(rix, r.i) };
+    c.join = { status: "matched", basis: "same-trace-and-parent-span", candidates: 1 };
+    c.joins = [j];
+    joins.push(j);
+  }
+  for (const c of calls) c.joins ||= [];
+
+  // Wait classification: an operation record (the chain, or the receiver's tool), else a long call, else none.
+  for (const c of calls) {
+    const ix = spans.get(c.env);
+    const span = c.callSpan ?? c.i;
+    const durationMs = ix.t1[span] - ix.t0[span];
+    const basis = [];
+    if (c.recordedWaitOp) basis.push(`operation ${WAIT_OP}`);
+    if (c.joins[0]?.tool === WAIT_TOOL) basis.push(`receiver tool ${WAIT_TOOL}`);
+    const classification = basis.length ? "recorded-wait" : c.callSpan != null && durationMs >= WAIT_MS ? "long-call-candidate" : "not-wait";
+    if (classification === "long-call-candidate") basis.push(`PeerMcpClient.call lasted ≥ ${WAIT_MS / 1000} s; no wait operation is recorded`);
+    c.wait = { classification, basis, durationMs, chunk: classification === "recorded-wait" && Math.abs(durationMs - WAIT_CHUNK_MS) <= 5000 ? "about one 50 s forwarded chunk" : null };
   }
 
-  // Clock: per link, the offset (receiver minus caller) each joined pair bounds to [s1 - c1, s0 - c0], fitted per
-  // clock epoch (the caller's and receiver's server processes, by service.instance.id where their traces say) by
-  // boundedFit, which stays inside every bound.
+  // Clock: per link, the offset (receiver minus caller) each matched pair bounds to [s1 - c1, s0 - c0], fitted per
+  // clock epoch (the caller's and receiver's server processes, where each span names its own or its trace has one)
+  // by boundedFit, which stays inside every bound. Only matched joins are pairs.
   const clock = {};
   const links = new Map();
   for (const j of joins) { const k = `${j.call.env}>${j.env}`; (links.get(k) || links.set(k, []).get(k)).push(j); }
@@ -83,29 +161,55 @@ export function buildNet(machines, spans) {
     clock[k] = linkClock(from, to, list.map(j => ({ t: j.call.t0, lo: j.s1 - j.call.t1, hi: j.s0 - j.call.t0, epoch: epochOf(spans, j) })));
   }
 
-  // Waits: one row per forwarded 50 s chunk (its PeerMcpClient.call), with its owner thread ids.
-  const waitCalls = new Map();
-  for (const c of calls) if (c.wait && c.call != null) { const k = `${c.env}:${c.call}`; if (!waitCalls.has(k)) waitCalls.set(k, c); }
-  const waits = [...waitCalls.values()].map(c => { const ix = spans.get(c.env); return { from: c.env, to: c.to, t0: ix.t0[c.call], t1: ix.t1[c.call], threads: c.threads, call: c }; })
-    .filter(w => w.t1 - w.t0 >= WAIT_MS).sort((a, b) => a.t0 - b.t0);
+  // Waits: one row per PeerMcpClient.call (or client span) that is a recorded wait or a long-call candidate, at its
+  // own recorded duration (a short recorded wait is still a wait; a long call is never promoted to one).
+  const waitRows = new Map();
+  for (const c of calls) {
+    if (c.wait.classification === "not-wait") continue;
+    const ix = spans.get(c.env), span = c.callSpan ?? c.i;
+    const key = waitKey(c.env, ix.trace(span), ix.spanId(span));
+    if (waitRows.has(key)) continue;
+    waitRows.set(key, { key, from: c.env, to: c.to, t0: ix.t0[span], t1: ix.t1[span], durationMs: c.wait.durationMs, classification: c.wait.classification, basis: c.wait.basis, chunk: c.wait.chunk, owners: c.owners, call: c });
+  }
+  const waits = [...waitRows.values()].sort((a, b) => a.t0 - b.t0);
 
   // Join rate per directed link: every caller span, those inside a collected window of the receiver's part (start and
   // end: a span is written when it ends, so a call still open when the part was taken has no receiving span yet),
-  // and those joined to a receiving span.
-  const windows = new Map(machines.map(m => [m.id, (m.part?.parts?.length ? m.part.parts.map(p => p.window) : [m.part?.window]).filter(Boolean)
-    .map(w => [Date.parse(w.since), Date.parse(w.until)])]));
+  // and those matched to a receiving span; ambiguous and route-conflict joins are counted apart.
+  const windows = new Map(machines.map(m => [m.id, windowsOf(m)]));
   const rate = {};
   for (const c of calls) {
-    const k = `${c.env}>${c.to}`, r = rate[k] ||= { calls: 0, inWindow: 0, inWindowJoined: 0, joined: 0 };
-    const inside = (windows.get(c.to) || []).some(([a, b]) => c.t0 >= a && c.t1 <= b);
+    const k = `${c.env}>${c.to}`, r = rate[k] ||= { calls: 0, inWindow: 0, inWindowJoined: 0, joined: 0, ambiguous: 0, routeConflict: 0 };
+    const wins = windows.get(c.to) || [], inside = wins.some(([a, b]) => c.t0 >= a && c.t1 <= b);
+    c.inReceiverWindow = inside;
+    // what the receiver's collected windows say of the call: inside, outside, or nothing (no window recorded)
+    c.receiverWindow = !wins.length ? "unknown" : inside ? "inside" : "outside";
     r.calls++;
     if (inside) r.inWindow++;
-    if (c.joins?.length) { r.joined++; if (inside) r.inWindowJoined++; }
+    if (c.join.status === "matched") { r.joined++; if (inside) r.inWindowJoined++; }
+    else if (c.join.status === "ambiguous") r.ambiguous++;
+    else if (c.join.status === "route-conflict") r.routeConflict++;
   }
-  return { calls, joins, waits, clock, rate, label: env => label.get(env) || String(env).slice(0, 8) };
+  const byKey = new Map(calls.map(c => [c.key, c]));
+  const waitByKey = new Map(waits.map(w => [w.key, w]));
+  return { calls, byKey, joins, waits, waitByKey, clock, rate, windows, collected: new Set(spans.keys()), label: env => label.get(env) || String(env).slice(0, 8) };
 }
 
-// A joined pair's clock epoch: the two server processes, where known.
+const windowsOf = m => (m.part?.parts?.length ? m.part.parts.map(p => p.window) : [m.part?.window]).filter(w => w?.since && w?.until).map(w => [Date.parse(w.since), Date.parse(w.until)]);
+
+// The MCP tool a receiving span ran, from its own attributes or a near descendant's (bounded walk).
+function receiverTool(ix, i) {
+  const queue = [[i, 0]];
+  for (let n = 0; queue.length && n < 64; n++) {
+    const [s, d] = queue.shift();
+    const tool = ix.attrs.get(s)?.["mcp.tool.name"];
+    if (tool) return String(tool);
+    if (d < 4) for (const c of ix.children(s)) queue.push([c, d + 1]);
+  }
+  return null;
+}
+
+// A matched pair's clock epoch: the two server processes, each "?" where unknown or conflicting.
 export const epochOf = (spans, j) => `${spans.get(j.call.env).instance(j.call.i) ?? "?"}>${spans.get(j.env).instance(j.i) ?? "?"}`;
 
 // A link's clock from its joined pairs ({ t, lo, hi, epoch }): one bounded fit per epoch, the pairs no fit can
@@ -177,14 +281,27 @@ export function offsetAt(knots, t) {
   return knots.at(-1).offsetMs;
 }
 
-// Which waits a family owns: attributed by the thread ids in their subtree; with no ids, consistent when a family
-// hop on that link was live; otherwise another family's or unknown.
-export function attributeWaits(waits, { familyThreads, hops }) {
-  const fam = new Set(familyThreads);
+// Whether qualified owner ids put a call or wait in a family (familyKeys: every known thread key of the family,
+// inventory-only threads included): "member" (all its owners are), "other" (none is), "mixed", "unknown" (none named).
+export function membershipOf(owners, familyKeys) {
+  const keys = owners?.threads || [];
+  if (!keys.length) return "unknown";
+  const inside = keys.filter(t => familyKeys.has(t.key)).length;
+  return inside === keys.length ? "member" : inside === 0 ? "other" : "mixed";
+}
+
+// Which waits a family owns, by qualified owner ids only. A wait with no owner ids is "unknown"; when a recorded
+// hop of the family has the wait's own endpoints (caller and destination environment) and its time span covers the
+// wait, it is flagged temporally consistent with that hop, which is not membership.
+//   familyKeys: Set of thread keys; hops: [{ fromEnv, toEnv, startedAt, completedAt }]
+export function attributeWaits(waits, { familyKeys, hops = [] }) {
+  const keys = familyKeys instanceof Set ? familyKeys : new Set(familyKeys || []);
   return waits.map(w => {
-    const owned = w.threads.some(id => fam.has(id));
-    const consistent = !w.threads.length && hops.some(h => h.toEnv === w.to && w.t0 >= h.startedAt - 2000 && w.t0 <= (h.completedAt ?? Infinity) + 2000);
-    return { ...w, family: owned || consistent, attribution: owned ? "attributed" : consistent ? "consistent" : w.threads.length ? "other-family" : "unknown" };
+    const membership = membershipOf(w.owners, keys);
+    const temporal = membership === "unknown" && hops.some(h => h.fromEnv === w.from && h.toEnv === w.to && Number.isFinite(h.startedAt)
+      && w.t0 >= h.startedAt - 2000 && w.t0 <= (h.completedAt ?? Infinity) + 2000) ? "consistent-with-recorded-hop" : null;
+    const attribution = membership === "member" ? "attributed" : membership === "mixed" ? "mixed" : membership === "other" ? "other-family" : temporal ? "consistent" : "unknown";
+    return { ...w, membership, temporal, family: membership === "member", attribution };
   });
 }
 
@@ -195,23 +312,65 @@ export function hopCommand(nodeId) {
   try { return decodeURIComponent(m[1]); } catch { return null; }
 }
 
-// The network rows of one family thread (its ridge's panel), grouped by link and kind, each with a count and the
-// call the ladder opens: the delegation into it and the waits held on it (calls whose subtree runs the hop's
-// command), and the calls it made itself (calls whose subtree names its thread).
-// who: { thread, env, commands: [hop command ids] }
-export function threadRows(net, { thread, env, commands = [] }) {
-  const cmds = new Set(commands), groups = new Map();
-  for (const c of net.calls) {
-    const into = c.commands.some(x => cmds.has(x)), own = c.threads.includes(thread) && c.env === env;
-    if (!into && !own) continue;
-    const kind = into ? (c.wait ? "held waits" : "delegation in") : c.wait ? "waits it held" : "calls out";
-    const k = `${c.env}>${c.to}|${kind}`;
-    const g = groups.get(k) || groups.set(k, { from: c.env, to: c.to, port: c.port, kind, count: 0, joined: 0, t0: c.t0, t1: c.t1, first: c }).get(k);
-    g.count++; if (c.joins?.length) g.joined++;
-    g.t0 = Math.min(g.t0, c.t0); g.t1 = Math.max(g.t1, c.t1);
-    // the ladder opens the group's first joined POST (a tool call), else its first joined call
-    const rank = x => (x.joins?.length ? 2 : 0) + (x.method === "POST" ? 1 : 0);
-    if (rank(c) > rank(g.first)) g.first = c;
+// The recorded delegations into a family thread, with qualified commands: [{ fromEnv, toEnv, fromKey, toKey,
+// commandId, command (commandKey) }] from the family's hops (a v2 hop names the delegation's node in subagentId; its
+// from.nodeId is the parent run's root).
+export function incomingCommands(hops, thread) {
+  const out = [];
+  for (const h of hops || []) {
+    if (h.toKey !== thread) continue;
+    const commandId = hopCommand(h.subagentId) || hopCommand(h.fromNode);
+    if (!commandId || h.fromEnv == null) continue;
+    out.push({ fromEnv: h.fromEnv, toEnv: h.toEnv, fromKey: h.fromKey, toKey: h.toKey, commandId, command: commandKey(h.fromEnv, commandId) });
   }
-  return [...groups.values()].sort((a, b) => a.t0 - b.t0);
+  return out;
 }
+
+// How a call relates to one family thread: "into" (it ran a recorded delegation's command, from that delegation's
+// caller environment to its child environment), "own" (its caller environment is the thread's and its spans name
+// the thread), or null.
+export function callRelation(c, { threadKey: key, env, incoming = [] }) {
+  const into = incoming.find(h => c.env === h.fromEnv && c.to === h.toEnv && c.owners.commands.some(x => x.key === h.command));
+  if (into) return { kind: "into", basis: "recorded-hop-command", hop: into };
+  const own = c.env === env ? c.owners.threads.find(x => x.key === key) : null;
+  if (own) return { kind: "own", basis: own.basis, shared: c.owners.threads.length > 1 };
+  return null;
+}
+
+// The network rows of one family thread (its ridge's panel), grouped by link and kind. Each group keeps every
+// member call's key in time order (`members`, at most MAX_MEMBERS, with `omitted` the rest), so a selection of the
+// group is its members, never a representative.
+//   who: { threadKey, env, incoming (incomingCommands) }
+const MAX_MEMBERS = 400;
+export function threadRows(net, who) {
+  const groups = new Map();
+  for (const c of net.calls) {
+    const rel = callRelation(c, who);
+    if (!rel) continue;
+    const waits = c.wait.classification === "recorded-wait";
+    const kind = rel.kind === "into" ? (waits ? "held waits" : "delegation in") : waits ? "waits it held" : "calls out";
+    const k = `${c.env}>${c.to}|${kind}`;
+    const g = groups.get(k) || groups.set(k, { from: c.env, to: c.to, port: c.port, kind, basis: new Set(), count: 0, joined: 0, ambiguous: 0, routeConflict: 0, candidates: 0, shared: 0, t0: c.t0, t1: c.t1, calls: [] }).get(k);
+    g.count++;
+    g.basis.add(rel.basis);
+    if (c.join.status === "matched") g.joined++; else if (c.join.status === "ambiguous") g.ambiguous++; else if (c.join.status === "route-conflict") g.routeConflict++;
+    if (c.wait.classification === "long-call-candidate") g.candidates++;
+    if (rel.shared) g.shared++;
+    g.t0 = Math.min(g.t0, c.t0); g.t1 = Math.max(g.t1, c.t1);
+    g.calls.push(c);
+  }
+  return [...groups.values()].sort((a, b) => a.t0 - b.t0).map(g => {
+    g.calls.sort((a, b) => a.t0 - b.t0 || a.key.localeCompare(b.key));
+    const { calls, basis, ...rest } = g;
+    return { ...rest, basis: [...basis], members: calls.slice(0, MAX_MEMBERS).map(c => c.key), omitted: Math.max(0, calls.length - MAX_MEMBERS) };
+  });
+}
+
+// One call as a compact row (a group's member list, a ladder's heading).
+export function callSummary(c, label = env => env) {
+  return { key: c.key, from: label(c.env), to: label(c.to), fromEnv: c.env, toEnv: c.to, port: c.port, method: c.method, path: c.path, status: c.status, t0: c.t0, t1: c.t1,
+    join: c.join.status, wait: c.wait.classification, durationMs: c.wait.durationMs };
+}
+
+// The span key of span i of an environment's index.
+export const spanKeyOf = (spans, env, i) => { const ix = spans.get(env); return spanKey(env, ix.trace(i), ix.spanId(i)); };

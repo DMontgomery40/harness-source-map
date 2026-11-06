@@ -5,13 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' http://127.0.0.1:8766; img-src 'self' data: blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'">
 <title>Trace: see an agent session as a landscape</title>
-<meta name="description" content="Load a real coding-agent session and explore what filled the model's context, what it did, and every prompt the harness injected between turns. Runs entirely in your browser.">
+<meta name="description" content="Load a real coding-agent session and explore what filled the model's context, what it did, and every prompt the harness injected between turns. Runs in your browser.">
 <meta name="color-scheme" content="dark">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="trace.css">
-<link rel="stylesheet" href="harness/harness.css">
 <link rel="stylesheet" href="search.css">
 <link rel="stylesheet" href="network/network.css">
 <link rel="stylesheet" href="sources/sources.css">
@@ -25,7 +24,7 @@
     <header class="intro">
       <p class="brand"><a href="../">Reference</a> <span aria-hidden="true">/</span> Trace</p>
       <h1>See one agent session as a landscape.</h1>
-      <p class="lede">Follow the shape of a conversation. Explore every agent, see what filled its context, and dive into the exact words behind each layer.</p>
+      <p class="lede">Every agent, what filled its context, and the exact words behind each layer.</p>
       <div id="hero" class="hero" aria-hidden="true"></div>
       <div id="hero-legend" class="legend"></div>
     </header>
@@ -34,22 +33,21 @@
       <div class="load-head"><h2 id="load-h">Open a session</h2><button id="help-loader" class="help-open" type="button">Help</button></div>
       <div class="real-example">
         <h3>New to Trace?</h3>
-        <p>Explore David Montgomery's real session building this site: 90 subagents and 5,667 requests across a day of engineering, research and review. The source logs are scrubbed for publication. No files, account, or local helper are needed.</p>
+        <p id="example-entry">A real T3 family: 64 agents across 4 environments and multiple providers · 8,348 requests · original text withheld</p>
         <button id="open-example" class="btn" type="button">Open a real example</button>
         <p id="example-status" class="example-description" role="status" aria-live="polite"></p>
         <p id="example-description" class="example-description" aria-live="polite"></p>
       </div>
       <div class="find">
-        <label for="paste" class="find-label">Paste a session ID, a Codex/ChatGPT thread link or a T3 Code thread link</label>
+        <label for="paste" class="find-label">Paste a session ID or thread link</label>
         <input id="paste" class="paste" type="text" spellcheck="false" autocomplete="off"
-          placeholder="OpenCode ses_…, Cursor or Claude Code UUID, codex://threads/…, or t3-thread://…">
-        <p class="find-note">A T3 Code thread spans many harness sessions, often on several machines: paste its link and the local helper opens the whole family.</p>
+          placeholder="ses_…, a UUID, codex://threads/…, or t3-thread://…">
         <div id="paste-out" class="paste-out" aria-live="polite"></div>
       </div>
       <p class="or">Or drop the files yourself</p>
-      <div id="drop" class="drop" tabindex="0" role="button" aria-describedby="drop-help">
+      <div id="drop" class="drop" tabindex="0" role="button" aria-label="Drop a session file or folder, or press Enter to choose files">
         <p class="drop-big">Drop a session file or folder here</p>
-        <p id="drop-help" class="drop-help">A Codex/ChatGPT rollout, Claude Code session, Cursor Agent stream (<code>.jsonl</code>), Cursor desktop export, or native OpenCode export (<code>.json</code>). Include related session exports to bring Claude Code or OpenCode subagents. A network capture (<code>.har</code>) dropped with the session attaches too.</p>
+        <p class="drop-help"><code>.jsonl</code> · <code>.json</code> exports · <code>.har</code> with its session · T3 bundle folders</p>
         <div class="drop-buttons">
           <label class="btn">Choose files<input id="pick-files" type="file" multiple accept=".jsonl,.json,.har,application/json"></label>
           <label class="btn">Choose a folder<input id="pick-folder" type="file" webkitdirectory multiple></label>
@@ -63,8 +61,8 @@
       <p id="load-error" class="error" role="alert" hidden></p>
 
       <div class="private">
-        <strong>Session files stay on your device.</strong>
-        <span>No session uploads.</span>
+        <strong>Session files are read in this tab.</strong>
+        <span>Nothing is sent unless you send an explanation.</span>
       </div>
 
       <div id="dev" class="dev" hidden>
@@ -79,7 +77,6 @@
 <div id="app" class="app" hidden>
   <div id="stage" class="stage"></div>
   <div id="flat" class="flat" hidden></div>
-  <div id="harness" class="harness-host" hidden aria-label="Harness layer"></div>
   <header class="hud">
     <div class="hud-title">
       <button id="back-to-load" class="brandbtn" type="button" title="Load another session"><span class="brand-mark" aria-hidden="true">≋</span> Trace</button>
@@ -90,16 +87,15 @@
   </header>
   <div class="side">
     <div id="resizer" class="resizer" role="separator" aria-orientation="vertical" aria-label="Resize the panel" tabindex="0"></div>
-    <div class="side-heading"><span class="eyebrow">Explore session</span><span class="side-actions"><button id="help-open" class="help-open" type="button" title="Help: open a session, see everything on this machine, captures">Help</button><button id="add-capture" class="net-button" type="button" data-state="none" aria-expanded="false" aria-controls="net-help" title="Network capture: what went over the wire in this session">+ Network capture</button><button id="overview" class="text-control" type="button">↖ Overview</button></span></div>
-    <div id="example-banner" class="example-banner" hidden><details><summary>Real session · Details</summary><p id="example-label"></p></details><button id="example-own-session" class="text-control" type="button">Open your own session</button></div>
-    <div id="source-notes" class="example-banner" hidden></div>
+    <div class="side-heading"><span class="side-actions"><button id="overview" class="text-control" type="button">↖ Overview</button><button id="notes-open" class="text-control" type="button" hidden>Notes</button><button id="add-capture" class="net-button" type="button" data-state="none" aria-expanded="false" aria-controls="net-help">Capture</button><button id="help-open" class="help-open" type="button">Help</button></span></div>
+    <div id="example-banner" class="example-banner" hidden><details><summary>Public example · Details</summary><div id="example-label" class="example-label"></div></details><button id="example-own-session" class="text-control" type="button">Open your own session</button></div>
     <input id="pick-har" type="file" multiple accept=".har,.json,application/json" hidden>
     <p id="net-status" class="net-status" role="status" aria-live="polite" hidden></p>
     <div id="net-help" class="net-help" hidden></div>
     <div id="search-bar" class="search-bar"></div>
     <nav id="lenses" class="lenses" aria-label="Explore session"></nav>
     <div id="request-nav" class="request-nav" hidden></div>
-    <div class="sidebar-tools"><button id="inspect-back" class="text-control" type="button" hidden>← Back</button><span id="selection-label" class="selection-label">Session overview</span><button id="widen" class="btn small widen" type="button" aria-pressed="false">Widen for reading</button></div>
+    <div class="sidebar-tools"><button id="inspect-back" class="text-control" type="button" hidden>← Back</button><span id="selection-label" class="selection-label">Overview</span><button id="widen" class="btn small widen" type="button" aria-pressed="false">Expand reader</button></div>
     <aside id="panel" class="panel" aria-live="polite"></aside>
   </div>
   <div id="minimap" class="minimap" aria-label="Session overview"></div>
@@ -112,9 +108,8 @@
   </div>
   <div id="playback" class="playback" role="group" aria-label="Playback" hidden></div>
   <div class="viewtools" aria-label="View controls">
-    <button id="reset-view" class="btn small" type="button" title="Reset camera to the current selection">↺ <span>Reset view</span></button>
-    <button id="label-detail" class="btn small" type="button" aria-pressed="false" title="Show injection labels on the landscape">Landmarks</button>
-    <button id="harness-mode" class="btn small" type="button" aria-pressed="false" title="Harness layer: every piece of text the harness put in front of the model, where it came from, what put it there, who got it, and when (h)">Harness</button>
+    <button id="reset-view" class="btn small" type="button" aria-label="Reset view">↺ <span>Reset view</span></button>
+    <button id="label-detail" class="btn small" type="button" aria-pressed="false">Landmarks</button>
     <button id="mode" class="btn small" type="button"></button>
   </div>
   <div id="tip" class="tip" hidden></div>

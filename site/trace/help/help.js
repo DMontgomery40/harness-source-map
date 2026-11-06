@@ -7,6 +7,7 @@ import { createRecordingPanel } from "./recording.js";
 import { resolverHealth } from "../local-session.js";
 
 import { productLabel } from '../products.js';
+import { routesFor, FILE_CAPTURE, RESOLVER } from "../capture-routes.js";
 const LOCAL = "http://127.0.0.1:8766";
 const TOPICS = [
   { key: "open", title: "Open a session" },
@@ -71,28 +72,28 @@ export function createHelp(ctx) {
     // The local resolver
     let state, text, action = null;
     if (checking) { state = "busy"; text = "Checking…"; }
-    else if (!health) { state = "idle"; text = "Not checked yet. Checking contacts 127.0.0.1 on this computer."; action = btn("Check now", check); }
-    else if (health.ok) { state = "ok"; text = onPageOrigin() ? "Running, and serving this page." : "Running, and answering this page."; action = btn("Check again", check); }
-    else if (health.blocked) { state = "warn"; text = "Your browser is blocking this page from reaching it. Allow local network access for this site, or open Trace from the resolver."; action = btn("Check again", check); }
-    else { state = "warn"; text = health.prompt ? "Not answering. When your browser asks to allow local network access, choose Allow." : "Not answering: it isn't running, or your browser blocks this page from reaching it."; action = btn("How to start it", () => show("everything")); }
-    rows.push(readout("Local resolver", state, text, action));
+    else if (!health) { state = "idle"; text = "Not checked (checking contacts 127.0.0.1)"; action = btn("Check now", check); }
+    else if (health.ok) { state = "ok"; text = onPageOrigin() ? "Running · serving this page" : "Running · answering this page"; action = btn("Check again", check); }
+    else if (health.blocked) { state = "warn"; text = "Blocked by the browser · allow local network access, or open Trace from the helper"; action = btn("Check again", check); }
+    else { state = "warn"; text = health.prompt ? "Not answering · choose Allow when the browser asks" : "Not answering"; action = btn("How to start it", () => show("everything")); }
+    rows.push(readout("Local helper", state, text, action));
     // This session's network capture
     if (s?.trace) {
       const n = s.network;
       rows.push(readout("Network capture", n ? "ok" : "idle",
-        n ? `Attached: ${fmtInt(n.kept)} requests, ${fmtInt(n.calls.length)} model call${n.calls.length === 1 ? "" : "s"}.` : "None for this session.",
+        n ? `Attached · ${fmtInt(n.kept)} requests · ${fmtInt(n.calls.length)} model call${n.calls.length === 1 ? "" : "s"}` : "None",
         n ? btn("Open it (5)", () => { close(); ctx.A.openNetwork?.(); }) : btn("How to record one", () => show("capture"))));
       // Everything on this machine
       const r = s.sources;
-      let st = "idle", t = "Not looked at yet.", a = btn("Look now", () => { close(); ctx.A.openSources?.(); });
+      let st = "idle", t = "Not looked at", a = btn("Look now", () => { close(); ctx.A.openSources?.(); });
       if (r && r.unavailable) { st = "warn"; t = r.reason; a = btn("How to fix it", () => show("everything")); }
       else if (r && r.sources) {
         const found = r.sources.filter((x) => x.status === "found").length;
-        st = "ok"; t = `${fmtInt(found)} of the ${fmtInt(r.sources.length)} places Trace checks have something for this session.`;
+        st = "ok"; t = `${fmtInt(found)} of ${fmtInt(r.sources.length)} places hold something`;
         a = btn("Open the lens", () => { close(); ctx.A.openSources?.(); });
       }
       rows.push(readout("This machine", st, t, a));
-    } else rows.push(readout("Session", "idle", "No session open yet.", btn("How to open one", () => show("open"))));
+    } else rows.push(readout("Session", "idle", "None open", btn("How to open one", () => show("open"))));
     readouts.replaceChildren(...rows);
   }
   function readout(name, state, text, action) {
@@ -130,72 +131,49 @@ export function createHelp(ctx) {
   function renderBody() {
     const s = S();
     const product = s?.trace ? productLabel(s.trace.product) : null;
-    const cursor = s?.trace?.product === "cursor";
-    const opencode = s?.trace?.product === "opencode";
-    const bundle = cursor || opencode;
-    const captureCommand = cursor
-      ? 'node tools/capture/cursor-agent-capture.mjs --open -- --mode ask --sandbox enabled "YOUR REAL TASK"'
-      : opencode
-        ? 'node tools/capture/opencode-capture.mjs --open -- --model PROVIDER/MODEL "YOUR REAL TASK"'
-        : `tools/capture/capture.sh -- ${s?.trace?.product === "codex" ? "codex" : "claude"}`;
+    const routes = routesFor(s?.trace?.product);
+    const bundle = ["cursor", "opencode"].includes(s?.trace?.product);
     const parts = {
       open: () => [
         h("Open a session"),
-        p("Trace reads Claude Code, Codex/ChatGPT and Cursor session logs and native OpenCode exports from your computer. Nothing is uploaded; the files are read in this tab."),
         steps([
-          ["Paste an id or a link", "A Claude Code session id (from the log's file name, or /status), or a Codex/ChatGPT link or thread id. Trace works out which folder the log is in."],
-          ["Or a T3 Code thread link", "A T3 Code thread spans many harness sessions, often on several machines. Paste its t3-thread:// link and the local resolver opens the whole family (collected with node tools/t3/collect.mjs)."],
-          ["Pick the folder once", "The first time, choose ~/.claude/projects (Claude Code) or ~/.codex/sessions (Codex/ChatGPT). Chrome remembers it, so the next paste opens straight away."],
-          ["Or drop the files", "A native OpenCode or Cursor desktop .json export, a Cursor Agent or Codex/ChatGPT .jsonl, or a Claude Code session's .jsonl with its same-named folder so its subagents come too. Drop a recorded Cursor or OpenCode folder to open its session and HAR together."],
+          ["Paste an id or a link", "A Claude Code, Cursor or OpenCode session id, a codex:// link, or a t3-thread:// link (a T3 family needs the local helper)."],
+          ["Pick the folder once", "~/.claude/projects or ~/.codex/sessions. Chrome remembers it."],
+          ["Or drop the files", "A .jsonl or .json export, with its same-named folder for subagents; a recording folder with its capture.har."],
         ]),
         cmd("In the folder picker, press ⌘⇧G and paste:", "~/.claude/projects"),
-        p("With the local resolver running (see “See everything on this machine”), a pasted id opens with no picker, and so do Claude desktop agent-mode sessions, which live in the Claude app's own folder."),
       ],
       everything: () => [
         h("See everything on this machine"),
-        p(`Beyond the log, ${product || "each harness"} keeps a lot about a session: its own databases and logs, caches, prompt history, file history, desktop-app records. The Sources lens lists every one of them from the harness's code and shows this session's part. A web page can't read those files, so a small local helper, the resolver, reads them for it and sends only this session's part, with credentials and identity removed.`),
-        steps([
-          ["Start the resolver", "In a clone of the harness-source-map repo:"],
-        ]),
-        cmd(null, "npm --prefix site run trace:local"),
-        steps([
-          ["Open Trace from it", "This avoids the browser's local-network prompt entirely."],
-        ], 2),
+        p(`${product || "A harness"} keeps more than its log about a session. The local helper reads those sources and sends this session's part, credentials removed.`),
+        steps([["Start the local helper", "In a clone of harness-source-map:"]]),
+        cmd(null, RESOLVER),
+        steps([["Open Trace from it", "No local-network prompt this way."]], 2),
         el("p", { class: "help-p" }, el("a", { class: "help-link", href: `${LOCAL}/trace/`, target: "_blank", rel: "noopener", text: `${LOCAL}/trace/` })),
-        steps([
-          ["Or allow this site", "On harness.dtmont.com, Chrome asks before the page reaches 127.0.0.1. Choose Allow, or turn on Local network access for this site in its settings (the icon left of the address)."],
-          ["Open the lens", "“Everything on this machine” (key 6)."],
-        ], 3),
-        health ? p(health.ok ? "The resolver is answering this page now." : "The resolver isn't answering this page yet.", health.ok ? "ok" : "warn") : null,
+        steps([["Or allow this site", "When the browser asks for local network access, choose Allow."], ["Open the lens", "Everything on this machine · key 6"]], 3),
+        health ? p(health.ok ? "The helper is answering this page." : "The helper isn't answering this page.", health.ok ? "ok" : "warn") : null,
       ],
       capture: () => [
         h("Network captures"),
-        p("A capture records traffic while a session runs, including request data the log can omit, such as prompts, tool definitions and flags. It cannot recover earlier traffic."),
-        cursor ? null : recording.element,
-        cursor ? el("h4", { class: "help-h4", text: "Cursor desktop capture route" }) : null,
-        cursor ? p("Quit Cursor first, then run the desktop recorder. It launches one observed app process and waits while you complete a real task. Quit that launched app yourself to finalize the private session export and capture.") : null,
-        cursor ? cmd(null, "node tools/capture/cursor-desktop-capture.mjs --open") : null,
-        el("h4", { class: "help-h4", text: "CLI capture route" }),
-        steps([["Start the session through the capture tool", "From the harness-source-map repo, run your real task with recording enabled:"]]),
-        cmd(null, captureCommand),
-        steps([["Open the result", bundle ? 'Drop the private recording folder into Trace: it holds the native session or export and capture.har. “What went over the wire” (key 5) appears.' : 'When the command exits, the capture is saved beside the session’s log. Trace attaches it every time you open that session, and “What went over the wire” (key 5) appears.']], 2),
-        p(bundle ? 'Already have a native session or export and HAR? Drop them together into Trace.' : "Already have a .har? File it beside its session so it attaches from now on:"),
-        bundle ? null : cmd(null, "node tools/capture/file-capture.mjs capture.har"),
-        s?.trace ? el("p", { class: "help-p" }, btn("Or choose a .har for this visit", () => { close(); ctx.A.pickHar?.(); })) : null,
-        p("Credentials never reach the file: each one is replaced by a description of what was sent. Trace also hides identity when it shows a capture."),
+        p("A capture records a future run's traffic, including what the log omits. Earlier traffic cannot be recovered."),
+        routes.some(r => r.kind === "recorder") ? recording.element : null,
+        ...routes.filter(r => r.kind === "command").flatMap(r => [el("h4", { class: "help-h4", text: `${r.label} route` }), r.before ? p(r.before) : null, cmd("In a clone of harness-source-map:", r.command), p(r.then)]),
+        bundle ? null : el("h4", { class: "help-h4", text: "A .har you already have" }),
+        bundle ? p("Drop the native session or export and its HAR together.") : cmd("File it beside its session:", FILE_CAPTURE),
+        s?.trace ? el("p", { class: "help-p" }, btn("Choose a .har for this visit", () => { close(); ctx.A.pickHar?.(); })) : null,
+        p("Credentials are replaced by a description before the file is written; Trace hides identity when it shows a capture.", "note"),
       ],
       requests: () => [
         h("Full request bodies"),
-        p("The log records what happened, not the exact request the model received. Two ways to keep that:"),
         el("h4", { class: "help-h4", text: "Codex/ChatGPT: its own trace switch" }),
-        p("Set this before starting Codex/ChatGPT and every thread writes each inference request and response, exactly as sent, into that folder. Trace's Sources lens reads them from there."),
+        p("Set before starting it; every request and response is written there, and the Sources lens reads them."),
         cmd(null, "export CODEX_ROLLOUT_TRACE_ROOT=~/.codex/rollout-traces"),
-        p("The files are never pruned (about 100 KB a request) and hold your full prompts.", "note"),
+        p("Never pruned (about 100 KB a request); holds your full prompts.", "note"),
         el("h4", { class: "help-h4", text: "Claude Code: a network capture" }),
-        p("Claude Code's own prompt dump is compiled out of the public build, so a capture (see “Network captures”) is the way to keep its requests."),
+        p("Its prompt dump is compiled out of the public build; record a capture instead."),
       ],
     };
-    if (!cursor) recording.refresh();
+    if (routes.some(r => r.kind === "recorder")) recording.refresh();
     body.replaceChildren(...(parts[topic] || parts.open)().filter(Boolean));
   }
 

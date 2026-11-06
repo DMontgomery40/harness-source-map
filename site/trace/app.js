@@ -1,29 +1,43 @@
 import {openRecordingView} from './recording-view.js';
 // Trace viewer: loading, state, levels, keyboard, and wiring between the scene, minimap and panels.
 // Parsing stays in the browser; sources are picked files or the optional loopback resolver.
-import { STRATA, STRATUM_INDEX, STATUS, LENSES, TOUCH, el, fmtTok, fmtInt, fmtDur, fmtClock, fmtWhen, sessionStats, renderPanel, keepInView, blockTokens, agentStats, clip, modelFamily, largestLayer } from "./panels.js";
+import { STRATA, STRATUM_INDEX, STATUS, LENSES, TOUCH, el, fmtTok, fmtInt, fmtDur, fmtClock, fmtWhen, sessionStats, renderPanel, keepInView, blockTokens, agentStats, clip, modelFamily, largestLayer, disclosure } from "./panels.js";
 import { buildLayout, renderOverview, renderAgentColumns, legend } from "./minimap.js";
 import { lineHash, normalizeLine, MIN_INDEXED_LINE, indexFor } from "./model.js";
 import { capturePickedFiles } from "./file-source.js";
 import { parsePaste } from "./paste.js";
 import { openLocalSession, localSources, localSource } from "./local-session.js";
-import { requestPosition, stepRequest, mapPanelState, createViewHistory, isLandscape, requestInspection } from "./navigation.js";
+import { requestPosition, stepRequest, createViewHistory, isLandscape, requestInspection, requestCalls } from "./navigation.js";
 import { viewKey, enterView, remember, anchorOf, hasView, setOpener, openerOf, snapshot, load as loadPanelMemory, forgetAll as forgetPanels, findAnchor, anchorFor, anchorDelta, setFold } from "./panel-memory.js";
 import { createPalette } from "./palette.js";
-import { createPlayback } from "./playback.js";
-import { createTransport, playheadForRequest } from "./transport.js";
-import { nextShot, agentPAt, createFollowZoom } from "./director.js";
-import { createHarnessMode } from "./harness/mode.js";
+import { createClock, eventTimes, cutAt, clockLabel } from "./clock.js";
+import { createTransport, fitPhoneClock } from "./transport.js";
+import { followShot, agentPAt, createFollowZoom } from "./director.js";
+import { createProvenance } from "./provenance.js";
+import { buildActivity, activityAt, activityLabel } from "./activity.js";
+import { groupNotes, traceNotes, notePage } from "./notes.js";
+import { compactValue, copyButton, tip } from "./compact.js";
+import { targetLabel } from "./ids.js";
+import { RESOLVER } from "./capture-routes.js";
+import { renderCaptureCard } from "./capture-card.js";
+import { createRecordingController, recordingNotice } from "./help/recording.js";
+import { createComposer } from "./ai/composer.js";
+import { citationTarget } from "./ai/cite.js";
+import { createAIClient } from "./ai/client.js";
+import { readableIn } from "./readable.js";
 import { looksLikeHar, looksLikeCursorDecoded, capturesFor } from "./network/har.js";
 import { networkLens, wireCard, wireSummary, wireTokens, NETWORK_LENS, closeWireReader } from "./network/panel.js";
 import { sourcesLens, SOURCES_LENS } from "./sources/panel.js";
 import { EXAMPLE_ID, loadPublicExample, createLoadOwnership } from "./example-loader.js";
 import { createHelp } from "./help/help.js";
 import { productLabel } from './products.js';
+import { exampleCounts, provenanceRows } from "./example-details.js";
 import { filterRows, agentRows } from "./fleet/controls.js";
-import { fleetKeys, cycle, isFiltered } from "./fleet/filter.js";
-import { breakWords, voidWords } from "./fleet/breaks.js";
+import { fleetKeys, cycle, isFiltered, matcher, envLabel } from "./fleet/filter.js";
+import { breakWords, voidWords, findBreaks } from "./fleet/breaks.js";
 import { renderLadder } from "./fleet/ladder.js";
+import { ownSessionFiles as ownSessionFilesOf } from "./fleet/own-session.js";
+import { createNetSelection } from "./fleet/selection.js";
 import { restoreLandscape } from "./fleet/ground.js";
 
 const params = new URLSearchParams(location.search);
@@ -33,6 +47,10 @@ const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const S = {
   trace: null, layout: null, level: 0, agentId: null, agent: null, reqIdx: null, stratum: null, block: null,
   lens: "context", mode: "3d", custodyFn: null, reading: false, detailedLabels: false, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args',
+  // the load generation every asynchronous answer is checked against, and the thread an inventory reader shows
+  gen: null, inventoryKey: null,
+  // the activity list: a snapshot frozen at one family time while it is open ({ t, snap, prior, opener })
+  activity: null,
   // A T3 family: the machine/lab filter, and the family an own session was opened from (its crumb back)
   fleetFilter: null, familyReturn: null,
   // B, the fleet ground: lanes grouped by machine. Only ever switched on from the family landscape, never restored.
@@ -49,12 +67,14 @@ let publicExample = null, exampleLoading = false, exampleAbort = null;
 let lastFiles = null; // the dropped files, kept so another session among them can be opened
 let lastCaptures = []; // the captures (.har) that came with them: each session attaches its own
 let pasteRoot = null; // the thread or session id from the paste box, sent as the worker's `root`
-// The playback transport (transport.js). Its clock lives outside S: playing never calls set(), and
-// each history entry carries the playhead's P beside the view.
+// The playback transport (transport.js) over the family clock (clock.js). The clock lives outside S: playing never
+// calls set() and never repaints the inspector; a history entry carries the time it was inspected at.
 let transport = null;
-let harness = null; // the harness layer: one more view beside 3D and 2D (harness/mode.js)
-let dir = null;       // the playback director's per-session state (direct() below)
-let playCard = null, playCardAt = 0; // the map card at the playhead while playing (playCardTick below)
+let provenance = null; // every copy of a piece of harness text, and where it comes from (provenance.js)
+let dir = null;       // the follow camera's per-session state (direct() below)
+let activityIndex = null; // the loaded trace's activity index (activity.js), built on first use
+let composer = null; // the explanation composer (ai/composer.js), inside the inspector
+const ai = createAIClient();
 // The zoom runs follow at (director.js createFollowZoom): told of every camera move that chooses a zoom,
 // read as a run starts. Kept across pauses, seeks and runs; each session starts its own.
 let followZoom = null;
@@ -80,7 +100,7 @@ function setupLoader() {
     e.preventDefault();
     if (!$("#loader").hidden) collectDrop(e.dataTransfer).then(loadFiles);
     // A capture dropped on an open session attaches to it.
-    else if (S.trace) collectDrop(e.dataTransfer).then(async files => { const { hars } = await splitCaptures(files); if (hars.length) attachCapture(hars); else netStatus("Drop a .har network capture here to attach it; to open another session, go back to the loader.", "error"); });
+    else if (S.trace) collectDrop(e.dataTransfer).then(async files => { const { hars } = await splitCaptures(files); if (hars.length) attachCapture(hars); else netStatus("Only a .har capture attaches here. To open another session, use ≋ Trace.", "error"); });
   });
   $("#add-capture").addEventListener("click", () => netHelp());
   $("#help-open").addEventListener("click", () => openHelp());
@@ -126,13 +146,13 @@ async function openExample(id=EXAMPLE_ID) {
   if(exampleLoading) return;
   exampleLoading=true;exampleAbort=new AbortController();const exampleSignal=exampleAbort.signal;$("#open-example").disabled=true;$("#open-example").textContent="Loading real example…";$("#load-error").hidden=true;
   try {
-    const {manifest,files}=await loadPublicExample({id,signal:exampleSignal,onProgress:(fraction,message)=>setProgress(fraction,message)});
+    const {manifest,files,provenance}=await loadPublicExample({id,signal:exampleSignal,onProgress:(fraction,message)=>setProgress(fraction,message)});
     publicExample=manifest;pasteRoot=null;
-    $("#example-description").textContent=`${manifest.title}${manifest.description ? `. ${manifest.description}` : ""} · ${fmtInt(manifest.counts.agents)} agents · ${fmtInt(manifest.counts.subagents)} subagents · ${fmtInt(manifest.counts.requests)} requests. ${manifest.privacyStatement}`;
+    $("#example-description").textContent=`${manifest.title}. ${manifest.privacyStatement}`;
     const loaded=await loadFiles(files,manifest.rootSessionId);
     if(loaded && !exampleSignal.aborted){
-      $("#example-status").textContent="";
-      $("#example-label").textContent=`Public real session: ${manifest.title}. ${manifest.privacyStatement}`;
+      $("#example-status").textContent="";$("#example-description").textContent="";
+      exampleDetails(manifest,provenance,S.trace);
       $("#example-banner").hidden=false;
       afterSideResize();
       const url=new URL(location.href);url.searchParams.set('example',id);history.replaceState(null,'',url);
@@ -140,6 +160,18 @@ async function openExample(id=EXAMPLE_ID) {
     else publicExample=null;
   } catch(error) {publicExample=null;if(error.name!=="AbortError")showError(error.message || 'The example could not be opened. Try again, or open your own session.');}
   finally {exampleLoading=false;exampleAbort=null;$("#open-example").disabled=false;$("#open-example").textContent="Open a real example";}
+}
+
+// The open example's details (in the banner's fold): what it is, what was parsed from it (the loaded trace's own
+// counts, never the manifest's), how it was made, and what was withheld.
+function exampleDetails(manifest,provenance,trace){
+  const rows=provenanceRows(provenance);
+  $("#example-label").replaceChildren(...[
+    el("p",{text:`${manifest.title}.${manifest.description?` ${manifest.description}`:""}`}),
+    el("p",{class:"meta",text:exampleCounts(trace).join(" · ")}),
+    el("p",{text:manifest.privacyStatement}),
+    rows.length?el("details",{class:"example-provenance"},el("summary",{text:"How this example was made"}),
+      el("dl",{},rows.flatMap(([k,v])=>[el("dt",{text:k}),el("dd",{text:v})]))):null].filter(Boolean));
 }
 
 // Back to the loader without reloading, so folders picked on this page stay available.
@@ -151,10 +183,12 @@ function backToLoader() {
   viewHistory?.dispose(); viewHistory = null; clearTimeout(viewTimer); mapReturn = null;
   transport?.load(null);
   $("#playback").hidden = true;
-  dir = null; playCard = null; followZoom = null;
+  composer?.reset(); provenance?.reset(); activityIndex = null;
+  worker?.postMessage({ type: "fleet-net-cancel" });
+  dir = null; followZoom = null;
   scene?.dispose();
   scene = null;
-  Object.assign(S, { trace: null, layout: null, level: 0, agentId: null, agent: null, reqIdx: null, stratum: null, block: null });
+  Object.assign(S, { trace: null, layout: null, level: 0, agentId: null, agent: null, reqIdx: null, stratum: null, block: null, activity: null, inspector: null, inventoryKey: null, netReader: null, netSel: null, citedFrom: null, evidenceRef: null, gen: null });
   $("#app").hidden = true;
   $("#tip").hidden = true;
   $("#loader").hidden = false;
@@ -190,12 +224,15 @@ async function collectDrop(dt) {
   return out;
 }
 
+// Progress and errors of a load show in the loader, or (when a session is open and stays readable meanwhile) in
+// the sidebar's status line: a replacement that fails never takes the open session away.
 function setProgress(frac, msg) {
   $("#progress").hidden = false;
   $("#load-error").hidden = true;
   if (frac != null) $("#progress-fill").style.width = `${Math.round(Math.max(0, Math.min(1, frac)) * 100)}%`;
   if (msg) $("#progress-text").textContent = msg;
   if(exampleLoading && msg) $("#example-status").textContent=msg;
+  if (!$("#app").hidden && S.trace && msg) netStatus(`${msg}${frac != null ? ` · ${Math.round(Math.max(0, Math.min(1, frac)) * 100)}%` : ""}`, "busy");
 }
 function showError(msg) {
   if(exampleLoading) $("#example-status").textContent=msg;
@@ -203,11 +240,23 @@ function showError(msg) {
   const e = $("#load-error");
   e.textContent = msg;
   e.hidden = false;
+  if (!$("#app").hidden && S.trace) netStatus(msg, "error");
 }
 
-// The parser runs in a Web Worker (worker.js), created only when real files are loaded.
-const pendingText = new Map();
+// The parser runs in a Web Worker (worker.js), created only when real files are loaded. Every request is pending
+// in one table until it is answered; a cancelled load, a worker failure or a replaced worker settles every pending
+// request exactly once (rejected), so no reader or fold waits forever and none installs an answer late.
+const pendingText = new Map(), pendingProv = new Map(), pendingExcerpts = new Map();
 let pendingLoad = null;
+let loadSeq = 0; // load generations: "g1", "g2", ...
+const released = () => Object.assign(new Error("This evidence belongs to a session that is no longer loaded; reopen it."), { code: "released" });
+function settleAll(error) {
+  palette?.workerGone?.(); // a full-text search in flight there is settled too, and can run again
+  const fail = p => { try { p.reject(error); } catch { /* settled */ } };
+  for (const table of [pendingText, pendingBody, pendingFleet, pendingProv, pendingExcerpts]) { for (const p of table.values()) fail(p); table.clear(); }
+  if (pendingLoad) { fail(pendingLoad); pendingLoad = null; }
+  if (pendingNetwork) { fail(pendingNetwork); pendingNetwork = null; }
+}
 function getWorker() {
   if (worker) return worker;
   worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
@@ -215,6 +264,7 @@ function getWorker() {
   worker.addEventListener("message", ({ data }) => {
     if (worker!==owner || !data) return;
     if (data.type === "progress") {
+      if (data.gen != null && pendingLoad && data.gen !== pendingLoad.gen) return;
       const frac = data.total ? data.done / data.total : null;
       const mb = n => `${(n / 1048576).toFixed(n > 1e8 ? 0 : 1)} MB`;
       if (data.phase === "narrow") {
@@ -223,39 +273,48 @@ function getWorker() {
         if (data.final && f) {
           const kids = [f.subagents ? `${fmtInt(f.subagents)} subagent${f.subagents === 1 ? "" : "s"}` : null,
             f.guardians ? `${fmtInt(f.guardians)} guardian review${f.guardians === 1 ? "" : "s"}` : null].filter(Boolean);
-          setProgress(0.08, `Found the ${productLabel(f.product)} session${kids.length ? ` + ${kids.join(" and ")}` : ""}. Reading…`);
-        } else setProgress(data.total ? 0.08 * data.done / data.total : null, `Finding the session: ${fmtInt(data.done)} of ${fmtInt(data.total)} files checked`);
+          setProgress(0.08, `${productLabel(f.product)} session${kids.length ? ` + ${kids.join(" and ")}` : ""}`);
+        } else setProgress(data.total ? 0.08 * data.done / data.total : null, `Finding the session · ${fmtInt(data.done)} of ${fmtInt(data.total)} files`);
         return;
       }
       if (data.phase === "family") {
         // A T3 family: one harness session (or provider log) per thread, read one after another.
         const f = data.found;
-        setProgress(data.total ? 0.04 + 0.9 * data.done / data.total : 0.04, f ? `Found a T3 family: ${fmtInt(f.threads)} threads on ${fmtInt(f.machines)} machines. Reading their sessions…`
-          : `Reading thread ${fmtInt(data.done)} of ${fmtInt(data.total)}${data.file ? ` · ${clipName(data.file)}` : ""}`);
+        setProgress(data.total ? 0.04 + 0.9 * data.done / data.total : 0.04, f ? `T3 family · ${fmtInt(f.threads)} threads · ${fmtInt(f.machines)} environments`
+          : `Thread ${fmtInt(data.done)} of ${fmtInt(data.total)}`);
         return;
       }
       const what = { scan: "Finding sessions", parse: "Reading", build: "Building the landscape", done: "Done" }[data.phase] || "Reading";
       const file = data.file ? ` · ${String(data.file).split("/").pop()}` : "";
-      setProgress(frac, data.total ? `${what}: ${mb(data.done)} of ${mb(data.total)}${file}` : `${what}…`);
+      setProgress(frac, data.total ? `${what} · ${mb(data.done)} of ${mb(data.total)}${file}` : `${what}…`);
     } else if (data.type === "trace") {
-      pendingLoad?.resolve(data.trace); pendingLoad = null;
+      if (!pendingLoad || (data.gen != null && data.gen !== pendingLoad.gen)) return;
+      const p = pendingLoad; pendingLoad = null; p.resolve(data.trace);
     } else if (data.type === "error") {
       const p = data.id != null && pendingText.get(data.id);
-      if (p) { pendingText.delete(data.id); p.reject(new Error(data.message)); }
-      else if (pendingLoad) { pendingLoad.reject(new Error(data.message)); pendingLoad = null; }
+      if (p) { pendingText.delete(data.id); p.reject(data.code === "released" ? released() : new Error(data.message)); }
+      else if (pendingLoad && (data.gen == null || data.gen === pendingLoad.gen)) { pendingLoad.reject(new Error(data.message)); pendingLoad = null; }
     } else if (data.type === "text") {
       const p = pendingText.get(data.id);
-      if (p) { pendingText.delete(data.id); p.resolve({ text: data.text, mode: data.mode }); }
-    } else if (data.type === "harness-progress") {
-      pendingHarness?.onProgress(data);
-    } else if (data.type === "harness") {
-      pendingHarness?.resolve(data.model); pendingHarness = null;
-    } else if (data.type === "harness-error") {
-      pendingHarness?.reject(new Error(data.message)); pendingHarness = null;
+      if (p) { pendingText.delete(data.id); if (data.gen != null && p.gen != null && data.gen !== p.gen) p.reject(released()); else p.resolve({ text: data.text, mode: data.mode }); }
+    } else if (data.type === "provenance-progress") {
+      pendingProv.get(data.id)?.onProgress?.(data);
+    } else if (data.type === "provenance" || data.type === "provenance-error") {
+      const p = pendingProv.get(data.id);
+      if (!p) return;
+      pendingProv.delete(data.id);
+      if (data.type === "provenance" && data.gen === p.gen) p.resolve(data.parts);
+      else p.reject(data.code === "released" || data.gen !== p.gen ? released() : new Error(data.message));
+    } else if (data.type === "excerpts") {
+      const p = pendingExcerpts.get(data.id);
+      if (!p) return;
+      pendingExcerpts.delete(data.id);
+      if (data.error || data.gen !== p.gen) p.reject(data.code === "released" || data.gen !== p.gen ? released() : new Error(data.error));
+      else p.resolve(data.results);
     } else if (data.type === "network-progress") {
       if(data.id!==pendingNetwork?.id)return;
       const mb = n => `${(n / 1048576).toFixed(1)} MB`;
-      netStatus(data.phase === "read" ? `Reading the capture: ${mb(data.done)} of ${mb(data.total)}…` : "Reading the requests, redacting identity and joining them to the log…", "busy");
+      netStatus(data.phase === "read" ? `Reading the capture · ${mb(data.done)} of ${mb(data.total)}` : "Joining the capture to the log…", "busy");
     } else if (data.type === "network") {
       if(data.id!==pendingNetwork?.id)return;
       pendingNetwork?.resolve({capture:data.capture,trace:data.trace}); pendingNetwork = null;
@@ -264,9 +323,9 @@ function getWorker() {
       pendingNetwork?.reject(new Error(data.message)); pendingNetwork = null;
     } else if (data.type === "fleet-net-progress") {
       pendingFleet.get(data.id)?.onProgress?.(data);
-    } else if (data.type === "fleet-net" || data.type === "fleet-ladder") {
+    } else if (data.type === "fleet-net" || data.type === "fleet-ladder" || data.type === "fleet-calls" || data.type === "fleet-evidence") {
       const p = pendingFleet.get(data.id);
-      if (p) { pendingFleet.delete(data.id); if (data.error) p.reject(new Error(data.error)); else p.resolve(data); }
+      if (p) { pendingFleet.delete(data.id); if (data.error) p.reject(data.code === "released" ? released() : Object.assign(new Error(data.error), { code: data.code || null })); else p.resolve(data); }
     } else if (data.type === "network-body") {
       const p = pendingBody.get(data.id);
       if (p) { pendingBody.delete(data.id); if (data.error) p.reject(new Error(data.error)); else p.resolve({ text: data.text, mode: data.mode, cut: data.cut }); }
@@ -274,40 +333,62 @@ function getWorker() {
   });
   worker.addEventListener("error", e => {
     if(worker!==owner)return;
-    const msg = `The parser couldn't start: ${e.message || "worker error"}`;
-    if (pendingLoad) { pendingLoad.reject(new Error(msg)); pendingLoad = null; }
+    // the parser itself failed: every pending request is settled, and the next request starts a fresh worker
+    worker = null; indexSent = null;
+    settleAll(new Error(`The parser stopped: ${e.message || "worker error"}`));
   });
   return worker;
 }
-// The harness model is built in the worker (harness/pieces.js), lazily, the first time the mode opens,
-// and cached there per loaded session. One request at a time (harness/mode.js keeps the promise).
-let pendingHarness = null;
-function requestHarness(onProgress = () => {}) {
-  return loadLiterals(S.trace?.product).then(literals => new Promise((resolve, reject) => {
-    pendingHarness = { resolve, reject, onProgress };
-    getWorker().postMessage({ type: "harness", literals });
+// Where each piece of harness text comes from, and every copy of it (provenance.js): built in the worker per load
+// and per native product, with each product's literal index (fetched only when first asked for).
+let provSeq = 0;
+function requestProvenance(gen) {
+  const products = [...new Set(S.trace?.family ? S.trace.products || [] : [S.trace?.product].filter(Boolean))];
+  return Promise.all(products.map(p => loadLiterals(p).then(ix => [p, ix]))).then(pairs => new Promise((resolve, reject) => {
+    if (gen !== S.gen) return reject(released());
+    const id = ++provSeq;
+    pendingProv.set(id, { resolve, reject, gen, onProgress: () => {} });
+    getWorker().postMessage({ type: "provenance", id, gen, literals: Object.fromEntries(pairs.filter(([, ix]) => ix)) });
   }));
 }
 let textSeq = 0;
+// A block's text, read from the load it belongs to, with the reference index of the product its own agent ran.
 function workerText(agentId, ref) {
-  const id = ++textSeq;
+  const id = ++textSeq, gen = S.gen;
+  const agent = agentId ? S.trace?.agents.find(a => a.id === agentId) : null;
   return new Promise((resolve, reject) => {
-    pendingText.set(id, { resolve, reject });
-    getWorker().postMessage({ type: "text", ref, id });
+    pendingText.set(id, { resolve, reject, gen });
+    getWorker().postMessage({ type: "text", ref, id, gen, product: agent?.nativeProduct || S.trace?.product || null });
   });
+}
+// Strict, bounded excerpts for an explanation (ai/resolve.js in the worker).
+let excerptSeq = 0;
+function workerExcerpts(items) {
+  const id = ++excerptSeq, gen = S.gen;
+  return new Promise((resolve, reject) => {
+    pendingExcerpts.set(id, { resolve, reject, gen });
+    getWorker().postMessage({ type: "excerpts", id, gen, items });
+  }).then(list => new Map(list.map(r => [r.key, r])));
 }
 // The site's reference index (same-origin static file) lets the worker link harness and injected
 // blocks to the pages that publish them. It is optional: without it blocks simply have no link.
-let indexLoad = null, indexSent = null;
+let indexLoad = null, indexSent = null, referenceIndex = null;
 function loadIndex() {
   indexLoad ||= fetch(new URL("./reference-index.json", import.meta.url))
     .then(r => (r.ok ? r.json() : null))
-    .catch(() => null);
+    .catch(() => null)
+    .then(ix => { referenceIndex = ix; return ix; });
   return indexLoad;
 }
+// The tool pages of the product an agent's own native session ran (custody's "Guided by"): a mixed T3 family's
+// bindings each use their own product's, never the root's.
+function toolsFor(agent) {
+  const product = (S.trace?.family ? agent?.nativeProduct : null) || S.trace?.product;
+  return indexFor(referenceIndex, product)?.tools || null;
+}
 // The literal index (hashes of the shipped binaries' literal text with chunk or file and offset; no text)
-// lets the harness layer say where an unnamed piece sits in what ships. One file per product, fetched only
-// when the harness layer first opens for a session of that product. Optional: without it such pieces read
+// lets provenance say where an unnamed piece sits in what ships. One file per product, fetched only
+// when provenance is first asked for in a session of that product. Optional: without it such pieces read
 // "not in the library".
 const literalsLoad = {};
 function loadLiterals(product) {
@@ -321,20 +402,24 @@ function sendIndex() {
   indexSent ||= loadIndex().then(index => { if (index) getWorker().postMessage({ type: "index", index }); });
   return indexSent;
 }
+// A superseded or cancelled load: the worker is replaced (its parse stops), and everything pending is settled.
 function cancelWorkerLoad(){
-  if(!pendingLoad)return;
-  const cancelled=pendingLoad;pendingLoad=null;
-  worker?.terminate();worker=null;indexSent=null;
-  cancelled.reject(new DOMException('Session load superseded.','AbortError'));
+  if(!pendingLoad && !pendingText.size && !pendingFleet.size && !pendingProv.size && !pendingExcerpts.size)return;
+  const w = worker;
+  worker=null;indexSent=null;
+  w?.terminate();
+  settleAll(new DOMException('Session load superseded.','AbortError'));
 }
 async function parseInWorker(files, root, current=()=>true) {
   files = await capturePickedFiles(files, root);
   if(!current())throw new DOMException('Session load superseded.','AbortError');
   await sendIndex();
   if(!current())throw new DOMException('Session load superseded.','AbortError');
+  const gen = `g${++loadSeq}`;
   return new Promise((resolve, reject) => {
-    pendingLoad = { resolve, reject };
-    getWorker().postMessage({ type: "load", files, root: root || null });
+    pendingLoad?.reject(new DOMException('Session load superseded.','AbortError'));
+    pendingLoad = { resolve: trace => resolve(Object.assign(trace, { loadGen: gen })), reject, gen };
+    getWorker().postMessage({ type: "load", gen, files, root: root || null });
   });
 }
 
@@ -345,7 +430,7 @@ let pendingNetwork = null;
 let networkSeq = 0;
 const pendingBody = new Map();
 let bodySeq = 0;
-const HAR_ALONE = "A network capture needs its session log. Drop the .har together with the session's .jsonl or native OpenCode or Cursor desktop .json export (for Claude Code, include its same-named folder), or open the session first and choose “+ Network capture”. Browser DevTools captures of chatgpt.com or claude.ai web chats have no session log, so Trace can't attach them.";
+const HAR_ALONE = "A capture needs its session: open the session first, or drop the .har together with its session log.";
 
 // A T3 Code fleet bundle among the files: what the resolver serves for a T3 thread, or a dropped bundle folder.
 const isBundleFiles = files => files.some(f => /(^|\/)bundle\.json$/.test(f.path)) && files.some(f => /(^|\/)machines\/[^/]+\/threads\.json(\.gz)?$/.test(f.path));
@@ -370,11 +455,13 @@ function netStatus(msg, kind = "info") {
   if (!p) return;
   clearTimeout(netStatusTimer);
   // A success note steps aside after a while; errors stay until the next action.
-  if (kind === "ok") netStatusTimer = setTimeout(() => { p.hidden = true; }, 9000);
+  if (kind === "ok") netStatusTimer = setTimeout(() => { p.hidden = true; if (S.trace) afterSideResize(); }, 9000);
+  const was = p.hidden;
   p.hidden = !msg;
   p.textContent = msg || "";
   p.dataset.kind = kind;
   p.setAttribute("role", kind === "error" ? "alert" : "status");
+  if (S.trace && was !== p.hidden) afterSideResize();
 }
 async function attachCapture(files) {
   if (!S.trace) return showError(HAR_ALONE);
@@ -394,14 +481,15 @@ async function attachCapture(files) {
     if(trace){
       const camera=scene?.getView(),mode=S.mode;
       trace.sourceWarnings=S.trace.sourceWarnings;
+      trace.loadGen=S.gen;
       S.trace=normalize(trace);S.layout=buildLayout(S.trace);S.agent=S.agentId?agentById(S.agentId):null;S.block=null;
-      palette?.setTrace(S.trace);harness?.reset();
+      palette?.setTrace(S.trace);provenance?.reset();activityIndex=null;
       scene?.dispose();scene=null;shownKey=null;forgetPanels();
-      transport?.load(playbackFor(S.layout));buildHud();
+      transport?.load(clockFor(S.trace, S.layout));buildHud();
       await setMode(mode,()=>seq===networkSeq);if(seq!==networkSeq)return;if(camera)scene?.restoreView(camera);
     }
     const n = capture.calls.length, matched = capture.join.matched;
-    netStatus(`Network capture attached: ${fmtInt(capture.kept)} requests, ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${networkMatchCount(matched)}). Open “What went over the wire” (5).`, "ok");
+    netStatus(`Capture attached · ${fmtInt(capture.kept)} requests · ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${networkMatchCount(matched)}) · lens 5`, "ok");
     palette?.setNetwork?.(capture);
     buildLenses();
     render(false);
@@ -410,49 +498,48 @@ async function attachCapture(files) {
     netStatus(e.message || String(e), "error");
   } finally { if(seq===networkSeq){btn.disabled = false; netButton(); if (!$("#net-help").hidden) netHelp(true); helpUI?.refresh();} }
 }
-// The capture button says whether this session has one; the card it opens says what a capture is, how
-// to record one and where Trace finds it, and offers the file picker for a .har already made.
+// The capture button says whether this session has one; its card offers the three actions (Record, Open file,
+// Help) and only the state needed to use them. Record shows the one route the product has, or asks which; a
+// command route shows its exact command with Copy; the desktop recorder route shows Start, Stop and its status,
+// and contacts the local recorder only when one of them is pressed. Nothing here quits or relaunches an app.
+let captureRoute = null, recorder = null, recorderState = null;
 function netButton() {
   const btn = $("#add-capture");
   btn.dataset.state = S.network ? "on" : "none";
-  btn.textContent = S.network ? "Network capture ✓" : "+ Network capture";
+  btn.textContent = S.network ? "Capture ✓" : "Capture";
 }
-const networkMatchCount = count => `${fmtInt(count)} ${S.trace?.product === 'opencode' ? `exact step match${count === 1 ? '' : 'es'}` : S.trace?.product === 'cursor' ? `exact identifier match${count === 1 ? '' : 'es'}` : 'in your log'}`;
-function netHelp(open = $("#net-help").hidden) {
+const networkMatchCount = count => `${fmtInt(count)} ${S.trace?.product === 'opencode' ? `exact step match${count === 1 ? '' : 'es'}` : S.trace?.product === 'cursor' ? `exact identifier match${count === 1 ? '' : 'es'}` : 'matched'}`;
+function netHelp(open = $("#net-help").hidden, { route = captureRoute } = {}) {
   const box = $("#net-help");
   $("#add-capture").setAttribute("aria-expanded", String(open));
   box.hidden = !open;
-  if (!open) return;
-  const n = S.network;
-  const isBundle = S.trace?.product === 'opencode' || S.trace?.product === 'cursor';
-  const cmd = S.trace?.product === 'cursor'
-    ? 'node tools/capture/cursor-agent-capture.mjs --open -- --mode ask --sandbox enabled "YOUR REAL TASK"'
-    : S.trace?.product === 'opencode'
-      ? 'npm run trace:opencode -- --open -- --model openrouter/deepseek/deepseek-v3.2 "YOUR REAL TASK"'
-      : `tools/capture/capture.sh -- ${S.trace?.product === "codex" ? "codex" : "claude"}`;
-  const copy = el("button", { class: "btn small", type: "button", text: "Copy" });
-  copy.addEventListener("click", () => navigator.clipboard?.writeText(cmd).then(() => { copy.textContent = "Copied"; }, () => { copy.textContent = "Select and copy"; }));
-  const choose = el("button", { class: "btn small", type: "button", text: n ? "Choose another .har…" : "Choose a .har file…" });
-  choose.addEventListener("click", () => $("#pick-har").click());
-  const open5 = n && el("button", { class: "btn small primary", type: "button", text: "Open “What went over the wire” (5)" });
-  open5?.addEventListener("click", () => { netHelp(false); selectLens(NETWORK_LENS.key); });
-  const close = el("button", { class: "text-control", type: "button", text: "Close" });
-  close.addEventListener("click", () => netHelp(false));
-  const more = el("button", { class: "text-control", type: "button", text: S.trace?.product === "codex" ? "Desktop recorder and help" : "Recording help" });
-  more.addEventListener("click", () => { netHelp(false); openHelp("capture"); });
-  box.replaceChildren(...[
-    el("p", { class: "net-help-head", text: n
-      ? `Attached: ${fmtInt(n.kept)} requests, ${fmtInt(n.calls.length)} model call${n.calls.length === 1 ? "" : "s"} (${networkMatchCount(n.join.matched)}).`
-      : "No network capture for this session." }),
-    el("p", { text: "A capture keeps future traffic while the session runs: prompts, tools and flags the log can omit. Earlier traffic cannot be recovered." }),
-    S.trace?.product === "codex" ? el("p", { text: "For the desktop app, open Desktop recorder and help below. It records a future app run through the local helper. The recorder never quits an already-running app." }) : null,
-    S.trace?.product === "cursor" ? el("p", { text: "For Cursor desktop, quit the app first, then use the process-scoped desktop command in Recording help. The recorder launches one future app run and never quits it for you." }) : null,
-    el("p", { text: "For a CLI session, run this from the harness-source-map repo:" }),
-    el("div", { class: "path" }, el("code", { text: cmd }), copy),
-    el("p", { text: isBundle ? 'When the command exits, drop its private recording folder into Trace. The native session or export and capture.har open together.' : "When the command exits, the capture is saved beside that session's log, and Trace attaches it on its own every time the session opens (pasted id, folder or drop)." }),
-    isBundle ? el('p', { class: 'net-help-note', text: 'Already have a native session or export and HAR? Drop them together, or choose the HAR here for this visit.' }) : el("p", { class: "net-help-note" }, "A .har you already have: ", el("code", { text: "node tools/capture/file-capture.mjs capture.har" }), " files it beside its session, or choose it here for this visit."),
-    el("div", { class: "net-help-actions" }, open5, choose, more, close)
-  ].filter(child => child != null && child !== false));
+  if (!open) { captureRoute = null; afterSideResize(); return; }
+  captureRoute = route;
+  renderCaptureCard(box, { network: S.network, product: S.trace?.product, route: captureRoute, matched: S.network ? networkMatchCount(S.network.join.matched) : null }, {
+    close: () => netHelp(false),
+    record: r => netHelp(true, { route: r }),
+    openFile: () => $("#pick-har").click(),
+    help: () => { netHelp(false); openHelp("capture"); },
+    openLens: () => { netHelp(false); selectLens(NETWORK_LENS.key); },
+    recorder: () => recorderRow(),
+  });
+  afterSideResize();
+}
+// The desktop recorder route: Start, Stop and a recheck, each an explicit request to the local recorder.
+function recorderRow() {
+  recorder ||= createRecordingController({ onChange: snap => { recorderState = snap; if (captureRoute === "desktop" && !$("#net-help").hidden) netHelp(true); } });
+  const snap = recorderState || recorder.snapshot;
+  const phase = snap.status?.phase;
+  const notice = recordingNotice(snap);
+  const live = ["starting", "recording"].includes(phase);
+  const b = (text, fn, disabled) => el("button", { class: "btn small", type: "button", text, onclick: fn, disabled: disabled ? true : null });
+  return el("div", { class: "net-help-recorder" },
+    el("p", { class: `net-help-step ${notice.kind}`, role: "status", text: snap.status ? notice.text : "Not checked yet." }),
+    el("div", { class: "net-help-actions" },
+      b("Start", () => recorder.start(), snap.busy || live || !!snap.status?.appRunning || snap.status?.supported === false),
+      b("Stop", () => recorder.stop(), snap.busy || !live),
+      b(snap.status ? "Check again" : "Check", () => recorder.check(), snap.busy)),
+    el("p", { class: "net-help-step", text: "Stop files the capture beside its session; reopen the session to see it." }));
 }
 function clearCapture() {
   networkSeq++;
@@ -493,8 +580,10 @@ async function loadFiles(files, root) {
     try {
       const trace = await parseInWorker(files, null, claim.current);
       if(!claim.current())return;
-      // the bundle's gaps, as the worker redacted them (the resolver's copy of them is not shown)
-      trace.sourceWarnings = trace.familyGaps || [];
+      // the bundle's gaps, as the worker redacted them; of the resolver's warnings only its own (its copy of the
+      // gaps, unredacted, follows them and is not shown)
+      const own = sourceWarnings.slice(0, Math.max(0, sourceWarnings.length - (trace.bundleGapCount || 0)));
+      trace.sourceWarnings = own;
       text = workerText;
       await start(trace, claim.current);
     } catch (e) {
@@ -584,6 +673,15 @@ async function holdsPaste(files, id) {
   return false;
 }
 
+// A T3 link without the local helper: the one command that starts it, with Copy.
+function showT3Help() {
+  const e = $("#load-error");
+  $("#progress").hidden = true;
+  e.replaceChildren(el("span", { text: "T3 families open through the local helper, or drop the collected bundle folder." }),
+    el("div", { class: "path" }, el("code", { text: RESOLVER }), copyButton(RESOLVER, { what: "command" })));
+  e.hidden = false;
+}
+
 // The files don't hold the pasted session: say so, and let the user pick again or open what they picked.
 function missingPaste(files) {
   const id = pasteRoot || pasted?.id || "";
@@ -608,25 +706,30 @@ function missingPaste(files) {
   e.hidden = false;
 }
 
-// Several sessions were dropped: reload the worker's parse with the chosen one as `root`.
+// Several sessions were dropped: reload the worker's parse with the chosen one as `root`. The session on screen stays
+// until the chosen one is ready; a newer choice or load supersedes this one.
 async function switchSession(root) {
   const pick = $("#session-pick");
   pick.disabled = true;
+  const claim = loads.begin();
+  claim.onCancel(cancelWorkerLoad);
   try {
+    netStatus("Opening that session…", "busy");
+    const trace = await parseInWorker(lastFiles, root, claim.current);
+    if (!claim.current()) return;
     clearCapture();
-    const trace = await parseInWorker(lastFiles, root);
-    transport?.load(null);
-    $("#playback").hidden = true;
-    dir = null; playCard = null; followZoom = null;
+    dir = null; followZoom = null;
     scene?.dispose();
     scene = null;
     Object.assign(S, { level: 0, agentId: null, agent: null, reqIdx: null, stratum: null, block: null });
-    await start(trace);
+    await start(trace, claim.current);
+    if (!claim.current()) return;
     attachFound();
   } catch (e) {
+    if (!claim.current() || e.name === "AbortError") return;
     pick.disabled = false;
-    alert(`Couldn't open that session: ${e.message || e}`);
-  }
+    netStatus(`That session could not be opened: ${e.message || e}`, "error");
+  } finally { claim.finish(); }
 }
 
 async function loadSynthetic() {
@@ -677,29 +780,26 @@ function describePaste(v) {
     const d = new Date(info.ms);
     const day = `${d.getFullYear()}/${p2(d.getMonth() + 1)}/${p2(d.getDate())}`;
     const stamp = `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}T${p2(d.getHours())}-${p2(d.getMinutes())}-${p2(d.getSeconds())}`;
-    what = `Codex/ChatGPT thread started ${fmtWhen(info.ms)}.`;
-    where.push(el("p", { text: "Its log (the file name uses local time):" }), pathRow(`~/.codex/sessions/${day}/rollout-${stamp}-${info.id}.jsonl`),
-      el("p", { text: "Subagents and guardian reviews are separate files in the date folders from that day on." }));
+    what = `Codex/ChatGPT thread · started ${fmtWhen(info.ms)}`;
+    where.push(pathRow(`~/.codex/sessions/${day}/rollout-${stamp}-${info.id}.jsonl`));
   } else if (info.product === "t3code") {
-    what = `T3 Code thread ${info.id.length > 40 ? `${info.id.slice(0, 37)}…` : info.id}${info.environmentId ? ` on environment ${info.environmentId.slice(0, 8)}` : ""}.`;
-    where.push(el("p", { text: "A T3 thread spans the harness sessions of every agent it ran, on every machine. Every machine sends its part of each family to this Mac hourly, and the local resolver assembles the family when you open it; you can also drop a bundle folder." }));
+    what = el("span", {}, "T3 Code thread · ", compactValue(info.id, { what: "thread id" }), info.environmentId ? el("span", {}, " · environment ", compactValue(info.environmentId, { what: "environment id" })) : null);
   } else if (info.product === 'opencode' || info.product === 'cursor') {
-    what = `${productLabel(info.product)} session ${info.id}.`;
-    where.push(el("p", {text:"The local resolver reads the native session store and matching recording folders. Without it, choose a folder containing the session export and its network capture."}));
+    what = el("span", {}, `${productLabel(info.product)} session · `, compactValue(info.id, { what: "session id" }));
   } else {
     const file = info.path || `~/.claude/projects/<project>/${info.id}.jsonl`;
-    what = `Claude Code or Cursor session ${info.id ? info.id.slice(0, 8) : ""}. The local resolver detects the product.`;
-    where.push(el("p", { text: "Its log, and the same-named folder that holds its subagents:" }), pathRow(file), pathRow(file.replace(/\.jsonl$/, "/")));
+    what = el("span", {}, "Claude Code or Cursor session · ", compactValue(info.id || "", { what: "session id" }));
+    where.push(pathRow(file), pathRow(file.replace(/\.jsonl$/, "/")));
   }
   const hint = el("p", { class: "open-hint", text: "" });
   const btn = el("button", { class: "btn primary open", type: "button", text: info.product === "t3code" ? "Open this thread's T3 family" : "Open this session and its subagents" });
   btn.addEventListener("click", () => openPasted(info, btn, hint));
-  out.append(el("p", { text: what }), el("div", { class: "open-row" }, btn, hint),
-    el("details", {}, el("summary", { text: "Where the files are" }), ...where));
-  if (info.product === "t3code") { hint.textContent = "Opens through the local resolver."; return; }
+  out.append(el("p", {}, what), el("div", { class: "open-row" }, btn, hint),
+    ...(where.length ? [el("details", {}, el("summary", { text: "Where the files are" }), ...where)] : []));
+  if (info.product === "t3code") { hint.textContent = "Opens through the local helper"; return; }
   storedHandle(info.product).then(h => {
-    hint.textContent = pickedRoots.has(info.product) || h ? "Opens from the folder you picked before."
-      : "Opens through the local resolver, or asks for a session export folder.";
+    hint.textContent = pickedRoots.has(info.product) || h ? "Opens from the folder you picked before"
+      : "Opens through the local helper, or a folder you pick";
   });
 }
 
@@ -715,18 +815,25 @@ async function openPasted(info, btn, hint, fresh = false) {
   pasteRoot = info.id;
   if (!fresh) {
     btn.disabled = true;
+    // this open owns the load from now: a newer open, Back or a drop cancels it, and its answer is then dropped
+    const claim = loads.begin(), stop = new AbortController();
+    claim.onCancel(() => stop.abort());
     setProgress(0, "Opening the session…");
     try {
       // a v2 T3 link names its environment: the resolver opens the thread only there
-      const files = await openLocalSession(info.id, { environmentId: info.product === "t3code" ? info.environmentId || null : null, onProgress: f => setProgress(f, null) });
+      const files = await openLocalSession(info.id, { environmentId: info.product === "t3code" ? info.environmentId || null : null, onProgress: f => { if (claim.current()) setProgress(f, null); }, signal: stop.signal });
+      if (!claim.current()) return;
+      claim.finish();
       if (files) return await loadFiles(files, info.id);
     } catch (error) {
+      if (!claim.current() || error.name === "AbortError") return;
       return showError(error.message);
     } finally { btn.disabled = false; }
+    if (!claim.current()) return;
     $("#progress").hidden = true;
   }
   // A T3 family exists only as a collected bundle, served by the local resolver (or dropped as a folder).
-  if (info.product === "t3code") return showError("T3 families open through the local resolver: start it with npm --prefix site run trace:local, then paste the link again. Or drop the collected bundle folder.");
+  if (info.product === "t3code") return showT3Help();
   const mem = !fresh && pickedRoots.get(info.product);
   if (mem) return await holdsPaste(mem, info.id) ? loadFiles(narrowPicked(mem, info), info.id) : missingPaste(mem);
   if (typeof window.showDirectoryPicker === "function") {
@@ -920,71 +1027,97 @@ function normalize(trace) {
   trace.agents = trace.agents.filter(a => a.requests.length || a.kind === "root");
   // A T3 family's voids (threads T3 recorded with nothing to draw a ridge from) keep their place on the time axis.
   for (const v of trace.voids || []) for (const k of ["from", "to", "firstEvidence", "lastEvidence", "claimedEnd"]) if (v[k] != null) v[k] = ms(v[k]);
-  const all = [...trace.agents.flatMap(a => a.requests.map(r => r.t)), ...(trace.voids || []).flatMap(v => [v.from, v.to])];
-  trace.started = ms(trace.started) || Math.min(...all);
-  trace.ended = ms(trace.ended) || Math.max(...all);
+  // The recorded span: every finite request, void and task time (a delegate's recorded end after the root's last
+  // request belongs to it). Nothing finite: no span, and nothing is drawn.
+  let lo = Infinity, hi = -Infinity;
+  const see = t => { if (Number.isFinite(t)) { if (t < lo) lo = t; if (t > hi) hi = t; } };
+  for (const a of trace.agents) { for (const r of a.requests) see(r.t); if (a.t3) { see(a.t3.startedAt); see(a.t3.completedAt); } }
+  for (const v of trace.voids || []) { see(v.from); see(v.to); }
+  const own = { started: ms(trace.started), ended: ms(trace.ended) };
+  trace.started = Number.isFinite(own.started) ? Math.min(own.started, lo) : Number.isFinite(lo) ? lo : null;
+  trace.ended = Number.isFinite(own.ended) ? Math.max(own.ended, hi) : Number.isFinite(hi) ? hi : null;
   return trace;
+}
+// The family clock of a loaded trace (clock.js): over every recorded event, null when nothing is timed.
+function clockFor(trace, layout) {
+  if (!layout || layout.empty) return null;
+  return createClock({ X: layout.X, T: layout.T, groups: eventTimes(trace) });
+}
+// The activity snapshot at time t (activity.js), from an index built the first time it is needed.
+function activityFor(t) {
+  if (!S.trace) return null;
+  activityIndex ||= buildActivity(S.trace);
+  return activityAt(activityIndex, t);
 }
 
 async function start(trace,current=()=>true) {
   viewHistory?.dispose(); viewHistory = null;
   clearCapture(); // a capture belongs to the session it was attached to
   S.sources = null; S.sourceOpen = new Map(); sourcesSeq++;
-  Object.assign(S, { level: 0, agentId: null, reqIdx: null, stratum: null, block: null, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args', fleetFilter: null, familyReturn: null, ground: false });
+  Object.assign(S, { level: 0, agentId: null, reqIdx: null, stratum: null, block: null, mapFocus: null, mapPinned: false, inspector: null, callIndex: null, callPart: 'args', fleetFilter: null, familyReturn: null, ground: false, activity: null, inventoryKey: null, netReader: null, netSel: null, citedFrom: null, evidenceRef: null });
   forgetPanels(); shownKey = null;
-  const referenceIndex = await loadIndex();
+  await loadIndex();
   if(!current())return;
-  S.tools = indexFor(referenceIndex, trace.product)?.tools || null; // custody ladder's "Guided by"
+  S.tools = indexFor(referenceIndex, trace.product)?.tools || null; // custody's "Guided by" for a single session
   mapReturn = null;
+  composer?.reset(); provenance?.reset(); activityIndex = null;
+  S.gen = trace.loadGen || `g${++loadSeq}`;
   S.trace = normalize(trace);
-  const sourceNotes = $("#source-notes");
-  sourceNotes.hidden = !trace.sourceWarnings?.length;
-  sourceNotes.replaceChildren(...(trace.sourceWarnings?.length ? [
-    el("details", {}, el("summary", { text: "Recording notes" }),
-      ...trace.sourceWarnings.map(message => el("p", { text: message })))
-  ] : []));
   S.layout = buildLayout(S.trace);
+  // a family with nothing timed to draw opens on what is known of it
+  if (S.layout.empty && S.trace.family) S.lens = "agents";
   transport ||= createTransport($("#playback"), {
-    onPlayhead: p => { scene?.setPlayhead(p); direct(p); playCardTick(p); harness?.playhead(p); },
-    onStart: playFromMap,
-    onFollow: () => { if (dir) { dir.prev = null; dir.prevCutX = null; } }
+    onClock: c => { const cut = cutAt(transport.clock); scene?.setPlayhead({ x: cut, playing: c.playing }); direct(c); if (S.mode === "2d" && !c.playing) renderFlat(); else if (S.mode === "2d") flatCutSoon(); },
+    onFollow: f => { if (dir) { dir.prev = null; dir.prevCutX = null; } scene?.setFollowTarget?.(f.mode === "agent" ? f.agentId : null); },
+    onActivity: () => openActivity(),
+    activity: t => activityLabel(activityFor(t)),
   });
-  transport.load(playbackFor(S.layout));
-  dir = null; playCard = null; followZoom = null;
+  transport.load(clockFor(S.trace, S.layout));
+  dir = null; followZoom = null;
+  provenance ||= createProvenance({ request: gen => requestProvenance(gen) });
+  composer ||= createComposer({ el, client: ai, trace: () => S.trace, gen: () => S.gen, read: items => workerExcerpts(items),
+    network: (agent, req) => (S.network ? wireFacts(agent, req) : null), openCitation: (entry, id, run) => openCitation(entry, id, run),
+    // a family network selection's exact records (fleet/evidence.js in the worker), derived on demand and stoppable
+    evidence: selection => (S.trace?.family && text === workerText ? fleetRequest({ type: "fleet-evidence", selection }) : Promise.reject(Object.assign(new Error("No family network here."), { code: "no_network" }))),
+    stopEvidence: () => worker?.postMessage({ type: "fleet-net-cancel" }),
+    readable: (holder, pre, text, opts) => readableIn(holder, pre, text, opts), compact: compactValue, tip,
+    openThread: key => A.openThread(key), openAgent: id => A.focusAgent(id, 0),
+    onClose: () => { S.inspector = null; up(); } });
   palette ||= createPalette({ state: () => S, A, overview, selectLens, moveRequest, getText: A.getText, finder: () => (text === workerText ? worker : null),
     network: () => S.network,
-    copies: d => harness?.copiesHere().then(r => r && palette.walk(r, d)),
+    copies: d => copiesHere().then(r => r && palette.walk(r, d)),
     playback: {
       toggle: () => playbackShown() && transport.toggle(),
       step: d => playbackShown() && transport.step(d),
       slower: () => playbackShown() && transport.slower(),
       faster: () => playbackShown() && transport.faster(),
-      follow: () => playbackShown() && transport.toggleFollow()
+      follow: () => playbackShown() && S.mode === "3d" && transport.toggleFollow(),
+      activity: () => playbackShown() && openActivity()
     } });
   palette.setTrace(S.trace);
   window.__trace = { S, set, transport };
-  harness ||= createHarnessMode({ S, A, transport, request: requestHarness });
-  harness.reset();
   $("#loader").hidden = true;
   $("#app").hidden = false;
+  netStatus("");
   buildHud();
   const { webglAvailable } = await import("./scene.js").catch(() => ({ webglAvailable: () => false }));
   if (!current()) return;
   S.webgl = webglAvailable();
-  S.mode = !reducedMotion && S.webgl ? "3d" : "2d";
-  // Trace opens in the landscape. The harness layer is reached from it (h, or the Harness button), never
-  // opened first: no URL or saved view starts there (David, 2026-09-27).
+  // Trace opens in the landscape: 3D, or the 2D chart without WebGL or with reduced motion. A family known only
+  // from its inventory (nothing timed) has no terrain: the 2D view says so and the inspector lists what is known.
+  S.mode = !reducedMotion && S.webgl && !S.layout.empty ? "3d" : "2d";
   await setMode(S.mode, current);
   if (!current()) return;
   if (!started) {
     started = true;
     setupResizer();
     $("#overview").addEventListener("click", overview);
+    $("#notes-open").addEventListener("click", () => openNotes());
     $("#reset-view").addEventListener("click", () => { userCamera("refit"); viewHistory.navigate(() => { followMap(null); scene?.refit(); }); });
     $("#zoom-in").addEventListener("click", () => { userCamera("zoom"); scene?.zoom(1.55); });
     $("#zoom-out").addEventListener("click", () => { userCamera("zoom"); scene?.zoom(1 / 1.55); });
     // The user's hands on the landscape camera: a wheel or a pinch (a zoom), or a drag of more than 5 px
-    // (a pan or orbit, which keeps the zoom).
+    // (a pan or orbit, which keeps the zoom). Any of them turns camera follow off.
     const stage = $("#stage"), pointers = new Set();
     stage.addEventListener("wheel", () => userCamera("zoom"), { passive: true, capture: true });
     for (const t of ["pointerup", "pointercancel"]) stage.addEventListener(t, e => pointers.delete(e.pointerId), true);
@@ -998,6 +1131,8 @@ async function start(trace,current=()=>true) {
       stage.addEventListener("pointerup", done, true);
       stage.addEventListener("pointercancel", done, true);
     }, true);
+    tip($("#label-detail"), "Injection labels on the landscape · l");
+    tip($("#reset-view"), "Reset the camera · r");
     $("#label-detail").addEventListener("click", () => {
       S.detailedLabels = !S.detailedLabels;
       $("#label-detail").setAttribute("aria-pressed", String(S.detailedLabels));
@@ -1018,58 +1153,58 @@ async function start(trace,current=()=>true) {
     });
   }
   viewHistory = createViewHistory(window, captureView, restoreView);
+  renderNotesButton();
   if (resolverInPlay()) loadSources();
 }
 let started = false;
+// The 2D chart's cut while playing: redrawn at most five times a second (the chart is SVG, not a frame loop).
+let flatCutTimer = null;
+function flatCutSoon() { if (flatCutTimer) return; flatCutTimer = setTimeout(() => { flatCutTimer = null; if (S.mode === "2d") renderFlat(); }, 200); }
 
-// Under the harness layer the 3D scene runs hidden, so playback and the session map keep working.
-const webglFor3d = () => S.webgl !== false;
+// The landscape's two views: 3D, and the 2D chart (no WebGL, reduced motion, or chosen). A saved or older view that
+// names any other mode (the removed Harness view) opens the landscape instead.
+const viewMode = mode => (mode === "3d" && S.webgl !== false && !S.layout?.empty ? "3d" : mode === "2d" ? "2d" : S.webgl !== false && !reducedMotion && !S.layout?.empty ? "3d" : "2d");
 async function setMode(mode, current = () => !!S.trace) {
   if (!current()) return;
-  if (mode !== "harness") S.lastMode = mode;
+  mode = viewMode(mode);
   S.mode = mode;
   setSessionKind();
   $("#mode").textContent = mode === "3d" ? "2D view" : "3D view";
-  $("#harness-mode").setAttribute("aria-pressed", String(mode === "harness"));
-  $("#legend").hidden = mode === "harness";   // the landscape's source colours; the layer draws its own legend
-  $("#harness-mode").onclick = () => viewHistory.navigate(() => setMode(S.mode === "harness" ? (S.lastMode || "3d") : "harness"));
+  $("#mode").hidden = !S.webgl || !!S.layout?.empty;
   $("#reset-view").hidden = mode !== "3d";
   $("#label-detail").hidden = mode !== "3d";
   $("#map-zoom").hidden = mode !== "3d";
   S.mapFocus = null;
   $("#mode").onclick = () => viewHistory.navigate(() => setMode(S.mode === "3d" ? "2d" : "3d"));
-  if (mode !== "harness") harness?.hide();
-  if (mode === "3d" || (mode === "harness" && webglFor3d())) {
+  if (mode === "3d") {
     try {
       const { createScene } = await import("./scene.js");
       if (!current() || S.mode !== mode) return;
       $("#flat").hidden = true;
       $("#stage").hidden = false;
-      // Under the harness layer the landscape stays laid out but invisible: display:none would size it to
-      // 0x0 through scene.js's ResizeObserver, and the 3D view came back blank (found in the mock).
-      $("#stage").style.visibility = mode === "harness" ? "hidden" : "";
       if (!scene) {
         scene = createScene($("#stage"), { trace: S.trace, layout: S.ground ? buildLayout(S.trace, { groupBy: "machine" }) : S.layout, reducedMotion, onHover: showTip, onPick: pick, onMapFocus: followMap, onViewChange: saveViewSoon });
         window.__trace.scene = scene;
         if (S.fleetFilter) scene.setFilter(S.fleetFilter, { dur: 0 });
         if (S.ground) groundRibs();
         scene.setLabelDetail(S.detailedLabels);
-        if (transport.playback) scene.setPlayhead({ P: transport.playback.P, playing: false });
+        scene.setPlayhead({ x: cutAt(transport.clock), playing: false });
         scene.onUserCamera?.(() => userCamera("hands"));
       }
     } catch (e) {
       if (!current() || S.mode !== mode) return;
       console.warn("3D view unavailable, using the 2D view", e);
+      S.webgl = false;
       $("#mode").hidden = true;
-      if (mode !== "harness") return setMode("2d", current);
+      return setMode("2d", current);
     }
   } else {
     $("#stage").hidden = true;
-    $("#stage").style.visibility = "";
-    $("#flat").hidden = mode === "harness";
+    $("#flat").hidden = false;
   }
   if (!current() || S.mode !== mode) return;
-  if (mode === "harness") harness.show();
+  transport?.setFlat(mode !== "3d");
+  if (mode !== "3d") transport?.setFollow({ mode: "off" });
   showPlayback();
   symbolLegend();
   layoutInsets();
@@ -1136,17 +1271,20 @@ function setupResizer() {
   });
 }
 
-// The header's eyebrow names the product and the view: the landscape, or the harness layer over it.
+// The header's eyebrow names the product.
 function setSessionKind() {
   if (!S.trace) return;
-  $("#session-kind").textContent = `${S.trace.family ? "T3 Code family" : productLabel(S.trace.product)} / ${S.mode === "harness" ? "Harness layer" : "Session landscape"}`;
+  $("#session-kind").textContent = S.trace.family ? "T3 Code family" : productLabel(S.trace.product);
 }
 
+// The heading of what is open: a public example by its manifest's approved title (its recorded titles are scrubbed
+// markers, which the records and readers keep as recorded); anything else by its own recorded title.
+const displayTitle = t => publicExample?.title || t.title || (t.family ? "T3 Code family" : `${productLabel(t.product)} session`);
 function buildHud() {
   const t = S.trace;
   const st = sessionStats(t);
   setSessionKind();
-  $("#title").textContent = t.title || `${productLabel(t.product)} session`;
+  $("#title").textContent = displayTitle(t);
   // More than one session among the dropped files: offer the others.
   const cands = (t.candidates || []).filter(c => c && c.id);
   const old = $("#session-pick");
@@ -1159,12 +1297,23 @@ function buildHud() {
     $(".hud-title").append(sel);
   }
   const stat = (b, s) => el("span", {}, el("b", { text: b }), s);
-  // Only what the session has: no subagent slots for a single-agent session.
-  $("#stats").replaceChildren(...[
+  // Only what the session has: no subagent slots for a single-agent session. A T3 family leads with what is known
+  // and what is readable, in its own units (threads, environments, drawn agents, requests).
+  if (t.family) {
+    const inv = t.inventory || [];
+    const readable = inv.filter(x => x.status === "readable" || x.status === "events-only").length;
+    const requests = t.agents.reduce((n, a) => n + a.requests.length, 0);
+    $("#stats").replaceChildren(...[
+      Number.isFinite(st.wall) && st.wall > 0 ? stat(fmtDur(st.wall), "Recorded span") : null,
+      stat(`${fmtInt(readable)} / ${fmtInt(inv.length)}`, "Threads readable"),
+      stat(fmtInt(t.fleet?.machines?.length || 0), "Environments"),
+      stat(fmtInt(t.agents.filter(a => a.requests.length).length), "Agents drawn"),
+      stat(fmtInt(requests), "Requests"),
+      stat(`${Math.round(st.cacheShare * 100)}%`, "Context from cache")].filter(Boolean));
+  } else $("#stats").replaceChildren(...[
     stat(fmtDur(st.wall), "Duration"),
     stat(fmtInt(st.rootRequests), "Main requests"),
-    // A T3 family's remote delegates are threads, not subagents.
-    st.subagents ? stat(fmtInt(st.subagents), `${t.family ? `threads & subagents on ${fmtInt(t.fleet?.machines?.length || 1)} machines` : "subagents"}, ${fmtInt(st.subRequests)} requests`) : null,
+    st.subagents ? stat(fmtInt(st.subagents), `subagents, ${fmtInt(st.subRequests)} requests`) : null,
     st.subFresh ? stat(`${fmtTok(st.rootFresh)} vs ${fmtTok(st.subFresh)}`, "Fresh · main / agents") : stat(fmtTok(st.rootFresh), "fresh tokens"),
     stat(`${Math.round(st.cacheShare * 100)}%`, "Context from cache"),
     st.sideFresh ? stat(fmtTok(st.sideFresh), "Side calls & reviews") : null].filter(Boolean));
@@ -1181,43 +1330,165 @@ function buildHud() {
 const pendingFleet = new Map();
 let fleetSeq = 0;
 function fleetRequest(message, onProgress) {
-  const id = ++fleetSeq;
+  const id = ++fleetSeq, gen = S.gen;
   return new Promise((resolve, reject) => {
-    pendingFleet.set(id, { resolve, reject, onProgress });
-    getWorker().postMessage({ ...message, id });
+    pendingFleet.set(id, { resolve, reject, onProgress, gen });
+    getWorker().postMessage({ ...message, id, gen });
   });
 }
-// A family ridge's network fold: its peer calls, held waits and calls out, grouped by link; a row opens its span
-// ladder in the reader. The spans are read the first time a fold opens.
+// The network evidence the user selected in Network folds and ladders (fleet/selection.js): one load's own, kept off
+// history and saved views; a new load starts empty. Every change repaints the selection bars on screen.
+function netSelection() {
+  if (S.netSel?.gen !== S.gen) S.netSel = { gen: S.gen, sel: createNetSelection() };
+  return S.netSel.sel;
+}
+const selectionApi = {
+  has: key => netSelection().has(key),
+  toggle(item) { const on = netSelection().toggle(item); refreshSelectionBars(); return on; },
+  toggleGroup(g) { const on = netSelection().toggleGroup(g); refreshSelectionBars(); return on; },
+  groupOn: g => netSelection().groupOn(g),
+  clear() { netSelection().clear(); refreshSelectionBars(); },
+  anchor: () => netSelection().anchor(),
+};
+// Every selection bar on screen says what is selected, with Explain and Clear; none when nothing is.
+function refreshSelectionBars() {
+  const sel = netSelection(), n = sel.size;
+  for (const bar of document.querySelectorAll(".net-selection")) {
+    bar.hidden = !n;
+    if (!n) { bar.replaceChildren(); continue; }
+    const omitted = sel.omitted;
+    bar.replaceChildren(el("span", { class: "meta", role: "status", text: `${fmtInt(n)} selected${omitted ? ` (+${fmtInt(omitted)} not listed)` : ""}` }),
+      el("button", { type: "button", class: "btn small", text: "Explain", onclick: () => openExplain({ agentId: S.agentId, threadKey: S.agent?.threadKey || null, network: selectionApi.anchor() }, { scope: "network" }) }),
+      el("button", { type: "button", class: "linkbtn", text: "Clear", onclick: () => selectionApi.clear() }));
+  }
+  for (const b of document.querySelectorAll(".fl-pick[data-key]")) { const on = sel.has(b.dataset.key); b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "✓" : "+"; }
+}
+const selectionBar = () => { const bar = el("div", { class: "net-selection", hidden: true }); queueMicrotask(refreshSelectionBars); return bar; };
+const pickButton = (key, kind, label) => el("button", { type: "button", class: "fl-pick", "data-key": key, "aria-pressed": String(selectionApi.has(key)), "aria-label": `Select ${label}`, title: "Select as evidence", text: selectionApi.has(key) ? "✓" : "+",
+  onclick: () => selectionApi.toggle({ key, kind, label }) });
+const JOIN_SHORT = { matched: "joined", unjoined: "not joined", ambiguous: "ambiguous join", "route-conflict": "route conflict" };
+const WAIT_SHORT = { "recorded-wait": "wait", "long-call-candidate": "long call" };
+
+// A family ridge's network fold: its peer calls, held waits and calls out, grouped by link. A group lists its own
+// calls (a page at a time), each selectable and each opening its span ladder; Select all selects the group's members.
+// The spans are read the first time a fold opens (never on load); reading can be stopped, and a stopped or failed
+// read can be asked for again. Every answer lands only in the fold that asked, for the load that asked.
 function fleetNetSection(agent) {
-  if (!S.trace?.family || !agent.thread || text !== workerText) return null;
-  const body = el("div", { class: "fleet-net-body" }, el("p", { class: "m", text: "Opens the family's span archives: peer calls, waits and routes between the machines." }));
-  const box = el("details", { class: "fleet-net" }, el("summary", { text: "Network" }), body);
+  if (!S.trace?.family || !agent.threadKey || text !== workerText) return null;
+  const body = el("div", { class: "fleet-net-body" });
+  const box = disclosure(`fleet-net:${agent.threadKey}`, "fleet-net", "Network", false, body);
+  const gen = S.gen;
   let asked = false;
-  box.addEventListener("toggle", async () => {
-    if (!box.open || asked) return;
+  const say = (t, ...more) => body.replaceChildren(el("p", { class: "m", role: "status", text: t }), ...more);
+  const stopBtn = () => el("button", { type: "button", class: "linkbtn", text: "Stop", onclick: () => { worker?.postMessage({ type: "fleet-net-cancel" }); } });
+  const PAGE = 25;
+  const groupRow = (g, r) => {
+    const calls = el("ul", { class: "items net-calls", hidden: true });
+    let shown = 0;
+    const more = el("button", { type: "button", class: "linkbtn", text: "Show more", hidden: true });
+    const page = async () => {
+      const keys = g.members.slice(shown, shown + PAGE);
+      shown += keys.length;
+      more.hidden = true;
+      try {
+        const { calls: rows } = await fleetRequest({ type: "fleet-calls", keys });
+        if (gen !== S.gen || !calls.isConnected) return;
+        for (const c of rows) calls.append(c.missing ? el("li", { class: "m", text: "A call no longer in the spans" }) : el("li", { class: "net-call" }, pickButton(c.key, "call", `${c.from} → ${c.to} call`),
+          el("button", { type: "button", class: "item", onclick: () => openLadder(c.key, body, () => rows_(r)) },
+            el("span", { class: "tool", text: `${fmtClock(c.t0)} · ${c.method || "?"}${c.status != null ? ` ${c.status}` : ""}` }),
+            el("span", { class: "meta", text: [fmtDur(c.t1 - c.t0), JOIN_SHORT[c.join], WAIT_SHORT[c.wait]].filter(Boolean).join(" · ") }))));
+        more.hidden = shown >= g.members.length;
+        if (!more.hidden) more.textContent = `Show ${fmtInt(Math.min(PAGE, g.members.length - shown))} more`;
+      } catch (e) { if (gen === S.gen) calls.append(el("li", { class: "m", text: e.message || String(e) })); }
+    };
+    more.onclick = page;
+    const open = el("button", { type: "button", class: "item", "aria-expanded": "false", onclick: () => {
+      const on = calls.hidden;
+      calls.hidden = !on; open.setAttribute("aria-expanded", String(on));
+      more.hidden = !on || !shown || shown >= g.members.length;
+      if (on && !shown) page();
+    } },
+      el("span", { class: "tool", text: `${g.from} → ${g.to} · ${g.kind}` }),
+      el("span", { class: "meta", text: [`${fmtInt(g.count)} call${g.count === 1 ? "" : "s"}`, g.joined < g.count ? `${fmtInt(g.joined)} joined` : null, g.ambiguous ? `${fmtInt(g.ambiguous)} ambiguous` : null, g.routeConflict ? `${fmtInt(g.routeConflict)} route conflict` : null,
+        g.candidates ? `${fmtInt(g.candidates)} long` : null, g.shared ? `${fmtInt(g.shared)} shared` : null, `:${g.port}`, `${fmtClock(g.t0)}–${fmtClock(g.t1)}`].filter(Boolean).join(" · ") }));
+    const all = el("button", { type: "button", class: "pill net-pick-all", "aria-pressed": String(selectionApi.groupOn(g)), text: g.omitted ? `Select ${fmtInt(g.members.length)} listed` : "Select all",
+      onclick: e => { const on = selectionApi.toggleGroup(g); e.currentTarget.setAttribute("aria-pressed", String(on)); } });
+    if (g.basis?.includes("anchor-subtree")) tip(all, "Some of these calls are associated with this thread only through their delegation's span subtree.");
+    return el("li", { class: "net-group" }, el("div", { class: "net-group-head" }, open, all), calls, more);
+  };
+  const rows_ = r => {
+    const note = r.rejected ? el("p", { class: "m", text: `${fmtInt(r.rejected)} span line${r.rejected === 1 ? "" : "s"} unreadable; calls in them are missing.` }) : null;
+    // only what the spans establish: a call is this thread's when its spans name the thread (or a recorded hop's command)
+    if (!r.rows.length) return say(`No collected peer call names this thread.${r.unowned ? ` ${fmtInt(r.unowned)} of the family's ${fmtInt(r.calls)} peer call${r.calls === 1 ? "" : "s"} ${r.unowned === 1 ? "names" : "name"} no thread, so none is shown as its own.` : ""}`, ...(note ? [note] : []));
+    body.replaceChildren(selectionBar(), ...(note ? [note] : []), el("ul", { class: "items" }, r.rows.map(g => groupRow(g, r))));
+  };
+  const read = async () => {
+    if (asked) return;
     asked = true;
-    body.replaceChildren(el("p", { class: "m", text: "Reading the family's spans…" }));
+    say("Reading the family's spans…", stopBtn());
     try {
-      const r = await fleetRequest({ type: "fleet-net", thread: agent.thread }, p => body.replaceChildren(el("p", { class: "m", text: `Reading the family's spans: ${fmtInt(p.lines)} lines (${p.machine})…` })));
-      const note = r.rejected ? el("p", { class: "m", text: `${fmtInt(r.rejected)} span line${r.rejected === 1 ? "" : "s"} of the family's archives could not be read; calls in them are missing here.` }) : null;
-      if (!r.rows.length) return body.replaceChildren(el("p", { class: "m", text: "No peer calls of this thread are in the collected spans." }), ...(note ? [note] : []));
-      body.replaceChildren(...(note ? [note] : []), el("ul", { class: "items" }, r.rows.map(g => el("li", {}, el("button", { type: "button", class: "item", onclick: () => openLadder(g.call),
-        title: "Open this call's span ladder" },
-        el("span", { class: "tool", text: `${g.from} → ${g.to} · ${g.kind}` }),
-        el("span", { class: "meta", text: `${fmtInt(g.count)}${g.joined < g.count ? ` (${fmtInt(g.joined)} joined)` : ""} · :${g.port} · ${fmtClock(g.t0)}–${fmtClock(g.t1)}` }))))));
-    } catch (e) { asked = false; body.replaceChildren(el("p", { class: "m", text: e.message || String(e) })); }
-  });
+      const r = await fleetRequest({ type: "fleet-net", thread: agent.threadKey }, p => { if (gen === S.gen) say(`Reading spans · ${fmtInt(p.lines)} lines · ${p.machine}`, stopBtn()); });
+      if (gen !== S.gen) return;
+      rows_(r);
+    } catch (e) {
+      asked = false;
+      if (gen !== S.gen) return;
+      say(e.code === "cancelled" ? "Stopped." : e.message || String(e), el("button", { type: "button", class: "linkbtn", text: "Read again", onclick: read }));
+    }
+  };
+  box.addEventListener("toggle", () => { if (box.open) read(); });
+  if (box.open) queueMicrotask(read);
   return box;
 }
-async function openLadder(call) {
-  const panel = $("#panel");
-  panel.replaceChildren(el("p", { class: "m", text: "Building the span ladder…" }));
+// One peer call's span ladder, inside the fold that opened it, with a way back to its rows. Each span row and the
+// call itself can be selected as evidence.
+async function openLadder(call, host, back) {
+  const gen = S.gen;
+  host.replaceChildren(el("p", { class: "m", role: "status", text: "Building the span ladder…" }));
   try {
     const { ladder } = await fleetRequest({ type: "fleet-ladder", call });
-    panel.replaceChildren(el("div", { class: "fleet-ladder" }, ...renderLadder(el, ladder, { fmtWhen, onBack: () => { shownKey = null; render(false); } })));
-    panel.scrollTop = 0;
-  } catch (e) { panel.replaceChildren(el("p", { class: "m", text: e.message || String(e) })); }
+    if (gen !== S.gen || !host.isConnected) return;
+    host.replaceChildren(selectionBar(), el("div", { class: "fleet-ladder" }, el("div", { class: "net-call-pick" }, pickButton(ladder.key, "call", `${ladder.from} → ${ladder.to} call`), el("span", { class: "meta", text: "Select this call" })),
+      ...renderLadder(el, ladder, { fmtWhen, onBack: back, select: selectionApi })));
+  } catch (e) {
+    if (gen !== S.gen || !host.isConnected) return;
+    host.replaceChildren(el("p", { class: "m", text: e.message || String(e) }), el("button", { type: "button", class: "linkbtn", text: "Back", onclick: back }));
+  }
+}
+// The network evidence a citation (or a selection) names, as a reader in the inspector: a call's or wait's ladder
+// (with the cited span marked), one span's own record, a delegation path's segments, or why the record is gone.
+// A record of another load says so; nothing is rebound to this one.
+function networkView() {
+  const r = S.netReader;
+  // opened from an answer's citation: its way back says where it goes
+  const back = el("button", { type: "button", class: "text-control", text: S.citedFrom ? "← Back to the answer" : "← Back", onclick: () => (S.citedFrom ? backToAnswer() : up()) });
+  if (!r) return [back];
+  if (r.gen !== S.gen) return [back, el("p", { class: "note", text: "This network record belonged to an earlier load." })];
+  const host = el("div", { class: "reader net-reader" }, el("p", { class: "m", role: "status", text: "Reading the family's spans…" }));
+  const gen = S.gen;
+  const fail = e => { if (gen === S.gen && host.isConnected) host.replaceChildren(el("p", { class: "warnline", text: e.code === "cancelled" ? "Stopped." : e.message || String(e) })); };
+  if (r.kind === "missing") host.replaceChildren(el("p", { class: "warnline", text: `Not in the family's spans${r.reason ? ` (${r.reason})` : ""}.` }));
+  else if (r.kind === "span") {
+    fleetRequest({ type: "fleet-evidence", selection: { kind: "network", keys: [r.key] } }).then(out => {
+      if (gen !== S.gen || !host.isConnected) return;
+      const rec = out.records?.[0], name = env => out.labels?.[env] || env;
+      if (!rec || rec.status !== "resolved") return host.replaceChildren(el("p", { class: "warnline", text: `That span is not in the family's spans${rec?.reason ? ` (${rec.reason})` : ""}.` }));
+      const sp = rec.span, a = rec.attributes || {};
+      host.replaceChildren(...[el("p", { class: "kicker", text: "Span" }), el("h2", { class: "aname", text: sp.name }),
+        el("p", { class: "m", text: `${name(sp.environmentId)} · ${sp.kind} · ${fmtWhen(sp.startMs)} · ${fmtDur(sp.endMs - sp.startMs)}` }),
+        el("p", { class: "m" }, "Span ", compactValue(sp.spanId, { what: "span id" }), " · trace ", compactValue(sp.traceId, { what: "trace id" })),
+        rec.parent ? el("p", { class: "m", text: rec.parent.foreign ? "Parent: a span on another environment" : `Parent: ${rec.parent.name}` }) : null,
+        Object.keys(a).length ? el("ul", { class: "items" }, Object.entries(a).map(([k, v]) => el("li", { class: "m" }, `${k} `, compactValue(String(v), { what: k })))) : null,
+        el("p", { class: "meta", text: `Process: ${{ own: "named by the span", trace: "its trace's only one", conflicting: "its trace names several", unknown: "not recorded" }[rec.process?.basis] || "not recorded"}` }),
+        selectionBar()].filter(Boolean));
+    }, fail);
+  } else {
+    fleetRequest({ type: "fleet-ladder", call: r.call }).then(({ ladder }) => {
+      if (gen !== S.gen || !host.isConnected) return;
+      host.replaceChildren(selectionBar(), el("div", { class: "fleet-ladder" }, ...renderLadder(el, ladder, { fmtWhen, select: selectionApi, highlight: r.span || null })));
+    }, fail);
+  }
+  return [back, el("p", { class: "kicker", text: r.kind === "path" ? "Delegation path" : r.kind === "wait" ? "Forwarded wait" : "Peer call" }), host];
 }
 
 // ---------- T3 family: the machine and lab filter, and each thread's own session ----------
@@ -1246,7 +1517,7 @@ async function setGround(on) {
   scene?.dispose(); scene = null;
   await setMode("3d");
   buildFleetFilter();
-  if (transport?.playback) scene?.setPlayhead({ P: transport.playback.P, playing: false });
+  scene?.setPlayhead({ x: cutAt(transport?.clock), playing: false });
   render(false);
 }
 async function groundRibs() {
@@ -1256,49 +1527,40 @@ async function groundRibs() {
     if (scene === want && S.ground) scene.setRibs(r.waits);
   } catch (e) { netStatus(`The fleet ground has no waits: ${e.message || e}`, "error"); }
 }
-// The files of one family thread's own harness session, inside the bundle the family came from.
-function ownSessionFiles(agent) {
-  const th = S.trace?.fleet?.threads?.find(t => t.id === agent.thread);
-  if (!th?.native || !lastFiles) return null;
-  const dir = `machines/${th.environmentId}/agent-sessions/`, stem = th.native.path.replace(/\.jsonl$/, "");
-  const files = lastFiles.filter(f => {
-    const rel = f.path.slice(f.path.indexOf("machines/"));
-    if (!rel.startsWith(dir)) return false;
-    const p = rel.slice(dir.length).replace(/\.gz$/, "");
-    return th.native.product === "codex" ? /\/rollout-[^/]+\.jsonl$/.test(p) : p === th.native.path || p.startsWith(`${stem}/`);
-  });
-  return files.length ? { files, nativeId: th.native.nativeId } : null;
-}
-// "Open its own session": that thread's own landscape, with a crumb back to the family.
+// The files of the clicked agent's own native binding (fleet/own-session.js).
+const ownSessionFiles = agent => ownSessionFilesOf(S.trace, agent, lastFiles);
+// "Open its session": that binding's own landscape, with a crumb back to the family.
 async function openOwnSession(agent) {
   const own = ownSessionFiles(agent);
   if (!own) return;
-  const back = { files: lastFiles, title: S.trace.title, machine: agent.machine, name: agent.name };
+  const back = { files: lastFiles, title: displayTitle(S.trace), machine: agent.machine, environmentId: agent.environmentId, name: agent.name };
   backToLoader();
   const trace = await loadFiles(own.files, own.nativeId);
   if (trace) { S.familyReturn = back; renderCrumbs(); }
 }
-async function backToFamily(machine = null) {
+async function backToFamily(env = null) {
   const back = S.familyReturn;
   if (!back) return;
   backToLoader();
   const trace = await loadFiles(back.files, null);
-  if (trace && machine) setFleetFilter({ machine });
+  if (trace && env) setFleetFilter({ machine: env });
 }
 
-// Opens a T3 family through the local resolver, from a session that ran in it.
+// Opens a T3 family through the local resolver, from a session that ran in it. The open session stays readable
+// until the family is ready; progress and a failure show in the sidebar's status line.
 async function openT3Family(rootThreadId) {
   const btn = $("#t3-family");
   btn.disabled = true;
-  // While the resolver assembles the family, its progress shows in the loader.
-  let back = false;
-  const toLoader = () => { if (!back) { backToLoader(); back = true; } };
+  const claim = loads.begin(), stop = new AbortController();
+  claim.onCancel(() => stop.abort());
   try {
-    const files = await openLocalSession(rootThreadId, { onProgress: f => { const first = !back; toLoader(); setProgress(f, first ? "Opening the session…" : null); } });
-    if (!files) return netStatus("The local resolver didn't answer: start it with npm --prefix site run trace:local.", "error");
-    toLoader();
+    netStatus("Opening its T3 family…", "busy");
+    const files = await openLocalSession(rootThreadId, { onProgress: f => { if (claim.current()) netStatus(`Assembling its T3 family · ${Math.round(f * 100)}%`, "busy"); }, signal: stop.signal });
+    if (!claim.current()) return;
+    claim.finish();
+    if (!files) return netStatus(`The local helper is not answering. Start it: ${RESOLVER}`, "error");
     await loadFiles(files, null);
-  } catch (e) { if (back) showError(e.message || String(e)); else netStatus(e.message || String(e), "error"); }
+  } catch (e) { if (claim.current() && e.name !== "AbortError") netStatus(e.message || String(e), "error"); }
   finally { btn.disabled = false; }
 }
 // The four questions, "What went over the wire" while a network capture is attached, and "Everything on this
@@ -1337,60 +1599,47 @@ function symbolLegend() {
 function clipName(s) { s = String(s); return s.length > 48 ? `${s.slice(0, 47)}…` : s; }
 
 // ---------- playback ----------
-// The session's clock over the main thread's requests, parked at the end, the last request complete
-// (the whole landscape, where the scene starts). Null when there is nothing to play through.
-function playbackFor(L) {
-  const reqs = L.root?.requests || [];
-  if (reqs.length < 2) return null;
-  const pb = createPlayback({ times: reqs.map(r => r.t), X: L.X });
-  pb.setP(pb.end);
-  return pb;
-}
-// The transport shows in the 3D view and under the harness layer; hiding it stops playback.
+// The transport shows in the 3D and the 2D view whenever the trace has a clock; hiding it stops playback.
 function showPlayback() {
-  const on = (S.mode === "3d" || S.mode === "harness") && !!scene && !!transport?.playback;
+  const on = !!transport?.clock && !!S.trace && !S.layout?.empty;
   if (!on) transport?.pause();
   $("#playback").hidden = !on;
+  transport?.sync();
 }
 function playbackShown() { return !$("#playback").hidden; }
-// Playing from an inspection (a request's core, an agent's requests) goes back to the map at that request,
-// where the landscape plays. On the map the camera stays where the user put it.
-function playFromMap() {
-  if (S.mode !== "3d" || !scene || isLandscape(S) || !S.agent?.requests[S.reqIdx]) return;
-  set({ mapPinned: true, level: 2, agentId: S.agentId, reqIdx: S.reqIdx, stratum: null, block: null, inspector: null, callIndex: null }, { locate: true, reveal: true });
-}
 
-// ---------- the director (director.js) ----------
-// Built on a session's first run: the scene's own placement and events, so the director aims where the
-// scene draws. prev is the last shot; level and span are the map zoom the run started at, so the
-// director's own framing never changes the level it works at. Nothing here allocates per tick but the
-// shots the director returns.
-function direct(p) {
+// ---------- camera follow (director.js followShot) ----------
+// Only while playing, and only when follow is on: the family's time keeps the cut at the anchor across the lanes;
+// one named agent keeps that agent's column there. Nothing here ever changes what the inspector shows.
+function direct(c) {
   if (!scene || S.mode !== "3d") return;
-  if (!p.playing) { if (dir) { dir.prev = null; dir.prevCutX = null; } return; }
-  const pb = transport.playback;
-  if (!dir) {
-    dir = { geom: scene.getGeometry(), events: scene.getEvents(), prev: null, prevCutX: null, level: 0, span: 0, zoom: 1,
-      lead: { agentId: null, P: 0, x: 0, z: 0, yTop: 0 }, state: {} };
-  }
-  const d = dir, g = d.geom, s = d.state, root = S.layout.root, cutX = g.W * pb.xAt(p.P);
-  if (d.prevCutX == null) { // a run starts, or Follow was asked for again: the user's zoom to follow at
+  const f = transport.follow;
+  if (!c.playing || f.mode === "off") { if (dir) { dir.prev = null; dir.prevCutX = null; } return; }
+  if (!dir) dir = { geom: scene.getGeometry(), prev: null, prevCutX: null, span: 0, zoom: 1, lead: { agentId: null, P: 0, x: 0, z: 0, yTop: 0 }, state: {}, zMid: null, yMid: null };
+  const d = dir, g = d.geom, s = d.state;
+  const cutX = g.W * c.x;
+  if (d.prevCutX == null) { // follow begins (or Play while following): the user's zoom is the one to follow at
     const latch = (followZoom ||= createFollowZoom(mapZoomNow)).engage();
     d.zoom = latch.zoom;
-    d.level = latch.level;
     d.span = g.W / Math.max(1e-6, latch.zoom);
   }
-  // The leading column: the focused subagent's ridge when one is focused (as the scene's lead agent is), else the main thread's.
-  const agent = S.agent?.kind === "subagent" && g.rowZ.has(S.agent.id) ? S.agent : root;
-  const aP = agent === root ? p.P : agentPAt(g, agent, cutX), i = Math.max(0, Math.min(agent.requests.length - 1, Math.floor(aP)));
   const lead = d.lead;
-  lead.agentId = agent.id; lead.P = aP; lead.x = cutX; lead.z = g.z(agent, i); lead.yTop = g.crest(agent, i);
-  const landscape = isLandscape(S);
-  s.P = p.P; s.playing = true; s.speed = pb.speed; s.n = pb.n; s.W = g.W; s.cutX = cutX; s.prevCutX = d.prevCutX ?? cutX;
-  s.level = landscape ? d.level : 0; s.override = transport.follow === "manual"; s.forced = landscape && transport.forced;
-  s.lead = lead; s.events = d.events; s.span = d.span; s.zoom = d.zoom; s.leadFx = scene.leadScreenX?.();
+  const agent = f.mode === "agent" ? agentById(f.agentId) : null;
+  if (agent && g.rowZ.has(agent.id) && agent.requests.length) {
+    const aP = agentPAt(g, agent, cutX), i = Math.max(0, Math.min(agent.requests.length - 1, Math.floor(Math.max(0, aP))));
+    Object.assign(lead, { agentId: agent.id, P: aP, x: aP < 0 ? g.x(agent, 0) : Math.min(cutX, g.x(agent, agent.requests.length - 1)), z: g.z(agent, i), yTop: g.crest(agent, i) });
+  } else {
+    // the family's time: the cut across the middle of the lanes, at a moderate height
+    if (d.zMid == null) {
+      let z0 = Infinity, z1 = -Infinity, y = 0;
+      for (const a of S.trace.agents) if (a.requests.length && g.rowZ.has(a.id)) { const zz = g.z(a, 0); z0 = Math.min(z0, zz); z1 = Math.max(z1, zz); y = Math.max(y, g.crest(a, 0)); }
+      d.zMid = Number.isFinite(z0) ? (z0 + z1) / 2 : 0; d.yMid = y / 2;
+    }
+    Object.assign(lead, { agentId: null, P: 0, x: cutX, z: d.zMid, yTop: d.yMid });
+  }
+  Object.assign(s, { playing: true, speed: c.speed ?? 4, n: 2, W: g.W, cutX, prevCutX: d.prevCutX ?? cutX, level: 1, override: false, forced: true, lead, events: [], span: d.span, zoom: d.zoom, leadFx: NaN });
   d.prevCutX = cutX;
-  const shot = nextShot(s, d.prev, performance.now());
+  const shot = followShot(s, d.prev, performance.now());
   if (shot) { d.prev = shot; scene.setDirectorShot?.(shot); }
 }
 function mapZoomNow() {
@@ -1403,18 +1652,28 @@ function mapZoomNow() {
 function cameraMove(source) { (followZoom ||= scene && createFollowZoom(mapZoomNow))?.camera(source); }
 // The user's hands on the camera, by source: "zoom" (the wheel, a pinch, the zoom buttons and keys), "refit"
 // (Reset view, the overview, a lens), "drag" (a pan or orbit), "hands" (the scene's onUserCamera, which does not say which).
-// While playing the director lets go (Follow manual); only a zoom or a refit chooses the follow zoom.
+// Follow lets go at once, and Play never takes it back; only a zoom or a refit chooses the zoom it follows at.
 function userCamera(source) { cameraMove(source); transport?.userCamera(); }
 // The transport sits on the bottom row, centred between the minimap and the view controls; where that
-// row is too narrow it sits above the minimap. Phones: full width, above the stacked bottom controls.
+// row is too narrow it sits above the minimap. Phones: full width, above the stacked bottom controls, and never over
+// the top ones (the lenses, the environment and lab filters, the crumbs): where the two stacks leave it too little
+// room, the bottom sheet gives up the height it needs (--sheet, which the controls floating above the sheet follow).
+const MIN_SHEET = 140;
 function placePlayback() {
   const host = $("#playback");
   if (host.hidden) return;
   const box = s => { const e = $(s); return e && !e.hidden ? e.getBoundingClientRect() : null; };
+  const app = $("#app");
+  app.style.removeProperty("--sheet"); app.style.removeProperty("--sheet0");
   if (innerWidth <= 980) {
-    const tops = ["#map-zoom", ".viewtools", "#request-nav", "#panel"].map(box).filter(r => r?.height).map(r => r.top);
-    Object.assign(host.style, { left: "", width: "", bottom: `${Math.round(innerHeight - Math.min(...tops) + 8)}px` });
     host.classList.add("compact");
+    Object.assign(host.style, { left: "", width: "" });
+    const H = host.getBoundingClientRect().height || 76;
+    const topLimit = Math.max(sideStackBottom(), ...["#crumbs", "#map-location"].map(box).filter(r => r?.height).map(r => r.bottom)) + 8;
+    const edge = () => Math.min(...["#map-zoom", ".viewtools", "#request-nav", "#panel"].map(box).filter(r => r?.height).map(r => r.top)) - 8;
+    const bottom = fitPhoneClock({ topLimit, height: H, edge, sheet: () => box("#panel")?.height || 0, minSheet: MIN_SHEET,
+      setSheet: px => { app.style.setProperty("--sheet", `${px}px`); app.style.setProperty("--sheet0", `${px}px`); } });
+    host.style.bottom = `${Math.round(innerHeight - bottom)}px`;
     return;
   }
   const H = 72, GAP = 14; // room for the two-row layout, so the choice does not flip with it
@@ -1432,8 +1691,8 @@ function placePlayback() {
 }
 
 function layoutInsets(preserveView = false) {
-  if (!scene) { const h = $(".hud").getBoundingClientRect(); if (innerWidth > 980) $("#crumbs").style.top = `${Math.round(h.bottom + 8)}px`; return; }
   placePlayback();
+  if (!scene) { const h = $(".hud").getBoundingClientRect(); if (innerWidth > 980) $("#crumbs").style.top = `${Math.round(h.bottom + 8)}px`; return; }
   const vw = innerWidth, vh = innerHeight;
   const mobile = vw <= 980;
   const hud = $(".hud").getBoundingClientRect();
@@ -1445,38 +1704,46 @@ function layoutInsets(preserveView = false) {
   const place = $('#map-location');
   place.style.top = `${Math.round(crumbs.bottom + 8)}px`;
   const placeBottom = place.hidden ? 0 : place.getBoundingClientRect().bottom;
-  const top = Math.max(hud.bottom, crumbs.bottom, placeBottom, mobile ? $("#lenses").getBoundingClientRect().bottom : 0) + 12;
+  const top = Math.max(hud.bottom, crumbs.bottom, placeBottom, mobile ? sideStackBottom() : 0) + 12;
   const controlsTop = Math.min(...["#map-zoom", ".viewtools", "#request-nav", "#playback"].map(s => $(s)).filter(e => e && !e.hidden).map(e => e.getBoundingClientRect().top), panel.top);
   scene.setInsets(mobile
     ? { top, right: 8, left: 8, bottom: vh - Math.min(panel.top, controlsTop) + 12 }
     : { top, right: vw - panel.left + 12, left: 16, bottom: (mm.height ? mm.height + 24 : 16) }, preserveView);
 }
 
-const VIEW_KEYS = ['level', 'agentId', 'reqIdx', 'stratum', 'block', 'lens', 'mode', 'reading', 'mapFocus', 'mapPinned', 'inspector', 'callIndex', 'callPart'];
+// citedFrom and evidenceRef are ids only ({ id, gen, run }): a history entry never carries session content
+const VIEW_KEYS = ['level', 'agentId', 'reqIdx', 'stratum', 'block', 'lens', 'mode', 'reading', 'mapFocus', 'mapPinned', 'inspector', 'callIndex', 'callPart', 'inventoryKey', 'notesQuery', 'netReader', 'citedFrom', 'evidenceRef'];
 function captureSceneView() {
   const panel = $('#panel');
   return { state: Object.fromEntries(VIEW_KEYS.map(k => [k, S[k]])), camera: scene?.getView(), scroll: panel.scrollTop,
     panel: shownKey ? snapshot(shownKey, liveAnchor(panel)) : null };
 }
-// The playhead rides on history entries but not on mapReturn: "Back to map" keeps where focusing put it.
-function captureView() { return { ...captureSceneView(), mapReturn, P: transport?.playback?.P ?? null }; }
+// The inspected time rides on history entries (not on mapReturn): Back restores the time an entry was read at,
+// never a history of playback ticks.
+function captureView() { return { ...captureSceneView(), mapReturn, time: transport?.clock?.t ?? null, gen: S.gen }; }
 function saveViewSoon() {
   clearTimeout(viewTimer);
   viewTimer = setTimeout(() => viewHistory?.checkpoint(), 160);
 }
 function restoreView(view) {
   clearTimeout(viewTimer);
+  if (view.gen && view.gen !== S.gen) return; // an entry of another load selects nothing here
   // a saved view never brings back the fleet ground, and Back or Forward leave it (rebuilt ungrouped)
   const ground = restoreLandscape(S, view);
   view = ground.view;
   mapReturn = view.mapReturn || null;
-  const pb = transport?.playback;
-  if (pb && Number.isFinite(view.P) && view.P !== pb.P) transport.seek(view.P);
-  const modeChanged = S.mode !== view.state.mode;
-  Object.assign(S, view.state);
+  transport?.pause();
+  transport?.setFollow({ mode: "off" });
+  if (Number.isFinite(view.time)) transport?.seekTime(view.time);
+  const want = viewMode(view.state.mode);
+  const modeChanged = S.mode !== want;
+  Object.assign(S, view.state, { mode: want, activity: null });
   S.agent = S.agentId ? agentById(S.agentId) : null;
+  const trace = S.trace;
   const finish = () => {
-    Object.assign(S, view.state);
+    if (S.trace !== trace) return; // the session changed while the view was rebuilding
+    Object.assign(S, view.state, { mode: want, activity: null });
+    S.agent = S.agentId ? agentById(S.agentId) : null;
     // The entry's folds and row come back with it (panel-memory.js); an entry from before had only scrollTop.
     if (view.panel) loadPanelMemory(view.panel);
     render(true, false, true);
@@ -1489,12 +1756,18 @@ function restoreView(view) {
 }
 
 // ---------- state ----------
-function agentById(id) { return S.trace.agents.find(a => a.id === id); }
+function agentById(id) { return S.trace?.agents.find(a => a.id === id); }
+// Every set() is a deliberate navigation (a pick, a search result, request navigation, an activity row, a citation,
+// a lens): it pauses playback. Opening exact evidence (a reader, a call, a thread's record, a citation) also turns
+// camera follow off. options.time seeks the clock to the inspected record, inside the change, so the entry being
+// left keeps its own time.
 function set(patch, options) {
   const change = () => {
     if (isLandscape(S) && patch.mapPinned === false && patch.level > 0) mapReturn = captureSceneView();
-    // Inside the change, so the entry being left keeps its own playhead.
-    if (options?.playhead != null) transport?.seek(options.playhead);
+    transport?.pause();
+    if (options?.reader || patch.block != null || patch.inspector) transport?.setFollow({ mode: "off" });
+    if (Number.isFinite(options?.time)) transport?.seekTime(options.time);
+    S.activity = null;
     applySet(patch);
     if (options?.locate && S.mapPinned) { scene?.panToRequest(S.agentId, S.reqIdx, options.reveal); cameraMove(options.reveal ? "reveal" : "pan"); }
   };
@@ -1503,31 +1776,36 @@ function set(patch, options) {
 }
 function applySet(patch) {
   const prev = { level: S.level, agentId: S.agentId };
+  // the way back to an answer belongs to the view its citation opened: any other navigation leaves it behind
+  if (!("citedFrom" in patch)) S.citedFrom = null;
   if (patch.level != null || patch.callIndex != null) S.callPart = 'args';
   if (patch.level != null) {
     S.mapFocus = null;
-    S.inspector = null; S.callIndex = null;
+    if (!("inspector" in patch)) { S.inspector = null; S.callIndex = null; }
     if (patch.level === 0) S.mapPinned = false;
   }
   Object.assign(S, patch);
   S.agent = S.agentId ? agentById(S.agentId) : null;
-  if (S.agent && !S.agent.requests.length && S.level > 0) S.level = 1;
-  if (S.agent && S.reqIdx != null) S.reqIdx = Math.max(0, Math.min(S.agent.requests.length - 1, S.reqIdx));
+  if (S.agent && !S.agent.requests.length && S.level > 1) S.level = 1;
+  if (S.agent && S.reqIdx != null) S.reqIdx = Math.max(0, Math.min(Math.max(0, S.agent.requests.length - 1), S.reqIdx));
   if (S.level < 3 || S.block == null) S.reading = false;
   render(prev.level !== S.level || prev.agentId !== S.agentId, patch.block != null);
 }
-// Focusing request i of an agent moves the playhead there, paused: the option set() seeks with, so the
-// history entry being left keeps its own playhead. Every request focus below passes it.
+// Opening request i of an agent puts the clock at that request's own recorded time, paused.
 function focusAt(agentId, i, options) {
-  return { ...options, playhead: playheadForRequest(transport?.playback, S.layout, agentId, i) };
+  const r = agentById(agentId)?.requests[i];
+  return { ...options, time: r?.t };
 }
 function pick(p) {
+  // a void, or a break with no ridge of its own: that thread's record of what is known
+  if (p.kind === "thread") return A.openThread(p.threadKey);
   const mapPinned = S.mode === '3d' && (S.level === 0 || S.mapPinned);
   if (p.intent === 'locate') return set({mapPinned:true, level:2, agentId:p.agentId, reqIdx:p.reqIdx, stratum:null, block:null}, focusAt(p.agentId, p.reqIdx, {locate:true, reveal:true}));
   if (p.intent === 'action') return A.focusAction(p.agentId, p.reqIdx);
   if (p.level === 3) return set({ ...requestInspection(p.agentId, p.reqIdx, p.stratum), block: p.block ?? null }, focusAt(p.agentId, p.reqIdx));
   if (p.level === 2) return A.focusRequest(p.agentId, p.reqIdx);
-  // A click on the map's terrain pins that request (the Selected card): a request focus. At L1 it is an agent's.
+  // A click on the map's terrain pins that request (the Selected card): a request focus, at its time. A click on
+  // an agent elsewhere opens its overview at the time the clock already stands on.
   set({ mapPinned, level: 1, agentId: p.agentId, reqIdx: p.reqIdx ?? 0, stratum: null, block: null }, mapPinned ? focusAt(p.agentId, p.reqIdx ?? 0) : undefined);
 }
 const A = {
@@ -1535,27 +1813,49 @@ const A = {
   fleetRows: agent => agentRows(S.trace, agent, A),
   ownSession: agent => (ownSessionFiles(agent) ? () => openOwnSession(agent) : null),
   fleetNetwork: agent => fleetNetSection(agent),
+  compact: (label, value, opts = {}) => compactValue(value, { label, ...opts }),
+  tip,
+  toolsFor,
   focusAction: (id, i) => set({ level: 2, agentId: id, reqIdx: i, stratum: null, block: null,
-    inspector: 'action', callIndex: null, mapPinned: S.mode === '3d' && (S.level === 0 || S.mapPinned) }, focusAt(id, i)),
+    inspector: 'action', callIndex: null, mapPinned: S.mode === '3d' && (S.level === 0 || S.mapPinned) }, focusAt(id, i, { reader: true })),
   showCallPart: part => { S.callPart = part; saveViewSoon(); },
-  focusCall: i => set({ inspector: 'action', callIndex: i }),
+  focusCall: i => set({ inspector: 'action', callIndex: i }, { reader: true }),
   focusAgent: (id, i) => set({ mapPinned: false, level: 1, agentId: id, reqIdx: i ?? 0, stratum: null, block: null }),
   focusRequest: (id, i) => set(requestInspection(id, i), focusAt(id, i)),
   focusStratum: (id, i, key) => set(requestInspection(id, i, key), focusAt(id, i)),
-  openBlock: i => { const view = sidebarState(); set({ ...requestInspection(view.agentId, view.reqIdx, view.stratum), block: i }, focusAt(view.agentId, view.reqIdx)); },
+  openBlock: i => { const view = sidebarState(); set({ ...requestInspection(view.agentId, view.reqIdx, view.stratum), block: i }, focusAt(view.agentId, view.reqIdx, { reader: true })); },
   openBlockAt(agentId, bi) {
     const a = agentById(agentId);
     const b = a?.blocks[bi];
     if (!b) return;
     let r = a.requests.findIndex(q => q.window && q.window[0] <= bi && q.window[1] >= bi);
     if (r < 0) r = Math.max(0, a.requests.findIndex(q => q.t >= b.t));
-    set({ ...requestInspection(agentId, r, b.kind), block: bi }, focusAt(agentId, r));
+    set({ ...requestInspection(agentId, r, b.kind), block: bi }, focusAt(agentId, r, { reader: true }));
   },
   openRef(agentId, ref) {
     const a = agentById(agentId);
     const bi = a?.blocks.findIndex(b => b.ref && b.ref.file === ref.file && b.ref.offset === ref.offset);
     if (bi >= 0) A.openBlockAt(agentId, bi);
   },
+  // the record of one known thread (fleet/family.js inventory): its status, why, its bindings and T3's claims
+  openThread(key) { if (key) set({ level: 0, agentId: null, reqIdx: null, stratum: null, block: null, inspector: 'thread', inventoryKey: key }, { reader: true }); },
+  inventory: () => S.trace?.inventory || [],
+  filteredOut: agent => isFiltered(S.fleetFilter) && !matcher(S.fleetFilter)(agent),
+  clearFilter: () => { setFleetFilter(null); render(false); },
+  breakWords, voidWords,
+  threadNotes: key => traceNotes(S.trace).filter(n => n.threadKey === key),
+  breaksOf: key => (S.trace?.family ? findBreaksOnce().filter(b => b.threadKey === key) : []),
+  // provenance of the open block, and its copy stepper (provenance.js)
+  provenance: (agentId, block) => provenance.at(S.trace, S.gen, agentId, block),
+  // an explanation of the current inspection (ai/composer.js), opened in the inspector
+  explain: (anchor = null, opts = {}) => openExplain(anchor, opts),
+  explainView: () => (composer?.state ? composer.render() : [el("p", { class: "note", text: "This explanation belonged to an earlier load." })]),
+  // the frozen inventory or coverage record an answer cited (S.evidenceRef), and the way back to that answer
+  evidenceView: () => (composer ? composer.citedView(S.evidenceRef, { back: backToAnswer }) : [el("p", { class: "note", text: "This record belonged to an earlier load." })]),
+  backToAnswer: () => backToAnswer(),
+  networkView: () => networkView(),
+  notesView: () => notesView(),
+  activityView: () => activityView(),
   getText: (agentId, ref) => (text ? text(agentId, ref) : Promise.reject(new Error("no text source"))),
   // The network layer (network/panel.js): its lens, the per-request card, and bodies read on demand.
   // A palette jump (S.netFocus) is revealed once; later renders keep the user's own scroll.
@@ -1588,6 +1888,9 @@ const A = {
     if (S.lens !== NETWORK_LENS.key || S.level !== 0) selectLens(NETWORK_LENS.key);
     else render(false);
   },
+  // Follow one named agent with the camera (3D, while playing): set only here, by its own action.
+  followAgent: agent => (S.mode === "3d" && agent?.requests.length ? () => { transport?.setFollow({ mode: "agent", agentId: agent.id, label: agentLabel(agent) }); } : null),
+  following: () => transport?.follow || { mode: "off" },
   // Narrow screens: the reader can take the whole screen.
   reading: () => S.reading,
   toggleReading() { S.reading = !S.reading; render(false, true); },
@@ -1599,8 +1902,13 @@ const A = {
   },
   up
 };
+let breaksCache = null;
+function findBreaksOnce() { if (breaksCache?.trace !== S.trace) breaksCache = { trace: S.trace, list: findBreaks(S.trace) }; return breaksCache.list; }
+const agentLabel = a => (a.kind === "root" ? "main thread" : a.name || "agent");
 function up() {
+  if (S.activity) return closeActivity();
   if (viewHistory?.back()) return;
+  if (S.inspector === 'explain' || S.inspector === 'notes' || S.inspector === 'thread' || S.inspector === 'network' || S.inspector === 'evidence') return set({ inspector: null });
   if (S.level === 0 && S.mapFocus) return overview();
   if (S.reading) { S.reading = false; return render(false, true); }
   if (S.level === 3 && S.block != null) return set({ block: null });
@@ -1611,13 +1919,13 @@ function up() {
 
 function backToMap() {
   if (!mapReturn) return overview();
-  const destination = { ...structuredClone(mapReturn), mapReturn: null };
+  const destination = { ...structuredClone(mapReturn), mapReturn: null, gen: S.gen };
   viewHistory.navigate(() => restoreView(destination));
 }
 // The overview (the button, `o`, the Session crumb, Escape from a map focus) and the lenses (tabs, 1 to 4,
-// the palette) refit the map: the user's hands on the camera, like Reset view, so a run's director lets go.
+// the palette) refit the map: the user's hands on the camera, like Reset view, so follow lets go.
 function overview() {
-  set({ level: 0, agentId: null, reqIdx: null, stratum: null, block: null });
+  set({ level: 0, agentId: null, reqIdx: null, stratum: null, block: null, inspector: null });
   scene?.refit();
   userCamera("refit");
 }
@@ -1626,23 +1934,24 @@ function selectLens(key) {
   // otherwise change the scene but leave an unrelated source reader on screen.
   if (key !== NETWORK_LENS.key) S.netFocus = null;
   if (key === SOURCES_LENS.key) loadSources();
-  set({ lens: key, level: 0, agentId: null, reqIdx: null, stratum: null, block: null });
+  set({ lens: key, level: 0, agentId: null, reqIdx: null, stratum: null, block: null, inspector: null });
   scene?.refit();
   userCamera("refit");
 }
+// Request navigation moves within the selected native agent and puts the clock at the request reached.
 function moveRequest(delta, inspect = true) {
   const view = sidebarState();
   if (!view.agent?.requests.length) return;
   const reqIdx = stepRequest(view.agent.requests.length, view.reqIdx, delta);
-  set({ mapPinned: S.mapPinned || !!S.mapFocus, inspector: S.inspector, level: inspect ? Math.max(2, view.level) : view.level, agentId: view.agentId, stratum: view.stratum, reqIdx, block: null }, focusAt(view.agentId, reqIdx, { locate: true }));
+  set({ mapPinned: S.mapPinned, inspector: S.inspector === 'action' ? 'action' : null, level: inspect ? Math.max(2, view.level) : Math.max(1, view.level), agentId: view.agentId, stratum: view.stratum, reqIdx, block: null }, focusAt(view.agentId, reqIdx, { locate: true }));
 }
 function onKey(e) {
   if ($("#app").hidden || !S.trace) return;
   if (palette?.handleKey(e)) return;
   if (e.target.closest && e.target.closest("input, textarea, select, [role=separator], [contenteditable=true]")) return;
   if (e.metaKey || e.ctrlKey || e.altKey) return;
-  // In a T3 family at the landscape, Esc first clears the machine filter; m / ⇧M step through the machines.
-  if (e.key === "Escape" && S.level === 0 && isFiltered(S.fleetFilter)) { e.preventDefault(); setFleetFilter(null); return; }
+  // In a T3 family at the landscape, Esc first clears the environment filter; m / ⇧M step through the environments.
+  if (e.key === "Escape" && S.level === 0 && !S.inspector && !S.activity && isFiltered(S.fleetFilter)) { e.preventDefault(); setFleetFilter(null); return; }
   if (e.key === "t" && S.trace.family && S.level === 0 && S.mode === "3d") { e.preventDefault(); setGround(!S.ground); return; }
   if ((e.key === "m" || e.key === "M") && S.trace.family && S.level === 0) {
     e.preventDefault();
@@ -1650,7 +1959,8 @@ function onKey(e) {
     return;
   }
   if (e.key === "Escape") { e.preventDefault(); up(); return; }
-  if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && S.level >= 1 && S.agent) {
+  // ← → move through the selected agent's requests; a focused button, link or summary keeps its own keys.
+  if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && S.level >= 1 && S.agent && !(e.target.closest && e.target.closest("button, a[href], summary, #playback"))) {
     e.preventDefault();
     const step = (e.key === "ArrowLeft" ? -1 : 1) * (e.shiftKey ? 10 : 1);
     moveRequest(step, false);
@@ -1667,6 +1977,145 @@ function onKey(e) {
   if (n >= 1 && n <= list.length) selectLens(list[n - 1].key);
 }
 
+// ---------- every copy of the open text (provenance.js), for c / ⇧C ----------
+function copiesHere() {
+  if (!S.trace || S.block == null || !S.agentId) return Promise.resolve(null);
+  const gen = S.gen;
+  return provenance.at(S.trace, gen, S.agentId, S.block).then(r => (gen === S.gen ? r : null), () => null);
+}
+
+// ---------- activity at the clock: a paused, frozen list in the inspector ----------
+// The transport's activity action pauses and opens the list at the time the clock stands on. The list is a snapshot:
+// it does not change while open. Choosing a row keeps that time and makes the prior inspection the Back destination;
+// closing without choosing returns to the prior inspection and focus.
+function openActivity() {
+  const clock = transport?.clock;
+  if (!clock || !S.trace) return;
+  transport.pause();
+  const snap = activityFor(clock.t);
+  S.activity = { t: clock.t, snap, query: "", opener: document.activeElement, scroll: $("#panel").scrollTop };
+  render(false);
+  $("#panel").scrollTop = 0;
+  $("#panel").querySelector("input.activity-search")?.focus({ preventScroll: true });
+}
+function closeActivity() {
+  const a = S.activity;
+  if (!a) return;
+  S.activity = null;
+  shownKey = null;
+  render(false);
+  $("#panel").scrollTop = a.scroll || 0;
+  if (a.opener?.isConnected) a.opener.focus?.();
+}
+function chooseActivity(row) {
+  const t = S.activity?.t;
+  if (row.void) return A.openThread(row.void.threadKey);
+  const a = row.agent;
+  // one evidenced request at this time opens it; otherwise the agent, at the same time
+  if (row.request != null) set(requestInspection(a.id, row.request), { time: t });
+  else set({ mapPinned: false, level: 1, agentId: a.id, reqIdx: Math.max(0, a.requests.findIndex(r => r.t >= t)), stratum: null, block: null }, { time: t });
+}
+function activityList(a) {
+  const snap = a.snap;
+  const q = a.query.trim().toLowerCase();
+  const kindWords = { request: "request", tool: "tool running", "t3-run": "T3 run", "t3-task": "T3 task" };
+  const match = text => !q || text.toLowerCase().includes(q);
+  const rows = [];
+  for (const r of snap.agents) {
+    const name = agentLabel(r.agent), env = r.agent.environmentId ? envLabel(S.trace, r.agent.environmentId) : null;
+    const state = r.state === "recorded" ? r.kinds.map(k => kindWords[k] || k).join(" · ") : "no record at this time";
+    if (!match(`${name} ${env || ""} ${state}`)) continue;
+    rows.push(el("li", { class: r.state === "unknown" ? "unknown" : null }, el("button", { type: "button", class: "item", onclick: () => chooseActivity(r) },
+      el("span", { class: "tool", text: name }), env ? el("span", { class: "meta", text: env }) : null,
+      el("span", { class: "meta", text: `${state}${r.requests.length ? ` · request ${r.requests.map(i => i + 1).slice(0, 3).join(", ")}${r.requests.length > 3 ? "…" : ""}` : ""}` }))));
+  }
+  for (const v of snap.threads) {
+    const name = v.void.title || "thread", env = v.void.environmentId ? envLabel(S.trace, v.void.environmentId) : null;
+    if (!match(`${name} ${env || ""}`)) continue;
+    rows.push(el("li", { class: "thread" }, el("button", { type: "button", class: "item", onclick: () => chooseActivity(v) },
+      el("span", { class: "tool", text: name }), env ? el("span", { class: "meta", text: env }) : null,
+      el("span", { class: "meta", text: `not drawn · T3 claims ${v.void.status || "a span"}` }))));
+  }
+  return rows.length ? el("ul", { class: "items activity-list" }, rows) : el("p", { class: "note activity-list", text: q ? "Nothing matches." : "Nothing recorded at this time." });
+}
+function activityView() {
+  const a = S.activity, c = a.snap.counts;
+  const search = el("input", { type: "search", class: "agent-search activity-search", placeholder: "Find…", "aria-label": "Find in this list", value: a.query, autocomplete: "off" });
+  // the list filters in place: the field keeps focus, the rows keep their order
+  search.addEventListener("input", () => { a.query = search.value; $("#panel .activity-list")?.replaceWith(activityList(a)); });
+  return [
+    el("div", { class: "activity-head" }, el("h2", { text: clockLabelOf(a.t) }), el("button", { type: "button", class: "linkbtn close", text: "Close", onclick: () => closeActivity() })),
+    el("p", { class: "meta", text: [`${fmtInt(c.recorded)} with recorded activity`, c.unknown ? `${fmtInt(c.unknown)} with no record now` : null, c.threads ? `${fmtInt(c.threads)} undrawn threads` : null].filter(Boolean).join(" · ") }),
+    search,
+    activityList(a),
+    S.trace.family ? el("button", { type: "button", class: "linkbtn", text: "All known work →", onclick: () => { S.activity = null; selectLens("agents"); } }) : null,
+  ];
+}
+const clockLabelOf = t => clockLabel(t);
+
+// ---------- recording notes, grouped (notes.js) ----------
+function renderNotesButton() {
+  const b = $("#notes-open");
+  if (!b) return;
+  const n = S.trace ? traceNotes(S.trace).length : 0;
+  b.hidden = !n;
+  b.textContent = `Notes ${fmtInt(n)}`;
+}
+function openNotes() { if (S.trace) set({ level: 0, agentId: null, reqIdx: null, stratum: null, block: null, inspector: "notes" }, { reader: true }); }
+const notePages = new Map(); // group key -> page shown (this load)
+function notesView() {
+  const groups = groupNotes(traceNotes(S.trace), { labelOf: env => envLabel(S.trace, env) });
+  const q = S.notesQuery || "";
+  const search = el("input", { type: "search", class: "agent-search", placeholder: "Find in notes…", "aria-label": "Find in notes", value: q, autocomplete: "off" });
+  search.addEventListener("change", () => { S.notesQuery = search.value; notePages.clear(); render(false); });
+  const total = groups.reduce((n, g) => n + g.count, 0);
+  const out = [el("h2", { text: "Recording notes" }), el("p", { class: "meta", text: `${fmtInt(total)} notes · ${fmtInt(groups.length)} kinds` }), search];
+  for (const g of groups) {
+    const page = notePage(g, { page: notePages.get(g.key) || 0, query: q });
+    if (q && !page.total) continue;
+    const list = el("ol", { class: "items note-items" }, page.items.map(r => el("li", {},
+      el("p", { class: "note-text", text: r.text }),
+      r.threadKey ? el("button", { type: "button", class: "linkbtn", text: "Its record →", onclick: () => A.openThread(r.threadKey) }) : null)));
+    const pager = page.pages > 1 ? el("div", { class: "note-pager" },
+      el("button", { type: "button", class: "linkbtn", text: "← Earlier", disabled: page.page === 0 ? true : null, onclick: () => { notePages.set(g.key, page.page - 1); render(false); } }),
+      el("span", { class: "meta", text: `${fmtInt(page.page * 50 + 1)}–${fmtInt(Math.min(page.total, page.page * 50 + 50))} of ${fmtInt(page.total)}` }),
+      el("button", { type: "button", class: "linkbtn", text: "Later →", disabled: page.page >= page.pages - 1 ? true : null, onclick: () => { notePages.set(g.key, page.page + 1); render(false); } })) : null;
+    out.push(disclosure(`notes:${g.key}`, `note-group ${g.severity}`, el("summary", {},
+      // a plain note's group label is bounded (notes.js shapeLabel); its whole shape is the label's description, and
+      // each original note is whole in the list below
+      el("span", { class: "gcount", text: `${fmtInt(q ? page.total : g.count)} ×` }), tip(el("span", { class: "tool", text: g.label }), g.shape && g.shape !== g.label ? g.shape : null),
+      g.environments.length ? el("span", { class: "meta", text: g.environments.slice(0, 4).join(", ") + (g.environments.length > 4 ? ` +${g.environments.length - 4}` : "") }) : null), false, list, pager));
+  }
+  return out;
+}
+
+// ---------- explanations (ai/composer.js) and their citations ----------
+function openExplain(anchor = null, { scope = null } = {}) {
+  if (!S.trace || !composer) return;
+  const at = anchor || { agentId: S.agentId, reqIdx: S.level >= 2 ? S.reqIdx : null, block: S.level >= 3 ? S.block : null, stratum: S.level >= 3 ? S.stratum : null,
+    call: S.inspector === "action" ? { index: S.callIndex ?? 0 } : null, threadKey: S.inspector === "thread" ? S.inventoryKey : S.agent?.threadKey || null };
+  composer.open(at, { scope });
+  set({ inspector: "explain" }, { reader: true });
+}
+// A citation opens the exact evidence it names (ai/cite.js), as one deliberate navigation: the cited view says it
+// was cited and offers a way back to the answer (Back, too). An id the answer's preview did not cite is never a
+// link; a citation of a released load says so.
+function openCitation(entry, id, run) {
+  const t = citationTarget(entry, id, run, { gen: S.gen, agent: agentById });
+  if (t.message) { netStatus(t.message, "error"); return; }
+  set(t.patch, t.options);
+}
+// Back to the answer a citation was opened from: the history entry before the cited view, or the answer itself.
+function backToAnswer() {
+  if (S.citedFrom && viewHistory?.back()) return;
+  set({ inspector: "explain" }, { reader: true });
+}
+// The wire facts of one request when a network capture is attached: what network/panel.js summarizes, flat.
+function wireFacts(agent, req) {
+  const line = S.network ? wireSummary(S.network, agent, req) : null;
+  return line ? { wire: clip(line, 300) } : null;
+}
+
 // ---------- render ----------
 function render(levelChanged, readerOpened, restoring = false) {
   // The network lens exists only while a capture is attached (Back can name it after the capture is gone).
@@ -1674,6 +2123,8 @@ function render(levelChanged, readerOpened, restoring = false) {
   if (S.lens === SOURCES_LENS.key && S.trace) loadSources(); // Back or Forward into the lens asks too (once per load)
   $("#app").dataset.level = String(S.level);
   $("#app").classList.toggle("reading", S.reading);
+  // an explanation, a thread's record or the activity list takes the reading surface on narrow screens
+  $("#app").classList.toggle("inspecting", !!S.activity || ["explain", "thread", "notes", "network", "evidence"].includes(S.inspector));
   $("#app").classList.toggle("map-following", !!S.mapFocus && S.level === 0);
   if (levelChanged) $("#tip").hidden = true;
   document.querySelectorAll("#lenses button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lens === S.lens)));
@@ -1688,7 +2139,6 @@ function render(levelChanged, readerOpened, restoring = false) {
   if (S.mode === "3d" && scene) scene.show({ level: S.mapPinned ? 0 : S.level, agentId: S.agentId, reqIdx: S.reqIdx, stratum: S.stratum, lens: mapLens(), mapSelection: S.mapPinned ? { agentId: S.agentId, reqIdx: S.reqIdx } : null });
   renderMapLocation();
   if (S.mode === "2d") renderFlat();
-  if (S.mode === "harness") harness?.sync();
 }
 
 // The landscape draws the four questions; under the network lens it shows the context lens's colours.
@@ -1757,78 +2207,62 @@ function renderCrumbs() {
   const c = $("#crumbs");
   // An own session opened from a T3 family: the family, its machine, then this session.
   const fam = S.familyReturn;
-  const parts = fam ? [["T3 family", () => backToFamily()], [fam.machine, () => backToFamily(fam.machine)], [clipName(fam.name || "Session"), overview]] : [["Session", overview]];
+  const parts = fam ? [["T3 family", () => backToFamily()], [fam.machine, () => backToFamily(fam.environmentId)], [clipName(fam.name || "Session"), overview]] : [["Session", overview]];
   if (S.level >= 1 && S.agent) parts.push([S.agent.kind === "root" ? "Main thread" : S.agent.name || S.agent.id, () => set({ level: 1, stratum: null, block: null })]);
   if (S.level >= 2 && S.reqIdx != null) parts.push([`Request ${S.reqIdx + 1}`, () => set({ level: 2, stratum: null, block: null })]);
   if (S.level >= 3 && S.stratum) parts.push([STRATA[STRATUM_INDEX[S.stratum]].name, () => set({ block: null })]);
-  if (S.level >= 3 && S.block != null && S.agent?.blocks[S.block]) parts.push([S.agent.blocks[S.block].label || "block", () => {}]);
+  if (S.level >= 3 && S.block != null && S.agent?.blocks[S.block]) parts.push([S.agent.blocks[S.block].label || "block", null]);
+  const view = S.activity ? "Activity" : { explain: "Explain", evidence: "Cited record", thread: "Thread record", notes: "Notes" }[S.inspector];
+  if (view) parts.push([view, null]);
   const kids = [];
   if (S.level > 0) kids.push(el("button", { type: "button", class: "mobile-back", text: "← Back", onclick: up }));
   parts.forEach(([name, fn], i) => {
     if (i) kids.push(el("span", { class: "sep", "aria-hidden": "true", text: "›" }));
-    kids.push(el("button", { type: "button", text: name, onclick: fn, "aria-current": String(i === parts.length - 1) }));
+    // the last crumb is where the user is: text, not a button that does nothing
+    if (!fn || i === parts.length - 1) kids.push(el("span", { class: "crumb-here", text: name, "aria-current": "page" }));
+    else kids.push(el("button", { type: "button", text: name, onclick: fn }));
   });
-  if (!TOUCH && S.level === 0) kids.push(el("span", { class: "keys", text: S.mode === "3d" ? "Drag to pan · scroll to zoom · Shift-drag to orbit" : S.mode === "harness" ? "Click a piece to read it · h returns to the landscape" : "Select a point to explore" }));
+  if (!TOUCH && S.level === 0 && S.mode === "3d") kids.push(el("span", { class: "keys", text: "Drag to pan · scroll to zoom · Shift-drag to orbit" }));
   c.replaceChildren(...kids);
 }
 
 function renderMinimap() {
   const host = $("#minimap");
-  if ((S.mode !== "3d" && S.mode !== "harness") || innerWidth <= 980) { host.hidden = true; return; }
+  if (S.mode !== "3d" || innerWidth <= 980) { host.hidden = true; return; }
   host.hidden = false;
   const w = Math.min(350, Math.max(220, innerWidth - sideW - 350));
   scene?.mountMinimap(host, w, 128, {agentId:S.agentId, reqIdx:S.level>=1?S.reqIdx:null});
   placePlayback();
 }
 
-// While playing on the map, the "At the centre of your map" card describes the leading column (the
-// request the playhead is in) instead; paused, the centre again. playCard: { agentId, reqIdx } or null.
-function sidebarState() {
-  if (!playCard || !S.mapFocus) return mapPanelState(S, S.mapFocus);
-  const view = mapPanelState(S, { ...S.mapFocus, ...playCard, stratum: null });
-  return view === S ? view : { ...view, atPlayhead: true };
-}
-// Redrawn when the playhead enters another request, at most every 250 ms; never a history entry. The panel
-// keeps its scroll while the card stays on one agent, so the user can read on during playback.
-function playCardTick(p) {
-  const lead = p.playing && dir && S.mode === "3d" && S.level === 0 && S.mapFocus ? dir.lead : null;
-  const next = lead ? { agentId: lead.agentId, reqIdx: Math.max(0, Math.floor(lead.P)) } : null;
-  if (next ? playCard && next.agentId === playCard.agentId && next.reqIdx === playCard.reqIdx : !playCard) return;
-  const now = performance.now();
-  if (next && playCard && now - playCardAt < 250) return; // a later tick catches up
-  const cardAgent = c => c?.agentId ?? S.mapFocus?.agentId ?? null; // the playhead's card, else the centre's
-  const otherAgent = cardAgent(next) !== cardAgent(playCard);
-  playCard = next; playCardAt = now;
-  renderRequestNav();
-  paintPanel(sidebarState(), { reset: otherAgent, follow: !otherAgent });
-  renderMapLocation();
-}
+// The inspector shows only what was deliberately chosen: the selection in S. The camera's centre, playback and the
+// clock never replace it (the map location bar beside the landscape may say what is in view; the panel does not).
+function sidebarState() { return S; }
+// The scene's map centre (onMapFocus): kept for the location bar only. It never repaints the inspector.
 function followMap(focus) {
   if (S.level !== 0 || S.mode !== "3d") return;
   S.mapFocus = focus;
-  renderRequestNav();
-  // While playing the card is the playhead's (playCardTick): the centre moving under the director changes
-  // nothing the user is reading, so the panel keeps its place. Paused, a new centre's card shows from its top
-  // (or where the user last left that request's card).
-  paintPanel(sidebarState(), { reset: !playCard, follow: !!playCard });
   $("#app").classList.toggle("map-following", !!focus);
   renderMapLocation();
   layoutInsets(true);
   saveViewSoon();
 }
 
+// The location bar beside the landscape: the selection, or (with nothing selected) what the camera centres on.
 function renderMapLocation() {
-  const view = sidebarState(), r = view.agent?.requests[view.reqIdx];
   const location = $('#map-location');
-  location.hidden = S.mode !== '3d' || !r;
-  if (!r) return;
   const onMap = isLandscape(S);
+  const sel = S.agent && S.reqIdx != null && S.level >= 1 ? { agent: S.agent, i: S.reqIdx } : null;
+  const inView = !sel && onMap && S.mapFocus?.agentId ? { agent: agentById(S.mapFocus.agentId), i: S.mapFocus.reqIdx } : null;
+  const at = sel || inView, r = at?.agent?.requests[at.i];
+  location.hidden = S.mode !== '3d' || !r || !!S.activity;
+  if (!r) return;
   location.replaceChildren(
     el('div', {class:'location-copy'},
-      el('b', { text: `${onMap ? (S.mapPinned ? 'Selected' : view.atPlayhead ? 'At the playhead' : 'In view') : 'Inspecting'} · ${view.agent.kind === 'root' ? 'Main thread' : view.agent.name} · request ${view.reqIdx + 1}` }),
-      el('span', { text: `${fmtWhen(r.t)} · ${onMap ? 'Height = context tokens · Colors = sources' : 'Sources within this request'}` })),
-    el('button', {type:'button',class:'btn inspect-layers',text:onMap?'Inspect layers':'Back to map',
-      onclick:()=>onMap ? A.focusRequest(view.agentId,view.reqIdx) : backToMap()}));
+      el('b', { text: `${sel ? (onMap ? 'Selected' : 'Inspecting') : 'In view'} · ${at.agent.kind === 'root' ? 'Main thread' : at.agent.name} · request ${at.i + 1}` }),
+      el('span', { text: fmtWhen(r.t) })),
+    el('button', {type:'button',class:'btn inspect-layers',text:onMap?'Inspect':'Back to map',
+      onclick:()=>onMap ? A.focusRequest(at.agent.id, at.i) : backToMap()}));
 }
 
 function renderRequestNav() {
@@ -1837,7 +2271,7 @@ function renderRequestNav() {
   const host = $("#request-nav"), count = view.agent?.requests.length || 0;
   host.hidden = !view.level || !count;
   $("#overview").hidden = view.level === 0;
-  $("#selection-label").textContent = `${S.mapPinned ? "Selected · " : S.mapFocus && S.level === 0 ? "In view · " : ""}${S.inspector === "action" ? "Tool call" : view.level === 0 ? "Session overview" : view.level === 1 ? "Agent overview" : view.level === 2 ? "Request detail" : "Layer detail"}`;
+  $("#selection-label").textContent = S.activity ? "Activity" : S.inspector === "explain" ? "Explanation" : S.inspector === "evidence" ? "Cited record" : S.inspector === "thread" ? "Thread record" : S.inspector === "network" ? "Network evidence" : S.inspector === "notes" ? "Recording notes" : S.inspector === "action" ? "Tool call" : view.level === 0 ? "Overview" : view.level === 1 ? "Agent" : view.level === 2 ? "Request" : "Layer";
   if (host.hidden) { host.replaceChildren(); return; }
   const pos = requestPosition(count, view.reqIdx);
   // Keep the slider node alive while it is being dragged or operated by keyboard.
@@ -1879,18 +2313,22 @@ function renderRequestNav() {
 // The free area the 2D view can use: below the HUD, crumbs and (on phones) the lens row; left of the
 // side panel, or above the bottom panel and the view button on phones.
 // Phones: the crumbs sit under the lens grid, whatever its height.
+// The bottom of the side column's top stack on narrow screens (the lenses, and the family filter under them).
+function sideStackBottom() {
+  return Math.max(...["#lenses", "#fleet-filter"].map(q => $(q)).filter(e => e && !e.hidden).map(e => e.getBoundingClientRect().bottom), 0);
+}
 function placeCrumbs() {
-  if (innerWidth <= 980) $("#app").style.setProperty("--crumbs-top", `${Math.round($("#lenses").getBoundingClientRect().bottom + 8)}px`);
+  if (innerWidth <= 980) $("#app").style.setProperty("--crumbs-top", `${Math.round(sideStackBottom() + 8)}px`);
 }
 
 function flatInsets() {
   const mobile = innerWidth <= 980;
   placeCrumbs();
   const bottomOf = s => $(s)?.getBoundingClientRect().bottom || 0;
-  const top = Math.max(bottomOf(".hud"), bottomOf("#crumbs"), mobile ? bottomOf("#lenses") : 0) + 12;
+  const top = Math.max(bottomOf(".hud"), bottomOf("#crumbs"), mobile ? sideStackBottom() : 0) + 12;
   if (!mobile) {
     $(".viewtools").style.bottom = "";
-    return { top, right: innerWidth - $("#panel").getBoundingClientRect().left + 12, bottom: 56, left: 24 };
+    return { top, right: innerWidth - $("#panel").getBoundingClientRect().left + 12, bottom: playbackShown() ? 104 : 56, left: 24 };
   }
   const panelTop = $("#panel").getBoundingClientRect().top;
   $(".viewtools").style.bottom = `${Math.round(innerHeight - panelTop + 8)}px`;
@@ -1904,15 +2342,16 @@ function renderFlat() {
   const w = Math.max(280, innerWidth - ins.left - ins.right);
   const box = el("div");
   const svgHost = el("div");
-  const caption = el("h2", { text: S.level === 0 ? "Main-thread context over time, with outward actions and subagent lanes"
-    : S.agent ? `${S.agent.kind === "root" ? "Main thread" : S.agent.name}: one column per request, height = exact context` : "" });
+  const caption = el("h2", { text: S.layout?.empty ? "Nothing here has a recorded time to draw" : S.level === 0 ? (S.trace.family ? "Context over time · threads and subagents" : "Context over time · subagents")
+    : S.agent ? `${S.agent.kind === "root" ? "Main thread" : S.agent.name} · one column per request` : "" });
   box.append(caption, svgHost);
   host.replaceChildren(box);
+  if (S.layout?.empty) return;
   // The chart takes what the caption leaves of the free area.
   const h = Math.max(140, Math.min(640, innerHeight - ins.top - ins.bottom - caption.offsetHeight - 14));
   if (S.level === 0) {
-    renderOverview(svgHost, S.trace, S.layout, { width: w, height: h, full: true, lens: mapLens(), filter: S.fleetFilter,
-      onPick: p => (p.reqIdx != null ? A.focusAgent(p.agentId, p.reqIdx) : A.focusAgent(p.agentId)) });
+    renderOverview(svgHost, S.trace, S.layout, { width: w, height: h, full: true, lens: mapLens(), filter: S.fleetFilter, cut: cutAt(transport?.clock),
+      onPick: p => (p.kind === "thread" ? A.openThread(p.threadKey) : p.reqIdx != null ? A.focusAgent(p.agentId, p.reqIdx) : A.focusAgent(p.agentId)) });
   } else if (S.agent) {
     renderAgentColumns(svgHost, S.agent, { width: w, height: h, reqIdx: S.reqIdx, onPick: i => A.focusRequest(S.agent.id, i) });
   }
@@ -1921,16 +2360,13 @@ function renderFlat() {
 function showTip(hit) {
   const tip = $("#tip");
   if (!hit) { tip.hidden = true; return; }
-  // A T3 family's void or lineage break: what T3 claims and what the evidence shows, only on hover.
+  // A T3 family's void or lineage break: a short line on hover; a click (or the Agents lens) opens its full record.
   if (hit.kind === "void" || hit.kind === "break") {
     const v = hit.void, b = hit.break, a = hit.agentId ? agentById(hit.agentId) : null;
     const name = v?.title || a?.name || "thread";
     const where = v ? [v.machine, v.provider, v.model].filter(Boolean).join(" · ") : a ? [a.machine, a.provider, a.model].filter(Boolean).join(" · ") : "";
-    const at = t => (t ? fmtWhen(t) : "unknown");
-    const kids = [el("b", { text: name }), where ? el("div", { class: "m fleet-where", text: where }) : null];
-    if (b) kids.push(el("div", { text: breakWords(b) }), ...b.evidence.map(e => el("div", { class: "m", text: `${e.what}${e.value ? `: ${e.value}` : ""}${e.at ? ` · ${at(e.at)}` : ""}` })));
-    else if (v) kids.push(el("div", { text: voidWords(v) }),
-      el("div", { class: "m", text: `T3 says ${v.status || "nothing"} · ${at(v.from)} to ${at(v.to)}` }));
+    const kids = [el("b", { text: name }), where ? el("div", { class: "m fleet-where", text: where }) : null,
+      el("div", { text: b ? breakWords(b) : voidWords(v) }), el("div", { class: "m", text: TOUCH ? "Tap for its record" : "Click for its record" })];
     tip.replaceChildren(...kids.filter(Boolean));
     tip.hidden = false;
     const x = Math.min(innerWidth - 330, hit.x + 14), y = Math.min(innerHeight - 140, hit.y + 14);
@@ -1956,7 +2392,7 @@ function showTip(hit) {
   } else {
     const top = largestLayer(r);
     kids.push(el("div", { class: "m", text: top ? `largest layer: ${top.name} ≈ ${fmtTok(top.tokens)}` : "split unknown: the log has no blocks for this request" }));
-    if (r.action && r.action.kind === "tool") kids.push(el("div", { text: `${r.action.tool}${r.action.target ? `: ${r.action.target.slice(0, 80)}` : ""}` }));
+    if (r.action && r.action.kind === "tool") kids.push(el("div", { text: `${r.action.tool}${r.action.target ? `: ${targetLabel(r.action.target, 72)}` : ""}` }));
   }
   // In a T3 family every ridge says where it ran: the machine, the product and the model.
   if (a.machine) kids.splice(1, 0, el("div", { class: "m fleet-where", text: [a.machine, a.provider, a.model].filter(Boolean).join(" · ") }));

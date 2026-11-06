@@ -8,6 +8,14 @@ Only Claude Opus 5.5 authors production UI changes for this work. Muse Wonder Fu
 
 The latest local Scan-to-Make / Counterpart family is the acceptance case. Its original recordings, identifiers, aliases, logs and screenshots remain private. Public tests use schema and transport invariants; opt-in local tests read the real family without publishing it.
 
+The user additionally requires the default example to be a T3 session spanning multiple model
+providers and machines. Prepare a reviewed structural derivative of a real family: preserve actual
+topology, relative timing, native bindings and coverage, while withholding original prose and
+replacing identifying values. Label the derivative honestly. Original recordings, alias maps,
+salts, source hashes and private review artifacts remain local. Promotion requires a complete
+privacy scan, bounded semantic review, original-versus-derivative structural verification and the
+leak gate. A generic single-session example is not sufficient for the default entry point.
+
 ## Accuracy before presentation
 
 - Qualify thread identity by environment. A T3 environment is a persisted server identity, not necessarily a physical machine.

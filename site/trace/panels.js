@@ -4,6 +4,8 @@ import { peakRequestIndex, requestCalls, selectedCall } from "./navigation.js";
 import { stratumRows, blockPart, windowBlocks as modelWindowBlocks, egressGroups } from "./model.js";
 import { readableIn } from "./readable.js";
 import { foldOpen, setFold } from "./panel-memory.js";
+import { tip, compactValue } from "./compact.js";
+import { targetLabel } from "./ids.js";
 
 export const STRATA = [
   { key: "harness", name: "Harness", long: "The harness: system prompt, tools, base instructions", color: "#8b97a8" },
@@ -175,8 +177,10 @@ export function toolSite(tools, name) {
   return null;
 }
 
+// A link to a page this site publishes: an optional product section (every supported product, T3 Code included),
+// then one page slug; an anchor only of id characters. Anything else is no link.
 export function siteHref(site) {
-  if (!site || typeof site.slug !== "string" || !/^(?:(?:claude-code|codex|opencode|cursor)\/)?[a-z0-9-]+$/.test(site.slug)) return null;
+  if (!site || typeof site.slug !== "string" || !/^(?:(?:claude-code|codex|opencode|cursor|t3code)\/)?[a-z0-9-]+$/.test(site.slug)) return null;
   const anchor = typeof site.anchor === "string" && /^[A-Za-z0-9_-]+$/.test(site.anchor) ? `#${site.anchor}` : "";
   return `../${site.slug}/${anchor}`;
 }
@@ -214,8 +218,77 @@ export function deriveCustody(trace, agent, req) {
 // ---------- panels ----------
 function chip(color) { return el("i", { class: "chip", style: `background:${color}` }); }
 function section(title, ...kids) { return el("section", { class: "psec" }, el("h3", { text: title }), ...kids); }
+// Rows of key and value; a row's note is the key's tooltip (focusable), not a sentence beside the value.
 function kv(rows) {
-  return el("dl", { class: "kv" }, rows.flatMap(([k, v, note]) => [el("dt", { text: k }), el("dd", {}, v, note ? el("span", { class: "note", text: note }) : null)]));
+  return el("dl", { class: "kv" }, rows.flatMap(([k, v, note]) => [note ? tip(el("dt", { text: k, tabindex: "0" }), note) : el("dt", { text: k }), el("dd", {}, v)]));
+}
+// The explanation action of an inspection (ai/composer.js): it opens the composer on this selection; nothing is
+// sent until its Send.
+function explainButton(A, anchor, scope = null) {
+  if (!A.explain) return null;
+  return el("button", { type: "button", class: "btn small explain-open", text: "Explain", onclick: () => A.explain(anchor, { scope }) });
+}
+// Why a known thread or the root has nothing readable, short (fleet/family.js inventory statuses).
+export const STATUS_WORDS = {
+  readable: "readable", "events-only": "provider events, no model requests", unreadable: "session unreadable", "missing-member": "declared file missing",
+  "not-collected": "environment not collected", late: "began during collection", missing: "not in its environment's part", "rows-unreadable": "thread rows unreadable",
+  "root-unavailable": "root session unavailable", ambiguous: "several agents match its title", unmatched: "no matching agent", "no-evidence": "no session or provider log", "not-read": "not read",
+  unparsed: "session unreadable", "no-session": "no session in the bundle"
+};
+function unavailableWords(u) { return STATUS_WORDS[u?.why] || u?.why || "unavailable"; }
+const short = v => compactValue(v, { what: "id" });
+
+// Every known thread of a family, drawn or not: searchable, each opening its record. Stable inventory order.
+function inventorySection(trace, S, A) {
+  const inv = trace.inventory || [];
+  const readable = inv.filter(x => x.status === "readable" || x.status === "events-only").length;
+  const label = x => x.title || `thread ${String(x.threadId).slice(0, 12)}`;
+  const env = x => trace.fleet?.machines?.find(m => m.id === x.environmentId)?.label || "";
+  const rows = inv.map(x => el("li", { class: x.status === "readable" ? null : "gap", "data-search": `${label(x)} ${env(x)} ${STATUS_WORDS[x.status] || x.status}`.toLowerCase() },
+    el("button", { type: "button", class: "item", onclick: () => A.openThread?.(x.key) },
+      el("span", { class: "tool", text: label(x) }), el("span", { class: "meta", text: [env(x), STATUS_WORDS[x.status] || x.status, x.untimed ? "untimed" : null, x.association === "title" ? "matched by title" : null].filter(Boolean).join(" · ") }))));
+  const list = el("ul", { class: "items inventory" }, rows);
+  const search = el("input", { type: "search", class: "agent-search", placeholder: "Find a thread…", "aria-label": "Find a thread", autocomplete: "off" });
+  search.addEventListener("input", () => { const q = search.value.trim().toLowerCase(); for (const r of rows) r.hidden = !!q && !r.dataset.search.includes(q); });
+  return disclosure("inventory", "inventory-fold", `Known threads · ${readable} of ${inv.length} readable`, inv.length <= 40, inv.length > 8 ? search : null, list);
+}
+
+// One known thread's record: what T3 and the bundle say of it, why nothing (or what) is drawn, its bindings, its
+// breaks and notes, each with its original wording.
+function threadPanel(trace, S, A) {
+  const x = (trace.inventory || []).find(e => e.key === S.inventoryKey);
+  if (!x) return [el("p", { text: "This thread is not in the loaded family." })];
+  const env = trace.fleet?.machines?.find(m => m.id === x.environmentId);
+  const when = t => (Number.isFinite(t) ? fmtWhen(t) : "–");
+  const parent = x.parentKey ? (trace.inventory || []).find(e => e.key === x.parentKey) : null;
+  const rows = [["Status", STATUS_WORDS[x.status] || x.status], ["Thread", short(x.threadId)], ["Environment", compactValue(x.environmentId, { label: env?.label || null, what: "environment id" })]];
+  if (x.provider) rows.push(["Product", x.provider]);
+  if (x.lab) rows.push(["Lab", x.lab]);
+  if (x.t3?.status || x.t3?.delivery) rows.push(["T3 says", [x.t3.status, x.t3.delivery && `result ${x.t3.delivery}`].filter(Boolean).join(", ")]);
+  rows.push(["Recorded", x.untimed ? "untimed" : `${when(x.from)} – ${when(x.to)}`]);
+  if (x.origin) rows.push(["Joined by", x.origin]);
+  const out = [
+    el("p", { class: "kicker", text: `Thread · ${env?.label || ""}${x.root ? " · root" : ""}` }),
+    el("div", { class: "lens-head" }, el("h2", { class: "aname", text: x.title || "Untitled thread" }), explainButton(A, { threadKey: x.key }, "thread")),
+    kv(rows),
+  ];
+  if (parent) out.push(el("p", {}, "Parent · ", btn(parent.title || "thread", () => A.openThread(parent.key))));
+  if (x.association === "title") out.push(el("p", { class: "note", text: "Matched to its agent by title (inferred)." }));
+  if (x.association === "ambiguous") out.push(el("p", { class: "warnline", text: `${(x.candidates || []).length} agents share its title; none is assumed.` }));
+  if (x.detail) out.push(el("p", { class: "note original", text: x.detail }));
+  const agents = (x.agentIds || []).map(id => trace.agents.find(a => a.id === id)).filter(Boolean);
+  if (agents.length) out.push(section("Drawn as", el("ul", { class: "items" }, agents.map(a => el("li", {}, btn(`${a.kind === "root" ? "Main thread" : a.name}${a.continuation ? " · later session" : ""} · ${fmtInt(a.requests.length)} requests`, () => A.focusAgent(a.id, 0), "item"))))));
+  if (x.bindings?.length) out.push(section("Native sessions", el("ul", { class: "items" }, x.bindings.map(b => el("li", { class: "binding" },
+    el("span", { class: "tool", text: `${b.product}${b.version ? ` ${b.version}` : ""}` }), short(b.nativeId), el("span", { class: "meta", text: STATUS_WORDS[b.status] || b.status }),
+    b.detail ? el("p", { class: "note original", text: b.detail }) : null)))));
+  const breaks = A.breaksOf?.(x.key) || [];
+  if (breaks.length) out.push(section("Where T3 and the evidence differ", el("ul", { class: "items" }, breaks.map(b => el("li", {},
+    el("p", { text: A.breakWords ? A.breakWords(b) : b.kind }),
+    el("ul", { class: "items evidence" }, b.evidence.map(e => el("li", { class: "fact", text: `${e.what}${e.value ? `: ${e.value}` : ""}${e.at ? ` · ${fmtWhen(e.at)}` : ""}` }))))))));
+  const notes = A.threadNotes?.(x.key) || [];
+  if (notes.length) out.push(section(`Notes (${notes.length})`, el("ul", { class: "items" }, notes.map(n => el("li", { class: "note original", text: n.text })))));
+  if (x.voidIndex != null && A.voidWords) out.push(el("p", { class: "meta", text: A.voidWords(trace.voids[x.voidIndex]) }));
+  return out;
 }
 function btn(text, onclick, cls = "linkbtn") { return el("button", { class: cls, type: "button", text, onclick }); }
 // A <details> whose open state is the panel's memory (panel-memory.js) under `key`, so a rebuild, Back or a
@@ -264,14 +337,37 @@ export function strataList(strata, total, onPick, selected, harnessNote, own) {
   return ul;
 }
 
+// Puts a view's nodes in the panel. A view that hands back exactly the nodes already mounted (the explanation
+// composer, which updates itself in place) is left where it is, so the control being edited keeps its focus.
+function mount(root, nodes) {
+  nodes = nodes.filter(Boolean);
+  if (nodes.length && nodes.length === root.childNodes.length && nodes.every((n, i) => root.childNodes[i] === n)) return;
+  root.replaceChildren(...nodes);
+}
+// The way back from a record an answer cited (S.citedFrom: { id, gen, run }), above the cited view itself.
+function citedBar(S, A) {
+  if (!S.citedFrom || !A.backToAnswer) return null;
+  return el("div", { class: "cited-from" }, btn("← Back to the answer", () => A.backToAnswer(), "text-control"), el("span", { class: "meta", text: `cited as ${S.citedFrom.id}` }));
+}
+
 export function renderPanel(root, S, A) {
-  root.replaceChildren();
   const { trace, level } = S;
+  // what was deliberately opened over the selection: the activity list, an explanation, a record an answer cited,
+  // a thread's record, the notes
+  if (S.activity && A.activityView) return mount(root, A.activityView());
+  if (S.inspector === "explain" && A.explainView) return mount(root, A.explainView());
+  if (S.inspector === "evidence" && A.evidenceView) return mount(root, A.evidenceView());
+  if (S.inspector === "network" && A.networkView) return mount(root, A.networkView());
+  root.replaceChildren();
+  const cited = citedBar(S, A);
+  if (cited) root.append(cited);
+  if (S.inspector === "thread") { root.append(...threadPanel(trace, S, A).filter(Boolean)); return; }
+  if (S.inspector === "notes" && A.notesView) { root.append(...A.notesView().filter(Boolean)); return; }
   const agent = S.agent;
   const req = agent && S.reqIdx != null ? agent.requests[S.reqIdx] : null;
-  const located = (S.followingMap || (S.mapPinned && S.level === 3)) && req;
+  const located = S.mapPinned && S.level === 3 && req;
   if (located) root.append(el("div", { class: "map-location" },
-    el("p", { class: "kicker", text: S.atPlayhead ? "AT THE PLAYHEAD" : S.followingMap ? "AT THE CENTER OF YOUR MAP" : "SELECTED REQUEST" }),
+    el("p", { class: "kicker", text: "SELECTED REQUEST" }),
     el("b", { text: `${agent.kind === 'root' ? 'Main thread' : agent.name} · request ${req.i + 1}` }),
     el("p", { class: "meta", text: `${fmtWhen(req.t)} · ${fmtTok(req.tokens.context)} context tokens` }),
     req.action?.kind === 'tool' ? btn(`Open ${req.action.tool} call ↗`, () => A.focusAction(agent.id, req.i), 'btn small') : null));
@@ -289,8 +385,8 @@ function lensPanel(S, A) {
   const root = trace.agents.find(a => a.kind === "root") || trace.agents[0];
   if (lens === "context") {
     const peak = root.requests[peakRequestIndex(root)];
-    out.push(el("h2", { text: "What filled its context" }),
-      el("p", { class: "lede", text: "Explore the layers, then open the words behind them." }));
+    out.push(el("div", { class: "lens-head" }, el("h2", { text: "What filled its context" }), explainButton(A, null, "family")));
+    if (root.unavailable) out.push(el("p", { class: "warnline" }, `Root thread · ${unavailableWords(root.unavailable)} `, root.threadKey && A.openThread ? btn("Its record →", () => A.openThread(root.threadKey)) : null));
     if (peak) {
       out.push(el("div", { class: "context-peak" },
         el("span", { class: "eyebrow", text: "Peak context · main thread" }),
@@ -315,17 +411,17 @@ function lensPanel(S, A) {
     ].sort((a, b) => a.t - b.t);
     if (marks.length) out.push(section("Context resets", el("ul", { class: "items" }, marks.map(m =>
       el("li", {}, btn(`${fmtClock(m.t)}  ${m.text}`, () => A.focusRequest(root.id, m.req), "item"))))));
-    out.push(el("p", { class: "note", text: `${TAP} any ${S.mode === "2d" ? "lane" : "ridge"} to explore an agent.` }));
   } else if (lens === "egress") {
-    out.push(el("h2", { text: "What left the machine" }),
-      el("p", { class: "lede", text: "Explore external actions, local changes, and reads. Open a call to see what led to it." }));
+    out.push(el("h2", { text: "What left the machine" }));
     const groups = egressGroups(trace);
     const row = ({ a, r, x, kind }) => el("li", {},
       el("button", { class: "item act", type: "button", onclick: () => A.focusRequest(a.id, r.i) },
         chip(STATUS[x.class].color), kind ? el("span", { class: "tool", text: kind }) : null,
         el("span", { class: kind ? null : "tool", text: x.tool || "text" }),
-        el("code", { text: x.target || "" }),
-        el("span", { class: "meta", text: [a.kind === "root" ? "main" : a.name, fmtClock(r.t), x.via ? `via ${x.via}` : null, x.blocked ? `network off: ${x.blocked}` : null].filter(Boolean).join(" · ") })));
+        // a compact label in the row (it is one navigation control); the exact target, with reveal and copy, is in
+        // the request it opens
+        x.target ? el("code", { class: "target-label", text: targetLabel(x.target) }) : null,
+        el("span", { class: "meta", text: [a.kind === "root" ? "main" : a.name, fmtClock(r.t), x.via ? `via ${targetLabel(x.via, 40)}` : null, x.blocked ? `network off: ${x.blocked}` : null].filter(Boolean).join(" · ") })));
     for (const cls of ["outward", "blocked", "write", "read"]) {
       const list = groups[cls];
       if (!list.length) continue;
@@ -341,8 +437,7 @@ function lensPanel(S, A) {
     }
     if (!Object.values(groups).some((l) => l.length)) out.push(el("p", { text: "No classified actions in this session." }));
   } else if (lens === "inflow") {
-    out.push(el("h2", { text: "Where outside text came in" }),
-      el("p", { class: "lede", text: "The largest single inflows of outside text, and outside blocks that contain instruction-like text. The flag is a heuristic, not a verdict." }));
+    out.push(el("h2", { text: "Where outside text came in" }));
     const flagged = [], big = [];
     for (const a of trace.agents) {
       for (const b of a.blocks) {
@@ -364,15 +459,16 @@ function lensPanel(S, A) {
         el("button", { class: "item", type: "button", onclick: () => A.openBlockAt(a.id, b.i) },
           chip(STRATA[STRATUM_INDEX.outside].color), el("span", { class: "tool", text: b.label }),
           el("span", { class: "meta", text: `${extra} · ${a.kind === "root" ? "main" : a.name} · ${fmtClock(b.t)}` })),
-        n ? btn(`next: ${n.action.tool || "reply"}${n.action.target ? " " + n.action.target : ""}`, () => A.focusRequest(a.id, n.i), "linkbtn next") : null);
+        n ? btn(`next: ${n.action.tool || "reply"}${n.action.target ? " " + targetLabel(n.action.target, 40) : ""}`, () => A.focusRequest(a.id, n.i), "linkbtn next") : null);
     };
     out.push(section(`Instruction-like (${flagged.length}, heuristic)`, flagged.length ? el("ul", { class: "items" }, flagged.slice(0, 60).map(x => item(x, "flagged"))) : el("p", { class: "note", text: "None flagged." })));
     out.push(section("Largest inflows", el("ul", { class: "items" }, big.slice(0, 25).map(x => item(x, `≈ ${fmtTok(x.tok)}`)))));
   } else if (lens === "agents") {
-    out.push(el("h2", { text: "Subagents, spend and return" }),
-      el("p", { class: "lede", text: "Compare each agent’s work and the report it returned. Select an agent to explore its ridge." }));
+    out.push(el("div", { class: "lens-head" }, el("h2", { text: trace.family ? "Threads, agents and return" : "Subagents, spend and return" }), explainButton(A, null, "family")));
+    // a family's known work first: every known thread, drawn or not, with its coverage
+    if (trace.family && trace.inventory?.length) out.push(inventorySection(trace, S, A));
     const others = trace.agents.filter(a => a.kind !== "root");
-    if (!others.some(a => a.kind === "subagent")) out.push(el("p", { class: "empty", text: others.length ? "No subagents in this session. Its side calls and reviews:" : "No subagents in this session." }));
+    if (!others.some(a => a.kind === "subagent")) out.push(el("p", { class: "empty", text: others.length ? "No subagents · side calls and reviews:" : "No subagents." }));
     if (others.length) out.push(agentTable(trace, others, S, A));
   } else if (lens === "network" && A.networkLens) {
     // What went over the wire: a network capture attached to the session (network/panel.js).
@@ -461,14 +557,18 @@ export function askWhere(agent, a) {
 export function askPreviewText(text) {
   return clip(String(text || "").replace(/<\/?(?:teammate|cross-session)-message\b[^>]*>/gi, " ").replace(/<\/?[a-z][\w-]*>/gi, " "), 90) || "(empty)";
 }
-const askPreviews = new Map();
-function askPreviewer(agent, A) {
+// Keyed by load generation and qualified agent id, so a reloaded or refreshed family never shows an older load's
+// text; at most ASK_CACHE entries are kept.
+const askPreviews = new Map(), ASK_CACHE = 2000;
+function askPreviewer(agent, A, gen = "") {
+  const keyOf = b => `${gen}|${agent.id}|${b.i}`;
   const load = (b, span) => {
-    const key = `${agent.id}|${b.i}`;
+    const key = keyOf(b);
     if (askPreviews.has(key)) { span.textContent = askPreviews.get(key); return; }
     A.getText(agent.id, b.ref).then(r => {
       const t = askPreviewText(r?.text);
       askPreviews.set(key, t);
+      while (askPreviews.size > ASK_CACHE) askPreviews.delete(askPreviews.keys().next().value);
       span.textContent = t;
     }).catch(() => { span.textContent = ""; });
   };
@@ -477,7 +577,7 @@ function askPreviewer(agent, A) {
     for (const e of es) if (e.isIntersecting && pending.has(e.target)) { io.unobserve(e.target); load(pending.get(e.target), e.target); pending.delete(e.target); }
   }) : null;
   return (b, span) => {
-    if (askPreviews.has(`${agent.id}|${b.i}`) || !io) return load(b, span);
+    if (askPreviews.has(keyOf(b)) || !io) return load(b, span);
     pending.set(span, b);
     io.observe(span);
   };
@@ -486,24 +586,30 @@ function askPreviewer(agent, A) {
 function agentPanel(trace, agent, S, A) {
   const s = agentStats(agent);
   const kids = trace.agents.filter(a => a.parentId === agent.id);
+  const follow = A.followAgent?.(agent);
+  const following = A.following?.();
   const out = [
-    el("p", { class: "kicker", text: agent.kind === "root" ? "Agent · main thread" : `Agent · ${agent.kind}${agent.depth ? ` · depth ${agent.depth}` : ""}` }),
+    el("p", { class: "kicker", text: agent.kind === "root" ? "Agent · main thread" : `Agent · ${agent.kind}${agent.depth ? ` · depth ${agent.depth}` : ""}${agent.continuation ? " · later session of its thread" : ""}` }),
     el("h2", { class: "aname", text: (agent.kind === "root" && trace.title) || agent.name || agent.id }),
-    kv([["Model", modelsUsed(agent)], ["Requests", fmtInt(s.requests)], ["Peak context", fmtTok(s.peak)], ["Fresh tokens", fmtTok(s.fresh)],
-      ["Bursts", fmtInt(agent.bursts?.length || 1)], ...(agent.spawn ? [["Spawned at", `${fmtWhen(agent.spawn.t)}`]] : [])]),
-    el("p", { class: "hint", text: S.followingMap ? "Zoom closer to explore this agent’s requests." : TOUCH ? "Each column is one request; its height is the exact context. Tap one to open it."
-      : "Each column is one request; its height is the exact context. ← → move between requests, Enter opens one, Esc goes back." }),
+    el("div", { class: "agent-actions" }, explainButton(A, { agentId: agent.id, threadKey: agent.threadKey || null }, "agent"),
+      follow ? el("button", { type: "button", class: "btn small", "aria-pressed": String(following?.mode === "agent" && following.agentId === agent.id), text: following?.mode === "agent" && following.agentId === agent.id ? "Following" : "Follow", onclick: follow }) : null,
+      agent.threadKey && A.openThread ? el("button", { type: "button", class: "linkbtn", text: "Thread record", onclick: () => A.openThread(agent.threadKey) }) : null),
+    agent.unavailable ? el("p", { class: "warnline", text: `No readable session · ${unavailableWords(agent.unavailable)}` }) : null,
+    // a filter hides this agent's ridge: the selection stays, and one action shows it again
+    A.filteredOut?.(agent) ? el("p", { class: "note" }, "Hidden by the environment filter · ", btn("Show all", () => A.clearFilter())) : null,
+    kv([["Model", modelsUsed(agent)], ["Requests", fmtInt(s.requests)], ["Peak context", fmtTok(s.peak)], ["Fresh tokens", fmtTok(s.fresh), "uncached input + cache writes + output"],
+      ["Bursts", fmtInt(agent.bursts?.length || 1), "runs of requests with no pause longer than 10 minutes"], ...(agent.spawn ? [["Spawned at", `${fmtWhen(agent.spawn.t)}`]] : [])]),
     // a T3 family's ridge: where it ran, what T3 says of it, its own session and its network (fleet/controls.js)
     ...(A.fleetRows?.(agent) || [])
-  ];
+  ].filter(Boolean);
   if (agent.spawn && agent.parentId) {
     const p = trace.agents.find(a => a.id === agent.parentId);
     if (p) out.push(btn(`Spawned by ${p.kind === "root" ? "the main thread" : p.name}, request ${agent.spawn.parentRequest + 1}`, () => A.focusRequest(p.id, agent.spawn.parentRequest)));
   }
-  const visibleAsks = S.followingMap ? agent.asks.filter(a => a.request <= S.reqIdx).slice(-2) : agent.asks;
+  const visibleAsks = agent.asks;
   if (visibleAsks.length) {
-    const preview = askPreviewer(agent, A);
-    out.push(section(S.followingMap ? "Recent asks" : `Asks (${agent.asks.length})`, el("ul", { class: "items asks" }, visibleAsks.map(a => {
+    const preview = askPreviewer(agent, A, S.gen || "");
+    out.push(section(`Asks (${agent.asks.length})`, el("ul", { class: "items asks" }, visibleAsks.map(a => {
       const b = agent.blocks[a.block];
       const where = askWhere(agent, a);
       const text = el("span", { class: "ask-text", text: b?.ref ? "…" : "" });
@@ -517,7 +623,7 @@ function agentPanel(trace, agent, S, A) {
   if (agent.compactions.length || shr.length) {
     out.push(section("Context resets", el("ul", { class: "items" },
       agent.compactions.map(c => el("li", {}, btn(`${fmtClock(c.t)}  compacted ${fmtTok(c.pre)} → ${fmtTok(c.post)}`, () => A.focusRequest(agent.id, nearestRequest(agent, c.t)), "item"))),
-      shr.map(x => el("li", {}, btn(`${fmtClock(x.t)}  context shrank ${fmtTok(x.from)} → ${fmtTok(x.to)}; not logged as a compaction`, () => A.focusRequest(agent.id, x.request), "item"))))));
+      shr.map(x => el("li", {}, btn(`${fmtClock(x.t)}  context shrank ${fmtTok(x.from)} → ${fmtTok(x.to)} · not logged as a compaction`, () => A.focusRequest(agent.id, x.request), "item"))))));
   }
   if (kids.length) out.push(section(`Subagents and side calls (${kids.length})`, agentTable(trace, kids, S, A)));
   return out;
@@ -568,7 +674,7 @@ function actionPanel(agent, req, S, A) {
   return [
 
     el('p', { class: 'kicker', text: `${agent.kind === 'root' ? 'Main thread' : agent.name} · request ${req.i + 1} of ${agent.requests.length}` }),
-    el('h2', { text: tool }),
+    el('div', { class: 'lens-head' }, el('h2', { text: tool }), explainButton(A, { agentId: agent.id, reqIdx: req.i, call: { index: S.callIndex ?? Math.max(0, calls.indexOf(call)) }, threadKey: agent.threadKey || null }, 'item')),
     el('p', { class: 'meta', text: `${fmtWhen(req.t)} · ${STATUS[call.class]?.label || 'Tool call'}` }),
     calls.length > 1 ? el('div', { class: 'call-picker', 'aria-label': 'Calls in this response' }, calls.map((c, i) => btn(`${i + 1}. ${c.tool || 'Reply'}`, () => A.focusCall(i), `btn small${c === call ? ' on' : ''}`))) : null,
     el('div', { class: 'call-tabs' }, input, result, !call.result ? el('span', { class: 'meta', text: 'No result recorded' }) : null),
@@ -581,13 +687,13 @@ function actionPanel(agent, req, S, A) {
 // wireTokenRows), and whether the context totals agree. A cell that differs is marked.
 function tokensBeside({ rows, equal, wireContext, logContext }) {
   const cell = v => el("td", { class: "num", text: v == null ? "–" : fmtInt(v) });
-  return section("Tokens (exact: from the log · from the wire)",
+  return section("Tokens · log and wire",
     el("table", { class: "atable tokens-table" },
       el("thead", {}, el("tr", {}, el("th", { text: "" }), el("th", { class: "num", text: "Log" }), el("th", { class: "num", text: "Wire" }))),
       el("tbody", {}, rows.map(([label, log, wire, note]) => el("tr", { class: log != null && wire != null && log !== wire ? "diff" : null },
         el("td", {}, label, note ? el("span", { class: "note", text: note }) : null), cell(log), cell(wire))))),
-    el("p", { class: equal ? "note" : "warnline", text: equal ? "Against the log: the same context total."
-      : `Against the log: ${fmtInt(wireContext)} on the wire, ${logContext == null ? "none" : fmtInt(logContext)} in the log. The log's split by source is estimated; these totals are exact.` }));
+    el("p", { class: equal ? "note" : "warnline", text: equal ? "Same context total as the log."
+      : `${fmtInt(wireContext)} on the wire · ${logContext == null ? "none" : fmtInt(logContext)} in the log` }));
 }
 
 function requestPanel(trace, agent, req, S, A, callOffered = false) {
@@ -601,15 +707,15 @@ function requestPanel(trace, agent, req, S, A, callOffered = false) {
   const out = [
     req.action?.kind === "tool" && !callOffered ? btn(`Open ${req.action.tool} call ↗`, () => A.focusAction(agent.id, req.i), "btn action-open") : null,
     el("p", { class: "kicker", text: `${agent.kind === "root" ? "Main thread" : agent.name} · request ${req.i + 1} of ${agent.requests.length}` }),
-    el("h2", { text: `${fmtTok(t.context)} tokens in context` }),
+    el("div", { class: "lens-head" }, el("h2", { text: `${fmtTok(t.context)} tokens in context` }), explainButton(A, { agentId: agent.id, reqIdx: req.i, stratum: S.stratum || null, threadKey: agent.threadKey || null }, "request")),
     el("p", { class: "meta", text: `${fmtWhen(req.t)} · ${req.model || agent.model || ""}${req.iterations > 1 ? ` · iteration ${req.iteration} of ${req.iterations} in one response` : ""}` }),
     // The card sits below Custody: this line jumps to it (scrollTop, not scrollIntoView).
     wire ? btn(`On the wire${wireLine ? `: ${wireLine}` : ""} ↓`, () => { const p = wire.closest(".panel"); if (p) p.scrollTop += wire.getBoundingClientRect().top - p.getBoundingClientRect().top - 8; }, "linkbtn wire-jump") : null,
-    req.strata ? section("Where the context came from (≈, split estimated; total exact)",
+    req.strata ? section("Context by source · split estimated",
       strataBar(req.strata, t.context, k => A.focusStratum(agent.id, req.i, k), S.stratum),
       strataList(req.strata, t.context, k => A.focusStratum(agent.id, req.i, k), S.stratum, harnessNote(trace, agent), req.own))
-      : section("Where the context came from", el("p", { class: "note", text: "The log has no blocks for this request, so its split can't be estimated. The total is exact." })),
-    wireToks ? tokensBeside(wireToks) : section("Tokens (exact, from the log)", kv([
+      : section("Context by source", el("p", { class: "note", text: "No blocks logged for this request · total exact" })),
+    wireToks ? tokensBeside(wireToks) : section("Tokens · exact", kv([
       ["Context", fmtInt(t.context), "input + cache read + cache write"],
       ["Cache read", fmtInt(t.cacheRead)], ["Cache write", fmtInt(t.cacheWrite)], ["Uncached input", fmtInt(t.uncached)],
       ["Output", fmtInt(t.output)], ["Reasoning output", t.reasoning ? fmtInt(t.reasoning) : "–"],
@@ -622,12 +728,12 @@ function requestPanel(trace, agent, req, S, A, callOffered = false) {
       chip(STATUS[act.class]?.color || "#a9b4c2"),
       el("span", { class: "tool", text: act.kind === "text" ? "Text reply" : act.tool || "tool" }),
       el("span", { class: "meta", text: act.class === "outward" ? "left the machine" : act.class }),
-      act.target ? el("code", { class: "target", text: act.target }) : null),
+      act.target ? el("div", { class: "target" }, compactValue(act.target, { label: targetLabel(act.target, 64), what: "target" })) : null),
     el("div", { class: "refbtns" },
       act.args ? refToggle(agent, act.args, "the call", A) : null,
       act.result ? refToggle(agent, act.result, "the result", A) : null),
-    act.all && act.all.length > 1 ? disclosure("action-calls", "calls", `${act.all.length} tool calls in this response (the ladder follows the most consequential)`, false,
-      el("ul", { class: "items" }, act.all.map(x => el("li", { class: "call" }, chip(STATUS[x.class]?.color || "#a9b4c2"), el("span", { class: "tool", text: x.tool || "tool" }), " ", el("code", { text: x.target || "" }))))) : null));
+    act.all && act.all.length > 1 ? disclosure("action-calls", "calls", `${act.all.length} calls in this response`, false,
+      el("ul", { class: "items" }, act.all.map(x => el("li", { class: "call" }, chip(STATUS[x.class]?.color || "#a9b4c2"), el("span", { class: "tool", text: x.tool || "tool" }), " ", x.target ? compactValue(x.target, { label: targetLabel(x.target), what: "target" }) : null)))) : null));
     if (act.kind === "tool" && act.class !== "internal") out.push(custodySection(trace, agent, req, S, A));
   }
   if (wire) out.push(wire);
@@ -704,7 +810,7 @@ function custodySection(trace, agent, req, S, A) {
     A.getText(c.askedBy.agent.id, c.askedBy.block.ref).then(r => { q.textContent = askLine(ask, r?.text || "", parent) || "(empty)"; }).catch(() => { q.textContent = "(text unavailable)"; });
     const from = ask.from === "harness" ? " · from the harness" : "";
     rung("Asked by", el("p", { class: "meta", text: `${c.askedBy.agent === agent ? "" : `${c.askedBy.agent.kind === "root" ? "main thread" : c.askedBy.agent.name}, `}${fmtWhen(ask.t)}${from}` }), q);
-  } else rung("Asked by", el("p", { class: "note", text: "No human ask before this request." }));
+  } else rung("Asked by", el("p", { class: "note", text: "No human ask before this request" }));
   const perm = c.permittedBy || { blocks: [], reviews: [] };
   const reviews = (perm.reviews || []).slice().sort((x, y) => (x.t ?? 0) - (y.t ?? 0));
   rung("Permitted by", perm.blocks.length || reviews.length || perm.facts?.length
@@ -719,16 +825,18 @@ function custodySection(trace, agent, req, S, A) {
         return el("li", {}, btn(`${verdict}${when}${r.forCall ? " · for another call in this response" : ""}`, () => (open != null ? A.openBlockAt(r.agent.id, open) : A.focusAgent(r.agent.id)), "item"),
           r.rationale ? el("p", { class: "meta", text: r.rationale }) : null);
       }))
-    : el("p", { class: "note", text: "No permission rows or reviews logged before this request." }));
+    : el("p", { class: "note", text: "None logged before this request" }));
   const g = c.guidedBy;
-  const href = g && (siteHref(g.site) || siteHref(toolSite(S.tools, g.tool)));
-  const gsite = g && (g.site || toolSite(S.tools, g.tool));
-  rung("Guided by", el("p", {}, `Tool: ${g?.tool || "–"}. `, href ? el("a", { href, text: gsite.title || "Tool description" }) : el("span", { class: "note", text: "The tool's description page isn't in this site's reference index." })));
+  // the tool pages of the product this agent's own session ran (a mixed family's bindings differ)
+  const tools = A.toolsFor ? A.toolsFor(agent) : S.tools;
+  const href = g && (siteHref(g.site) || siteHref(toolSite(tools, g.tool)));
+  const gsite = g && (g.site || toolSite(tools, g.tool));
+  rung("Guided by", el("p", {}, `${g?.tool || "–"} `, href ? el("a", { href, text: gsite.title || "Tool description" }) : el("span", { class: "note", text: "· no page for this tool" })));
   const iv = c.inView;
   rung("In view", el("p", {}, `${fmtInt(iv.count)} outside and agent blocks, ≈ ${fmtTok(iv.tokens)} tokens${iv.flaggedCount ? `; ${fmtInt(iv.flaggedCount)} flagged instruction-like (heuristic)` : ""}.`),
     iv.flagged.length ? el("ul", { class: "items" }, iv.flagged.slice(0, 6).map(b => el("li", {},
       btn(`Instruction-like (heuristic): ${b.label}`, () => A.openBlockAt(agent.id, b.i), "item warn")))) : el("p", { class: "note", text: "None flagged as instruction-like (heuristic)." }));
-  rung("Did", el("p", {}, `${c.did?.tool || "–"} `, c.did?.target ? el("code", { text: c.did.target }) : null));
+  rung("Did", el("p", {}, `${c.did?.tool || "–"} `, c.did?.target ? compactValue(c.did.target, { label: targetLabel(c.did.target, 64), what: "target" }) : null));
   return section("Custody ladder", ol);
 }
 
@@ -973,14 +1081,16 @@ function blockReader(agent, b, A) {
   const full = A.reading ? btn(A.reading() ? "Exit full screen" : "Read full screen", () => A.toggleReading(), "linkbtn fullread") : null;
   const box = el("div", { class: "reader" },
     el("div", { class: "rhead" }, el("strong", { text: b.label || b.kind }), mode, full,
+      explainButton(A, { agentId: agent.id, block: b.i, threadKey: agent.threadKey || null }, "item"),
       btn("Close", () => A.openBlock(null), "linkbtn close")),
     href ? el("p", {}, "On the site: ", el("a", { href, text: b.site.title || b.site.slug })) : null,
-    b.flags?.includes("instruction-like") ? el("p", { class: "warnline", text: "Flagged instruction-like by a heuristic. Treat as untrusted outside text." }) : null,
-    b.carried ? el("p", { class: "note", text: "Carried into this window by a compaction; the same text as the original block." }) : null,
-    b.own ? el("p", { class: "note", text: b.ownEst < b.est ? "From your setup. Your text is marked with a green edge; the product's wording around it is muted." : "From your setup." }) : null,
-    b.resendOf != null ? el("p", { class: "note" }, b.resendSame ? "Sent again while an identical copy was still in context. " : "Sent again with changes while the earlier copy was still in context. ",
-      btn("Open the earlier copy", () => A.openBlockAt(agent.id, b.resendOf))) : null,
-    b.full ? el("p", { class: "note", text: `The model saw a preview; the full output was saved to tool-results/${b.persisted || ""}.` }) : null,
+    b.flags?.includes("instruction-like") ? el("p", { class: "warnline", text: "Instruction-like (heuristic) · untrusted outside text" }) : null,
+    b.carried ? el("p", { class: "note", text: "Carried by a compaction · same text as the original" }) : null,
+    b.own ? el("p", { class: "note", text: b.ownEst < b.est ? "From your setup · your text has the green edge" : "From your setup" }) : null,
+    b.resendOf != null ? el("p", { class: "note" }, b.resendSame ? "Sent again · an identical copy was still in context " : "Sent again, changed · the earlier copy was still in context ",
+      btn("Earlier copy", () => A.openBlockAt(agent.id, b.resendOf))) : null,
+    b.full ? el("p", { class: "note", text: `The model saw a preview · full output in tool-results/${b.persisted || ""}` }) : null,
+    A.provenance && b.kind !== "model" ? provenanceRow(agent, b, A) : null,
     holder,
     b.full ? refToggle(agent, b.full, "the full file", A) : null);
   A.getText(agent.id, b.ref).then(r => {
@@ -1005,5 +1115,30 @@ function blockReader(agent, b, A) {
       });
     }
   }).catch(e => { pre.textContent = `Text unavailable: ${e?.message || e}`; });
+  return box;
+}
+
+// Where this text comes from, asked for deliberately (the model behind it is built on first use): what the
+// product's library and shipped code say of it, how many copies were delivered and to how many agents, and a
+// stepper through every copy in time order. Built for the product this agent's own session ran.
+function provenanceRow(agent, b, A) {
+  const box = el("div", { class: "provenance" });
+  const ask = btn("Where this text comes from", () => show(), "linkbtn");
+  box.append(ask);
+  async function show() {
+    box.replaceChildren(el("span", { class: "meta", role: "status", text: "Reading…" }));
+    let r = null;
+    try { r = await A.provenance(agent.id, b.i); } catch (e) { box.replaceChildren(el("span", { class: "meta", text: e?.message || String(e) })); return; }
+    if (!box.isConnected) return;
+    if (!r) { box.replaceChildren(el("span", { class: "meta", text: "Not harness text · no copies tracked" })); return; }
+    const k = r.at, n = r.list.length;
+    const go = d => { const c = r.list[(k + d + n) % n]; if (c) A.openBlockAt(c.agentId, c.block); };
+    box.replaceChildren(...[
+      el("span", { class: "meta", text: [r.words, r.where, `${n} ${n === 1 ? "copy" : "copies"}`, r.agents > 1 ? `${r.piece.reach} of ${r.agents} agents` : null, r.product].filter(Boolean).join(" · ") }),
+      n > 1 ? el("span", { class: "copy-step" },
+        el("button", { type: "button", class: "linkbtn", "aria-label": "Previous copy", text: "‹", onclick: () => go(-1) }),
+        el("span", { class: "meta", text: `${k + 1} of ${n}` }),
+        el("button", { type: "button", class: "linkbtn", "aria-label": "Next copy", text: "›", onclick: () => go(1) })) : null].filter(Boolean)); // the native call would write a null as text
+  }
   return box;
 }

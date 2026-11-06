@@ -2,6 +2,7 @@
 // Everything shown comes from the redacted capture summary (capture.js); bodies are read from the worker on
 // demand (A.networkBody) and shown in a reader like the block reader. All text goes in through textContent.
 import { el, fmtTok, fmtInt, fmtClock, fmtWhen, clip } from "../panels.js";
+import { compactValue } from "../compact.js";
 import { RULES, partyOf } from "./transit.js";
 import { readableIn, readableOrStored, readableValue } from "../readable.js";
 import { foldOpen, setFold, valueOf, setValue } from "../panel-memory.js";
@@ -175,8 +176,7 @@ export function networkLens(S, A) {
   readerClaimed = false;
   const out = [];
   if(cap.voice?.observed)out.push(section('WebRTC voice evidence',el('p',{text:`${fmtInt(cap.voice.messages)} data-channel messages · ${cap.voice.calls.length} observed call(s). Audio was not recorded.`})));
-  out.push(el("h2", { text: NETWORK_LENS.q }),
-    el("p", { class: "lede", text: `A network capture loaded with this ${productLabel(product)} session. Exact identifiers join traffic to the log; other requests remain unattributed. Credentials and identity were redacted in your browser as the capture was read; nothing is saved.` }));
+  out.push(el("h2", { text: NETWORK_LENS.q }));
   const readerSlot = el("div", { class: "net-reader-slot" });
   const unattributed = cap.entries.filter(e => e.association === 'unattributed').length;
   out.push(el("p", { class: "meta net-source" }, `${cap.files.length > 3 ? "Network captures" : cap.files.join(", ")} · ${fmtInt(cap.kept)} of ${fmtInt(cap.total)} requests displayed · ${fmtInt(cap.entries.length - unattributed)} associated · ${fmtInt(unattributed)} unattributed`,
@@ -296,7 +296,7 @@ function transitSection(cap, A, focus) {
       rest.length ? (flagged.length ? fold([`${fmtInt(rest.length)} more places on this host, none flagged`], false, `transit-host-rest:${host}`, list(rest)) : list(rest)) : null);
   }).filter(Boolean);
   return topFold("sec:transit", "Sensitive data in transit", `${plural(creds.length, "credential")} · ${plural(tr.rows.length, "place")}, ${fmtInt(tr.counts.flagged)} flagged`,
-    el("p", { class: "note", text: "Where credentials and identity travel: kinds, hosts, channels and counts. A credential shows its kind, length and last four characters (so you can tell which key it was), its JWT issuer, scopes and times, and every send with the server's answer; its full value is never shown. Identity values are removed. A fingerprint (fp) groups equal values within this capture." }),
+    el("p", { class: "note", text: "kind · length · last four · never the full value · fp groups equal values · identity removed" }),
     creds.length ? fold(["Credentials sent", [`${fmtInt(creds.length)}`, rejected ? `${fmtInt(rejected)} rejected (401/403)` : null, expired ? `${fmtInt(expired)} sent after expiry` : null, multi.length ? `the same ${multi[0].kind} on ${plural(multi[0].hosts.length, "host")}` : null].filter(Boolean).join(" · ")], false, "transit:creds",
       ...credentialList(creds, focus)) : null,
     fold(["Where they travel", `${fired.length ? `${plural(fired.length, "rule")} fired` : "no rules fired"} · ${plural(hosts.length, "host")}, third parties first`], false, "transit:where",
@@ -335,7 +335,7 @@ function endpointItem(cap, e, byI, A) {
 // Every entry of a group: the first 25, then the rest one click away.
 function entryList(cap, e, g, A) {
   const row = (x) => el("li", { "data-anchor": `entry:${x.i}` },
-    el("code", { text: `${x.method} ${x.host}${x.path}${x.query && x.query.length ? `?${x.query.join("&")}` : ""}` }),
+    el("span", { class: "net-url" }, `${x.method} `, compactValue(`${x.host}${x.path}${x.query && x.query.length ? `?${x.query.join("&")}` : ""}`, { label: `${x.host}${x.path.length > 48 ? `${x.path.slice(0, 22)}…${x.path.slice(-22)}` : x.path}${x.query && x.query.length ? " …" : ""}`, what: "address" })),
     el("span", { class: "meta", text: ` ${x.status || "no HTTP response"} · ${x.t ? `${fmtClock(x.t)} · ` : ""}${fmtBytes(x.reqBytes)} → ${fmtBytes(x.resBytes)}${x.ws ? ` · ${fmtInt(x.ws)} frames` : ""}${x.partial ? ' · incomplete at recorder checkpoint' : ''}${x.association === 'unattributed' ? ' · unattributed' : ''}${x.withheldBodies ? ` · ${x.withheldBodies} bodies withheld by recorder` : ''}${x.eager ? "" : " · read on demand"} ` }),
     bodyButtons(A, x.i, [["headers", "Headers"], ...(x.reqBytes ? [["request", "Request"]] : []), ...(x.ws ? [["frames", "Frames"]] : x.resBytes ? [["response", "Response"]] : [])], `${x.method} ${x.host}${x.path}`, `entry:${x.i}`),
     readerAt(A, `entry:${x.i}`));
@@ -377,8 +377,8 @@ function telemetrySection(cap, trace, A) {
     filled = true;
     const all = runs(cap.events, (e) => `${e.name}\u0000${e.sink}`);
     const row = (r) => el("li", {}, el("span", { class: "meta", text: span(r.t0, r.t1) }), " ", el("b", { text: r.first.name }), el("span", { class: "meta", text: `${r.count > 1 ? ` ×${fmtInt(r.count)}` : ""} · ${r.first.sink}` }), r.first.call != null ? callLink(r.first.call) : null);
-    order.append(el("ol", { class: "net-timeline" }, all.slice(0, 100).map(row)),
-      all.length > 100 ? fold([`The other ${fmtInt(all.length - 100)} rows`], false, "events-order-all", el("ol", { class: "net-timeline" }, all.slice(100).map(row))) : null);
+    order.append(...[el("ol", { class: "net-timeline" }, all.slice(0, 100).map(row)),
+      all.length > 100 ? fold([`The other ${fmtInt(all.length - 100)} rows`], false, "events-order-all", el("ol", { class: "net-timeline" }, all.slice(100).map(row))) : null].filter(Boolean));
   };
   order.addEventListener("toggle", () => { if (order.open) fill(); });
   if (order.open) fill();
@@ -580,7 +580,7 @@ function callCard(cap, c, trace, A, at) {
     c.timings ? `${fmtMs(c.timings.wait)} to first byte · ${fmtMs(c.timings.total)} total` : null].filter((v) => v != null && v !== "").join(" · ") }));
   if (at && at.same) kids.push(el("p", { class: "note", text: `The same HTTP call as ${at.agent.kind === "side" ? "the main thread's" : ""} request ${at.same.reqIdx + 1}: this row is one iteration of it.` }));
   kids.push(kv([
-    [product === "codex" ? "Response id" : "Request id", el("code", { text: c.requestId || "–" }), c.joinedBy ? `joined by ${c.joinedBy}` : product === 'opencode' || product === 'cursor' ? 'no exact native step match' : "not in your log"],
+    [product === "codex" ? "Response id" : "Request id", c.requestId ? compactValue(c.requestId, { what: "id" }) : "–", c.joinedBy ? `joined by ${c.joinedBy}` : product === 'opencode' || product === 'cursor' ? 'no exact native step match' : "not in your log"],
     product === "codex" ? ["Request kind", c.requestKind || (c.generate === false ? "prewarm" : "turn"), c.generate === false ? "generate: false" : null] : ["Request class", c.requestClass || "–", c.kind === "side" ? "a side call" : null],
     ["Model", c.model || "–"],
   ]));

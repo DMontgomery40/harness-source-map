@@ -1,159 +1,165 @@
-// The playback transport: play or pause, a scrub bar over the session's compressed time, the speed,
-// and a readout of where the playhead is. It owns the one animation-frame loop that advances the
-// clock (playback.js) while playing, and reports every change through onPlayhead so the app can
-// hand it to the scene. Paused, nothing runs. The playhead never touches the app's view state.
-import { el, fmtInt, fmtClock } from "./panels.js";
-import { COMPLETE } from "./playback.js";
-
-// "req 1,234 · Sep 25 · 3:02 am": the request the playhead is in and the session time it has reached.
-export function playheadLabel(pb, P = pb.P) {
-  const t = pb.timeAt(P);
-  const day = new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  return `req ${fmtInt(Math.floor(P) + 1)} · ${day} · ${fmtClock(t)}`;
-}
-
-// Where a focused request puts the playhead within it: i + FOCUS shows request i complete (playback.js
-// COMPLETE, which is also where the session ends).
-export const FOCUS = COMPLETE;
-
-// Where focusing request i puts the playhead: i + FOCUS on the root. For any other agent, the root-space
-// P whose cut lands at that agent's own i + FOCUS in compressed-time x (a subagent's whole run can sit
-// between two root requests, so this is fractional, never rounded; its last request is complete at its
-// own x). The root's last request complete is the end. Null when unknown.
-export function playheadForRequest(pb, layout, agentId, i) {
-  const agent = layout.byId.get(agentId), r = agent?.requests[i];
-  if (!pb || !r) return null;
-  if (agent === layout.root) return i + FOCUS;
-  const next = agent.requests[i + 1], x = layout.X(r.t);
-  return pb.PAtX(next ? x + (layout.X(next.t) - x) * FOCUS : x);
-}
-
-// `,` and `.`: the previous or next request, complete (floor(P) -/+ 1, plus FOCUS), so the readout's
-// request number moves by exactly one. Never below FOCUS (request 0 stays complete), never past the end
-// (the last request complete).
-export function focusStep(P, d, n) {
-  return Math.min(n - 1 + FOCUS, Math.max(FOCUS, Math.floor(P) + (d < 0 ? -1 : 1) + FOCUS));
-}
+// The playback transport: play or pause, a scrub over the family clock's compressed time (clock.js), the speed,
+// the recorded time the clock stands on, camera follow, and the activity at that time. It owns the one
+// animation-frame loop that advances the clock while playing and reports every change through onClock, so the app
+// can hand the cut to the scene and the 2D chart. It never touches what the inspector shows: playing, scrubbing and
+// stepping change time only.
+//
+// Follow has three states: off; the family's time (the camera keeps the time cut in view); one named agent (set
+// only by an explicit action on that agent). A manual camera gesture turns it off at once; Play never turns it on.
+import { el } from "./panels.js";
+import { clockLabel } from "./clock.js";
+import { tip } from "./compact.js";
 
 // The next speed of the button's cycle (the keys' faster and slower stop at the ends instead).
-export function nextSpeed(pb) {
-  const list = pb.speeds;
-  return list.find(s => s > pb.speed) ?? list[0];
+export function nextSpeed(clock) {
+  const list = clock.speeds;
+  return list.find(s => s > clock.speed) ?? list[0];
 }
 
-// host: the #playback element. onPlayhead({ P, playing }) runs on every change of the playhead or its
-// playing state.
-// onStart() runs as playback starts, before the clock moves and the first push. onFollow('auto'|'manual') runs when the
-// Follow chip's state changes.
-export function createTransport(host, { onPlayhead = () => {}, onStart = () => {}, onFollow = () => {}, raf = f => requestAnimationFrame(f), caf = id => cancelAnimationFrame(id), now = () => performance.now(), maxDt = 100 } = {}) {
-  let pb = null, frame = 0, last = 0, label = "";
-  // Follow: the director moves the camera while playing unless the user turned Follow off (off) or moved
-  // the camera during this run (held). forced: the user asked for Follow, so it follows at the overview too.
-  let off = false, held = false, forced = false;
-  const play = el("button", { type: "button", class: "play", "aria-pressed": "false", "aria-label": "Play", title: "Play · Space" }, el("i", { "aria-hidden": "true" }));
-  const scrub = el("input", { type: "range", class: "scrub", min: "0", max: "1", step: "0.0005", value: "1", "aria-label": "Session time" });
+// host: the #playback element. onClock({ x, t, playing, atEnd }) runs on every change of the clock or its playing
+// state; onFollow(follow) when follow changes; onActivity() when the activity action is chosen; activity(t) gives
+// the compact count shown on that action ({ count, label } or null).
+export function createTransport(host, { onClock = () => {}, onFollow = () => {}, onActivity = () => {}, activity = () => null, raf = f => requestAnimationFrame(f), caf = id => cancelAnimationFrame(id), now = () => performance.now(), maxDt = 100 } = {}) {
+  let clock = null, frame = 0, last = 0, label = "", countAt = -Infinity, flat = false;
+  let follow = { mode: "off", agentId: null, label: null };
+  const play = el("button", { type: "button", class: "play", "aria-pressed": "false", "aria-label": "Play" }, el("i", { "aria-hidden": "true" }));
+  tip(play, "Play or pause · Space");
+  const scrub = el("input", { type: "range", class: "scrub", min: "0", max: "1", step: "0.0005", value: "1", "aria-label": "Family time" });
   const readout = el("output", { class: "readout", "aria-live": "off" });
-  const speed = el("button", { type: "button", class: "speed", title: "Speed · < >" });
-  const followState = el("span", { class: "state", text: "auto" });
-  const follow = el("button", { type: "button", class: "follow", "aria-pressed": "true", title: "The camera follows the playhead · f" }, "Follow ", followState);
-  host.replaceChildren(play, scrub, readout, speed, follow);
+  const speed = el("button", { type: "button", class: "speed", "aria-label": "Playback speed" });
+  tip(speed, "Speed · < >");
+  // follow and activity carry a full label and a short one; narrow screens show the short one (trace.css), and the
+  // accessible name is always the full one
+  const followLong = el("span", { class: "long" }), followShort = el("span", { class: "short", "aria-hidden": "true", text: "⌖" });
+  const followBtn = el("button", { type: "button", class: "follow", "aria-pressed": "false" }, followLong, followShort);
+  tip(followBtn, "Camera follows the time · f");
+  const activityLong = el("span", { class: "long" }), activityShort = el("span", { class: "short", "aria-hidden": "true" });
+  const activityBtn = el("button", { type: "button", class: "activity", "aria-haspopup": "true" }, activityLong, activityShort);
+  tip(activityBtn, "Who has recorded activity at this time");
+  host.replaceChildren(play, scrub, readout, speed, followBtn, activityBtn);
   host.setAttribute("data-playing", "false");
 
   play.addEventListener("click", () => api.toggle());
   // Scrubbing pauses: the thumb follows the pointer, not the clock.
-  scrub.addEventListener("pointerdown", () => { if (pb?.playing) api.pause(); });
-  scrub.addEventListener("input", () => { if (pb) api.seek(pb.PAtX(Number(scrub.value))); });
-  speed.addEventListener("click", () => { if (pb) api.setSpeed(nextSpeed(pb)); });
-  follow.addEventListener("click", () => api.toggleFollow());
+  scrub.addEventListener("pointerdown", () => { if (clock?.playing) api.pause(); });
+  scrub.addEventListener("input", () => { if (clock) { clock.seekFraction(Number(scrub.value)); push(); sync(); } });
+  speed.addEventListener("click", () => { if (clock) { clock.setSpeed(nextSpeed(clock)); sync(); } });
+  followBtn.addEventListener("click", () => api.toggleFollow());
+  activityBtn.addEventListener("click", () => { if (clock) { api.pause(); onActivity(); } });
 
-  function push() {
-    if (pb) onPlayhead({ P: pb.P, playing: pb.playing });
-  }
+  function push() { if (clock) onClock({ x: clock.x, t: clock.t, playing: clock.playing, atEnd: clock.atEnd }); }
   function stop() { if (frame) caf(frame); frame = 0; }
   function loop(t) {
     frame = 0;
-    if (!pb?.playing) return;
+    if (!clock?.playing) return;
     const dt = Math.min(maxDt, t - last);
     last = t;
-    pb.tick(dt);
+    clock.tick(dt);
     push();
     sync();
-    if (pb.playing) frame = raf(loop);
+    if (clock.playing) frame = raf(loop);
   }
-  function run() { if (pb?.playing && !frame) { last = now(); frame = raf(loop); } }
+  function run() { if (clock?.playing && !frame) { last = now(); frame = raf(loop); } }
 
+  function syncFollow() {
+    const on = follow.mode !== "off";
+    followBtn.hidden = flat || !clock;
+    followBtn.setAttribute("aria-pressed", String(on));
+    const text = follow.mode === "agent" ? `Following ${follow.label || "agent"}` : follow.mode === "time" ? "Following time" : "Follow";
+    if (followLong.textContent !== text) { followLong.textContent = text; followBtn.setAttribute("aria-label", text); }
+  }
+  function syncActivity(force = false) {
+    if (!clock) { activityBtn.hidden = true; return; }
+    const t = now();
+    if (!force && clock.playing && t - countAt < 250) return;
+    countAt = t;
+    const a = activity(clock.t);
+    activityBtn.hidden = !a;
+    if (!a) return;
+    const text = a.label;
+    if (activityLong.textContent !== text) { activityLong.textContent = text; activityShort.textContent = a.short || text; }
+    activityBtn.setAttribute("aria-label", `${a.spoken || text}. Open the list at this time`);
+  }
   // Redraws the controls from the clock. The readout and its spoken value change only when the text does.
   function sync() {
-    if (!pb) return;
-    const on = pb.playing, x = pb.xAt(pb.P);
+    host.hidden = !clock;
+    if (!clock) return;
+    const on = clock.playing;
     host.setAttribute("data-playing", String(on));
     play.setAttribute("aria-pressed", String(on));
     play.setAttribute("aria-label", on ? "Pause" : "Play");
-    play.title = `${on ? "Pause" : "Play"} · Space`;
-    scrub.value = String(x);
-    scrub.style.setProperty("--progress", `${(x * 100).toFixed(2)}%`);
-    const text = playheadLabel(pb);
+    play.disabled = !clock.playable;
+    scrub.disabled = !clock.playable;
+    const f = clock.fraction;
+    scrub.value = String(f);
+    scrub.style.setProperty("--progress", `${(f * 100).toFixed(2)}%`);
+    const text = clockLabel(clock.t);
     if (text !== label) {
       label = text;
       readout.textContent = text;
       scrub.setAttribute("aria-valuetext", text);
     }
-    const s = `${pb.speed}×`;
-    if (speed.textContent !== s) {
-      speed.textContent = s;
-      speed.setAttribute("aria-label", `Speed ${s}: ${pb.speed} requests a second`);
-    }
+    const s = `${clock.speed}×`;
+    if (speed.textContent !== s) speed.textContent = s;
+    speed.hidden = !clock.playable;
     syncFollow();
-  }
-  function syncFollow() {
-    const auto = !off && !held;
-    follow.setAttribute("aria-pressed", String(auto));
-    if (followState.textContent !== (auto ? "auto" : "manual")) followState.textContent = auto ? "auto" : "manual";
+    syncActivity();
   }
 
+  const setFollow = next => {
+    const was = follow.mode + (follow.agentId || "");
+    follow = { mode: next?.mode || "off", agentId: next?.mode === "agent" ? next.agentId : null, label: next?.mode === "agent" ? next.label || null : null };
+    syncFollow();
+    if (was !== follow.mode + (follow.agentId || "")) onFollow(follow);
+  };
+
   const api = {
-    // A new session's clock (or null), with Follow back to auto. Nothing is pushed: the scene starts from the same place.
-    load(next) { stop(); pb = next || null; label = ""; off = held = forced = false; sync(); },
-    get playback() { return pb; },
-    get playing() { return !!pb?.playing; },
-    toggle() { if (pb?.playing) api.pause(); else api.play(); },
-    // Starting a run follows again, unless the user turned Follow off. onStart runs before the clock moves,
-    // so a history entry it pushes keeps the playhead of the view being left, even when a play at the end
-    // starts over from request 1 (a clock of one request never plays).
-    play() {
-      if (!pb) return;
-      const was = pb.playing;
-      if (!was && pb.n >= 2) { held = false; onStart(); }
-      pb.play();
-      if (pb.playing) run();
-      push(); sync();
-    },
-    pause() { if (!pb) return; const was = pb.playing; pb.pause(); stop(); if (was) push(); sync(); },
-    // Jump to P and stay paused (scrubbing, focusing a request, history).
-    seek(P) { if (!pb) return; pb.pause(); stop(); pb.setP(P); push(); sync(); },
-    step(d) { if (pb) api.seek(focusStep(pb.P, d, pb.n)); },
-    setSpeed(v) { if (!pb) return; pb.setSpeed(v); sync(); },
-    faster() { if (!pb) return; pb.faster(); sync(); },
-    slower() { if (!pb) return; pb.slower(); sync(); },
-    // The Follow chip and the f key: back to auto (asked for, so the overview follows too), or off.
-    get follow() { return off || held ? "manual" : "auto"; },
-    get forced() { return forced && !off && !held; },
-    toggleFollow() {
-      if (off || held) { off = held = false; forced = true; } else off = true;
-      syncFollow();
-      onFollow(api.follow);
-    },
-    // The user moved the camera: while playing, the director lets go until Follow is asked for again.
-    // Either way an earlier "follow at the overview too" no longer holds.
-    userCamera() {
-      forced = false;
-      if (!pb?.playing || off || held) return;
-      held = true;
-      syncFollow();
-      onFollow("manual");
-    },
+    // A new family's clock (or null): paused at its end, follow off. Nothing is pushed: the scene starts there.
+    load(next) { stop(); clock = next || null; label = ""; follow = { mode: "off", agentId: null, label: null }; sync(); syncActivity(true); },
+    get clock() { return clock; },
+    get playing() { return !!clock?.playing; },
+    toggle() { if (clock?.playing) api.pause(); else api.play(); },
+    // Play changes time only: no selection, reader or follow change. At the end it starts over from the start.
+    play() { if (!clock) return false; if (!clock.play()) return false; run(); push(); sync(); return true; },
+    pause() { if (!clock) return; const was = clock.playing; clock.pause(); stop(); if (was) push(); sync(); syncActivity(true); },
+    // Jump to a recorded time and stay paused (opening a request, stepping, history).
+    seekTime(t) { if (!clock || !Number.isFinite(t)) return; stop(); clock.seekTime(t); push(); sync(); syncActivity(true); },
+    seekX(x) { if (!clock || !Number.isFinite(x)) return; stop(); clock.seekX(x); push(); sync(); syncActivity(true); },
+    step(d) { if (!clock) return; stop(); clock.step(d); push(); sync(); syncActivity(true); },
+    toStart() { if (clock) api.seekTime(clock.t0); },
+    toEnd() { if (clock) api.seekTime(clock.t1); },
+    setSpeed(v) { if (!clock) return; clock.setSpeed(v); sync(); },
+    faster() { if (!clock) return; clock.faster(); sync(); },
+    slower() { if (!clock) return; clock.slower(); sync(); },
+    get follow() { return { ...follow }; },
+    setFollow,
+    // The follow button and the f key: off becomes the family's time; any follow becomes off.
+    toggleFollow() { setFollow(follow.mode === "off" ? { mode: "time" } : { mode: "off" }); },
+    // The user moved the camera: follow lets go at once, whatever it was following.
+    userCamera() { if (follow.mode !== "off") setFollow({ mode: "off" }); },
+    // The 2D view has no camera to follow with; time, stepping and activity stay.
+    setFlat(on) { flat = !!on; syncFollow(); },
+    refreshActivity() { syncActivity(true); },
     sync,
-    controls: { play, scrub, readout, speed, follow }
+    controls: { play, scrub, readout, speed, follow: followBtn, activity: activityBtn }
   };
   return api;
+}
+
+// On a phone, the clock's place between the top controls (lenses, the environment and lab filters, the crumbs) and the
+// bottom ones (the sheet and what floats above it). It sits just above the bottom stack; where the two stacks leave it
+// less than its own height, the sheet gives up the difference (the controls floating above the sheet follow the
+// sheet's height), never below minSheet, so the clock is never drawn over the filters.
+//   layout: { topLimit (the top stack's bottom, plus a gap), height (the clock's), edge() (where the clock's bottom
+//   would be now: the bottom stack's top, minus a gap), sheet() (the sheet's height now), setSheet(px) }
+//   -> the clock's bottom edge (a y), with the sheet set as needed.
+export function fitPhoneClock({ topLimit, height, edge, sheet, setSheet, minSheet = 140 }) {
+  let bottom = edge(), was = Infinity;
+  for (let k = 0; k < 4 && bottom - height < topLimit; k++) {
+    const next = Math.max(minSheet, Math.floor(Math.min(sheet(), was) - (topLimit - (bottom - height))));
+    if (!(next < was)) break; // the sheet has nothing more to give
+    setSheet(next); was = next;
+    bottom = edge();
+  }
+  return bottom;
 }

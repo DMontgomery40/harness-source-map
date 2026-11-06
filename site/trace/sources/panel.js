@@ -3,6 +3,7 @@
 // holds. Content is read from the resolver one source at a time, redacted there the way the network layer
 // redacts a capture. Nothing is saved.
 import { el, fmtInt, fmtWhen } from "../panels.js";
+import { compactValue } from "../compact.js";
 import { readableOrStored, readableText, readableValue, recordList, splitCut, textKind } from "../readable.js";
 
 export const SOURCES_LENS = { key: "sources", q: "Everything on this machine", icon: "⌸" };
@@ -71,7 +72,7 @@ function row(s, S, A) {
     s.error ? el("p", { class: "note", text: `Couldn't read it: ${s.error}` }) : null,
     open ? body(s, open, A) : null,
     el("details", { class: "net-fold" }, el("summary", { text: "Source details" }),
-      el("p", { class: "meta src-path" }, el("code", { text: s.path }), s.shownIn ? ` · also shown in ${s.shownIn}` : "", s.modified ? ` · changed ${fmtWhen(s.modified)}` : "", s.span && s.span.a != null ? ` · ${spanText(s.span)}` : ""),
+      el("p", { class: "meta src-path" }, compactValue(s.path, { kind: "path", what: "path" }), s.shownIn ? ` · also shown in ${s.shownIn}` : "", s.modified ? ` · changed ${fmtWhen(s.modified)}` : "", s.span && s.span.a != null ? ` · ${spanText(s.span)}` : ""),
       s.catalog ? catalogNote(s.catalog) : null,
       !s.read && s.reason ? el("p", { class: "meta src-what", text: s.reason }) : null));
   d.addEventListener("toggle", () => { if (d.open && !S.sourceOpen?.get(s.id) && s.read && ["found", "present", "empty"].includes(s.status)) A.openSource(s.id); if (!d.open) A.closeSource(s.id); });
@@ -96,7 +97,7 @@ function body(s, v, A) {
   const wrap = el("div", { class: "src-body" });
   const key = `${s.id}|${v.part || ""}`;
   const stored = (text) => () => el("pre", { class: "src-pre", text });
-  if (d.path && d.kind !== "files") wrap.append(el("p", { class: "meta" }, el("code", { text: d.path })));
+  if (d.path && d.kind !== "files") wrap.append(el("p", { class: "meta" }, compactValue(d.path, { kind: "path", what: "path" })));
   if (d.kind === "note") wrap.append(el("p", { class: "note", text: d.text }));
   // Code, config and prose read best as written; JSON, JSON Lines and logs get a readable layout.
   else if (d.kind === "text") wrap.append(textKind(splitCut(d.text).text, d.path) === "plain" ? stored(d.text)()

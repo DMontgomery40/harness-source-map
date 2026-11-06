@@ -149,7 +149,7 @@ test("2D charts never emit negative geometry: dense lanes keep a visible bar, ma
     return a;
   });
   const dense = { agents: [root, ...subs], started: t0, ended: t0 + 800e3 };
-  const sessions = [["dense", dense], ["long", longSession()], ...await fixtureTraces()];
+  const sessions = [["dense", dense], ["tail", tailFamily()], ...await fixtureTraces()];
   const bad = [], at = (what, n) => `${what} ${n.getAttribute("class") || ""} ${n.getAttribute("width")}x${n.getAttribute("height")}`;
   const check = (what, svg) => {
     for (const n of svg.all(n => n.tagName === "RECT")) {
@@ -317,36 +317,6 @@ test("overview entry points open the correct peak request and layer for both pro
   }
 });
 
-test('map-following sidebar moves through overview, agent, request and source without changing selection', async () => {
-  const { mapPanelState } = await import('../navigation.js');
-  for (const [, trace] of await fixtureTraces()) {
-    const state = { trace, level: 0, mode: '3d', lens: 'context', agentId: null, reqIdx: null };
-    for (const agent of trace.agents.filter(a => a.requests.length)) {
-      for (const reqIdx of [0, agent.requests.length - 1]) {
-        const req = agent.requests[reqIdx], stratum = Object.keys(req.strata || {}).find(k => req.strata[k] > 0);
-        for (const detail of [1, 2, 3, 2, 1, 0]) {
-          const view = mapPanelState(state, { detail, agentId: agent.id, reqIdx, stratum });
-          assert.equal(state.level, 0); assert.equal(state.agentId, null);
-          if (!detail) { assert.equal(view, state); continue; }
-          assert.equal(view.agent, agent); assert.equal(view.reqIdx, reqIdx);
-          assert.equal(view.level, detail === 3 && !stratum ? 2 : detail);
-        }
-      }
-    }
-    const focus = { detail: 3, agentId: trace.agents[0].id, reqIdx: 999999, stratum: 'missing' };
-    const view = mapPanelState(state, focus);
-    assert.equal(view.reqIdx, view.agent.requests.length - 1);
-    assert.equal(view.level, 2); assert.equal(view.stratum, null);
-    for (const level of [1, 2, 3]) {
-      const pinned = { ...state, level, block: 0 };
-      assert.equal(mapPanelState(pinned, focus), pinned, 'explicit reader is not replaced while reading');
-    }
-    const flat = { ...state, mode: '2d' };
-    assert.equal(mapPanelState(flat, focus), flat);
-    assert.equal(mapPanelState(state, { ...focus, agentId: 'missing' }), state);
-  }
-});
-
 test('a request offers its tool call once, whether or not the map card is showing it', () => {
   const req = { i: 0, t: 1000, tokens: { context: 811000 }, action: { kind: 'tool', tool: 'Bash', class: 'write' } };
   const agent = { id: 'root', kind: 'root', requests: [req], blocks: [], asks: [], compactions: [] };
@@ -358,17 +328,20 @@ test('a request offers its tool call once, whether or not the map card is showin
   }
 });
 
-test("the map card names where it is: the playhead while playing, the centre of the map, or the selection", () => {
+test("the inspector shows the selection only: no card follows the camera's centre or the playhead", () => {
   const req = { i: 4, t: 1000, tokens: { context: 900 } };
   const agent = { id: "root", kind: "root", requests: [{}, {}, {}, {}, req], blocks: [], asks: [], compactions: [] };
-  const kicker = extra => {
+  const text = extra => {
     const host = new Element("aside");
     renderPanel(host, { trace: { agents: [agent] }, level: 2, agent, reqIdx: 4, ...extra }, { focusAction() {}, focusRequest() {}, focusStratum() {} });
-    return host.all(n => n.getAttribute("class") === "kicker")[0]?.textContent;
+    return host.textContent;
   };
-  assert.equal(kicker({ followingMap: true, atPlayhead: true }), "AT THE PLAYHEAD");
-  assert.equal(kicker({ followingMap: true }), "AT THE CENTER OF YOUR MAP");
-  assert.equal(kicker({ mapPinned: true, level: 3 }), "SELECTED REQUEST");
+  // camera and clock state carried in by an older caller change nothing the panel says
+  assert.equal(text({ followingMap: true, atPlayhead: true }), text({}));
+  assert.doesNotMatch(text({ followingMap: true }), /CENTER OF YOUR MAP|AT THE PLAYHEAD/);
+  const host = new Element("aside");
+  renderPanel(host, { trace: { agents: [agent] }, level: 3, mapPinned: true, agent, reqIdx: 4 }, { focusAction() {}, focusRequest() {}, focusStratum() {} });
+  assert.equal(host.all(n => n.getAttribute("class") === "kicker")[0]?.textContent, "SELECTED REQUEST");
 });
 
 test('tool inspector opens the actual selected call immediately, including every call in multi-call responses', async () => {
@@ -527,279 +500,204 @@ test("a readable tree keeps every value it was given", async () => {
   for (const leaf of leaves) assert.ok(shown.includes(leaf), `shows ${leaf}`);
 });
 
-// ---------- the playback transport ----------
-const { createPlayback } = await import("../playback.js");
-const { createTransport, playheadLabel, playheadForRequest, nextSpeed, focusStep, FOCUS } = await import("../transport.js");
-const { cutXAt, agentPlayhead } = await import("../scene-rules.js");
-const { fmtClock } = await import("../panels.js");
+// ---------- the family clock and the playback transport ----------
+const { createClock, eventTimes, cutAt, clockLabel, SWEEP_MS } = await import("../clock.js");
+const { createTransport, nextSpeed } = await import("../transport.js");
+const { buildActivity, activityAt, activityLabel } = await import("../activity.js");
 
-// A long main thread: 1,701 requests 20 s apart, with 3-hour idle stretches before requests 501, 1,001
-// and 1,501 (the layout squeezes them) and a 40-minute wait before request 1,302 that one subagent's
-// whole run fills. A second subagent's single request sits inside an idle stretch, splitting it.
-function longSession() {
-  const t0 = Date.UTC(2026, 8, 25, 7, 0), req = t => ({ t, tokens: { context: 1000 } });
+// A family whose root makes one request and whose delegate works for an hour after it, with a 3-hour idle stretch
+// (the layout squeezes it) and two agents that record a request at the same instant.
+function tailFamily({ rootRequests = 1 } = {}) {
+  const t0 = Date.UTC(2026, 8, 25, 7, 0), req = (t, extra = {}) => ({ t, tokens: { context: 1000 }, ...extra });
   const agent = (id, kind, extra = {}) => ({ id, kind, name: id, requests: [], blocks: [], asks: [], compactions: [], ...extra });
   const root = agent("root", "root");
-  let t = t0;
-  for (let i = 0; i < 1701; i++) {
-    if (i) t += i % 500 === 0 ? 3 * 3600e3 : i === 1301 ? 40 * 60e3 : 20e3;
-    root.requests.push(req(t));
-  }
+  for (let i = 0; i < rootRequests; i++) root.requests.push(req(t0 + i * 20e3));
   const worker = agent("worker", "subagent", { parentId: "root" });
-  for (let k = 0; k < 50; k++) worker.requests.push(req(root.requests[1300].t + 30e3 + k * 48e3));
+  for (let k = 0; k < 40; k++) worker.requests.push(req(t0 + 60e3 + k * 90e3));
   const late = agent("late", "subagent", { parentId: "root" });
-  late.requests.push(req(root.requests[999].t + 2 * 3600e3));
-  return { agents: [root, worker, late], started: t0, ended: t };
+  late.requests.push(req(worker.requests.at(-1).t + 3 * 3600e3));
+  const twin = agent("twin", "subagent", { parentId: "root" });
+  twin.requests.push(req(worker.requests[5].t));
+  const trace = { agents: [root, worker, late, twin] };
+  trace.started = Math.min(...trace.agents.flatMap(a => a.requests.map(r => r.t)));
+  trace.ended = Math.max(...trace.agents.flatMap(a => a.requests.map(r => r.t)));
+  return trace;
 }
-function transportFixture() {
-  const L = buildLayout(longSession());
-  const pb = createPlayback({ times: L.root.requests.map(r => r.t), X: L.X });
-  pb.setP(pb.end); // parked where app.js parks it: the end, the last request complete
-  const frames = new Map(), pushed = [];
+function clockOf(trace) { const L = buildLayout(trace); return { L, clock: createClock({ X: L.X, T: L.T, groups: eventTimes(trace) }) }; }
+
+test("the family clock spans every recorded event: a delegate's tail after the root's last request is reachable, and the cut stays until the true end", () => {
+  const trace = tailFamily(), { L, clock } = clockOf(trace);
+  const last = trace.agents.find(a => a.id === "late").requests[0].t;
+  assert.equal(clock.t1, last, "the end is the last recorded event, not the root's last request");
+  assert.ok(clock.playable, "one root request is no reason for no clock");
+  assert.equal(cutAt(clock), null, "parked at the end: nothing is cut");
+  // the root's last request is not the end: later delegates stay ahead of the cut there
+  clock.seekTime(trace.agents[0].requests.at(-1).t);
+  assert.ok(cutAt(clock) != null && cutAt(clock) < L.X(last), "at the root's end the cut stands and the late delegate is still ahead");
+  // stepping reaches every distinct time, the tail included, and End is the family end
+  clock.toStart();
+  let n = 1, guard = 0;
+  while (clock.t < clock.t1 && guard++ < 1000) { clock.step(1); n++; }
+  assert.equal(n, clock.groups.length);
+  assert.equal(clock.t, last);
+  // simultaneous events share one group: the twin's request and the worker's sixth are visited once
+  assert.equal(clock.groups.length, new Set(trace.agents.flatMap(a => a.requests.map(r => r.t))).size);
+  // the inverse is finite and monotone across the squeezed idle stretch
+  let prev = -Infinity;
+  for (let k = 0; k <= 200; k++) { const t = L.T(k / 200); assert.ok(Number.isFinite(t) && t >= prev, `T(${k / 200})`); prev = t; }
+  assert.ok(Math.abs(L.X(L.T(0.37)) - 0.37) < 1e-9);
+});
+
+test("a single instant is inspectable with nothing to animate; with nothing timed there is no clock", () => {
+  const one = { agents: [{ id: "r", kind: "root", requests: [{ t: 5000, tokens: {} }], blocks: [], asks: [], compactions: [] }], started: 5000, ended: 5000 };
+  const { clock } = clockOf(one);
+  assert.ok(clock && !clock.playable && clock.groups.length === 1);
+  assert.equal(clock.play(), false);
+  assert.equal(clock.t, 5000);
+  const none = { agents: [{ id: "r", kind: "root", requests: [], blocks: [], asks: [], compactions: [] }], started: null, ended: null };
+  const L = buildLayout(none);
+  assert.equal(L.empty, true);
+  assert.equal(createClock({ X: L.X, T: L.T, groups: eventTimes(none) }), null);
+});
+
+test("a full sweep takes 60 s at 1× whatever the number of requests, agents or root requests", () => {
+  for (const rootRequests of [0, 1, 200]) {
+    const { clock } = clockOf(tailFamily({ rootRequests }));
+    clock.setSpeed(1); clock.toStart(); clock.play();
+    let ms = 0;
+    while (clock.playing && ms < 2 * SWEEP_MS) { clock.tick(50); ms += 50; }
+    assert.ok(Math.abs(ms - SWEEP_MS) <= 50, `${rootRequests} root requests: ${ms} ms`);
+    assert.ok(clock.atEnd && !clock.playing);
+    clock.setSpeed(4); clock.play();
+    assert.ok(clock.atStart, "play at the end starts over from the family start");
+    ms = 0;
+    while (clock.playing) { clock.tick(50); ms += 50; }
+    assert.ok(Math.abs(ms - SWEEP_MS / 4) <= 50, `at 4×: ${ms} ms`);
+  }
+});
+
+function transportFixture(trace = tailFamily()) {
+  const { L, clock } = clockOf(trace);
+  const frames = new Map(), pushed = [], follows = [], opened = [];
   let id = 0;
   const host = new Element("div");
-  const starts = [], follows = [];
-  const tr = createTransport(host, { onPlayhead: p => pushed.push(p), onStart: () => starts.push(pb.P), onFollow: f => follows.push(f),
-    raf: f => { frames.set(++id, f); return id; }, caf: i => frames.delete(i), now: () => 0 });
-  tr.load(pb);
-  // Runs the queued animation frame at time t.
+  const tr = createTransport(host, { onClock: c => pushed.push(c), onFollow: f => follows.push(f), onActivity: () => opened.push(clock.t),
+    activity: t => ({ label: `${t % 7} active`, short: `${t % 7}`, spoken: "x" }), raf: f => { frames.set(++id, f); return id; }, caf: i => frames.delete(i), now: () => 0 });
+  tr.load(clock);
   const frame = t => { const [[k, f]] = frames; frames.delete(k); f(t); };
-  const [play, scrub, readout, speed] = host.children;
-  return { L, pb, tr, host, frames, frame, pushed, starts, follows, play, scrub, readout, speed, follow: tr.controls.follow };
+  return { L, clock, tr, host, frames, frame, pushed, follows, opened, ...tr.controls };
 }
 
-test("the transport renders play, scrub, readout and speed; the readout names the request and its time", () => {
-  const { pb, tr, host, pushed, play, scrub, readout, speed } = transportFixture();
-  assert.deepEqual(host.children.map(c => `${c.tagName}.${c.className}`), ["BUTTON.play", "INPUT.scrub", "OUTPUT.readout", "BUTTON.speed", "BUTTON.follow"]);
-  assert.deepEqual(["type", "min", "max", "step", "aria-label"].map(k => scrub.getAttribute(k)), ["range", "0", "1", "0.0005", "Session time"]);
+test("the transport renders play, scrub, time, speed, follow and activity; the readout is the recorded time, never a request number", () => {
+  const { clock, tr, host, pushed, play, scrub, readout, speed } = transportFixture();
+  assert.deepEqual(host.children.map(c => `${c.tagName}.${c.className.split(" ")[0]}`), ["BUTTON.play", "INPUT.scrub", "OUTPUT.readout", "BUTTON.speed", "BUTTON.follow", "BUTTON.activity"]);
+  assert.deepEqual(["type", "min", "max", "aria-label"].map(k => scrub.getAttribute(k)), ["range", "0", "1", "Family time"]);
   assert.equal(readout.getAttribute("aria-live"), "off", "the readout is not announced every frame");
-  assert.deepEqual([play.getAttribute("aria-label"), play.getAttribute("aria-pressed"), host.getAttribute("data-playing")], ["Play", "false", "false"]);
+  assert.equal(pushed.length, 0, "loading pushes nothing: the scene starts at the same end");
+  assert.equal(readout.textContent, clockLabel(clock.t1));
+  assert.doesNotMatch(readout.textContent, /req/);
   assert.equal(speed.textContent, "4×");
-  assert.equal(pushed.length, 0, "loading a session pushes nothing: the scene starts at the same end");
-  const tEnd = pb.timeAt(pb.n - 1);
-  assert.equal(readout.textContent, `req 1,701 · ${new Date(tEnd).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${fmtClock(tEnd)}`);
-  tr.seek(1233.5);
-  const t = pb.timeAt(1233.5);
-  assert.ok(t > pb.timeAt(1233) && t < pb.timeAt(1234), "the time the playhead has reached, between the two requests");
-  const day = new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  assert.equal(readout.textContent, `req 1,234 · ${day} · ${fmtClock(t)}`);
-  assert.match(readout.textContent, /^req 1,234 · Sep 2[56] · \d{1,2}:\d\d [ap]m$/);
+  assert.doesNotMatch(speed.getAttribute("aria-label") || "", /request/, "speed is a multiplier, not requests a second");
+  tr.seekTime(clock.groups[3]);
+  assert.equal(readout.textContent, clockLabel(clock.groups[3]));
   assert.equal(scrub.getAttribute("aria-valuetext"), readout.textContent);
-  assert.deepEqual(pushed.at(-1), { P: 1233.5, playing: false });
-  // Halfway through the 40-minute wait the clock reads 20 minutes on, not the request's own time.
-  tr.seek(1300.5);
-  const mid = pb.timeAt(1300) + 20 * 60e3;
-  assert.equal(pb.timeAt(1300.5), mid);
-  assert.equal(readout.textContent, `req 1,301 · ${new Date(mid).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${fmtClock(mid)}`);
-  assert.notEqual(fmtClock(mid), fmtClock(pb.timeAt(1300)));
-  // The scrub is the playhead's compressed-time x, and dragging it moves the playhead to that x.
-  for (const P of [0, 1, 499.5, 500, 1000.25, 1301, pb.n - 1]) { tr.seek(P); assert.equal(Number(scrub.value), pb.xAt(P), `scrub at P ${P}`); }
-  for (const P of [12.75, 700.25, 1300.5]) {
-    scrub.value = String(pb.xAt(P));
-    scrub.dispatch("input");
-    assert.ok(Math.abs(pb.P - P) < 1e-9, `scrubbing to x(${P}) lands on ${pb.P}`);
-    assert.deepEqual(pushed.at(-1), { P: pb.P, playing: false });
-  }
+  assert.deepEqual(Object.keys(pushed.at(-1)), ["x", "t", "playing", "atEnd"]);
+  scrub.value = "0.5"; scrub.dispatch("input");
+  assert.ok(Math.abs(clock.fraction - 0.5) < 1e-9 && !clock.playing);
 });
 
-test("play runs one frame loop that pushes P; pause, step and scrubbing stop it", () => {
-  const { pb, tr, host, frames, frame, pushed, play, scrub } = transportFixture();
-  tr.seek(100.2);
-  assert.equal(frames.size, 0, "paused: no frame is scheduled");
+test("play runs one frame loop; pause, step and scrubbing stop it; play at the end starts over", () => {
+  const { clock, tr, host, frames, frame, pushed, play, scrub } = transportFixture();
+  tr.seekTime(clock.groups[2]);
+  assert.equal(frames.size, 0);
   play.dispatch("click");
-  assert.deepEqual([host.getAttribute("data-playing"), play.getAttribute("aria-pressed"), play.getAttribute("aria-label")], ["true", "true", "Pause"]);
-  assert.equal(frames.size, 1);
-  assert.deepEqual(pushed.at(-1), { P: 100.2, playing: true });
-  for (const t of [16, 33, 50]) {
-    const before = pb.P;
-    frame(t);
-    const p = pushed.at(-1);
-    assert.ok(p.playing && p.P > before, `frame ${t} moves the playhead`);
-    assert.deepEqual(Object.keys(p), ["P", "playing"]);
-    assert.equal(Number(scrub.value), pb.xAt(p.P));
-    assert.equal(frames.size, 1, "one frame queued at a time");
-  }
-  const x0 = pb.xAt(pb.P);
-  frame(5050);
-  assert.ok(Math.abs(pb.xAt(pb.P) - x0 - 4 / (pb.n - 1) * 0.1) < 1e-9, "a 5 s gap between frames (a hidden tab) advances only 100 ms");
+  assert.deepEqual([host.getAttribute("data-playing"), play.getAttribute("aria-label"), frames.size], ["true", "Pause", 1]);
+  for (const t of [16, 33, 50]) { const before = clock.x; frame(t); assert.ok(pushed.at(-1).playing && clock.x > before); assert.equal(frames.size, 1); }
   play.dispatch("click");
-  assert.deepEqual([host.getAttribute("data-playing"), play.getAttribute("aria-label"), frames.size], ["false", "Play", 0]);
-  assert.deepEqual(pushed.at(-1), { P: pb.P, playing: false });
-  tr.play();
-  assert.equal(frames.size, 1);
-  const from = pb.P;
-  tr.step(1);
-  assert.deepEqual([frames.size, pb.playing, pb.P], [0, false, Math.floor(from) + 1 + FOCUS], "stepping pauses on the next request, complete");
-  tr.play();
-  scrub.dispatch("pointerdown");
-  assert.deepEqual([frames.size, pb.playing], [0, false], "grabbing the scrub pauses");
-});
-
-test("playing to the end stops the loop and resets the button; play again starts over", () => {
-  const { pb, tr, host, frames, frame, pushed, play } = transportFixture();
-  tr.seek(pb.n - 3.5);
-  tr.setSpeed(16);
-  play.dispatch("click");
+  assert.deepEqual([host.getAttribute("data-playing"), frames.size], ["false", 0]);
+  tr.play(); tr.step(1);
+  assert.deepEqual([frames.size, clock.playing], [0, false], "stepping pauses on the next event group");
+  tr.play(); scrub.dispatch("pointerdown");
+  assert.equal(clock.playing, false, "grabbing the scrub pauses");
+  tr.toEnd(); tr.setSpeed(16); tr.play();
+  assert.ok(clock.atStart, "play at the end starts from the family start");
   let t = 0, guard = 0;
-  while (pb.playing && guard++ < 10000) frame(t += 100);
-  assert.ok(guard < 10000);
-  assert.equal(frames.size, 0, "the frame that reaches the end schedules no other");
-  assert.equal(pb.end, pb.n - 1 + FOCUS, "the end is the last request complete");
-  assert.deepEqual([pb.P, pb.playing, host.getAttribute("data-playing"), play.getAttribute("aria-label")], [pb.end, false, "false", "Play"]);
-  assert.deepEqual(pushed.at(-1), { P: pb.end, playing: false });
-  assert.match(host.children[2].textContent, /^req 1,701 · /, "the readout names the last request");
-  play.dispatch("click");
-  assert.equal(pb.P, 0, "play at the end starts from the first request");
-  assert.equal(frames.size, 1);
+  while (clock.playing && guard++ < 100000) frame(t += 100);
+  assert.ok(clock.atEnd && frames.size === 0 && pushed.at(-1).atEnd);
 });
 
-// Play from an inspection pushes one history entry as the run starts (app.js playFromMap, the onStart hook). At
-// the end (focusing the root's last request lands there) the clock starts over from request 1, but the entry
-// being left must keep the playhead it had, or Back shows that inspection fully ghosted.
-test("a run's onStart sees the playhead before the clock moves, even when a play at the end starts over", () => {
-  const { pb, tr, starts, frames } = transportFixture();
-  tr.seek(pb.end);
+test("follow is off at load, set only by its control, the f key or an agent's own action, and any camera gesture turns it off; Play never turns it on", () => {
+  const { tr, follows, follow, clock } = transportFixture();
+  assert.equal(tr.follow.mode, "off");
+  // the full label is the accessible name and the wide one; the short one is for phones
+  const longOf = b => b.children.find(c => c.className === "long").textContent, shortOf = b => b.children.find(c => c.className === "short").textContent;
+  assert.deepEqual([follow.getAttribute("aria-pressed"), longOf(follow), follow.getAttribute("aria-label"), shortOf(follow)], ["false", "Follow", "Follow", "⌖"]);
   tr.play();
-  assert.deepEqual(starts, [pb.end], "the view being left still has the end");
-  assert.equal(pb.P, 0, "then the run starts from request 1");
-  assert.equal(frames.size, 1);
-  tr.pause(); tr.seek(40.65); tr.play();
-  assert.deepEqual(starts, [pb.end, 40.65]);
-  const one = createPlayback({ times: [0], X: () => 1 });
-  tr.load(one); tr.play();
-  assert.deepEqual([starts.length, one.playing], [2, false], "a clock of one request never plays, so no run starts");
-});
-
-test("the speed button cycles 4× → 8× → 16× → 1×; the keys' faster and slower stop at the ends", () => {
-  const { pb, tr, speed } = transportFixture();
-  const seen = [speed.textContent];
-  for (let i = 0; i < 5; i++) { speed.dispatch("click"); seen.push(speed.textContent); }
-  assert.deepEqual(seen, ["4×", "8×", "16×", "1×", "2×", "4×"]);
-  assert.equal(pb.speed, 4);
-  assert.equal(nextSpeed({ speeds: [1, 2, 4, 8, 16], speed: 3 }), 4, "an off-list speed goes to the next listed one");
-  for (let i = 0; i < 4; i++) tr.faster();
-  assert.equal(speed.textContent, "16×");
-  for (let i = 0; i < 6; i++) tr.slower();
-  assert.equal(speed.textContent, "1×");
-});
-
-test("focusing request i puts the playhead at i + 0.65: request i complete, on the root or in a subagent's own requests", () => {
-  const { L, pb, tr, readout, scrub } = transportFixture();
-  assert.equal(FOCUS, 0.65, "past request i's tread (the midpoint to i + 1), short of i + 1");
-  // the playhead stays inside request i for every i (the float value of i + 0.65 - i varies with i)
-  for (let i = 0; i < pb.n; i++) assert.equal(Math.floor(playheadForRequest(pb, L, "root", i)), i, `request ${i}`);
-  assert.equal(playheadForRequest(pb, L, "root", 1234), 1234.65);
-  assert.equal(playheadForRequest(pb, L, "root", 0), 0.65);
-  assert.equal(playheadForRequest(pb, L, "root", pb.n - 1), pb.n - 1 + FOCUS, "the last request complete: the end");
-  assert.equal(playheadForRequest(pb, L, "root", 99999), null);
-  assert.equal(playheadForRequest(pb, L, "nobody", 0), null);
-  assert.equal(playheadForRequest(null, L, "root", 3), null);
-  // What app.js's set() does with the option: seek, paused. The readout and scrub name the focused request.
-  tr.play();
-  tr.seek(playheadForRequest(pb, L, "root", 899));
-  assert.deepEqual([pb.P, pb.playing], [899.65, false]);
-  assert.match(readout.textContent, /^req 900 · /, "request index 899 is the 900th, as the request slider shows it");
-  assert.equal(scrub.getAttribute("aria-valuetext"), readout.textContent);
-  tr.seek(playheadForRequest(pb, L, "root", pb.n - 1));
-  assert.deepEqual([pb.P, pb.atEnd], [pb.n - 1 + FOCUS, true], "the last request complete is the end: the whole landscape");
-  assert.match(readout.textContent, /^req 1,701 · /);
-  // A map pin (the Selected card) on root request 849, then on a subagent's request, while playing.
-  tr.seek(100.2); tr.play();
-  tr.seek(playheadForRequest(pb, L, "root", 849));
-  assert.deepEqual([pb.P, pb.playing, readout.textContent.split(" · ")[0]], [849.65, false, "req 850"]);
-  tr.step(-1);
-  assert.deepEqual([pb.P, readout.textContent.split(" · ")[0]], [848.65, "req 849"], ", from 849.65 gives 848.65");
-  tr.seek(playheadForRequest(pb, L, "worker", 10));
-  assert.ok(pb.P > 1300 && pb.P < 1301 && !pb.playing, "a pin on a subagent's request moves the playhead into its run");
-  // A subagent's request: the cut lands where that agent's own playhead reads i + 0.65, its last request
-  // included (there the cut sits on its own x, by way of root space). The scene's side is scene-rules: the
-  // cut in world x (the layout's x times the world width, as landscape-geometry places requests) and the
-  // agent's playhead at that cut.
-  const worker = L.byId.get("worker"), W = 220, rootXs = L.info.get("root").xs, workerXs = L.info.get("worker").xs;
-  const own = P => agentPlayhead(P, cutXAt(P, pb.n, i => rootXs[i] * W, Infinity), { isRoot: false, n: workerXs.length, xAt: i => workerXs[i] * W }, Infinity);
-  let prev = -1;
-  worker.requests.forEach((r, i) => {
-    const P = playheadForRequest(pb, L, "worker", i);
-    assert.ok(P > 1300 && P < 1301 && P > prev, `worker request ${i}: P ${P} is fractional, inside the wait, in order`);
-    assert.ok(Math.abs(own(P) - (i + FOCUS)) < 1e-6, `worker request ${i}: its own playhead reads ${own(P)}`);
-    prev = P;
-  });
-  assert.equal(own(pb.end), worker.requests.length - 1 + FOCUS, "at the session end the finished worker stands at its end");
-  // Inside a squeezed idle stretch, time and compressed x disagree: the playhead follows x.
-  const t = L.byId.get("late").requests[0].t, P = playheadForRequest(pb, L, "late", 0);
-  assert.ok(P > 999 && P < 1000);
-  assert.ok(Math.abs(pb.xAt(P) - L.X(t)) < 1e-12);
-  assert.ok(Math.abs(pb.xAt(pb.PAtTime(t)) - L.X(t)) > 1e-3, "PAtTime alone would put the cut off the request here");
-});
-
-test(", and . move the readout's request number by exactly one, to that request complete", () => {
-  const n = 1701;
-  for (const [P, back, on] of [[849.65, 848.65, 850.65], [899.65, 898.65, 900.65], [900, 899.65, 901.65], [900.4, 899.65, 901.65], [900.95, 899.65, 901.65],
-    [0, FOCUS, 1.65], [0.65, FOCUS, 1.65], [0.3, FOCUS, 1.65], [n - 1, n - 2 + FOCUS, n - 1 + FOCUS], [n - 2 + FOCUS, n - 3 + FOCUS, n - 1 + FOCUS],
-    [n - 1 + FOCUS, n - 2 + FOCUS, n - 1 + FOCUS]]) {
-    assert.deepEqual([focusStep(P, -1, n), focusStep(P, 1, n)], [back, on], `from ${P}`);
-  }
-  const { pb, tr, readout } = transportFixture();
-  tr.seek(899.65);
-  const seen = [];
-  for (const d of [1, 1, -1, -1, -1]) { tr.step(d); seen.push([pb.P, readout.textContent.split(" · ")[0]]); }
-  assert.deepEqual(seen, [[900.65, "req 901"], [901.65, "req 902"], [900.65, "req 901"], [899.65, "req 900"], [898.65, "req 899"]]);
-  tr.seek(0.65);
-  tr.step(-1);
-  assert.deepEqual([pb.P, readout.textContent.split(" · ")[0]], [0.65, "req 1"], ", from 0.65 stays at 0.65: request 0 stays complete");
-});
-
-test("the Follow chip: auto by default; moving the camera during a run makes it manual; the chip or f asks for it again", () => {
-  const { pb, tr, follow, follows, starts, frame, frames } = transportFixture();
-  const chip = () => [follow.getAttribute("aria-pressed"), follow.textContent, tr.follow, tr.forced];
-  assert.deepEqual(chip(), ["true", "Follow auto", "auto", false]);
-  assert.equal(follow.getAttribute("title"), "The camera follows the playhead · f");
-  tr.userCamera();
-  assert.deepEqual(chip(), ["true", "Follow auto", "auto", false], "panning while paused leaves Follow alone");
-  tr.seek(100.65);
-  tr.play();
-  assert.deepEqual(starts, [100.65], "a run starts once");
-  frame(16);
-  tr.play();
-  assert.deepEqual(starts, [100.65], "play while playing is not a new run");
-  tr.userCamera();
-  assert.deepEqual(chip(), ["false", "Follow manual", "manual", false]);
-  assert.deepEqual(follows, ["manual"]);
-  tr.pause(); tr.play();
-  assert.deepEqual(chip(), ["true", "Follow auto", "auto", false], "a new run follows again");
-  tr.userCamera();
-  follow.dispatch("click");
-  assert.deepEqual(chip(), ["true", "Follow auto", "auto", true], "asked for: it follows at the overview too");
-  follow.dispatch("click");
-  assert.deepEqual(chip(), ["false", "Follow manual", "manual", false], "turned off");
-  tr.pause(); tr.play();
-  assert.equal(tr.follow, "manual", "off stays off across runs");
+  assert.equal(tr.follow.mode, "off", "Play does not follow");
   tr.toggleFollow();
-  assert.deepEqual(chip(), ["true", "Follow auto", "auto", true]);
-  tr.pause();
+  assert.deepEqual([tr.follow.mode, longOf(follow), follow.getAttribute("aria-pressed")], ["time", "Following time", "true"]);
   tr.userCamera();
-  assert.deepEqual(chip(), ["true", "Follow auto", "auto", false], "the user took the camera: no longer asked to follow at the overview");
-  tr.toggleFollow(); tr.toggleFollow();
-  assert.equal(tr.forced, true);
-  assert.deepEqual(follows, ["manual", "manual", "auto", "manual", "auto", "manual", "auto"]);
-  assert.ok(frames.size <= 1);
+  assert.equal(tr.follow.mode, "off", "the user's hands on the camera turn it off at once");
+  tr.pause(); tr.play();
+  assert.equal(tr.follow.mode, "off", "a new run does not take it back");
+  tr.setFollow({ mode: "agent", agentId: "worker", label: "worker" });
+  assert.deepEqual([tr.follow.mode, tr.follow.agentId, longOf(follow)], ["agent", "worker", "Following worker"]);
+  tr.toggleFollow();
+  assert.equal(tr.follow.mode, "off", "the control turns any follow off");
+  tr.setFollow({ mode: "time" });
+  tr.setFlat(true);
+  assert.equal(follow.hidden, true, "the 2D view has no camera to follow with");
+  tr.load(clock);
+  assert.equal(tr.follow.mode, "off", "a new load starts with follow off");
+  assert.deepEqual(follows.map(f => f.mode), ["time", "off", "agent", "off", "time"]);
 });
 
-test("a new session's clock starts with Follow auto: off, a held run and 'asked for' do not carry over", () => {
-  const { tr, pb, follow } = transportFixture();
-  const next = () => { const p = createPlayback({ times: [0, 1000, 2000], X: t => t / 2000 }); p.setP(2); return p; };
-  const chip = () => [follow.getAttribute("aria-pressed"), follow.textContent, tr.follow, tr.forced];
-  tr.toggleFollow(); // off
-  tr.load(next());
-  assert.deepEqual(chip(), ["true", "Follow auto", "auto", false], "turned off in the last session");
-  tr.toggleFollow(); tr.toggleFollow(); // off, then asked for: follows at the overview too
-  assert.equal(tr.forced, true);
-  tr.load(next());
-  assert.deepEqual(chip(), ["true", "Follow auto", "auto", false], "asked for in the last session");
-  tr.load(pb); tr.play(); tr.userCamera(); // held: the user moved the camera during a run
-  assert.equal(tr.follow, "manual");
-  tr.load(next());
-  assert.deepEqual(chip(), ["true", "Follow auto", "auto", false], "held in the last session");
+test("the activity action pauses and opens the list at the clock's time; its count follows the clock", () => {
+  const { tr, activity, opened, clock } = transportFixture();
+  tr.seekTime(clock.groups[4]);
+  tr.play();
+  activity.dispatch("click");
+  assert.equal(clock.playing, false, "opening the list pauses");
+  assert.deepEqual(opened, [clock.t]);
+  tr.seekTime(clock.groups[6]);
+  const label = activity.children.find(c => c.className === "long").textContent, short = activity.children.find(c => c.className === "short").textContent;
+  assert.equal(label, `${clock.groups[6] % 7} active`);
+  assert.equal(short, `${clock.groups[6] % 7}`, "the phone label keeps the count");
+});
+
+test("activity counts only what is recorded: a request at its own instant, half-open recorded intervals, unknown inside a span, undrawn threads apart", () => {
+  const ref = n => ({ file: 0, offset: n, length: 1 });
+  const a = { id: "a", kind: "subagent", name: "a", environmentId: "e1", blocks: [{ t: 150, ref: ref(9) }], asks: [], compactions: [],
+    requests: [{ t: 100, tokens: {}, action: { kind: "tool", tool: "Bash", args: ref(1), result: ref(9) } }, { t: 400, tokens: {} }] };
+  const b = { id: "b", kind: "subagent", name: "b", environmentId: "e2", blocks: [], asks: [], compactions: [], requests: [{ t: 100, tokens: {} }, { t: 100, tokens: {} }, { t: 300, tokens: {} }],
+    t3: { runs: [{ requestedAt: 250, completedAt: 350 }] } };
+  const trace = { family: true, agents: [a, b], voids: [{ threadKey: "k", thread: "v", environmentId: "e1", from: 120, to: 200, title: "undrawn" }], fleet: { machines: [] } };
+  const ix = buildActivity(trace);
+  const at = t => { const s = activityAt(ix, t); return { rec: s.agents.filter(x => x.state === "recorded").map(x => x.agent.id), unk: s.agents.filter(x => x.state === "unknown").map(x => x.agent.id), thr: s.threads.length, s }; };
+  // t 100: both requests at that instant; b's two requests count b once; a's tool call runs from its request
+  let r = at(100); assert.deepEqual([r.rec, r.unk, r.thr], [["a", "b"], [], 0]);
+  assert.equal(r.s.agents.find(x => x.agent.id === "b").request, null, "two requests at once: no single request is chosen");
+  assert.equal(r.s.agents.find(x => x.agent.id === "a").request, 0, "one evidenced request: that one");
+  // t 120: a's tool is running (call at 100, result at 150); b has no record then: unknown, not idle
+  r = at(120); assert.deepEqual([r.rec, r.unk, r.thr], [["a"], ["b"], 1]);
+  // t 150: the tool interval is half-open: it has ended at its result
+  r = at(150); assert.deepEqual([r.rec, r.unk], [[], ["a", "b"]]);
+  // t 260: a recorded T3 run of b; a's next request is later, so no continuous work is assumed for a
+  r = at(260); assert.deepEqual([r.rec, r.unk, r.thr], [["b"], ["a"], 0]);
+  // outside every span: nobody listed
+  r = at(1000); assert.deepEqual([r.rec, r.unk], [[], []]);
+  assert.equal(activityLabel(activityAt(ix, 120)).label, "1 active · 1 ? · 1 T3");
+});
+
+test("the clock's handler in app.js moves only time and camera: it never repaints the inspector", async () => {
+  const { readFileSync } = await import("node:fs");
+  const APP = readFileSync(new URL("../app.js", import.meta.url), "utf8");
+  const handler = /onClock: c => \{([^\n]*)\},/.exec(APP)?.[1];
+  assert.ok(handler, "the transport's onClock handler");
+  assert.doesNotMatch(handler, /paintPanel|renderPanel|render\(/, "no inspector repaint on a tick");
+  assert.doesNotMatch(APP, /playCard|followingMap|mapPanelState/, "no card follows the playhead or the camera");
+  const sidebar = /function sidebarState\(\) \{([^}]*)\}/.exec(APP)?.[1];
+  assert.equal(sidebar.trim(), "return S;", "the inspector is the deliberate selection");
 });
 
 // Every transport control's text at rest, on hover, pressed and playing: at least 7:1 on its own opaque
@@ -842,10 +740,9 @@ function spacePage() {
   const canvas = E("canvas", { class: "gl" }), label = E("button", { class: "lbl event" });
   const stage = E("div", { id: "stage", class: "stage" }, canvas, E("div", { class: "labels" }, label));
   const transportHost = E("div", { id: "playback", class: "playback", role: "group" });
-  const L = buildLayout(longSession());
-  const pb = createPlayback({ times: L.root.requests.map(r => r.t), X: L.X });
+  const { clock } = clockOf(tailFamily({ rootRequests: 3 }));
   const tr = createTransport(transportHost, { raf: () => 1, caf: () => {}, now: () => 0 });
-  tr.load(pb);
+  tr.load(clock);
   const req = { i: 0, t: 1000, tokens: { context: 900 }, action: { kind: "tool", tool: "Bash", target: "echo hi", args: null, result: null } };
   const agent = { id: "root", kind: "root", requests: [req], blocks: [], asks: [], compactions: [] };
   const panel = E("aside", { id: "panel", class: "panel" });
@@ -1157,17 +1054,130 @@ test("Help checks the resolver only when asked from the web, reads out this sess
     help.open();
     assert.equal(layer.hidden, false);
     const text = () => layer.textContent;
-    assert.ok(text().includes("Not checked yet") && text().includes("None for this session.") && text().includes("1 of the 2 places Trace checks"));
+    assert.ok(text().includes("Not checked") && text().includes("Network capture") && text().includes("1 of 2 places hold something"));
     assert.equal(calls, 0, "no request to 127.0.0.1 until asked");
     const button = label => layer.all(n => n.tagName === "BUTTON" && n.textContent === label)[0];
     button("Check now").dispatch("click");
     await new Promise(r => setTimeout(r, 0)); await new Promise(r => setTimeout(r, 0));
     assert.equal(calls, 1);
-    assert.ok(text().includes("Running, and answering this page."));
+    assert.ok(text().includes("Running · answering this page"));
     layer.all(n => n.getAttribute("id") === "help-tab-capture")[0].dispatch("click");
     assert.ok(text().includes("tools/capture/capture.sh -- codex"), "the capture command fits the session's product");
+    assert.ok(text().includes("Codex/ChatGPT desktop recorder"), "and so does the recorder route");
     layer.all(n => n.getAttribute("id") === "help-tab-keys")[0].dispatch("click");
     assert.deepEqual(called, ["keys"]);
     assert.equal(layer.hidden, true, "the shortcuts sheet replaces Help");
   } finally { globalThis.location = savedLocation; globalThis.fetch = savedFetch; }
+});
+
+test("a full-text search whose worker is replaced settles as interrupted, never 'Searching…', and the same query runs again", async () => {
+  const { createPalette } = await import("../palette.js");
+  for (const k of ["focus", "select", "blur"]) Element.prototype[k] ??= function () {};
+  Element.prototype.removeAttribute ??= function (k) { this.attributes.delete(k); };
+  Element.prototype.querySelectorAll ??= function () { return []; };
+  Element.prototype.querySelector ??= function () { return null; };
+  Element.prototype.getBoundingClientRect ??= () => ({ top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0 });
+  class FakeWorker { constructor() { this.posted = []; this.fns = []; } addEventListener(_t, fn) { this.fns.push(fn); } postMessage(m) { this.posted.push(m); } emit(data) { for (const fn of this.fns) fn({ data }); } }
+  let current = new FakeWorker();
+  const first = current;
+  const palette = createPalette({ state: () => ({}), A: {}, overview() {}, selectLens() {}, moveRequest() {}, getText: async () => ({ text: "" }), finder: () => current, network: () => null });
+  palette.setTrace({ agents: [{ id: "root", kind: "root", name: "root", requests: [], blocks: [], asks: [], compactions: [] }] });
+  const tick = () => new Promise(r => setTimeout(r, 5));
+  palette.open("needle", "text");
+  await tick();
+  const sent = first.posted.find(m => m.type === "find");
+  assert.equal(sent?.q, "needle");
+  assert.equal(palette.findState.finished, false, "searching on the first worker");
+  // the load was superseded: the worker is replaced while the scan runs; the app says so
+  current = new FakeWorker();
+  palette.workerGone();
+  await tick();
+  const again = current.posted.find(m => m.type === "find");
+  assert.equal(again?.q, "needle", "the open palette runs the same query on the new worker");
+  assert.notEqual(again.id, sent.id);
+  // a late answer from the replaced worker changes nothing
+  first.emit({ type: "find-done", id: sent.id, hits: 0, truncated: false });
+  assert.equal(palette.findState.finished, false);
+  current.emit({ type: "find-done", id: again.id, hits: 0, truncated: false });
+  assert.deepEqual([palette.findState.finished, palette.findState.interrupted], [true, false]);
+  // replaced without notice (no worker in place for a moment): the pending scan is settled, not left searching
+  palette.open("other", "text");
+  await tick();
+  current = null;
+  palette.open("other", "text");
+  assert.equal(palette.findState.finished, true, "with no worker in place nothing is left searching");
+  // a scan the worker itself reports cancelled is interrupted too, and retried on the next try
+  current = new FakeWorker();
+  palette.open("third", "text");
+  await tick();
+  const third = current.posted.find(m => m.type === "find" && m.q === "third");
+  current.emit({ type: "find-done", id: third.id, hits: 0, truncated: false, cancelled: true });
+  assert.equal(palette.findState.interrupted, true);
+  palette.open("third", "text");
+  await tick();
+  assert.equal(current.posted.filter(m => m.type === "find" && m.q === "third").length, 2, "an interrupted query runs again");
+});
+
+test("at 360 px the transport keeps all six controls on two rows: play and the scrub, then the time, speed, follow and activity", async () => {
+  const { readFileSync } = await import("node:fs");
+  const CSS = readFileSync(new URL("../trace.css", import.meta.url), "utf8");
+  const phone = /@media \(max-width: 480px\) \{([\s\S]*?)\n\}/.exec(CSS.slice(CSS.indexOf("Phones (360-480 px)")))?.[1];
+  assert.ok(phone, "a phone rule for the transport");
+  const rule = sel => new RegExp(`\\.playback\\.compact ${sel.replace(".", "\\.")} \\{([^}]*)\\}`).exec(phone)?.[1] || "";
+  assert.match(rule(".play"), /grid-column: 1; grid-row: 1/);
+  assert.match(rule(".scrub"), /grid-column: 2 \/ -1; grid-row: 1; min-width: 0/);
+  assert.match(rule(".readout"), /grid-column: 1 \/ 3; grid-row: 2; min-width: 0; overflow: hidden; text-overflow: ellipsis/);
+  assert.match(rule(".speed"), /grid-column: 3; grid-row: 2/);
+  assert.match(rule(".follow"), /grid-column: 4; grid-row: 2/);
+  assert.match(rule(".activity"), /grid-column: 5; grid-row: 2/);
+  assert.match(phone, /\.playback\.compact \.long \{ display: none; \}/);
+  assert.match(phone, /\.playback\.compact \.short \{ display: inline; \}/);
+  // the second row's fixed part at 360 px: the host is 360 - 2 x 16 wide, less its padding and border; speed, the
+  // short follow glyph and the widest short activity count ("99·99?·99T") at ~8 px a character, with their padding
+  // and the column gaps, leave the time and the scrub room
+  const content = 360 - 32 - 10 - 2, gaps = 4 * 6;
+  const speed = 40, follow = 18 + 12, activity = 16 + 8 * "99·99?·99T".length;
+  const left = content - gaps - speed - follow - activity;
+  assert.ok(left >= 120, `room for the time and the play column: ${left}px`);
+  const { activityLabel } = await import("../activity.js");
+  const short = activityLabel({ counts: { recorded: 12, unknown: 3, threads: 4 } }).short;
+  assert.ok(short.length <= 10, short);
+});
+
+// The phone layout as trace.css builds it: the sheet's height is min(its content, --sheet or its usual cap), and the
+// request steps and the map controls float a fixed distance above --sheet (or its usual height).
+function phoneLayout({ vh, content, cap, usual, floating }) {
+  let sheetVar = null;
+  const sheet = () => Math.min(content, sheetVar ?? cap);
+  const tops = () => [vh - sheet(), ...floating.map(f => vh - ((sheetVar ?? usual) + f.above) - f.height)];
+  return { sheet, edge: () => Math.min(...tops()) - 8, setSheet: px => { sheetVar = px; }, tops, get sheetVar() { return sheetVar; } };
+}
+test("on a phone the clock is never drawn over the environment and lab filters: the sheet gives up the height it needs", async () => {
+  const { fitPhoneClock } = await import("../transport.js");
+  const floating = [{ above: 89, height: 31 }, { above: 10, height: 70 }]; // the map controls, the request steps
+  // the reported case: 433 x 937 CSS px, the top stack (lenses and two filter rows) ending at 473, an explanation open
+  const L = phoneLayout({ vh: 937, content: 460, cap: Math.min(0.78 * 937, 937 - 140), usual: 0.36 * 937, floating });
+  const topLimit = 473 + 8, height = 75;
+  const bottom = fitPhoneClock({ topLimit, height, edge: L.edge, sheet: L.sheet, setSheet: L.setSheet });
+  assert.ok(bottom - height >= topLimit, `the clock starts below the filters: ${bottom - height} >= ${topLimit}`);
+  assert.ok(L.tops().every(t => bottom <= t - 8), "and ends above the sheet and everything floating over it");
+  assert.ok(L.sheet() >= 140 && L.sheet() < 460, `the sheet gave up only height: ${L.sheet()}`);
+  // with room to spare nothing changes
+  const roomy = phoneLayout({ vh: 1400, content: 300, cap: 0.36 * 1400, usual: 0.36 * 1400, floating });
+  fitPhoneClock({ topLimit: 400, height: 75, edge: roomy.edge, sheet: roomy.sheet, setSheet: roomy.setSheet });
+  assert.equal(roomy.sheetVar, null);
+  // no room at all (a landscape phone): the sheet keeps its minimum, it is never taken away
+  const tiny = phoneLayout({ vh: 390, content: 300, cap: 0.36 * 390, usual: 0.36 * 390, floating });
+  fitPhoneClock({ topLimit: 380, height: 75, edge: tiny.edge, sheet: tiny.sheet, setSheet: tiny.setSheet });
+  assert.equal(tiny.sheetVar, 140);
+  // the rules that place the bottom stack all follow the one sheet height, and the filters stay one row each
+  const { readFileSync } = await import("node:fs");
+  const CSS = readFileSync(new URL("../trace.css", import.meta.url), "utf8");
+  const phone = CSS.split("@media (max-width: 980px)").slice(1).map(b => b.slice(0, b.indexOf("\n}\n"))).join("\n");
+  for (const rule of phone.split("\n").filter(l => /^\s*\.(?:app[^{]*)?\.?(?:panel|request-nav|viewtools|map-zoom|flat)\b[^{]*\{[^}]*(?:bottom|max-height|padding)[^}]*\d+vh/.test(l)))
+    assert.match(rule, /var\(--sheet0?, /, `a bottom-stack rule ignores the sheet's height: ${rule.trim()}`);
+  assert.match(phone, /\.fleet-filter \.ff-row \{ flex-wrap: nowrap; overflow-x: auto;/);
+  const APP = readFileSync(new URL("../app.js", import.meta.url), "utf8");
+  assert.match(APP, /const topLimit = Math\.max\(sideStackBottom\(\), \.\.\.\["#crumbs", "#map-location"\]/);
+  assert.match(APP, /fitPhoneClock\(\{ topLimit, height: H, edge,/);
 });

@@ -43,9 +43,10 @@ import path from "node:path";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.resolve(here, "../../dist");
 
-// Trace implementation files deleted on purpose after the move (grains were removed, 2026-09-27). They were
-// never pages anyone linked to; their old URLs redirect into /trace/ and simply 404 there.
-const RETIRED = new Set(["trace/grains.js", "trace/grain-rules.js", "trace/block-text.js", "trace/block-text.css"]);
+// Trace implementation files deleted on purpose after the move (grains were removed, 2026-09-27; playback.js gave way
+// to clock.js and transport.js, 2026-11-06). They were never pages anyone linked to; their old URLs redirect into
+// /trace/ and simply 404 there.
+const RETIRED = new Set(["trace/grains.js", "trace/grain-rules.js", "trace/block-text.js", "trace/block-text.css", "trace/playback.js"]);
 
 test("every page and file the retired sites served redirects to something the one site serves", { skip: !existsSync(dist) && "build the site first (npm run build)" }, () => {
   assert.match(readFileSync(path.join(dist, "_redirects"), "utf8"), /^\/claude-code\/data\/inventory\.json \/claude-code\/data\/inventory\.json\.gz 301$/m);
@@ -63,5 +64,5 @@ test("every page and file the retired sites served redirects to something the on
     }
   }
   assert.equal(checked + retired, 155, "the two retired sites served 155 files");
-  assert.equal(retired, 8, "four retired Trace files, on each host");
+  assert.equal(retired, 10, "five retired Trace files, on each host");
 });

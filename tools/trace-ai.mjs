@@ -2,6 +2,7 @@
 import {createHash, randomBytes} from 'node:crypto';
 import {once} from 'node:events';
 import {Redactor} from './t3/redact.mjs';
+import {ExactSet} from './t3/exact.mjs';
 
 export const AI_LIMITS=Object.freeze({profiles:8,previews:4,previewMs:5*60_000,requestBytes:384*1024,evidenceBytes:256*1024,items:200,excerptBytes:8192,promptBytes:8192,outboundBytes:384*1024,modelBytes:512*1024,models:1000,frameBytes:64*1024,streamBytes:1024*1024,outputBytes:128*1024,firstContentMs:120_000,totalMs:300_000,discoveryMs:15_000,bodyMs:15_000});
 const SCOPE_KINDS=Object.freeze(['layer','range','path','family','selection']);
@@ -79,13 +80,21 @@ function validateEvidence(e,limits){
  return [...ids];
 }
 
-// Reuse the collector's in-memory shape + everywhere pass without reading its secret stores.
-function scrub(value,aliasKey,secrets){
- const redactor=new Redactor({aliasKey});for(const secret of secrets)redactor.addValue(secret);
+// Fleet joins must survive ordinary collection. In an outgoing AI packet, a value positively identified by
+// credential context must instead disappear everywhere, including short and join-shaped credentials.
+class AICredentialRedactor extends Redactor {
+ constructor(options){super(options);this.credentials=new Set();}
+ note(value,rule){super.note(value,rule);if(typeof value==='string'&&value.length>=4)this.credentials.add(value);}
+}
+// Reuse credential detection without reading secret stores; literal matching stays bounded by this packet.
+function scrub(value,aliasKey,secrets,publicValues=[]){
+ const redactor=new AICredentialRedactor({aliasKey});for(const secret of secrets)redactor.addValue(secret);
  let clean=redactor.value(value);redactor.promoteFound();
+ const exact=new ExactSet([...secrets,...redactor.credentials]);
+ if(publicValues.some(value=>exact.has(value)))fail(400,'key_in_public_field');
  const walk=v=>{
   if(typeof v==='string'){
-   let s=redactor.exactOnly(v);for(const secret of secrets)if(secret)s=s.split(secret).join('[redacted:credential]');
+   const s=exact.replace(redactor.exactOnly(v),()=>'[redacted:credential]');
    return s.replace(/(?:[A-Za-z]:\\|\/(?:Users|home|private|tmp|var|root|etc)\/)[^\s"'<>]*/g,'[redacted:path]').replace(/\/v1\/file\/[a-z0-9]+/gi,'[redacted:source-ticket]');
   }
   if(Array.isArray(v))return v.map(walk);
@@ -203,7 +212,9 @@ export function createTraceAI({fetchImpl=globalThis.fetch,limits:overrides={}}={
     publicStrings([model,body.traceGeneration,body.presetId??'']);
     const citations=validateEvidence(body.evidence,limits);
     publicStrings(citations);
-    const clean=scrub({prompt:body.prompt,evidence:body.evidence},aliasKey,secrets());
+    const clean=scrub({prompt:body.prompt,evidence:body.evidence},aliasKey,secrets(),[model,body.traceGeneration,body.presetId??'',...citations]);
+    str(clean.prompt,limits.promptBytes);
+    validateEvidence(clean.evidence,limits); // redaction must not silently change schema fields or exceed bounds
     const payload={model,messages:[{role:'system',content:SYSTEM},{role:'user',content:JSON.stringify(clean)}],stream:true};
     if(profile.outputTokenParameter!=='none')payload[profile.outputTokenParameter]=profile.maxOutputTokens;
     const outboundBody=JSON.stringify(payload);if(bytes(outboundBody)>limits.outboundBytes)fail(400,'outbound_too_large');

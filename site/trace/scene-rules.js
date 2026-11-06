@@ -1,5 +1,7 @@
 // Pure rules behind the landscape (no three.js), shared by scene.js and its tests.
-import { COMPLETE } from "./playback.js";
+// A request's own playhead reads "complete" at i + COMPLETE: past its tread's midpoint to the next request. A drawing
+// convention for the lead column only: it never moves the family clock or another agent's cut.
+export const COMPLETE = 0.65;
 
 export const BASE_W = 220;   // world width of a session with a subagent field
 export const BASE_H = 32;    // world height of the tallest context
@@ -126,19 +128,12 @@ export function shouldRedrawNavigator(prev, next) {
 }
 
 // ---------- the playhead on the landscape ----------
-// The root's playhead runs from 0 to its end, the last request complete (playback.js COMPLETE).
+// The family clock's cut is one world x for every ridge (clock.js cutAt): no ridge's own requests decide it.
+// An agent's last request complete, the end of its own request-space playhead.
 export function playheadEnd(n) { return n ? n - 1 + COMPLETE : 0; }
-// The cut's world x at root playhead P: the root's request x (xAt(i)) interpolated to the next request;
-// noCut from the last request on, where the whole landscape stands.
-export function cutXAt(P, n, xAt, noCut) {
-  if (!(n > 1) || P >= n - 1 - 1e-9) return noCut;
-  const i = Math.floor(P), f = P - i;
-  return xAt(i) + (xAt(i + 1) - xAt(i)) * f;
-}
-// The focused agent's own request-space playhead: the root's P, or for a subagent the request its ridge has
-// reached at the cut's x (xAt(i) its request i), -1 before its first request, and its end (its last request
-// complete) once the cut has reached its last request or there is no cut. A cut within float error of a
-// request's x has reached it: focusing a subagent's last request puts the cut on that x by way of root space.
+// An agent's own request-space playhead at the cut's world x (xAt(i) its request i): -1 before its first request,
+// and its end (its last request complete) once the cut has reached its last request or there is no cut. A cut
+// within float error of a request's x has reached it. isRoot passes P through (kept for older callers).
 export function agentPlayhead(P, cutX, { isRoot, n, xAt }, noCut) {
   if (isRoot) return P;
   if (!n) return -1;

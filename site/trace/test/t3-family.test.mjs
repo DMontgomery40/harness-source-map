@@ -66,10 +66,14 @@ test("the machine key cycles through every machine and back to all", () => {
 });
 
 test("the family landscape opens in 3D, and the fleet ground is never on at open, from a URL or from history", () => {
-  // start() chooses the mode from WebGL and reduced motion alone, the same for a family as for any session
-  assert.match(APP, /S\.mode = !reducedMotion && S\.webgl \? "3d" : "2d";/);
+  // start() chooses the mode from WebGL and reduced motion (and whether anything is timed to draw), the same for a
+  // family as for any session
+  assert.match(APP, /S\.mode = !reducedMotion && S\.webgl && !S\.layout\.empty \? "3d" : "2d";/);
   // every load starts on the landscape (A): start() resets the ground
-  assert.match(APP, /fleetFilter: null, familyReturn: null, ground: false \}\);/);
+  assert.match(APP, /fleetFilter: null, familyReturn: null, ground: false, activity: null, inventoryKey: null, netReader: null, netSel: null(?:, [A-Za-z]+: null)* \}\);/);
+  // no saved view or URL can reopen the removed Harness view: any other mode resolves to the landscape
+  assert.doesNotMatch(APP, /"harness"\)/);
+  assert.match(APP, /const viewMode = mode =>/);
   // no URL parameter turns it on
   assert.doesNotMatch(APP, /params\.(?:has|get)\(["'](?:ground|fleet)/);
   // no history entry or saved view carries it: it is not a view key, and a restored state is stripped of it

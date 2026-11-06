@@ -9,6 +9,8 @@ import { createRedactor } from "../network/redact.js";
 const KEEP = new Set(["id", "parentId", "agentId", "thread", "threadId", "parentThreadId", "environmentId", "rootThreadId", "rootEnvironmentId",
   "session", "nativeId", "file", "offset", "length", "kind", "product", "type", "callId", "requestId", "messageId", "fromNode", "subagentId",
   "from", "to", "fromEnv", "toEnv", "parent", "parentAgent", "transcriptParent", "claimed", "actual", "epoch",
+  // qualified keys (fleet/keys.js): encodings of the join ids above
+  "key", "threadKey", "parentKey", "fromKey", "toKey", "rootKey", "t3ThreadKey", "binding", "nativeAgentId", "agentIds", "candidates", "nativeProduct", "condition", "source", "status",
   // bundle paths the page matches files on (a thread's own session)
   "path"]);
 

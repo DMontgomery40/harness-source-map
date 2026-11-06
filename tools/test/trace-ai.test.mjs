@@ -59,6 +59,51 @@ test('preview scrubs all occurrences, binds exact outbound bytes and citations, 
  assert.equal(requests[0].text,p.outboundBody);assert.equal((await explain(call,p)).status,409);
 });
 
+test('credentials identified in evidence are removed everywhere even when short or join-shaped',async t=>{
+ const {call,requests}=await harness(t);
+ const unmarked='aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
+ let last;
+ for(const secret of ['a+b$','abc12345678','11111111-2222-4333-8444-555555555555','mcp:synthetic-credential'])for(const before of [true,false])for(const embedded of [false,true]){
+  const marked={id:'E1',kind:'record',provenance:'observed',...(embedded?{text:JSON.stringify({password:secret})}:{facts:{password:secret}})};
+  const repeated={id:'E2',kind:'record',provenance:'observed',text:`Literal ${secret}; again ${secret}; unmarked ${unmarked}.`};
+  const e=evidence();e.items=before?[marked,repeated]:[repeated,marked];
+  last=await preview(call,{evidence:e});
+  const sent=JSON.parse(JSON.parse(last.outboundBody).messages[1].content);
+  assert.ok(!JSON.stringify(sent).includes(secret),`identified credential survived: ${secret.length}/${before}/${embedded}`);
+  assert.ok(JSON.stringify(sent).includes(unmarked),'an unmarked join ID is not a credential');
+  assert.deepEqual(sent.evidence.items.map(x=>x.id),e.items.map(x=>x.id));
+ }
+ assert.equal(requests.length,0);
+ await (await explain(call,last)).text();
+ assert.equal(requests[0].text,last.outboundBody,'the stronger scrub remains exactly preview-bound');
+});
+
+test('identified credentials cannot survive in outbound control fields or corrupt the evidence schema',async t=>{
+ const {call,requests}=await harness(t);
+ for(const secret of ['test-model','generation-1','E1234','observed']){
+  const e=evidence();if(secret==='E1234')e.items[0].id=secret;
+  e.items[1].facts={password:secret};
+  const res=await call('preview',{providerId:'local',model:'test-model',prompt:'Explain.',traceGeneration:'generation-1',evidence:e});
+  assert.equal(res.status,400);
+ }
+ assert.equal(requests.length,0);
+});
+
+test('redaction expansion cannot bypass the evidence excerpt byte limit',async t=>{
+ const {call,requests}=await harness(t,{limits:{excerptBytes:32}}),e=evidence();
+ e.items[0]={id:'E1',kind:'record',provenance:'observed',facts:{password:'p4$$'}};
+ e.items[1].text='p4$$ p4$$ p4$$';
+ const res=await call('preview',{providerId:'local',prompt:'Explain.',traceGeneration:'g',evidence:e});
+ assert.equal(res.status,400);assert.equal(requests.length,0);
+});
+
+test('redaction expansion cannot bypass the prompt byte limit',async t=>{
+ const {call,requests}=await harness(t,{limits:{promptBytes:32}}),e=evidence();
+ e.items[0].facts={password:'p4$$'};
+ const res=await call('preview',{providerId:'local',prompt:'p4$$ p4$$ p4$$',traceGeneration:'g',evidence:e});
+ assert.equal(res.status,400);assert.equal(requests.length,0);
+});
+
 test('scope coverage, unknown fields, duplicate citations and UTF-8 byte caps reject before upstream',async t=>{
  const {call,requests}=await harness(t,{limits:{excerptBytes:32}});
  for(const change of [d=>{d.scope.kind='whatever';},d=>{d.coverage.omitted=0;},d=>{d.items[1].id='E1';},d=>{d.items[0].sourcePath='/tmp/secret';},d=>{d.items[0].text='😀'.repeat(9);}]){

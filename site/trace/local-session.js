@@ -6,18 +6,21 @@ const headers = {'X-Trace-Request':'1'};
 // environmentId: a T3 v2 thread link's environment; the resolver then opens the thread only on that machine.
 // A T3 family is assembled on request from every machine's harvest; while that runs the resolver answers 202 with
 // its progress, which goes to onProgress(fraction), and the request is repeated until the family is ready.
-export async function openLocalSession(id, {fetcher=fetch,base=BASE,environmentId=null,onProgress=null,pollMs=700}={}) {
+// signal: an AbortSignal that stops waiting (and polling) at once: a newer load, Back, or a cancel.
+const aborted=()=>new DOMException('Session load superseded.','AbortError');
+export async function openLocalSession(id, {fetcher=fetch,base=BASE,environmentId=null,onProgress=null,pollMs=700,signal=null}={}) {
   let health;
-  try {health=await fetcher(base+'/health',{credentials:'omit',redirect:'error',signal:AbortSignal.timeout(800)});}
-  catch {return null;}
+  try {health=await fetcher(base+'/health',{credentials:'omit',redirect:'error',signal:signal?AbortSignal.any([signal,AbortSignal.timeout(800)]):AbortSignal.timeout(800)});}
+  catch {if(signal?.aborted)throw aborted();return null;}
   if(!health.ok)return null;
   try {if((await health.json()).service!=='trace-local')return null;}catch{return null;}
-  const ask=()=>fetcher(base+'/v1/session',{method:'POST',credentials:'omit',redirect:'error',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({id,captures:true,progress:true,...(environmentId?{environmentId}:{})})});
+  const ask=()=>fetcher(base+'/v1/session',{method:'POST',credentials:'omit',redirect:'error',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({id,captures:true,progress:true,...(environmentId?{environmentId}:{})}),...(signal?{signal}:{})});
   let result=await ask();
   while(result.status===202){
     const state=await result.json().catch(()=>({}));
+    if(signal?.aborted)throw aborted();
     if(onProgress&&Number.isFinite(state.progress))onProgress(Math.max(0,Math.min(1,state.progress)));
-    await new Promise(r=>setTimeout(r,pollMs));
+    await new Promise((resolve,reject)=>{const t=setTimeout(resolve,pollMs);signal?.addEventListener('abort',()=>{clearTimeout(t);reject(aborted());},{once:true});});
     result=await ask();
   }
   if(!result.ok){const error=await result.json().catch(()=>({}));throw new Error(error.error||'Could not open the local session');}
@@ -75,6 +78,9 @@ export function localFileSource(file,fetcher=fetch){
     for(let start=a;start<b;start+=8*1024*1024){
       const end=Math.min(b,start+8*1024*1024);const part=new URL(url);part.searchParams.set('start',start);part.searchParams.set('end',end);
       const res=await fetcher(part.href,{headers,credentials:'omit',redirect:'error'});
+      // the resolver pins each ticket to the bytes it issued it for; changed bytes are refused, never substituted
+      // (the helper's code TRACE_SOURCE_CHANGED: the ticket's source generation is gone; reopening issues new tickets)
+      if(res.status===409){const body=typeof res.json==='function'?await res.json().catch(()=>({})):{};const e=new Error(body.error||'Session file changed; reopen it');e.code=body.code||'TRACE_SOURCE_CHANGED';throw e;}
       if(!res.ok)throw new Error('Could not read the local session; reopen it');
       const data=new Uint8Array(await res.arrayBuffer());
       if(data.length!==end-start)throw new Error('Session file changed; reopen it');

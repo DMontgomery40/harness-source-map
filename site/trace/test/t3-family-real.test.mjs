@@ -16,8 +16,10 @@ import { findBreaks } from "../fleet/breaks.js";
 import { fleetKeys, matcher, litAgents } from "../fleet/filter.js";
 import { buildLayout } from "../minimap.js";
 import { indexSpans } from "../fleet/spans.js";
-import { buildNet, offsetAt, epochOf } from "../fleet/net.js";
+import { buildNet, offsetAt, epochOf, membershipOf } from "../fleet/net.js";
 import { readRef } from "../model.js";
+import { threadKey } from "../fleet/keys.js";
+import { gzipSync } from "node:zlib";
 
 const dirs = (process.env.T3_BUNDLE || "").split(":").filter(Boolean);
 const expect = process.env.T3_EXPECT ? JSON.parse(process.env.T3_EXPECT) : {};
@@ -65,14 +67,18 @@ for (const dir of dirs) {
       if (want.agents != null) assert.equal(trace.agents.length, want.agents);
       // [P1] a thread that moved provider kept only its first session; a native subagent whose parent was a
       // Workflow's own thread, or whose parent's session was not drawn, had no form at all.
+      // every known thread is in the inventory, with a status, whether or not anything is drawn for it
+      assert.equal(trace.inventory.length, trace.fleet.threads.length);
       for (const th of trace.fleet.threads) {
         const ridge = th.agentId != null && trace.agents.some(a => a.id === th.agentId);
-        const voided = trace.voids.some(v => v.thread === th.id);
-        assert.ok(ridge || voided, `thread ${trace.fleet.threads.indexOf(th)} has no form`);
+        const voided = trace.voids.some(v => v.threadKey === th.key);
+        const inv = trace.inventory.find(x => x.key === th.key);
+        assert.ok(inv?.status, `thread ${trace.fleet.threads.indexOf(th)} is in the inventory`);
+        assert.ok(ridge || voided || ["ambiguous", "unmatched", "no-evidence", "not-collected", "missing-member", "unreadable", "events-only", "root-unavailable", "rows-unreadable", "late", "missing"].includes(inv.status), `thread ${trace.fleet.threads.indexOf(th)} has a form or a stated status`);
       }
       // every session the bundle holds for a thread is drawn: the first as its ridge, the rest beside it
-      const mainSessions = machines.flatMap(m => (m.sessions || []).filter(e => /\.jsonl$/.test(e.path) && !/\/subagents\//.test(e.path) && threads.has(e.threadId)).map(e => `${e.threadId} ${e.nativeId}`));
-      const drawn = new Set(trace.agents.filter(a => a.kind === "root" || a.t3 || a.continuation).map(a => `${a.thread} ${a.session}`));
+      const mainSessions = machines.flatMap(m => (m.sessions || []).filter(e => /\.jsonl$/.test(e.path) && !/\/subagents\//.test(e.path) && threads.has(threadKey(m.id, e.threadId))).map(e => `${threadKey(m.id, e.threadId)} ${e.nativeId}`));
+      const drawn = new Set(trace.agents.filter(a => a.kind === "root" || a.t3 || a.continuation).map(a => `${a.threadKey} ${a.session}`));
       for (const k of new Set(mainSessions)) assert.ok(drawn.has(k) || trace.notes.some(n => /could not be read/.test(n)), `a session of thread ${k.split(" ")[0].slice(0, 8)} is drawn`);
       assert.ok(ms < 30000, `family parse took ${Math.round(ms)} ms`);
     });
@@ -87,12 +93,12 @@ for (const dir of dirs) {
         assert.ok(sources[i].name.endsWith(f.name.slice(f.name.indexOf("/") + 1)), `file ${i} names its own source`);
       });
       // and each reference reads a file of its own agent's session, not another thread's
-      const own = new Map(trace.fleet.threads.map(x => [x.id, x]));
+      const own = new Map(trace.fleet.threads.map(x => [x.key, x]));
       for (const a of trace.agents) for (const r of refsOf(a)) {
         const name = trace.files[r.file]?.name || "";
         assert.ok(name.startsWith(`${a.machine}/machines/${a.environmentId}/agent-sessions/`), "a ref reads its own machine's sessions");
         // a thread with several sessions: each ridge reads its own (a.session), the first or a continuation
-        const native = own.get(a.thread)?.native;
+        const native = own.get(a.threadKey)?.native;
         const session = a.session && a.session !== "provider-event log" ? a.session : native?.nativeId;
         if (native) assert.ok(native.product === "codex" && !a.continuation && session === native.nativeId ? /\/rollout-[^/]+\.jsonl$/.test(name) : name.includes(session) || /\/rollout-[^/]+\.jsonl$/.test(name), "a ref reads its own thread's session");
       }
@@ -117,7 +123,7 @@ for (const dir of dirs) {
         assert.ok(log, "a Muse thread has its provider log");
         const lines = threadLines(parseT3EventLines(await b.text(`${m.dir}provider-events/${log.path}`)), { threadId: th.id, sessionId: th.museSession, shared: log.shared });
         const calls = lines.filter(l => l.method === "session/tokenUsage" && Number(l.params?.promptTokens)).length;
-        const ridge = trace.agents.find(a => a.thread === th.id && a.t3);
+        const ridge = trace.agents.find(a => a.threadKey === th.key && a.t3);
         assert.equal(ridge?.requests.length || 0, calls);
         if (calls) { assert.equal(ridge.lab, "Meta"); assert.ok(ridge.requests.every(r => !Object.keys(r.strata || {}).length), "Muse strata are unknown, never invented"); }
         counts.push(calls);
@@ -127,8 +133,8 @@ for (const dir of dirs) {
 
     await t.test("Antigravity threads are voids, never ridges", () => {
       for (const th of collected.filter(x => x.provider === "antigravity")) {
-        assert.ok(!trace.agents.some(a => a.thread === th.id && a.t3));
-        assert.ok(trace.voids.some(v => v.thread === th.id));
+        assert.ok(!trace.agents.some(a => a.threadKey === th.key && a.t3));
+        assert.ok(trace.voids.some(v => v.threadKey === th.key));
       }
     });
 
@@ -146,11 +152,11 @@ for (const dir of dirs) {
         const taken = Math.max(...[m.part.collectedAt, ...(m.part.parts || []).map(p => p.collectedAt)].map(Date.parse).filter(Number.isFinite));
         assert.ok(x.silence.to <= taken, "its silence lies inside what the log covers");
       }
-      for (const v of trace.voids.filter(v => v.lastEvidence == null)) assert.ok(!breaks.some(x => x.thread === v.thread && x.kind === "claimed-run"), "no evidence is never a break");
-      for (const th of threads.values()) if (th.uncollected) {
+      for (const v of trace.voids.filter(v => v.lastEvidence == null)) assert.ok(!breaks.some(x => x.threadKey === v.threadKey && x.kind === "claimed-run"), "no evidence is never a break");
+      for (const th of threads.values()) if (th.uncollected && th.hop) {
         assert.equal(th.uncollected, uncollectedChild(th.hop?.startedAt, machines.find(m => m.id === th.env)));
-        if (th.uncollected === "late") assert.ok(breaks.some(x => x.kind === "late" && x.thread === th.id));
-        else assert.ok(!breaks.some(x => x.kind === "late" && x.thread === th.id));
+        if (th.uncollected === "late") assert.ok(breaks.some(x => x.kind === "late" && x.threadKey === th.key));
+        else assert.ok(!breaks.some(x => x.kind === "late" && x.threadKey === th.key));
       }
       if (want.disposed != null) assert.equal(n("disposed"), want.disposed);
       if (want.claimedParent != null) assert.equal(n("claimed-parent"), want.claimedParent);
@@ -158,10 +164,10 @@ for (const dir of dirs) {
       if (want.late != null) assert.equal(n("late"), want.late);
       // a launched thread is a launch-join break, never a one-sided one
       for (const h of (b.bundle.hops || []).filter(h => h.kind === "launch")) {
-        const th = threads.get(h.to.threadId);
+        const th = threads.get(threadKey(h.to.environmentId, h.to.threadId));
         if (th?.origin !== "launch") continue;
-        assert.ok(breaks.some(x => x.kind === "launch-join" && x.thread === th.id), "a launched thread is drawn as a launch join");
-        assert.ok(!breaks.some(x => x.kind === "one-sided" && x.thread === th.id));
+        assert.ok(breaks.some(x => x.kind === "launch-join" && x.threadKey === th.key), "a launched thread is drawn as a launch join");
+        assert.ok(!breaks.some(x => x.kind === "one-sided" && x.threadKey === th.key));
       }
       if (want.launchJoins != null) assert.equal(n("launch-join"), want.launchJoins);
     });
@@ -174,8 +180,9 @@ for (const dir of dirs) {
       const callIn = (r, id) => r && (r.action?.callId === id ? r.action : (r.action?.all || []).find(x => x.callId === id));
       let checked = 0, fromSubagent = 0;
       for (const h of (b.bundle.hops || []).filter(h => h.kind === "launch" && h.join?.callId)) {
-        const ridge = trace.agents.find(a => a.thread === h.to.threadId && a.t3);
-        const v = !ridge && trace.voids.find(x => x.thread === h.to.threadId);
+        const key = threadKey(h.to.environmentId, h.to.threadId);
+        const ridge = trace.agents.find(a => a.threadKey === key && a.t3);
+        const v = !ridge && trace.voids.find(x => x.threadKey === key);
         if (!ridge && !v) continue; // a native subagent thread: drawn inside its own parent's session
         const parent = byId.get(ridge ? ridge.parentId : v.parent);
         const at = ridge ? ridge.spawn?.parentRequest : v.parentRequest;
@@ -190,7 +197,7 @@ for (const dir of dirs) {
         checked++;
       }
       // every drawn launched thread was checked (a native subagent thread is drawn in its parent's session instead)
-      const drawn = (b.bundle.hops || []).filter(h => h.kind === "launch" && h.join?.callId && (trace.agents.some(a => a.thread === h.to.threadId && a.t3) || trace.voids.some(x => x.thread === h.to.threadId)));
+      const drawn = (b.bundle.hops || []).filter(h => h.kind === "launch" && h.join?.callId && (trace.agents.some(a => a.threadKey === threadKey(h.to.environmentId, h.to.threadId) && a.t3) || trace.voids.some(x => x.threadKey === threadKey(h.to.environmentId, h.to.threadId))));
       assert.equal(checked, drawn.length);
       if (want.launchesFromSubagents != null) assert.equal(fromSubagent, want.launchesFromSubagents);
     });
@@ -206,7 +213,12 @@ for (const dir of dirs) {
         if (r.payload_json && typeof r.payload_json === "object") r.payload_json.title = r.title;
         else if (typeof r.payload_json === "string") { const p = JSON.parse(r.payload_json); p.title = r.title; r.payload_json = JSON.stringify(p); }
       }
-      const planted = list.filter(x => x !== e).concat({ path: rel, source: memorySource(rel, new TextEncoder().encode(JSON.stringify(rows))) });
+      // planted in the representation the manifest declares, with the manifest's declared size kept true
+      const json = new TextEncoder().encode(JSON.stringify(rows)), bytes = /\.gz$/.test(e.path) ? new Uint8Array(gzipSync(json)) : json;
+      const manifest = JSON.parse(new TextDecoder().decode(await b.get("bundle.json").source.slice(0, b.get("bundle.json").source.size)));
+      for (const m of manifest.machines || []) if (m.sizes && e.path in m.sizes) m.sizes[e.path] = bytes.length;
+      const mbytes = new TextEncoder().encode(JSON.stringify(manifest));
+      const planted = list.filter(x => x !== e && x.path !== "bundle.json").concat({ path: e.path, source: memorySource(e.path, bytes) }, { path: "bundle.json", source: memorySource("bundle.json", mbytes) });
       const fam = await loadFamily(planted);
       assert.ok(!JSON.stringify(fam.trace).includes(FAKE), "the planted key is gone from the trace");
       assert.match(fam.trace.title, /chars \| ends …FAKE›/);
@@ -253,8 +265,12 @@ for (const dir of dirs) {
       }
       if (links.length) assert.ok(checked > 100, "joined pairs were checked");
       for (const link of Object.values(net.clock)) for (const p of link.infeasible) assert.ok(p.why, "an infeasible pair says why");
-      const fam = new Set((b.bundle.machines || []).flatMap(m => m.threadIds || []));
-      const owned = net.waits.filter(w => w.threads.some(id => fam.has(id))).length;
+      // every join is same-trace and cross-environment, and the family's waits are counted by qualified owners only
+      for (const j of net.joins) { assert.equal(j.traceId, j.call.traceId); assert.notEqual(j.env, j.call.env); }
+      const fam = new Set((b.bundle.machines || []).flatMap(m => (m.threadIds || []).map(id => threadKey(m.environmentId, id))));
+      const owned = net.waits.filter(w => w.classification === "recorded-wait" && membershipOf(w.owners, fam) === "member").length;
+      // T3_EXPECT familyWaits counts recorded waits whose qualified owners are all family threads (re-baseline an
+      // expectation recorded before waits were qualified by environment and by recorded operation)
       if (want.familyWaits != null) assert.equal(owned, want.familyWaits);
     });
 
@@ -263,9 +279,9 @@ for (const dir of dirs) {
       const before = [...L.info.values()].map(i => [...i.xs]);
       for (const machine of fleetKeys(trace).machines) {
         const lit = litAgents(trace, { machine });
-        const theirs = new Set(trace.agents.filter(a => a.machine === machine).map(a => a.id));
+        const theirs = new Set(trace.agents.filter(a => a.environmentId === machine).map(a => a.id));
         assert.deepEqual(new Set(lit), theirs);
-        assert.ok(trace.agents.filter(a => matcher({ machine })(a)).every(a => a.machine === machine));
+        assert.ok(trace.agents.filter(a => matcher({ machine })(a)).every(a => a.environmentId === machine));
       }
       const after = [...buildLayout(trace).info.values()].map(i => [...i.xs]);
       assert.deepEqual(after, before);
@@ -283,7 +299,7 @@ for (const dir of dirs) {
       for (const r of lanes) {
         const a = trace.agents.find(x => x.id === r.attributes.get("data-agent"));
         const out = /fleet-out/.test(r.attributes.get("class"));
-        assert.equal(out, a.machine !== machine);
+        assert.equal(out, a.environmentId !== machine);
         assert.equal(Number(r.attributes.get("fill-opacity")) <= 0.12, out);
       }
       const voids = all(host, n => /\bvoid\b/.test(n.attributes.get("class") || ""));

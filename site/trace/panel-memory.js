@@ -16,7 +16,9 @@ export function viewKey(v) {
   if (v.level >= 1 || v.followingMap) parts.push(v.agentId ?? "");
   if (v.level >= 2 || v.followingMap) parts.push(v.reqIdx ?? "");
   if (v.level >= 3) parts.push(v.stratum ?? "");
-  if (v.inspector) parts.push(v.inspector, v.callIndex ?? "");
+  if (v.inspector) parts.push(v.inspector, v.inspector === "thread" ? v.inventoryKey ?? "" : v.callIndex ?? "");
+  // the activity list is its own view (a snapshot at one time), never the view under it
+  if (v.activity) parts.push("activity", v.activity.t);
   return parts.join("|");
 }
 

@@ -45,15 +45,21 @@ It is **not** about token cost or the fact that context is re-read every turn. D
     scan, bounded semantic review, original-versus-scrubbed structural verification, and the leak
     gate. Original recordings, source paths, original identifiers, alias maps/salts, audit files and
     review material remain private. This exception does not authorize any other private recording.
+  - **User-authorized exception (2026-11-06):** the same review and privacy requirements apply to
+    `site/trace/examples/t3-multi-machine/`, the requested default T3 example across environments and
+    providers. Verify decoded ownership, command associations and network coverage against the source,
+    as well as native graph structure. See `docs/reviews/2026-11-06-t3-example-review.md` before replacing
+    its reviewed derivative. Original recordings and private review material remain private.
 
 ## Rules
 - **Jev discovery:** read `docs/specs/jev-discovery.md` and, when available, the global `jev-workflows` skill before changing a classifier or coverage sweep. Check candidate selection, complete source text, privacy filtering, batch-size accounting, cache identity, unanswered work, and site record indexing as separate layers. The publicly shipped Claude Code binary is approved source material for this site. Do not confuse that publication scope with sending the complete corpus to an external classifier: the broad TypeSafe transfer is opt-in and needs destination-specific authorization; local preparation does not make that transfer.
 - Run the gate before calling work done: `npm run check` (build, all tests, link check, leak check).
 - Once work is complete and verified, commit your own changes and push immediately. Confirm the push
   succeeded before reporting completion.
-- Trace always opens in the 3D landscape (2D only without WebGL or with reduced motion). The harness
-  layer and any new layer are reached from it and never open first, whether by default, URL or saved
-  view (David, 2026-09-27).
+- Trace always opens in the 3D landscape (2D only without WebGL or with reduced motion). New layers
+  are reached from it and never open first, whether by default, URL or saved view (David, 2026-09-27).
+- The separate Harness GUI, navigation and shortcut were removed at the user's request (2026-11-06).
+  Keep harness provenance in the existing evidence and custody paths.
 - Trace is one layer-rich tool. New views are **added** as modes. Never remove the existing landscape,
   2D view, sidebar panels, lenses, search, reader, custody ladder or playback. Grains may go (decided
   2026-09-27).

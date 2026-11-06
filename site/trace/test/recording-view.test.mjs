@@ -7,6 +7,6 @@ test('a private network-only recording renders without a session or voice call a
  t.after(()=>{globalThis.document=originalDocument;globalThis.fetch=originalFetch;});
  await openRecordingView('run-111111111111111111111111');
  const text=node=>node.textContent+' '+(node.children||[]).map(text).join(' '),output=text(root);
- assert.match(output,/1 network flows/);assert.match(output,/No voice call observed/);assert.doesNotMatch(output,/private-account-identity|private@example.com/);
+ assert.match(output,/1 flow · 0 WebSocket frames/);assert.match(output,/no voice call · audio not recorded/);assert.match(output,/GET chatgpt\.com\/metadata · 200/);assert.doesNotMatch(output,/private-account-identity|private@example.com/);
  assert.equal(recordingSummary({log:{entries:[]}}).voiceMessages,0);
 });

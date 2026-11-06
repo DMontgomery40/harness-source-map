@@ -2,7 +2,7 @@
 // 2D SVG overview used when motion is reduced or WebGL is unavailable.
 // The 3D corner navigator shares the actual scene meshes (map-overview.js).
 import { STRATA, STATUS, MODEL_COLORS, modelFamily, freshTokens, fmtTok, fmtClock, fmtDur, fmtTick, spansDays, blockTokens, unloggedShrinks, el } from "./panels.js";
-import { fleetKeys, matcher, isFiltered } from "./fleet/filter.js";
+import { fleetKeys, matcher, isFiltered, envLabel } from "./fleet/filter.js";
 
 const GAP_MS = 20 * 60e3;   // idle stretches longer than this are compressed
 const BURST_MS = 10 * 60e3; // a subagent pause longer than this starts a new burst
@@ -20,7 +20,15 @@ export function buildLayout(trace, { groupBy = null } = {}) {
   // The session's own start and end anchor the axis, so a long idle head or tail (a thread
   // reopened days later with no requests) shows as a compressed, labelled gap.
   for (const t of [trace.started, trace.ended]) if (Number.isFinite(t)) times.push(t);
+  const finite = times.filter(Number.isFinite);
+  times.length = 0; times.push(...finite);
   times.sort((x, y) => x - y);
+  // Nothing timed (a family known only from its inventory): no axis, nothing to draw, no clock.
+  if (!times.length) {
+    const byId = new Map(trace.agents.map(a => [a.id, a]));
+    const root = trace.agents.find(a => a.kind === "root") || trace.agents[0] || null;
+    return { empty: true, t0: null, t1: null, X: () => 0, T: () => null, gaps: [], info: new Map(trace.agents.map(a => [a.id, { agent: a, xs: new Float64Array(0), segments: [], stats: null }])), root, lanes: 0, links: [], yMax: 1, hours: [], byId, voids: [], terraces: [] };
+  }
   const t0 = times[0], t1 = times.at(-1);
   const gaps = [];
   for (let i = 1; i < times.length; i++) if (times[i] - times[i - 1] > GAP_MS) gaps.push({ a: times[i - 1], b: times[i] });
@@ -44,6 +52,16 @@ export function buildLayout(trace, { groupBy = null } = {}) {
     while (hi - lo > 1) { const m = (lo + hi) >> 1; if (knotsT[m] <= t) lo = m; else hi = m; }
     const dt = knotsT[hi] - knotsT[lo];
     return dt ? knotsX[lo] + (t - knotsT[lo]) / dt * (knotsX[hi] - knotsX[lo]) : knotsX[lo];
+  };
+  // The inverse: the recorded time at compressed x, monotone and finite (a knot repeated in x maps to its first
+  // time, so the scrub never lands between two equal knots).
+  const T = x => {
+    if (!(x > 0)) return t0;
+    if (x >= 1) return t1;
+    let lo = 0, hi = knotsX.length - 1;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (knotsX[m] <= x) lo = m; else hi = m; }
+    const dx = knotsX[hi] - knotsX[lo];
+    return dx > 0 ? knotsT[lo] + (x - knotsX[lo]) / dx * (knotsT[hi] - knotsT[lo]) : knotsT[lo];
   };
 
   const byId = new Map(trace.agents.map(a => [a.id, a]));
@@ -90,10 +108,10 @@ export function buildLayout(trace, { groupBy = null } = {}) {
   const terraces = [];
   if (groupBy === "machine" && trace.family) {
     let base = 0;
-    const machineOf = s => (s.void ? s.void.machine : s.agent.machine);
+    const machineOf = s => (s.void ? s.void.environmentId ?? s.void.machine : s.agent.environmentId ?? s.agent.machine);
     for (const machine of fleetKeys(trace).machines) {
       const n = Math.max(1, pack(packed.filter(s => machineOf(s) === machine), base).length);
-      terraces.push({ machine, lane0: base, lane1: base + n - 1 });
+      terraces.push({ machine, label: envLabel(trace, machine), lane0: base, lane1: base + n - 1 });
       for (let k = 0; k < n; k++) laneEnd.push(1);
       base += n + 1;
       laneEnd.push(1); // the valley between two machines
@@ -155,7 +173,7 @@ export function buildLayout(trace, { groupBy = null } = {}) {
   const hours = [];
   const start = new Date(t0); start.setMinutes(step < 3600e3 ? Math.floor(start.getMinutes() / (step / 60e3)) * (step / 60e3) : 0, 0, 0);
   for (let t = start.getTime() + step; t < t1; t += step) if (!gaps.some(g => t > g.a && t < g.b)) hours.push(t);
-  return { t0, t1, X, gaps, info, root, lanes: laneEnd.length, links, yMax, hours, byId, voids, terraces };
+  return { t0, t1, X, T, gaps, info, root, lanes: laneEnd.length, links, yMax, hours, byId, voids, terraces };
 }
 
 // ---------- SVG overview ----------
@@ -282,7 +300,7 @@ export function renderOverview(host, trace, L, opts) {
   for (const v of L.voids || []) {
     const x0 = px(v.x0), x1 = Math.max(px(v.x1), x0 + 3), on = !filtered || lit(v.void);
     const r = S("rect", { x: x0, y: lane0 + v.lane * laneH, width: x1 - x0, height: laneBar, rx: full ? 2 : 1, fill: "none",
-      stroke: v.void.lastEvidence == null ? "#5c6676" : "#dfe8f2", "stroke-opacity": on ? 0.85 : OUT, "data-thread": v.void.thread, class: on ? "void" : "void fleet-out" });
+      stroke: v.void.lastEvidence == null ? "#5c6676" : "#dfe8f2", "stroke-opacity": on ? 0.85 : OUT, "data-thread": v.void.thread, "data-thread-key": v.void.threadKey || null, "pointer-events": "all", class: on ? "void" : "void fleet-out" });
     r.append(S("title", {}, v.void.title || "thread"));
     g.append(r);
   }
@@ -324,6 +342,13 @@ export function renderOverview(host, trace, L, opts) {
       }
     }
   }
+  // the family clock's time cut (clock.js cutAt): a line at the clock, and what lies ahead of it veiled; none at
+  // the family's end. opts.cut is compressed x or null.
+  if (opts.cut != null && Number.isFinite(opts.cut)) {
+    const x = px(opts.cut);
+    g.append(S("rect", { x, y: top - (full ? 26 : 12), width: Math.max(0, W - right - x), height: Math.max(0, H - top + (full ? 26 : 12) - axisH), fill: "#080e16", "fill-opacity": 0.62, class: "cut-veil", "pointer-events": "none" }));
+    g.append(S("line", { x1: x, x2: x, y1: top - (full ? 26 : 12), y2: H - axisH, stroke: "#91d6c6", "stroke-width": 1.5, class: "cut-line", "pointer-events": "none" }));
+  }
   // picking
   if (opts.onPick) {
     svg.addEventListener("click", ev => {
@@ -331,6 +356,9 @@ export function renderOverview(host, trace, L, opts) {
       const mx = ev.clientX - r.left, my = ev.clientY - r.top;
       const lane = ev.target.getAttribute && ev.target.getAttribute("data-agent");
       if (lane) return opts.onPick({ agentId: lane });
+      const thread = ev.target.getAttribute && ev.target.getAttribute("data-thread-key");
+      if (thread) return opts.onPick({ kind: "thread", threadKey: thread });
+      if (!rinfo.xs.length) return;
       if (my <= top + areaH + 6) {
         const xn = (mx - left) / (W - left - right);
         let best = 0, bd = Infinity;
