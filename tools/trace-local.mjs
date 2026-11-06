@@ -113,10 +113,19 @@ export function createAssembler({repo=defaultT3Repo,t3Home=join(homedir(),'.t3')
  let assemblyTail=Promise.resolve();
  let partsAt=0,parts=[];
  const freshParts=()=>{if(Date.now()-partsAt>20000){parts=readParts(incomingDir(repo));partsAt=Date.now();}return parts;};
- async function isThread(threadId){
-  if(storesHold(freshParts(),threadId))return true;
+ async function localThread(threadId){
   let db;try{db=await openReadOnly(join(t3Home,'userdata','statev2.sqlite'));}catch{return false;}
   try{return db.all('select 1 from orchestration_v2_projection_threads where thread_id = ? limit 1',threadId).length>0;}catch{return false;}finally{db.close();}
+ }
+ async function isThread(threadId){
+  let interrupted;
+  try{if(storesHold(freshParts(),threadId))return true;}
+  catch(error){if(error.code!=='T3_RECEIVE_UPDATE')throw error;interrupted=error;}
+  // A known local thread must reach assembleFamily's publication recovery. An unreadable remote store
+  // cannot establish absence: preserve its retryable error unless local membership was positively found.
+  if(await localThread(threadId))return true;
+  if(interrupted)throw interrupted;
+  return false;
  }
  function job(threadId,environmentId){
   const key=`${environmentId||''}\u0000${threadId}`;

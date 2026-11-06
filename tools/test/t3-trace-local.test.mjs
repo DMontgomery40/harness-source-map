@@ -5,7 +5,9 @@ import assert from 'node:assert/strict';
 import {mkdtemp, rm, mkdir, writeFile, symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {createTraceServer, createAssembler} from '../trace-local.mjs';
+import {incomingDir} from '../t3/assemble.mjs';
 
 test('the resolver takes T3 thread ids and says when no collected bundle holds one', async t => {
  const dir = await mkdtemp(join(tmpdir(), 't3-trace-local-'));
@@ -112,4 +114,43 @@ test('a T3 family being assembled answers 202 with its progress to a page that a
  assert.equal(res.status, 404);
  assert.match((await res.json()).error, /No machine has reported that T3 thread/);
  assert.equal(calls.length, 1);
+});
+
+test('an interrupted publication lets a positively identified local thread reach assembly recovery', async t => {
+ const root=await mkdtemp(join(tmpdir(),'t3-local-recovery-'));t.after(()=>rm(root,{recursive:true,force:true}));
+ const t3Home=join(root,'home'),store=join(incomingDir(root),'test-machine');
+ await mkdir(join(t3Home,'userdata'),{recursive:true});await mkdir(store,{recursive:true});
+ execFileSync('sqlite3',[join(t3Home,'userdata','statev2.sqlite'),`CREATE TABLE orchestration_v2_projection_threads (thread_id TEXT PRIMARY KEY); INSERT INTO orchestration_v2_projection_threads VALUES ('${SESSION}');`]);
+ for(const marker of ['.harvest-pending','.receive-pending','.lock']){
+  await writeFile(join(store,marker),'{}');let calls=0;
+  const assembler=createAssembler({repo:root,t3Home,enabled:true,assemble:async({threadId})=>{calls++;assert.equal(threadId,SESSION);await rm(join(store,marker));return null;}});
+  assert.equal(await assembler.isThread(SESSION),true,marker);
+  await assembler.job(SESSION,null).promise;assert.equal(calls,1,'known local membership reaches the ordinary recovery entry');
+ }
+});
+
+test('blocked discovery remains an error for absent or unreadable local membership; other errors propagate', async t => {
+ const root=await mkdtemp(join(tmpdir(),'t3-local-discovery-'));t.after(()=>rm(root,{recursive:true,force:true}));
+ const t3Home=join(root,'home'),store=join(incomingDir(root),'test-machine');
+ await mkdir(join(t3Home,'userdata'),{recursive:true});await mkdir(store,{recursive:true});
+ await writeFile(join(store,'.harvest-pending'),'{}');
+ let assembler=createAssembler({repo:root,t3Home,enabled:true});
+ await assert.rejects(assembler.isThread(SESSION),{code:'T3_RECEIVE_UPDATE'},'missing local database cannot prove remote absence');
+ execFileSync('sqlite3',[join(t3Home,'userdata','statev2.sqlite'),'CREATE TABLE orchestration_v2_projection_threads (thread_id TEXT PRIMARY KEY);']);
+ await assert.rejects(assembler.isThread(SESSION),{code:'T3_RECEIVE_UPDATE'},'local absence does not settle an uninspectable remote store');
+ await rm(join(store,'.harvest-pending'));
+ await mkdir(join(store,'.receive-generation'));
+ execFileSync('sqlite3',[join(t3Home,'userdata','statev2.sqlite'),`INSERT INTO orchestration_v2_projection_threads VALUES ('${SESSION}');`]);
+ assembler=createAssembler({repo:root,t3Home,enabled:true});
+ await assert.rejects(assembler.isThread(SESSION),{code:'EISDIR'},'general filesystem failure is never swallowed by local membership');
+});
+
+test('an explicitly addressed environment reaches assembly even while membership discovery is blocked',async t=>{
+ const root=await mkdtemp(join(tmpdir(),'t3-local-v2-recovery-'));t.after(()=>rm(root,{recursive:true,force:true}));
+ const store=join(incomingDir(root),'test-machine');await mkdir(store,{recursive:true});await writeFile(join(store,'.harvest-pending'),'{}');
+ let calls=0;const assembler=createAssembler({repo:root,t3Home:join(root,'absent'),enabled:true,assemble:async({threadId,environmentId})=>{calls++;assert.equal(threadId,SESSION);assert.equal(environmentId,ENV);return null;}});
+ const server=createTraceServer({roots:{},t3Roots:[],t3Assembler:assembler});await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>server.close(r)));
+ const base=`http://127.0.0.1:${server.address().port}`;
+ const res=await fetch(base+'/v1/session',{method:'POST',headers:{Origin:base,'X-Trace-Request':'1','Content-Type':'application/json'},body:JSON.stringify({id:SESSION,environmentId:ENV})});
+ assert.equal(calls,1);assert.equal(res.status,404,'assembly, rather than failed membership preflight, decides whether the target exists');
 });

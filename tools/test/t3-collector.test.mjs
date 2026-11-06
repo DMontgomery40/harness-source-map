@@ -300,10 +300,8 @@ test('launched threads join their launcher\'s family by the launch call\'s own r
  } finally {rmSync(cache, {recursive: true, force: true});}
 });
 
-// [P2] a family opened while the hourly harvest held this machine's store was served with the stored parts and no
-// word that they were stale. Run against a scratch copy of the stores (links to the real ones) whose own machine
-// folder holds a live lock, so the real store is never written.
-test('a family opened while the harvest holds this machine\'s store marks its changed parts stale (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : (!existsSync(incomingDir(mainRepo)) || !existsSync(db)) && 'no fleet harvest or T3 home on this machine', timeout: 1800000}, async () => {
+// An actively written store is not a stable snapshot. Use a scratch store with a live lock; no real store writes.
+test('a family opened while the harvest holds this machine\'s store rejects an unstable snapshot (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : (!existsSync(incomingDir(mainRepo)) || !existsSync(db)) && 'no fleet harvest or T3 home on this machine', timeout: 1800000}, async () => {
  const env = readFileSync(join(t3Home, 'userdata', 'environment-id'), 'utf8').trim();
  const store = incomingDir(mainRepo), mine = join(store, env);
  if (!existsSync(mine)) return;
@@ -329,16 +327,7 @@ test('a family opened while the harvest holds this machine\'s store marks its ch
   for (const n of readdirSync(mine)) if (n !== '.lock') symlinkSync(join(mine, n), join(inc, env, n));
   mkdirSync(join(inc, env, '.lock'));
   writeFileSync(join(inc, env, '.lock', 'pid'), String(process.pid)); // a live owner: the harvest "holds" the store
-  const r = await assembleFamily({threadId: pick.root, environmentId: env, repo: tmp});
-  const m = r.bundle.machines.find(x => x.environmentId === env);
-  assert.ok(m.stale && m.stale.roots >= 1 && m.stale.why === 'harvest-held', 'the machine records its stale parts');
-  assert.ok(Date.parse(m.stale.since) <= Date.parse(m.stale.until));
-  assert.ok(m.gaps.some(g => g.startsWith('stale: ')) && r.bundle.gaps.some(g => g.includes('stale: ')), 'and says so as a gap of the bundle');
-  const a = JSON.parse(readFileSync(join(r.dir, 'assembly.json'), 'utf8'));
-  assert.ok(a.stale.some(x => x.root === pick.root && x.partCollectedAt === pick.entry.collectedAt), 'assembly.json names the stale part');
-  // served again while the store is still held: the same stale build, not a silent one
-  const again = await assembleFamily({threadId: pick.root, environmentId: env, repo: tmp});
-  assert.equal(again.dir, r.dir);
+  await assert.rejects(assembleFamily({threadId: pick.root, environmentId: env, repo: tmp, refreshLocal: false}), {code: 'T3_RECEIVE_UPDATE'});
  } finally {
   rmSync(tmp, {recursive: true, force: true});
  }

@@ -44,7 +44,7 @@ log "harvest $(git -C "$CODE" rev-parse --short HEAD 2>/dev/null) into $STORE/$E
 "$NODE" --max-old-space-size=8192 "$CODE/tools/t3/collect.mjs" "${ARGS[@]}"
 rc=$?
 
-# Push: files changed since the last push, into a staging folder on the Mac, then moved into place one by one.
+# Push: package changed files under the store lock, then send the immutable archive after releasing that lock.
 if [ -n "${T3_HARVEST_PUSH:-}" ]; then
   DIR="$STORE/$ENV_ID"
   MARK="$DIR/.pushed"
@@ -57,15 +57,20 @@ if [ -n "${T3_HARVEST_PUSH:-}" ]; then
     rm -r "$PL"; mkdir "$PL"
   fi
   echo $$ > "$PL/pid"
-  trap 'rm -r "$PL" 2>/dev/null; rm -f "$NEXT"' EXIT
-  touch "$NEXT"
-  LIST="$(mktemp)"
-  ( cd "$DIR" && if [ -f "$MARK" ]; then find . -type f -newer "$MARK" ! -name '.push*' ! -path './.push*' ! -path './.lock/*'; else find . -type f ! -name '.push*' ! -path './.push*' ! -path './.lock/*'; fi ) > "$LIST"
-  N="$(wc -l < "$LIST" | tr -d ' ')"
+  ARCHIVE="$(mktemp)"
+  cleanup_push() {
+    if [ "$(cat "$PL/pid" 2>/dev/null)" = "$$" ]; then rm -r "$PL" 2>/dev/null; fi
+    rm -f "$NEXT" "$ARCHIVE"
+  }
+  trap cleanup_push EXIT
+  if ! N="$("$NODE" "$CODE/tools/t3/package-harvest.mjs" "$DIR" "$MARK" "$NEXT" "$ARCHIVE")"; then
+    log "push packaging failed; the next cycle retries without advancing the push marker"
+    exit 1
+  fi
   if [ "$N" -gt 0 ]; then
     REMOTE="${T3_HARVEST_REMOTE:-harness-source-map/private/sessions/t3/incoming}"
     RECV="$(cat "$CODE/tools/t3/receive-harvest.sh")"
-    if (cd "$DIR" && tar -czf - -T "$LIST") | ssh -o BatchMode=yes -o ConnectTimeout=20 "$T3_HARVEST_PUSH" "sh -c $(printf %q "$RECV") recv $(printf %q "$REMOTE") $(printf %q "$ENV_ID")"; then
+    if ssh -o BatchMode=yes -o ConnectTimeout=20 "$T3_HARVEST_PUSH" "sh -c $(printf %q "$RECV") recv $(printf %q "$REMOTE") $(printf %q "$ENV_ID")" < "$ARCHIVE"; then
       mv "$NEXT" "$MARK"
       log "pushed $N files to $T3_HARVEST_PUSH:$REMOTE/$ENV_ID"
     else
@@ -76,6 +81,5 @@ if [ -n "${T3_HARVEST_PUSH:-}" ]; then
     mv "$NEXT" "$MARK"
     log "nothing new to push"
   fi
-  rm -f "$LIST"
 fi
 exit $rc

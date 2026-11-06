@@ -168,14 +168,45 @@ touched, the bundle holds:
 - the build and config files above;
 - the bound agent sessions.
 
-The fleet harvest transfers changed files incrementally. Its receiver installs data before publishing each
-bundle manifest, and removes the obsolete plain or gzip representation after installing its replacement.
+The fleet harvest transfers changed files incrementally. The producer selects and packages those files under the
+same per-store lock used by collection, including span segments and their coverage metadata. It releases the lock
+before SSH sends the immutable archive. A live collector's lock is never taken over just because it is old. Failed
+packaging or transfer leaves the last-successful push marker unchanged, so the next cycle retries the delta.
+
+The receiver stages the complete archive before changing the live store. A durable `.receive-pending` journal
+retains every staged source while data files are installed, obsolete compression twins are removed, and manifests
+are installed last. It commits `.receive-generation`, then atomically retires the journal. An interrupted receive
+remains unreadable; the next receive replays that journal before installing its new input. The receiver does not
+hold an assembly reader lock or wait for a long merge to finish.
+
+Local collection uses its store lock and a `.harvest-pending` journal containing the attempted roots. An uncaught
+write/archive failure leaves the journal; caught per-root failures remain in `harvest.json`'s `errors`. Both prevent
+assembly and packaging from treating partial files as a complete publication. Ordinary harvests include those
+pending and failed roots in their next collection. When local recovery is needed, the resolver invokes that same
+harvest path before discovering parts, with a three-second lock wait; a failed repair remains an explicit error.
+If publication completed but its process died before lock cleanup, the resolver reclaims only the dead lock and
+rechecks publication state, without collecting the archive again. Live owners retain the same bounded wait.
+Recovery does not invent missing source data or guarantee repair of an unreadable archive.
+
+Assembly validates the receive generation, local harvest publication identity, and absence of active/incomplete
+publication before and after source reads: manifests, launch evidence, activity, and the combined parts including
+their archived spans. Both cached-build return paths revalidate their inputs. A receive that completes during a
+read is detected even if filenames, byte lengths, and thread IDs stay unchanged. Once stable parts are copied into
+the build directory, the expensive merge and verification need no source-store lock. Existing stores without
+publication markers remain readable as legacy publications.
+
+This deliberately favors integrity over availability: an active or incomplete encountered environment fails
+discovery explicitly, and can temporarily prevent opening an otherwise unrelated family. A previously frozen
+build is separate from the mutable store; this protocol does not promise live reads of a store while it is being
+rewritten, nor silently omit a failed environment.
+
 Assembly reads the representation named by the producer's `machines[].files` manifest. This also recovers older
 stores containing both forms without modifying either original. Ambiguous representations without a manifest,
 or a missing declared file, are integrity errors; filesystem timestamps do not establish which bytes are current.
 Before publishing or reusing an assembled bundle, every collected machine's declared thread inventory must match
 its thread rows, and every indexed root session must bind to a collected thread. Cache identity includes the file
-manifest and thread inventory as well as collection time. A valid subset of the rows cannot pass as a complete family.
+manifest, thread inventory, and publication identity as well as collection time. A valid subset of the rows cannot
+pass as a complete family.
 
 It removes credentials before writing anything (§4.6). It reaches other machines through T3's own linked environments
 or over SSH. On macOS, a process T3 starts lacks the

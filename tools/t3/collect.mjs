@@ -2,7 +2,7 @@
 // T3 fleet collector (plan Contract A). Writes this machine's part of a private bundle for a thread family or a
 // time window, with credentials removed before anything reaches disk, and merges other machines' parts.
 // Usage: node tools/t3/collect.mjs --help
-import {existsSync, readFileSync, readdirSync, statSync, rmSync, mkdirSync, writeFileSync} from 'node:fs';
+import {existsSync, readFileSync, readdirSync, statSync, rmSync, mkdirSync, writeFileSync, renameSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {createHash, createHmac} from 'node:crypto';
 import {homedir, hostname, platform, arch} from 'node:os';
@@ -913,7 +913,7 @@ async function harvest(o) {
 // ---- the fleet harvest store ------------------------------------------------------------------------------------
 
 // One writer per machine store at a time (the hourly harvest and the resolver's on-demand refresh): a lock folder
-// naming its owner's pid. A lock whose owner is gone, or that is older than 30 minutes, is taken over.
+// naming its owner's pid. A dead owner's lock is taken over; a live long-running publisher is never displaced.
 export async function withStoreLock(dir, fn, {waitMs = 15 * 60000} = {}) {
  const lock = join(dir, '.lock');
  ensureDir(dir);
@@ -926,15 +926,34 @@ export async function withStoreLock(dir, fn, {waitMs = 15 * 60000} = {}) {
    const st = statSync(lock, {throwIfNoEntry: false});
    const age = st ? Date.now() - st.mtimeMs : 0;
    const pid = Number(read(join(lock, 'pid')));
-   if (age > 30 * 60000) stale = true;
-   else if (pid) {try {process.kill(pid, 0);} catch (k) {if (k.code === 'ESRCH') stale = true;}}
+   if (pid) {try {process.kill(pid, 0);} catch (k) {if (k.code === 'ESRCH') stale = true;}}
    else if (age > 60000) stale = true;
    if (stale) {rmSync(lock, {recursive: true, force: true}); continue;}
    if (Date.now() - t0 > waitMs) throw new Error(`${dir} is held by another harvest (pid ${pid || '?'})`);
    await new Promise(r => setTimeout(r, 1000));
   }
  }
- try {return await fn();} finally {rmSync(lock, {recursive: true, force: true});}
+ try {return await fn();} finally {
+  if (Number(read(join(lock, 'pid'))) === process.pid) rmSync(lock, {recursive: true, force: true});
+ }
+}
+
+export function harvestRecoveryRoots(dir, roots) {
+ const pending = readJson(join(dir, '.harvest-pending'));
+ if (existsSync(join(dir, '.harvest-pending')) && !Array.isArray(pending?.roots)) throw new Error('Harvest recovery journal is invalid');
+ const failed = readJson(join(dir, 'harvest.json'))?.errors || [];
+ return [...new Set([...roots, ...(pending?.roots || []), ...failed.map(e => e.root)].filter(r => typeof r === 'string' && r))];
+}
+
+// A thrown archive/write failure must remain distinguishable from the previous complete publication after the
+// writer lock is released. Per-root failures are committed in harvest.errors and retried by the next harvest.
+export async function withHarvestPublication(dir, roots, write) {
+ const pending = join(dir, '.harvest-pending');
+ writeFileSync(pending + '.next', JSON.stringify({roots}) + '\n', {mode: 0o600});
+ renameSync(pending + '.next', pending);
+ const result = await write();
+ rmSync(pending);
+ return result;
 }
 
 // The fleet harvest into a store (<store>/<environmentId>/): every span T3's logs still hold into the machine's span
@@ -953,10 +972,11 @@ export async function storeHarvest(o, {roots: given = null, onProgress = null} =
   let roots, values, credValues;
   try {
    const since = o.since ? ms(o.since) : Date.now() - 65 * 60000;
-   roots = given || [...new Set(db.all("select json_extract(payload_json,'$.lineage.rootThreadId') root from orchestration_v2_projection_threads where updated_at >= ? and deleted_at is null", iso(since)).map(r => r.root).filter(Boolean))];
+   roots = harvestRecoveryRoots(dir, given || [...new Set(db.all("select json_extract(payload_json,'$.lineage.rootThreadId') root from orchestration_v2_projection_threads where updated_at >= ? and deleted_at is null", iso(since)).map(r => r.root).filter(Boolean))]);
    values = secretValues({t3Home, home, repo, db});
    credValues = credentialValues({home, repo, t3Home, db});
   } finally {db.close();}
+  return withHarvestPublication(dir, roots, async () => {
   const redactor = new Redactor({aliasKey: partsKey, values});
   for (const [v, kind] of credValues) if (!/git email/.test(kind)) redactor.addValue(v, 'secret-value');
   const started = new Date().toISOString();
@@ -977,6 +997,7 @@ export async function storeHarvest(o, {roots: given = null, onProgress = null} =
   writeFileSync(join(dir, 'harvest.json'), JSON.stringify(record, null, 1) + '\n', {mode: 0o600});
   // wall time of the archive update and of the roots' collection (the assembler logs them)
   return {dir, environmentId, archive, results, record, timings: {archive: tCollect - tArchive, collect: Date.now() - tCollect}};
+  });
  }, o.lockWaitMs != null ? {waitMs: o.lockWaitMs} : {});
 }
 

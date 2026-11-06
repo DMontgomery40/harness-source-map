@@ -14,7 +14,7 @@ import {join, relative, sep, dirname} from 'node:path';
 import {createHash, randomUUID} from 'node:crypto';
 import {openReadOnly} from './sqlite.mjs';
 import {resolveFamily, FAMILY_METADATA_VERSION} from './family.mjs';
-import {storeHarvest, merge, mainRepo} from './collect.mjs';
+import {storeHarvest, withStoreLock, merge, mainRepo} from './collect.mjs';
 import {readBundle, writeBundle, emptyBundle, ensureDir, slug, readKeyFile, partsKeyFile, ALIAS_KEY_FILE, COLLECTOR_VERSION, FORMAT, READABLE_VERSIONS} from './bundle.mjs';
 import {familyKey, keyId} from './redact.mjs';
 import {credentialValues, scanBundle, scanBundleParallel, bundleFiles} from './verify.mjs';
@@ -30,8 +30,56 @@ export const fleetDir = repo => join(t3Root(repo), 'fleet');
 const dirs = d => {try {return readdirSync(d, {withFileTypes: true}).filter(e => e.isDirectory() && !e.name.startsWith('.')).map(e => e.name);} catch {return [];}};
 
 const partOptions = p => ({base: p.dir, files: p.entry.files});
-const partIdentity = p => `${p.entry.collectedAt}:${createHash('sha256').update(JSON.stringify([p.entry.files, p.entry.sizes, [...p.threadIds], p.entry.familyMetadata])).digest('hex')}`;
+const partIdentity = p => `${p.entry.collectedAt}:${createHash('sha256').update(JSON.stringify([p.entry.files, p.entry.sizes, [...p.threadIds], p.entry.familyMetadata, p.receiveGeneration])).digest('hex')}`;
 const needsFamilyMetadata = p => p?.entry.familyMetadata?.version !== FAMILY_METADATA_VERSION;
+
+// Optimistic read transaction for a store. Receive journals/generations and local harvest journals/records
+// bracket publication; the writer lock also excludes the local packaging read. Readers copy one publication or
+// fails explicitly, including when the producer dies. No lock is held during the expensive merge/verification.
+const receiveError = () => Object.assign(new Error('Harvest store update is incomplete or changed during assembly; retry after the publisher finishes or recovers'), {code: 'T3_RECEIVE_UPDATE'});
+export function receiveGeneration(store) {
+ const busy = () => ['.receive-pending', '.harvest-pending', '.lock'].some(name => existsSync(join(store, name)));
+ if (busy()) throw receiveError();
+ let generation = null;
+ try {generation = readFileSync(join(store, '.receive-generation'), 'utf8');} catch (e) {if (e.code !== 'ENOENT') throw e;}
+ let harvest = null;
+ try {harvest = readFileSync(join(store, 'harvest.json'), 'utf8');} catch (e) {if (e.code !== 'ENOENT') throw e;}
+ if (harvest !== null) {
+  let record; try {record = JSON.parse(harvest);} catch {throw receiveError();}
+  if (record.errors?.length) throw receiveError();
+ }
+ if (busy()) throw receiveError();
+ return harvest === null ? generation : JSON.stringify([generation, createHash('sha256').update(harvest).digest('hex')]);
+}
+export function withReceiveSnapshot(store, expected, read) {
+ const generation = receiveGeneration(store);
+ if (expected !== undefined && generation !== expected) throw receiveError();
+ const result = read();
+ if (receiveGeneration(store) !== generation) throw receiveError();
+ return result;
+}
+function assertReceiveSnapshots(parts) {
+ for (const p of parts) withReceiveSnapshot(p.store, p.receiveGeneration, () => {});
+}
+
+// Discovery must not strand this machine behind its own failed publication. The ordinary resolver refresh
+// repairs only journal/failed roots before reading parts; an active publisher has a bounded wait, then errors.
+export async function recoverLocalStore({store, environmentId, ...options}, harvest = storeHarvest) {
+ const dir = join(store, environmentId);
+ const incomplete = () => existsSync(join(dir, '.harvest-pending')) || !!readJson(join(dir, 'harvest.json'))?.errors?.length;
+ let recovered = false;
+ // A publisher can die after committing/removing its journal but before lock cleanup. Reclaim that lock using
+ // the normal live-owner checks, without collecting the archive again. A live owner still gets a bounded wait.
+ if (!incomplete() && existsSync(join(dir, '.lock'))) {
+  await withStoreLock(dir, async () => {}, {waitMs: 3000});
+  recovered = true;
+ }
+ // Recheck after waiting: the previous owner may have completed with per-root failures.
+ if (incomplete()) {await harvest({...options, store, lockWaitMs: 3000}, {roots: []}); recovered = true;}
+ if (!recovered) return false;
+ receiveGeneration(dir);
+ return true;
+}
 
 export function rootsNeedingRefresh(local, mine, harvested = new Set()) {
  return local.filter(r => !harvested.has(r.root) && (needsFamilyMetadata(mine.get(r.root)) ||
@@ -67,13 +115,15 @@ export function readParts(incoming) {
  const parts = [];
  for (const env of dirs(incoming)) {
   const store = join(incoming, env);
+  const generation = receiveGeneration(store);
   for (const name of dirs(join(store, 'families'))) {
    const dir = join(store, 'families', name);
    let b; try {b = readBundle(dir);} catch {continue;}
    const entry = b?.machines.find(m => m.environmentId === env && m.status === 'collected');
    if (!entry || b.collector?.aliasScheme !== 'fleet-parts') continue;
-   parts.push({environmentId: env, store, dir, root: b.scope.rootThreadId, since: b.scope.since, threadIds: new Set(entry.threadIds || []), hops: b.hops || [], entry, bundle: b, mtimeMs: statSync(join(dir, 'bundle.json')).mtimeMs});
+   parts.push({environmentId: env, store, dir, root: b.scope.rootThreadId, since: b.scope.since, threadIds: new Set(entry.threadIds || []), hops: b.hops || [], entry, bundle: b, receiveGeneration: generation, mtimeMs: statSync(join(dir, 'bundle.json')).mtimeMs});
   }
+  withReceiveSnapshot(store, generation, () => {});
  }
  return parts;
 }
@@ -172,7 +222,7 @@ export function addLaunchHops(parts, cacheDir) {
  for (const p of parts) {
   const key = h => `${h.from.environmentId} ${h.to.environmentId} ${h.to.threadId}`;
   const byKey = new Map(p.hops.map(h => [key(h), h]));
-  const launches = partLaunches(p, cacheDir).filter(l => p.threadIds.has(l.callerThreadId)).sort((a, b) => ((a.at || '') < (b.at || '') ? -1 : 1));
+  const launches = withReceiveSnapshot(p.store, p.receiveGeneration, () => partLaunches(p, cacheDir)).filter(l => p.threadIds.has(l.callerThreadId)).sort((a, b) => ((a.at || '') < (b.at || '') ? -1 : 1));
   for (const l of launches) {
    const h = launchHop(l, holds);
    const had = byKey.get(key(h));
@@ -190,6 +240,9 @@ export function addLaunchHops(parts, cacheDir) {
 // still open (no completed_at, or a running status). Cached like the launches.
 const OPEN = new Set(['running', 'preparing', 'starting', 'queued', 'pending', 'waiting']);
 export function partActivity(p, cacheDir) {
+ return withReceiveSnapshot(p.store, p.receiveGeneration, () => partActivitySnapshot(p, cacheDir));
+}
+function partActivitySnapshot(p, cacheDir) {
  const mdir = join(p.dir, 'machines', p.environmentId);
  const f = resolveBundleFile(join(mdir, 'threads.json'), partOptions(p));
  if (!f) return {lastMs: null, active: false};
@@ -254,6 +307,10 @@ function writeLines(file, lines) {
 // One machine's parts of the family as one part folder (aliases unchanged: all are the fleet parts key's), with the
 // archive's spans for [sinceMs, untilMs] and its coverage there.
 export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId, stale = []}) {
+ assertReceiveSnapshots(machineParts);
+ return withReceiveSnapshot(machineParts[0].store, machineParts[0].receiveGeneration, () => combineMachineSnapshot(machineParts, out, {sinceMs, untilMs, partsKeyId, stale}));
+}
+function combineMachineSnapshot(machineParts, out, {sinceMs, untilMs, partsKeyId, stale}) {
  const env = machineParts[0].environmentId, store = machineParts[0].store;
  const mdir = join(out, 'machines', env);
  ensureDir(mdir);
@@ -353,7 +410,7 @@ export function latestBuild(familyDir) {
 // changed after their part was taken (the hourly harvest keeps the rest). A build is reused, across resolver restarts
 // too, while its inputs are the same: the same parts (by collection time), the same assembly version, and every
 // machine's span archive either unchanged or already past the family's window when the build was made.
-export const ASSEMBLY_VERSION = 4;
+export const ASSEMBLY_VERSION = 5;
 const MERGE_WORKERS = Math.max(1, Math.min(8, (availableParallelism?.() || 4) - 1));
 const OPEN_REUSE_MS = 5 * 60000;
 export async function assembleFamily({threadId, environmentId = null, repo = mainRepo(), t3Home = join(homedir(), '.t3'), partsKey = null, onProgress = () => {}, maxAgeMs = null, refreshLocal = true, mergeWorkers = MERGE_WORKERS} = {}) {
@@ -364,6 +421,10 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
  let lap = t0;
  const mark = name => {const now = Date.now(); timings[name] = (timings[name] || 0) + now - lap; lap = now;};
  const localEnv = (() => {try {return readFileSync(join(t3Home, 'userdata', 'environment-id'), 'utf8').trim();} catch {return null;}})();
+ if (refreshLocal && localEnv) {
+  await recoverLocalStore({store: incoming, environmentId: localEnv, t3Home, partsKey: pk, label: 'mac', gzip: true, agentSessions: true, repo});
+  mark('localRecovery');
+ }
  const cache = join(fleetDir(repo), '.cache');
  const allParts = () => addLaunchHops(readParts(incoming), join(cache, 'launches'));
  let parts = allParts();
@@ -385,14 +446,15 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   if (a0 && a0.version === ASSEMBLY_VERSION && age0 < OPEN_REUSE_MS && (maxAgeMs == null || age0 < maxAgeMs) && current && !metadataStale && (!a0.stale?.length || held)) {
    const bundle = readBundle(last0);
    assertBundleInventory(last0, bundle);
+   assertReceiveSnapshots(fam);
    onProgress(1);
    return {dir: last0, bundle, root: r0, reused: true};
   }
  }
  // This machine's part of the family: its roots of every thread found so far (the thread itself when it is this
  // machine's, or the link names no machine), collected where the store lacks them or they changed since. When the
- // hourly harvest holds the store, the stored parts are used as they are and each one that changed since it was
- // taken is recorded as stale: a gap of the machine in the bundle, never silent.
+ // hourly harvest holds the store, any stale parts can be used only after publication checks establish a stable
+ // snapshot. An active or incomplete publication fails explicitly; an earlier frozen build remains separate.
  let staleParts = [];
  if (refreshLocal && localEnv) {
   const harvested = new Set();
@@ -408,10 +470,9 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
    timings.staleRoots = (timings.staleRoots || 0) + stale.length;
    if (!stale.length) break;
    for (const r of stale) harvested.add(r);
-   // The hourly harvest may hold the store: then its parts (at most an hour old) are used as they are, after a short
-   // wait.
+   // Wait briefly for the store; later snapshot checks reject a publisher still active or changed underneath us.
    try {
-    const h = await storeHarvest({store: incoming, partsKey: pk, label: 'mac', gzip: true, agentSessions: true, repo, lockWaitMs: 3000}, {roots: stale, onProgress: f => onProgress(0.05 + 0.4 * f)});
+    const h = await storeHarvest({store: incoming, t3Home, partsKey: pk, label: 'mac', gzip: true, agentSessions: true, repo, lockWaitMs: 3000}, {roots: stale, onProgress: f => onProgress(0.05 + 0.4 * f)});
     timings.localArchive = (timings.localArchive || 0) + (h.timings?.archive || 0);
     timings.localCollect = (timings.localCollect || 0) + (h.timings?.collect || 0);
    } catch (e) {
@@ -450,6 +511,7 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
  if (a && a.version === ASSEMBLY_VERSION && same(a.inputs, inputs) && archived && (!staleParts.length || a.stale?.length) && (!open || age < OPEN_REUSE_MS) && (maxAgeMs == null || age < maxAgeMs)) {
   const bundle = readBundle(last);
   assertBundleInventory(last, bundle);
+  assertReceiveSnapshots(fam);
   onProgress(1);
   return {dir: last, bundle, root, reused: true};
  }
@@ -463,6 +525,7 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   for (const p of fam) {if (!byEnv.has(p.environmentId)) byEnv.set(p.environmentId, []); byEnv.get(p.environmentId).push(p);}
   const partDirs = [];
   for (const [env, ps] of byEnv) partDirs.push(combineMachine(ps, join(tmp, 'parts', env), {sinceMs, untilMs, partsKeyId: keyId(pk), stale: env === localEnv ? staleParts : []}));
+  assertReceiveSnapshots(fam);
   mark('combine');
   onProgress(0.6);
   // The bundle, with the family's own key.

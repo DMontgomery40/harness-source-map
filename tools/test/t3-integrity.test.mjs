@@ -1,14 +1,16 @@
 // Storage/schema regressions only: no session recordings or private fixture material.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync} from 'node:fs';
+import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, chmodSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, dirname} from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {gzip, readBuffer} from '../t3/gz.mjs';
 import {combineMachine, partActivity} from '../t3/assemble.mjs';
 import * as assembly from '../t3/assemble.mjs';
 import {partLaunches} from '../t3/launches.mjs';
+import {withStoreLock, withHarvestPublication, harvestRecoveryRoots} from '../t3/collect.mjs';
 
 function scratch(t) { const dir = mkdtempSync(join(tmpdir(), 't3-integrity-')); t.after(() => rmSync(dir, {recursive: true, force: true})); return dir; }
 function put(file, value) { mkdirSync(dirname(file), {recursive: true}); writeFileSync(file, typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)); }
@@ -136,4 +138,154 @@ for (const compressed of [true, false]) test(`incremental receive replaces ${com
  execFileSync('sh', ['-c', code, 'receive', incoming, 'test-machine'], {input: archive});
  assert.equal(readBuffer(target).toString(), 'current');
  assert.equal(existsSync(target + (compressed ? '' : '.gz')), false, 'obsolete representation is removed');
+});
+
+function receiveFixture(t) {
+ const dir = scratch(t), incoming = join(dir, 'private/sessions/t3/incoming'), environmentId = 'test-machine';
+ const store = join(incoming, environmentId), rel = 'families/test-root', p = part(join(store, rel), {compressed: false});
+ p.store = store; p.receiveGeneration = null;
+ p.entry.status = 'collected';
+ const file = 'machines/test-machine/threads.json';
+ const rows = provider => ({threads: [{thread_id: 'test-root', active_provider_thread_id: provider}, {thread_id: 'test-child'}], runs: []});
+ const oldRows = rows('old-provider'), newRows = rows('new-provider');
+ assert.equal(JSON.stringify(oldRows).length, JSON.stringify(newRows).length);
+ put(join(p.dir, file), oldRows);
+ const bundle = {format: 't3-fleet-bundle', version: 2, collector: {aliasScheme: 'fleet-parts'}, scope: {rootThreadId: p.root, since: p.since}, machines: [p.entry], hops: []};
+ put(join(p.dir, 'bundle.json'), bundle);
+ const send = join(dir, 'send');
+ put(join(send, rel, file), newRows);
+ put(join(send, rel, 'bundle.json'), {...bundle, machines: [{...p.entry, collectedAt: '2000-01-01T00:00:04Z'}]});
+ // Archive data and metadata share the same publication transaction as family parts.
+ put(join(store, 'archive/example.ndjson'), 'old archive\n');
+ put(join(send, 'archive/example.ndjson'), 'new archive\n');
+ const empty = join(dir, 'empty'); mkdirSync(empty);
+ const archive = source => execFileSync('tar', ['-czf', '-', '-C', source, '.']);
+ const receiver = new URL('../t3/receive-harvest.sh', import.meta.url);
+ const run = (source = send, extraEnv = {}) => execFileSync('sh', [receiver.pathname, incoming, environmentId], {input: archive(source), env: {...process.env, ...extraEnv}, stdio: ['pipe', 'pipe', 'pipe']});
+ return {dir, incoming, store, p, send, empty, run, file, oldRows, newRows};
+}
+
+for (const phase of ['before-manifest', 'after-generation']) test(`interrupted receive ${phase} fails closed and replays its complete journal`, t => {
+ const f = receiveFixture(t), bin = join(f.dir, 'bin');
+ const target = phase === 'before-manifest' ? '*/bundle.json' : '*/.receive-completed';
+ put(join(bin, 'mv'), `#!/bin/sh\ncase "$2" in ${target}) exit 73 ;; esac\nexec /bin/mv "$@"\n`);
+ chmodSync(join(bin, 'mv'), 0o700);
+ assert.throws(() => f.run(f.send, {PATH: `${bin}:${process.env.PATH}`}));
+ assert.ok(existsSync(join(f.store, '.receive-pending/files')));
+ assert.deepEqual(JSON.parse(readFileSync(join(f.p.dir, f.file))), f.newRows, 'same-name, same-size bytes were already replaced');
+ assert.equal(existsSync(join(f.store, '.receive-generation')), phase === 'after-generation');
+ for (const read of [() => assembly.readParts(f.incoming), () => partActivity(f.p, null), () => assembly.addLaunchHops([f.p], null), () => combine(f.p, join(f.dir, 'blocked'))]) {
+  assert.throws(read, {code: 'T3_RECEIVE_UPDATE'});
+ }
+ // A terminated receiver may leave its owner link. The next receive recovers the journal before new input.
+ put(join(f.store, '.receive-lock'), '2147483647\n');
+ f.run(f.empty);
+ assert.equal(existsSync(join(f.store, '.receive-pending')), false);
+ assert.equal(existsSync(join(f.store, '.receive-lock')), false);
+ assert.equal(readFileSync(join(f.store, 'archive/example.ndjson'), 'utf8'), 'new archive\n');
+ assert.equal(JSON.parse(readFileSync(join(f.p.dir, 'bundle.json'))).machines[0].collectedAt, '2000-01-01T00:00:04Z');
+ const current = assembly.readParts(f.incoming)[0];
+ combine(current, join(f.dir, 'recovered'));
+ assert.deepEqual(JSON.parse(readFileSync(join(f.dir, 'recovered', f.file))), f.newRows);
+ assert.throws(() => combine(f.p, join(f.dir, 'stale')), {code: 'T3_RECEIVE_UPDATE'}, 'pre-publication metadata cannot be reused');
+});
+
+test('an assembly read spanning a complete receive rejects the mixed snapshot', t => {
+ const f = receiveFixture(t);
+ assert.equal(assembly.receiveGeneration(f.store), null, 'legacy stores require no migration');
+ let readNew = false;
+ assert.throws(() => assembly.withReceiveSnapshot(f.store, null, () => {
+  assert.deepEqual(JSON.parse(readFileSync(join(f.p.dir, f.file))), f.oldRows);
+  f.run(); // A different process publishes while this read transaction remains open.
+  readNew = JSON.parse(readFileSync(join(f.p.dir, f.file))).threads[0].active_provider_thread_id === 'new-provider';
+  return 'must not escape';
+ }), {code: 'T3_RECEIVE_UPDATE'});
+ assert.equal(readNew, true, 'the interleaving crossed the publication, rather than only testing a pending marker');
+ assert.throws(() => partActivity(f.p, null), {code: 'T3_RECEIVE_UPDATE'});
+ assert.throws(() => assembly.addLaunchHops([f.p], null), {code: 'T3_RECEIVE_UPDATE'});
+});
+
+test('a live duplicate receiver fails promptly without modifying the store', t => {
+ const f = receiveFixture(t);
+ put(join(f.store, '.receive-lock'), `${process.pid}\n`);
+ assert.throws(() => f.run());
+ assert.deepEqual(JSON.parse(readFileSync(join(f.p.dir, f.file))), f.oldRows);
+ assert.equal(existsSync(join(f.store, '.receive-pending')), false);
+});
+
+test('the early assembly cache return revalidates a receive that completes after input discovery', async t => {
+ const f = receiveFixture(t), p = f.p;
+ const cached = join(f.dir, 'private/sessions/t3/fleet/test-mac-test-root/20000101T000000Z');
+ put(join(cached, 'bundle.json'), readFileSync(join(p.dir, 'bundle.json')));
+ for (const file of p.entry.files) put(join(cached, file), readFileSync(join(p.dir, file)));
+ const identity = `${p.entry.collectedAt}:${createHash('sha256').update(JSON.stringify([p.entry.files, p.entry.sizes, [...p.threadIds], p.entry.familyMetadata, null])).digest('hex')}`;
+ put(join(cached, 'assembly.json'), {version: assembly.ASSEMBLY_VERSION, builtAt: new Date().toISOString(), inputs: {'test-machine/families/test-root': identity}});
+ const options = {repo: f.dir, t3Home: join(f.dir, 'absent-t3'), partsKey: Buffer.alloc(32, 1), threadId: 'test-root', environmentId: 'test-machine', refreshLocal: false};
+ assert.equal((await assembly.assembleFamily(options)).reused, true, 'fixture reaches the early cache return');
+ let published = false;
+ await assert.rejects(assembly.assembleFamily({...options, onProgress: progress => {
+  if (progress === 0.05) {f.run(); published = true;}
+ }}), {code: 'T3_RECEIVE_UPDATE'});
+ assert.equal(published, true);
+});
+
+test('local publication blocks mixed reads, preserves failures, and ordinary recovery retries failed roots', async t => {
+ const f = receiveFixture(t);
+ await withStoreLock(f.store, () => withHarvestPublication(f.store, ['test-root'], async () => {
+  put(join(f.p.dir, f.file), f.newRows);
+  assert.throws(() => combine(f.p, join(f.dir, 'during-write')), {code: 'T3_RECEIVE_UPDATE'});
+  // This is storeHarvest's caught-per-root failure path: the outer publication resolves with errors recorded.
+  put(join(f.store, 'harvest.json'), {errors: [{root: 'test-root', error: 'example write failure'}]});
+ }));
+ assert.equal(existsSync(join(f.store, '.lock')), false);
+ assert.equal(existsSync(join(f.store, '.harvest-pending')), false);
+ assert.throws(() => assembly.readParts(f.incoming), {code: 'T3_RECEIVE_UPDATE'});
+ assert.deepEqual(harvestRecoveryRoots(f.store, []), ['test-root']);
+ let recovered = false;
+ assert.equal(await assembly.recoverLocalStore({store: f.incoming, environmentId: 'test-machine'}, async (options, selection) => {
+  assert.equal(options.lockWaitMs, 3000);
+  assert.deepEqual(selection.roots, [], 'on-demand preflight uses the ordinary recovery-root selection');
+  const roots = harvestRecoveryRoots(f.store, selection.roots);
+  await withStoreLock(f.store, () => withHarvestPublication(f.store, roots, async () => {
+   put(join(f.p.dir, f.file), f.newRows);
+   put(join(f.store, 'harvest.json'), {errors: [], harvestedAt: '2000-01-01T00:00:05Z'});
+   recovered = true;
+  }));
+ }), true);
+ assert.equal(recovered, true);
+ combine(assembly.readParts(f.incoming)[0], join(f.dir, 'local-recovered'));
+});
+
+test('an uncaught local publication failure remains blocked after lock release and retains its recovery roots', async t => {
+ const f = receiveFixture(t);
+ await assert.rejects(withStoreLock(f.store, () => withHarvestPublication(f.store, ['test-root'], async () => {
+  put(join(f.p.dir, f.file), f.newRows);
+  throw new Error('example archive failure');
+ })), /example archive failure/);
+ assert.equal(existsSync(join(f.store, '.lock')), false);
+ assert.ok(existsSync(join(f.store, '.harvest-pending')));
+ assert.throws(() => assembly.readParts(f.incoming), {code: 'T3_RECEIVE_UPDATE'});
+ assert.deepEqual(harvestRecoveryRoots(f.store, ['test-new-root']), ['test-new-root', 'test-root']);
+ await assert.rejects(assembly.recoverLocalStore({store: f.incoming, environmentId: 'test-machine'}, async () => {}), {code: 'T3_RECEIVE_UPDATE'}, 'a failed repair cannot certify the old manifest');
+});
+
+test('store lock cleanup never removes a replacement owner lock', async t => {
+ const dir = scratch(t);
+ await withStoreLock(dir, async () => {put(join(dir, '.lock/pid'), '2147483647');});
+ assert.equal(readFileSync(join(dir, '.lock/pid'), 'utf8'), '2147483647');
+});
+
+test('on-demand recovery clears a dead lock after a complete publication without collecting again', async t => {
+ const f = receiveFixture(t);
+ const record = {errors: [], harvestedAt: '2000-01-01T00:00:05Z'};
+ put(join(f.store, 'harvest.json'), record);
+ put(join(f.store, '.lock/pid'), '2147483647');
+ assert.throws(() => assembly.readParts(f.incoming), {code: 'T3_RECEIVE_UPDATE'});
+ assert.equal(await assembly.recoverLocalStore({store: f.incoming, environmentId: 'test-machine'}, async () => {
+  assert.fail('a complete publication needs only dead-lock cleanup, not archive collection');
+ }), true);
+ assert.equal(existsSync(join(f.store, '.lock')), false);
+ assert.deepEqual(JSON.parse(readFileSync(join(f.store, 'harvest.json'))), record);
+ assert.deepEqual(JSON.parse(readFileSync(join(f.p.dir, f.file))), f.oldRows);
+ assert.equal(assembly.readParts(f.incoming).length, 1);
 });
