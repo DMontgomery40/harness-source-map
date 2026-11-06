@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Loopback-only Trace resolver. No uploads, arbitrary paths, or directory-listing API.
+// Loopback-only Trace resolver and explicit AI provider bridge. No arbitrary paths or directory-listing API.
 import {largeHarEntries, captureEntryMatches} from './trace-har.mjs';
 import {readFileSync} from 'node:fs';
 import {createServer} from 'node:http';
@@ -23,6 +23,7 @@ import {assembleFamily, readParts, storesHold, incomingDir, fleetBuilds, t3Root}
 import {mainRepo} from './t3/collect.mjs';
 import {openReadOnly} from './t3/sqlite.mjs';
 import {existsSync} from 'node:fs';
+import {createTraceAI} from './trace-ai.mjs';
 
 export const PORT = 8766;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -198,6 +199,7 @@ export async function t3Session(roots,id,builds=[]){
 }
 
 export function createTraceServer({roots=defaultRoots,captureRoots=roots===defaultRoots?defaultCaptureRoots:[],opencodeDatabases=roots===defaultRoots?defaultDatabases:[],t3Roots=roots===defaultRoots?defaultT3Roots:[],t3Assembler=roots===defaultRoots?createAssembler():null,t3Builds=roots===defaultRoots?()=>fleetBuilds(defaultT3Repo):()=>[],siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){
+ const ai=createTraceAI();
  const tickets=new Map();
  // The family of a session id, found the same way for the manifest and for its local sources (kept briefly,
  // so the Sources lens doesn't walk every project folder on each read).
@@ -284,6 +286,7 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
   if(url.pathname.startsWith('/v1/')){
    if(!trusted || req.headers['x-trace-request']!=='1')return reply(403,{error:'Forbidden request'});
    try{
+    if(url.pathname.startsWith('/v1/ai/'))return await ai.handle(req,res,url);
     if(url.pathname.startsWith('/v1/recording/')){
      if(url.pathname==='/v1/recording/capture'&&req.method==='GET'){try{return reply(200,await recorder.capture(url.searchParams.get('run')||''));}catch{return reply(404,{error:'Checked recording not available'});}}
      if(url.pathname==='/v1/recording/status'&&req.method==='GET')return reply(200,await recorder.status());
@@ -459,6 +462,7 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
   }
   reply(404,{error:'Not found'});
  });
+ server.once('close',()=>ai.close());
  return server;
 }
 
