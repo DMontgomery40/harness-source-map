@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import { createRequire } from "node:module";
 
-const { evidenceFinder, tolerantPattern } = createRequire(import.meta.url)("../evidence-match.cjs");
+const { evidenceFinder, tolerantPattern, uniqueEvidence } = createRequire(import.meta.url)("../evidence-match.cjs");
 
 function build(files) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "evidence-"));
@@ -55,4 +55,19 @@ test("wildcards match whole identifiers only; path segments stay exact; minified
   const find3 = evidenceFinder(build({ "chunk-c.js": 'var k7n="bridge-spawn";this.path=Tr(J1(e),"journal.jsonl")' }));
   assert.equal(find3("chunk-x.js", 'h6n="bridge-spawn"').literal, 'k7n="bridge-spawn"');
   assert.equal(find3("chunk-x.js", 'this.path=Sr(I0(e),"journal.jsonl")').literal, 'this.path=Tr(J1(e),"journal.jsonl")');
+});
+
+test("desktop evidence records a unique renamed identifier with its actual text and offset", () => {
+  assert.deepEqual(uniqueEvidence('prefix;var xw="local-agent-mode-sessions";', 'uC="local-agent-mode-sessions"'), {
+    offset: 11, literal: 'xw="local-agent-mode-sessions"',
+  });
+  assert.deepEqual(uniqueEvidence('prefix;this.vmStorageDir=n.default.join(u.app.getPath("userData"),"claude-code-vm");', 'this.vmStorageDir=n.default.join(a.app.getPath("userData"),"claude-code-vm")'), {
+    offset: 7, literal: 'this.vmStorageDir=n.default.join(u.app.getPath("userData"),"claude-code-vm")',
+  });
+});
+
+test("desktop evidence refuses changed strings and ambiguous exact or renamed matches", () => {
+  assert.equal(uniqueEvidence('xw="new-agent-mode-sessions"', 'uC="local-agent-mode-sessions"'), null);
+  assert.equal(uniqueEvidence('xw="local-agent-mode-sessions";yw="local-agent-mode-sessions"', 'uC="local-agent-mode-sessions"'), null);
+  assert.equal(uniqueEvidence('uC="local-agent-mode-sessions";uC="local-agent-mode-sessions"', 'uC="local-agent-mode-sessions"'), null);
 });

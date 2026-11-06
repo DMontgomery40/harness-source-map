@@ -37,6 +37,16 @@ Stream compressed input and output where possible. Avoid expanding all machines'
 
 Resource improvements preserve privacy scanning, exact join evidence, request ordering and byte-index correctness. Measure the real acceptance family under the normal Node heap; a raised heap is diagnostic evidence, not the finished fix.
 
+## AI explanations of evidence
+
+The user requires an AI TL;DR/explanation feature as part of this work. It must explain meaningful scopes of observed behavior: selected layers, a request range, cross-agent communication, network activity, or a whole recorded family. A generic single-agent summary is insufficient. The difficult design question is how a user selects and understands that scope without another dense control panel; the model review must resolve it alongside stable inspection.
+
+Provide a useful preset prompt that the user can edit for a specific question. Support a user-configured API endpoint/key/model and link the canonical CLIProxyAPI instructions for users choosing a subscription-backed local proxy. Verify upstream capabilities and distinguish the proxy's documentation from any provider's subscription terms. Do not collect subscription credentials into Trace.
+
+Explanations must connect claims to the exact available evidence, making the relevant requests, layers, calls or relationships easy to inspect. Separate observations from hypotheses and unavailable evidence. Bounded evidence preparation must disclose omitted or unavailable inputs; never claim to have analyzed a complete raw recording after silently truncating it. Do not send recordings automatically. An explicit user action selects the evidence and configured destination. Treat source/log content as data, not instructions to the summarizing agent. Keep credentials out of URLs, logs, exports and prompt evidence.
+
+Research the highest-value observability questions against original user reports and primary technical sources. The user's recollections of recent subagent-status summarization changes and March prompt-cache incidents are investigation leads, not established facts. The goal is to expose hidden harness behavior and trace causal relationships with evidence; it is not to present unsupported scandal claims or reframe the project as a token-cost dashboard.
+
 ## Acceptance
 
 1. A fresh assembly of the latest acceptance family reconciles all harvested thread rows and native-session entries, including Codex/ChatGPT. Exact counts may grow; a stale subset cannot pass.
@@ -48,6 +58,7 @@ Resource improvements preserve privacy scanning, exact join evidence, request or
 6. The Harness GUI is absent. Opening Trace, including old view links, still starts in the landscape or its existing accessibility/WebGL fallback.
 7. Streaming regression checks preserve every span offset and derivation result except explicitly reviewed classification corrections. Full rebuild wall time and peak memory are recorded locally.
 8. The complete repository gate, local rendered interaction checks and private-family acceptance run are reported honestly. Only reviewed public code and documentation are committed and pushed.
+9. AI explanations accept an editable prompt and a clear selected scope, use the configured compatible endpoint, can be canceled, and link supported claims back to evidence. Missing coverage and bounded input are represented honestly. Provider errors, an invalid key, unavailable proxy, narrow layout and keyboard operation are tested without transmitting private recordings during development.
 
 ## Review status
 

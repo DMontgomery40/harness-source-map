@@ -13,7 +13,7 @@ const OUT=path.join(ROOT,'claude-code','outputs','local-sources.json');
 const VERSION=(()=>{try{return JSON.parse(fs.readFileSync(path.join(ROOT,'claude-code','work','current.json'),'utf8')).version;}catch{return null;}})();
 // Evidence is found by content, so renamed chunks and minified identifiers move it instead of breaking it
 // (evidence-match.cjs); only a literal gone from the whole build is reported.
-const {evidenceFinder}=require('./evidence-match.cjs');const find=evidenceFinder(D);
+const {evidenceFinder,uniqueEvidence}=require('./evidence-match.cjs');const find=evidenceFinder(D);
 const missing=[];
 function ev(f,lit,hint){if(lit.length>=120)throw Error('literal too long '+lit);const e=find(f,lit,hint);if(!e)missing.push(f+' :: '+lit);return e;}
 const S=[];
@@ -272,8 +272,17 @@ add({id:'remote-folder-sync',path:'remote: cloud session folder sync',env:[],kin
 add({id:'remote-feedback',path:'remote: /bug feedback upload',env:[],kind:'remote',what:'A /bug report upload with the transcript, subagent transcripts and last API request.',join:'approximate',joinKey:'report id',writer:'/bug',
  evidence:[['chunk-6bdxb0yq.js','_("feedback_transcript_share")']],enabledBy:'running /bug and agreeing to share the transcript'});
 
-const ASAR='/Applications/Claude.app/Contents/Resources/app.asar';let asar='';try{asar=fs.readFileSync(ASAR,'latin1');}catch{console.error('Claude.app not found: desktop evidence is not re-checked');}
-function aev(lit){const i=asar.indexOf(lit);if(i<0){missing.push('ASAR :: '+lit);return null;}return {file:'Claude.app/Contents/Resources/app.asar',offset:i,literal:lit};}
+// This is the currently installed desktop artifact, not an archived/pinned source.
+// Its version and bytes are checked independently of the extracted CLI build; an app
+// update requires a reviewed regeneration even when the CLI version is unchanged.
+const ASAR='/Applications/Claude.app/Contents/Resources/app.asar';let asar='',desktopSource=null;
+try{
+ const bytes=fs.readFileSync(ASAR);asar=bytes.toString('latin1');
+ const version=require('child_process').execFileSync('/usr/libexec/PlistBuddy',['-c','Print CFBundleShortVersionString','/Applications/Claude.app/Contents/Info.plist'],{encoding:'utf8'}).trim();
+ if(!version)throw Error('desktop version missing');
+ desktopSource={version,asarSha256:require('crypto').createHash('sha256').update(bytes).digest('hex')};
+}catch{missing.push('Claude.app artifact or version unavailable');}
+function aev(lit){const e=uniqueEvidence(asar,lit);if(!e){missing.push('ASAR (missing or ambiguous) :: '+lit);return null;}return {file:'Claude.app/Contents/Resources/app.asar',...e};}
 function addD(o){const e=o.aevidence.map(aev).filter(Boolean);delete o.aevidence;add({...o,evidence:[]});S[S.length-1].evidence=e;const k=missing.indexOf('NO EVIDENCE '+o.id);if(e.length&&k>=0)missing.splice(k,1);}
 const DS='~/Library/Application Support/Claude';
 addD({id:'desktop-code-session',path:DS+'/claude-code-sessions/<account id>/<org id>/local_<desktop session id>.json',kind:'json',
@@ -298,14 +307,15 @@ addD({id:'desktop-bundled-cli',path:DS+'/{claude-code/<version>/claude.app,claud
 
 // --check: write nothing; fail when evidence is gone from the build, or when the committed list differs from what
 // the build it names gives. work/extracted can hold a newer build than the committed list (a Claude Code refresh
-// that has not published yet); then the entries are compared without their evidence locations, which that
-// refresh regenerates.
+// that has not published yet); then CLI entries are compared without evidence locations.
+// Desktop provenance and evidence remain exact regardless of the CLI build's version.
 const newer=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++)if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0);return false;};
 const sansLocations=list=>JSON.stringify(list.map(({evidence,...entry})=>entry));
+const desktopEvidence=list=>JSON.stringify(list.filter(entry=>entry.id.startsWith('claude-code.desktop-')));
 if(process.argv.includes('--check')){
  let had=null;try{had=JSON.parse(fs.readFileSync(OUT,'utf8'));}catch{}
  const ahead=had&&VERSION&&had.extractedVersion!==VERSION&&newer(VERSION,had.extractedVersion);
- if(ahead)console.log(`local-sources.json describes ${had.extractedVersion}; work/extracted holds the newer ${VERSION}, so evidence locations were not compared`);
- if(!had||(ahead?sansLocations(had.sources)!==sansLocations(S):(had.extractedVersion!==VERSION||JSON.stringify(had.sources)!==JSON.stringify(S)))){console.error('claude-code/outputs/local-sources.json is out of date for this build: run node claude-code/extract/local-sources.cjs');process.exitCode=1;}
-}else fs.writeFileSync(OUT,JSON.stringify({product:'claude-code',extractedVersion:VERSION,generated:new Date().toISOString().slice(0,10),sources:S},null,2)+'\n');
+ if(ahead)console.log(`local-sources.json describes ${had.extractedVersion}; work/extracted holds the newer ${VERSION}, so CLI evidence locations were not compared`);
+ if(!had||JSON.stringify(had.desktopSource)!==JSON.stringify(desktopSource)||desktopEvidence(had.sources)!==desktopEvidence(S)||(ahead?sansLocations(had.sources)!==sansLocations(S):(had.extractedVersion!==VERSION||JSON.stringify(had.sources)!==JSON.stringify(S)))){console.error('claude-code/outputs/local-sources.json is out of date for this build: run node claude-code/extract/local-sources.cjs');process.exitCode=1;}
+}else if(!missing.length)fs.writeFileSync(OUT,JSON.stringify({product:'claude-code',extractedVersion:VERSION,desktopSource,generated:new Date().toISOString().slice(0,10),sources:S},null,2)+'\n');
 const c={};for(const s of S)c[s.join]=(c[s.join]||0)+1;console.log('sources',S.length,JSON.stringify(c));if(missing.length){console.error('Evidence not found in this build (update the entries):\n'+missing.join('\n'));process.exitCode=1;}

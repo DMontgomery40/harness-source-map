@@ -31,6 +31,20 @@ function tolerantPattern(lit) {
   return { anchor, re };
 }
 
+// Desktop anchors have no chunk or proximity hint. Accept only one occurrence, and
+// record the installed artifact's actual bytes rather than the historical spelling.
+function uniqueEvidence(text, literal) {
+  if (!literal) return null;
+  const exact = text.indexOf(literal);
+  if (exact !== -1) return text.indexOf(literal, exact + 1) === -1 ? { offset: exact, literal } : null;
+  const { anchor, re } = tolerantPattern(literal);
+  if (anchor && !text.includes(anchor)) return null;
+  const matches = new RegExp(re.source, 'g');
+  const match = matches.exec(text);
+  if (!match || matches.exec(text)) return null;
+  return { offset: match.index, literal: match[0] };
+}
+
 function evidenceFinder(dir) {
   const cache = {};
   const src = f => cache[f] ??= (fs.existsSync(path.join(dir, f)) ? fs.readFileSync(path.join(dir, f), 'latin1') : null);
@@ -52,4 +66,4 @@ function evidenceFinder(dir) {
   };
 }
 
-module.exports = { evidenceFinder, tolerantPattern };
+module.exports = { evidenceFinder, tolerantPattern, uniqueEvidence };
