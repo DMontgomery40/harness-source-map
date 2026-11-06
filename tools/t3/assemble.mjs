@@ -410,7 +410,7 @@ export function latestBuild(familyDir) {
 // changed after their part was taken (the hourly harvest keeps the rest). A build is reused, across resolver restarts
 // too, while its inputs are the same: the same parts (by collection time), the same assembly version, and every
 // machine's span archive either unchanged or already past the family's window when the build was made.
-export const ASSEMBLY_VERSION = 5;
+export const ASSEMBLY_VERSION = 6;
 const MERGE_WORKERS = Math.max(1, Math.min(8, (availableParallelism?.() || 4) - 1));
 const OPEN_REUSE_MS = 5 * 60000;
 export async function assembleFamily({threadId, environmentId = null, repo = mainRepo(), t3Home = join(homedir(), '.t3'), partsKey = null, onProgress = () => {}, maxAgeMs = null, refreshLocal = true, mergeWorkers = MERGE_WORKERS} = {}) {
@@ -543,7 +543,9 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   mark('prepare');
   // The merge's per-machine scan is skipped: the whole bundle is verified below, before it is served.
   // The merge's files are shared out to worker threads (collect.mjs mergePool), one machine at a time.
-  const merged = await merge({merge: partDirs, out, partsKey: pk, credValues, repo, t3Home, gzip: true, trusted: localEnv ? [localEnv] : [], verifyParts: false, fastSpans: true, gzipLevel: 1, spanWindow: {sinceMs, untilMs}, spansFromCache: join(cache, 'spans-from'), workers: mergeWorkers, ...(hand ? {spansFrom: [hand]} : {})});
+  // The viewer derives network facts from raw spans. Preserve normalized coverage but defer duplicate graphs
+  // and indexes; the manifest declares this explicitly. --derive can materialize the optional backend files.
+  const merged = await merge({merge: partDirs, out, partsKey: pk, credValues, repo, t3Home, gzip: true, trusted: localEnv ? [localEnv] : [], verifyParts: false, noDerive: true, fastSpans: true, gzipLevel: 1, spanWindow: {sinceMs, untilMs}, spansFromCache: join(cache, 'spans-from'), workers: mergeWorkers, ...(hand ? {spansFrom: [hand]} : {})});
   mark('merge');
   onProgress(0.9);
   // Verify the whole bundle before it is served.

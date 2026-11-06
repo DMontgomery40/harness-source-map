@@ -16,7 +16,7 @@ import {PartWriter, aliasKey, readAliasKey, readBundle, emptyBundle, writeBundle
 import {updateArchive} from './archive.mjs';
 import {resolveFamily, threadsInWindow, familyRows, nativeSessions, stripMessageText} from './family.mjs';
 import {lineThreadMap, splitLines, splitName, worktreeFacts} from './facts.mjs';
-import {deriveNet} from './net.mjs';
+import {deriveNet, normalizeCoverage} from './net.mjs';
 import {credentialValues, scanner, scanBundle, missingJoinKeys, bundleFiles} from './verify.mjs';
 import {fileBuffer, bufferLines, lineChunks, gzip, linesBuffer} from './gz.mjs';
 import {fileLines, writeLineFile} from './stream.mjs';
@@ -371,16 +371,17 @@ function childHops(fam, environmentId, label, rows, redactor) {
 
 // ---- derived files (net.ndjson, spans.idx.json) -------------------------------------------------------------------
 
-function machineFiles(out, m) {
+function machineFiles(out, m, files = null) {
  const mdir = `machines/${m.environmentId}`;
  if (!existsSync(join(out, mdir))) return;
- m.files = [...bundleFiles(join(out, mdir))].map(f => relative(out, f).split(sep).join('/')).sort();
+ m.files = files || [...bundleFiles(join(out, mdir))].map(f => relative(out, f).split(sep).join('/'));
+ m.files.sort();
  m.sizes = Object.fromEntries(m.files.map(f => [f, statSync(join(out, f)).size]));
 }
 async function writeDerived(out, bundle, {redactor, credValues, gzip = true, level = 6}) {
  const ready = bundle.machines.filter(m => m.status === 'collected' && existsSync(join(out, 'machines', m.environmentId)));
  const own = m => {try {return JSON.parse(readFileSync(join(out, 'machines', m.environmentId, 'environment.json'), 'utf8')).exposure?.port ?? null;} catch {return null;}};
- await deriveNet(ready.map(m => ({environmentId: m.environmentId, label: m.label, dir: join(out, 'machines', m.environmentId), parts: m.parts || [], ownPort: own(m)})), {onMachine: async (environmentId, d) => {
+ await deriveNet(ready.map(m => ({environmentId: m.environmentId, label: m.label, dir: join(out, 'machines', m.environmentId), parts: m.parts || [], ownPort: own(m), fileOptions: {base: out, files: m.files}})), {onMachine: async (environmentId, d) => {
   const m = ready.find(m => m.environmentId === environmentId);
   m.parts = d.parts;
   const gaps = [];
@@ -389,12 +390,28 @@ async function writeDerived(out, bundle, {redactor, credValues, gzip = true, lev
   const mdir = `machines/${m.environmentId}`;
   writer.ndjson(`${mdir}/net.ndjson`, d.rows);
   writer.put(`${mdir}/spans.idx.json`, JSON.stringify({archive: 'spans.ndjson', encoding: 'utf8 byte offsets in the decompressed archive, [start, end) of the line', spans: d.index}) + '\n');
-  writer.flush();
+  const {written} = writer.flush();
   const c = {}; for (const r of d.rows) c[r.type] = (c[r.type] || 0) + 1;
   m.net = {rows: d.rows.length, peerCalls: c['peer-call'] || 0, joins: c.join || 0, misses: c.miss || 0, missesInCoverage: d.rows.filter(r => r.type === 'miss' && r.inReceiverCoverage).length, waits: c.wait || 0, bins: c.bin || 0, indexed: Object.keys(d.index).length};
   m.gaps = [...(m.gaps || []).filter(g => !g.startsWith('derived')), ...gaps.map(g => `derived: ${g}`)];
-  machineFiles(out, m);
+  machineFiles(out, m, [...m.files.filter(f => !DERIVED.test(f)), ...written]);
  }});
+ bundle.networkDerivation = {version: 1, status: 'ready'};
+}
+
+async function deferDerived(out, bundle) {
+ for (const m of bundle.machines.filter(m => m.status === 'collected')) {
+  const dir = join(out, 'machines', m.environmentId);
+  if (!existsSync(dir)) throw new Error('Collected machine has no output directory');
+  m.parts = await normalizeCoverage(dir, m.parts || [], {base: out, files: m.files});
+  // A rerun can leave old derived files on machines absent from the newly merged parts. Their metadata and
+  // physical files must both disappear; omitted derivation is not a measured zero or a current old result.
+  for (const name of ['net.ndjson', 'spans.idx.json']) for (const suffix of ['', '.gz']) rmSync(join(dir, name + suffix), {force: true});
+  delete m.net;
+  m.gaps = (m.gaps || []).filter(g => !g.startsWith('derived'));
+  machineFiles(out, m, m.files.filter(f => !DERIVED.test(f)));
+ }
+ bundle.networkDerivation = {version: 1, status: 'deferred'};
 }
 
 // ---- collect one machine ---------------------------------------------------------------------------------------
@@ -582,6 +599,7 @@ async function collect(o) {
  for (const h of bundle.hops) if (h.to.environmentId !== environmentId && !bundle.machines.some(m => m.environmentId === h.to.environmentId)) bundle.machines.push({environmentId: h.to.environmentId, label: h.to.label, status: 'not-collected', files: [], gaps: [`reached by remoteChild from ${env.label}; no part merged yet`]});
  for (const h of bundle.hops) if (h.from.environmentId !== environmentId && !bundle.machines.some(m => m.environmentId === h.from.environmentId)) bundle.machines.push({environmentId: h.from.environmentId, label: null, status: 'not-collected', files: [], gaps: [`named by delegatedFrom on ${env.label}; no part merged yet`]});
  if (!o.noDerive) await writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip});
+ else delete bundle.networkDerivation; // A raw collection/harvest does not certify earlier derived output.
  finishBundle(bundle);
  writeBundle(out, bundle);
  return {out, machine, bundle, hops: fam.hops, before};
@@ -676,7 +694,7 @@ function rewriteExact(path, redactor, level) {
 
 const DERIVED = /\/(?:net\.ndjson|spans\.idx\.json)(?:\.gz)?$/;
 async function merge(o) {
- const started = Date.now(), timings = {spanUnionMs: 0, workerFilesMs: 0, everywhereMs: 0, deriveMs: 0};
+ const started = Date.now(), timings = {spanUnionMs: 0, workerFilesMs: 0, everywhereMs: 0, deriveMs: 0, coverageMs: 0};
  if (!o.out) throw new Error('--merge needs --out <bundleDir>');
  const out = resolve(o.out);
  const bundle = readBundle(out);
@@ -867,10 +885,15 @@ async function merge(o) {
  }
  } finally {await pool?.close();}
  const deriveStarted = Date.now();
- if (!o.noDerive) await writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6});
+ if (o.noDerive) {
+  await deferDerived(out, bundle);
+  timings.coverageMs = Date.now() - deriveStarted;
+ } else {
+  await writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6});
+  timings.deriveMs = Date.now() - deriveStarted;
+ }
  finishBundle(bundle);
  writeBundle(out, bundle);
- timings.deriveMs = Date.now() - deriveStarted;
  timings.totalMs = Date.now() - started;
  return {out, results, bundle, timings};
 }

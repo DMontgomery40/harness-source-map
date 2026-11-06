@@ -9,8 +9,9 @@
 //              command ids found in its OrchestratorMcpService.delegateTask subtree
 //   bin        per minute and edge kind: spans and errors
 import {fileLines} from './stream.mjs';
+import {resolveBundleFile} from './gz.mjs';
 import {segmentsOf} from './spans.mjs';
-import {existsSync, readFileSync} from 'node:fs';
+import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 
 // The seven edge kinds (design §7). `internal` is server work with no edge; `local` a probe of a local port that is
@@ -69,8 +70,8 @@ const iso = ms => new Date(ms).toISOString();
 const ATTRIBUTES = ['http.request.method', 'server.address', 'server.port', 'url.path', 'http.route', 'user_agent.original', 'client.address', 'http.response.status_code', 'orchestration_v2.thread_id', 'orchestration_v2.command_id'];
 
 // A machine's spans, light: what the derivations need, plus each span's byte range in the decompressed archive.
-export async function readSpans(dir, {receiversOnly = false, keepEnds = false} = {}) {
- const file = ['spans.ndjson.gz', 'spans.ndjson'].map(f => join(dir, f)).find(existsSync);
+export async function readSpans(dir, {receiversOnly = false, keepEnds = false, base, files} = {}) {
+ const file = resolveBundleFile(join(dir, 'spans.ndjson'), {base, files});
  if (!file) return {spans: [], index: {}, ends: []};
  const spans = [], index = {}, ends = [];
  const names = new Map(), traces = new Map();
@@ -122,6 +123,19 @@ function cutPartsAtEnds(parts, ends) {
  });
 }
 
+// Coverage is part of the bundle contract even when the viewer derives network rows itself. Modern span-end
+// parts need no archive read. Legacy windows need only end timestamps, never receiver maps, graphs or indexes.
+export async function normalizeCoverage(dir, parts = [], fileOptions) {
+ if (!parts.some(p => p.basis !== 'span-end' && p.window?.since && p.window?.until)) return parts;
+ const file = resolveBundleFile(join(dir, 'spans.ndjson'), fileOptions);
+ const ends = [];
+ if (file) for await (const line of fileLines(file)) {
+  let span; try {span = JSON.parse(line);} catch {continue;}
+  if (span?.spanId) ends.push(msOf(span.endTimeUnixNano));
+ }
+ return cutPartsAtEnds(parts, ends);
+}
+
 const WAIT_CHAIN = ['PeerForwarding.forward', 'PeerForwarding.waitForThread', 'RemoteDelegation.followOnce', 'RemoteDelegation.delegate', 'OrchestratorMcpService.delegateTask'];
 
 // Derive every collected machine's rows. machines: [{environmentId, label, dir, parts, ownPort}]. Returns
@@ -131,7 +145,7 @@ export async function deriveNet(machines, {onMachine = null} = {}) {
  const loaded = [], receivers = new Map();
  for (const machine of machines) {
   const keepEnds = (machine.parts || []).some(p => p.basis !== 'span-end' && p.window?.since && p.window?.until);
-  const r = await readSpans(machine.dir, {receiversOnly: true, keepEnds});
+  const r = await readSpans(machine.dir, {...machine.fileOptions, receiversOnly: true, keepEnds});
   const m = {...machine, parts: keepEnds ? cutPartsAtEnds(machine.parts, r.ends) : machine.parts || [], links: peerLinks(machine.dir)};
   loaded.push(m);
   for (const s of r.spans) {
@@ -143,7 +157,7 @@ export async function deriveNet(machines, {onMachine = null} = {}) {
  const covered = (env, t) => (coverage.get(env) || []).some(([a, b]) => t >= a && t <= b);
  const out = new Map();
  for (const meta of loaded) {
-  const m = {...meta, ...await readSpans(meta.dir)};
+  const m = {...meta, ...await readSpans(meta.dir, meta.fileOptions)};
   const rows = [];
   const peerHosts = new Set(m.links.hosts.keys());
   const ctx = {peerHosts, ownPort: m.ownPort};

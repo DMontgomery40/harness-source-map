@@ -91,10 +91,11 @@ const realDir = process.env.T3_RESOURCE_BUNDLE;
 const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 test('streamed derivation preserves every existing real bundle row and index entry (opt-in)', {skip: !realDir && 'set T3_RESOURCE_BUNDLE', timeout: 600000}, async t => {
  const bundle = JSON.parse(readFileSync(join(realDir, 'bundle.json')));
+ if (bundle.networkDerivation?.status === 'deferred') return t.skip('equivalence baseline requires materialized net/index files; use an eager or earlier bundle');
  const machines = bundle.machines.filter(m => m.status === 'collected').map(m => {
   const dir = join(realDir, 'machines', m.environmentId);
   const env = JSON.parse(readFileSync(join(dir, 'environment.json')));
-  return {...m, dir, ownPort: env.exposure?.port ?? null};
+  return {...m, dir, ownPort: env.exposure?.port ?? null, fileOptions: {base: realDir, files: m.files}};
  });
  let seen = 0;
  const result = await deriveNet(machines, {onMachine: async (id, d) => {

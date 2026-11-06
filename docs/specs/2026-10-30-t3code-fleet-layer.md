@@ -208,6 +208,20 @@ its thread rows, and every indexed root session must bind to a collected thread.
 manifest, thread inventory, and publication identity as well as collection time. A valid subset of the rows cannot
 pass as a complete family.
 
+Assembly version 6 uses `noDerive` and records `networkDerivation: {version: 1, status: "deferred"}` in
+`bundle.json`. This defers the optional backend `net.ndjson` and `spans.idx.json` outputs; it does not indicate
+missing source evidence or zero traffic. Their plain/gzip files, manifest entries and stale `machine.net`
+statistics are removed, including on retained machines. Eager derivation records `status: "ready"`; an absent
+marker is legacy/unspecified. The assembly version invalidates earlier caches; the bundle remains format v2.
+
+Deferred assembly still preserves coverage: existing `basis: "span-end"` parts need no extra span read, while
+legacy windows are normalized from span end times and split at five-minute silences. Reads use the
+manifest-declared representation, and source entries remain authoritative when derived entries change. Guarded
+writes, the credential everywhere-pass and full-bundle privacy verification remain required. The current browser
+derives its network from raw spans; backend rows and indexes are not interchangeable with browser structures.
+Consumers must treat deferred outputs as not precomputed and use the source evidence, rather than interpret
+their absence as a coverage gap.
+
 It removes credentials before writing anything (§4.6). It reaches other machines through T3's own linked environments
 or over SSH. On macOS, a process T3 starts lacks the
 Local Network permission until the user grants it to the T3 app. The collector says so instead of opening windows.

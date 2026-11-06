@@ -19,7 +19,7 @@ import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir, addLaunchH
 import {spansInWindow} from '../t3/archive.mjs';
 import {readNdjsonLines} from '../t3/gz.mjs';
 import {stripMessageText} from '../t3/family.mjs';
-import {classifyName, classifySpan, cutParts, EDGE_KINDS, ROLES} from '../t3/net.mjs';
+import {classifyName, classifySpan, cutParts, deriveNet, EDGE_KINDS, ROLES} from '../t3/net.mjs';
 import {splitLines, splitName} from '../t3/facts.mjs';
 import {endSegments, GAP_MS} from '../t3/spans.mjs';
 import {GZIP_OVER} from '../t3/gz.mjs';
@@ -430,21 +430,28 @@ test('validateBundle accepts the collector\'s empty bundle and names what a malf
 
 // ---- opt-in, on the real v2 bundles: counts and structure only ---------------------------------------------------
 
-test('real v2 bundles: schema, every family thread and hop, joins complete inside part windows (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : !v2Bundles().length && 'no v2 bundles', timeout: 600000}, () => {
+test('real v2 bundles: schema, every family thread and hop, joins complete inside part windows (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : !v2Bundles().length && 'no v2 bundles', timeout: 600000}, async () => {
  const families = [];
  for (const dir of v2Bundles()) {
   const b = readBundle(dir);
   assert.deepEqual(validateBundle(b), [], dir);
   const collected = b.machines.filter(m => m.status === 'collected');
+  const nets = new Map(collected.map(m => [m.environmentId, m.net]));
+  if (b.networkDerivation?.status === 'deferred') await deriveNet(collected.map(m => {
+   const machineDir = join(dir, 'machines', m.environmentId);
+   let ownPort = null; try {ownPort = JSON.parse(readFileSync(join(machineDir, 'environment.json'))).exposure?.port ?? null;} catch {}
+   return {...m, dir: machineDir, ownPort, fileOptions: {base: dir, files: m.files}};
+  }), {onMachine: (environmentId, d) => {nets.set(environmentId, {joins: d.rows.filter(r => r.type === 'join').length, missesInCoverage: d.rows.filter(r => r.type === 'miss' && r.inReceiverCoverage).length});}});
   for (const m of collected) {
    assert.ok(m.parts.length >= 1, 'coverage parts');
-   assert.ok(m.net, 'net derived');
-   assert.equal(m.net.missesInCoverage, 0, `${m.label}: every caller span inside the receiver's coverage has its receiving span`);
+   const net = nets.get(m.environmentId);
+   assert.ok(net, 'net is materialized or explicitly derived for validation');
+   assert.equal(net.missesInCoverage, 0, `${m.label}: every caller span inside the receiver's coverage has its receiving span`);
    assert.equal(m.verify.hitFiles, 0);
   }
   for (const h of b.hops) for (const end of [h.from, h.to]) assert.ok(b.machines.some(m => m.environmentId === end.environmentId), 'hop machines listed');
   const threads = new Set(collected.flatMap(m => m.threadIds.map(t => `${m.environmentId} ${t}`)));
-  families.push({threads: threads.size, hops: b.hops.length, joins: collected.reduce((n, m) => n + m.net.joins, 0), machines: collected.length});
+  families.push({threads: threads.size, hops: b.hops.length, joins: collected.reduce((n, m) => n + nets.get(m.environmentId).joins, 0), machines: collected.length});
  }
  // Design §14: planning has at least 31 threads and 23 hops, Scan-to-Make at least 28 and 7 (both families can grow).
  families.sort((a, b) => b.hops - a.hops);

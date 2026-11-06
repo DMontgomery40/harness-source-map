@@ -229,6 +229,24 @@ test('the early assembly cache return revalidates a receive that completes after
  assert.equal(published, true);
 });
 
+test('cold assembly defers network derivation, verifies its sources and invalidates the prior cache contract', async t => {
+ const f = receiveFixture(t);
+ const options = {repo: f.dir, t3Home: join(f.dir, 'absent-t3'), partsKey: Buffer.alloc(32, 1), threadId: 'test-root', environmentId: 'test-machine', refreshLocal: false, mergeWorkers: 1};
+ const result = await assembly.assembleFamily(options);
+ assert.equal(result.reused, false);
+ assert.deepEqual(result.bundle.networkDerivation, {version: 1, status: 'deferred'});
+ const metadata = JSON.parse(readFileSync(join(result.dir, 'assembly.json')));
+ assert.equal(metadata.version, assembly.ASSEMBLY_VERSION);
+ assert.equal(metadata.mergeTimings.deriveMs, 0);
+ assert.ok(metadata.mergeTimings.coverageMs >= 0);
+ assert.ok(metadata.verify.files > 0);
+ assert.equal(metadata.verify.hitFiles, 0);
+ assert.ok(result.bundle.machines.every(m => !m.files.some(f => /\/(?:net\.ndjson|spans\.idx\.json)(?:\.gz)?$/.test(f))));
+ assert.equal((await assembly.assembleFamily(options)).reused, true);
+ put(join(result.dir, 'assembly.json'), {...metadata, version: assembly.ASSEMBLY_VERSION - 1});
+ await assert.rejects(assembly.assembleFamily({...options, onProgress: f => {if (f === 0.5) throw new Error('cold rebuild observed');}}), /cold rebuild observed/);
+});
+
 test('local publication blocks mixed reads, preserves failures, and ordinary recovery retries failed roots', async t => {
  const f = receiveFixture(t);
  await withStoreLock(f.store, () => withHarvestPublication(f.store, ['test-root'], async () => {
