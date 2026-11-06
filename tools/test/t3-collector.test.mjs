@@ -15,7 +15,8 @@ import {readBundle, ALIAS_KEY_FILE, emptyBundle, validateBundle, VERSION} from '
 import {bundleFileList, findT3Bundle} from '../t3/bundles.mjs';
 import {Redactor, FamilyRedactor, familyKey, ALIAS_MARK} from '../t3/redact.mjs';
 import {ExactSet} from '../t3/exact.mjs';
-import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir, addLaunchHops, assembleFamily} from '../t3/assemble.mjs';
+import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir, addLaunchHops, assembleFamily, combineMachine} from '../t3/assemble.mjs';
+import {spansInWindow} from '../t3/archive.mjs';
 import {readNdjsonLines} from '../t3/gz.mjs';
 import {stripMessageText} from '../t3/family.mjs';
 import {classifyName, classifySpan, cutParts, EDGE_KINDS, ROLES} from '../t3/net.mjs';
@@ -36,6 +37,28 @@ const bundleRoot = join(mainRepo, 'private', 'sessions', 't3');
 const realBundles = () => existsSync(bundleRoot) ? readdirSync(bundleRoot).map(n => join(bundleRoot, n)).filter(d => existsSync(join(d, 'bundle.json'))) : [];
 const anyBundle = dir => readBundle(dir, {anyVersion: true});
 const v2Bundles = () => realBundles().filter(d => anyBundle(d).version === VERSION);
+
+test('combines archived spans beyond the string limit without losing lines (opt-in)', {skip: !real || !process.env.T3_ASSEMBLY_THREAD ? 'set T3_REAL_TESTS=1 and T3_ASSEMBLY_THREAD' : false, timeout: 600000}, () => {
+ const parts = readParts(incomingDir(mainRepo));
+ const family = familyParts(parts, {threadId: process.env.T3_ASSEMBLY_THREAD});
+ assert.ok(family.length, 'the requested family was harvested');
+ const machine = family.filter(p => p.environmentId === family[0].environmentId);
+ const sinceMs = Math.min(...machine.map(p => Date.parse(p.since))), untilMs = Date.now();
+ let expectedBytes = 0, expectedCount = 0;
+ for (const line of spansInWindow(machine[0].store, 'server', sinceMs, untilMs)) {expectedBytes += Buffer.byteLength(line) + 1; expectedCount++;}
+ assert.ok(expectedBytes > 512 * 1024 * 1024, 'choose a family with over 512 MiB of archived spans');
+ const out = mkdtempSync(join(tmpdir(), 't3-large-assembly-'));
+ try {
+  const result = combineMachine(machine, out, {sinceMs, untilMs, partsKeyId: machine[0].bundle.collector.partsKeyId});
+  const path = join(out, 'machines', machine[0].environmentId, 'spans.ndjson');
+  assert.equal(statSync(path).size, expectedBytes);
+  assert.equal(statSync(path).mode & 0o077, 0);
+  assert.equal(readBundle(result).machines[0].counts.spans, expectedCount);
+  let actualCount = 0;
+  for (const line of readNdjsonLines(path)) {assert.ok(line); actualCount++;}
+  assert.equal(actualCount, expectedCount);
+ } finally {rmSync(out, {recursive: true, force: true});}
+});
 
 test('collector CLI documents every mode and rejects unknown arguments', () => {
  for (const flag of ['--root', '--threads', '--window', '--merge', '--verify', '--filter-spans', '--alias-key-file', '--only spans', '--spans-from', '--harvest', '--derive', '--clock-from', '--no-derive']) assert.ok(USAGE.includes(flag), flag);

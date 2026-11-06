@@ -8,7 +8,7 @@
 //  4. merge them into a bundle with the family's own key (redact.mjs FamilyRedactor), derive, and verify.
 // A machine that sent nothing yet is listed not collected (collect.mjs finishBundle). Builds are kept under
 // private/sessions/t3/fleet/<root>/<stamp>/; a build newer than every input and younger than maxAgeMs is reused.
-import {existsSync, readdirSync, readFileSync, writeFileSync, statSync, rmSync, renameSync, copyFileSync, mkdirSync} from 'node:fs';
+import {existsSync, readdirSync, readFileSync, writeFileSync, statSync, rmSync, renameSync, copyFileSync, mkdirSync, openSync, closeSync} from 'node:fs';
 import {homedir, availableParallelism} from 'node:os';
 import {join, relative, sep, dirname} from 'node:path';
 import {openReadOnly} from './sqlite.mjs';
@@ -18,7 +18,7 @@ import {readBundle, writeBundle, emptyBundle, ensureDir, slug, readKeyFile, part
 import {familyKey, keyId} from './redact.mjs';
 import {credentialValues, scanBundle, scanBundleParallel, bundleFiles} from './verify.mjs';
 import {spansInWindow, coverageParts, SPAN_LOGS} from './archive.mjs';
-import {readBuffer} from './gz.mjs';
+import {readBuffer, bufferLines, lineChunks} from './gz.mjs';
 import {partLaunches, launchHop} from './launches.mjs';
 
 const iso = ms => new Date(ms).toISOString();
@@ -164,6 +164,19 @@ const UNIONS = {
 const LINE_UNIONS = new Set(['stalls.ndjson', 'renderer.ndjson']);
 const DERIVED = /^(?:net\.ndjson|spans\.idx\.json|spans\.ndjson|desktop-spans\.ndjson)$/;
 
+// A family's span window can exceed V8's string limit. Consume the archive lazily and write bounded chunks.
+function writeLines(file, lines) {
+ let count = 0, fd;
+ function* counted() {for (const line of lines) {count++; yield line;}}
+ try {
+  for (const chunk of lineChunks(counted())) {
+   fd ??= openSync(file, 'w', 0o600);
+   writeFileSync(fd, chunk + '\n');
+  }
+ } finally {if (fd !== undefined) closeSync(fd);}
+ return count;
+}
+
 // One machine's parts of the family as one part folder (aliases unchanged: all are the fleet parts key's), with the
 // archive's spans for [sinceMs, untilMs] and its coverage there.
 export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId, stale = []}) {
@@ -179,18 +192,16 @@ export function combineMachine(machineParts, out, {sinceMs, untilMs, partsKeyId,
    const rel = relative(src, f).split(sep).join('/'), plain = rel.replace(/\.gz$/, '');
    if (DERIVED.test(plain)) continue;
    if (UNIONS[plain]) {let v = null; try {v = JSON.parse(readBuffer(join(src, plain)).toString('utf8'));} catch {} if (v) {if (!json.has(plain)) json.set(plain, []); json.get(plain).push(v);}}
-   else if (LINE_UNIONS.has(plain)) {const buf = readBuffer(join(src, plain)); if (buf) {if (!lines.has(plain)) lines.set(plain, new Set()); for (const l of buf.toString('utf8').split('\n')) if (l) lines.get(plain).add(l);}}
+   else if (LINE_UNIONS.has(plain)) {const buf = readBuffer(join(src, plain)); if (buf) {if (!lines.has(plain)) lines.set(plain, new Set()); for (const l of bufferLines(buf)) if (l) lines.get(plain).add(l);}}
    else {for (const old of [plain, plain + '.gz']) copies.delete(old); copies.set(rel, f);}
   }
  }
  for (const [rel, f] of copies) {ensureDir(dirname(join(mdir, rel))); copyFileSync(f, join(mdir, rel));}
  for (const [rel, vs] of json) {ensureDir(dirname(join(mdir, rel))); writeFileSync(join(mdir, rel), JSON.stringify(UNIONS[rel](vs), null, 1) + '\n', {mode: 0o600});}
- for (const [rel, set] of lines) writeFileSync(join(mdir, rel), [...set].join('\n') + '\n', {mode: 0o600});
+ for (const [rel, set] of lines) writeLines(join(mdir, rel), set);
  const counts = {};
  for (const [kind, , rel] of SPAN_LOGS) {
-  const got = [...spansInWindow(store, kind, sinceMs, untilMs)];
-  if (got.length) writeFileSync(join(mdir, rel), got.join('\n') + '\n', {mode: 0o600});
-  counts[rel === 'spans.ndjson' ? 'spans' : 'desktopSpans'] = got.length;
+  counts[rel === 'spans.ndjson' ? 'spans' : 'desktopSpans'] = writeLines(join(mdir, rel), spansInWindow(store, kind, sinceMs, untilMs));
  }
  const newest = ordered.at(-1).entry;
  const harvest = readJson(join(store, 'harvest.json'));
