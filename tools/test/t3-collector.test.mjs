@@ -141,7 +141,9 @@ test('real bundles in private/ are well formed, credential-free, and served by t
   assert.equal(manifest.files.length, (await bundleFileList(dir)).length);
   assert.ok(manifest.files.every(f => !f.path.endsWith(ALIAS_KEY_FILE) && f.kind === 't3-bundle'));
   assert.ok(manifest.files.some(f => f.path === 'bundle.json'));
-  assert.equal([...bundleFiles(dir)].length, manifest.files.length);
+  if (b.machines.every(m => Array.isArray(m.files))) {
+   assert.deepEqual(manifest.files.map(f => f.path).sort(), ['bundle.json', ...new Set(b.machines.flatMap(m => m.files))].sort(), 'only producer-declared members receive file tickets');
+  }
  }
 });
 

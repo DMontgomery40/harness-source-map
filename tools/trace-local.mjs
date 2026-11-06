@@ -35,11 +35,17 @@ const defaultRoots = {cursor:join(homedir(),'.cursor'),codex:join(homedir(),'.co
  'claude-desktop':join(homedir(),'Library','Application Support','Claude','local-agent-mode-sessions')};
 
 async function fileEntry(root,path){
- const size=(await lstat(path)).size;
+ const signature=st=>`${st.dev}:${st.ino}:${st.size}:${st.mtimeNs}:${st.ctimeNs}`;
+ const initial=await lstat(path,{bigint:true}),size=Number(initial.size),version=signature(initial);
+ const changed=()=>Object.assign(new Error('Session file changed; reopen the session'),{code:'TRACE_SOURCE_CHANGED'});
  return {path,source:{name:path,size,async slice(a,b){
   if(!within(root,await realpath(path)))throw new Error('Outside session root');
-  const fh=await open(path,'r');try{const bytes=new Uint8Array(Math.max(0,Math.min(b,size)-a));let n=0;
-   while(n<bytes.length){const {bytesRead}=await fh.read(bytes,n,bytes.length-n,a+n);if(!bytesRead)break;n+=bytesRead;}return bytes.subarray(0,n);
+  const fh=await open(path,'r');try{
+   if(signature(await fh.stat({bigint:true}))!==version)throw changed();
+   const bytes=new Uint8Array(Math.max(0,Math.min(b,size)-a));let n=0;
+   while(n<bytes.length){const {bytesRead}=await fh.read(bytes,n,bytes.length-n,a+n);if(!bytesRead)break;n+=bytesRead;}
+   if(n!==bytes.length||signature(await fh.stat({bigint:true}))!==version)throw changed();
+   return bytes;
   }finally{await fh.close();}
  }}};
 }
@@ -344,7 +350,7 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
        tickets.set(token,{entry,root:dir,expires:now+24*60*60*1000});
        files.push({path:relative(dir,path).split('\\').join('/'),kind:'t3-bundle',size:entry.source.size,url:'/v1/file/'+token});
       }
-      return reply(200,{id:id||t3id,product:'t3code',files,warnings:[...warnings,...(bundle.gaps||[])].slice(0,200)});
+      return reply(200,{id:id||t3id,product:'t3code',files,warnings:[...warnings,...(bundle.gaps||[])]});
      };
      const threadId=t3id||id;
      // The fleet harvest first: the family is assembled now from every machine's latest parts and this machine's
@@ -360,13 +366,13 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
        // the thread itself, or a hop to it from a machine whose part is in (its own machine has not sent it yet)
        const reached=(done.r.bundle.hops||[]).some(h=>h.to?.environmentId===environmentId&&h.to?.threadId===threadId);
        if(environmentId && !holdsThreadOn(done.r.bundle,environmentId,threadId) && !reached)return reply(404,{error:'That T3 family holds this thread, but not on the environment the link names.'});
-       return serveBundle(done.r.dir,done.r.bundle);
+       return await serveBundle(done.r.dir,done.r.bundle);
       }
      }
      // A hand-collected bundle.
      const t3=t3Roots.length?await t3Family(t3Roots,id||t3id,environmentId||null):null;
      if(t3?.mismatch)return reply(404,{error:'A collected T3 bundle holds that thread, but not on the environment the link names.'});
-     if(t3)return serveBundle(t3.dir,t3.bundle,assemblyError?[`The family could not be assembled from the fleet harvest (${String(assemblyError.message||assemblyError).slice(0,200)}); showing an earlier collection.`]:[]);
+     if(t3)return await serveBundle(t3.dir,t3.bundle,assemblyError?[`The family could not be assembled from the fleet harvest (${String(assemblyError.message||assemblyError).slice(0,200)}); showing an earlier collection.`]:[]);
      const notYet=assemblyError?`Could not assemble that T3 family: ${String(assemblyError.message||assemblyError).slice(0,300)}`
       :'No machine has reported that T3 thread yet. Every machine sends its T3 families each hour; open it again after the next harvest.';
      if(environmentId || !id)return reply(assemblyError?500:404,{error:notYet});
@@ -457,7 +463,10 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
      const bytes=await ticket.entry.source.slice(start,end);res.writeHead(200,{'Content-Type':'application/octet-stream','Content-Length':bytes.length});return res.end(bytes);
     }
     return reply(404,{error:'Not found'});
-   }catch(error){console.error('Trace resolver read failed:',error);return reply(500,{error:'Could not read the session'});}
+   }catch(error){
+    if(error?.code==='TRACE_SOURCE_CHANGED')return reply(409,{error:error.message,code:error.code});
+    console.error('Trace resolver read failed:',error);return reply(500,{error:'Could not read the session'});
+   }
   }
   if(siteRoot && req.method==='GET'){
    try{

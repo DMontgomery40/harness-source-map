@@ -152,6 +152,29 @@ test('each explanation scope requires explicit selectors and preserves coverage 
  }
 });
 
+test('explicit selections support rootless evidence and provider-safe opaque identities without fabricated ranges',async t=>{
+ const {call,requests}=await harness(t);
+ for(const selectionType of ['items','agent','thread','network']){
+  const e=evidence();e.scope={kind:'selection',selectionType,selectionIds:['local:α/[unit-1]']};delete e.items[0].agent;delete e.items[1].agent;
+  const p=await preview(call,{evidence:e});const sent=JSON.parse(JSON.parse(p.outboundBody).messages[1].content);
+  assert.deepEqual(sent.evidence.scope,e.scope);assert.equal(sent.evidence.items[0].agent,undefined);
+ }
+ for(const scope of [{kind:'selection',selectionType:'unsupported',selectionIds:['s1']},{kind:'selection',selectionIds:['s1']},{kind:'selection',selectionType:'items',selectionIds:[]},{kind:'family',agentIds:['a'],selectionType:'items',selectionIds:['s1']}]){
+  const e=evidence();e.scope=scope;assert.equal((await call('preview',{providerId:'local',prompt:'Explain',traceGeneration:'g',evidence:e})).status,400);
+ }
+ assert.equal(requests.length,0);
+});
+
+test('capabilities expose server limits and selections enforce the advertised boundary',async t=>{
+ const {call,requests}=await harness(t,{limits:{items:3}});
+ const c=await (await call('capabilities')).json();assert.equal(c.version,1);assert.equal(c.limits.items,3);assert.ok(c.scopeKinds.includes('selection'));assert.deepEqual(c.selectionTypes,['items','agent','thread','network']);assert.deepEqual(c.outputTokenParameters,['max_tokens','max_completion_tokens','none']);
+ c.limits.items=99;
+ assert.equal((await (await call('capabilities')).json()).limits.items,3,'responses cannot mutate server configuration');
+ const e=evidence();e.scope={kind:'selection',selectionType:'items',selectionIds:['s1','s2','s3']};await preview(call,{evidence:e});
+ e.scope.selectionIds.push('s4');assert.equal((await call('preview',{providerId:'local',prompt:'Explain',traceGeneration:'g',evidence:e})).status,400);
+ assert.equal(requests.length,0);
+});
+
 test('known credentials cannot become citation IDs or stream correlation IDs',async t=>{
  const {call,proxy}=await harness(t);await call('providers',{...profile(proxy+'/v1'),apiKey:'E1234'});const e=evidence();e.items[0].id='E1234';
  assert.equal((await call('preview',{providerId:'local',prompt:'Explain',traceGeneration:'g',evidence:e})).status,400);

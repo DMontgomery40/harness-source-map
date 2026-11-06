@@ -62,4 +62,4 @@ Research the highest-value observability questions against original user reports
 
 ## Review status
 
-This document records the user's constraints and verified repair direction. The Muse → GPT Pro → Muse review will refine the concrete inspector and disclosure interaction contract before Opus implements it.
+The Muse → GPT Pro → Muse review is complete. The reconciled [implementation plan](../plans/2026-11-06-trace-fleet-clarity.md) defines stable selection, family time, paused activity discovery, complete inventory, compact surfaces and the mandatory evidence-explanation flow. Only Opus 5.5 implements browser and UI changes.

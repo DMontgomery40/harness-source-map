@@ -154,3 +154,21 @@ test('an explicitly addressed environment reaches assembly even while membership
  const res=await fetch(base+'/v1/session',{method:'POST',headers:{Origin:base,'X-Trace-Request':'1','Content-Type':'application/json'},body:JSON.stringify({id:SESSION,environmentId:ENV})});
  assert.equal(calls,1);assert.equal(res.status,404,'assembly, rather than failed membership preflight, decides whether the target exists');
 });
+
+test('family responses retain every warning occurrence beyond 200 while bounding the assembly error text',async t=>{
+ const root=await mkdtemp(join(tmpdir(),'t3-local-warnings-'));t.after(()=>rm(root,{recursive:true,force:true}));
+ const dir=join(root,'bundles','family');await mkdir(dir,{recursive:true});
+ const gaps=Array.from({length:205},(_,i)=>`Coverage gap occurrence ${i}`);
+ gaps.push(gaps[0],`Detailed original explanation ${'x'.repeat(250)}`);
+ await writeFile(join(dir,'bundle.json'),JSON.stringify({format:'t3-fleet-bundle',version:2,scope:{rootThreadId:THREAD,rootEnvironmentId:ENV},machines:[{environmentId:ENV,status:'collected',threadIds:[THREAD],files:[]}],hops:[],gaps}));
+ const message='Synthetic assembly failure '.repeat(20);
+ t.mock.method(console,'error',()=>{});
+ const t3Assembler={enabled:true,job:()=>({promise:Promise.reject(new Error(message))})};
+ const server=createTraceServer({roots:{},t3Roots:[join(root,'bundles')],t3Assembler});await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>server.close(r)));
+ const base=`http://127.0.0.1:${server.address().port}`;
+ const response=await fetch(base+'/v1/session',{method:'POST',headers:{Origin:base,'X-Trace-Request':'1','Content-Type':'application/json'},body:JSON.stringify({id:THREAD})});
+ assert.equal(response.status,200);const {warnings}=await response.json();
+ assert.equal(warnings.length,gaps.length+1);
+ assert.deepEqual(warnings.slice(1),gaps,'all original occurrences, order, duplicates and full gap text survive');
+ assert.equal(warnings[0],`The family could not be assembled from the fleet harvest (${message.slice(0,200)}); showing an earlier collection.`);
+});

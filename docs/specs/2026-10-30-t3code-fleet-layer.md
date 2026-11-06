@@ -208,6 +208,15 @@ its thread rows, and every indexed root session must bind to a collected thread.
 manifest, thread inventory, and publication identity as well as collection time. A valid subset of the rows cannot
 pass as a complete family.
 
+Helper family opens preserve that authority through serving: only `bundle.json` and declared machine members
+receive file tickets. Legacy machines without an inventory enumerate only their own regular files and reject
+ambiguous compression twins. Declared missing files, unsafe paths, and symbolic links fail instead of selecting
+other bytes. Declared `machines[].sizes[path]` values must match physical file byte lengths, including compressed
+bytes for gzip members. The current schema declares no per-file digest; message-text hashes are not file hashes.
+Disk-backed source tickets pin file identity and modification state, checking the open file before
+and after each lazy range read. Replacement or in-place modification invalidates the ticket with a reopen error,
+even when file size and modification time were preserved; ranges from different file versions are not combined.
+
 Assembly version 6 uses `noDerive` and records `networkDerivation: {version: 1, status: "deferred"}` in
 `bundle.json`. This defers the optional backend `net.ndjson` and `spans.idx.json` outputs; it does not indicate
 missing source evidence or zero traffic. Their plain/gzip files, manifest entries and stale `machine.net`
