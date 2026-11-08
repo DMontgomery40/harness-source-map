@@ -6,7 +6,6 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync, chmodSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { loadAgentServiceClasses, decodeConnectStream } from '../../cursor/extract/agent-service-descriptors.mjs';
-import { findSecrets } from './check-har.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '..', '..');
@@ -119,9 +118,6 @@ export function decodeCursorAgentHar(har, { indexFile, capture = 'capture.har' }
     entries,
     boundary: 'Exact Connect envelopes decoded with protobuf classes from the pinned shipped Cursor Agent CLI. Unknown traffic and identifiers remain unattributed.',
   };
-  const text = JSON.stringify(decoded, null, 2) + '\n';
-  const secrets = findSecrets(text);
-  if (secrets.length) throw new Error(`Decoded AgentService derivative failed credential checks (${secrets.join(', ')}); nothing was written.`);
   return decoded;
 }
 
@@ -163,7 +159,7 @@ const HELP = `Decode a private real Cursor Agent capture with the exact shipped 
 
   node tools/capture/cursor-agent-decode.mjs BUNDLE [--index /path/to/index.js]
 
-The original HAR is never changed. A credential-checked ${CURSOR_AGENT_DECODED_FILE} is created
+The original HAR is never changed. A locally recorded ${CURSOR_AGENT_DECODED_FILE} is created
 with mode 0600. Set TRACE_CURSOR_AGENT_INDEX instead of --index if preferred.
 `;
 

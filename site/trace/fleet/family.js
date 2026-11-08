@@ -23,6 +23,9 @@ export const PRODUCTS = { claudeAgent: "Claude Code", codex: "Codex/ChatGPT", mu
 export const LABS = { claudeAgent: "Anthropic", codex: "OpenAI", muse: "Meta", antigravity: "Google", cursor: "Cursor", grok: "xAI" };
 // A lab the provider log names itself (Muse's session/started providerId).
 const LOG_LABS = { meta: "Meta", anthropic: "Anthropic", openai: "OpenAI", google: "Google", xai: "xAI" };
+// The organization behind a native session's own product. A binding's lab comes from its own product, never from
+// the thread's provider: a thread T3 moved from Claude Code to Codex/ChatGPT has one binding of each.
+const PRODUCT_LABS = { "claude-code": "Anthropic", codex: "OpenAI" };
 // Trace's adapter product of a native session -> the product it names.
 const NATIVE_LABEL = { codex: "Codex/ChatGPT", "claude-code": "Claude Code", opencode: "OpenCode", cursor: "Cursor", "t3-events": "provider-event log" };
 
@@ -103,6 +106,18 @@ export function familyThreads(bundle, machines) {
         childSide: !!p.delegatedFrom, linkOrigin: !!p.linkOrigin,
         hop: null, task: null, late: false, native: null, natives: [], known: [], nativeRef: null, museSession: null, runs: []
       });
+    }
+    // The thread ids the environment's manifest part declares (part.threadIds). A declared thread the table does not
+    // hold stays a known thread, because its table is missing, unreadable, or lacks its row. It has no metadata
+    // and no time, and nothing is invented for it. A table row always wins. Seeded before the joins below, so a
+    // binding, provider row or session file recorded for it still attaches.
+    const tableWhy = m.rows ? "row-missing" : (m.problems || []).some(x => x.file === "threads.json" && x.reason === "unreadable") ? "rows-unreadable" : "rows-missing";
+    for (const id of Array.isArray(m.part?.threadIds) ? m.part.threadIds : []) {
+      if (typeof id !== "string" || !id) continue;
+      const key = threadKey(m.id, id);
+      if (threads.has(key)) continue;
+      threads.set(key, { key, id, env: m.id, title: "", provider: null, model: null, created: null, parent: null, parentEnv: null, origin: null, childSide: false, linkOrigin: false,
+        hop: null, task: null, late: false, native: null, natives: [], known: [], nativeRef: null, museSession: null, runs: [], declaredOnly: tableWhy });
     }
     // the native sessions T3 binds to each thread (provider-thread rows' nativeThreadRef), whether or not a recording
     // of them was collected
@@ -293,8 +308,11 @@ export function silenceIn(ev, from, to, collectedAt) {
   return best;
 }
 
+// A thread only the manifest declares: why its table says nothing of it.
+const DECLARED_WORDS = { "row-missing": "declared in the bundle manifest; its environment's thread table has no row for it", "rows-missing": "declared in the bundle manifest; its environment's thread table is missing", "rows-unreadable": "declared in the bundle manifest; its environment's thread table could not be read" };
 // Why a thread with no drawable session has none, as an inventory status.
-const VOID_STATUS = { "no-usage": "events-only", unparsed: "unreadable", "no-evidence": "no-evidence", late: "late", missing: "missing", unreachable: "not-collected", "not-collected": "not-collected", unreadable: "rows-unreadable" };
+const VOID_STATUS = { "no-usage": "events-only", unparsed: "unreadable", "no-evidence": "no-evidence", late: "late", missing: "missing", unreachable: "not-collected", "not-collected": "not-collected", unreadable: "rows-unreadable",
+  "row-missing": "row-missing", "rows-missing": "rows-missing", "rows-unreadable": "rows-unreadable" };
 
 // The merged family trace.
 //   bundle: bundle.json; machines: fleet/bundle.js readMachines (plus `windowUntil` when known)
@@ -329,7 +347,10 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
   const sessions = []; // { thread, agents, mainId, continuation, binding }
   const agentOfThread = new Map(); // thread key -> agent id
   const agentsOfThread = new Map(); // thread key -> every agent id drawn from its bindings
-  const labOf = (t, ev) => (ev?.lab && LOG_LABS[ev.lab] ? { lab: LOG_LABS[ev.lab], labEvidence: "provider-log" } : LABS[t.provider] ? { lab: LABS[t.provider], labEvidence: "driver-map" } : { lab: null, labEvidence: null });
+  // labEvidence: "product-map" (the binding's own native product), "provider-log" (the provider log names it), or
+  // "driver-map" (T3's provider driver). None of them verifies which lab made the model.
+  const labOf = (t, ev, product = null) => (PRODUCT_LABS[product] ? { lab: PRODUCT_LABS[product], labEvidence: "product-map" }
+    : ev?.lab && LOG_LABS[ev.lab] ? { lab: LOG_LABS[ev.lab], labEvidence: "provider-log" } : LABS[t.provider] ? { lab: LABS[t.provider], labEvidence: "driver-map" } : { lab: null, labEvidence: null });
   const note = (text, t, extra = {}) => {
     out.noteRecords.push({ text: String(text), source: "parser", threadKey: t?.key ?? null, environmentId: t?.env ?? null, machine: t ? nameOf(t.env) : null, title: t?.title || "", ...extra });
     out.notes.push(t && t !== root ? `${nameOf(t.env)} · ${t.title}: ${text}` : String(text));
@@ -365,7 +386,8 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     tr.files.forEach((f, i) => { out.files[fileBase + i] = { ...f, name: `${nameOf(t.env)}/${f.name}` }; });
     const ev = evidence.get(t.key) || null;
     const binding = `${t.key}|${tr.product || "?"}|${nat?.nativeId ?? (tr.product === "t3-events" ? "events" : `f${fileBase}`)}`;
-    const where = { machine: nameOf(t.env), environmentId: t.env, provider: PRODUCTS[t.provider] || t.provider || null, ...labOf(t, ev), thread: t.id, threadKey: t.key,
+    const own = tr.product === "t3-events" ? null : tr.product || nat?.product || null;
+    const where = { machine: nameOf(t.env), environmentId: t.env, provider: PRODUCTS[t.provider] || t.provider || null, ...labOf(t, ev, own), thread: t.id, threadKey: t.key,
       session: nat?.nativeId || (tr.product === "t3-events" ? "provider-event log" : null),
       // the native binding's own product and recorded version: provenance and tool references use these, never the root's
       nativeProduct: tr.product || nat?.product || null, nativeVersion: tr.version || nat?.version || null, binding };
@@ -401,7 +423,9 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     out.agents.push(...agents);
     if (!continuation) agentOfThread.set(t.key, ids.get(main.id));
     (agentsOfThread.get(t.key) || agentsOfThread.set(t.key, []).get(t.key)).push(...agents.map(a => a.id));
-    sessions.push({ thread: t, agents, mainId: ids.get(main.id), continuation, binding, product: tr.product, native: nat });
+    // the session's recorded images (loader.js), by their place in the merged file table
+    const media = (tr.files || []).flatMap((f, i) => (f.role === "media" ? [fileBase + i] : []));
+    sessions.push({ thread: t, agents, mainId: ids.get(main.id), continuation, binding, product: tr.product, native: nat, media });
     if (isRoot) Object.assign(out, { product: tr.product, version: tr.version, contextWindow: tr.contextWindow });
     for (const n of tr.notes || []) note(n, t, { binding });
   };
@@ -488,7 +512,7 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     const to = claimedEnd ?? (t.uncollected ? ms(bundle.scope?.until) : until);
     if (!Number.isFinite(from) || !Number.isFinite(to) || !(to >= from)) continue;
     const logTaken = Math.max(...[part.collectedAt, ...(part.parts || []).map(x => x.collectedAt)].map(ms).filter(Number.isFinite));
-    const why = t.uncollected || (ev?.lines ? "no-usage" : ev?.parseErrors?.length ? "unparsed" : ev?.missing?.length ? "missing-member" : t.native ? "unparsed" : "no-evidence");
+    const why = t.uncollected || (ev?.lines ? "no-usage" : ev?.parseErrors?.length ? "unparsed" : ev?.missing?.length ? "missing-member" : t.native ? "unparsed" : t.declaredOnly || "no-evidence");
     const v = {
       thread: t.id, threadKey: t.key, machine: nameOf(t.env), environmentId: t.env, provider: PRODUCTS[t.provider] || t.provider || null, model: t.model, ...labOf(t, ev),
       title: t.title, from, to, point: to === from, firstEvidence: ev?.firstActivity ?? null, lastEvidence: ev?.lastActivity ?? null, status: t.task?.status || t.hop?.status || null,
@@ -514,9 +538,10 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
       const failed = ev?.parseErrors?.find(e => e.nativeId === n.nativeId && e.product === n.product);
       const missing = ev?.missing?.find(e => e.nativeId === n.nativeId && e.product === n.product);
       const meta = t.known.find(k => k.nativeId === String(n.nativeId) && k.product === n.product);
-      return { product: n.product, nativeId: n.nativeId, path: n.path, version: n.version || null, binding: s?.binding || null, agentId: s?.mainId || null,
+      return { product: n.product, nativeId: n.nativeId, path: n.path, version: n.version || null, binding: s?.binding || null, agentId: s?.mainId || null, ...labOf(t, ev, n.product),
         status: s ? "readable" : missing ? "missing-member" : failed ? "unreadable" : "not-read", detail: failed?.error || missing?.reason || null,
-        recordedBy: meta ? ["session-index", "provider-thread"] : ["session-index"], driver: meta?.driver || null, providerThreadId: meta?.providerThreadId || null };
+        recordedBy: meta ? ["session-index", "provider-thread"] : ["session-index"], driver: meta?.driver || null, providerThreadId: meta?.providerThreadId || null,
+        ...(s?.media?.length ? { media: s.media } : {}) };
     });
     for (const k of t.known) {
       if (bindings.some(b => String(b.nativeId) === k.nativeId && (b.product === k.product || k.product == null))) continue;
@@ -532,15 +557,21 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
     else if (drawn.length && parsed.get(t.key)?.trace?.product === "t3-events") status = "events-only";
     else if (drawn.length) status = "readable";
     else if (voidOf.has(t.key)) status = VOID_STATUS[out.voids[voidOf.get(t.key)].why] || "no-evidence";
-    else status = t.uncollected ? VOID_STATUS[t.uncollected] || "not-collected" : bindings.some(b => b.status === "missing-member") ? "missing-member" : bindings.some(b => b.status === "unreadable") ? "unreadable" : ev?.lines ? "events-only" : "no-evidence";
+    else status = t.uncollected ? VOID_STATUS[t.uncollected] || "not-collected" : bindings.some(b => b.status === "missing-member") ? "missing-member" : bindings.some(b => b.status === "unreadable") ? "unreadable" : ev?.lines ? "events-only" : t.declaredOnly || "no-evidence";
     const from = finite(t.task?.startedAt ?? t.hop?.startedAt ?? t.created ?? ev?.firstActivity ?? null);
     const to = finite(t.task?.completedAt ?? t.hop?.completedAt ?? ev?.lastActivity ?? null);
+    // what T3 itself recorded of the thread's conversation (its messages, turn items and legacy messages): counted
+    // here, read whole on request (worker fleet-records); never drawn, timed or taken for model requests
+    const rows = machineOf(t.env)?.rows || {}, mine = list => (Array.isArray(list) ? list.filter(r => r?.thread_id === t.id).length : 0);
+    const records = { messages: mine(rows.messages), turnItems: mine(rows.turnItems), legacyMessages: mine(rows.legacyMessages) };
     out.inventory.push({
-      key: t.key, threadId: t.id, environmentId: t.env, machine: nameOf(t.env), title: t.title, provider: PRODUCTS[t.provider] || t.provider || null, lab: labOf(t, ev).lab,
+      key: t.key, threadId: t.id, environmentId: t.env, machine: nameOf(t.env), title: t.title, provider: PRODUCTS[t.provider] || t.provider || null, ...labOf(t, ev),
+      ...(records.messages || records.turnItems || records.legacyMessages ? { records } : {}),
       root: t === root, status, association: assoc?.kind || null, candidates: assoc?.candidates || null, agentId: agentOfThread.get(t.key) || null, agentIds: drawn,
       voidIndex: voidOf.has(t.key) ? voidOf.get(t.key) : null, bindings, parentKey: t.parentKey, parentThreadId: t.parent, origin: t.origin,
       from, to: to != null && from != null && to < from ? null : to, untimed: from == null && to == null && !drawn.length,
-      detail: placeholder ? out.agents[0].unavailable.detail : ev?.parseErrors?.[0]?.error || ev?.missing?.[0]?.reason || null,
+      detail: placeholder ? out.agents[0].unavailable.detail : ev?.parseErrors?.[0]?.error || ev?.missing?.[0]?.reason || (t.declaredOnly ? DECLARED_WORDS[t.declaredOnly] : null),
+      ...(t.declaredOnly ? { declaredOnly: t.declaredOnly } : {}),
       t3: { status: t.task?.status || t.hop?.status || null, delivery: t.task?.delivery || null, runs: t.runs.length }
     });
   }
@@ -560,7 +591,7 @@ export function buildFamilyTrace({ bundle, machines, parsed, evidence = new Map(
       // parts the assembler served unrefreshed (the hourly harvest held the store): nothing after since is in the bundle
       stale: m.part.stale ? { since: ms(m.part.stale.since), until: ms(m.part.stale.until), lastChange: ms(m.part.stale.lastChange), roots: m.part.stale.roots || 0, why: m.part.stale.why || null } : null
     })),
-    threads: [...threads.values()].map(t => ({ key: t.key, id: t.id, machine: nameOf(t.env), environmentId: t.env, title: t.title, provider: PRODUCTS[t.provider] || t.provider || null, lab: labOf(t, evidence.get(t.key)).lab,
+    threads: [...threads.values()].map(t => ({ key: t.key, id: t.id, machine: nameOf(t.env), environmentId: t.env, title: t.title, provider: PRODUCTS[t.provider] || t.provider || null, ...labOf(t, evidence.get(t.key)),
       agentId: agentOfThread.get(t.key) || null, uncollected: t.uncollected || null,
       native: t.native ? { nativeId: t.native.nativeId, product: t.native.product, path: t.native.path, version: t.native.version || null } : null,
       natives: t.natives.map(n => ({ nativeId: n.nativeId, product: n.product, path: n.path, version: n.version || null })),

@@ -202,8 +202,9 @@ for (const dir of dirs) {
       if (want.launchesFromSubagents != null) assert.equal(fromSubagent, want.launchesFromSubagents);
     });
 
-    // [P1] the family path skipped the credential rules: a key in the root title reached trace.title.
-    await t.test("a credential planted in the bundle's rows never reaches the family trace", async () => {
+    // Local Trace shows what was recorded, credentials included (network/redact.js): a key in the root title reaches
+    // the trace, its reader text and its search exactly as recorded, and join ids are untouched.
+    await t.test("a credential planted in the bundle's rows reaches the family trace exactly as recorded", async () => {
       const root = machines.find(m => (m.rows?.threads || []).some(r => r.thread_id === b.bundle.scope.rootThreadId));
       const rel = `${root.dir}threads.json`, e = b.get(rel);
       const rows = JSON.parse(new TextDecoder().decode(/\.gz$/.test(e.path) ? await gunzip(await e.source.slice(0, e.source.size)) : await e.source.slice(0, e.source.size)));
@@ -220,10 +221,9 @@ for (const dir of dirs) {
       const mbytes = new TextEncoder().encode(JSON.stringify(manifest));
       const planted = list.filter(x => x !== e && x.path !== "bundle.json").concat({ path: e.path, source: memorySource(e.path, bytes) }, { path: "bundle.json", source: memorySource("bundle.json", mbytes) });
       const fam = await loadFamily(planted);
-      assert.ok(!JSON.stringify(fam.trace).includes(FAKE), "the planted key is gone from the trace");
-      assert.match(fam.trace.title, /chars \| ends …FAKE›/);
+      assert.ok(fam.trace.title.endsWith(` ${FAKE}`), "the planted key is shown as recorded, never a placeholder");
       assert.equal(fam.trace.fleet.rootThreadId, b.bundle.scope.rootThreadId, "join ids are kept");
-      assert.equal(fam.redact.str(`reader text ${FAKE}`).includes(FAKE), false);
+      assert.equal(fam.redact.str(`reader text ${FAKE}`), `reader text ${FAKE}`);
     });
 
     // [P2] the clock fit ignored the joined pairs' bounds; [P2] the span index needed one key order.

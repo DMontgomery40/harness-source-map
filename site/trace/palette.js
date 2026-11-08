@@ -113,7 +113,7 @@ export function createPalette(ctx) {
     const root = trace.agents.find(a => a.kind === "root") || trace.agents[0];
     const peak = root ? peakRequestIndex(root) : -1;
     const out = [
-      ...LENSES.map((l, i) => cmd(l.q, () => ctx.selectLens(l.key), String(i + 1), "Question")),
+      ...LENSES.map((l, i) => cmd(l.name, () => ctx.selectLens(l.key), String(i + 1), `Lens · ${l.q}`)),
       root?.requests.length ? cmd("Open the main thread", () => ctx.A.focusAgent(root.id, 0), null, `${fmtInt(root.requests.length)} requests`) : null,
       peak >= 0 ? cmd("Jump to peak context", () => ctx.A.focusRequest(root.id, peak), null, `Request ${peak + 1} · ${fmtTok(root.requests[peak].tokens.context)} in context`) : null,
       ...KEYS.filter(k => k.command).map(k => cmd(k.command, () => ACTIONS[k.id](0), k.keys[0], k.detail)),
@@ -261,7 +261,7 @@ export function createPalette(ctx) {
       if (!b) continue;
       const r = requestOf(a, h.block);
       out.push({ kind: "text", title: b.label || b.kind, snippet: h.snippet, stratum: b.kind,
-        detail: `${agentName(a)}${r != null ? ` · request ${r + 1}` : ""} · ≈ ${fmtTok(b.est)}`,
+        detail: `${agentName(a)}${r != null ? ` · request ${r + 1}` : ""}${b.est != null ? ` · ≈ ${fmtTok(b.est)}` : ""}`,
         go: { type: "block", agentId: a.id, block: h.block } });
     }
     return out;

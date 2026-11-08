@@ -1,6 +1,8 @@
 # Trace: everything on this machine (a session's local sources)
 
 Date: 2026-09-28. Status: built. Lens 6 (or 5 without a network capture), "Everything on this machine".
+Updated 2026-11-07: local source reads preserve recorded values under the
+[network layer’s original-content contract](2026-09-28-network-layer.md#6-local-evidence-and-publication).
 
 ## Why
 
@@ -33,8 +35,13 @@ paths and ids out.
   in the family), project folder, cwd, time window, version, and the config folder. A Claude desktop
   agent-mode session uses its own `.claude` under the app's data, not `~/.claude`.
 - `tools/sources/read.mjs` probes and reads, bounded (400 rows, 400,000 characters or 1,000 files a page),
-  through the network layer's redactor. On top of that, secrets written as settings (`token = …`, GitHub,
-  npm and Slack tokens) are scrubbed, and account and organization ids in desktop paths are masked.
+  while retaining the recorded values, including credentials in settings, logs and instruction text.
+  The earlier settings/token filtering and account/organization path masking are historical behavior.
+  Dedicated credential stores remain presence-only; preserving recorded evidence does not add secret-store
+  harvesting. Page and field limits must be distinguished from the complete source. Native instruction
+  configuration reports whether text is a selected-field projection or original source. If parsing or
+  projection cannot complete, it exposes the bounded original text with a parse note and truncation status;
+  deeply nested recorded values are preserved.
 - The resolver (`tools/trace-local.mjs`) serves `POST /v1/sources` (the report) and `POST /v1/source`
   (one page of one source) with the same origin, host and header checks as the session endpoints. It
   also looks for sessions in the Claude desktop app's `local-agent-mode-sessions`, so those open in Trace.
@@ -84,7 +91,7 @@ A Help button, in the sidebar and on the loader (and as a palette command), open
 
 - `tools/test/sources.test.mjs`:
   - per-session filtering, the time window, empty folders and snapshots;
-  - redaction, and credential stores never read;
+  - exact recorded credential and identity preservation, and credential stores never read;
   - the resolver endpoints and their refusals;
   - every reader naming a catalog entry.
 - `site/trace/test/ui.test.mjs`: the lens groups, opening content on request, and the no-resolver state.

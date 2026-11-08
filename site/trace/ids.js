@@ -87,3 +87,19 @@ export function looksLong(value, max = 28) {
   const s = String(value ?? "");
   return s.length > max && !/\s/.test(s);
 }
+
+// Readable names for agents (search rows, panel headings, pickers): the agent's own name when it reads as a name; else
+// its task description, cut at a word; else "Task" with the shortest end of its id that tells it apart from the other
+// unnamed agents ("Task · …7c4d"). A long unbroken token (an id, hash or encoded id) is not a name. The exact id stays with the agent, where its panel offers reveal and copy. Returns Map(agent id -> label).
+export const idLike = (s) => { const t = String(s ?? "").trim(); return !t || looksLong(t, 24); };
+export function readableAgentNames(agents) {
+  const out = new Map(), unnamed = [];
+  for (const a of agents || []) {
+    if (a.kind === "root") out.set(a.id, "Main thread");
+    else if (!idLike(a.name, a.id)) out.set(a.id, String(a.name).trim());
+    else if (!idLike(a.description, a.id)) out.set(a.id, targetLabel(a.description, 48));
+    else unnamed.push(a.id);
+  }
+  for (const [id, label] of distinctLabels(unnamed, () => "Task")) out.set(id, label === "Task" ? `Task · …${String(id).slice(-6)}` : label);
+  return out;
+}

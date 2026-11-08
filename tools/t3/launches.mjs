@@ -12,8 +12,9 @@
 //                 line's tool_result {tool_use_id, content} (a string, or text parts)
 //   Codex/ChatGPT event_msg item_completed {item: {type: "McpToolCall", tool, arguments, result: {content}}}, and
 //                 response_item function_call {name, call_id, arguments} with function_call_output {call_id, output}
-import {readdirSync, statSync, existsSync, readFileSync, writeFileSync, mkdirSync} from 'node:fs';
-import {join, relative, sep, dirname} from 'node:path';
+import {existsSync, readFileSync, writeFileSync, mkdirSync} from 'node:fs';
+import {join, relative, sep, dirname, resolve} from 'node:path';
+import {createHash} from 'node:crypto';
 import {fileBuffer, readBuffer, resolveBundleFile, bufferLines} from './gz.mjs';
 
 export const LAUNCH_TOOLS = /(?:^|__|\.)(t3_thread_launch|create_threads)$/;
@@ -122,21 +123,22 @@ export function launchesInSessions(sessionsDir, options) {
  return out;
 }
 
-// Launch hops of one stored part (its machine's agent sessions), cached by the part's files' size and mtime so a
-// part is read once: the cache lives outside the stores (a machine's push may replace its folder).
+// Launch hops of one published part. Its revision covers the selected index and transcripts; the selected
+// manifest representation and source location also belong to the identity. Legacy unversioned parts bypass
+// persistent caching. The assembly caller brackets both cache hits and reads with its publication guard.
 export function partLaunches(part, cacheDir) {
  const sdir = join(part.dir, 'machines', part.environmentId, 'agent-sessions');
  if (!existsSync(sdir)) return [];
  const options = {base: part.dir, files: part.entry.files};
  const index = resolveBundleFile(join(sdir, 'index.json'), options);
- const stamp = [join(part.dir, 'bundle.json'), index].map(f => {try {const s = statSync(f); return `${f}:${s.size}:${s.mtimeMs}`;} catch {return '-';}}).join('|');
- const cacheFile = cacheDir && join(cacheDir, part.environmentId, `${relative(join(part.store, 'families'), part.dir).split(sep).join('__')}.json`);
+ const stamp = createHash('sha256').update(JSON.stringify([resolve(part.store), resolve(part.dir), part.environmentId, part.receiveGeneration, part.entry.files, part.entry.sizes, index])).digest('hex');
+ const cacheFile = cacheDir && typeof part.receiveGeneration === 'string' && part.receiveGeneration.length && join(cacheDir, part.environmentId, `${relative(join(part.store, 'families'), part.dir).split(sep).join('__')}.json`);
  if (cacheFile && existsSync(cacheFile)) {try {const c = JSON.parse(readFileSync(cacheFile, 'utf8')); if (c.stamp === stamp && c.version === LAUNCH_CACHE_VERSION) return c.launches;} catch {}}
  const launches = launchesInSessions(sdir, options).map(l => ({...l, callerEnvironmentId: part.environmentId}));
  if (cacheFile) {try {mkdirSync(dirname(cacheFile), {recursive: true, mode: 0o700}); writeFileSync(cacheFile, JSON.stringify({version: LAUNCH_CACHE_VERSION, stamp, launches}) + '\n', {mode: 0o600});} catch {}}
  return launches;
 }
-export const LAUNCH_CACHE_VERSION = 3;
+export const LAUNCH_CACHE_VERSION = 4;
 
 // A launch as a hop (Contract A hops[], kind "launch"). The target machine is the one whose store holds the thread:
 // the link's environment, else the one the call asked for (T3 has answered a create_threads call aimed at another

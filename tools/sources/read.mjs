@@ -1,6 +1,6 @@
 // Reads one local source for one session, from a declarative read spec (tools/sources/specs.mjs), on this
-// machine, for the loopback resolver (tools/trace-local.mjs). Every value that leaves here goes through the
-// network layer's redactor: credentials and identity values are replaced, session and thread ids stay.
+// machine, for the loopback resolver (tools/trace-local.mjs). Recorded credential and identity values
+// remain evidence; the network layer's compatibility redactor preserves them unchanged.
 // A spec of type "credential" is never opened: only whether it exists is reported.
 //
 // Placeholders in paths and values, from the session's context (context.mjs):
@@ -57,26 +57,18 @@ const sized = (f) => { if (!f) return null; try { const s = statSync(f); return 
 const inWindow = (ctx, t) => ctx.start != null && t >= ctx.start - 3_600_000 && t <= (ctx.end ?? ctx.start) + 3_600_000;
 const cut = (s, n) => (s.length > n ? `${s.slice(0, n)}\n… (${(s.length - n).toLocaleString("en-US")} more characters)` : s);
 
-// Secrets written as settings (config.toml, settings.json env, .env lines) and token shapes the network
-// redactor doesn't know (GitHub, npm, Slack): the value goes, the name stays.
-const SECRET_LINE = /((?:^|[\s"'{,])[\w.-]*(?:token|secret|password|passwd|api[_-]?key|apikey|auth[_-]?key|private[_-]?key|credential)[\w.-]*["']?\s*[=:]\s*["']?)([^"'\s,}]{8,})/gim;
-const MORE_TOKENS = /\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|npm_[A-Za-z0-9]{30,}|xox[abpr]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16})\b/g;
-// Identity written as key=value or "key": "value" in log text (account, user, organization, workspace,
-// installation, device, machine ids). Session, thread, turn and request ids are join keys and stay.
-const IDENTITY_LINE = /((?:chatgpt[_-]?|anthropic[_-]?|x-)?(?:account|user|org|organization|workspace|installation|device|machine|anonymous)[_-]?(?:id|uuid|user[_-]?id)\\?["']?\s*[=:]\s*\\?["']?)([A-Za-z0-9_.@:+-]{6,})/gi;
-export const scrubText = (t) => typeof t === "string" ? t.replace(MORE_TOKENS, "‹redacted›").replace(SECRET_LINE, (m, a, v) => (/^‹redacted|^<redacted/.test(v) ? m : `${a}‹redacted›`)).replace(IDENTITY_LINE, (m, a, v) => (/^‹redacted|^<redacted/.test(v) ? m : `${a}‹redacted›`)) : t;
+// Compatibility helper used by native source readers: local recorded text stays original.
+export const scrubText = (text) => text;
 
 function redactor(ctx) {
   const R = createRedactor();
   R.protect([...ctx.ids, ...(ctx.keep || [])]);
   return R;
 }
-// A JSON text or value, redacted field by field when it parses, else scrubbed as text.
+// A bounded source value; strings retain their recorded representation.
 function clean(R, v) {
   if (v == null) return v;
   if (typeof v === "string") {
-    const t = v.trim();
-    if (t[0] === "{" || t[0] === "[") { try { const j = JSON.parse(t); R.harvest(j); return R.json(j); } catch { /* text */ } }
     return scrubText(R.str(cut(v, MAX_FIELD)));
   }
   if (typeof v === "object") { R.harvest(v); return R.json(v); }
@@ -315,7 +307,7 @@ export async function probe(spec, ctx) {
   }
 }
 
-// One page of a source's content for the session, redacted. `part` picks a file of a file/dir/glob source.
+// One page of a source's recorded content for the session. `part` picks a file of a file/dir/glob source.
 export async function read(spec, ctx, { offset = 0, limit = MAX_ROWS, part = null } = {}) {
   const R = redactor(ctx);
   const rel = (f) => displayFile(f, ctx);
@@ -369,8 +361,7 @@ export async function read(spec, ctx, { offset = 0, limit = MAX_ROWS, part = nul
   }
 }
 
-// A path as shown: the home folder as ~, and the account and organization ids in the Claude desktop app's
-// session folders masked (they are identity, like the ids the redactor removes from JSON).
-export const displayFile = (f, ctx = {}) => String(f).replace(ctx.home || home(), "~").replace(/((?:local-agent-mode-sessions|claude-code-sessions)\/)[^/]+\/[^/]+\//, "$1‹account›/‹org›/");
+// Compact only the home-folder prefix; recorded account and organization path components stay intact.
+export const displayFile = (f, ctx = {}) => String(f).replace(ctx.home || home(), "~");
 export const displayPath = (spec) => spec.path || spec.db || spec.dir || "";
 export { basename };

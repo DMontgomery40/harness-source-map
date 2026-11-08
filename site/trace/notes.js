@@ -2,11 +2,12 @@
 // merged into groups of one condition each, with an exact count and the environments and threads they touch. Every
 // original note is kept in its group, in order; grouping changes the presentation only. Pure: no DOM.
 //
-// A structured record (fleet/load.js noteRecords) names its condition. A plain string is grouped by its literal
-// shape (ids, numbers and times blanked): nothing is inferred about why it was written, and two shapes are never
-// one group. Its label is that shape bounded (shapeLabel: paths cut to their last segment, at most LABEL_MAX
-// characters at a word) and kept distinct from every other group's; the whole shape stays on the group (shape), and
-// every original note stays whole in its items.
+// A structured record (fleet/load.js noteRecords) names its condition. A plain string that says a known thing in
+// its own known words (the collector's, a parser's or the helper's: KINDS) is grouped by that kind, under a short
+// label. Any other plain string is grouped by its literal shape (ids, numbers and times blanked): nothing is inferred
+// about why it was written, and two shapes are never one group; its label is that shape, readable and bounded
+// (shapeLabel), kept distinct from every other group's, and the whole shape stays on the group (shape). Every
+// original note stays whole, in order, in its group's items: only the labels are the page's own words.
 import { distinctLabels } from "./ids.js";
 
 const SHAPES = [
@@ -25,17 +26,47 @@ export function noteShape(text) {
   return s.replace(/\s+/g, " ").trim();
 }
 
-// A plain note group's label: its shape with each path cut to its last segment, at most `max` characters, cut at a
-// word. Presentation only.
+// A shape as a label reads: a blanked id or time is "…" (a run of them, as an encoded id makes, one "…"), a blanked
+// number "N". Presentation only: the group keeps its shape, and every note stays whole.
+const readableShape = s => String(s ?? "").replace(/‹(?:id|time)›/g, "…").replace(/‹n›/g, "N").replace(/…(?:[^\s…]{0,3}…)+/g, "…");
+// A plain note group's label: its shape, readable, with each path cut to its last segment, at most `max` characters,
+// cut at a word. Presentation only.
 export const LABEL_MAX = 88;
 export function shapeLabel(shape, max = LABEL_MAX) {
-  let s = String(shape ?? "").replace(/(?:[A-Za-z]:)?(?:[\\/][^\s\\/"'‹›“”]+){2,}[\\/]?/g, p => `…/${p.split(/[\\/]/).filter(Boolean).pop()}`);
+  let s = readableShape(shape).replace(/(?:[A-Za-z]:)?(?:[\\/][^\s\\/"'‹›“”]+){2,}[\\/]?/g, p => `…/${p.split(/[\\/]/).filter(Boolean).pop()}`);
   s = s.replace(/\s+/g, " ").trim();
   if (s.length <= max) return s;
   const cut = s.slice(0, max - 1), sp = cut.lastIndexOf(" ");
   return `${sp > max * 0.6 ? cut.slice(0, sp) : cut}…`;
 }
 const SOURCE_WORDS = { parser: "parser", helper: "helper", gap: "collector", integrity: "bundle", load: "load" };
+// The kinds of plain note that say a known thing in fixed words, and each one's label.
+const KINDS = [
+  [/has no T3 log of its own; its events are in the parent thread's log/, "Recorded in parent"],
+  [/\bis shared: T3 cuts log names\b/, "Shared log"],
+  [/\bno provider event log on this machine\b/, "Missing log"],
+  [/\bNo session reader for\b/, "Unsupported session format"],
+  [/\bharvested parts predate recorded\b/, "Older recording"],
+  [/\bencrypted\b/i, "Encrypted file"],
+  [/\bunparsable lines skipped\b/, "Unreadable lines"],
+  [/\bcould not be read\b/, "Unreadable files"],
+  [/\bnot found under ~\//, "Session file not found"],
+  [/\brotated out of T3's log\b/, "Older spans"],
+  [/\bno archived spans of this machine cover\b/, "No spans for this window"],
+  [/(?:^|:\s)stale: the hourly harvest\b/, "Stale harvest"],
+  [/\black original-content provenance\b/, "Older content"],
+  [/\bis not in this part\b/, "Not collected yet"],
+  [/\bits machine is ambiguous\b/, "Ambiguous machine"],
+  [/\bis named by a family row but is not on this machine\b/, "Not on this machine"],
+  [/\bno matching \S+ tool_use; attached to\b|\bno Agent tool_use near its start spawned it\b/, "Subagent parent not found"],
+  [/\breviews not joined to a parent call\b/, "Unjoined reviews"],
+  [/\bopaque native store blobs\b/, "Opaque store data"],
+  [/\bLegacy SQLite chat-store adapter\b/, "Older store format"],
+  [/\bAn assistant message ended with\b/, "Assistant error"],
+  [/\bCould not read a saved network capture\b/, "Unreadable capture"],
+  [/\bnot written: the pre-write scan still found\b/, "File not written"],
+];
+export const noteKind = text => KINDS.find(([re]) => re.test(String(text ?? "")))?.[1] || null;
 
 const SEVERITY = { integrity: "warn", gap: "warn", load: "warn", parser: "info", helper: "info" };
 const CONDITION_LABEL = {
@@ -61,9 +92,10 @@ export function groupNotes(records, { labelOf = env => env } = {}) {
     let where = r.machine || null, body = text;
     const lead = /^([^:\n]{1,60}):\s+(.+)$/s.exec(text);
     if (!r.condition && lead && !/\s{2,}/.test(lead[1]) && lead[1].split(" ").length <= 5) { where ||= lead[1]; body = lead[2]; }
-    const key = r.condition ? `c:${r.condition}` : `s:${r.source || "helper"}:${noteShape(body)}`;
+    const kind = r.condition ? null : noteKind(text);
+    const key = r.condition ? `c:${r.condition}` : kind ? `k:${kind}` : `s:${r.source || "helper"}:${noteShape(body)}`;
     let g = groups.get(key);
-    if (!g) groups.set(key, g = { key, label: r.condition ? CONDITION_LABEL[r.condition] || r.condition : null, shape: r.condition ? null : noteShape(body), severity: SEVERITY[r.source] || "info", source: r.source || "helper",
+    if (!g) groups.set(key, g = { key, label: r.condition ? CONDITION_LABEL[r.condition] || r.condition : kind, shape: r.condition || kind ? null : noteShape(body), severity: SEVERITY[r.source] || "info", source: r.source || "helper",
       count: 0, environments: new Set(), threads: new Set(), items: [] });
     g.count++;
     g.items.push({ ...r, text });
@@ -78,7 +110,7 @@ export function groupNotes(records, { labelOf = env => env } = {}) {
     let l = labels.get(g.shape);
     if (l.length > LABEL_MAX + 24) l = shapeLabel(g.shape);
     if (plain.some(o => o !== g && o.shape === g.shape)) l += ` · ${SOURCE_WORDS[g.source] || g.source}`;
-    g.label = l;
+    g.label = readableShape(l);
   }
   for (const g of plain) { const n = plain.filter(o => o.label === g.label); if (n.length > 1) g.label += ` · ${n.indexOf(g) + 1} of ${n.length}`; }
   const rank = s => (s === "warn" ? 0 : 1);

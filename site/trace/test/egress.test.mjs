@@ -65,6 +65,17 @@ test("egress: escalation key forms and what justifications say", () => {
   assert.equal(plain.class, "read", "a justification without escalation is not evidence");
   const fn = classifyCodexCall("exec_command", JSON.stringify({ cmd: "./tools/ship.sh", sandbox_permissions: "require_escalated", justification: "Push the release branch." }));
   assert.deepEqual([fn.class, fn.egress, fn.escalated], ["outward", "push", true]);
+  // A justification is stated intent: it cannot upgrade a command Trace parsed itself. A grep stays a read and a
+  // fetch stays a fetch, whatever the prose around them says; the justification is still kept with the call.
+  const grep = classifyCodexCall("exec_command", JSON.stringify({ cmd: `grep -n -i -E "tag|github release|mcpb" notes.txt`, sandbox_permissions: "require_escalated", justification: "Inspect release metadata before we deploy." }));
+  assert.deepEqual([grep.class, grep.egress, grep.justification], ["read", null, "Inspect release metadata before we deploy."]);
+  const fetch = classifyCodexCall("exec_command", JSON.stringify({ cmd: "git fetch origin", sandbox_permissions: "require_escalated", justification: "Fetch remote refs before push." }));
+  assert.deepEqual([fetch.class, fetch.egress], ["outward", "network"]);
+  const fetchSrc = classifyCodexCall("exec", `text(await tools.exec_command({cmd:"git fetch origin","sandbox_permissions":"require_escalated","justification":"Fetch remote refs before push."}));`);
+  assert.deepEqual([fetchSrc.class, fetchSrc.egress], ["outward", "network"]);
+  // An actual push in the command is still a push.
+  const push = classifyCodexCall("exec_command", JSON.stringify({ cmd: "git fetch origin && git push origin main", sandbox_permissions: "require_escalated", justification: "Sync." }));
+  assert.equal(push.egress, "push");
 });
 
 test("egress: what written scripts do, by language and call form", () => {
@@ -105,6 +116,11 @@ test("egress: kinds of outward commands and tools", () => {
   for (const [c, k] of cmds) assert.equal(commandDetail(c).kind, k, c);
   // The most consequential part of a compound command names the kind.
   assert.equal(commandDetail("git fetch && git push origin main").kind, "push");
+  // Reading a release is network, not a deploy; only the subcommands that change a release publish.
+  for (const c of ["gh release view v1.2.31 -R org/repo", "gh release list -R org/repo", "gh release download v1 -R org/repo"]) assert.deepEqual([commandDetail(c).class, commandDetail(c).kind], ["outward", "network"], c);
+  for (const c of ["gh release upload v1 a.zip", "gh release edit v1 --draft=false", "gh release delete v1"]) assert.equal(commandDetail(c).kind, "deploy", c);
+  // A grep whose pattern names a release stays a read.
+  assert.equal(commandDetail(`grep -n -i -E "tag|github release|mcpb" notes.txt`).class, "read");
   const tools = [
     ["Bash", "git push origin main", "push"], ["Artifact", "publish a.html", "deploy"], ["WebFetch", "https://x.test", "network"], ["WebSearch", "q", "network"],
     ["mcp__claude_ai_Slack__send_message", "{}", "message"], ["mcp__claude_ai_Netlify__deploy", "{}", "deploy"], ["mcp__claude-in-chrome__navigate", "https://x.test", "network"],

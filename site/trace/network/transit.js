@@ -6,8 +6,8 @@
 // key it was) and, for a JWT, when it was issued and expires; every send of it keeps its time, host, request and
 // the server's answer, which is how an expired or rejected key shows. Runs in the worker on the raw capture, in
 // two passes:
-//   collect() before anything is redacted: it decodes raw JWTs and hands the identity inside them (email,
-//     name) to the redactor, so they are removed everywhere, and remembers them to find them in prompt text;
+//   collect() before anything is redacted: it decodes raw JWTs and remembers the identity inside them (email,
+//     name) to find them in prompt text (an identity is no credential: it stays where it was recorded);
 //   report() after the findings: it walks the entries again and returns the rows.
 
 export const RULES = [
@@ -159,7 +159,27 @@ const CRED_HEADER = /^(authorization|proxy-authorization|x-api-key|dd-api-key|st
 const JSON_HEADERS = new Set(["x-codex-turn-metadata"]);
 const ENV_KEYS = ["terminal", "shell", "package_managers", "runtimes", "platform", "arch", "node_version", "os_version", "runtime_os"];
 const PROMPT_ROOTS = /^(messages|system|input|instructions)\b/;
-const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g;
+// An address: EMAIL, the pattern itself, is run by emails() below, never globally over a whole text.
+const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/y;
+const LOCAL_CHAR = /[A-Za-z0-9._%+-]/;
+// Every address in a text, exactly the matches a global EMAIL finds (leftmost, one after another), in linear time.
+// Run globally, EMAIL retries every suffix of a long run of address characters that has no "@" (quadratic: a 2 MB
+// string in a body never finishes). Here each "@" is tried once: its local part starts at the run of address
+// characters just before it, never reaching back past where the search stands (the previous match's end), and EMAIL
+// runs once (sticky) from there; a match moves the search to its end, a miss goes on to the next "@".
+export function emails(text) {
+  const s = String(text), out = [];
+  let pos = 0;
+  for (let at = s.indexOf("@"); at >= 0; at = s.indexOf("@", Math.max(at + 1, pos))) {
+    let start = at;
+    while (start > pos && LOCAL_CHAR.test(s[start - 1])) start--;
+    if (start === at) continue;
+    EMAIL.lastIndex = start;
+    const m = EMAIL.exec(s);
+    if (m) { out.push(m[0]); pos = start + m[0].length; }
+  }
+  return out;
+}
 // Addresses that belong to a product or are examples, not to a person (the harness's own prompts cite some).
 const SERVICE_EMAIL = /^(no-?reply|support|security|privacy|help|feedback)@|@(anthropic\.com|openai\.com|claude\.ai|chatgpt\.com|example\.(com|org|net)|users\.noreply\.github\.com)$/i;
 
@@ -168,7 +188,7 @@ export function collectTransit({ entries, R }) {
   const personal = new Map(); // value -> "email" | "name"
   const seeJwt = (s) => {
     if (typeof s !== "string" || !s.includes("eyJ")) return;
-    for (const m of s.matchAll(JWT_ANY)) { const d = decodeJwt(m[0]); if (d) for (const p of d.personal) { personal.set(p.value, p.kind); R.note(p.value); } }
+    for (const m of s.matchAll(JWT_ANY)) { const d = decodeJwt(m[0]); if (d) for (const p of d.personal) personal.set(p.value, p.kind); }
   };
   const walk = (v, key, depth = 0) => {
     if (v == null || depth > 30) return;
@@ -303,9 +323,9 @@ export async function reportTransit({ product, entries, R, personal }) {
     for (const m of v.matchAll(JWT_ANY)) await addCredential(m[0], parentKey || "", { ...ctx, path });
     for (const m of v.matchAll(TOKEN_IN_TEXT)) await addCredential(m[0], parentKey || "", { ...ctx, path });
     const prompt = ctx.model && PROMPT_ROOTS.test(path);
-    for (const m of v.matchAll(EMAIL)) {
-      if (SERVICE_EMAIL.test(m[0]) && !personal.has(m[0])) continue; // noreply@…, example.com: not a person's
-      await addIdentity("email", m[0], { ...ctx, path, prompt, channel: prompt ? "prompt text" : ctx.channel, rules: [...(ctx.rules || []), ...(prompt ? [1] : [])] });
+    for (const address of emails(v)) {
+      if (SERVICE_EMAIL.test(address) && !personal.has(address)) continue; // noreply@…, example.com: not a person's
+      await addIdentity("email", address, { ...ctx, path, prompt, channel: prompt ? "prompt text" : ctx.channel, rules: [...(ctx.rules || []), ...(prompt ? [1] : [])] });
     }
     if (prompt) for (const [value, kind] of personal) if (kind === "name" && value.length >= 4 && v.includes(value)) await addIdentity("name", value, { ...ctx, path, prompt, channel: "prompt text", rules: [...(ctx.rules || []), 1] });
   };
@@ -331,7 +351,7 @@ export async function reportTransit({ product, entries, R, personal }) {
         const kind = idKindOf(k);
         if (kind) await addIdentity(kind, v, { ...base, channel: "URL query", path: k, rules: [3] });
         else if (SECRET_KEY.test(norm(k)) || v.includes("<redacted") || JWT.test(v)) await addCredential(v, k, { ...base, channel: "URL query", path: k, rules: [3] });
-        else for (const m of v.matchAll(EMAIL)) await addIdentity("email", m[0], { ...base, channel: "URL query", path: k, rules: [3] });
+        else for (const address of emails(v)) await addIdentity("email", address, { ...base, channel: "URL query", path: k, rules: [3] });
       }
     }
     // Request headers.

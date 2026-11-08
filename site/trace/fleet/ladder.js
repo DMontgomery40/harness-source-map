@@ -62,7 +62,8 @@ export function buildLadder(net, spans, call, label = net.label) {
 // Unjoined says only that no receiving span matched the call's trace and parent span ids. What the receiver's
 // collection says of the call is a separate clause, and only what it records: no spans collected there, or the call
 // inside or outside a recorded collected window; with no window recorded, nothing. Neither proves traffic was lost.
-const COVER_WORDS = { inside: "the call is inside the receiver's collected window", outside: "the call is outside the receiver's collected window", unknown: null };
+const COVER_WORDS = { inside: "the call is inside the receiver's collected window", outside: "the call is outside the receiver's collected window",
+  uncertain: "the call is at the edge of the receiver's collected window, within the clocks' uncertainty", unknown: null };
 const JOIN_WORDS = {
   unjoined: j => ["No receiving span matched the caller's trace and parent IDs", j.receiverCollected === false ? "the receiver's spans were not collected" : COVER_WORDS[j.receiverWindow || "unknown"]].filter(Boolean).join(" · "),
   ambiguous: n => `${n} receiving spans match; none is chosen`,
@@ -78,7 +79,7 @@ export function renderLadder(el, L, { fmtWhen, onBack = null, select = null, hig
   const span = Math.max(1, b - a);
   const ms = v => (v >= 1000 ? `${(v / 1000).toFixed(v >= 10000 ? 0 : 1)} s` : `${v.toFixed(v < 10 ? 1 : 0)} ms`);
   const bar = r => {
-    const pick = select ? el("button", { type: "button", class: "fl-pick", "data-key": r.key, "aria-pressed": String(select.has(r.key)), "aria-label": `Select span ${r.name}`, title: "Select this span as evidence", text: select.has(r.key) ? "✓" : "+",
+    const pick = select ? el("button", { type: "button", class: "fl-pick", "data-key": r.key, "aria-pressed": String(select.has(r.key)), "aria-label": `Choose span ${r.name} for Explain`, title: "Choose for Explain", text: select.has(r.key) ? "✓" : "+",
       onclick: e => { const on = select.toggle({ key: r.key, kind: "span", label: `${r.side === "caller" ? L.from : L.to} · ${r.name}` }); e.currentTarget.setAttribute("aria-pressed", String(on)); e.currentTarget.textContent = on ? "✓" : "+"; } }) : null;
     return el("div", { class: `fl-row fl-${r.side}${select ? " fl-selectable" : ""}${r.clamped ? " fl-clamped" : ""}${highlight && r.key === highlight ? " fl-hit" : ""}`, "aria-current": highlight && r.key === highlight ? "true" : null, title: r.clamped ? "Clamped: after the clock correction it would still start before its caller" : null },
       pick,

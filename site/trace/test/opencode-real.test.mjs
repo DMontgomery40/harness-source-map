@@ -81,7 +81,8 @@ test('a real OpenCode HAR exposes observed routing and received reasoning withou
     assert.equal(c.association, header(raw.request.headers, 'x-opencode-session-id') === trace.agents[0].id ? 'session-id' : 'unattributed');
     assert.equal(c.routing.geography, undefined);
     assert.equal(c.routing.retention, undefined);
-    for (const part of ['request', 'response']) assert.equal(/Bearer\s+(?!<redacted)[a-z0-9_-]{20,}/i.test(store.body(c.entry, part).text), false);
+    // shown as recorded: any token the recorded body carries is in the shown body unchanged (nothing is redacted)
+    for (const part of ['request', 'response']) { const shown = store.body(c.entry, part).text; for (const m of (bodyText(raw, part) || '').matchAll(/Bearer\s+[A-Za-z0-9._~+/=-]{20,}/g)) assert.ok(shown.includes(m[0]), 'a recorded credential is shown as recorded'); }
     // Compare the separate reader with fields actually received from the
     // provider. Keep the duplicated OpenRouter representations separate.
     const plain = chunks.flatMap(j => j.choices || []).map(choice => choice.delta?.reasoning || choice.message?.reasoning || '').filter(value => typeof value === 'string').join('');

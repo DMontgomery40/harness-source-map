@@ -3,6 +3,7 @@
 // The 3D corner navigator shares the actual scene meshes (map-overview.js).
 import { STRATA, STATUS, MODEL_COLORS, modelFamily, freshTokens, fmtTok, fmtClock, fmtDur, fmtTick, spansDays, blockTokens, unloggedShrinks, el } from "./panels.js";
 import { fleetKeys, matcher, isFiltered, envLabel } from "./fleet/filter.js";
+import { recordedTimes } from "./clock.js";
 
 const GAP_MS = 20 * 60e3;   // idle stretches longer than this are compressed
 const BURST_MS = 10 * 60e3; // a subagent pause longer than this starts a new burst
@@ -16,10 +17,10 @@ export function buildLayout(trace, { groupBy = null } = {}) {
     for (const r of a.requests) times.push(r.t);
     for (const b of a.bursts || []) times.push(b.a, b.b);
   }
-  for (const v of trace.voids || []) times.push(v.from, v.to);
-  // The session's own start and end anchor the axis, so a long idle head or tail (a thread
-  // reopened days later with no requests) shows as a compressed, labelled gap.
-  for (const t of [trace.started, trace.ended]) if (Number.isFinite(t)) times.push(t);
+  // Every time the family clock can stand on (clock.js recordedTimes: requests, voids, terminal records such as run
+  // ends, returns and last activity, and the session's own start and end, which anchor a long idle head or tail as a
+  // compressed, labelled gap): the axis spans them all, so no clock position is clamped.
+  times.push(...recordedTimes(trace));
   const finite = times.filter(Number.isFinite);
   times.length = 0; times.push(...finite);
   times.sort((x, y) => x - y);
@@ -138,7 +139,9 @@ export function buildLayout(trace, { groupBy = null } = {}) {
       const t0s = a.requests[s.i0].t, t1s = a.requests[s.i1].t;
       const from = k === 0 && a.spawn && a.spawn.parentRequest != null ? Math.min(a.spawn.parentRequest, parent.requests.length - 1) : reqAt(parent, t0s, false);
       links.push({ type: "spawn", parent, child: a, seg: s, parentReq: from });
-      if (a.kind === "subagent" && !Array.isArray(a.returns)) {
+      // A subagent whose log records no returns: a report is inferred from timing, and the link says so. Never for a
+      // T3 thread's main or a continuation: T3 lineage and a later session of the same thread are no delivered report.
+      if (a.kind === "subagent" && !Array.isArray(a.returns) && !a.t3 && !a.continuation) {
         const back = reqAt(parent, t1s, true);
         // Report size: the parent's first agents-kind block after this burst ends that names this agent.
         let size = null;
@@ -147,7 +150,7 @@ export function buildLayout(trace, { groupBy = null } = {}) {
           if (b.t < t1s - 1000 || b.kind !== "agents") continue;
           if (!want || (b.label || "").toLowerCase().includes(want)) { size = blockTokens(b); break; }
         }
-        links.push({ type: "return", parent, child: a, seg: s, parentReq: back, size });
+        links.push({ type: "return", parent, child: a, seg: s, parentReq: back, size, inferred: true });
       }
     });
   }
@@ -307,7 +310,7 @@ export function renderOverview(host, trace, L, opts) {
   // labels and hour ticks (full view only)
   if (full) {
     g.append(S("text", { x: left - 8, y: askY1 - 2, "text-anchor": "end", class: "lab" }, "your asks"));
-    g.append(S("text", { x: left - 8, y: railY + 4, "text-anchor": "end", class: "lab" }, "left the machine"));
+    g.append(S("text", { x: left - 8, y: railY + 4, "text-anchor": "end", class: "lab" }, "network (inferred)"));
     if (L.lanes) g.append(S("text", { x: left - 8, y: lane0 + 9, "text-anchor": "end", class: "lab" }, trace.family ? "threads & subagents" : "subagents"));
     const long = spansDays(trace);
     // Long idle stretches get their duration on the axis row; hour ticks keep clear of them.

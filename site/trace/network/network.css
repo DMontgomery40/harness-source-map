@@ -105,13 +105,14 @@
 .net-top[open] > summary { border-bottom: 1px solid var(--line); margin-bottom: 8px; padding-bottom: 7px; }
 .net-fold .net-fold { background: #0d1219; }
 .net-findings > h3 { margin-bottom: 6px; }
-.net-finding-list { display: grid; gap: 6px; margin-top: 8px; }
-.net-finding { border-left: 3px solid var(--line-2); padding: 3px 0 4px 10px; }
+/* Findings: one row each, its name and first fact; the whole finding is the row's tooltip; the row opens its section. */
+.net-finding-list { list-style: none; padding: 0; display: grid; gap: 2px; margin: 8px 0 0; }
+.net-finding { border-left: 3px solid var(--line-2); }
 .net-finding.warn { border-left-color: var(--warn); }
-.net-finding-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.net-finding-head b { font-size: 13.5px; }
-.net-finding-head .linkbtn { font-size: 12.5px; flex: none; }
-.net-finding p { margin: 2px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+.net-finding-row { display: flex; align-items: baseline; gap: 8px; width: 100%; min-width: 0; border: 0; background: none; color: var(--ink); text-align: left; padding: 4px 6px 4px 9px; cursor: pointer; font: inherit; border-radius: 0 6px 6px 0; }
+.net-finding-row:hover { background: #121a24; }
+.net-finding-row b { flex: none; font-size: 13px; }
+.net-finding-row .meta { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; }
 .net-table { font-size: 12.5px; }
 .net-table th.num, .net-table td.num, .tokens-table th.num, .tokens-table td.num { text-align: right; white-space: nowrap; }
 .net-table td.mono { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
@@ -149,12 +150,83 @@
 .net-names { columns: 2; column-gap: 18px; }
 .net-names li { break-inside: avoid; }
 .net-entries .reader { margin: 6px 0 10px; }
+/* A body opened under a send or a row: its buttons keep their words whole. */
+.net-bodies .linkbtn, .net-reader .rhead .linkbtn, .net-reader .pager .btn { white-space: nowrap; }
 .net-reader-slot:empty { display: none; }
 @media (max-width: 980px) {
   .net-names { columns: 1; }
+  /* nested folds and a reader opened deep inside them keep the width for the text */
+  .net-fold { padding: 4px 7px; }
+  .net-fold .net-fold { padding: 3px 5px; margin: 5px 0; }
+  .net-sends { padding-left: 0; list-style-position: inside; }
+  .net-sends .reader, .net-entries .reader, .net-occ .reader { margin: 6px 0; padding: 7px; border-radius: 8px; }
+  .net-transit-list { padding-left: 0; }
 }
 .net-party.third { color: #ffc49b; }
 .net-party.first { color: #b9d6f5; }
 .net-timeline .linkbtn, .net-occ .linkbtn { margin-left: 6px; font-size: 12.5px; }
 .net-mark.warn { color: #ffc49b; font-weight: 600; }
 .net-id { overflow-wrap: anywhere; font-size: 11.5px; }
+/* Endpoints (panel.js hostsSection): one flat list; each endpoint names its destination once; its requests are
+   aligned rows of method · path · status · size, the whole row opening the tabbed reader under it. */
+.net-count { margin: 2px 0 6px; }
+.net-eps { list-style: none; padding: 0; margin: 0 0 8px; display: grid; gap: 2px; }
+.net-ep { border-top: 1px solid var(--line); padding: 5px 0 3px; min-width: 0; }
+.net-ep:first-child { border-top: 0; }
+.net-ep-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; min-width: 0; font-size: 13px; }
+summary.net-ep-head { cursor: pointer; list-style-position: outside; padding: 2px 0; }
+summary.net-ep-head::-webkit-details-marker { color: var(--ink-3); }
+.net-ep-name { color: var(--ink); font-weight: 650; }
+.net-ep-host { color: var(--ink-3); font-size: 12px; overflow-wrap: anywhere; }
+.net-ep-n { color: var(--ink-3); font-size: 12px; margin-left: auto; white-space: nowrap; }
+.net-role-tag { font-size: 11px; color: var(--ink-3); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; }
+.net-party { font-size: 11.5px; }
+.net-party.third { color: #ffc49b; }
+.net-party.local { color: #b9d6f5; }
+.net-grp-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin: 8px 0 2px 2px; font-size: 12.5px; color: var(--ink-2); }
+.net-reqs { list-style: none; padding: 0; margin: 2px 0 4px; display: grid; gap: 1px; }
+.net-req { min-width: 0; }
+.net-req-row {
+  display: grid; grid-template-columns: 4.6em minmax(0, 1fr) auto auto; align-items: baseline; gap: 8px; width: 100%;
+  border: 0; border-radius: 6px; background: none; color: var(--ink); font: inherit; text-align: left; padding: 3px 6px; cursor: pointer;
+}
+.net-req-row:hover { background: #121a24; }
+.net-req.open > .net-req-row { background: #142131; box-shadow: inset 3px 0 0 var(--link); }
+.net-method { font: 600 11.5px var(--mono); color: #b9d6f5; letter-spacing: .02em; }
+.net-path { font: 12.5px var(--mono); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.net-size { font-size: 12px; color: var(--ink-3); white-space: nowrap; text-align: right; }
+.net-req-flags { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 6px 2px calc(4.6em + 14px); }
+/* A status or finding badge: a few characters of text, coloured by what it means. */
+.net-st { display: inline-block; padding: 0 5px; border-radius: 5px; border: 1px solid var(--line-2); font: 11.5px/1.5 var(--sans); color: var(--ink-2); white-space: nowrap; }
+.net-st.ok { border-color: #2f5a44; color: #9fe0b8; }
+.net-st.redirect { border-color: #4b4f6e; color: #c9cdf5; }
+.net-st.warn { border-color: #8a5a3a; color: #ffc49b; }
+.net-st.none { border-style: dashed; color: var(--ink-3); }
+.net-hosts-table td { vertical-align: top; }
+.net-hosts-table td .net-st { margin: 0 4px 2px 0; }
+.net-hosts-table tr.warn td:first-child { box-shadow: inset 3px 0 0 var(--warn); padding-left: 7px; }
+/* The reader's head: the request's parts as tabs, then its tools; under it the exact address and the facts. */
+.net-reader { margin: 4px 0 8px; }
+.net-reader .rhead { align-items: center; justify-content: space-between; }
+.net-tabs { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 2px; border: 1px solid var(--line-2); border-radius: 8px; background: #0b0f15; }
+.net-tab { border: 0; border-radius: 6px; background: none; color: var(--ink-2); font: 12.5px var(--sans); padding: 3px 9px; cursor: pointer; }
+.net-tab:hover { color: var(--ink); background: #151d28; }
+.net-tab[aria-selected=true] { color: var(--ink); background: #1d3047; box-shadow: inset 0 0 0 1px #3d6796; }
+.net-tab-size { color: var(--ink-3); font-size: 11.5px; }
+.net-reader-tools { display: inline-flex; gap: 12px; align-items: baseline; }
+.net-reader-facts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin: 2px 0 4px; min-width: 0; }
+.net-reader-facts .meta { font-size: 12px; }
+.net-route { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin: 2px 0 6px; min-width: 0; }
+.net-actions .net-tabs { margin: 2px 0; }
+@media (max-width: 640px) {
+  .net-req-row { grid-template-columns: 4em minmax(0, 1fr) auto; }
+  .net-req-row .net-size { grid-column: 2 / -1; text-align: left; }
+  .net-req-flags { padding-left: 6px; }
+  .net-ep-n { margin-left: 0; }
+}
+/* Filter rows: a dropdown and a search box on one line, the same height. */
+.net-filterbar { align-items: center; }
+.net-filterbar .net-choose { margin: 0; flex: 0 1 auto; flex-wrap: nowrap; gap: 6px; }
+.net-filterbar .net-choose .net-select { flex: 0 1 auto; }
+.net-filterbar .agent-search, .net-filterbar .net-search { width: auto; flex: 1 1 160px; min-width: 0; padding: 4px 8px; font-size: 13px; border-radius: 7px; height: auto; line-height: 1.4; }
+.filter-scope .net-st { vertical-align: baseline; }

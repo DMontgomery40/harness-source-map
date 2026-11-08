@@ -1,26 +1,27 @@
 // Builds a T3 family's bundle on demand from the fleet harvest (the Trace resolver calls it when a thread is opened).
 // Every machine keeps a store (collect.mjs --harvest --store): span-less family parts under families/<local root>/
-// and a span archive (archive.mjs), aliased with the fleet parts key. The VMs push theirs to the Mac's
+// and a span archive (archive.mjs), preserving original content. The VMs push theirs to the Mac's
 // private/sessions/t3/incoming/<environmentId>/; the Mac's own store is there too. To open a thread:
 //  1. find its family across the stores: parts that share a thread, or that a hop joins (a delegation's two ends);
 //  2. collect the Mac's part of it now (any Mac thread of the family, found from every family thread id);
 //  3. combine each machine's parts (one per local root) and cut its spans for the family's window from its archive;
-//  4. merge them into a bundle with the family's own key (redact.mjs FamilyRedactor), derive, and verify.
+//  4. merge the original records, derive as requested, and verify readability and inventory.
 // A machine that sent nothing yet is listed not collected (collect.mjs finishBundle). Builds are kept under
 // private/sessions/t3/fleet/<root>/<stamp>/; a build newer than every input and younger than maxAgeMs is reused.
 import {existsSync, readdirSync, readFileSync, writeFileSync, statSync, rmSync, renameSync, copyFileSync, mkdirSync, openSync, closeSync} from 'node:fs';
 import {homedir, availableParallelism} from 'node:os';
-import {join, relative, sep, dirname} from 'node:path';
+import {join, relative, sep, dirname, resolve} from 'node:path';
 import {createHash, randomUUID} from 'node:crypto';
 import {openReadOnly} from './sqlite.mjs';
 import {resolveFamily, FAMILY_METADATA_VERSION} from './family.mjs';
 import {storeHarvest, withStoreLock, merge, mainRepo} from './collect.mjs';
 import {readBundle, writeBundle, emptyBundle, ensureDir, slug, readKeyFile, partsKeyFile, ALIAS_KEY_FILE, COLLECTOR_VERSION, FORMAT, READABLE_VERSIONS} from './bundle.mjs';
-import {familyKey, keyId} from './redact.mjs';
-import {credentialValues, scanBundle, scanBundleParallel, bundleFiles} from './verify.mjs';
-import {spansInWindow, coverageParts, SPAN_LOGS} from './archive.mjs';
+import {familyKey, keyId, CONTENT_POLICY} from './redact.mjs';
+import {scanBundleParallel, bundleFiles} from './verify.mjs';
+import {spansInWindow, coverageParts, SPAN_LOGS, archiveContentPolicy} from './archive.mjs';
 import {readBuffer, fileBuffer, resolveBundleFile, bufferLines, lineChunks} from './gz.mjs';
 import {partLaunches, launchHop} from './launches.mjs';
+import {ambiguousThread} from './bundles.mjs';
 
 const iso = ms => new Date(ms).toISOString();
 const readJson = f => {try {return JSON.parse(readFileSync(f, 'utf8'));} catch {return null;}};
@@ -30,8 +31,11 @@ export const fleetDir = repo => join(t3Root(repo), 'fleet');
 const dirs = d => {try {return readdirSync(d, {withFileTypes: true}).filter(e => e.isDirectory() && !e.name.startsWith('.')).map(e => e.name);} catch {return [];}};
 
 const partOptions = p => ({base: p.dir, files: p.entry.files});
-const partIdentity = p => `${p.entry.collectedAt}:${createHash('sha256').update(JSON.stringify([p.entry.files, p.entry.sizes, [...p.threadIds], p.entry.familyMetadata, p.receiveGeneration])).digest('hex')}`;
+const partIdentity = p => `${p.entry.collectedAt}:${createHash('sha256').update(JSON.stringify([p.entry.files, p.entry.sizes, [...p.threadIds], p.entry.familyMetadata, p.entry.nativeContentPolicy, p.entry.contentPolicy, p.receiveGeneration])).digest('hex')}`;
 const needsFamilyMetadata = p => p?.entry.familyMetadata?.version !== FAMILY_METADATA_VERSION;
+const currentContentPolicy = policy => policy?.version === CONTENT_POLICY.version && policy?.mode === CONTENT_POLICY.mode;
+const needsContentPolicy = p => !currentContentPolicy(p?.entry.nativeContentPolicy || p?.entry.contentPolicy);
+const needsCollectorMetadata = p => needsFamilyMetadata(p) || needsContentPolicy(p);
 
 // Optimistic read transaction for a store. Receive journals/generations and local harvest journals/records
 // bracket publication; the writer lock also excludes the local packaging read. Readers copy one publication or
@@ -82,7 +86,7 @@ export async function recoverLocalStore({store, environmentId, ...options}, harv
 }
 
 export function rootsNeedingRefresh(local, mine, harvested = new Set()) {
- return local.filter(r => !harvested.has(r.root) && (needsFamilyMetadata(mine.get(r.root)) ||
+ return local.filter(r => !harvested.has(r.root) && (needsCollectorMetadata(mine.get(r.root)) ||
   (r.updatedAt && Date.parse(r.updatedAt) > Date.parse(mine.get(r.root).entry.collectedAt)))).map(r => r.root);
 }
 
@@ -135,6 +139,15 @@ export function storesHold(parts, threadId, environmentId = null) {
 
 // The family of a thread across the stores: parts sharing a thread, joined through hops (both ends).
 export function familyParts(parts, {threadId, environmentId = null}) {
+ if (!environmentId) {
+  const envs = new Set();
+  for (const p of parts) {
+   if (p.threadIds.has(threadId)) envs.add(p.environmentId);
+   for (const h of p.hops) for (const end of [h.from, h.to]) if (end?.threadId === threadId && end.environmentId) envs.add(end.environmentId);
+  }
+  if (envs.size > 1) throw ambiguousThread();
+  if (envs.size === 1) environmentId = [...envs][0];
+ }
  const key = (e, t) => `${e}\u0000${t}`;
  const known = new Set(), loose = new Set([threadId]);
  const inFamily = new Set();
@@ -246,8 +259,10 @@ function partActivitySnapshot(p, cacheDir) {
  const mdir = join(p.dir, 'machines', p.environmentId);
  const f = resolveBundleFile(join(mdir, 'threads.json'), partOptions(p));
  if (!f) return {lastMs: null, active: false};
- const st = statSync(f), stamp = `manifest-v1:${relative(p.dir, f)}:${st.size}:${st.mtimeMs}`;
- const cacheFile = cacheDir && join(cacheDir, p.environmentId, `${relative(join(p.store, 'families'), p.dir).split(sep).join('__')}.json`);
+ // The publisher revision, not mtime/size, identifies these bytes. Unversioned legacy stores remain readable
+ // but cannot safely reuse persistent derivations after an in-place replacement.
+ const stamp = `publication-v2:${createHash('sha256').update(JSON.stringify([resolve(p.store), resolve(p.dir), p.environmentId, p.receiveGeneration, p.entry.files, p.entry.sizes, f])).digest('hex')}`;
+ const cacheFile = cacheDir && typeof p.receiveGeneration === 'string' && p.receiveGeneration.length && join(cacheDir, p.environmentId, `${relative(join(p.store, 'families'), p.dir).split(sep).join('__')}.json`);
  if (cacheFile && existsSync(cacheFile)) {const c = readJson(cacheFile); if (c?.stamp === stamp) return c.activity;}
  const rows = JSON.parse(fileBuffer(f).toString('utf8'));
  let lastMs = null, active = false;
@@ -274,7 +289,7 @@ const ROW_KEYS = {
  bindings: ['provider_session_id', 'thread_id'], providerThreads: ['provider_thread_id'], providerTurns: ['provider_turn_id'],
  threadSessions: ['thread_id'], sessionRuntime: ['thread_id'], contextHandoffs: ['context_handoff_id'],
  contextTransfers: ['context_transfer_id'], runtimeRequests: ['runtime_request_id'], plans: ['plan_id'],
- launchWorkflows: ['command_id'], projects: ['project_id'], threadCreations: ['turn_item_id'],
+ launchWorkflows: ['command_id'], projects: ['project_id'], threadCreations: ['turn_item_id'], messages: ['message_id'], legacyMessages: ['message_id'], turnItems: ['turn_item_id'],
 };
 const rowKey = table => row => {
  const keys = ROW_KEYS[table];
@@ -344,12 +359,16 @@ function combineMachineSnapshot(machineParts, out, {sinceMs, untilMs, partsKeyId
  }
  const newest = ordered.at(-1).entry;
  const legacyMetadata = ordered.filter(needsFamilyMetadata).length;
+ const legacyContent = ordered.filter(needsContentPolicy).length;
+ const legacyArchives = SPAN_LOGS.filter(([kind]) => !currentContentPolicy(archiveContentPolicy(store, kind, sinceMs, untilMs))).map(([kind]) => kind);
  const harvest = readJson(join(store, 'harvest.json'));
  const entry = {
   ...newest, status: 'collected', role: 'hop', collector: COLLECTOR_VERSION,
-  // the collector versions that harvested the parts (the merge redacts a part from an older one in full)
+  // Keep source versions visible: merging cannot restore bytes withheld by an older collector.
   sourceCollectors: [...new Set(ordered.map(p => p.entry.collector || p.bundle.collector?.version || null))],
   familyMetadata: legacyMetadata ? undefined : newest.familyMetadata,
+  nativeContentPolicy: !legacyContent ? CONTENT_POLICY : undefined,
+  contentPolicy: !legacyContent && !legacyArchives.length ? CONTENT_POLICY : undefined,
   threadIds: [...new Set(ordered.flatMap(p => [...p.threadIds]))],
   seeds: [...new Set(ordered.flatMap(p => p.entry.seeds || []))],
   window: {since: iso(sinceMs), until: iso(untilMs)},
@@ -359,6 +378,9 @@ function combineMachineSnapshot(machineParts, out, {sinceMs, untilMs, partsKeyId
   harvest: {parts: ordered.length, localRoots: ordered.map(p => p.root), lastHarvestAt: harvest?.harvestedAt || null, partsCollectedAt: ordered.map(p => p.entry.collectedAt)},
   files: [...bundleFiles(mdir)].map(f => relative(out, f).split(sep).join('/')).sort(),
  };
+ // Union files and archived spans are rewritten here; the newest source part's sizes no longer describe them.
+ entry.sizes = Object.fromEntries(entry.files.map(file => [file, statSync(join(out, file)).size]));
+ if (legacyContent || legacyArchives.length) entry.gaps.push(`content policy: ${legacyContent} native parts and ${legacyArchives.length} selected span archives lack original-content provenance; older identity aliases or withheld text cannot be reconstructed from these copies`);
  if (legacyMetadata) entry.gaps.push(`family metadata: ${legacyMetadata} harvested parts predate recorded thread-creation inspection; additional launch relationships may be absent until their machines refresh them`);
  if (!entry.parts.length) entry.gaps.push(`no archived spans of this machine cover the family's window (${iso(sinceMs)} .. ${iso(untilMs)})`);
  // Parts the assembler could not refresh (the hourly harvest held the store): what their threads did after the part
@@ -397,6 +419,22 @@ function handBundle(repo, rootThreadId) {
  return best?.dir || null;
 }
 
+// Preserve lexical generation ordering even when two publications share a millisecond.
+// Atomic directory rename rejects an occupied generation; a concurrent publisher can
+// only make us select a later ordinal, never replace a build already handed to a reader.
+function publishBuild(out, familyDir, stamp) {
+ const pattern = new RegExp(`^${stamp}-(\\d{20})$`);
+ for (let attempt = 0; attempt < 16; attempt++) {
+  let ordinal = 0n;
+  for (const name of dirs(familyDir)) {const match = pattern.exec(name); if (match && BigInt(match[1]) > ordinal) ordinal = BigInt(match[1]);}
+  const final = join(familyDir, `${stamp}-${String(ordinal + 1n).padStart(20, '0')}`);
+  try {renameSync(out, final); return final;} catch (error) {
+   if (!['EEXIST', 'ENOTEMPTY'].includes(error.code)) throw error;
+  }
+ }
+ throw new Error('Concurrent assembly publications prevented a new generation; retry the request.');
+}
+
 export function latestBuild(familyDir) {
  const builds = dirs(familyDir).filter(n => /^\d{8}T\d{6}/.test(n)).sort();
  for (const n of builds.reverse()) {const dir = join(familyDir, n); if (existsSync(join(dir, 'assembly.json'))) return dir;}
@@ -410,7 +448,7 @@ export function latestBuild(familyDir) {
 // changed after their part was taken (the hourly harvest keeps the rest). A build is reused, across resolver restarts
 // too, while its inputs are the same: the same parts (by collection time), the same assembly version, and every
 // machine's span archive either unchanged or already past the family's window when the build was made.
-export const ASSEMBLY_VERSION = 6;
+export const ASSEMBLY_VERSION = 9;
 const MERGE_WORKERS = Math.max(1, Math.min(8, (availableParallelism?.() || 4) - 1));
 const OPEN_REUSE_MS = 5 * 60000;
 export async function assembleFamily({threadId, environmentId = null, repo = mainRepo(), t3Home = join(homedir(), '.t3'), partsKey = null, onProgress = () => {}, maxAgeMs = null, refreshLocal = true, mergeWorkers = MERGE_WORKERS} = {}) {
@@ -440,9 +478,9 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   const last0 = latestBuild(join(fleetDir(repo), slug(`${r0.environmentId.slice(0, 8)}-${r0.threadId}`)));
   const a0 = last0 && readJson(join(last0, 'assembly.json'));
   const age0 = a0 ? Date.now() - Date.parse(a0.builtAt) : Infinity;
-  const current = a0 && Object.keys(a0.inputs || {}).length === fam.length && fam.every(p => a0.inputs?.[relative(incoming, p.dir)] === partIdentity(p));
+  const current = a0 && Object.keys(a0.inputs || {}).length === fam.length && fam.every(p => typeof p.receiveGeneration === 'string' && p.receiveGeneration.length > 0 && a0.inputs?.[relative(incoming, p.dir)] === partIdentity(p));
   const held = localEnv && existsSync(join(incoming, localEnv, '.lock'));
-  const metadataStale = refreshLocal && localEnv && fam.some(p => p.environmentId === localEnv && needsFamilyMetadata(p));
+  const metadataStale = refreshLocal && localEnv && fam.some(p => p.environmentId === localEnv && needsCollectorMetadata(p));
   if (a0 && a0.version === ASSEMBLY_VERSION && age0 < OPEN_REUSE_MS && (maxAgeMs == null || age0 < maxAgeMs) && current && !metadataStale && (!a0.stale?.length || held)) {
    const bundle = readBundle(last0);
    assertBundleInventory(last0, bundle);
@@ -508,7 +546,7 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
  const archived = a && Object.entries(archives).every(([env, at]) => a.archives?.[env] === at || (a.window?.until && a.archives?.[env] && Date.parse(a.window.until) <= Date.parse(a.archives[env])));
  // A family with a run still open is rebuilt once its build is five minutes old (its spans keep coming).
  const age = a ? Date.now() - Date.parse(a.builtAt) : Infinity;
- if (a && a.version === ASSEMBLY_VERSION && same(a.inputs, inputs) && archived && (!staleParts.length || a.stale?.length) && (!open || age < OPEN_REUSE_MS) && (maxAgeMs == null || age < maxAgeMs)) {
+ if (a && a.version === ASSEMBLY_VERSION && fam.every(p => typeof p.receiveGeneration === 'string' && p.receiveGeneration.length > 0) && same(a.inputs, inputs) && archived && (!staleParts.length || a.stale?.length) && (!open || age < OPEN_REUSE_MS) && (maxAgeMs == null || age < maxAgeMs)) {
   const bundle = readBundle(last);
   assertBundleInventory(last, bundle);
   assertReceiveSnapshots(fam);
@@ -536,28 +574,28 @@ export async function assembleFamily({threadId, environmentId = null, repo = mai
   const b = emptyBundle({rootEnvironmentId: root.environmentId, rootThreadId: root.threadId, since: iso(sinceMs), until: iso(untilMs), mode: 'family'});
   b.collector = {version: COLLECTOR_VERSION, aliasScheme: 'fleet-family', aliasKeyId: keyId(fk), partsKeyId: keyId(pk), assembledFrom: 'fleet harvest'};
   writeBundle(out, b);
-  let db = null; try {db = await openReadOnly(join(t3Home, 'userdata', 'statev2.sqlite'));} catch {}
-  const credValues = credentialValues({home: homedir(), repo, t3Home: existsSync(t3Home) ? t3Home : null, db});
-  db?.close();
   const hand = handBundle(repo, root.threadId);
   mark('prepare');
-  // The merge's per-machine scan is skipped: the whole bundle is verified below, before it is served.
+  // The merge's per-machine check is skipped: whole-bundle readability and inventory are verified below.
   // The merge's files are shared out to worker threads (collect.mjs mergePool), one machine at a time.
   // The viewer derives network facts from raw spans. Preserve normalized coverage but defer duplicate graphs
   // and indexes; the manifest declares this explicitly. --derive can materialize the optional backend files.
-  const merged = await merge({merge: partDirs, out, partsKey: pk, credValues, repo, t3Home, gzip: true, trusted: localEnv ? [localEnv] : [], verifyParts: false, noDerive: true, fastSpans: true, gzipLevel: 1, spanWindow: {sinceMs, untilMs}, spansFromCache: join(cache, 'spans-from'), workers: mergeWorkers, ...(hand ? {spansFrom: [hand]} : {})});
+  const merged = await merge({merge: partDirs, out, partsKey: pk, repo, t3Home, gzip: true, trusted: localEnv ? [localEnv] : [], verifyParts: false, noDerive: true, fastSpans: true, gzipLevel: 1, spanWindow: {sinceMs, untilMs}, spansFromCache: join(cache, 'spans-from'), workers: mergeWorkers, ...(hand ? {spansFrom: [hand]} : {})});
   mark('merge');
   onProgress(0.9);
-  // Verify the whole bundle before it is served.
-  const v = await scanBundleParallel(out, {values: credValues});
+  // Validate readable/decompressible bytes without filtering the evidence being inspected.
+  const v = await scanBundleParallel(out, {contentPolicy: 'original'});
   mark('verify');
   if (Object.keys(v.hits).length) throw new Error(`the assembled bundle failed verification (${Object.keys(v.hits).length} files with hits); not served`);
   const bundle = readBundle(out);
+  const collected = bundle.machines.filter(m => m.status === 'collected');
+  if (collected.length && collected.every(m => currentContentPolicy(m.contentPolicy))) bundle.contentPolicy = CONTENT_POLICY;
+  else delete bundle.contentPolicy;
   assertBundleInventory(out, bundle);
+  writeBundle(out, bundle);
   writeFileSync(join(out, 'assembly.json'), JSON.stringify({version: ASSEMBLY_VERSION, builtAt: new Date().toISOString(), root, requested: {threadId, environmentId}, window: {since: iso(sinceMs), until: iso(untilMs), open, lastActivity: Number.isFinite(lastMs) ? iso(lastMs) : null},
-   timings: {...timings, totalMs: Date.now() - t0}, mergeTimings: merged.timings, inputs, archives, stale: staleParts, launches: bundle.hops.filter(h => h.kind === 'launch').length, spansFrom: hand ? relative(t3Root(repo), hand) : null, verify: {files: v.files, bytes: v.bytes, hitFiles: 0}}, null, 1) + '\n', {mode: 0o600});
-  const final = join(familyDir, stamp);
-  renameSync(out, final);
+   timings: {...timings, totalMs: Date.now() - t0}, mergeTimings: merged.timings, inputs, archives, stale: staleParts, launches: bundle.hops.filter(h => h.kind === 'launch').length, spansFrom: hand ? relative(t3Root(repo), hand) : null, verify: {files: v.files, bytes: v.bytes, hitFiles: 0, mode: 'readability-and-inventory'}}, null, 1) + '\n', {mode: 0o600});
+  const final = publishBuild(out, familyDir, stamp);
   // Keep the two newest builds (a page may still be reading the previous one).
   for (const n of dirs(familyDir).filter(n => /^\d{8}T\d{6}/.test(n)).sort().slice(0, -2)) rmSync(join(familyDir, n), {recursive: true, force: true});
   onProgress(1);

@@ -161,7 +161,7 @@ export function createHelp(ctx) {
         bundle ? null : el("h4", { class: "help-h4", text: "A .har you already have" }),
         bundle ? p("Drop the native session or export and its HAR together.") : cmd("File it beside its session:", FILE_CAPTURE),
         s?.trace ? el("p", { class: "help-p" }, btn("Choose a .har for this visit", () => { close(); ctx.A.pickHar?.(); })) : null,
-        p("Credentials are replaced by a description before the file is written; Trace hides identity when it shows a capture.", "note"),
+        p("Trace shows a capture exactly as recorded, credentials included. A capture written by an older capture tool can hold its <redacted> marks.", "note"),
       ],
       requests: () => [
         h("Full request bodies"),

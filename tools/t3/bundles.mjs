@@ -1,15 +1,30 @@
 // Finds T3 fleet bundles for the local Trace resolver. A bundle is served for its root thread id or any T3 thread
 // id it holds; machine files follow the producer's manifest. Symlinks are never followed. When several bundles hold
-// the id (a v2 re-collection beside the v1 bundle it drew spans from), the newest format wins, then the newest.
+// the same qualified entity, the newest format wins, then the newest. Distinct environments are never ranked
+// against each other to resolve an unqualified id.
 import {readdir, readFile, lstat} from 'node:fs/promises';
 import {join, resolve} from 'node:path';
 import {FORMAT, READABLE_VERSIONS, ALIAS_KEY_FILE} from './bundle.mjs';
 
 const names = async dir => {try {return await readdir(dir, {withFileTypes: true});} catch {return [];}};
 
-export async function findT3Bundle(roots, id) {
+export const ambiguousThread = () => Object.assign(new Error('That thread ID has more than one environment identity. Open its environment-qualified T3 link.'), {code: 'T3_THREAD_AMBIGUOUS'});
+
+// Null means a legacy root claim with no environment evidence; it is not a wildcard for qualified lookups.
+export function threadEnvironments(bundle, id) {
+ const want = String(id).toLowerCase(), envs = new Set();
+ for (const m of bundle.machines || []) if ((m.threadIds || []).some(t => String(t).toLowerCase() === want)) envs.add(m.environmentId || null);
+ if (String(bundle.scope?.rootThreadId || '').toLowerCase() === want) {
+  if (bundle.scope.rootEnvironmentId) envs.add(bundle.scope.rootEnvironmentId);
+  else if (!envs.size) envs.add(null);
+ }
+ return envs;
+}
+
+export async function findT3Bundle(roots, id, {environmentId = null} = {}) {
  const want = String(id).toLowerCase();
- let best = null;
+ let best = null, mismatch = false;
+ const identities = new Set();
  const newest = b => (b.machines || []).map(m => m.mergedAt || m.collectedAt || '').sort().pop() || b.createdAt || '';
  for (const root of roots) for (const item of await names(root)) {
   if (!item.isDirectory()) continue;
@@ -17,11 +32,14 @@ export async function findT3Bundle(roots, id) {
   let bundle;
   try {bundle = JSON.parse(await readFile(join(dir, 'bundle.json'), 'utf8'));} catch {continue;}
   if (bundle.format !== FORMAT || !READABLE_VERSIONS.includes(bundle.version)) continue;
-  const ids = [bundle.scope?.rootThreadId, ...(bundle.machines || []).flatMap(m => m.threadIds || [])].filter(Boolean).map(s => String(s).toLowerCase());
-  if (!ids.includes(want)) continue;
+  const envs = threadEnvironments(bundle, want);
+  if (!envs.size) continue;
+  if (environmentId && !envs.has(environmentId)) {mismatch = true; continue;}
+  for (const env of envs) identities.add(env ? `environment:${env}` : `unknown:${resolve(dir)}`);
   if (!best || bundle.version > best.bundle.version || (bundle.version === best.bundle.version && newest(bundle) > newest(best.bundle))) best = {dir, bundle};
  }
- return best;
+ if (!environmentId && identities.size > 1) throw ambiguousThread();
+ return best || (mismatch ? {mismatch: true} : null);
 }
 
 // Only the manifest and declared machine members are served. Older bundles without a machine inventory may

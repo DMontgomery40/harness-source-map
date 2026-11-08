@@ -58,7 +58,9 @@ export async function loadFamily(entries, { index = null, onProgress = () => {},
     const log = m && eventLogFor(m, t.id);
     if (log) {
       const key = `${m.id}/${log.path}`;
-      if (!logs.has(key)) logs.set(key, parseT3EventLines((await b.text(`${m.dir}provider-events/${log.path}`).catch(e => { if (isAbort(e)) throw e; return null; })) || ""));
+      // a public example's log the worker could not fetch or verify (public-asset.js) fails the load, as a page
+      // download does; it never reads as a thread without evidence
+      if (!logs.has(key)) logs.set(key, parseT3EventLines((await b.text(`${m.dir}provider-events/${log.path}`).catch(e => { if (isAbort(e) || /^example-/.test(e?.code || "")) throw e; return null; })) || ""));
       const mine = threadLines(logs.get(key), { threadId: t.id, sessionId: t.museSession, shared: log.shared });
       const fromLog = t3EventsTrace(mine, { id: `t3-events:${t.id}`, name: t.title, model: t.model });
       Object.assign(ev(t.key), fromLog.evidence, { log: log.path });

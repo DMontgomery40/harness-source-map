@@ -1,8 +1,6 @@
 // Memory-only, explicitly requested AI explanations. No source discovery or credential-file reads.
 import {createHash, randomBytes} from 'node:crypto';
 import {once} from 'node:events';
-import {Redactor} from './t3/redact.mjs';
-import {ExactSet} from './t3/exact.mjs';
 
 export const AI_LIMITS=Object.freeze({profiles:8,previews:4,previewMs:5*60_000,requestBytes:384*1024,evidenceBytes:256*1024,items:200,excerptBytes:8192,promptBytes:8192,outboundBytes:384*1024,modelBytes:512*1024,models:1000,frameBytes:64*1024,streamBytes:1024*1024,outputBytes:128*1024,firstContentMs:120_000,totalMs:300_000,discoveryMs:15_000,bodyMs:15_000});
 const SCOPE_KINDS=Object.freeze(['layer','range','path','family','selection']);
@@ -15,6 +13,9 @@ const bytes=value=>Buffer.byteLength(value,'utf8');
 const object=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 function fields(value,allowed){if(!object(value)||Object.keys(value).some(key=>!allowed.includes(key)))fail(400,'invalid_fields');}
 function str(value,max=256,{empty=false}={}){if(typeof value!=='string'||(!empty&&!value.length)||bytes(value)>max||/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(value))fail(400,'invalid_string');return value;}
+// Recorded terminal output may contain ANSI escapes and other controls. JSON preserves them as data;
+// configuration and protocol fields continue to use str() above.
+function evidenceText(value,max){if(typeof value!=='string'||bytes(value)>max)fail(400,'invalid_string');return value;}
 function id(value){if(typeof value!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(value))fail(400,'invalid_id');return value;}
 const integer=(n,max=Number.MAX_SAFE_INTEGER)=>Number.isSafeInteger(n)&&n>=0&&n<=max;
 const json=(res,status,value)=>{if(res.destroyed||res.writableEnded)return;res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(value));};
@@ -72,36 +73,12 @@ function validateEvidence(e,limits){
   str(item.kind,64);if(!['observed','derived','inferred','unknown'].includes(item.provenance))fail(400,'invalid_provenance');
   for(const key of ['agent','request'])if(item[key]!==undefined)str(item[key],256);
   if(item.time!==undefined&&!Number.isFinite(item.time))fail(400,'invalid_time');
-  if(item.text!==undefined)str(item.text,limits.excerptBytes,{empty:true});
-  if(item.facts!==undefined){if(!object(item.facts)||Object.keys(item.facts).length>32)fail(400,'invalid_facts');for(const [k,v] of Object.entries(item.facts)){str(k,64);if(typeof v==='string')str(v,1024,{empty:true});else if(v!==null&&typeof v!=='boolean'&&!Number.isFinite(v))fail(400,'invalid_facts');}}
+  if(item.text!==undefined)evidenceText(item.text,limits.excerptBytes);
+  if(item.facts!==undefined){if(!object(item.facts)||Object.keys(item.facts).length>32)fail(400,'invalid_facts');for(const [k,v] of Object.entries(item.facts)){str(k,64);if(typeof v==='string')evidenceText(v,1024);else if(v!==null&&typeof v!=='boolean'&&!Number.isFinite(v))fail(400,'invalid_facts');}}
   if(item.text===undefined&&item.facts===undefined)fail(400,'empty_item');
  }
  if(bytes(JSON.stringify(e))>limits.evidenceBytes)fail(400,'evidence_too_large');
  return [...ids];
-}
-
-// Fleet joins must survive ordinary collection. In an outgoing AI packet, a value positively identified by
-// credential context must instead disappear everywhere, including short and join-shaped credentials.
-class AICredentialRedactor extends Redactor {
- constructor(options){super(options);this.credentials=new Set();}
- note(value,rule){super.note(value,rule);if(typeof value==='string'&&value.length>=4)this.credentials.add(value);}
-}
-// Reuse credential detection without reading secret stores; literal matching stays bounded by this packet.
-function scrub(value,aliasKey,secrets,publicValues=[]){
- const redactor=new AICredentialRedactor({aliasKey});for(const secret of secrets)redactor.addValue(secret);
- let clean=redactor.value(value);redactor.promoteFound();
- const exact=new ExactSet([...secrets,...redactor.credentials]);
- if(publicValues.some(value=>exact.has(value)))fail(400,'key_in_public_field');
- const walk=v=>{
-  if(typeof v==='string'){
-   const s=exact.replace(redactor.exactOnly(v),()=>'[redacted:credential]');
-   return s.replace(/(?:[A-Za-z]:\\|\/(?:Users|home|private|tmp|var|root|etc)\/)[^\s"'<>]*/g,'[redacted:path]').replace(/\/v1\/file\/[a-z0-9]+/gi,'[redacted:source-ticket]');
-  }
-  if(Array.isArray(v))return v.map(walk);
-  if(object(v))return Object.fromEntries(Object.entries(v).map(([k,x])=>[walk(k),walk(x)]));
-  return v;
- };
- return walk(clean);
 }
 
 async function limitedText(response,max,signal){
@@ -129,7 +106,7 @@ async function* chatEvents(response,limits,signal){
 }
 
 export function createTraceAI({fetchImpl=globalThis.fetch,limits:overrides={}}={}){
- const limits=Object.freeze({...AI_LIMITS,...overrides}),profiles=new Map(),previews=new Map(),aliasKey=randomBytes(32);let active=null,revision=0;
+ const limits=Object.freeze({...AI_LIMITS,...overrides}),profiles=new Map(),previews=new Map();let active=null,revision=0;
  for(const [key,value] of Object.entries(limits))if(!(key in AI_LIMITS)||!Number.isSafeInteger(value)||value<1)throw new TypeError('Invalid AI service limit');
  const secrets=()=>[...profiles.values()].map(p=>p.apiKey);
  const publicStrings=values=>{if(values.some(value=>secrets().some(key=>value.includes(key))))fail(400,'key_in_public_field');};
@@ -151,7 +128,10 @@ export function createTraceAI({fetchImpl=globalThis.fetch,limits:overrides={}}={
    let data;try{data=JSON.parse(await limitedText(response,limits.modelBytes,slot.controller.signal));}catch(e){if(e instanceof AIError)throw e;fail(502,'invalid_models');}
    if(!Array.isArray(data.data)||data.data.length>limits.models)fail(502,'invalid_models');
    const models=data.data.map(m=>{if(!object(m)||typeof m.id!=='string'||bytes(m.id)>256)fail(502,'invalid_models');const out={id:m.id};if(typeof m.owned_by==='string'&&bytes(m.owned_by)<=128)out.ownedBy=m.owned_by;return out;});
-   json(res,200,{models:scrub(models,aliasKey,secrets())});
+   // Discovery is configuration metadata, not recorded evidence. Reject a profile key echoed by
+   // an upstream service rather than silently replacing actual model names or owners.
+   if(models.some(m=>Object.values(m).some(value=>secrets().some(key=>value.includes(key)))))fail(502,'invalid_models');
+   json(res,200,{models});
   }catch(error){throw slot.controller.signal.aborted?slot.controller.signal.reason:error;}
   finally{clearTimeout(timer);res.off('close',cancel);end(slot);}
  }
@@ -211,10 +191,11 @@ export function createTraceAI({fetchImpl=globalThis.fetch,limits:overrides={}}={
     id(body.traceGeneration);if(body.presetId!==undefined)id(body.presetId);const model=str(body.model??profile.model,256);str(body.prompt,limits.promptBytes);
     publicStrings([model,body.traceGeneration,body.presetId??'']);
     const citations=validateEvidence(body.evidence,limits);
-    publicStrings(citations);
-    const clean=scrub({prompt:body.prompt,evidence:body.evidence},aliasKey,secrets(),[model,body.traceGeneration,body.presetId??'',...citations]);
+    // Recorded text is evidence, including credentials and ticket-looking strings. It is never used as
+    // a source-fetch instruction. Preview and explicit Send share these exact, validated frozen bytes.
+    const clean={prompt:body.prompt,evidence:body.evidence};
     str(clean.prompt,limits.promptBytes);
-    validateEvidence(clean.evidence,limits); // redaction must not silently change schema fields or exceed bounds
+    validateEvidence(clean.evidence,limits); // Keep the complete schema, scope, coverage and byte-limit guard.
     const payload={model,messages:[{role:'system',content:SYSTEM},{role:'user',content:JSON.stringify(clean)}],stream:true};
     if(profile.outputTokenParameter!=='none')payload[profile.outputTokenParameter]=profile.maxOutputTokens;
     const outboundBody=JSON.stringify(payload);if(bytes(outboundBody)>limits.outboundBytes)fail(400,'outbound_too_large');

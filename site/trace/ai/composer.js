@@ -29,6 +29,7 @@ import { byteLength } from "./resolve.js";
 import { RESOLVER } from "../capture-routes.js";
 import { copyButton } from "../compact.js";
 import { middle } from "../ids.js";
+import { STRATA } from "../panels.js";
 
 export const PROXY_LINKS = {
   project: "https://github.com/router-for-me/CLIProxyAPI",
@@ -55,7 +56,8 @@ export function reconcile(parent, kids) {
   }
 }
 
-// The items exactly as the helper will send them (its own redaction applied), read from the frozen outgoing body;
+// The items exactly as the helper will send them (the same bytes, sent only on an explicit Send), read from the
+// frozen outgoing body;
 // null when the body is not the Chat Completions request the helper builds.
 function sentItems(body) {
   try {
@@ -81,7 +83,7 @@ export function createComposer(ctx) {
   let S = null; // the composer's state: one draft of one load generation
   let live = { nodes: new Map() }; // the mounted composer's nodes, for S only
   const blank = () => ({
-    gen: ctx.gen(), anchor: null, options: [], scopeId: null, range: null, paths: null, question: "", presetId: null, providerId: null, model: "",
+    gen: ctx.gen(), anchor: null, options: [], scopeId: null, range: null, layerRange: null, layers: null, paths: null, question: "", presetId: null, providerId: null, model: "",
     evidenceRev: 0, draftRev: 0, packet: null, packing: null, preview: null, preparing: null, prepTimer: null, run: null, notice: null,
     caps: null, providers: null, helperError: null, setup: { open: false, error: null, busy: false, models: null, modelsError: null }, outgoingOpen: false,
   });
@@ -94,6 +96,8 @@ export function createComposer(ctx) {
     const o = S.options.find(x => x.id === S.scopeId);
     if (!o) return null;
     if (o.id === "range" && S.range) return { ...o.spec, from: S.range[0], to: S.range[1] };
+    // the layer scope: its own range and its chosen layers (the packer and the helper take both)
+    if (o.id === "layer" && S.layerRange && S.layers?.size) return { ...o.spec, from: S.layerRange[0], to: S.layerRange[1], layers: STRATA.map(x => x.key).filter(k => S.layers.has(k)) };
     if (o.id === "path" && S.paths?.size) return { ...o.spec, paths: [...S.paths] };
     return o.spec;
   };
@@ -151,7 +155,7 @@ export function createComposer(ctx) {
     if (!st.packet?.ok || !provider(st) || !st.question.trim() || running()) return;
     st.prepTimer = setTimeout(() => prepare(st), ctx.prepareDelay ?? 450);
   }
-  // ---- the frozen preview (the helper scrubs and freezes the exact outgoing request; no provider contact) ----
+  // ---- the frozen preview (the helper validates and freezes the exact outgoing request, unchanged; no provider contact) ----
   async function prepare(st = S) {
     if (!alive(st)) return;
     const gen = st.gen, draft = st.draftRev, packet = st.packet, p = provider(st), question = st.question;
@@ -279,28 +283,44 @@ export function createComposer(ctx) {
     const row = keep("scopes", () => el("div", { class: "ai-scopes", role: "group", "aria-label": "What to explain" }));
     reconcile(row, S.options.map(o => pill(`scope:${o.id}`, o.label, S.scopeId === o.id, () => { if (S.scopeId === o.id) return; S.scopeId = o.id; pack(); })));
     const out = [row];
-    if (S.scopeId === "range") {
-      const agent = ctx.trace().agents.find(a => a.id === S.anchor?.agentId);
-      const n = agent?.requests.length || 1;
-      const r = keep("range", () => {
-        const num = label => el("input", { type: "number", min: "1", class: "ai-num", "aria-label": label });
-        const from = num("From request"), to = num("To request"), of = el("span", { class: "meta" });
-        const commit = () => {
-          const max = Number(from.max) || 1;
-          let x = Math.max(1, Math.min(max, Number(from.value) || 1)) - 1, y = Math.max(1, Math.min(max, Number(to.value) || 1)) - 1;
-          if (y < x) [x, y] = [y, x];
-          if (S.range && S.range[0] === x && S.range[1] === y) return;
-          S.range = [x, y]; pack();
-        };
-        from.addEventListener("change", commit); to.addEventListener("change", commit);
-        return { from, to, of, row: el("div", { class: "ai-range" }, el("label", {}, "From ", from), el("label", {}, "to ", to), of), shown: null };
-      });
-      const [a, b] = S.range || [0, 0], shown = `${a}:${b}:${n}`;
-      // the values follow the committed range; what the user is typing stays until it is committed
-      if (r.shown !== shown) { r.from.max = r.to.max = String(n); r.from.setAttribute("max", String(n)); r.to.setAttribute("max", String(n)); r.from.value = String(a + 1); r.to.value = String(b + 1); setText(r.of, `of ${n}`); r.shown = shown; }
-      out.push(r.row);
+    const agent = ctx.trace().agents.find(a => a.id === S.anchor?.agentId);
+    if (S.scopeId === "range") out.push(rangeRow("range", () => S.range, v => { S.range = v; }, agent));
+    if (S.scopeId === "layer") {
+      // the layer scope's own range, and its layers: those present in the range (and any already chosen), as pills;
+      // the last chosen one stays on
+      out.push(rangeRow("layer-range", () => S.layerRange, v => { S.layerRange = v; }, agent));
+      const [a, b] = S.layerRange || [0, 0], present = new Set(S.layers || []);
+      for (let i = a; i <= b; i++) for (const [k, v] of Object.entries(agent?.requests[i]?.strata || {})) if (v > 0) present.add(k);
+      const row = keep("layers", () => el("div", { class: "ai-scopes ai-layers", role: "group", "aria-label": "Layers to explain" }));
+      reconcile(row, STRATA.filter(x => present.has(x.key)).map(x => pill(`layer:${x.key}`, x.name, S.layers.has(x.key), () => {
+        if (S.layers.has(x.key)) { if (S.layers.size === 1) return; S.layers.delete(x.key); } else S.layers.add(x.key);
+        pack();
+      })));
+      out.push(row);
     }
     return out;
+  }
+  // A request range editor (made once per draft under `key`): its values follow the committed range; what the user
+  // is typing stays until it is committed, and a commit packs the evidence again.
+  function rangeRow(key, get, set, agent) {
+    const n = agent?.requests.length || 1;
+    const r = keep(key, () => {
+      const num = label => el("input", { type: "number", min: "1", class: "ai-num", "aria-label": label });
+      const from = num("From request"), to = num("To request"), of = el("span", { class: "meta" });
+      const commit = () => {
+        const max = Number(from.max) || 1;
+        let x = Math.max(1, Math.min(max, Number(from.value) || 1)) - 1, y = Math.max(1, Math.min(max, Number(to.value) || 1)) - 1;
+        if (y < x) [x, y] = [y, x];
+        const cur = get();
+        if (cur && cur[0] === x && cur[1] === y) return;
+        set([x, y]); pack();
+      };
+      from.addEventListener("change", commit); to.addEventListener("change", commit);
+      return { from, to, of, row: el("div", { class: "ai-range" }, el("label", {}, "From ", from), el("label", {}, "to ", to), of), shown: null };
+    });
+    const [a, b] = get() || [0, 0], shown = `${a}:${b}:${n}`;
+    if (r.shown !== shown) { r.from.max = r.to.max = String(n); r.from.setAttribute("max", String(n)); r.to.setAttribute("max", String(n)); r.from.value = String(a + 1); r.to.value = String(b + 1); setText(r.of, `of ${n}`); r.shown = shown; }
+    return r.row;
   }
   // The evidence's state: one status line per state, kept while it says the same, so a draft edit never re-announces it.
   function coverageLine() {
@@ -316,13 +336,15 @@ export function createComposer(ctx) {
       words = { inventory_too_large: `Too many members to list (${p.summary?.known ?? "?"}). Choose a narrower scope.`, released: "This session is no longer loaded.", no_requests: "No requests in this scope.", no_edge: "No recorded edge for this agent.", no_network: "No network records selected.", cancelled: "Stopped.", read_failed: "The evidence could not be read." }[p.reason] || "This scope cannot be explained.";
       if (p.reason === "cancelled" || p.reason === "read_failed") action = "again";
     } else {
+      // the count, and what did not fit; the full account (members, excerpts, records only, gap notes) on hover or focus
       const s = p.summary;
-      words = [`${s.included} records`, s.known > 1 ? `${s.known} known members` : null, s.excerpted ? `${s.excerpted} with excerpts` : null, s.recordsOnly ? `${s.recordsOnly} records only` : null, s.omitted ? `${s.omitted} left out (budget)` : null, s.gaps.length ? `${s.gaps.length} gap note${s.gaps.length === 1 ? "" : "s"}` : null].filter(Boolean).join(" · ");
-      gaps = s.gaps.length ? s.gaps.join(" · ") : null;
+      words = [`${s.included} records`, s.omitted ? `${s.omitted} not sent (budget)` : null].filter(Boolean).join(" · ");
+      gaps = [[s.known > 1 ? `${s.known} known members` : null, s.excerpted ? `${s.excerpted} with excerpts` : null, s.recordsOnly ? `${s.recordsOnly} records only` : null, s.gaps.length ? `${s.gaps.length} gap note${s.gaps.length === 1 ? "" : "s"}` : null].filter(Boolean).join(" · "),
+        ...s.gaps].filter(Boolean).join(" · ") || null;
     }
     return keep(`coverage:${cls}:${words}:${action}:${gaps}`, () => {
       const line = el("p", { class: cls, role: "status" }, words, action === "stop" ? btn("Stop", () => ctx.stopEvidence(), "linkbtn") : action === "again" ? btn("Try again", () => pack(), "linkbtn") : null);
-      if (gaps) ctx.tip(line, gaps);
+      if (gaps) { line.setAttribute("tabindex", "0"); ctx.tip(line, gaps); }
       return line;
     });
   }
@@ -380,7 +402,7 @@ export function createComposer(ctx) {
       S.helperError === "helper_unreachable" ? el("div", { class: "path" }, el("code", { text: RESOLVER }), copyButton(RESOLVER, { what: "command" })) : null,
       btn("Check again", () => loadHelper(), "linkbtn"));
     const p = provider();
-    if (!p) return el("div", { class: "ai-dest" }, btn("Set up an endpoint", () => { S.setup.open = true; paint(); }, "btn small"));
+    if (!p) return el("div", { class: "ai-dest" }, btn("Connect an AI model", () => { S.setup.open = true; paint(); }, "btn small"));
     const row = keep("dest", () => el("div", { class: "ai-dest" }));
     const to = keep("dest:to", () => el("span", { class: "meta", text: "To" }));
     const model = keep("dest:model", () => {
@@ -464,19 +486,19 @@ export function createComposer(ctx) {
   }
   function setup() {
     const f = keep("setup", () => {
-      const url = el("input", { name: "url", type: "url", required: true, spellcheck: "false", autocomplete: "off", placeholder: "https://… /v1 or http://127.0.0.1:8317/v1", "aria-label": "Endpoint address" });
-      const key = el("input", { name: "key", type: "password", required: true, autocomplete: "off", "aria-label": "Client key" });
-      const model = el("input", { name: "model", spellcheck: "false", autocomplete: "off", placeholder: "model id", "aria-label": "Model" });
+      const url = el("input", { name: "url", type: "url", required: true, spellcheck: "false", autocomplete: "off", placeholder: "https://api.example.com/v1 or http://127.0.0.1:8317/v1", "aria-label": "API address" });
+      const key = el("input", { name: "key", type: "password", required: true, autocomplete: "off", "aria-label": "API key" });
+      const model = el("input", { name: "model", spellcheck: "false", autocomplete: "off", placeholder: "e.g. gpt-5 or claude-sonnet-5-5", "aria-label": "Model" });
       model.value = S.model || "";
       const form = el("form", { class: "ai-setup" });
       form.addEventListener("submit", e => { e.preventDefault(); saveEndpoint(); });
       const save = el("button", { type: "submit", class: "btn primary small", text: "Save" });
       return { form, fields: { url, key, model }, save,
-        top: [el("label", {}, el("span", { text: "Endpoint" }), url),
-          ctx.tip(el("label", {}, el("span", { text: "Client key" }), key), "The key this endpoint expects from Trace (for a proxy, its client key, not your account login). Held by the helper until it restarts."),
+        top: [ctx.tip(el("label", {}, el("span", { text: "API address" }), url), "Any OpenAI-compatible chat completions address, ending in /v1"),
+          ctx.tip(el("label", {}, el("span", { text: "API key" }), key), "The key this address expects (for a local proxy, the proxy's own key, not your account login). Held by the helper until it restarts."),
           el("label", {}, el("span", { text: "Model" }), model)],
         buttons: el("div", { class: "ai-actions" }, save, btn("Cancel", () => { S.setup.error = null; closeSetup(); paint(); }, "btn small")),
-        links: el("p", { class: "meta" }, "Local proxy: ", el("a", { href: PROXY_LINKS.project, target: "_blank", rel: "noopener noreferrer", text: "CLIProxyAPI" }), " · ", el("a", { href: PROXY_LINKS.quickStart, target: "_blank", rel: "noopener noreferrer", text: "quick start" })) };
+        links: el("p", { class: "meta" }, "Use a subscription through a local proxy: ", el("a", { href: PROXY_LINKS.project, target: "_blank", rel: "noopener noreferrer", text: "CLIProxyAPI" }), " · ", el("a", { href: PROXY_LINKS.quickStart, target: "_blank", rel: "noopener noreferrer", text: "quick start" })) };
     });
     live.fields = f.fields;
     setText(f.save, S.setup.busy ? "Saving…" : "Save");
@@ -532,7 +554,7 @@ export function createComposer(ctx) {
       else if (p === "Y" && a.ambiguous?.[al]) label = `one of ${a.ambiguous[al].names.join(", ")} · the record does not say which`;
       if (label) rows.push(el("li", {}, el("code", { text: al }), " ", open ? btn(label, open, "linkbtn") : el("span", { text: label })));
     }
-    return rows.length ? el("div", { class: "ai-legend" }, el("h3", { text: "What the aliases stand for" }), el("ul", { class: "items" }, rows)) : null;
+    return rows.length ? el("div", { class: "ai-legend" }, el("h3", { text: "What the references stand for" }), el("ul", { class: "items" }, rows)) : null;
   }
 
   const api = {
@@ -550,8 +572,10 @@ export function createComposer(ctx) {
         S.anchor = anchor;
         S.options = scopeOptions(ctx.trace(), anchor);
         S.scopeId = (scope && S.options.find(o => o.id === scope)?.id) || S.options[0]?.id || null;
-        const r = S.options.find(o => o.id === "range")?.spec;
+        const r = S.options.find(o => o.id === "range")?.spec, l = S.options.find(o => o.id === "layer")?.spec;
         S.range = r ? [r.from, r.to] : null;
+        S.layerRange = l ? [l.from, l.to] : null;
+        S.layers = new Set(l?.layers || []);
         // the drawn incoming path is chosen first; others are added by the user
         const alts = anchor?.agentId ? incomingPaths(ctx.trace(), anchor.agentId) : [];
         const first = (anchor?.paths?.length ? alts.filter(p => anchor.paths.includes(p.id)) : alts.filter(p => p.drawn).slice(0, 1)).map(p => p.id);
@@ -580,7 +604,7 @@ export function createComposer(ctx) {
       const r = entry.record;
       const title = r.kind === "inventory" && r.facts?.of > 1 ? `${KIND_WORDS.inventory} · part ${r.facts.chunk} of ${r.facts.of}` : KIND_WORDS[r.kind] || r.kind;
       const out = [backBtn, el("p", { class: "kicker", text: `Cited record ${ref.id} · ${r.provenance}` }), el("h2", { class: "aname", text: title }),
-        el("p", { class: "meta", text: entry.asSent ? "Exactly as sent, with the aliases the model saw." : "As packed for the model, with the aliases it saw." })];
+        el("p", { class: "meta", text: entry.asSent ? "Exactly as sent, with the references the model saw." : "As packed for the model, with the references it saw." })];
       if (r.text) {
         const pre = el("pre", { class: "text", text: r.text });
         const holder = el("div", { class: "rtext" }, pre);

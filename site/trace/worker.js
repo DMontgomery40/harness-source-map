@@ -15,7 +15,9 @@ import { localFileSource } from "./local-session.js";
 //     Claude Code attachments mapped in index.reminders get block.site = { slug, anchor, title }
 //     (a structured row rebuilt from index.templates links its template instead), and a Claude Code
 //     agent with no logged harness uses index.harness[version] (harnessSource "inferred").
-//   postMessage({ type: "load", gen, files: [File | { file: File, path: string } | { path, local }], root?: string })
+//   postMessage({ type: "load", gen, files: [File | { file: File, path: string } | { path, local }], root?: string,
+//     example?: { estimates: Blob | null, digest } })   example: a public T3 example (example-loader.js); its
+//     context split comes from its reviewed estimates (estimates.js), or is unavailable (trace.allocation)
 //     -> { type: "progress", phase: "narrow"|"scan"|"parse"|"build"|"done", done, total, file?, fileDone? }
 //        parse/build/done: done/total in bytes; parse events at most every 80 ms, plus one
 //        at the end of each file. scan (no root): total = number of dropped files.
@@ -38,16 +40,22 @@ import { localFileSource } from "./local-session.js";
 //     request waiting on it answers code "cancelled", and asking again starts a new derivation, never the stopped one
 //   postMessage({ type: "fleet-ladder", id, gen, call })   one peer call's span ladder (fleet/ladder.js); call: a call key
 //   postMessage({ type: "fleet-calls", id, gen, keys })   compact rows of the given calls (a group's members, a page)
+//   postMessage({ type: "fleet-records", id, gen, threadKey })   what T3 recorded of one thread's conversation, whole:
+//     its rows of messages, turnItems and legacyMessages from its environment's threads.json, as recorded (bounded:
+//     at most RECORDS_MAX rows and RECORDS_BYTES of them; the rest counted, never dropped silently)
+//     -> { type: "fleet-records", id, gen, records: [{ table, row }], omitted }
 //   postMessage({ type: "fleet-evidence", id, gen, selection })   exact records of a network selection
 //     (fleet/evidence.js): selection { kind: "network", keys, omitted? } or { kind: "path", thread } (the network
 //     paths of the delegations recorded into a thread)
 //     -> { type: "fleet-evidence", id, gen, records, coverage, paths?, hops? }
+//   postMessage({ type: "bytes", id, gen, file })   one recorded media file's exact bytes (at most BYTES_MAX)
+//     -> { type: "bytes", id, gen, bytes: ArrayBuffer, size } | { ..., error, code: "too-large" }
 //   postMessage({ type: "text", ref, id, gen })
 //     -> { type: "text", ref, id, gen, text, mode }  the literal text of one block (presentation: model.js readRef)
 //     -> { type: "error", id, gen, message, code? }
 //   postMessage({ type: "excerpts", id, gen, items: [{ key, ref, max }] })   strict, bounded excerpts for an
 //     explanation (ai/resolve.js): every item resolves to ok / empty / line / locator-missing / member-missing /
-//     unreadable, with at most `max` UTF-8 bytes of redacted text
+//     unreadable, with at most `max` UTF-8 bytes of the recorded text
 //     -> { type: "excerpts", id, gen, results: [{ key, status, text?, bytes?, truncated? }] }
 //   postMessage({ type: "find", q, id })   full-text search of the loaded session (find.js)
 //   postMessage({ type: "provenance", id, gen, literals })   where each piece of harness text comes from and every
@@ -56,7 +64,10 @@ import { localFileSource } from "./local-session.js";
 //     -> { type: "provenance-progress", id, done, total }
 //     -> { type: "provenance", id, gen, parts: [{ product, libName, literals, pieces }] }
 //     -> { type: "provenance-error", id, gen, message }
-//   postMessage({ type: "network", ... }), ({ type: "network-body", ... }), ({ type: "network-clear" })   unchanged
+//   postMessage({ type: "network", ... }), ({ type: "network-clear" })   unchanged
+//   postMessage({ type: "network-body", id, entry, part, whole?, original? })   one body of the attached capture,
+//     exactly as recorded (network/capture.js store.body): bounded at its first BODY_MAX characters unless whole
+//     -> { type: "network-body", id, text, mode, cut, total, decoded? }
 //
 // A load is stopped when a newer one begins (it was never installed): its reads stop at the next read, and the members
 // it inflated are released. Only the files the user dropped are read. No network requests. Capture content stays in this worker's
@@ -75,6 +86,8 @@ import { buildNet, threadRows, incomingCommands, attributeWaits, callSummary } f
 import { buildLadder } from "./fleet/ladder.js";
 import { resolveSelection, delegationPaths } from "./fleet/evidence.js";
 import { resolveStrict, excerpt, validRef } from "./ai/resolve.js";
+import { settleAllocation, markUnavailable, ESTIMATE_CAPS } from "./estimates.js";
+import { publicAssetSource, stoppable } from "./public-asset.js";
 
 let sources = [];
 let index = null;
@@ -96,6 +109,8 @@ let family = null;
 // known only within its own load, so its members are released once another load is in place or it is superseded.
 const expanded = createExpandedCache({ maxBytes: 256 * 1024 * 1024 });
 const dropped = no => `drop:${no}:`;
+const RECORDS_MAX = 5000, RECORDS_BYTES = 32 * 1024 * 1024;
+const BYTES_MAX = 32 * 1024 * 1024;
 
 class Released extends Error { constructor() { super("This evidence belongs to a session that is no longer loaded; reopen it."); this.code = "released"; } }
 const sameGen = m => m.gen == null || m.gen === gen;
@@ -131,7 +146,8 @@ async function deriveNet(fam, signal, progress) {
     if (signal.aborted) throw abortError(signal);
     const e = fam.bundle.get(`${m.dir}spans.ndjson`);
     if (!e) continue;
-    const ix = await indexSpans(guardSource(e.source, signal), { gz: /\.gz$/i.test(e.path), signal, onProgress: n => progress(before + n, m.label) });
+    // stoppable: a span archive the page did not preload stops downloading when this run stops (public-asset.js)
+    const ix = await indexSpans(stoppable(e.source, signal), { gz: /\.gz$/i.test(e.path), signal, onProgress: n => progress(before + n, m.label) });
     before += ix.lines;
     spans.set(m.id, ix);
   }
@@ -174,10 +190,10 @@ async function provenanceOf(trace, literals, onProgress) {
   const parts = [];
   for (const [product, list] of groups) {
     const sub = { ...trace, product, agents: list.map(ai => trace.agents[ai]) };
-    const ix = indexFor(index, product);
+    const ix = indexFor(index, product), lit = literals?.[product] ? indexFor(literals[product], product) : null;
     const read = blockReader(trace, ix, ai => list[ai]);
     const model = await buildHarnessModel({
-      trace: sub, index: ix, literals: literals?.[product] ? indexFor(literals[product], product) : null,
+      trace: sub, index: ix, literals: lit,
       readText: family && trace === family.trace ? redactedReader(read, family.redact.str) : read,
       onProgress: p => onProgress({ done: before + p.done, total }),
     });
@@ -186,7 +202,10 @@ async function provenanceOf(trace, literals, onProgress) {
       pieces: model.pieces.map(p => ({ id: p.id, name: p.name, rung: p.rung, where: p.where || null, n: p.n, reach: p.reach, origin: p.origin || null,
         record: p.record ? { title: p.record.title || null, page: p.record.page || null, anchor: p.record.anchor || null, slug: p.record.slug || null } : null,
         blocks: p.blocks.map(([a, b]) => [list[a], b]) })),
-      agents: list.length });
+      agents: list.length,
+      // the builds this product's matches were made against, and the versions its own sessions recorded
+      compared: { literal: lit?.version || null, reference: ix?.libVersion || null },
+      versions: [...new Set(list.map(ai => trace.agents[ai].nativeVersion || (trace.family ? null : trace.version)).filter(Boolean))] });
   }
   return parts;
 }
@@ -206,6 +225,9 @@ self.onmessage = async (e) => {
     const stale = () => pending !== mine;
     try {
       const entries = (m.files || []).map((f, i) => {
+        // a public example's member the page did not preload: fetched (bounded as it streams), checked and inflated here
+        // on first read; its download stops with this load, or once every read waiting for it has stopped
+        if (f?.lazy) return { path: String(f.path).replace(/^\/+/, ""), identity: `example:${f.lazy.sha256}`, source: stoppable(publicAssetSource(f.path, f.lazy, expanded, { signal }), signal) };
         const file = f instanceof Blob ? f : f.file;
         const path = (f instanceof Blob ? file.webkitRelativePath || file.name : f.path || file.webkitRelativePath || file.name).replace(/^\/+/, "");
         // the identity of the immutable bytes: a helper ticket (pinned to one source generation), or this one file
@@ -225,6 +247,17 @@ self.onmessage = async (e) => {
       let result, fam = null;
       if (await isT3Bundle(entries)) {
         result = await loadFamily(entries, { index, onProgress, cache: expanded, signal });
+        // A public example: its split by source from its reviewed estimates, validated whole against the parsed family
+        // and applied at once, or unavailable for the whole family. Never discovered for a dropped or helper bundle.
+        if (m.example) {
+          const blob = m.example.estimates || null;
+          if (blob && blob.size > ESTIMATE_CAPS.bytes) markUnavailable(result.trace, "invalid", "the estimates file is larger than allowed");
+          else {
+            const bytes = blob ? new Uint8Array(await blob.arrayBuffer()) : null;
+            if (stale() || signal.aborted) throw abortError(signal);
+            settleAllocation(result.trace, bytes ? { bytes, digest: m.example.digest } : null);
+          }
+        }
         fam = { trace: result.trace, bundle: result.bundle, redact: result.redact, net: null };
       } else {
         const plain = await Promise.all(entries.map(async e => {
@@ -265,7 +298,7 @@ self.onmessage = async (e) => {
     let last = 0;
     try {
       if (!loaded) throw new Error("no session loaded");
-      // a family's snippets pass its credential rules (fleet/redact.js) like everything else it shows
+      // a family's snippets, as recorded (fleet/redact.js passes them through)
       const hitsShown = family && loaded === family.trace ? family.redact.hits : (hits) => hits;
       const res = await findText(loaded, sources, m.q, {
         index, cancelled: () => fg !== findGen,
@@ -330,7 +363,8 @@ self.onmessage = async (e) => {
   } else if (m.type === "network-body") {
     try {
       if (!network) throw new Error("no network capture is attached");
-      const out = m.part === "headers" ? { text: JSON.stringify(network.store.headers(m.entry), null, 2), mode: "headers, redacted", cut: false } : network.store.body(m.entry, m.part);
+      // whole: the whole text, asked for deliberately (a read is otherwise bounded); original: the body as stored
+      const out = m.part === "headers" ? { text: JSON.stringify(network.store.headers(m.entry), null, 2), mode: "URL and headers", cut: false } : network.store.body(m.entry, m.part, { whole: !!m.whole, original: !!m.original });
       self.postMessage({ type: "network-body", id: m.id, ...out });
     } catch (err) {
       self.postMessage({ type: "network-body", id: m.id, error: String((err && err.message) || err) });
@@ -341,6 +375,26 @@ self.onmessage = async (e) => {
     loaded=nativeLoaded;sources=nativeSources;provenance=null;
   } else if (m.type === "fleet-net-cancel") {
     stopNet(family);
+  } else if (m.type === "fleet-records") {
+    const asked = gen;
+    try {
+      if (!sameGen(m) || !family) throw new Released();
+      const t = (family.trace.fleet?.threads || []).find(x => x.key === m.threadKey);
+      if (!t) throw Object.assign(new Error("That thread is not in the loaded family."), { code: "missing" });
+      const rows = (await family.bundle.json(`machines/${t.environmentId}/threads.json`).catch(e => { if (isAbort(e)) throw e; return null; })) || {};
+      if (gen !== asked) throw new Released();
+      const records = [];
+      let bytes = 0, omitted = 0;
+      for (const table of ["messages", "turnItems", "legacyMessages"]) for (const row of Array.isArray(rows[table]) ? rows[table] : []) {
+        if (row?.thread_id !== t.id) continue;
+        const size = JSON.stringify(row).length;
+        if (records.length >= RECORDS_MAX || bytes + size > RECORDS_BYTES) { omitted++; continue; }
+        bytes += size; records.push({ table, row });
+      }
+      self.postMessage({ type: "fleet-records", id: m.id, gen: asked, records, omitted });
+    } catch (err) {
+      self.postMessage({ type: "fleet-records", id: m.id, gen: asked, code: err?.code || null, error: String((err && err.message) || err) });
+    }
   } else if (m.type === "fleet-net" || m.type === "fleet-ladder" || m.type === "fleet-calls" || m.type === "fleet-evidence") {
     // A T3 family's network: the rows of one thread (its ridge's panel), the waits of the whole family (fleet
     // ground), one call's ladder, compact rows of some calls, or the exact records of a selection.
@@ -418,6 +472,20 @@ self.onmessage = async (e) => {
       self.postMessage({ type: "excerpts", id: m.id, gen: asked, results });
     } catch (err) {
       self.postMessage({ type: "excerpts", id: m.id, gen: asked, code: err?.code || null, error: String((err && err.message) || err) });
+    }
+  } else if (m.type === "bytes") {
+    const asked = gen;
+    try {
+      if (!sameGen(m)) throw new Released();
+      const src = sources[m.file];
+      if (!src || loaded?.files?.[m.file]?.role !== "media") throw new Error("That is not a recorded media file of this load.");
+      if (src.size > BYTES_MAX) throw Object.assign(new Error("That file is larger than this view reads."), { code: "too-large" });
+      const bytes = await src.slice(0, src.size);
+      if (gen !== asked) throw new Released();
+      const out = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+      self.postMessage({ type: "bytes", id: m.id, gen: asked, bytes: out, size: src.size }, [out]);
+    } catch (err) {
+      self.postMessage({ type: "bytes", id: m.id, gen: asked, code: err?.code || null, error: String((err && err.message) || err) });
     }
   } else if (m.type === "text") {
     // the generation asked for is checked again after the read: a load that landed meanwhile releases the answer

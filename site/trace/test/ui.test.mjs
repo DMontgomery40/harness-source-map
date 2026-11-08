@@ -560,6 +560,41 @@ test("a single instant is inspectable with nothing to animate; with nothing time
   assert.equal(createClock({ X: L.X, T: L.T, groups: eventTimes(none) }), null);
 });
 
+test("at real epoch times stepping visits every group in order both ways, and a range includes its upper group", () => {
+  // ≈1.79e12 ms: a tolerance proportional to this value spans whole seconds and skipped the next two groups
+  const base = Date.UTC(2026, 10, 6, 14, 0), offsets = [0, 1, 100, 1000, 2000];
+  const trace = { agents: [{ id: "r", kind: "root", requests: offsets.map(o => ({ t: base + o, tokens: { context: 1 } })), blocks: [], asks: [], compactions: [] }], started: base, ended: base + 2000 };
+  const { L, clock } = clockOf(trace);
+  clock.toStart();
+  const seen = [clock.t - base];
+  while (!clock.atEnd && seen.length < 10) seen.push(clock.step(1) - base);
+  assert.deepEqual(seen, offsets);
+  const back = [clock.t - base];
+  while (!clock.atStart && back.length < 10) back.push(clock.step(-1) - base);
+  assert.deepEqual(back, offsets.slice().reverse());
+  // from a scrubbed position between groups, the nearest group on each side
+  clock.seekX(L.X(base + 500));
+  assert.equal(clock.step(1) - base, 1000);
+  clock.seekX(L.X(base + 500));
+  assert.equal(clock.step(-1) - base, 100);
+  // both ends included: a group exactly at the upper bound is crossed
+  assert.deepEqual(clock.groupsBetween(base, base + 1000), [0, 4]);
+  assert.deepEqual(clock.groupsBetween(base + 1000, base + 1), [1, 4]);
+});
+
+test("terminal records extend the clock and the axis alike: a run's end after the last request is reachable in both views", () => {
+  const t = Date.UTC(2026, 10, 6, 15, 0);
+  const child = { id: "c", kind: "subagent", parentId: "r", requests: [{ t, tokens: { context: 5 } }], blocks: [{ t, kind: "you" }, { t: t + 5000, kind: "model" }], asks: [], compactions: [],
+    t3: { startedAt: t, completedAt: null, parentRunEnd: null, runs: [{ requestedAt: t, completedAt: t + 9000 }] }, returns: [] };
+  const trace = { agents: [{ id: "r", kind: "root", requests: [], blocks: [], asks: [], compactions: [] }, child], started: t, ended: t };
+  const { L, clock } = clockOf(trace);
+  assert.deepEqual([...clock.groups].map(x => x - t), [0, 5000, 9000], "one request, its last block, its run's end: not every block");
+  assert.ok(clock.playable);
+  assert.equal(L.X(t + 9000), 1, "the shared layout axis (3D and 2D) ends where the clock does, so nothing is clamped");
+  clock.toEnd();
+  assert.deepEqual([clock.t, clock.atEnd], [t + 9000, true]);
+});
+
 test("a full sweep takes 60 s at 1× whatever the number of requests, agents or root requests", () => {
   for (const rootRequests of [0, 1, 200]) {
     const { clock } = clockOf(tailFamily({ rootRequests }));
@@ -905,11 +940,10 @@ test("a real OpenCode export renders its title, optional context rows and bounde
   assert.deepEqual(problems, []);
 });
 
-test("network lens and On-the-wire card render for both products with nothing planted in the text", async () => {
+test("network lens and On-the-wire card render for both products, the credential report leading", async () => {
   const { renderPanel } = await import("../panels.js");
   const { networkLens, wireCard } = await import("../network/panel.js");
   const { analyzeCapture } = await import("../network/capture.js");
-  const { PLANTED } = await import("./fixtures/network.mjs");
   const { readFileSync } = await import("node:fs");
   const NET = FIX + "network/";
   for (const [dir, file] of [["claude", "claude.har"], ["codex", "codex.har"], ["claude", "claude-described.har"]]) {
@@ -924,8 +958,7 @@ test("network lens and On-the-wire card render for both products with nothing pl
     const lens = new Element("aside");
     renderPanel(lens, { trace, level: 0, lens: "network", mode: "3d" }, A);
     const text = lens.textContent;
-    assert.ok(text.includes("What went over the wire") && text.includes("Sensitive data in transit") && text.includes("Endpoints by role"), file);
-    assert.deepEqual(Object.entries(PLANTED).filter(([, v]) => text.includes(v)).map(([k]) => k), [], `${file}: the lens shows no planted value`);
+    assert.ok(text.includes("What went over the wire") && text.includes("Sensitive data in transit") && text.includes("Endpoints"), file);
     // Each credential is listed by itself, with where it went, what the servers answered and every send.
     const cards = lens.all(n => /\bnet-cred\b/.test(n.className));
     assert.equal(cards.length, capture.transit.credentials.length, `${file}: a card per credential`);
@@ -945,9 +978,8 @@ test("network lens and On-the-wire card render for both products with nothing pl
     assert.equal(new Set(keys).size, keys.length, `${file}: fold keys are unique`);
     const pills = lens.all(n => /\bnet-(chip|rule|tool)\b/.test(cls(n))).length;
     assert.equal(pills, cards.reduce((k, c) => k + c.all(n => /\bnet-chip\b/.test(cls(n))).length, 0), `${file}: no pills outside the credential cards`);
-    // With every fold open (and the every-event list drawn), still nothing planted.
+    // every fold opens (and the every-event list draws) without error
     for (const d of lens.all(n => n.tagName === "DETAILS")) { d.open = true; d.dispatch("toggle"); }
-    assert.deepEqual(Object.entries(PLANTED).filter(([, v]) => lens.textContent.includes(v)).map(([k]) => k), [], `${file}: every fold open shows no planted value`);
     // A call in the log opens its request; the request inspector then carries the card.
     const call = lens.all(n => n.tagName === "BUTTON" && n.className === "item" && !/not in your log/.test(n.textContent))[0];
     call.dispatch("click");
@@ -960,7 +992,7 @@ test("network lens and On-the-wire card render for both products with nothing pl
     // Action and Custody come before the network detail.
     const kids = req.children, at = kids.indexOf(card), action = kids.findIndex(n => n.tagName === "SECTION" && n.children[0] && n.children[0].textContent === "Action");
     if (action >= 0) assert.ok(action < at, `${file}: Action sits above the card`);
-    assert.deepEqual(Object.entries(PLANTED).filter(([, v]) => req.textContent.includes(v)).map(([k]) => k), [], `${file}: the card shows no planted value`);
+
     if (dir === "codex") assert.ok(card.textContent.includes("Tokens per input item") && card.textContent.includes("On the websocket handshake") && card.textContent.includes("JWT"), "the socket's bearer token shows on its calls");
     else assert.ok(card.textContent.includes("System blocks as sent") && card.textContent.includes("billing header"));
   }
@@ -1028,10 +1060,30 @@ test("the Sources lens lists every source by where it stands, opens content on r
   renderPanel(lens5, { trace, level: 0, lens: "sources", mode: "3d" }, A);
   assert.ok(!pressed(lens5, "Readable") && lens5.all(n => n.tagName === "PRE" && n.textContent === 'model = "m"\nkey=value').length === 1);
   // Without the resolver the lens says how to start it.
-  A.sourcesLens = view => sourcesLens({ ...view, sources: { unavailable: true, reason: "The local resolver isn't running." }, sourceOpen: new Map() }, A);
+  A.sourcesLens = view => sourcesLens({ ...view, sources: { unavailable: true, code: "helper", reason: "The local resolver isn't running." }, sourceOpen: new Map() }, A);
   const lens3 = new Element("aside");
   renderPanel(lens3, { trace, level: 0, lens: "sources", mode: "3d" }, A);
   assert.ok(lens3.textContent.includes("npm --prefix site run trace:local"));
+  // A public example's policy is no setup problem: its reason and the way to your own session, never setup steps
+  let own = 0;
+  A.openOwnSession = () => own++;
+  A.sourcesLens = view => sourcesLens({ ...view, sources: { unavailable: true, code: "public-example", reason: "This public example uses published files only." }, sourceOpen: new Map() }, A);
+  const lens6 = new Element("aside");
+  renderPanel(lens6, { trace, level: 0, lens: "sources", mode: "3d" }, A);
+  assert.ok(lens6.textContent.includes("published files only") && !lens6.textContent.includes("trace:local") && !/Connect the local helper/.test(lens6.textContent));
+  lens6.all(n => n.tagName === "BUTTON" && n.textContent === "Open your own session")[0].dispatch("click");
+  assert.equal(own, 1);
+  // a session with no id to look up, or the helper's own answer, says just that
+  for (const code of ["no-session-id", "answer"]) {
+    A.sourcesLens = view => sourcesLens({ ...view, sources: { unavailable: true, code, reason: `reason ${code}` }, sourceOpen: new Map() }, A);
+    const lens7 = new Element("aside");
+    renderPanel(lens7, { trace, level: 0, lens: "sources", mode: "3d" }, A);
+    assert.ok(lens7.textContent.includes(`reason ${code}`) && !lens7.textContent.includes("trace:local"), code);
+  }
+  // and the page asks no local source for a public example: its policy answers before any loopback request
+  const APP = (await import("node:fs")).readFileSync(new URL("../app.js", import.meta.url), "utf8");
+  const ask = APP.slice(APP.indexOf("function loadSources()"), APP.indexOf("localSources(id)"));
+  assert.match(ask, /if\(publicExample\) return done\(\{unavailable:true,code:"public-example"/);
 });
 
 test("Help checks the resolver only when asked from the web, reads out this session's state, and switches topics", async () => {
@@ -1180,4 +1232,338 @@ test("on a phone the clock is never drawn over the environment and lab filters: 
   const APP = readFileSync(new URL("../app.js", import.meta.url), "utf8");
   assert.match(APP, /const topLimit = Math\.max\(sideStackBottom\(\), \.\.\.\["#crumbs", "#map-location"\]/);
   assert.match(APP, /fitPhoneClock\(\{ topLimit, height: H, edge,/);
+});
+
+test("a long text reads a page at a time from the whole: a marker past the old caps is reachable, Copy all is exact, own spans stay placed", async () => {
+  const { pagedText, pagesOf } = await import("../panels.js");
+  const line = n => `line ${String(n).padStart(7, "0")} ${"x".repeat(40)}\n`;
+  let text = "";
+  for (let n = 0; text.length < 900000; n++) text += line(n);
+  const at = 850000, marker = "UNIQUE-MARKER-PAST-THE-CAPS";
+  text = `${text.slice(0, at)}${marker}${text.slice(at)}`;
+  // pages end at a line end, cover everything once, in order
+  const pages = pagesOf(text, 400000);
+  assert.equal(pages[0][0], 0); assert.equal(pages.at(-1)[1], text.length);
+  for (let k = 1; k < pages.length; k++) { assert.equal(pages[k][0], pages[k - 1][1]); assert.equal(text[pages[k][0] - 1], "\n"); }
+  const shown = [];
+  const pager = pagedText(text, { size: 400000, key: "test|marker", label: "big", show: (page, start) => shown.push([page, start]) });
+  assert.ok(pager, "more than one page");
+  const buttons = pager.all(n => n.tagName === "BUTTON");
+  const next = buttons.find(b => b.textContent === "Next"), copy = buttons.find(b => b.textContent === "Copy all");
+  assert.match(pager.textContent, /Characters 1–[\d,]+ of 900,0\d\d/);
+  while (!shown.at(-1)[0].includes(marker) && shown.length < 10) next.dispatch("click");
+  const [page, start] = shown.at(-1);
+  assert.equal(page.indexOf(marker) + start, at, "the marker sits at its place in the whole text");
+  // the page a reader stands on is kept for its key (a re-render or Back returns to it)
+  const again = [];
+  pagedText(text, { size: 400000, key: "test|marker", show: (p, s) => again.push(s) });
+  assert.equal(again[0], start);
+  // Copy all takes the whole text exactly
+  let copied = null;
+  const nav = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  Object.defineProperty(globalThis, "navigator", { value: { clipboard: { writeText: async v => { copied = v; } } }, configurable: true });
+  try { copy.dispatch("click"); await new Promise(r => setTimeout(r, 0)); } finally { if (nav) Object.defineProperty(globalThis, "navigator", nav); else delete globalThis.navigator; }
+  assert.equal(copied, text);
+  // a text that fits on one page has no pager
+  assert.equal(pagedText("short", { size: 400000, key: "test|short", show: () => {} }), null);
+});
+
+test("a thread's record lists what T3 recorded of its conversation on request, each row shown exactly", async () => {
+  const { renderPanel } = await import("../panels.js");
+  const row = { thread_id: "child", message_id: "m2", role: "assistant", text: "The build failed:\n  error", created_at: "2026-01-01T00:02:00Z" };
+  const trace = { family: true, agents: [], inventory: [{ key: "env-a:child", threadId: "child", environmentId: "env-a", title: "Child", status: "no-reader", records: { messages: 1, turnItems: 0, legacyMessages: 0 }, bindings: [] }], fleet: { machines: [{ id: "env-a", label: "Studio" }] } };
+  let asked = 0;
+  const A = { threadRecords: async key => { asked++; assert.equal(key, "env-a:child"); return { records: [{ table: "messages", row }], omitted: 0 }; } };
+  const host = new Element("aside");
+  renderPanel(host, { trace, level: 0, inspector: "thread", inventoryKey: "env-a:child", lens: "context", mode: "3d" }, A);
+  const fold = host.all(n => n.tagName === "DETAILS" && /T3's records of this thread \(1 message\)/.test(n.textContent))[0];
+  assert.ok(fold, "the record names what T3 recorded");
+  assert.equal(asked, 0, "nothing is read until it is opened");
+  fold.open = true; fold.dispatch("toggle");
+  await new Promise(r => setTimeout(r, 0));
+  const item = host.all(n => n.tagName === "DETAILS" && n.getAttribute("class") === "record")[0];
+  assert.match(item.textContent, /^message · assistant · 2026-01-01T00:02:00Z/);
+  item.open = true; item.dispatch("toggle");
+  assert.equal(item.all(n => n.tagName === "PRE")[0].textContent, JSON.stringify(row, null, 2));
+});
+
+test("from a flagged credential, each send opens the exact request it went in, under its row: the key as recorded", async () => {
+  const { renderPanel } = await import("../panels.js");
+  const { networkLens } = await import("../network/panel.js");
+  const { analyzeCapture } = await import("../network/capture.js");
+  const { PLANTED, CCX } = await import("./fixtures/network.mjs");
+  const { readFileSync } = await import("node:fs");
+  const NET = FIX + "network/";
+  const entries = await entriesFor([NET + "claude"]);
+  let trace;
+  try { trace = (await loadTrace(entries)).trace; } finally { await Promise.all(entries.map(e => e.source.close())); }
+  // the key where it belongs (its own header to the API) and where it shouldn't (an analytics body)
+  const KEY = PLANTED.apiKey, h = JSON.parse(readFileSync(NET + "claude.har", "utf8"));
+  const api = h.log.entries.findIndex(e => /api\.anthropic\.com/.test(e.request.url));
+  h.log.entries[api].request.headers.push({ name: "x-api-key", value: KEY });
+  const body = JSON.stringify({ event: "client_boot", api_key: KEY });
+  h.log.entries.push({ startedDateTime: new Date(CCX.t0 + 9950).toISOString(), time: 40, request: { method: "POST", url: "https://analytics.example.test/v1/track", httpVersion: "HTTP/1.1", cookies: [], headers: [], queryString: [], headersSize: -1, bodySize: body.length, postData: { mimeType: "application/json", text: body } },
+    response: { status: 200, statusText: "", httpVersion: "HTTP/1.1", cookies: [], headers: [], content: { size: 0, mimeType: "application/json" }, redirectURL: "", headersSize: -1, bodySize: 0 }, cache: {}, timings: { send: 1, wait: 10, receive: 1 } });
+  const { capture, store } = await analyzeCapture([{ name: "leak.har", text: JSON.stringify(h) }], trace);
+  const host = new Element("aside");
+  const A = { focusRequest() {}, focusStratum() {}, focusAction() {}, openBlockAt() {}, addCapture() {}, getText: () => Promise.resolve({ text: "" }),
+    networkBody: (entry, part) => Promise.resolve(part === "headers" ? { text: JSON.stringify(store.headers(entry), null, 2), mode: "URL and headers" } : store.body(entry, part)) };
+  A.networkLens = view => networkLens({ ...view, network: capture }, A);
+  const paint = () => renderPanel(host, { trace, level: 0, lens: "network", mode: "3d" }, A);
+  A.rerender = paint;
+  paint();
+  const card = () => host.all(n => /\bnet-cred\b/.test(n.getAttribute("class") || "") && n.textContent.includes("analytics.example.test"))[0];
+  assert.ok(card(), "the key is flagged on both hosts");
+  for (const d of card().all(n => n.tagName === "DETAILS")) { d.open = true; d.dispatch("toggle"); }
+  const open = card().all(n => n.tagName === "BUTTON" && n.textContent === "Open request body")[0];
+  assert.ok(open, "the analytics send opens the request body it went in");
+  open.dispatch("click");
+  await new Promise(r => setTimeout(r, 0));
+  const reader = card().all(n => /\bnet-reader\b/.test(n.getAttribute("class") || ""))[0];
+  assert.ok(reader, "the reader opens under that send's row");
+  assert.ok(reader.textContent.includes(KEY), "the exact key, as recorded");
+  assert.ok(!/redact/i.test(reader.textContent), "no reader label claims a removal");
+  // the API send opens its URL and headers, the key in its own header
+  for (const d of card().all(n => n.tagName === "DETAILS")) { d.open = true; d.dispatch("toggle"); }
+  card().all(n => n.tagName === "BUTTON" && n.textContent === "Open URL and headers")[0].dispatch("click");
+  await new Promise(r => setTimeout(r, 0));
+  const headers = card().all(n => /\bnet-reader\b/.test(n.getAttribute("class") || ""))[0];
+  assert.ok(headers.textContent.includes(KEY) && headers.textContent.includes("https://api.anthropic.com"), "the API call's URL and its x-api-key header, as recorded");
+});
+
+test("a deliberately opened body: As stored is the recorded text exactly, a body past the read's bound is whole on request (its tail's key included), and Copy all takes all of it", async () => {
+  const { renderPanel } = await import("../panels.js");
+  const { networkLens } = await import("../network/panel.js");
+  const { analyzeCapture } = await import("../network/capture.js");
+  const { PLANTED, CCX } = await import("./fixtures/network.mjs");
+  const { readFileSync } = await import("node:fs");
+  const NET = FIX + "network/";
+  const entries = await entriesFor([NET + "claude"]);
+  let trace;
+  try { trace = (await loadTrace(entries)).trace; } finally { await Promise.all(entries.map(e => e.source.close())); }
+  const KEY = PLANTED.apiKey, h = JSON.parse(readFileSync(NET + "claude.har", "utf8"));
+  const RAW = `{\r\n  "event" : "boot",\r\n  "event": "client_boot",\r\n  "n": 9007199254740993,\r\n  "api_key":"${KEY}"\r\n}`;
+  // over 2,000,000 characters, the key at its very end
+  const BIG = JSON.stringify({ rows: Array.from({ length: 30000 }, (_, i) => ({ i, t: "x".repeat(60) })), api_key: KEY });
+  const post = (url, text) => ({ startedDateTime: new Date(CCX.t0 + 9950).toISOString(), time: 40, request: { method: "POST", url, httpVersion: "HTTP/1.1", cookies: [], headers: [], queryString: [], headersSize: -1, bodySize: text.length, postData: { mimeType: "application/json", text } },
+    response: { status: 200, statusText: "", httpVersion: "HTTP/1.1", cookies: [], headers: [], content: { size: 0, mimeType: "application/json" }, redirectURL: "", headersSize: -1, bodySize: 0 }, cache: {}, timings: { send: 1, wait: 10, receive: 1 } });
+  h.log.entries.push(post("https://analytics.example.test/v1/track", RAW), post("https://upload.example.test/v1/blob", BIG));
+  const { capture, store } = await analyzeCapture([{ name: "exact.har", text: JSON.stringify(h) }], trace);
+  const asked = [];
+  const host = new Element("aside");
+  const A = { focusRequest() {}, focusStratum() {}, focusAction() {}, openBlockAt() {}, addCapture() {}, getText: () => Promise.resolve({ text: "" }),
+    networkBody: (entry, part, opts = {}) => { asked.push({ entry, part, ...opts }); return Promise.resolve(store.body(entry, part, opts)); } };
+  A.networkLens = view => networkLens({ ...view, network: capture }, A);
+  const paint = () => renderPanel(host, { trace, level: 0, lens: "network", mode: "3d" }, A);
+  A.rerender = paint;
+  paint();
+  const tick = () => new Promise(r => setTimeout(r, 0));
+  // the key's card lists each of its sends; a send's own row (the innermost naming its host) opens its body under it
+  const card = () => host.all(n => /\bnet-cred\b/.test(n.getAttribute("class") || "") && n.textContent.includes("upload.example.test") && n.textContent.includes("analytics.example.test"))[0];
+  const isOpen = n => n.tagName === "BUTTON" && n.textContent === "Open request body";
+  const row = where => card().all(n => n.tagName === "LI" && n.all(isOpen).length === 1 && n.textContent.includes(where)).sort((x, y) => x.textContent.length - y.textContent.length)[0];
+  const reader = where => row(where).all(n => /\bnet-reader\b/.test(n.getAttribute("class") || ""))[0];
+  const openBody = async where => {
+    for (const d of card().all(n => n.tagName === "DETAILS")) { d.open = true; d.dispatch("toggle"); }
+    row(where).all(isOpen)[0].dispatch("click");
+    await tick();
+    return reader(where);
+  };
+  const press = (r, text) => r.all(n => n.tagName === "BUTTON" && n.textContent === text)[0];
+  // the recorded JSON, its CRLFs, duplicate keys and long integer: As stored is exactly it
+  let r = await openBody("analytics.example.test");
+  assert.ok(r && press(r, "As stored"), "laid out, with As stored a click away");
+  press(r, "As stored").dispatch("click");
+  assert.equal(reader("analytics.example.test").all(n => n.tagName === "PRE")[0].textContent, RAW);
+  press(reader("analytics.example.test"), "Readable").dispatch("click");
+  // past the read's bound: the first part, then the whole on request
+  r = await openBody("upload.example.test");
+  assert.ok(!r.textContent.includes(KEY), "the first read is bounded");
+  assert.match(r.textContent, new RegExp(`Characters 1–400,000 of ${BIG.length.toLocaleString("en-US")}`));
+  press(r, `Read all ${BIG.length.toLocaleString("en-US")} characters`).dispatch("click");
+  await tick();
+  r = reader("upload.example.test");
+  assert.deepEqual(asked.at(-1), { entry: capture.entries.find(e => e.host === "upload.example.test").i, part: "request", whole: true });
+  for (let i = 0; i < 10 && press(r, "Next") && !press(r, "Next").disabled; i++) { press(r, "Next").dispatch("click"); r = reader("upload.example.test"); }
+  assert.ok(r.all(n => n.tagName === "PRE")[0].textContent.endsWith(`"api_key":"${KEY}"}`), "the last page holds the tail, the key as recorded");
+  let copied = null;
+  const nav = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  Object.defineProperty(globalThis, "navigator", { value: { clipboard: { writeText: async v => { copied = v; } } }, configurable: true });
+  try { press(r, "Copy all").dispatch("click"); await tick(); } finally { if (nav) Object.defineProperty(globalThis, "navigator", nav); else delete globalThis.navigator; }
+  assert.equal(copied, BIG, "Copy all takes the whole body exactly");
+});
+
+test("under an environment or lab filter the Subagents lens lists what the filter keeps, says its scope once, and Show all clears it", async () => {
+  const { matcher } = await import("../fleet/filter.js");
+  const [, fixture] = (await fixtureTraces())[0];
+  const base = fixture.agents[0];
+  const agent = (id, kind, environmentId, lab, model) => ({ ...base, id, name: id, kind, environmentId, lab, model, parentId: kind === "root" ? null : "root" });
+  const agents = [agent("root", "root", "env-a", "OpenAI", "gpt-5"), agent("gpt-helper", "subagent", "env-a", "OpenAI", "gpt-5"), agent("opus-helper", "subagent", "env-b", "Anthropic", "claude-opus-4"), agent("sonnet-helper", "subagent", "env-a", "Anthropic", "claude-sonnet-4")];
+  const inventory = [["t1", "env-a", "OpenAI"], ["t2", "env-b", "Anthropic"], ["t3", "env-a", "Anthropic"]].map(([threadId, environmentId, lab]) => ({ key: `${environmentId}:${threadId}`, threadId, environmentId, lab, title: `Thread ${threadId}`, status: "readable", bindings: [] }));
+  const trace = { ...fixture, family: true, agents, inventory, fleet: { machines: [{ id: "env-a", label: "Studio" }, { id: "env-b", label: "Laptop" }], threads: [], hops: [] } };
+  let filter = { machine: null, lab: "OpenAI" }, cleared = 0;
+  const A = { focusAgent() {}, openThread() {}, filteredOut: a => !!filter && !matcher(filter)(a), filterScope: () => (filter ? [filter.machine && "Studio", filter.lab].filter(Boolean).join(" · ") : null), clearFilter: () => { cleared++; filter = null; } };
+  const listed = host => host.all(n => n.tagName === "TR").slice(1).map(r => r.all(b => b.tagName === "BUTTON")[0].textContent);
+  const threads = host => host.all(n => n.tagName === "LI" && /Thread t\d/.test(n.textContent)).map(n => /Thread (t\d)/.exec(n.textContent)[1]);
+  const host = new Element("aside");
+  renderPanel(host, { trace, level: 0, lens: "agents", mode: "3d" }, A);
+  assert.deepEqual(listed(host), ["gpt-helper"], "opus and sonnet are not listed under OpenAI");
+  assert.deepEqual(threads(host), ["t1"]);
+  const scope = host.all(n => /\bfilter-scope\b/.test(n.getAttribute("class") || ""))[0];
+  assert.match(scope.textContent, /^1 of 3 agents · OpenAI · Show all$/);
+  assert.ok(host.textContent.includes("Known threads · OpenAI · 1 of 1 readable"));
+  scope.all(n => n.tagName === "BUTTON")[0].dispatch("click");
+  assert.equal(cleared, 1);
+  // an environment and a lab together; and no filter lists everything, with no scope line
+  filter = { machine: "env-a", lab: "Anthropic" };
+  renderPanel(host, { trace, level: 0, lens: "agents", mode: "3d" }, A);
+  assert.deepEqual([listed(host), threads(host)], [["sonnet-helper"], ["t3"]]);
+  assert.match(host.all(n => /\bfilter-scope\b/.test(n.getAttribute("class") || ""))[0].textContent, /^1 of 3 agents · Studio · Anthropic · Show all$/);
+  filter = null;
+  renderPanel(host, { trace, level: 0, lens: "agents", mode: "3d" }, A);
+  assert.deepEqual(listed(host).sort(), ["gpt-helper", "opus-helper", "sonnet-helper"]);
+  assert.deepEqual(threads(host), ["t1", "t2", "t3"]);
+  assert.equal(host.all(n => /\bfilter-scope\b/.test(n.getAttribute("class") || "")).length, 0);
+});
+
+test("Network endpoints: the destination named once, aligned request rows, and a tabbed reader over each request's parts", async () => {
+  const { renderPanel } = await import("../panels.js");
+  const { networkLens, closeWireReader } = await import("../network/panel.js");
+  const { analyzeCapture } = await import("../network/capture.js");
+  const { enterView, setValue, setFold } = await import("../panel-memory.js");
+  closeWireReader(); // as the app does when a capture is attached
+  const { readFileSync } = await import("node:fs");
+  const NET = FIX + "network/";
+  const entries = await entriesFor([NET + "claude"]);
+  let trace;
+  try { trace = (await loadTrace(entries)).trace; } finally { await Promise.all(entries.map(e => e.source.close())); }
+  const { capture, store } = await analyzeCapture([{ name: "claude.har", text: readFileSync(NET + "claude.har", "utf8") }], trace);
+  enterView("network-endpoints-ux");
+  const asked = [];
+  const host = new Element("aside");
+  const A = { focusRequest() {}, focusStratum() {}, focusAction() {}, openBlockAt() {}, addCapture() {}, getText: () => Promise.resolve({ text: "" }),
+    networkBody: (entry, part, opts = {}) => { asked.push({ entry, part }); return Promise.resolve(store.body(entry, part, opts)); } };
+  A.networkLens = view => networkLens({ ...view, network: capture }, A);
+  const paint = () => renderPanel(host, { trace, level: 0, lens: "network", mode: "3d" }, A);
+  A.rerender = paint;
+  setFold("sec:hosts", true);
+  paint();
+  const cls = n => n.getAttribute("class") || "";
+  const has = c => n => cls(n).split(/\s+/).includes(c);
+  const eps = host.all(has("net-ep"));
+  assert.equal(eps.length, capture.roles.reduce((k, r) => k + r.endpoints.length, 0), "every endpoint is one row of one flat list");
+  assert.ok(!host.textContent.includes("read on demand"), "no implementation narration");
+  for (const ep of eps) {
+    const head = ep.all(has("net-ep-head"))[0];
+    const hostsIn = [...new Set(capture.entries.filter(x => ep.getAttribute("data-net-key") === `endpoint:${x.label}`).map(x => x.host))];
+    for (const h of hostsIn) assert.ok(head.textContent.split(h).length - 1 <= 1, `${h}: the head names its host at most once`);
+    const rows = ep.all(has("net-req"));
+    // one request: its row is shown directly, with no fold around it
+    if (rows.length === 1) assert.equal(ep.all(n => n.tagName === "DETAILS").length, 0, "a one-request endpoint has no fold");
+    for (const r of rows) {
+      const row = r.all(has("net-req-row"))[0];
+      assert.ok(row.all(has("net-method")).length === 1 && row.all(has("net-st")).length === 1, "method and status badge in each row");
+      assert.ok(!row.all(has("net-path"))[0].textContent.includes(capture.entries.find(x => `entry:${x.i}` === r.getAttribute("data-anchor")).host), "the path row does not repeat the host");
+    }
+  }
+  // a row opens the reader under it: tabs over the parts it has, the first selected, the exact address revealable
+  const x = capture.entries.find(e => e.reqBytes && e.resBytes && !e.ws);
+  const rowOf = () => host.all(n => n.getAttribute("data-anchor") === `entry:${x.i}` && has("net-req")(n))[0];
+  for (const d of host.all(n => n.tagName === "DETAILS")) { d.open = true; }
+  setFold(`ep:${x.label}`, true);
+  paint();
+  rowOf().all(has("net-req-row"))[0].dispatch("click");
+  await new Promise(r => setTimeout(r, 0));
+  const reader = rowOf().all(has("net-reader"))[0];
+  assert.ok(reader, "the reader opens under its row");
+  const tabs = reader.all(n => n.getAttribute("role") === "tab");
+  assert.deepEqual(tabs.map(t => t.childNodes[0].textContent), ["Headers", "Request", "Response"]);
+  assert.deepEqual(tabs.map(t => t.getAttribute("aria-selected")), ["false", "true", "false"], "it opens on what was sent");
+  assert.deepEqual(asked.at(-1), { entry: x.i, part: "request" });
+  // the exact address: whole when short, else a label that reveals it; Copy either way
+  const exact = reader.all(n => has("cv-full")(n) || has("cv-text")(n))[0];
+  assert.ok(exact.textContent.startsWith(`${x.host}${x.path}`) && reader.all(has("cv-copy")).length === 1, "the exact address, revealable and copyable");
+  tabs[2].dispatch("click");
+  await new Promise(r => setTimeout(r, 0));
+  assert.deepEqual(asked.at(-1), { entry: x.i, part: "response" }, "a tab opens its part");
+  // the role filter narrows the list and says how many it keeps
+  const role = capture.roles.find(r => r.endpoints.length && r.endpoints.length < eps.length);
+  if (role) {
+    setValue("eps:role", role.key);
+    paint();
+    assert.equal(host.all(has("net-ep")).length, role.endpoints.length);
+    assert.match(host.all(has("net-count"))[0].textContent, new RegExp(`^${role.endpoints.length} of `));
+  }
+});
+
+test("family links are labelled environments, an environment filter keeps its links and a lab filter is named as not applying", async () => {
+  const { linkRows } = await import("../fleet/links.js");
+  const rate = { "studio → laptop": { calls: 18, joined: 18 }, "laptop → studio": { calls: 4, joined: 3, ambiguous: 1 }, "ci → cloud": { calls: 2, joined: 0, routeConflict: 2 } };
+  const all = linkRows(rate);
+  assert.deepEqual(all.rows.map(r => [r.from, r.to, r.calls]), [["studio", "laptop", 18], ["laptop", "studio", 4], ["ci", "cloud", 2]]);
+  const studio = linkRows(rate, { envLabel: "studio" });
+  assert.deepEqual([studio.rows.map(r => r.key), studio.total], [["studio → laptop", "laptop → studio"], 3]);
+  assert.deepEqual(linkRows({}, { envLabel: "studio" }), { rows: [], total: 0 });
+});
+
+test("readable agent names: a name, else the task description, else Task with a distinguishing end of its id", async () => {
+  const { readableAgentNames } = await import("../ids.js");
+  const enc = s => `dGFzay0${s}xMjM0NTY3ODkwYWJjZGVmZ2hpams`;
+  const names = readableAgentNames([{ id: "root", kind: "root", name: "x" }, { id: "gpt-helper", kind: "subagent", name: "gpt-helper" },
+    { id: enc("a"), kind: "subagent", name: enc("a"), description: "Summarize the build log" },
+    { id: `${enc("b")}Q1`, kind: "subagent", name: `${enc("b")}Q1` }, { id: `${enc("c")}Q2`, kind: "subagent", name: null }]);
+  assert.equal(names.get("root"), "Main thread");
+  assert.equal(names.get("gpt-helper"), "gpt-helper", "a short readable name stays");
+  assert.equal(names.get(enc("a")), "Summarize the build log", "an encoded name gives way to its task");
+  const b = names.get(`${enc("b")}Q1`), c = names.get(`${enc("c")}Q2`);
+  assert.match(b, /^Task · …\S{1,6}$/); assert.match(c, /^Task · …\S{1,6}$/);
+  assert.notEqual(b, c, "two unnamed tasks read differently");
+  assert.ok(!b.includes(enc("b")), "never the whole id");
+});
+
+test("the Network thread picker lists each qualified thread once, filtered like the landscape, identical names told apart", async () => {
+  const { threadChoices } = await import("../fleet/links.js");
+  const threads = [
+    { key: "env-a:t1", environmentId: "env-a", machine: "studio", title: "Advisor", lab: "Anthropic" },
+    { key: "env-b:t1", environmentId: "env-b", machine: "laptop", title: "Advisor", lab: "Anthropic" },
+    { key: "env-a:t2", environmentId: "env-a", machine: "studio", title: "Advisor", lab: "Anthropic" },
+    { key: "env-a:t3", environmentId: "env-a", machine: "studio", title: "", lab: "OpenAI" }];
+  // two agents of one thread (a later session) are one choice
+  const agents = [{ id: "a1", threadKey: "env-a:t1", name: "advisor" }, { id: "a1b", threadKey: "env-a:t1", name: "advisor" }, { id: "a3", threadKey: "env-a:t3", name: "builder" }];
+  const all = threadChoices(threads, agents);
+  assert.equal(all.total, 4);
+  assert.deepEqual(all.rows.map(r => r.key).sort(), threads.map(t => t.key).sort(), "one row per thread, not per agent");
+  const labels = all.rows.map(r => r.label);
+  assert.equal(new Set(labels).size, labels.length, "every label distinct");
+  assert.ok(labels.includes("Advisor · laptop") && labels.includes("builder · studio"));
+  assert.ok(labels.filter(l => l.startsWith("Advisor · studio · …")).length === 2 && labels.every(l => !l.includes("env-a:t")), "told apart by a short end, not the key");
+  assert.equal(all.rows.find(r => r.key === "env-a:t1").agentId, "a1");
+  const openai = threadChoices(threads, agents, { keep: t => t.lab === "OpenAI" });
+  assert.deepEqual([openai.rows.map(r => r.key), openai.total], [["env-a:t3"], 4]);
+});
+
+test("Outbound and Inbound list only what the environment or lab filter keeps and say so; Context says it is the main thread", async () => {
+  const { renderPanel } = await import("../panels.js");
+  const { egressGroups } = await import("../model.js");
+  const traces = (await fixtureTraces()).map(([, t]) => t);
+  const trace = traces.find(t => { const g = egressGroups(t); return new Set(Object.values(g).flat().map(e => e.a.id)).size > 1; }) || traces[0];
+  const every = Object.values(egressGroups(trace)).flat();
+  const keepId = every[0]?.a.id;
+  let filter = { lab: "Lab" };
+  const A = { focusRequest() {}, openBlockAt() {}, focusAgent() {}, focusStratum() {}, explain() {}, filteredOut: a => !!filter && a.id !== keepId, filterScope: () => (filter ? "Lab" : null), clearFilter: () => { filter = null; } };
+  const host = new Element("aside");
+  renderPanel(host, { trace, level: 0, lens: "egress", mode: "3d" }, A);
+  const kept = every.filter(e => e.a.id === keepId).length;
+  const scope = host.all(n => /\bfilter-scope\b/.test(n.getAttribute("class") || ""))[0];
+  assert.match(scope.textContent, new RegExp(`^${kept.toLocaleString("en-US")} of ${every.length.toLocaleString("en-US")} actions · Lab · Show all$`));
+  const listed = host.all(n => n.tagName === "BUTTON" && /\bact\b/.test(n.getAttribute("class") || "")).length;
+  assert.equal(listed, Math.min(kept, listed), "no row of a filtered-out agent");
+  assert.ok(listed <= kept);
+  renderPanel(host, { trace, level: 0, lens: "inflow", mode: "3d" }, A);
+  assert.match(host.all(n => /\bfilter-scope\b/.test(n.getAttribute("class") || ""))[0].textContent, / inflows · Lab · Show all$/);
+  renderPanel(host, { trace, level: 0, lens: "context", mode: "3d" }, A);
+  assert.match(host.all(n => /\bfilter-scope\b/.test(n.getAttribute("class") || ""))[0].textContent, /^main thread · Show all$/);
+  filter = null;
+  renderPanel(host, { trace, level: 0, lens: "egress", mode: "3d" }, A);
+  assert.equal(host.all(n => /\bfilter-scope\b/.test(n.getAttribute("class") || "")).length, 0, "no filter, no scope line");
 });

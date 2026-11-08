@@ -111,16 +111,20 @@ test('source reads cannot select credentials, symlink files, symlink directories
  assert.equal(by(await sourcesReport(oc(), { home }))['opencode.instructions'].count, 1);
 });
 
-test('bounded reads redact instruction secrets and refuse oversized or malformed config', async t => {
+test('bounded reads preserve instruction secrets and expose original malformed or oversized selected config', async t => {
  const { home, put, cursor, oc } = await setup(t);
  const token = 'gh' + 'p_' + 'aB9'.repeat(15);
  await put('project/sub/AGENTS.md', `rule\napi_key="${'abcd'.repeat(10)}"\n${token}\n` + 'x'.repeat(850_000));
  const rule = await readSource(cursor(), 'cursor.project-rules', { home });
- assert.equal(rule.truncated, true); assert.ok(rule.text.length <= 400_000); assert.doesNotMatch(rule.text, new RegExp(token)); assert.doesNotMatch(rule.text, /abcdabcd/);
- await put('project/opencode.jsonc', '{not valid: secret}');
- assert.equal((await readSource(oc(), 'opencode.config-instructions', { home })).kind, 'note');
- await put('project/opencode.jsonc', ' '.repeat(800_001));
- const large = await readSource(oc(), 'opencode.config-instructions', { home }); assert.equal(large.kind, 'note'); assert.match(large.text, /bounded parse limit/);
+ assert.equal(rule.truncated, true); assert.ok(rule.text.length <= 400_000); assert.ok(rule.text.includes(token)); assert.ok(rule.text.includes('abcd'.repeat(10))); assert.ok(rule.text.endsWith('x'.repeat(3000)));
+ const malformed = `{not valid: api_key=${token}\r\n  account_id=acct-fixture}`;
+ await put('project/opencode.jsonc', malformed);
+ const raw = await readSource(oc(), 'opencode.config-instructions', { home });
+ assert.equal(raw.kind, 'text'); assert.equal(raw.text, malformed); assert.equal(raw.contentBasis, 'source'); assert.equal(raw.truncated, false); assert.match(raw.parseNote, /JSON/);
+ const oversized = token + ' '.repeat(800_001);
+ await put('project/opencode.jsonc', oversized);
+ const large = await readSource(oc(), 'opencode.config-instructions', { home });
+ assert.equal(large.kind, 'text'); assert.equal(large.text, oversized.slice(0, 400_000)); assert.equal(large.contentBasis, 'source'); assert.equal(large.truncated, true); assert.match(large.parseNote, /bounded parse limit/);
 });
 
 test('legacy Cursor User Rules query only the shipped exact SQLite key and leave credentials untouched', async t => {
@@ -243,4 +247,29 @@ test('Cursor metadata-only manifest preserves later component discovery without 
  await put(`${root}/.cursor-plugin/plugin.json`, '{invalid');
  report = await sourcesReport(cursor(), { home });
  assert.equal(by(report)['cursor.plugin-instructions'].count, 0);
+});
+
+
+test('native recorded instructions and selected config prompts preserve credentials, identity, paths and long values', async t => {
+ const { home, cwd, put, oc } = await setup(t);
+ const original = `api_key="${'aB9'.repeat(15)}"\r\naccount_id=acct-fixture organization_id=org-fixture\r\n/local-agent-mode-sessions/acct-fixture/org-fixture/record\r\n${'gh' + 'p_' + 'Z9a'.repeat(15)}\r\n${'K'.repeat(3000)}`;
+ const session = { product: 'opencode', id: OC, entries: [memoryEntry({ info: { id: OC, directory: cwd }, messages: [{ info: { id: 'msg_original', role: 'user', system: original }, parts: [] }] }, 'native/original.json')] };
+ assert.equal((await readSource(session, 'opencode.recorded-instructions', { home })).rows[0].text, original);
+ await put('project/opencode.json', JSON.stringify({ agent: { build: { prompt: original } }, provider: { secret: 'OUTSIDE_SELECTED_INSTRUCTIONS' } }));
+ const config = await readSource(oc(), 'opencode.config-instructions', { home });
+ assert.equal(JSON.parse(config.text).agent.build.prompt, original);
+ assert.doesNotMatch(config.text, /OUTSIDE_SELECTED_INSTRUCTIONS/);
+});
+
+
+test('selected config values nested past thirty levels remain complete', async t => {
+ const { home, put, cursor } = await setup(t);
+ const original = `password=${'q9X'.repeat(15)} account_id=acct-fixture /recorded/path`;
+ let nested = original;
+ for (let i = 0; i < 45; i++) nested = { next: nested };
+ await put('project/sub/.cursor/hooks.json', JSON.stringify({ version: 1, hooks: nested }));
+ const result = await readSource(cursor(), 'cursor.hooks', { home });
+ let actual = JSON.parse(result.text).hooks;
+ for (let i = 0; i < 45; i++) actual = actual.next;
+ assert.equal(actual, original); assert.equal(result.truncated, false); assert.equal(result.contentBasis, 'projection');
 });

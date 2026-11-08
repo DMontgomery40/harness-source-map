@@ -5,9 +5,9 @@
 import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { createWriteStream, existsSync, mkdirSync, mkdtempSync, chmodSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+import { createWriteStream, existsSync, mkdirSync, mkdtempSync, chmodSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
-import { checkHar, findSecrets, harSecrets } from './check-har.mjs';
+import { checkHar } from './check-har.mjs';
 import { CURSOR_AGENT_DECODED_FILE, decodeCursorAgentHar, resolveCursorAgentIndex } from './cursor-agent-decode.mjs';
 import { siteOrigin } from '../../site/src/shared/site.mjs';
 
@@ -16,7 +16,7 @@ const HELP = `Record a real Cursor Agent CLI run and its application-layer HTTP/
   node tools/capture/cursor-agent-capture.mjs [--out DIR] [--open] [--agent PATH] -- [agent options] PROMPT
 
 The command forces --print --output-format stream-json and keeps the native stream,
-credential-checked HAR and manifest in a private per-run folder. The observer does
+locally recorded HAR and manifest in a private per-run folder. The observer does
 not proxy traffic or replace certificates. When a matching pinned Agent CLI source
 is available, an exact decoded protobuf sidecar is added. Unknown ownership stays
 unattributed. Output defaults to ~/.harness-source-map/captures.
@@ -118,16 +118,12 @@ export async function recordCursorAgent(opts) {
   if (invalidRows || buffered.trim()) problems.push('The native stream contains an incomplete or invalid JSON event.');
   if (sessions.size !== 1 || ![...sessions].every(id => SESSION.test(id))) problems.push('The stream did not carry one exact native Cursor session id.');
   if (!result || result.subtype !== 'success' || result.is_error === true) problems.push('The stream has no successful final result.');
-  const streamText = readFileSync(streamFile, 'utf8');
-  const secretKinds = findSecrets(streamText);
-  if (secretKinds.length) { unlinkSync(streamFile); problems.push('The native stream failed credential checks and was removed.'); }
 
   let evidence = null, decoded = null, decoderWarning = null;
   if (!existsSync(captureFile)) problems.push('No HTTP/2 traffic was observed.');
-  else if (!checkHar(captureFile).ok) problems.push('The HTTP/2 observation failed credential checks and was removed.');
+  else if (!checkHar(captureFile).ok) problems.push('The HTTP/2 observation failed HAR validation and was removed.');
   else {
     const har = JSON.parse(readFileSync(captureFile, 'utf8'));
-    if (harSecrets(har).length) throw new Error('Checked Cursor HAR unexpectedly contains credentials.');
     evidence = cursorCaptureEvidence(har, [...sessions], [...requests]);
     writeFileSync(captureFile, JSON.stringify(har, null, 2) + '\n', { mode: 0o600 });
     const indexFile = resolveCursorAgentIndex();
@@ -152,7 +148,7 @@ export async function recordCursorAgent(opts) {
     status: unique.length ? 'incomplete' : 'complete', commandExitCode: status, stream: existsSync(streamFile) ? 'stream.jsonl' : null,
     capture: existsSync(captureFile) ? 'capture.har' : null, decoded, evidence, problems: unique,
     association: 'Exact observed Cursor session or request identifiers only; unknown traffic remains unattributed.',
-    credentials: 'Observed headers and bodies were scrubbed before HAR checkpoints and checked again after capture. Native stream output remains private.' };
+    credentials: 'Original observed headers, bodies and native stream output are retained locally.' };
   save(path.join(directory, 'manifest.json'), manifest);
   for (const problem of unique) console.error(`cursor-agent-capture: ${problem}`);
   if (decoderWarning) console.error(`cursor-agent-capture: ${decoderWarning}`);

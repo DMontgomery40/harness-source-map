@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 // Explicit process-scoped recording of a real OpenCode run. Native exports and
-// credential-redacted HARs remain private; no recordings are published here.
+// original local HARs remain private; no recordings are published here.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import os from "node:os";
 import { existsSync, realpathSync, mkdirSync, mkdtempSync, chmodSync, readdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import { spawn, spawnSync } from "node:child_process";
 import { createInterface } from "node:readline";
-import { checkHar, findSecrets, harSecrets } from "./check-har.mjs";
+import { checkHar } from "./check-har.mjs";
 import { siteOrigin } from "../../site/src/shared/site.mjs";
 
-const HELP = `Record a real OpenCode run and bundle its native session export with a credential-redacted HAR.
+const HELP = `Record a real OpenCode run and bundle its native session export with a original local HAR.
 
   node tools/capture/opencode-capture.mjs [--out DIR] [--open] [--opencode PATH] -- [opencode run options] MESSAGE
 
@@ -21,42 +21,8 @@ Needs opencode, mitmproxy, python3 and node. No system proxy or persistent trust
 `;
 
 const SESSION_ID = /^ses_[A-Za-z0-9_-]+$/;
-const MARK = "<redacted by trace-capture: session credential>";
-const SECRET_FIELD = /^(authorization|proxy-authorization|cookie|set-cookie|x-api-key|api[-_]?key|access[-_]?token|refresh[-_]?token|id[-_]?token|session[-_]?token|sentinel[-_]?token|proof[-_]?token|turnstile[-_]?token|client[-_]?secret|password|code_verifier|token)$/i;
-
-// Native exports are read into memory and scrubbed before their first disk write.
-// Keep transcript structure, reasoning and usage counters; never use --sanitize,
-// which upstream deliberately replaces the entire transcript with placeholders.
-export function sanitizeSessionExport(value) {
-  function text(input) {
-    let clean = input.replace(/\b(Bearer\s+)(?!<redacted)[A-Za-z0-9._~+/=-]+/gi, `$1${MARK}`)
-      .replace(/\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g, MARK)
-      .replace(/\b(?:sk-[A-Za-z0-9_-]{8,}|npm_[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{20,})/g, MARK)
-      .replace(/([?&](?:access_token|token|id_token|refresh_token|api_key|apikey|auth|authorization|client_secret|password|code|code_verifier|session_token|sig|signature)=)([^&#\s"<>]+)/gi,
-        (match, prefix, val) => { try { return decodeURIComponent(val).startsWith("<redacted") ? match : prefix + encodeURIComponent(MARK); } catch { return prefix + encodeURIComponent(MARK); } });
-    try {
-      const parsed = JSON.parse(clean);
-      if (parsed && typeof parsed === "object") {
-        const scrubbed = walk(parsed);
-        if (JSON.stringify(scrubbed) !== JSON.stringify(parsed)) clean = JSON.stringify(scrubbed);
-      }
-    } catch { /* ordinary transcript text */ }
-    return clean;
-  }
-  function walk(item, key = "") {
-    if (SECRET_FIELD.test(key) && item != null && item !== "") return MARK;
-    if (Array.isArray(item)) return item.map(value => walk(value));
-    if (item && typeof item === "object") {
-      const clean = Object.fromEntries(Object.entries(item).map(([name, value]) => [name, walk(value, name)]));
-      if (typeof item.name === "string" && SECRET_FIELD.test(item.name) && typeof item.value === "string") clean.value = MARK;
-      return clean;
-    }
-    return typeof item === "string" ? text(item) : item;
-  }
-  const clean = walk(value);
-  if (findSecrets(JSON.stringify(clean)).length) throw new Error("Native export failed credential checks; no export was written.");
-  return clean;
-}
+// Keep the native export's values and literal strings unchanged in a detached copy.
+export function sanitizeSessionExport(value) { return structuredClone(value); }
 
 export function sessionProblems(session, expectedID) {
   if (session?.info?.id !== expectedID || !Array.isArray(session?.messages)) return ["Native export does not match its exact session id."];
@@ -213,11 +179,10 @@ export async function recordOpenCode(opts) {
   if (files.length !== 1) problems.push("The recorder did not produce exactly one HAR.");
   else {
     const file = path.join(directory, files[0]);
-    if (!checkHar(file).ok) problems.push("The HAR failed credential checks and was removed.");
+    if (!checkHar(file).ok) problems.push("The HAR failed HAR validation and was removed.");
     else {
       renameSync(file, path.join(directory, "capture.har"));
       const har = JSON.parse(readFileSync(path.join(directory, "capture.har"), "utf8"));
-      if (harSecrets(har).length) throw new Error("Checked HAR unexpectedly contains credentials.");
       evidence = captureEvidence(har);
       if (!evidence.modelRequests) problems.push("No model request was observed. Check provider configuration and proxy support.");
       if (!evidence.sessions.some(session => session.modelRequests)) problems.push("No model request carried an exact OpenCode session header.");
@@ -229,7 +194,7 @@ export async function recordOpenCode(opts) {
         const ids = [...new Set((entry.request?.headers || []).filter(header => header.name.toLowerCase() === "x-opencode-session-id").map(header => header.value))];
         if (ids.length !== 1 || !SESSION_ID.test(ids[0])) entry._traceAssociation = "unattributed";
       }
-      // Already-redacted input only, with identity labeling added for unknown traffic.
+      // Original captured input, with identity labeling added for unknown traffic.
       writeFileSync(path.join(directory, "capture.har"), JSON.stringify(har, null, 2) + "\n", { mode: 0o600 });
     }
   }
@@ -252,7 +217,7 @@ export async function recordOpenCode(opts) {
     status: uniqueProblems.length ? "incomplete" : "complete", commandExitCode: status,
     capture: evidence ? "capture.har" : null, evidence, exports, problems: uniqueProblems,
     association: "Exact OpenCode request headers and JSON run events only; unknown traffic is unattributed.",
-    credentials: "Redacted before disk; transcript and file contents remain private.",
+    credentials: "Original observed headers, bodies and transcript content are retained locally.",
   };
   save(path.join(directory, "manifest.json"), manifest);
   for (const problem of uniqueProblems) console.error(`opencode-capture: ${problem}`);

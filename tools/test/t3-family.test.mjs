@@ -22,7 +22,7 @@ async function database(t, {creations = true} = {}) {
  const item = (id, parent, child, extra = {}, type = 'thread_created') => sql(`INSERT INTO ${C} VALUES (${quote(id)}, ${quote(parent)}, 'parent-run', 'parent-node', ${quote(type)}, 'completed', '2000-01-01T00:00:01Z', ${quote(JSON.stringify({id, threadId: parent, type, targetThreadId: child, targetRunId: 'target-run', targetProviderInstanceId: 'provider', targetModel: 'model', startedAt: '2000-01-01T00:00:01Z', ...extra}))})`);
  const db = await openReadOnly(file);
  t.after(() => db.close());
- return {db, thread, item};
+ return {db, thread, item, sql};
 }
 
 test('recorded thread creation joins an ordinary child and its descendants from either end', async t => {
@@ -84,4 +84,10 @@ test('legacy unqualified upstream seeds require one parent environment and repor
  const family = resolveFamily(db, ['upstream', 'unique-upstream'], {environmentId: 'local'});
  assert.deepEqual(family.threadIds, ['unique-child']);
  assert.deepEqual(family.ambiguousUpstream, [{threadId: 'upstream', environmentIds: ['remote-a', 'remote-b']}]);
+});
+
+test('selected family metadata includes original messages and full tool turn items without unrelated threads',async t=>{
+ const {db,thread,item,sql}=await database(t);thread('selected');thread('unrelated');item('tool-item','selected',null,{text:'Original tool result',credential:'Recorded credential evidence'},'tool');
+ sql(`CREATE TABLE orchestration_v2_projection_messages (message_id TEXT PRIMARY KEY, thread_id TEXT, payload_json TEXT); CREATE TABLE projection_thread_messages (message_id TEXT PRIMARY KEY, thread_id TEXT, text TEXT); INSERT INTO orchestration_v2_projection_messages VALUES ('message-a','selected','{"content":"Original prompt","authorization":"Bearer recorded-value"}'), ('message-other','unrelated','{}'); INSERT INTO projection_thread_messages VALUES ('legacy','selected','Original legacy instruction');`);
+ const rows=familyRows(db,['selected']);assert.deepEqual(rows.messages.map(x=>x.message_id),['message-a']);assert.equal(rows.messages[0].payload_json.authorization,'Bearer recorded-value');assert.equal(rows.legacyMessages[0].text,'Original legacy instruction');assert.equal(rows.turnItems[0].payload_json.text,'Original tool result');assert.equal(rows.turnItems[0].payload_json.credential,'Recorded credential evidence');
 });

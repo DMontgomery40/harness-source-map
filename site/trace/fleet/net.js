@@ -175,15 +175,19 @@ export function buildNet(machines, spans) {
 
   // Join rate per directed link: every caller span, those inside a collected window of the receiver's part (start and
   // end: a span is written when it ends, so a call still open when the part was taken has no receiving span yet),
-  // and those matched to a receiving span; ambiguous and route-conflict joins are counted apart.
+  // and those matched to a receiving span; ambiguous and route-conflict joins are counted apart. The receiver's
+  // windows are on its own clock: the call is moved onto it by the link's fit (receiverWindowOf), never compared raw.
   const windows = new Map(machines.map(m => [m.id, windowsOf(m)]));
   const rate = {};
   for (const c of calls) {
     const k = `${c.env}>${c.to}`, r = rate[k] ||= { calls: 0, inWindow: 0, inWindowJoined: 0, joined: 0, ambiguous: 0, routeConflict: 0 };
-    const wins = windows.get(c.to) || [], inside = wins.some(([a, b]) => c.t0 >= a && c.t1 <= b);
+    const at = receiverWindowOf(c, windows.get(c.to) || [], clock[k], spans.get(c.env)?.instance(c.i) ?? null);
+    const inside = at.state === "inside";
     c.inReceiverWindow = inside;
-    // what the receiver's collected windows say of the call: inside, outside, or nothing (no window recorded)
-    c.receiverWindow = !wins.length ? "unknown" : inside ? "inside" : "outside";
+    // what the receiver's collected windows say of the call: inside, outside, uncertain (the fit's error spans a
+    // window's edge), or unknown (no window recorded, or no clock fit that applies to it)
+    c.receiverWindow = at.state;
+    c.receiverClock = at.clock;
     r.calls++;
     if (inside) r.inWindow++;
     if (c.join.status === "matched") { r.joined++; if (inside) r.inWindowJoined++; }
@@ -196,6 +200,24 @@ export function buildNet(machines, spans) {
 }
 
 const windowsOf = m => (m.part?.parts?.length ? m.part.parts.map(p => p.window) : [m.part?.window]).filter(w => w?.since && w?.until).map(w => [Date.parse(w.since), Date.parse(w.until)]);
+
+// Where a call falls among the receiver's collected windows, on the receiver's clock: the caller's span moved by the
+// link's fitted offset, from the epoch of the caller's own server process that covers the call's time (no
+// extrapolation past the pairs that fit it), and widened by the link's residual. -> { state, clock }:
+//   inside     inside a window whatever the error;  outside: inside none, whatever the error
+//   uncertain  inside one only for part of the error range;  unknown: no window, or no applicable fit
+// clock: { offsetMs, uncertaintyMs, epoch } as applied, or null. With no fit nothing is assumed: never zero.
+export function receiverWindowOf(c, wins, link, instance) {
+  if (!wins.length) return { state: "unknown", clock: null };
+  const t = c.t0;
+  const own = (link?.epochs || []).filter(e => String(e.epoch).split(">")[0] === String(instance ?? "?") && t >= e.since && t <= e.until);
+  if (own.length !== 1) return { state: "unknown", clock: null };
+  const off = offsetAt(own[0].knots, t), u = Math.max(0, link.residualMs ?? 0);
+  const T0 = c.t0 + off, T1 = c.t1 + off;
+  const certain = wins.some(([a, b]) => T0 - u >= a && T1 + u <= b);
+  const possible = wins.some(([a, b]) => Math.max(a - T0, -u) <= Math.min(b - T1, u));
+  return { state: certain ? "inside" : possible ? "uncertain" : "outside", clock: { offsetMs: off, uncertaintyMs: u, epoch: own[0].epoch } };
+}
 
 // The MCP tool a receiving span ran, from its own attributes or a near descendant's (bounded walk).
 function receiverTool(ix, i) {

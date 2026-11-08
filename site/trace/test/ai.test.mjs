@@ -307,6 +307,12 @@ function mockClient({ onExplain } = {}) {
   return client;
 }
 const tick = (ms = 5) => new Promise(r => setTimeout(r, ms));
+// Waits until cond holds: a state wait for work the composer schedules. It returns as soon as the state is reached, so
+// its bound only matters on a stalled run; it is generous (a loaded parallel run can be slow) and it fails by naming the
+// state it waited for, never by letting a later assertion run against a state not yet reached.
+const until = async (cond, what = "the expected state", ms = 30000) => {
+  for (const end = Date.now() + ms; !cond();) { if (Date.now() > end) throw new Error(`timed out waiting for ${what}`); await tick(5); }
+};
 async function composerFixture(client) {
   const trace = await codexTrace();
   const root = trace.agents.find(a => a.kind === "root");
@@ -331,7 +337,7 @@ test("the composer contacts no endpoint before Send; edits make the preview stal
     opts.onEvent({ event: "done", data: { runId: body.runId, traceGeneration: body.traceGeneration, finishReason: "stop" } });
     opts.onEvent({ event: "delta", data: { runId: body.runId, traceGeneration: body.traceGeneration, text: "AFTER DONE" } }); } });
   const f = await composerFixture(client);
-  await tick(30);
+  await until(() => client.calls.some(c => c[0] === "preview"));
   assert.ok(!client.calls.some(c => c === "models" || c[0] === "explain"), "opening, packing and previewing contact no endpoint");
   assert.ok(client.calls.some(c => c[0] === "preview"), "the helper's local preview is prepared as the draft is current");
   let send = f.button("Send");
@@ -385,10 +391,13 @@ test("a busy helper leaves the preview usable for a later Send; endpoint setup s
   let n = 0;
   const client = mockClient({ onExplain: async () => { n++; if (n === 1) throw Object.assign(new Error("busy"), { code: "ai_busy" }); } });
   const f = await composerFixture(client);
-  await tick(30);
+  // the preview is ready when Send is enabled; then the busy answer is shown (each waited for as the state, bounded)
+  await until(() => f.button("Send") && !f.button("Send").disabled, "the preview to be ready (Send enabled)");
+  assert.ok(f.button("Send") && !f.button("Send").disabled, "the preview became ready");
   f.button("Send").dispatch("click");
-  await tick(5);
+  await until(() => /Another explanation or model check is running/.test(f.host.textContent), "the busy notice");
   assert.match(f.host.textContent, /Another explanation or model check is running/);
+  assert.equal(n, 1, "one send was made");
   assert.ok(!f.button("Send").disabled, "the same preview can still be sent");
   // setup: the key goes to the helper in one request, and the field is emptied
   f.button("Change").dispatch("click");
@@ -397,14 +406,14 @@ test("a busy helper leaves the preview usable for a later Send; endpoint setup s
   form.url = field("url"); form.key = field("key"); form.model = field("model");
   form.url.value = "http://localhost:8317/v1"; form.key.value = "synthetic-key";
   form.dispatch("submit");
-  await tick(5);
+  await until(() => /Use 127\.0\.0\.1/.test(f.host.textContent), "the localhost refusal");
   assert.match(f.host.textContent, /Use 127\.0\.0\.1/, "localhost is not treated as a loopback address");
   const form2 = f.find(n => n.tagName === "FORM");
   const field2 = name => form2.all(n => n.getAttribute("name") === name)[0];
   form2.url = field2("url"); form2.key = field2("key"); form2.model = field2("model");
   form2.url.value = "http://127.0.0.1:8317/v1"; form2.key.value = "synthetic-key"; form2.model.value = "m2";
   form2.dispatch("submit");
-  await tick(5);
+  await until(() => client.calls.some(c => c[0] === "save") && form2.key.value === "", "the key saved and its field emptied");
   const save = client.calls.find(c => c[0] === "save")[1];
   assert.deepEqual([save.baseUrl, save.allowLoopbackHttp, save.apiKey, save.model], ["http://127.0.0.1:8317/v1", true, "synthetic-key", "m2"]);
   assert.equal(form2.key.value, "", "the key field is emptied after it is sent");
@@ -454,22 +463,17 @@ test("the inventory lists every native binding with its own status, and each age
   assert.deepEqual([cov.knownBindings, cov.readableBindings, cov.bindingsWithoutRecording], [3, 1, 2]);
 });
 
-test("structured targets and known ids never leave as raw values: known ones become their aliases, unknown id-shaped ones X aliases", async () => {
+test("recorded targets and excerpts leave as recorded: known entities carry their handle beside the value, never instead of it", async () => {
   const rawId = "11111111-2222-4333-8444-555555555555";
   const other = { id: "worker-agent-77", kind: "subagent", name: "Worker", requests: [{ t: 2 }], blocks: [] };
   const a = { id: "root-agent-00001", kind: "root", name: "Task", blocks: [{ kind: "you", ref: { file: 0, offset: 0, length: 4 } }],
-    requests: [{ t: 1, window: [0, 0], action: { kind: "tool", tool: "send_message", target: rawId, callId: "call_0123456789" } }, { t: 3, action: { kind: "tool", tool: "send_message", target: `to worker-agent-77 about ${rawId}` } }] };
+    requests: [{ t: 1, window: [0, 0], action: { kind: "tool", tool: "send_message", target: "worker-agent-77", callId: "call_0123456789" } }, { t: 3, action: { kind: "tool", tool: "send_message", target: `to worker-agent-77 about ${rawId}` } }] };
   const trace = { product: "codex", agents: [a, other] };
   const p = await buildPacket({ trace, gen: "g", spec: { kind: "agent", agentId: a.id }, read: async items => new Map(items.map(x => [x.key, { status: "line", text: `excerpt naming root-agent-00001 and call_0123456789` }])) });
-  const text = JSON.stringify(p.evidence);
-  for (const raw of [rawId, "worker-agent-77", "root-agent-00001", "call_0123456789"]) assert.ok(!text.includes(raw), `${raw} stays local`);
   const targets = p.evidence.items.filter(x => x.kind === "request").map(x => x.facts.target);
-  assert.deepEqual(targets, ["X1", "to A2 about X1"]);
-  assert.ok(p.evidence.items.some(x => x.text === "excerpt naming A1 and C1"), "known ids inside an excerpt are replaced too");
-  assert.equal(p.aliases.unknown.X1, rawId, "the reverse map stays local");
-  // the helper's own redactor keeps join ids, so the page's boundary is what keeps them local
-  const { Redactor } = await import("../../../tools/t3/redact.mjs");
-  assert.ok(!JSON.stringify(new Redactor({ aliasKey: Buffer.alloc(32) }).value(p.evidence)).includes(rawId));
+  const A2 = Object.entries(p.aliases.agents).find(([, raw]) => raw === "worker-agent-77")[0];
+  assert.deepEqual(targets, [`worker-agent-77 (${A2})`, `to worker-agent-77 about ${rawId}`], "an identity target keeps its recorded value; a description is as written");
+  assert.ok(p.evidence.items.some(x => x.text === "excerpt naming root-agent-00001 and call_0123456789"), "excerpt text is never rewritten");
 });
 
 test("'How it started' in the composer: every incoming path is a toggle with its provenance, and the packet follows the choice", async () => {
@@ -724,10 +728,11 @@ test("an inventory or coverage citation opens its frozen record (what the model 
   const c = createComposer({ el, client, trace: () => trace, gen: () => "g1", read: okRead, network: () => null, openCitation: (entry, id, run) => opened.push({ entry, id, run }), openAgent: id => opened.push({ agent: id }), tip: n => n, readable: () => {}, prepareDelay: 1 });
   c.open({ agentId: root.id }, { scope: "family" });
   const host = new Element("div"); document.body.replaceChildren(host); host.append(...c.render());
-  await tick(30);
+  const sendButton = () => host.all(n => n.tagName === "BUTTON" && n.textContent === "Send")[0];
+  await until(() => c.state.packet?.evidence && sendButton() && !sendButton().disabled, "the evidence packet and an enabled Send");
   const sent = c.state.packet.evidence.items;
-  host.all(n => n.tagName === "BUTTON" && n.textContent === "Send")[0].dispatch("click");
-  await tick(10);
+  sendButton().dispatch("click");
+  await until(() => host.all(n => n.className === "cite").length === 2, "the answer's two citations");
   for (const b of host.all(n => n.className === "cite")) b.dispatch("click");
   assert.deepEqual(opened.map(o => [o.id, o.entry.type]), [["E1", "coverage"], ["E2", "inventory"]]);
   for (const o of opened.slice(0, 2)) {
@@ -741,7 +746,7 @@ test("an inventory or coverage citation opens its frozen record (what the model 
     if (item.text) assert.ok(view.textContent.includes(item.text), "the record's own text");
     for (const [k, v] of Object.entries(item.facts || {})) assert.ok(view.textContent.includes(`${k}${v}`), `${o.id} ${k}`);
     if (o.id === "E2") {
-      assert.match(view.textContent, /What the aliases stand for/);
+      assert.match(view.textContent, /What the references stand for/);
       const agentLink = view.all(n => n.tagName === "BUTTON" && n.textContent.startsWith("Main thread"))[0];
       agentLink.dispatch("click");
       assert.deepEqual(opened.at(-1), { agent: root.id }, "an alias opens what it stands for");
@@ -755,37 +760,33 @@ test("an inventory or coverage citation opens its frozen record (what the model 
 });
 
 // ---------- the alias boundary: qualified identities, opaque targets, E# kept for evidence ----------
-test("a raw id shared by two environments never leaves as the first environment's entity; known opaque targets leave as their aliases", async () => {
+test("a raw id shared by two environments is never resolved to the first environment's entity; excerpts stay as recorded", async () => {
   const { threadKey } = await import("../fleet/keys.js");
   const rt = "thread-shared-1", rn = "native-shared-1", opaque = "opaque-private-recipient";
   const agents = ["alpha", "beta"].map((n, i) => ({
     id: i ? opaque : "sender-agent-1", kind: i ? "subagent" : "root", name: n, environmentId: `env-${n}-1`, thread: rt, threadKey: threadKey(`env-${n}-1`, rt), session: rn, nativeProduct: "codex",
     blocks: [{ kind: "you", i: 0, ref: { file: i, offset: 0, length: 1, path: ["text"] } }],
-    requests: [{ t: i + 1, window: [0, 0], action: { kind: "tool", tool: "send_message", target: opaque } }] }));
+    requests: [{ t: i + 1, window: [0, 0], action: { kind: "tool", tool: "send_message", target: i ? rt : opaque } }] }));
   const trace = { product: "codex", family: true, agents, inventory: agents.map(a => ({ key: a.threadKey, threadId: rt, environmentId: a.environmentId, agentId: a.id, agentIds: [a.id], status: "readable",
     bindings: [{ nativeId: rn, product: "codex", agentId: a.id, status: "readable" }] })) };
   const p = await buildPacket({ trace, gen: "g", spec: { kind: "family" }, read: async xs => new Map(xs.map(x => [x.key, { status: "ok", text: `thread ${rt} native ${rn} in env-beta-1:${rt}`, bytes: 50, truncated: false }])) });
   assert.ok(p.ok);
-  const text = JSON.stringify(p.evidence);
-  for (const raw of [rt, rn, opaque, "env-alpha-1", "env-beta-1", "sender-agent-1"]) assert.ok(!text.includes(raw), `${raw} stays local`);
-  // the bare shared ids are explicitly ambiguous in both agents' excerpts; the qualified key resolves exactly
+  for (const x of p.evidence.items.filter(i => i.provenance === "observed")) assert.equal(x.text, `thread ${rt} native ${rn} in env-beta-1:${rt}`, "an excerpt is what was recorded");
+  // a target naming the shared thread id carries an ambiguous handle, and the gap note says what it could be
   const T = Object.fromEntries(Object.entries(p.aliases.threads).map(([al, key]) => [key, al]));
   const Y = Object.entries(p.aliases.ambiguous);
-  assert.deepEqual(Y.map(([, v]) => v.raw).sort(), [rn, rt].sort());
-  const yOf = raw => Y.find(([, v]) => v.raw === raw)[0];
-  for (const x of p.evidence.items.filter(i => i.provenance === "observed")) assert.equal(x.text, `thread ${yOf(rt)} native ${yOf(rn)} in ${T[threadKey("env-beta-1", rt)]}`, x.agent);
-  assert.deepEqual(Y.find(([, v]) => v.raw === rt)[1].names.sort(), Object.values(T).sort(), "Y names both threads");
-  assert.ok(p.evidence.coverage.gaps.some(g => g.includes(`${yOf(rt)} is one of`) && /does not say which/.test(g)), "the gap note says what each Y could be");
-  // the structured target is the recipient's own alias, though the id has no digit
+  assert.deepEqual(Y.map(([, v]) => v.raw), [rt]);
+  assert.deepEqual(Y[0][1].names.sort(), Object.values(T).sort(), "Y names both threads, never the first one");
+  assert.ok(p.evidence.coverage.gaps.some(g => g.includes(`${Y[0][0]} is one of`) && /does not say which/.test(g)));
   const A2 = Object.entries(p.aliases.agents).find(([, raw]) => raw === opaque)[0];
-  assert.deepEqual(p.evidence.items.filter(i => i.kind === "request").map(i => i.facts.target), [A2, A2]);
-  // environments are M aliases: E# means evidence only
+  assert.deepEqual(p.evidence.items.filter(i => i.kind === "request").map(i => i.facts.target).sort(), [`${opaque} (${A2})`, `${rt} (${Y[0][0]})`].sort());
+  // environments are M handles in the packet's own structure: E# means evidence only
   assert.ok(Object.keys(p.aliases.envs).length === 2 && Object.keys(p.aliases.envs).every(k => /^M\d+$/.test(k)));
-  assert.ok([...p.citations.keys()].every(k => /^E\d+$/.test(k)) && !Object.values(p.aliases).some(m => Object.keys(m).some(k => p.citations.has(k))), "no alias shares an evidence id");
+  assert.ok([...p.citations.keys()].every(k => /^E\d+$/.test(k)) && !Object.values(p.aliases).some(m => Object.keys(m).some(k => p.citations.has(k))), "no handle shares an evidence id");
   assert.match(p.evidence.items.find(i => i.kind === "inventory").text, /^T\d · M1 · readable/m);
 });
 
-test("an identity target the trace does not know leaves as an X alias whatever its shape; command and path targets stay readable", async () => {
+test("identity targets the trace does not know leave as recorded; command and path targets too", async () => {
   const a = { id: "root-agent-0001", kind: "root", name: "Root", blocks: [], requests: [
     { t: 1, action: { kind: "tool", tool: "send_message", class: "internal", target: "quiet-recipient" } },
     { t: 2, action: { kind: "tool", tool: "wait_agent", class: "internal", target: "first-one, second-one" } },
@@ -793,8 +794,7 @@ test("an identity target the trace does not know leaves as an X alias whatever i
     { t: 4, action: { kind: "tool", tool: "Read", class: "read", target: "src/index.js" } }] };
   const p = await buildPacket({ trace: { product: "codex", agents: [a] }, gen: "g", spec: { kind: "agent", agentId: a.id }, read: async () => new Map() });
   const targets = p.evidence.items.filter(i => i.kind === "request").sort((x, y) => x.facts.request - y.facts.request).map(i => i.facts.target);
-  assert.deepEqual(targets, ["X1", "X2, X3", "npm test -- --watch", "src/index.js"]);
-  assert.deepEqual([p.aliases.unknown.X1, p.aliases.unknown.X2, p.aliases.unknown.X3], ["quiet-recipient", "first-one", "second-one"], "the reverse map stays local");
+  assert.deepEqual(targets, ["quiet-recipient", "first-one, second-one", "npm test -- --watch", "src/index.js"]);
 });
 
 test("an array step is followed only as written canonically: '1' and 1 name index 1, '01', '1.0', '+1' and -1 name nothing", () => {
@@ -804,4 +804,45 @@ test("an array step is followed only as written canonically: '1' and 1 name inde
   assert.deepEqual(strictExtract(line, { path: ["a", "0"] }), { status: "ok", text: "zero" });
   for (const k of ["01", "1.0", "+1", " 1", "1e0", "0x1", "length", "-1"]) assert.deepEqual(strictExtract(line, { path: ["a", k] }), { status: "locator-missing" }, JSON.stringify(k));
   assert.deepEqual(strictExtract(line, { path: ["o", "01"] }), { status: "ok", text: "key" }, "an object's own key is followed as written");
+});
+
+test("the layer scope edits its own range and layer set in the composer's scope area; the packet follows; the question stays", async () => {
+  const trace = await codexTrace();
+  const root = trace.agents.find(a => a.kind === "root");
+  const n = root.requests.length, at = Math.min(2, n - 1);
+  // two layers present across the requests
+  const present = [...new Set(root.requests.flatMap(r => Object.entries(r.strata || {}).filter(([, v]) => v > 0).map(([k]) => k)))];
+  assert.ok(present.length >= 2 && n >= 3, "the fixture has two layers over several requests");
+  const client = mockClient();
+  const c = createComposer({ el, client, trace: () => trace, gen: () => "g1", read: okRead, network: () => null, openCitation: () => {}, tip: x => x, readable: () => {}, prepareDelay: 1 });
+  c.open({ agentId: root.id, reqIdx: at, stratum: present[0] }, { scope: "layer" });
+  const host = new Element("div");
+  document.body.replaceChildren(host);
+  const repaint = () => host.replaceChildren(...c.render());
+  repaint();
+  await tick(20);
+  assert.deepEqual([c.state.packet.evidence.scope.kind, c.state.packet.evidence.scope.requestRange, c.state.packet.evidence.scope.layerIds], ["layer", [at, at], [present[0]]]);
+  // the question being typed survives every scope edit
+  const ta = host.all(x => x.tagName === "TEXTAREA")[0];
+  ta.value = "What filled these layers?"; ta.dispatch("input");
+  // edit the range: from 1 to n
+  const [from, to] = ["From request", "To request"].map(l => host.all(x => x.tagName === "INPUT" && x.getAttribute("aria-label") === l)[0]);
+  from.value = "1"; from.dispatch("change"); to.value = String(n); to.dispatch("change");
+  await tick(20); repaint();
+  assert.deepEqual(c.state.packet.evidence.scope.requestRange, [0, n - 1]);
+  // add a second layer; the last chosen one cannot be turned off
+  const layerPill = name => host.all(x => x.tagName === "BUTTON" && x.textContent === name && x.closest?.(".ai-layers"))[0] || host.all(x => x.tagName === "BUTTON" && x.textContent === name)[0];
+  const { STRATA } = await import("../panels.js");
+  const nameOf = k => STRATA.find(s => s.key === k).name;
+  layerPill(nameOf(present[1])).dispatch("click");
+  await tick(20); repaint();
+  assert.deepEqual(new Set(c.state.packet.evidence.scope.layerIds), new Set(present.slice(0, 2)));
+  layerPill(nameOf(present[0])).dispatch("click"); await tick(20); repaint();
+  layerPill(nameOf(present[1])).dispatch("click"); await tick(20); repaint();
+  assert.deepEqual(c.state.packet.evidence.scope.layerIds, [present[1]], "the last chosen layer stays on");
+  // switching to the request range and back keeps the layer scope's own range and layers
+  host.all(x => x.tagName === "BUTTON" && x.textContent === "Request range")[0].dispatch("click"); await tick(20); repaint();
+  host.all(x => x.tagName === "BUTTON" && x.textContent.endsWith("layer"))[0].dispatch("click"); await tick(20); repaint();
+  assert.deepEqual([c.state.packet.evidence.scope.requestRange, c.state.packet.evidence.scope.layerIds], [[0, n - 1], [present[1]]]);
+  assert.equal(host.all(x => x.tagName === "TEXTAREA")[0].value, "What filled these layers?");
 });

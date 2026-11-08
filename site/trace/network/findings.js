@@ -1,8 +1,8 @@
 // What a capture reveals, per product, from entries whose bodies are parsed. Every function takes values
-// already parsed from the HAR and a redactor (redact.js) and returns plain, redacted data for the page.
+// already parsed from the HAR and the recorded-content pass (redact.js, which changes nothing) and returns plain data
+// for the page.
 // SSE and websocket streams may be cut off: every field read from them is optional.
 import { header, parseSSE, wsFrames, jsonOr, bodyText } from "./har.js";
-import { REDACTED } from "./redact.js";
 
 const PREVIEW = 160;
 const preview = (R, s) => { const t = R.str(String(s ?? "")).replace(/\s+/g, " ").trim(); return t.length > PREVIEW ? `${t.slice(0, PREVIEW - 1)}…` : t; };
@@ -158,7 +158,7 @@ export function growthbookFlags(res, R) {
   });
 }
 
-// The eval request's attributes: the account facts the flags were evaluated for (ids redacted).
+// The eval request's attributes: the account facts the flags were evaluated for.
 export function growthbookAttributes(req, R) {
   const a = req && req.attributes;
   return a && typeof a === "object" ? R.json(a) : null;
@@ -320,7 +320,7 @@ function absorb(c, f, R) {
     if (type === "response.created" || !c.response) c.response = {
       id: r.id || null, model: r.model ? R.str(r.model) : null, status: r.status || null, access_programs: R.json(r.access_programs ?? null),
       prompt_cache_retention: r.prompt_cache_retention ?? null, service_tier: r.service_tier ?? null, reasoning: R.json(r.reasoning ?? null),
-      safety_identifier: r.safety_identifier ? REDACTED : null, tool_usage: R.json(r.tool_usage ?? null), tools: Array.isArray(r.tools) ? r.tools.length : null,
+      safety_identifier: r.safety_identifier ? R.str(String(r.safety_identifier)) : null, tool_usage: R.json(r.tool_usage ?? null), tools: Array.isArray(r.tools) ? r.tools.length : null,
     };
   } else if (type === "responsesapi.websocket_timing") c.timing = R.json(j.timing_metrics || null);
   else if (type === "response.completed" || type === "response.failed" || type === "response.incomplete") {

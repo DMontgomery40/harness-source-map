@@ -122,6 +122,9 @@ export function voidWords(v) {
     "missing": "Its environment was collected after this began, without it.",
     "unreachable": "Its environment could not be reached.",
     "not-collected": "Its environment was not collected.",
-    "unreadable": "Its environment's thread rows could not be read."
+    "unreadable": "Its environment's thread rows could not be read.",
+    "rows-unreadable": "Declared in the bundle; its environment's thread rows could not be read.",
+    "rows-missing": "Declared in the bundle; its environment's thread table is missing.",
+    "row-missing": "Declared in the bundle; its environment's thread table has no row for it."
   }[v.why] || "Nothing drawable for this thread.";
 }

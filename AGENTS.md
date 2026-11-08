@@ -37,21 +37,32 @@ It is **not** about token cost or the fact that context is re-read every turn. D
 - **Docs:** `docs/specs`, `docs/plans`, `docs/harness-layer.md`.
 - **Private (gitignored, local only):** `private/sessions` (frozen Claude Code and Codex/ChatGPT
   sessions), `private/video`, `private/research`. Never copy anything from `private/` into a tracked
-  file. `npm run check` runs `tools/leak-check.mjs`, which fails on this machine's paths, user name,
-  secrets and private session ids.
+  file except the specifically authorized examples below. `npm run check` runs `tools/leak-check.mjs`;
+  credentials remain forbidden, and approved example content has an exact artifact scope.
   - **User-authorized exception (2026-09-29):** the reviewed, scrubbed recording in
     `site/trace/examples/source-map-development/` may be tracked and published as the real Trace
     example the user requested. Promote only the approved derivative after a complete local privacy
     scan, bounded semantic review, original-versus-scrubbed structural verification, and the leak
     gate. Original recordings, source paths, original identifiers, alias maps/salts, audit files and
     review material remain private. This exception does not authorize any other private recording.
-  - **User-authorized exception (2026-11-06):** the same review and privacy requirements apply to
-    `site/trace/examples/t3-multi-machine/`, the requested default T3 example across environments and
-    providers. Verify decoded ownership, command associations and network coverage against the source,
-    as well as native graph structure. See `docs/reviews/2026-11-06-t3-example-review.md` before replacing
-    its reviewed derivative. Original recordings and private review material remain private.
+  - **User-authorized exception (2026-11-06, corrected):** publish the selected real family in
+    `site/trace/examples/t3-multi-machine/` with its actual thread content, prompts, skills, MCP details,
+    system reminders, tool calls/results, project material, identifiers, dates and media. The user
+    explicitly rejected blanket prose replacement, identity masking and withholding available content.
+    Remove only actual credentials (passwords, API keys and access tokens). Verify every removal against
+    that rule, source fidelity, native structure and network associations before promotion. The selected
+    example is authorized; unrelated recordings, credential values and private review files stay private.
+    See `docs/reviews/2026-11-06-t3-example-review.md` for the artifact and evidence.
 
 ## Rules
+- UI implementation and UI test changes must be authored only by Claude Opus 5.5 at medium effort,
+  invoked with `claude -p --model claude-opus-5-5 --effort medium` (user instruction, 2026-11-07).
+  Other agents may review and verify the UI and handle backend, memory and resource work.
+- Local Trace preserves exact recorded content, including passwords, API keys and authorization headers:
+  finding an unintended disclosure is a core use case. Capture, collection, parsing, search, display and
+  deliberately sent AI evidence must not silently redact it. Keep unavailable evidence distinct from
+  reference material. Credential removal for the explicitly published example above is an export step,
+  never a filter in the local product.
 - **Jev discovery:** read `docs/specs/jev-discovery.md` and, when available, the global `jev-workflows` skill before changing a classifier or coverage sweep. Check candidate selection, complete source text, privacy filtering, batch-size accounting, cache identity, unanswered work, and site record indexing as separate layers. The publicly shipped Claude Code binary is approved source material for this site. Do not confuse that publication scope with sending the complete corpus to an external classifier: the broad TypeSafe transfer is opt-in and needs destination-specific authorization; local preparation does not make that transfer.
 - Run the gate before calling work done: `npm run check` (build, all tests, link check, leak check).
 - Once work is complete and verified, commit your own changes and push immediately. Confirm the push

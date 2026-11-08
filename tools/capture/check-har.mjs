@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-// The last guard on a capture: scans a HAR's text for anything that still looks like a credential
-// (a bearer token, a JWT, an Anthropic or OpenAI API key, an OAuth token field) and deletes the file on
-// a hit, so a capture that slipped past trace_capture.py is never left on disk.
+// Local HAR validation preserves recorded evidence. Credential scans are explicit export checks.
 import { existsSync, readFileSync, unlinkSync, chmodSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -67,8 +65,8 @@ export function harSecrets(har) {
   return [...kinds];
 }
 
-// Returns { ok, kinds, deleted }; malformed HARs and credentials are removed.
-export function checkHar(file) {
+// Malformed HARs are removed. Credential rejection is only for explicit public export.
+export function checkHar(file, {publicExport = false} = {}) {
   const raw = readFileSync(file, "utf8");
   let har;
   try {
@@ -78,7 +76,7 @@ export function checkHar(file) {
     unlinkSync(file);
     return { ok: false, kinds: ["invalid HAR"], deleted: true };
   }
-  const kinds = [...new Set([...findSecrets(raw), ...harSecrets(har)])];
+  const kinds = publicExport ? [...new Set([...findSecrets(raw), ...harSecrets(har)])] : [];
   if (!kinds.length) {
     chmodSync(file, 0o600);
     return { ok: true, kinds, deleted: false };
@@ -88,15 +86,16 @@ export function checkHar(file) {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const file = process.argv[2];
+  const args = process.argv.slice(2), publicExport = args.includes('--public-export');
+  const file = args.find(arg => arg !== '--public-export');
   if (!file || !existsSync(file)) {
     console.error(`capture: no HAR was written${file ? ` at ${file}` : ""} (did the command make any HTTPS requests?)`);
     process.exit(1);
   }
-  const { ok, kinds } = checkHar(file);
+  const { ok, kinds } = checkHar(file, {publicExport});
   if (!ok) {
     console.error(`capture: deleted ${file}: it still held ${kinds.join(", ")}. Nothing was kept.`);
     process.exit(1);
   }
-  console.error(`capture: credentials check passed for ${file}`);
+  console.error(`capture: HAR validation passed for ${file}`);
 }

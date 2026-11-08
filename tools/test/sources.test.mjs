@@ -1,4 +1,4 @@
-// tools/sources: every local source of a session, probed and read for that session only, redacted, with
+// tools/sources: every local source of a session, probed and read for that session only, as recorded, with
 // credential stores never opened. A synthetic home folder stands in for ~/.claude and ~/.codex.
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -59,7 +59,6 @@ async function home() {
   return { h, session };
 }
 const by = (rep) => Object.fromEntries(rep.sources.map((s) => [s.id, s]));
-const leaks = (text) => [TOKEN.slice(7), EMAIL, CRED, ACCOUNT].filter((v) => text.includes(v));
 
 test("a Claude Code session's sources: found, matched by time, snapshots, empty folders and credentials", async () => {
   const { h, session } = await home();
@@ -82,12 +81,11 @@ test("a Claude Code session's sources: found, matched by time, snapshots, empty 
     if (r.kind === "files") r = await readSource(session.cc, id, { home: h, part: r.files[0].path });
     reads.push(r);
   }
-  // A token reads as its kind, length and last four characters (so you can tell which one it was), never its value.
-  assert.match(reads[0].text, /Bearer ‹bearer token \| 36 chars \| ends …Wq7W›/);
-  assert.equal(reads[0].text.includes(TOKEN.slice(7)), false);
+  assert.equal(reads[0].text, `const auth = "${TOKEN}";\n// mail ${EMAIL}\n`);
   assert.deepEqual(reads[1].rows.map((x) => x.display), ["mine"]);
   assert.equal(reads[3].kind, "note");
-  assert.deepEqual(leaks(JSON.stringify([rep, reads])), [], "no token, email or credential leaves");
+  assert.equal(reads[2].value.oauthAccount.emailAddress, EMAIL);
+  assert.equal(JSON.stringify([rep, reads]).includes(CRED), false, "dedicated credential store stays unread");
 });
 
 test("a Codex/ChatGPT thread's sources: its database rows and log lines only, auth never opened", async () => {
@@ -112,8 +110,10 @@ test("a Codex/ChatGPT thread's sources: its database rows and log lines only, au
   assert.equal(auth.kind, "note");
   const desk = await readSource(session.cx, "codex.desktop-logs", { home: h });
   assert.equal(desk.total, 1); // the other thread's line stays out
-  assert.match(desk.rows[0].text, /account_id=‹redacted›/);
-  assert.deepEqual(leaks(JSON.stringify([rep, tools, log, row, auth, desk])), [], "no token, email, account id or credential leaves");
+  assert.equal(desk.rows[0].text, `2026-01-06T09:00:01Z info thread ${CXX.thread} opened account_id=${ACCOUNT}`);
+  assert.equal(row.rows[0].first_user_message, `login ${TOKEN}`);
+  assert.equal(log.rows[0].feedback_log_body, `Request completed method=GET url=https://chatgpt.com/backend-api/codex/models ${EMAIL} chatgpt_account_id="${ACCOUNT}"`);
+  assert.equal(JSON.stringify([rep, tools, log, row, auth, desk]).includes(CRED), false, "auth store stays unread");
 });
 
 test("the resolver serves a session's sources to a trusted page and refuses anything else", async (t) => {
@@ -177,4 +177,28 @@ test("every evidence literal is still in the code it cites", async () => {
   }
   assert.deepEqual(missing, [], "Codex/ChatGPT evidence that moved or went away (update codex/outputs/local-sources.json)");
   assert.ok(readdirSync(src).length);
+});
+
+
+test('source files retain credential settings, identity and recorded paths exactly', async () => {
+  const { h, session } = await home();
+  const recordedPath = `/local-agent-mode-sessions/${ACCOUNT}/org-fixture/session/config.toml`;
+  const original = `api_key="${'q7W'.repeat(12)}"\r\naccount_id=${ACCOUNT}\r\norganization_id=org-fixture\r\npath=${recordedPath}\r\n${'gh' + 'p_' + 'k9Z'.repeat(15)}`;
+  writeFileSync(path.join(h, '.codex/config.toml'), original);
+  const result = await readSource(session.cx, 'codex.config', { home: h });
+  assert.equal(result.text, original);
+  const { displayFile } = await import('../sources/read.mjs');
+  assert.equal(displayFile(recordedPath, { home: h }), recordedPath);
+});
+
+
+test('recorded JSON text in a selected database cell retains duplicate keys and number tokens', async () => {
+  const { h, session } = await home();
+  const { DatabaseSync } = await import('node:sqlite');
+  const db = new DatabaseSync(path.join(h, '.codex/state_5.sqlite'));
+  const recorded = '{ "password":"first-recorded", "password":"second-recorded", "n":9007199254740993 }';
+  db.prepare('UPDATE thread_dynamic_tools SET input_schema = ? WHERE thread_id = ?').run(recorded, CXX.thread);
+  db.close();
+  const value = await readSource(session.cx, 'codex.state-thread-dynamic-tools', { home: h });
+  assert.equal(value.rows[0].input_schema, recorded);
 });

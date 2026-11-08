@@ -10,7 +10,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 import {randomBytes} from 'node:crypto';
 import {createServer, connect} from 'node:net';
 import {codexApp} from '../../codex/extract/codex/lib/app-layout.mjs';
-import {checkHar,findSecrets,harSecrets} from './check-har.mjs';
+import {checkHar} from './check-har.mjs';
 import {fileCapture, defaultRoots} from './file-capture.mjs';
 import {createRendererCapture} from './renderer-capture.mjs';
 import {captureSessions} from '../../site/trace/network/capture.js';
@@ -154,7 +154,7 @@ export function createDesktopRecorder({directory=DIRECTORY,roots=defaultRoots(),
   const state=await json(join(dir,'status.json'),{});if(!state.captureReady)throw problem('CAPTURE','The recording has not been frozen and checked.');
   const config=await json(join(dir,'config.json'),{}),file=join(dir,config.renderer&&await json(join(dir,'combined.har'))?'combined.har':'capture.har');
   const checkedPath=await realpath(file);if(!checkedPath.startsWith(dir+'/'))throw problem('CAPTURE','Capture outside recording directory.');
-  const text=await readFile(checkedPath,'utf8'),har=JSON.parse(text);if(findSecrets(text).length||harSecrets(har).length)throw problem('CREDENTIALS','Capture credential checks failed.');return har;
+  const text=await readFile(checkedPath,'utf8'),har=JSON.parse(text);if(!Array.isArray(har?.log?.entries))throw problem('INVALID_HAR','Capture is not a valid HAR.');return har;
  }
  return {status,start,stop,arm,details,capture};
 }
@@ -178,7 +178,7 @@ export async function runDesktopRecording(runDir,{runtime=realRuntime,tickMs=250
   try{
    state.captureReady=false;let finalHar=har;
    if(renderer){try{await renderer.stop();const observed=await json(join(runDir,'renderer.har'));const base=await json(har,{log:{version:'1.2',entries:[]}});base.log.entries.push(...observed.log.entries);base.log._traceVoice=observed.log._traceVoice;base.log._traceRenderer=observed.log._traceRenderer;finalHar=join(runDir,'combined.har');await save(finalHar,base);}catch{state.renderer={...state.renderer,error:'Renderer checkpoint failed; app-server capture retained.'};}}
-   const checked=checkHar(finalHar);if(!checked.ok)throw problem('CREDENTIALS','The capture failed its credential check and was deleted. Nothing was filed.');
+   const checked=checkHar(finalHar);if(!checked.ok)throw problem('INVALID_HAR','The capture was malformed and was deleted. Nothing was filed.');
    state.error=null;state.captureReady=true;
    const identified=captureSessions(await readFile(finalHar,'utf8'));
    state.pendingAttachment=!identified.sessions.length && state.flows>0;

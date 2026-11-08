@@ -1,7 +1,8 @@
-// The network layer: HAR intake, redaction, the endpoint catalog, findings and the join to the session log.
-// Synthetic captures (fixtures/network.mjs) carry planted identity values that must never come out.
-// The private captures, when this machine has them, are checked for counts and structure only: a failure
-// never prints a captured value.
+// The network layer: HAR intake, the endpoint catalog, findings, the sensitive-data-in-transit report and the join to
+// the session log. Synthetic captures (fixtures/network.mjs) carry planted identity and credential values: shown
+// exactly as recorded, identified by the transit report, and only a capture tool's own removals are flagged.
+// The private captures, when this machine has them, are compared with their own recorded entries and reported in
+// counts only: a failure never prints a captured value.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
@@ -60,8 +61,11 @@ test('direct GLM destinations expose streamed reasoning through the network read
   assert.equal(classify('opencode', { host: 'api.z.ai', path: '/api/paas/v4/chat/completions', method: 'GET' }).role, 'other');
 });
 
-// Every planted value that must not reach the page.
-function planted(text) { return Object.entries(PLANTED).filter(([, v]) => text.includes(v)).map(([k]) => k); }
+// planted(text): which planted credentials a summary carries (the transit report keeps no values); identityShown:
+// which planted identity values a text shows.
+const CREDENTIAL_KEYS = new Set(["apiKey", "projectKey", "bearer", "ddKey", "refresh", "npm", "jwt"]);
+function planted(text) { return Object.entries(PLANTED).filter(([k, v]) => CREDENTIAL_KEYS.has(k) && text.includes(v)).map(([k]) => k); }
+function identityShown(text) { return Object.entries(PLANTED).filter(([k, v]) => !CREDENTIAL_KEYS.has(k) && text.includes(v)).map(([k]) => k); }
 function everything(capture, store) {
   const parts = [JSON.stringify(capture)];
   for (const e of capture.entries) {
@@ -93,20 +97,18 @@ test("SSE parsing keeps a stream cut off mid-event, marking the last event parti
   assert.equal(ev[1].json, null);
 });
 
-test("redactor: headers, identity fields, JSON inside strings, URL paths, tokens and keys", () => {
+test("recorded content passes through exactly: credentials, identity, auth facts; only a capture tool's own marks are flagged", () => {
   const R = createRedactor();
-  R.protect([CCX.session]);
-  const body = { attributes: { id: PLANTED.device, sessionId: CCX.session, accountUUID: PLANTED.account }, metadata: { user_id: JSON.stringify({ device_id: PLANTED.device, session_id: CCX.session }) }, pins: { [PLANTED.org]: 1 }, note: `mail ${PLANTED.email} key ${PLANTED.apiKey} jwt ${PLANTED.jwt}`, experimentResult: { hashValue: PLANTED.account } };
-  R.harvest({ organization_uuid: PLANTED.org });
+  const body = { attributes: { id: PLANTED.device, accountUUID: PLANTED.account }, note: `mail ${PLANTED.email} key ${PLANTED.apiKey} jwt ${PLANTED.jwt}`,
+    auth: { refresh_token: PLANTED.refresh, password: "hunter2-SYNTHETIC" }, attachment: { needsAuthMcpServers: ["mcp-example"] }, headers: { Authorization: `Bearer ${PLANTED.bearer}` } };
   R.harvest(body);
-  const out = JSON.stringify(R.json(body));
-  assert.deepEqual(planted(out), []);
-  assert.ok(out.includes(CCX.session), "the session id is a join key and stays");
-  assert.ok(JSON.parse(R.json(body).metadata.user_id).device_id === REDACTED, "JSON in an identity field keeps its keys");
-  assert.ok(!R.path(`/api/oauth/organizations/${PLANTED.org}/skills`).includes(PLANTED.org));
+  assert.deepEqual(R.json(body), body, "nothing is replaced, a password and keys included");
+  assert.notEqual(R.json(body), body, "a copy, never the parsed object itself");
+  for (const s of [`Bearer ${PLANTED.bearer}`, PLANTED.jwt, `/api/oauth/organizations/${PLANTED.org}/skills`]) assert.equal(R.str(s), s);
+  assert.equal(R.path(`/v1/keys/${PLANTED.apiKey}`), `/v1/keys/${PLANTED.apiKey}`);
+  // a value an older capture tool removed before Trace saw the file is shown as recorded and identified as such
   const hs = R.headers([{ name: "Authorization", value: `Bearer ${PLANTED.bearer}` }, { name: "x-api-key", value: PLANTED.apiKey }, { name: "authorization", value: "<redacted by trace-capture>" }, { name: "x-app", value: "cli" }]);
-  assert.deepEqual(hs.map((h) => h.redacted), ["trace", "trace", "capture", null]);
-  assert.deepEqual(planted(JSON.stringify(hs)), []);
+  assert.deepEqual(hs.map((h) => [h.value, h.redacted]), [[`Bearer ${PLANTED.bearer}`, null], [PLANTED.apiKey, null], ["<redacted by trace-capture>", "capture"], ["cli", null]]);
 });
 
 test("catalog: every entry names a known role; unknown hosts are 'other'", () => {
@@ -164,21 +166,25 @@ test("Claude Code: model calls, request classes, join, flags, bootstrap, telemet
   assert.equal(a.response.thinking_tokens, 7);
   assert.equal(a.response.service_tier, "standard");
   assert.equal(a.rateLimit.windows["5h"].status, "allowed");
-  assert.ok(a.identity.some((h) => h.name === "anthropic-organization-id"));
+  // the call's redacted headers are its credentials; its organization id header reads as recorded
+  // no header was removed: the call's "removed" list is the capture tool's marks, and this capture has none
+  assert.deepEqual(a.identity, []);
   // Side traffic.
   const velvet = c.flags.find((f) => f.name === "tengu_velvet_tide");
   assert.deepEqual([velvet.source, velvet.experiment, velvet.variation, velvet.inExperiment, velvet.valueText], ["experiment", "tengu_velvet_tide", 1, true, '"layout-b"']);
   assert.equal(c.flags.length, 4);
   assert.deepEqual(c.bootstrap.clientData, { cedar_synth: { "claude-synth": true }, cedar_date: "2027-01-01" });
   assert.ok(c.account.facts.some((f) => f.key === "organization_type"));
-  assert.ok(c.account.identityFields.some((f) => /account_email/.test(f)));
+  assert.ok(!c.account.identityFields.some((f) => /account_email/.test(f)), "an account's email is recorded identity: shown, not removed");
+  assert.ok(everything(c, store).includes(PLANTED.email), "the email is where it was recorded");
   assert.ok(c.events.some((e) => e.name === "tengu_sysprompt_boundary_found" && e.decision && e.meta.blockCount === 4));
   assert.equal(c.events.find((e) => e.name === "tengu_api_success" && e.sink === "event log").call, 0, "api success joins its call");
   assert.ok(c.notes.some((n) => /telemetry events named another session/.test(n)));
   assert.deepEqual([...new Set(c.rateLimits.map((r) => r.key))].sort(), ["5h", "7d"]);
   assert.ok(c.roles.find((r) => r.key === "side").count === 1);
-  assert.ok(c.headerNames.some((h) => h.name === "authorization" && h.redacted));
-  assert.deepEqual(planted(everything(c, store)), [], "no planted identity value comes out");
+  assert.ok(c.headerNames.some((h) => h.name === "authorization" && !h.redacted));
+  const all = everything(c, store);
+  for (const k of ["bearer", "ddKey", "npm", "jwt", "refresh", "projectKey"]) assert.ok(all.includes(PLANTED[k]), `${k}: the recorded value is shown as sent`);
 });
 
 test("Codex/ChatGPT: websocket calls, prewarm not in the log, attribution to blocks, catalog, features", async () => {
@@ -191,7 +197,7 @@ test("Codex/ChatGPT: websocket calls, prewarm not in the log, attribution to blo
   assert.deepEqual(c.calls[0].additionalTools, ["functions.exec", "functions.js"]);
   assert.equal(c.calls[1].rateLimits.plan_type, "pro");
   assert.equal(c.calls[1].response.prompt_cache_retention, "24h");
-  assert.equal(c.calls[1].response.safety_identifier, REDACTED);
+  assert.equal(c.calls[1].response.safety_identifier, PLANTED.safety, "an identifier is no credential");
   assert.equal(c.calls[1].timing.pre_inference_ms, 40);
   const at = Object.fromEntries(c.calls[1].attribution.map((x) => [x.id, x]));
   assert.equal(at.at_SYNTH1.blocks.length, 0, "additional_tools is on the wire, not in the log");
@@ -206,8 +212,8 @@ test("Codex/ChatGPT: websocket calls, prewarm not in the log, attribution to blo
   assert.deepEqual(c.events.map((e) => e.name), ["codex_thread_initialized", "codex_turn_event"]);
   assert.ok(c.account.facts.some((f) => f.key === "plan_type"));
   assert.ok(c.rateLimits.some((r) => /^primary/.test(r.key)));
-  assert.ok(c.handshake.turnMetadata && c.handshake.turnMetadata.installation_id === REDACTED);
-  assert.deepEqual(planted(everything(c, store)), [], "no planted identity value comes out");
+  assert.ok(c.handshake.turnMetadata && c.handshake.turnMetadata.installation_id === PLANTED.installation);
+  assert.ok(everything(c, store).includes(PLANTED.jwt), "the bearer JWT is shown as sent");
 });
 
 test("a capture spanning two sessions is filtered to the loaded one, and says how many entries went elsewhere", async () => {
@@ -322,14 +328,11 @@ test("transit: each credential says which key it was, what it is, and every send
   assert.deepEqual([token.jwt.issued, token.jwt.expires, token.afterExpiry], ["2026-01-05T09:00:00Z", "2026-01-05T10:00:02Z", 1], "sent 200 ms after it expired");
   assert.equal(transit.credentials.find((c) => c.kind === "npm token").ends, null, "an older capture has no ending to show");
   assert.deepEqual(transit.rows.find((r) => r.kind === "Anthropic OAuth access token" && r.host === "api.anthropic.com").ends, ["Zq_1", "Yy_2"], "a row lists each key it carried");
-  // In the headers view a credential reads as its description; identity stays removed; the value never shows.
+  // The headers view shows each header exactly as sent; the transit report above says what each credential is.
   const R = createRedactor();
   const shown = R.headers([{ name: "authorization", value: oauth }, { name: "authorization", value: `Bearer ${PLANTED.bearer}` }, { name: "cookie", value: `sid=${PLANTED.bearer}; theme=dark` }, { name: "x-organization-uuid", value: PLANTED.org }]);
-  assert.equal(shown[0].value, "Bearer ‹Anthropic OAuth access token | 108 chars | ends …Zq_1 | fp 0a1b2c3d4e5f6071›");
-  assert.match(shown[1].value, new RegExp(`^Bearer ‹[^›]+ \\| ${PLANTED.bearer.length} chars \\| ends …${PLANTED.bearer.slice(-4).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}›$`));
-  assert.match(shown[2].value, /^sid=‹cookie value \| \d+ chars \| ends …\S{4}›; theme=‹cookie value \| 4 chars›$/);
-  assert.equal(shown[3].value, REDACTED);
-  assert.ok(!JSON.stringify(shown).includes(PLANTED.bearer) && !JSON.stringify(shown).includes(PLANTED.org));
+  assert.deepEqual(shown.map((h) => h.value), [oauth, `Bearer ${PLANTED.bearer}`, `sid=${PLANTED.bearer}; theme=dark`, PLANTED.org]);
+  assert.deepEqual(shown.map((h) => h.redacted), ["capture", null, null, null], "only the capture tool's own mark is identified as a removal");
 });
 
 test("transit: every one of the ten rules fires on the synthetic captures, and a first-party session header fires none", async () => {
@@ -357,6 +360,7 @@ test("transit: every one of the ten rules fires on the synthetic captures, and a
   assert.ok(jwt.rules.includes(2) && jwt.rules.includes(7) && jwt.details.lifetime === "10d");
   assert.ok(cxRows.some((r) => r.kind === "name" && r.channel === "prompt text" && r.rules.includes(1)), "the name from the token's claims is found in prompt text");
   assert.ok(cxRows.some((r) => r.kind === "installation id" && r.rules.includes(6) && r.notes.some((n) => /sent twice/.test(n))));
+  // the report keeps no values: kinds, hosts, fingerprints and last fours group them (the values are in the entries)
   for (const c of caps) assert.deepEqual(planted(JSON.stringify(c.transit)), []);
 });
 
@@ -411,22 +415,62 @@ function privateNetwork() {
   return null;
 }
 const PRIV = privateNetwork();
-function sessionIdsIn(dir) {
+// asRecorded: where an attached capture's view differs from the capture's own recorded entries, in counts only (a
+// failure names no value). For each kept entry: its URL and headers, flagged only where the capture tool removed a
+// value; each body opened as stored, and as read where nothing is decoded; each frame shown, its data after Trace's
+// one-line heading that ends in the data's exact length. A Codex/ChatGPT socket shows the frames its session owns,
+// so the frames shown must be found, in order, among the recorded ones.
+const FRAME_HEAD = /^(?:→ sent|← received)\b[^\n]* · ([\d,]+) characters?$/;
+function framesShown(text) {
   const out = [];
-  const walk = (d) => { for (const n of readdirSync(d)) { for (const m of n.matchAll(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi)) out.push(m[0].toLowerCase()); if (statSync(join(d, n)).isDirectory()) walk(join(d, n)); } };
-  if (existsSync(dir)) walk(dir);
+  for (let at = 0; at < text.length;) {
+    const nl = text.indexOf("\n", at), m = nl < 0 ? null : FRAME_HEAD.exec(text.slice(at, nl));
+    if (!m) return null;
+    const to = nl + 1 + Number(m[1].replace(/,/g, ""));
+    if (to > text.length || (to < text.length && !text.startsWith("\n\n", to))) return null;
+    out.push({ sent: text.startsWith("→", at), data: text.slice(nl + 1, to) });
+    at = to + 2;
+  }
   return out;
 }
-const leakValues = () => { try { return JSON.parse(readFileSync(join(PRIV, "..", "..", "leak-values.json"), "utf8")).filter((v) => typeof v === "string" && v.length >= 6); } catch { return []; } };
+function asRecorded(capture, store, recorded) {
+  const compared = { headers: 0, bodies: 0, frames: 0 }, differ = { urls: 0, headers: 0, flags: 0, bodies: 0, frames: 0 };
+  const dataOf = (m) => (typeof m.data === "string" ? m.data : m.data == null ? "" : JSON.stringify(m.data));
+  for (const { i } of capture.entries) {
+    const r = recorded[i], shown = store.headers(i);
+    if (shown.url !== `${r.request.method || ""} ${r.request.url || ""}`.trim()) differ.urls++;
+    for (const [got, want] of [[shown.request, r.request.headers || []], [shown.response, r.response.headers || []]]) {
+      compared.headers += want.length;
+      if (got.length !== want.length) { differ.headers++; continue; }
+      want.forEach((h, k) => {
+        const value = String(h.value ?? "");
+        if (got[k].name !== String(h.name) || got[k].value !== value) differ.headers++;
+        if (got[k].redacted !== (value.includes("<redacted") ? "capture" : null)) differ.flags++;
+      });
+    }
+    for (const part of ["request", "response"]) {
+      const stored = part === "request" ? r.request.postData : r.response.content, text = stored?.text == null ? "" : String(stored.text);
+      if (text) compared.bodies++;
+      const asStored = store.body(i, part, { original: true, whole: true });
+      if (asStored.text !== text || asStored.total !== text.length) differ.bodies++;
+      if (stored?.encoding !== "base64" && store.body(i, part, { whole: true }).text !== text) differ.bodies++;
+    }
+    const frames = framesShown(store.body(i, "frames", { whole: true }).text), list = Array.isArray(r._webSocketMessages) ? r._webSocketMessages : [];
+    let next = 0;
+    const found = (f) => { while (next < list.length && !(dataOf(list[next]) === f.data && (list[next].type === "send") === f.sent)) next++; return next++ < list.length; };
+    if (!frames || !frames.every(found)) differ.frames++;
+    compared.frames += frames ? frames.length : 0;
+  }
+  return { compared, differ };
+}
 
-test("private captures: each attaches to its own session, joins, and leaks no identity value", { skip: !PRIV && "no private captures on this machine" }, async () => {
+test("private captures: each attaches to its own session, joins, and is shown exactly as recorded", { skip: !PRIV && "no private captures on this machine" }, async () => {
   const hars = readdirSync(PRIV).filter((n) => /^c[cx]-run\d.*\.har$/.test(n)).sort();
   const cc = join(PRIV, "sessions", "claude-code"), cx = join(PRIV, "sessions", "codex");
   const sessions = [
     ...readdirSync(cc).filter((n) => n.endsWith(".jsonl")).map((n) => ({ product: "claude-code", paths: [join(cc, n), ...(existsSync(join(cc, n.slice(0, -6))) ? [join(cc, n.slice(0, -6))] : [])] })),
     ...readdirSync(cx).filter((n) => /^rollout-.*\.jsonl$/.test(n)).map((n) => ({ product: "codex", paths: [join(cx, n)] })),
   ];
-  const values = leakValues();
   let attached = 0;
   for (const name of hars) {
     const text = readFileSync(join(PRIV, name), "utf8");
@@ -434,20 +478,230 @@ test("private captures: each attaches to its own session, joins, and leaks no id
     let hit = null;
     for (const s of sessions.filter((x) => x.product === product)) {
       const trace = await session(s.paths);
-      try { hit = { trace, ...(await analyzeCapture([{ name, text }], trace)) }; break; } catch (e) { if (!/doesn't hold the loaded session/.test(e.message)) throw new Error(`${name}: ${e.message.slice(0, 80)}`); }
+      try { hit = await analyzeCapture([{ name, text }], trace); break; } catch (e) { if (!/doesn't hold the loaded session/.test(e.message)) throw new Error(`${name}: ${e.message.slice(0, 80)}`); }
     }
     if (!hit) continue; // a capture whose session log isn't kept here
     attached++;
-    const { capture: c, store, trace } = hit;
+    const { capture: c, store } = hit;
     const main = c.calls.filter((x) => x.kind !== "side");
     assert.ok(main.length > 0, `${name}: no model calls`);
     assert.ok(main.every((x) => x.matched.length > 0), `${name}: a main or subagent call did not join`);
     if (product === "codex") assert.ok(c.calls.some((x) => x.kind === "side" && !x.matched.length), `${name}: the prewarm should be a call not in the log`);
-    // Session and thread ids are join keys, shown on purpose (a resumed run names its earlier session too).
-    const ids = new Set([...sessionIdsOf(trace), ...sessionIdsIn(join(PRIV, "sessions"))]);
-    const out = everything(c, store);
-    const leaks = values.filter((v) => !ids.has(v.toLowerCase()) && out.includes(v)).length;
-    assert.ok(leaks === 0, `${name}: ${leaks} identity values in the output`);
+    // Identity and credentials included, the reader shows what was recorded: each kept entry against the capture's own.
+    const { compared, differ } = asRecorded(c, store, parseHar(text).log.entries);
+    assert.ok(compared.bodies + compared.frames > 0, `${name}: no recorded body or frame was compared`);
+    for (const [what, n] of Object.entries(differ)) assert.ok(n === 0, `${name}: ${what} not as recorded (${n})`);
   }
   assert.ok(attached >= 2, "at least one capture of each product attaches");
+});
+
+test("the private captures' check, on the synthetic ones: each URL, header, opened body and owned frame is as recorded, and a view that masks a value is caught", async () => {
+  // A Codex/ChatGPT socket that also carries another thread's exchange, after the prewarm completed: those two
+  // frames are left out, and every other frame must still be found in order.
+  const h = JSON.parse(har("codex.har").text), socket = h.log.entries.find((e) => e._webSocketMessages), time = socket._webSocketMessages[4].time;
+  socket._webSocketMessages.splice(5, 0,
+    { type: "send", time, opcode: 1, data: JSON.stringify({ type: "response.create", model: "gpt-synth-1", client_metadata: { thread_id: CXX.other } }) },
+    { type: "receive", time, opcode: 1, data: JSON.stringify({ type: "response.completed", response: { id: "resp_SYNTHother", status: "completed" } }) });
+  const mask = (s) => Object.values(PLANTED).reduce((t, v) => t.split(v).join(REDACTED), s);
+  const masking = (store) => ({ ...store, body: (...a) => { const b = store.body(...a); return { ...b, text: mask(b.text) }; },
+    headers: (i) => { const x = store.headers(i), m = (list) => list.map((y) => ({ ...y, value: mask(y.value) })); return { url: mask(x.url), request: m(x.request), response: m(x.response) }; } });
+  const flagging = (store) => ({ ...store, headers: (i) => { const x = store.headers(i); return { ...x, request: x.request.map((y) => ({ ...y, redacted: "capture" })) }; } });
+  const cases = [
+    { name: "claude.har", text: har("claude.har").text, trace: await claudeTrace(), frames: 0, masked: ["urls", "headers", "bodies"] },
+    { name: "codex.har", text: JSON.stringify(h), trace: await codexTrace(), frames: socket._webSocketMessages.length - 2, masked: ["headers", "bodies", "frames"] },
+  ];
+  for (const { name, text, trace, frames, masked } of cases) {
+    const { capture, store } = await analyzeCapture([{ name, text }], trace), recorded = parseHar(text).log.entries;
+    const { compared, differ } = asRecorded(capture, store, recorded);
+    assert.deepEqual(differ, { urls: 0, headers: 0, flags: 0, bodies: 0, frames: 0 }, `${name}: shown as recorded`);
+    assert.ok(compared.headers > 0 && compared.bodies > 0, `${name}: headers and bodies were compared`);
+    assert.equal(compared.frames, frames, `${name}: every frame its session owns was compared, another thread's left out`);
+    const caught = asRecorded(capture, masking(store), recorded).differ;
+    assert.deepEqual(masked.filter((k) => !caught[k]), [], `${name}: masking the planted values is caught wherever the capture carries them`);
+    assert.ok(asRecorded(capture, flagging(store), recorded).differ.flags > 0, `${name}: a header marked removed that the capture tool never removed is caught`);
+  }
+});
+
+test("a key sent where it belongs and also where it shouldn't is flagged, and deliberate inspection shows it exactly", async () => {
+  const { readdirSync: ls, statSync: st } = await import("node:fs");
+  const { relative, basename } = await import("node:path");
+  const posted = [];
+  globalThis.self = { postMessage: (m) => posted.push(m) };
+  await import("../worker.js?leak-scenario");
+  const walk = (d) => ls(d).flatMap((n) => (st(join(d, n)).isDirectory() ? walk(join(d, n)) : [join(d, n)]));
+  const files = walk(join(NET, "claude")).map((p) => ({ path: relative(NET, p), file: new File([readFileSync(p)], basename(p)) }));
+  await self.onmessage({ data: { type: "load", gen: "g1", files } });
+  assert.ok(posted.some((m) => m.type === "trace" && m.gen === "g1"));
+  // The recorded capture: the key goes to the API in its own header (where it belongs), and an analytics call to a
+  // third party carries the same key in its body (where it shouldn't).
+  const KEY = PLANTED.apiKey, h = JSON.parse(readFileSync(join(NET, "claude.har"), "utf8"));
+  const api = h.log.entries.findIndex((e) => /api\.anthropic\.com/.test(e.request.url));
+  h.log.entries[api].request.headers.push({ name: "x-api-key", value: KEY });
+  const body = JSON.stringify({ event: "client_boot", api_key: KEY, note: `configured with ${KEY}` });
+  h.log.entries.push({ startedDateTime: new Date(CCX.t0 + 9950).toISOString(), time: 40, request: { method: "POST", url: "https://analytics.example.test/v1/track", httpVersion: "HTTP/1.1", cookies: [], headers: [{ name: "content-type", value: "application/json" }], queryString: [], headersSize: -1, bodySize: body.length, postData: { mimeType: "application/json", text: body } },
+    response: { status: 200, statusText: "", httpVersion: "HTTP/1.1", cookies: [], headers: [{ name: "content-type", value: "application/json" }], content: { size: 2, mimeType: "application/json", text: "{}" }, redirectURL: "", headersSize: -1, bodySize: 2 }, cache: {}, timings: { send: 1, wait: 10, receive: 1 } });
+  await self.onmessage({ data: { type: "network", id: 1, files: [new File([JSON.stringify(h)], "leak.har")] } });
+  const net = posted.find((m) => m.type === "network" && m.id === 1);
+  assert.ok(net, posted.find((m) => m.type === "network-error")?.message);
+  // flagged: one credential on both hosts (rule 5), the third-party send listed with it
+  const cred = net.capture.transit.credentials.find((c) => c.hosts.includes("analytics.example.test"));
+  assert.ok(cred && cred.hosts.includes("api.anthropic.com"), "the same key, on the API and on the analytics host");
+  const row = net.capture.transit.rows.find((r) => r.host === "analytics.example.test" && r.cat === "credential");
+  assert.ok(row && row.rules.includes(5) && row.party === "third");
+  // and on deliberate inspection, exactly as recorded: the analytics request body and the API call's headers
+  const at = (host) => net.capture.entries.find((e) => e.host === host).i;
+  await self.onmessage({ data: { type: "network-body", entry: at("analytics.example.test"), part: "request", id: 2 } });
+  assert.equal(posted.find((m) => m.type === "network-body" && m.id === 2).text.replace(/\s+/g, ""), body.replace(/\s+/g, ""), "the whole request body, the key in it");
+  assert.ok(net.capture.entries.some((e) => e.i === api), "the API call the key belongs to is in the capture");
+  await self.onmessage({ data: { type: "network-body", entry: api, part: "headers", id: 3 } });
+  const shown = JSON.parse(posted.find((m) => m.type === "network-body" && m.id === 3).text);
+  assert.deepEqual(shown.request.find((x) => x.name === "x-api-key"), { name: "x-api-key", value: KEY, redacted: null }, "the header carries the exact key");
+  delete globalThis.self;
+});
+
+// ---------- a deliberately opened body is the recorded text, exactly ----------
+// What the reader's "As stored" shows is what was recorded: spacing, line endings, duplicate keys, integers past 2^53,
+// every event-stream line and every frame's data, a credential included. Only the layout is derived (readable.js), and
+// what the capture's summary detects in a body (the transit report) is derived apart from it.
+const KEY = PLANTED.apiKey;
+const RAW_JSON = `{\r\n  "event" : "boot",\r\n  "event": "client_boot",\r\n  "n": 9007199254740993,\r\n  "api_key":"${KEY}"  ,\r\n  "nested": {"a":[1,  2,3]}\r\n}\r\n`;
+const RAW_SSE = [": keep-alive\r\nretry: 3000", 'id: 7\r\nevent: message_start\r\ndata: {"type":"message_start",\r\ndata:  "n": 9007199254740993}',
+  `event: token\r\ndata: {"type":"delta","text":"${KEY}"}`, "data:", 'event: token\r\ndata: {"type":"delta","text":"done"}', "data: [DONE]"].join("\r\n\r\n") + "\r\n\r\n";
+const FRAMES = [
+  { type: "send", time: 1767225600.1, opcode: 1, data: '{"type" : "response.create",  "n":9007199254740993, "type":"dup"}' },
+  { type: "receive", time: 1767225600.2, opcode: 1, data: `a text frame\r\n\r\nwith a blank line and ${KEY}\n\n` },
+  { type: "receive", time: 1767225600.3, opcode: 1, data: '{"type":"response.created"}' },
+  { type: "receive", time: 1767225600.4, opcode: 2, data: Buffer.from([0, 1, 2, 250]).toString("base64") },
+];
+const BIG = `${"x".repeat(2_100_000)}\n${KEY}`;
+async function exactCapture() {
+  const trace = await claudeTrace(), h = JSON.parse(har("claude.har").text), t = Date.parse(h.log.entries[0].startedDateTime);
+  const entry = (url, request, response, extra = {}) => ({ startedDateTime: new Date(t + 5000).toISOString(), time: 10, request: { method: "POST", url, httpVersion: "HTTP/1.1", cookies: [], headers: [], queryString: [], headersSize: -1, bodySize: -1, ...request },
+    response: { status: 200, statusText: "", httpVersion: "HTTP/1.1", cookies: [], headers: [], redirectURL: "", headersSize: -1, bodySize: -1, content: { size: 0, mimeType: "" }, ...response }, cache: {}, timings: { send: 1, wait: 5, receive: 1 }, ...extra });
+  h.log.entries.push(
+    entry("https://exact.example.test/v1/track", { postData: { mimeType: "application/json", text: RAW_JSON } }, { content: { size: RAW_SSE.length, mimeType: "text/event-stream", text: RAW_SSE } }),
+    entry("wss://socket.example.test/stream", { method: "GET" }, { status: 101 }, { _webSocketMessages: FRAMES }),
+    entry("https://big.example.test/upload", { postData: { mimeType: "text/plain", text: BIG } }, {}));
+  const { capture, store } = await analyzeCapture([{ name: "exact.har", text: JSON.stringify(h) }], trace);
+  const at = host => capture.entries.find(e => e.host === host).i;
+  return { capture, store, at };
+}
+
+test("a deliberately opened body is exactly what was recorded: JSON spacing, CRLF, duplicate keys, long integers and the key; every event-stream line; every frame's data", async () => {
+  const R = await import("../readable.js");
+  const { capture, store, at } = await exactCapture();
+  const json = store.body(at("exact.example.test"), "request");
+  assert.deepEqual([json.text, json.mode, json.cut, json.total], [RAW_JSON, "JSON", false, RAW_JSON.length]);
+  // the layout is derived from it: the long integer keeps its digits, the record keeps both keys
+  assert.equal(R.textKind(json.text), "json");
+  const n = R.parseJson(json.text).value.n;
+  assert.ok(n instanceof R.Digits && n.s === "9007199254740993");
+  assert.equal(json.text.match(/"event"/g).length, 2);
+  const sse = store.body(at("exact.example.test"), "response");
+  assert.deepEqual([sse.text, sse.mode, sse.cut], [RAW_SSE, "server-sent events", false]);
+  const events = R.segments(sse.text);
+  assert.deepEqual(events.map(e => e.head), [": keep-alive · retry: 3000", "id: 7 · event: message_start", "event: token", "", "event: token", ""], "comments, ids, retries and an empty event are all there");
+  assert.equal(events[1].value.n.s, "9007199254740993");
+  assert.equal(events[2].value.text, KEY);
+  const frames = store.body(at("socket.example.test"), "frames");
+  assert.equal(frames.mode, "websocket frames");
+  for (const f of FRAMES) assert.ok(frames.text.includes(`\n${f.data}`), "every frame's data, whole");
+  const records = R.segments(frames.text);
+  assert.deepEqual(records.map(r => ("value" in r ? "json" : r.text)), ["json", FRAMES[1].data, "json", FRAMES[3].data], "taken whole by its length, blank lines and all");
+  assert.match(records[3].head, /^← received \d\d:\d\d:\d\d\.\d{3} · binary, base64 as recorded · 8 characters$/);
+  assert.equal(records[0].value.n.s, "9007199254740993");
+  // the transit report found the key in the body (derived apart: the body itself is unchanged)
+  assert.ok(capture.transit.credentials.some(c => c.sends.some(s => s.host === "exact.example.test")), "detected where it went");
+});
+
+test("a body longer than a read's bound is whole on request: its tail, with the key in it, is reachable exactly", async () => {
+  const { store, at } = await exactCapture();
+  const first = store.body(at("big.example.test"), "request");
+  assert.deepEqual([first.cut, first.total], [true, BIG.length]);
+  assert.ok(first.text.length < BIG.length && !first.text.includes(KEY), "the first read is bounded");
+  const whole = store.body(at("big.example.test"), "request", { whole: true });
+  assert.deepEqual([whole.cut, whole.total, whole.text === BIG], [false, BIG.length, true], "the whole text, exactly");
+  assert.ok(whole.text.endsWith(`\n${KEY}`));
+});
+
+test("a Cursor body decoded with the shipped descriptors is a view: the body as the capture stored it stays reachable exactly, and an undecoded one is shown as stored", async () => {
+  const { createHash } = await import("node:crypto");
+  const id = "88888888-8888-4888-8888-888888888888";
+  const stream = [{ type: "system", subtype: "init", session_id: id, model: "test", cwd: "/workspace" }, { type: "user", session_id: id, message: { content: [{ type: "text", text: "Go" }] } }, { type: "result", session_id: id, subtype: "success", result: "Done", usage: { inputTokens: 100 } }].map(x => JSON.stringify(x)).join("\n");
+  const bytes = new TextEncoder().encode(stream);
+  const { trace } = await loadTrace([{ path: "stream.jsonl", source: { size: bytes.length, slice: async (a, b) => bytes.subarray(a, b) } }]);
+  const req = Buffer.from([0, 0, 0, 0, 5, 0x0a, 0x03, 0x61, 0x62, 0x63]), res = Buffer.from([0, 0, 0, 0, 3, 0x12, 0x01, 0xff]);
+  const sha = b => createHash("sha256").update(b).digest("hex");
+  const h = { log: { version: "1.2", entries: [{ startedDateTime: "2026-01-01T00:00:00Z", time: 5,
+    request: { method: "POST", url: "https://api2.cursor.sh/agent.v1.AgentService/Run", headers: [{ name: "content-type", value: "application/connect+proto" }], postData: { mimeType: "application/connect+proto", text: req.toString("base64"), encoding: "base64" } },
+    response: { status: 200, headers: [{ name: "content-type", value: "application/connect+proto" }], content: { mimeType: "application/connect+proto", size: res.length, text: res.toString("base64"), encoding: "base64" } } }] } };
+  const item = { harIndex: 0, method: "POST", path: "/agent.v1.AgentService/Run", request: { capturedBytes: req.length, capturedSha256: sha(req), frames: [{ message: { text: "abc" } }] }, response: { capturedBytes: res.length, capturedSha256: sha(res), frames: [{ message: { n: 1 } }] } };
+  const sidecar = { format: "trace-cursor-agent-service-decoded", version: 1, product: "cursor", surface: "agent-cli", source: { evidence: "shipped-artifact" }, capture: "capture.har", entries: [item] };
+  const { store } = await analyzeCapture([{ name: "capture.har", text: JSON.stringify(h) }, { name: "agent-service-decoded.json", text: JSON.stringify(sidecar) }], trace);
+  for (const [part, raw] of [["request", req], ["response", res]]) {
+    const view = store.body(0, part);
+    assert.equal(view.decoded, true);
+    assert.match(view.mode, /decoded with the exact shipped AgentService descriptors/);
+    assert.deepEqual(JSON.parse(view.text), item[part], "the decoded view");
+    const stored = store.body(0, part, { original: true });
+    assert.deepEqual([stored.text, stored.mode, stored.decoded], [raw.toString("base64"), "as captured, base64", undefined], `${part}: the bytes exactly as the capture stored them`);
+    assert.deepEqual([...Buffer.from(stored.text, "base64")], [...raw]);
+  }
+  // without a decoder the reader shows the stored body itself, with no words of Trace's in it
+  const bare = await analyzeCapture([{ name: "capture.har", text: JSON.stringify(h) }], trace);
+  const opaque = bare.store.body(0, "request");
+  assert.deepEqual([opaque.text, opaque.decoded], [req.toString("base64"), undefined]);
+  assert.match(opaque.mode, /as captured, base64; no shipped-schema decoder was applied/);
+});
+
+// ---------- addresses in long texts: exactly the pattern's matches, in linear time ----------
+test("email detection takes exactly the addresses a global search of its pattern takes, an address that starts where the last one ended included", async () => {
+  const { emails } = await import("../network/transit.js");
+  // the pattern as it was searched globally before (quadratic on a long run with no "@"): the reference
+  const ORIGINAL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g;
+  const ref = s => [...s.matchAll(ORIGINAL)].map(m => m[0]);
+  assert.deepEqual(emails("a@b.com.x@c.com"), ["a@b.com", ".x@c.com"], "adjoining: the second starts where the first ended");
+  assert.deepEqual(emails("a@b.co123c@d.ef"), ["a@b.co", "123c@d.ef"]);
+  assert.deepEqual(emails("x@y.zz@w.zz@v.zz"), ref("x@y.zz@w.zz@v.zz"));
+  for (const s of ["x@y.co1z@w.org", "a@b.c@d.com", "john@a.com mary@b.org", "mail:a@b.io,c@d.io", "@@a@b.cd@@", "a@b", "a@b.c", ".a@b.cd.", '{"to":"dana@harbor.test","cc":["e@f.gh"]}', "", "no address", "a@-.-.cd", "a@b..cd", "%+@x.yz", "a@@b.cd", "a.@b.cd"])
+    assert.deepEqual(emails(s), ref(s), JSON.stringify(s));
+  // a seeded differential over short texts of address characters, "@" and separators
+  let seed = 7;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff, ALPHA = "ab1.-_+%@@.. ,:co";
+  for (let k = 0; k < 5000; k++) {
+    const s = Array.from({ length: 1 + Math.floor(rnd() * 40) }, () => ALPHA[Math.floor(rnd() * ALPHA.length)]).join("");
+    assert.deepEqual(emails(s), ref(s), JSON.stringify(s));
+  }
+});
+
+test("a capture whose bodies hold 2.1 MB strings is analyzed in bounded time, and the address and key at a tail are still found", { timeout: 120000 }, async () => {
+  const { spawnSync } = await import("node:child_process");
+  const at = rel => JSON.stringify(new URL(rel, import.meta.url).href);
+  // in a process of its own, killed if it runs long: a quadratic search fails here instead of hanging the suite
+  const script = `
+    const { loadTrace } = await import(${at("../loader.js")});
+    const { entriesFor } = await import(${at("../dump.mjs")});
+    const { analyzeCapture } = await import(${at("../network/capture.js")});
+    const { PLANTED, CCX } = await import(${at("./fixtures/network.mjs")});
+    const { readFileSync } = await import("node:fs");
+    const { fileURLToPath } = await import("node:url");
+    const NET = fileURLToPath(new URL(${at("./fixtures/network/")}));
+    const entries = await entriesFor([NET + "claude"]);
+    let trace; try { trace = (await loadTrace(entries)).trace; } finally { await Promise.all(entries.map(e => e.source.close())); }
+    const h = JSON.parse(readFileSync(NET + "claude.har", "utf8")), A = "A".repeat(2_100_000);
+    const post = (url, body) => { const text = JSON.stringify(body); return { startedDateTime: new Date(CCX.t0 + 9950).toISOString(), time: 40, request: { method: "POST", url, httpVersion: "HTTP/1.1", cookies: [], headers: [], queryString: [], headersSize: -1, bodySize: text.length, postData: { mimeType: "application/json", text } },
+      response: { status: 200, statusText: "", httpVersion: "HTTP/1.1", cookies: [], headers: [], content: { size: 0, mimeType: "application/json" }, redirectURL: "", headersSize: -1, bodySize: 0 }, cache: {}, timings: { send: 1, wait: 10, receive: 1 } }; };
+    h.log.entries.push(post("https://plain.example.test/a", { blob: A }), post("https://at-zero.example.test/b", { blob: "@" + A }),
+      post("https://tail.example.test/c?to=" + encodeURIComponent(A + " dana.query@harbor-mail.test"), { blob: A + " dana.tail@harbor-mail.test", api_key: PLANTED.apiKey }));
+    const t = Date.now();
+    const { capture } = await analyzeCapture([{ name: "long.har", text: JSON.stringify(h) }], trace);
+    const rows = capture.transit.rows;
+    console.log(JSON.stringify({ ms: Date.now() - t, email: rows.filter(r => r.kind === "email" && r.host === "tail.example.test").map(r => r.channel).sort(), key: capture.transit.credentials.some(c => c.sends.some(s => s.host === "tail.example.test")) }));`;
+  const r = spawnSync(process.execPath, ["--input-type=module", "-e", script], { encoding: "utf8", timeout: 60000, maxBuffer: 1 << 20 });
+  assert.equal(r.signal, null, "the analysis did not finish within a minute");
+  assert.equal(r.status, 0, r.stderr);
+  const out = JSON.parse(r.stdout.trim().split("\n").pop());
+  assert.ok(out.ms < 20000, `${out.ms} ms`);
+  assert.deepEqual(out.email, ["URL query", "request body"], "the address after the long text, in the body and in the query");
+  assert.equal(out.key, true, "the key after it");
 });

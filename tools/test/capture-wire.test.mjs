@@ -133,7 +133,7 @@ test("loopback TLS/SSE/WebSocket upstream authentication survives recording and 
     assert.equal(evidence.websocket, true, "WebSocket handshake authenticates upstream");
     assert.equal(evidence.wsMessages, 1, "upstream receives original WebSocket token");
     const openSnapshot = readFileSync(har);
-    assert.equal(openSnapshot.includes(Buffer.from(secret)), false);
+    assert.equal(openSnapshot.includes(Buffer.from(secret)), true);
     assert.ok(JSON.parse(openSnapshot).log.entries.every(entry => entry._traceCapture.partial));
     assert.equal(statSync(har).mode & 0o777, 0o600);
     assert.equal(checkHar(har).ok, true);

@@ -4,6 +4,8 @@
 //                                      agents, environments and requests; a session: agents, subagents, requests).
 //                                      No lab count: a provider recorded for a thread is not a distinct model lab.
 //   provenanceRows(provenance) -> [[label, text]]   the provenance document's own statements, in reading order
+//   allocationRow(trace) -> [label, text] | null     what the loaded example's split by source rests on, as the
+//                                      worker settled it (estimates.js), never the document's own claim
 const n = v => Number(v).toLocaleString("en-US");
 const plural = (v, one, many = `${one}s`) => `${n(v)} ${v === 1 ? one : many}`;
 
@@ -40,4 +42,12 @@ export function provenanceRows(p) {
   }
   say("Review", p.structuralReview);
   return rows;
+}
+
+export function allocationRow(trace) {
+  const a = trace?.allocation;
+  if (!a) return null;
+  if (a.status === "preserved") return ["Context split", `The original recording's estimates, preserved for ${plural(a.agents, "agent")} and ${plural(a.requests, "request")} (${a.method}). Estimates, not measured per source; recorded totals are exact.`];
+  return ["Context split", a.reason === "absent" ? "Unavailable: no reviewed estimates were published. Recorded totals are exact."
+    : `Unavailable: the published estimates did not check out (${a.reason}). Recorded totals are exact.`];
 }

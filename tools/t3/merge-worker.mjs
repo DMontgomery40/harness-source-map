@@ -1,18 +1,17 @@
-// One worker of a fleet assembly's merge (collect.mjs merge with o.workers): the files of a machine part, one at a
-// time, each through exactly what the merge does on one thread: aliases mapped to the family's, the redaction pass
-// for its mode, the pre-write guard (scan, scrub on a hit, scan again; a file that still hits is not written and
-// becomes a gap), then written (gzipped at or over GZIP_OVER). Values a file's shapes reveal are sent back, so the
-// merge removes them from every file of the machine (PartWriter's everywhere-pass), as on one thread.
+import {isBinaryMember, assertBinaryCredentials} from './media.mjs';
+// One bounded worker of the local fleet assembly. Native/config/provider members are copied as bytes; span
+// union files are streamed and compressed. Local original mode performs no content scanning or redaction.
+// Historical/export helper branches remain explicit, separate from the default original capture policy.
 //
 // workerData: {out, familyKey (hex), partsKey (hex), values: [[value, rule]], credValues: [[value, kind]], gzip, level}
 // Task: {id, src, rel, mode: 'own' | 'same' | 'full' | 'none'}. Reply: {id, written | null, counts, found: [[value, rule]], gaps}.
 import {parentPort, workerData} from 'node:worker_threads';
-import {writeFileSync, rmSync, chmodSync, statSync} from 'node:fs';
+import {writeFileSync, rmSync, chmodSync} from 'node:fs';
 import {join, dirname} from 'node:path';
 import {FamilyRedactor} from './redact.mjs';
-import {scanner, scanFileStream} from './verify.mjs';
-import {copyFileStream} from './stream.mjs';
+import {scanner} from './verify.mjs';
 import {ExactSet} from './exact.mjs';
+import {guardedSpanWrite} from './streamed-write.mjs';
 import {fileBuffer, bufferLines, bufferChunks, lineChunks, gzip, linesBuffer, GZIP_OVER} from './gz.mjs';
 import {ensureDir} from './bundle.mjs';
 
@@ -36,19 +35,20 @@ parentPort.on('message', async task => {
   for (const k of Object.keys(redactor.counts)) redactor.counts[k] = 0;
   redactor.found.clear();
   const gaps = [];
-  // Span unions are already redacted. Scan and gzip them through bounded streams instead of expanding the
-  // complete archive into a Buffer and an array of chunk strings. A hit retains the existing scrub path.
-  if (task.mode === 'none' && !Object.keys(await scanFileStream(task.src, {scan})).length) {
-   const plain = join(w.out, task.rel);
-   const compress = w.gzip && statSync(task.src).size >= GZIP_OVER;
-   const path = compress ? plain + '.gz' : plain;
-   ensureDir(dirname(path));
-   rmSync(compress ? plain : plain + '.gz', {force: true});
-   await copyFileStream(task.src, path, {gzip: compress, level: w.level});
-   parentPort.postMessage({id: task.id, written: path, counts: {...redactor.counts}, found: [], gaps});
+  // Span unions are already selected. Copy and gzip them through bounded streams instead of expanding the
+  // complete archive into a Buffer and an array of chunk strings. A hit is scrubbed and rescanned as streams.
+  if (task.mode === 'none') {
+   const result = await guardedSpanWrite({src: task.src, plain: join(w.out, task.rel), rel: task.rel,
+    redactor, scan, credValues: w.credValues, gzip: w.gzip, level: w.level});
+   parentPort.postMessage({id: task.id, ...result, counts: {...redactor.counts}, found: [...redactor.found]});
    return;
   }
   const buf = fileBuffer(task.src);
+  if (redactor.original || isBinaryMember(task.rel)) {
+   assertBinaryCredentials(buf, redactor, scan);
+   parentPort.postMessage({id: task.id, written: writeBuffer(task.rel, buf), counts: {...redactor.counts}, found: [], gaps});
+   return;
+  }
   let lines = [...bufferLines(buf)].map(reline[task.mode]);
   let written = null;
   if (Object.keys(hitsOf(lines)).length) {

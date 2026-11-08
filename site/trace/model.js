@@ -745,7 +745,8 @@ function argvKind(argv) {
   }
   if (c === "docker" || c === "podman") return sub[0] === "push" ? "push" : "network";
   if (c === "gh") {
-    if (sub[0] === "release" || (sub[0] === "workflow" && sub[1] === "run")) return "deploy";
+    // a release is published only by the subcommands that change it; view, list and download only read it
+    if ((sub[0] === "release" && /^(create|upload|edit|delete|delete-asset)$/.test(sub[1] || "")) || (sub[0] === "workflow" && sub[1] === "run")) return "deploy";
     if ((sub[0] === "pr" || sub[0] === "issue") && sub[1] === "merge") return "push";
     if ((sub[0] === "pr" || sub[0] === "issue") && /^(create|comment|review|close|reopen|edit)$/.test(sub[1] || "")) return "message";
     if (sub[0] === "api" && (has(/^(-f|-F|--field|--raw-field|--input)$/) || method(/^(-X|--method)$/))) return "send";
@@ -1134,11 +1135,26 @@ export function codexWrites(name, input) {
 }
 
 // A call escalated out of the sandbox whose justification says it pushes, deploys,
-// publishes, uploads or uses the network is outward.
-function escalatedOut(best, escalated, justification) {
+// publishes, uploads or uses the network is outward, unless its commands were all parsed as
+// programs Trace knows: then what they do decides, and prose about them cannot upgrade it
+// ("grep … before we deploy" stays a read, "git fetch … before push" stays a fetch).
+function escalatedOut(best, escalated, justification, cmds = []) {
   const jk = escalated ? justificationKind(justification) : null;
+  if (!jk || (cmds.length && cmds.every(knownCommand))) return best;
   const d = { class: "outward", kind: jk };
-  return jk && better(d, best) > 0 ? { ...best, ...d } : best;
+  return better(d, best) > 0 ? { ...best, ...d } : best;
+}
+// Programs whose effect classifyArgv reads from the command itself; interpreters, build tools and scripts are not
+// among them (what they run is not on the command line).
+const KNOWN_READ = new Set(["grep", "egrep", "fgrep", "rg", "ag", "cat", "less", "more", "head", "tail", "ls", "find", "fd", "wc", "sort", "uniq", "cut", "tr", "awk", "sed",
+  "jq", "yq", "diff", "cmp", "stat", "file", "du", "df", "pwd", "cd", "echo", "printf", "which", "whereis", "type", "env", "date", "basename", "dirname", "realpath", "readlink", "tree", "nl", "column", "test", "true", "false", "sleep", "ps", "lsof", "hostname", "uname", "id", "whoami"]);
+function knownCommand(cmd) {
+  const { argvs, heredocs } = shellCommands(cmd);
+  if (heredocs.length || !argvs.length) return false;
+  return argvs.every((argv) => {
+    const c = base(stripArgv(argv)[0] || "");
+    return c === "git" || KNOWN_READ.has(c) || OUT_CMDS.has(c) || WRITE_CMDS.has(c) || ["docker", "podman", "kubectl", "helm", "terraform", "pulumi", "wrangler"].includes(c);
+  });
 }
 
 // files: path -> text of scripts this thread wrote earlier (see codexWrites/recordScripts).
@@ -1172,7 +1188,7 @@ export function classifyCodexCall(name, input, completed = [], files = null) {
       if (RANK[best.class] < RANK.outward) best = { class: "outward", kind: "network", target: (completed.find((it) => it.type === "Extension") || {}).query || "web search", via: null };
     }
     if (p.browser && !p.urls.length && RANK[best.class] < RANK.outward) { toolNet = true; best = { class: "outward", kind: "network", target: best.target || "browser", via: null }; }
-    best = escalatedOut(best, p.escalated, p.justification);
+    best = escalatedOut(best, p.escalated, p.justification, toolNet ? [] : cmds);
     if (best.class === "internal" && cmds.length === 0) best.class = "read";
     return { class: best.class, target: trunc(best.target || (p.cmds[0] ?? null)), justification: p.justification, escalated: p.escalated, cmds: cmds.map((c) => trunc(c, 300)), egress: best.class === "outward" ? best.kind || "network" : null, via: trunc(best.via), sandboxed: !toolNet };
   }
@@ -1184,7 +1200,7 @@ export function classifyCodexCall(name, input, completed = [], files = null) {
   if (n === "shell" || n === "exec_command" || n === "local_shell" || n === "container.exec") {
     const cmd = Array.isArray(args.command) ? args.command[args.command.length - 1] : args.cmd || args.command;
     const escalated = args.sandbox_permissions === "require_escalated";
-    const d = escalatedOut(commandDetail(cmd, files), escalated, args.justification);
+    const d = escalatedOut(commandDetail(cmd, files), escalated, args.justification, cmd ? [cmd] : []);
     return { class: d.class, target: trunc(d.target), justification: args.justification || null, escalated, egress: d.class === "outward" ? d.kind || "network" : null, via: trunc(d.via), sandboxed: true };
   }
   if (n === "apply_patch") return { class: "write", target: trunc((String(input).match(/\*\*\* (?:Update|Add|Delete) File: (.+)/) || [])[1] || null) };

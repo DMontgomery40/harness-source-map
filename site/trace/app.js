@@ -6,6 +6,8 @@ import { buildLayout, renderOverview, renderAgentColumns, legend } from "./minim
 import { lineHash, normalizeLine, MIN_INDEXED_LINE, indexFor } from "./model.js";
 import { capturePickedFiles } from "./file-source.js";
 import { parsePaste } from "./paste.js";
+import { contentIdentity, identityCandidates, sameSession } from "./session-identity.js";
+import { keepPicked, narrowPicked, filesFromHandle } from "./opener.js";
 import { openLocalSession, localSources, localSource } from "./local-session.js";
 import { requestPosition, stepRequest, createViewHistory, isLandscape, requestInspection, requestCalls } from "./navigation.js";
 import { viewKey, enterView, remember, anchorOf, hasView, setOpener, openerOf, snapshot, load as loadPanelMemory, forgetAll as forgetPanels, findAnchor, anchorFor, anchorDelta, setFold } from "./panel-memory.js";
@@ -17,7 +19,7 @@ import { createProvenance } from "./provenance.js";
 import { buildActivity, activityAt, activityLabel } from "./activity.js";
 import { groupNotes, traceNotes, notePage } from "./notes.js";
 import { compactValue, copyButton, tip } from "./compact.js";
-import { targetLabel } from "./ids.js";
+import { targetLabel, readableAgentNames } from "./ids.js";
 import { RESOLVER } from "./capture-routes.js";
 import { renderCaptureCard } from "./capture-card.js";
 import { createRecordingController, recordingNotice } from "./help/recording.js";
@@ -28,10 +30,11 @@ import { readableIn } from "./readable.js";
 import { looksLikeHar, looksLikeCursorDecoded, capturesFor } from "./network/har.js";
 import { networkLens, wireCard, wireSummary, wireTokens, NETWORK_LENS, closeWireReader } from "./network/panel.js";
 import { sourcesLens, SOURCES_LENS } from "./sources/panel.js";
+import { linkRows, threadChoices } from "./fleet/links.js";
 import { EXAMPLE_ID, loadPublicExample, createLoadOwnership } from "./example-loader.js";
 import { createHelp } from "./help/help.js";
 import { productLabel } from './products.js';
-import { exampleCounts, provenanceRows } from "./example-details.js";
+import { exampleCounts, provenanceRows, allocationRow } from "./example-details.js";
 import { filterRows, agentRows } from "./fleet/controls.js";
 import { fleetKeys, cycle, isFiltered, matcher, envLabel } from "./fleet/filter.js";
 import { breakWords, voidWords, findBreaks } from "./fleet/breaks.js";
@@ -112,21 +115,22 @@ function setupLoader() {
   });
   $("#pick-files").addEventListener("change", e => loadFiles([...e.target.files].map(f => ({ path: f.name, file: f }))));
   $("#pick-folder").addEventListener("change", e => loadFiles([...e.target.files].map(f => ({ path: f.webkitRelativePath || f.name, file: f }))));
-  drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("#pick-files").click(); } });
   $("#paste").addEventListener("input", e => describePaste(e.target.value));
   $("#paste").addEventListener("keydown", e => {
     if (e.key !== "Enter") return;
     e.preventDefault();
-    const open = $("#paste-out .btn.open");
-    if (open && !open.disabled) open.click();
+    openFromPaste();
   });
+  $("#paste-open").addEventListener("click", openFromPaste);
   $("#pick-root").addEventListener("change", async e => {
     const files = [...e.target.files].map(f => ({ path: f.webkitRelativePath || f.name, file: f }));
     if (!files.length) return;
     e.target.value = "";
-    if (pasted?.id && !await holdsPaste(files, pasted.id)) return missingPaste(files);
-    pickedRoots.set(e.target.dataset.product, files);
-    loadFiles(narrowPicked(files, pasted), pasted?.id || null);
+    // a bare id: only what can belong to that session (opener.js), never a harness's settings or credentials
+    const mine = e.target.dataset.product === "any" && pasted?.id ? files.filter(f => keepPicked(f.path, pasted.id)) : files;
+    if (pasted?.id && !await holdsPaste(mine, pasted.id)) return missingPaste(mine);
+    if (e.target.dataset.product !== "any") pickedRoots.set(e.target.dataset.product, mine);
+    loadFiles(narrowPicked(mine, pasted), pasted?.id || null);
   });
   if (params.has("dev")) window.__traceDev = { filesFromHandle, narrowPicked, parsePaste };
   $("#dev-model").addEventListener("change", async e => {
@@ -140,18 +144,22 @@ function setupLoader() {
     } catch (err) { showError(`That file isn't a Trace JSON: ${err.message}`); }
   });
   $("#back-to-load").addEventListener("click", backToLoader);
+  $("#progress-cancel").addEventListener("click", cancelOpen);
 }
 
 async function openExample(id=EXAMPLE_ID) {
   if(exampleLoading) return;
-  exampleLoading=true;exampleAbort=new AbortController();const exampleSignal=exampleAbort.signal;$("#open-example").disabled=true;$("#open-example").textContent="Loading real example…";$("#load-error").hidden=true;
+  exampleLoading=true;exampleAbort=new AbortController();const exampleSignal=exampleAbort.signal;$("#open-example").disabled=true;$("#open-example").textContent="Loading…";$("#load-error").hidden=true;
   try {
-    const {manifest,files,provenance}=await loadPublicExample({id,signal:exampleSignal,onProgress:(fraction,message)=>setProgress(fraction,message)});
+    const {manifest,files,provenance,estimates,pageBytes}=await loadPublicExample({id,signal:exampleSignal,onProgress:(fraction,message)=>setProgress(fraction,message)});
+    // A T3 example that requires estimates sends them to the worker with its files: its checked sidecar, or none, in
+    // which case its split is unavailable (estimates.js). Its page-held source bytes are counted apart from the
+    // worker's own retention.
+    if(estimates)files.example={estimates:estimates.file,digest:estimates.digest};
+    files.pageBytes=pageBytes;
     publicExample=manifest;pasteRoot=null;
-    $("#example-description").textContent=`${manifest.title}. ${manifest.privacyStatement}`;
     const loaded=await loadFiles(files,manifest.rootSessionId);
     if(loaded && !exampleSignal.aborted){
-      $("#example-status").textContent="";$("#example-description").textContent="";
       exampleDetails(manifest,provenance,S.trace);
       $("#example-banner").hidden=false;
       afterSideResize();
@@ -159,13 +167,14 @@ async function openExample(id=EXAMPLE_ID) {
     }
     else publicExample=null;
   } catch(error) {publicExample=null;if(error.name!=="AbortError")showError(error.message || 'The example could not be opened. Try again, or open your own session.');}
-  finally {exampleLoading=false;exampleAbort=null;$("#open-example").disabled=false;$("#open-example").textContent="Open a real example";}
+  finally {exampleLoading=false;exampleAbort=null;$("#open-example").disabled=false;$("#open-example").textContent="Example";}
 }
 
 // The open example's details (in the banner's fold): what it is, what was parsed from it (the loaded trace's own
 // counts, never the manifest's), how it was made, and what was withheld.
 function exampleDetails(manifest,provenance,trace){
-  const rows=provenanceRows(provenance);
+  const split=allocationRow(trace);
+  const rows=[...(split?[split]:[]),...provenanceRows(provenance)];
   $("#example-label").replaceChildren(...[
     el("p",{text:`${manifest.title}.${manifest.description?` ${manifest.description}`:""}`}),
     el("p",{class:"meta",text:exampleCounts(trace).join(" · ")}),
@@ -196,6 +205,7 @@ function backToLoader() {
   $("#load-error").hidden = true;
   $("#paste").value = "";
   $("#paste-out").replaceChildren();
+  $("#paste-open").title = "";
   pasted = null;
   pasteRoot = null;
   $("#paste").focus();
@@ -226,16 +236,36 @@ async function collectDrop(dt) {
 
 // Progress and errors of a load show in the loader, or (when a session is open and stays readable meanwhile) in
 // the sidebar's status line: a replacement that fails never takes the open session away.
+// The bar carries its value for assistive technology; the spoken status changes only when the step does (its first
+// words), never with every byte count, so a long assembly or parse is announced a few times, not hundreds.
+let progressSaid = "";
 function setProgress(frac, msg) {
   $("#progress").hidden = false;
   $("#load-error").hidden = true;
-  if (frac != null) $("#progress-fill").style.width = `${Math.round(Math.max(0, Math.min(1, frac)) * 100)}%`;
-  if (msg) $("#progress-text").textContent = msg;
-  if(exampleLoading && msg) $("#example-status").textContent=msg;
+  const bar = $("#progress-fill").parentNode;
+  if (frac != null) {
+    const pct = Math.round(Math.max(0, Math.min(1, frac)) * 100);
+    $("#progress-fill").style.width = `${pct}%`;
+    bar.setAttribute("aria-valuenow", String(pct));
+  }
+  if (msg) {
+    $("#progress-text").textContent = msg;
+    bar.setAttribute("aria-valuetext", msg);
+    const step = msg.split(" · ")[0];
+    if (step !== progressSaid) { progressSaid = step; $("#progress-status").textContent = step; }
+  }
   if (!$("#app").hidden && S.trace && msg) netStatus(`${msg}${frac != null ? ` · ${Math.round(Math.max(0, Math.min(1, frac)) * 100)}%` : ""}`, "busy");
 }
+// Time taken so far, as m:ss (h:mm:ss past an hour), for an assembly or parse that runs long.
+const elapsed = ms => { const t = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, sec = String(t % 60).padStart(2, "0"); return h ? `${h}:${String(m).padStart(2, "0")}:${sec}` : `${m}:${sec}`; };
+// Cancel (beside the progress): stops the open in progress (a helper wait, the example download, a parse) at once.
+// The helper may go on assembling a T3 family; opening it again later picks that up.
+function cancelOpen() {
+  loads.cancel(); exampleAbort?.abort();
+  $("#progress").hidden = true; progressSaid = "";
+  $("#progress-status").textContent = "Stopped";
+}
 function showError(msg) {
-  if(exampleLoading) $("#example-status").textContent=msg;
   $("#progress").hidden = true;
   const e = $("#load-error");
   e.textContent = msg;
@@ -323,12 +353,12 @@ function getWorker() {
       pendingNetwork?.reject(new Error(data.message)); pendingNetwork = null;
     } else if (data.type === "fleet-net-progress") {
       pendingFleet.get(data.id)?.onProgress?.(data);
-    } else if (data.type === "fleet-net" || data.type === "fleet-ladder" || data.type === "fleet-calls" || data.type === "fleet-evidence") {
+    } else if (data.type === "fleet-net" || data.type === "fleet-ladder" || data.type === "fleet-calls" || data.type === "fleet-evidence" || data.type === "fleet-records" || data.type === "bytes") {
       const p = pendingFleet.get(data.id);
       if (p) { pendingFleet.delete(data.id); if (data.error) p.reject(data.code === "released" ? released() : Object.assign(new Error(data.error), { code: data.code || null })); else p.resolve(data); }
     } else if (data.type === "network-body") {
       const p = pendingBody.get(data.id);
-      if (p) { pendingBody.delete(data.id); if (data.error) p.reject(new Error(data.error)); else p.resolve({ text: data.text, mode: data.mode, cut: data.cut }); }
+      if (p) { pendingBody.delete(data.id); if (data.error) p.reject(new Error(data.error)); else p.resolve({ text: data.text, mode: data.mode, cut: data.cut, total: data.total ?? null, decoded: !!data.decoded }); }
     }
   });
   worker.addEventListener("error", e => {
@@ -410,7 +440,7 @@ function cancelWorkerLoad(){
   w?.terminate();
   settleAll(new DOMException('Session load superseded.','AbortError'));
 }
-async function parseInWorker(files, root, current=()=>true) {
+async function parseInWorker(files, root, current=()=>true, example=null) {
   files = await capturePickedFiles(files, root);
   if(!current())throw new DOMException('Session load superseded.','AbortError');
   await sendIndex();
@@ -419,7 +449,7 @@ async function parseInWorker(files, root, current=()=>true) {
   return new Promise((resolve, reject) => {
     pendingLoad?.reject(new DOMException('Session load superseded.','AbortError'));
     pendingLoad = { resolve: trace => resolve(Object.assign(trace, { loadGen: gen })), reject, gen };
-    getWorker().postMessage({ type: "load", gen, files, root: root || null });
+    getWorker().postMessage({ type: "load", gen, files, root: root || null, ...(example ? { example } : {}) });
   });
 }
 
@@ -433,7 +463,10 @@ let bodySeq = 0;
 const HAR_ALONE = "A capture needs its session: open the session first, or drop the .har together with its session log.";
 
 // A T3 Code fleet bundle among the files: what the resolver serves for a T3 thread, or a dropped bundle folder.
-const isBundleFiles = files => files.some(f => /(^|\/)bundle\.json$/.test(f.path)) && files.some(f => /(^|\/)machines\/[^/]+\/threads\.json(\.gz)?$/.test(f.path));
+// A metadata-only bundle (its manifest declares no collected file) counts too: a bundle.json with nothing beside it but
+// machines/ members and the example's own documents.
+const isBundleFiles = files => files.some(f => /(^|\/)bundle\.json$/.test(f.path)) && (files.some(f => /(^|\/)machines\/[^/]+\/threads\.json(\.gz)?$/.test(f.path))
+  || files.every(f => /(^|\/)(?:bundle|provenance|context-estimates)\.json$/.test(f.path) || /(^|\/)machines\//.test(f.path)));
 
 // Captures among picked files: .har files, HAR-shaped .json files, and Cursor's
 // private decoded AgentService sidecar (a session .json remains separate).
@@ -489,7 +522,8 @@ async function attachCapture(files) {
       await setMode(mode,()=>seq===networkSeq);if(seq!==networkSeq)return;if(camera)scene?.restoreView(camera);
     }
     const n = capture.calls.length, matched = capture.join.matched;
-    netStatus(`Capture attached · ${fmtInt(capture.kept)} requests · ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${networkMatchCount(matched)}) · lens 5`, "ok");
+    if ($("#net-help").hidden) netStatus(`Capture attached · ${fmtInt(capture.kept)} requests · ${fmtInt(n)} model call${n === 1 ? "" : "s"} (${networkMatchCount(matched)})`, "ok");
+    else netStatus("");
     palette?.setNetwork?.(capture);
     buildLenses();
     render(false);
@@ -547,7 +581,7 @@ function clearCapture() {
   S.network = null;
   S.netFocus = null;
   closeWireReader();
-  if (S.lens === NETWORK_LENS.key) S.lens = "context";
+  if (S.lens === NETWORK_LENS.key && !hasNetworkLens()) S.lens = "context";
   pendingNetwork?.reject(new Error("the session changed")); pendingNetwork = null;
   worker?.postMessage({ type: "network-clear" });
   palette?.setNetwork?.(null);
@@ -556,11 +590,12 @@ function clearCapture() {
   $("#net-help").hidden = true;
   $("#add-capture").setAttribute("aria-expanded", "false");
 }
-function networkBody(entry, part) {
+// opts: { whole } the whole text (asked for deliberately), { original } the body exactly as the capture stored it
+function networkBody(entry, part, { whole = false, original = false } = {}) {
   const id = ++bodySeq;
   return new Promise((resolve, reject) => {
     pendingBody.set(id, { resolve, reject });
-    getWorker().postMessage({ type: "network-body", entry, part, id });
+    getWorker().postMessage({ type: "network-body", entry, part, id, whole, original });
   });
 }
 
@@ -578,8 +613,9 @@ async function loadFiles(files, root) {
     setProgress(0, "Opening the T3 family…");
     lastFiles = files; lastCaptures = [];
     try {
-      const trace = await parseInWorker(files, null, claim.current);
+      const trace = await parseInWorker(files, null, claim.current, files.example || null);
       if(!claim.current())return;
+      if (files.pageBytes) (trace.loadStats ||= {}).page = { publicExample: { files: files.length, expandedBytes: files.pageBytes } };
       // the bundle's gaps, as the worker redacted them; of the resolver's warnings only its own (its copy of the
       // gaps, unredacted, follows them and is not shown)
       const own = sourceWarnings.slice(0, Math.max(0, sourceWarnings.length - (trace.bundleGapCount || 0)));
@@ -645,10 +681,12 @@ function loadSources() {
   sourcesAsked = sourcesSeq;
   const seq = sourcesSeq, id = sessionRootId();
   const done = v => { if (seq !== sourcesSeq) return; S.sources = v; if ([SOURCES_LENS.key,'context'].includes(S.lens)) render(false); helpUI?.refresh(); };
-  if(publicExample) return done({unavailable:true,reason:"This public example uses published source logs only. Local machine sources are not requested."});
-  if (!/^(?:[0-9a-f-]{36}|ses_[A-Za-z0-9_-]{1,160})$/i.test(id)) return done({ unavailable: true, reason: "This session has no session id to look up." });
-  localSources(id).then(r => done(r || { unavailable: true, reason: "The local resolver didn't answer this page: it isn't running, or this page isn't one it serves." }),
-    e => done({ unavailable: true, reason: e.message || String(e) }));
+  // typed outcomes (sources/panel.js): a public example (no local sources are asked for), no session id to look up,
+  // no helper, or the helper's own answer (a session it doesn't hold, a remote one)
+  if(publicExample) return done({unavailable:true,code:"public-example",reason:"Not available for a public example: it reads no files on this computer."});
+  if (!/^(?:[0-9a-f-]{36}|ses_[A-Za-z0-9_-]{1,160})$/i.test(id)) return done({ unavailable: true, code: "no-session-id", reason: "This session has no session ID to look up." });
+  localSources(id).then(r => done(r || { unavailable: true, code: "helper", reason: "The local helper didn't answer this page: it isn't running, or this page isn't one it serves." }),
+    e => done({ unavailable: true, code: "answer", reason: e.message || String(e) }));
 }
 
 // A capture that came with the session's files attaches on its own: one filed beside the session's log
@@ -659,51 +697,84 @@ function attachFound() {
   if (mine.length) attachCapture(mine);
 }
 
-// A pasted id is in the files when some path names it (the session's .jsonl, a rollout file name).
+// A pasted id is in the files when some path names it (the session's .jsonl, a rollout file name), or when a file's
+// own content does (a renamed export). That is the same bounded identity probe the worker's loader uses
+// (session-identity.js), so whatever this check accepts, the loader opens.
 async function holdsPaste(files, id) {
   if (files.some(f => f.path.includes(id) || (!id.startsWith('ses_') && f.path.toLowerCase().includes(id.toLowerCase())))) return true;
-  for (const f of files) {
-    if (!f.file || !/\.jsonl?$/i.test(f.path)) continue;
-    try {
-      const raw = /\.json$/i.test(f.path) ? await f.file.text() : (await f.file.slice(0,65536).text()).split('\n')[0];
-      const value = JSON.parse(raw);
-      if (value.info?.id === id || value.session_id?.toLowerCase() === id.toLowerCase()) return true;
-    } catch { /* the worker reports invalid or unrelated input */ }
+  for (const f of identityCandidates(files.filter(f => f.file), id).list) {
+    const found = await contentIdentity(f.path, f.file.size, async (a, b) => new Uint8Array(await f.file.slice(a, b).arrayBuffer()));
+    if (sameSession(found, id)) return true;
   }
   return false;
 }
 
-// A T3 link without the local helper: the one command that starts it, with Copy.
-function showT3Help() {
+// One action of a notice under the open box: an action-first label, and a tooltip that says what it does.
+function noticeAction(text, what, fn) {
+  const b = el("button", { class: "btn small", type: "button", text });
+  b.addEventListener("click", () => { $("#load-error").hidden = true; fn(); });
+  return tip(b, what);
+}
+const PICK_ANY = "Pick the folder that holds the session's files; the ID is matched inside them";
+const pickWhat = info => (info?.product && ROOT_DIR[info.product] ? `Pick ${ROOT_DIR[info.product]}` : PICK_ANY);
+// The open button and hint of the paste box (a notice's actions act on the same paste).
+const reopen = (info, mode) => openPasted(info, $("#paste-open"), $("#paste-out .open-hint") || el("p"), mode);
+// Open, beside the field: the session or thread it names; an empty or unrecognized field keeps the focus (its error
+// shows under it).
+function openFromPaste() {
+  const btn = $("#paste-open");
+  if (btn.disabled) return;
+  if (!pasted) describePaste($("#paste").value);
+  if (!pasted) { $("#paste").focus(); return; }
+  openPasted(pasted, btn, $("#paste-out .open-hint") || el("p"));
+}
+function notice(message, ...rest) {
   const e = $("#load-error");
   $("#progress").hidden = true;
-  e.replaceChildren(el("span", { text: "T3 families open through the local helper, or drop the collected bundle folder." }),
-    el("div", { class: "path" }, el("code", { text: RESOLVER }), copyButton(RESOLVER, { what: "command" })));
+  e.replaceChildren(el("span", { text: message }), ...rest);
   e.hidden = false;
 }
 
-// The files don't hold the pasted session: say so, and let the user pick again or open what they picked.
+// No local helper served a pasted id. The notice says why, how to start the helper, and offers Retry, which asks
+// it again. A bare id also gets an explicit "Choose a folder…". Nothing opens a picker unasked, and no product's
+// folder is named for a bare id.
+const HELPER_STATE = {
+  unreachable: "The local helper isn't running.",
+  timeout: "The local helper didn't answer in time.",
+  "not-trace": "Another app is using the local helper's port (8766).",
+  blocked: "This browser blocked the page from reaching the local helper. Allow local network access for this site.",
+};
+function helperNotice(info, why) {
+  const t3 = info.product === "t3code";
+  notice(`${HELPER_STATE[why] || HELPER_STATE.unreachable}${t3 ? " T3 threads open through it, or drop the collected bundle folder." : ""}`,
+    why === "unreachable" ? el("div", { class: "path" }, el("code", { text: RESOLVER }), copyButton(RESOLVER, { what: "command" })) : null,
+    el("span", { class: "error-actions" },
+      noticeAction("Retry", "Ask the local helper again", () => reopen(info, "helper")),
+      t3 ? null : noticeAction("Choose a folder…", pickWhat(info), () => reopen(info, "folder"))));
+}
+// The helper answered but has no such session, or no T3 thread yet: show its own words, Retry, and a folder.
+function helperMissing(info, message) {
+  notice(message, el("span", { class: "error-actions" },
+    noticeAction("Retry", "Ask the local helper again", () => reopen(info, "helper")),
+    info.product === "t3code" ? null : noticeAction("Choose a folder…", pickWhat(info), () => reopen(info, "folder"))));
+}
+
+// The picked files don't hold the pasted id. Say so, then offer the helper (it also resolves T3 threads, whose
+// native sessions carry other ids), another folder, or what was picked without the id.
 function missingPaste(files) {
-  const id = pasteRoot || pasted?.id || "";
-  const product = pasted?.product;
-  const e = $("#load-error");
-  $("#progress").hidden = true;
-  const again = el("button", { class: "btn small", type: "button", text: "Pick again" });
-  again.addEventListener("click", () => {
-    e.hidden = true;
-    if (pasted) openPasted(pasted, $("#paste-out .btn.open") || again, $("#paste-out .open-hint") || el("p"), true);
-    else $("#pick-folder").click();
-  });
-  const clear = el("button", { class: "btn small", type: "button", text: "Clear the pasted id" });
-  clear.addEventListener("click", () => {
-    e.hidden = true;
+  const info = pasted, id = pasteRoot || info?.id || "";
+  const named = info?.product && ROOT_DIR[info.product];
+  const actions = info ? [
+    noticeAction("Retry the helper", "Ask the local helper, which also opens T3 threads", () => reopen(info, "helper")),
+    noticeAction("Choose another folder", pickWhat(info), () => reopen(info, "folder")),
+  ] : [noticeAction("Choose another folder", PICK_ANY, () => $("#pick-folder").click())];
+  actions.push(noticeAction("Open what you picked", "Open the largest session in these files, without the pasted ID", () => {
     $("#paste").value = "";
     describePaste("");
     loadFiles(files, null);
-  });
-  e.replaceChildren(el("span", { text: `Session ${id.slice(0, 8)}… isn't in these files${product ? `. Pick ${ROOT_DIR[product]}` : ""}.` }),
-    el("span", { class: "error-actions" }, again, clear));
-  e.hidden = false;
+  }));
+  notice(`${id.slice(0, 8)}… isn't in these files.${named ? ` Pick ${ROOT_DIR[info.product]}.` : " A T3 thread ID opens through the local helper."}`,
+    el("span", { class: "error-actions" }, ...actions));
 }
 
 // Several sessions were dropped: reload the worker's parse with the chosen one as `root`. The session on screen stays
@@ -754,7 +825,7 @@ async function rawLine(trace, sources, ref) {
 }
 
 // ---------- paste → open ----------
-// Codex thread ids are UUIDv7: the first 48 bits are Unix milliseconds, which name the folder and file.
+// Where a product keeps its sessions, for a link or path that names its product. A bare UUID names none.
 const ROOT_DIR = { codex: "~/.codex/sessions", "claude-code": "~/.claude/projects", opencode: "~/.harness-source-map/captures", cursor: "~/.harness-source-map/captures" };
 let pasted = null;           // the parsed paste the open button acts on
 const pickedRoots = new Map(); // product -> files picked this page load (no File System Access)
@@ -766,6 +837,7 @@ function describePaste(v) {
   pasted = info && !info.error ? info : null;
   pasteRoot = pasted?.id || null;
   $("#paste").setAttribute("aria-invalid", info?.error ? "true" : "false");
+  $("#paste-open").title = "";
   if (!info) return;
   if (info.error) return out.append(el("p", { class: "paste-error", text: info.error }));
   const p2 = n => String(n).padStart(2, "0");
@@ -777,74 +849,97 @@ function describePaste(v) {
   const where = [];
   let what;
   if (info.product === "codex") {
-    const d = new Date(info.ms);
-    const day = `${d.getFullYear()}/${p2(d.getMonth() + 1)}/${p2(d.getDate())}`;
-    const stamp = `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}T${p2(d.getHours())}-${p2(d.getMinutes())}-${p2(d.getSeconds())}`;
-    what = `Codex/ChatGPT thread · started ${fmtWhen(info.ms)}`;
-    where.push(pathRow(`~/.codex/sessions/${day}/rollout-${stamp}-${info.id}.jsonl`));
+    // A link that names Codex/ChatGPT. Its rollout's place is shown only when the id is a UUIDv7; other ids
+    // carry no time.
+    what = `Codex/ChatGPT thread${info.ms != null ? ` · started ${fmtWhen(info.ms)}` : ""}`;
+    if (info.path) where.push(pathRow(info.path));
+    else if (info.ms != null) {
+      const d = new Date(info.ms);
+      const day = `${d.getFullYear()}/${p2(d.getMonth() + 1)}/${p2(d.getDate())}`;
+      const stamp = `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}T${p2(d.getHours())}-${p2(d.getMinutes())}-${p2(d.getSeconds())}`;
+      where.push(pathRow(`~/.codex/sessions/${day}/rollout-${stamp}-${info.id}.jsonl`));
+    }
   } else if (info.product === "t3code") {
     what = el("span", {}, "T3 Code thread · ", compactValue(info.id, { what: "thread id" }), info.environmentId ? el("span", {}, " · environment ", compactValue(info.environmentId, { what: "environment id" })) : null);
   } else if (info.product === 'opencode' || info.product === 'cursor') {
     what = el("span", {}, `${productLabel(info.product)} session · `, compactValue(info.id, { what: "session id" }));
-  } else {
+  } else if (info.product === "claude-code") {
+    // a path under .claude names Claude Code
     const file = info.path || `~/.claude/projects/<project>/${info.id}.jsonl`;
-    what = el("span", {}, "Claude Code or Cursor session · ", compactValue(info.id || "", { what: "session id" }));
+    what = el("span", {}, "Claude Code session · ", compactValue(info.id, { what: "session id" }));
     where.push(pathRow(file), pathRow(file.replace(/\.jsonl$/, "/")));
+  } else {
+    // A bare UUID could be a Claude Code, Codex/ChatGPT or Cursor session, or a T3 thread. The helper knows which.
+    what = el("span", {}, "Session or thread ID · ", compactValue(info.id, { what: "ID" }));
   }
-  const hint = el("p", { class: "open-hint", text: "" });
-  const btn = el("button", { class: "btn primary open", type: "button", text: info.product === "t3code" ? "Open this thread's T3 family" : "Open this session and its subagents" });
-  btn.addEventListener("click", () => openPasted(info, btn, hint));
-  out.append(el("p", {}, what), el("div", { class: "open-row" }, btn, hint),
+  // what Open will open, in its tooltip; the hint below says only what a step needs (a picker's path)
+  const hint = el("p", { class: "open-hint", text: "" }), open = $("#paste-open");
+  out.append(el("p", { class: "paste-what" }, what), hint,
     ...(where.length ? [el("details", {}, el("summary", { text: "Where the files are" }), ...where)] : []));
-  if (info.product === "t3code") { hint.textContent = "Opens through the local helper"; return; }
-  storedHandle(info.product).then(h => {
-    hint.textContent = pickedRoots.has(info.product) || h ? "Opens from the folder you picked before"
-      : "Opens through the local helper, or a folder you pick";
-  });
+  const says = t => { if (pasted === info) open.title = t; };
+  if (info.product === "t3code") return says("Open this thread's T3 family, through the local helper");
+  if (!info.product) return says("Open this session or thread, through the local helper");
+  says("Open this session and its subagents");
+  storedHandle(info.product).then(h => says(`Open this session and its subagents, ${pickedRoots.has(info.product) || h ? "from the folder you picked before" : "through the local helper, or a folder you pick"}`));
 }
 
 function copiedHint(hint, product) {
+  if (!ROOT_DIR[product]) return hint.replaceChildren(PICK_ANY);
   if (TOUCH) return hint.replaceChildren(`Pick ${ROOT_DIR[product]} in the file picker.`);
   hint.replaceChildren(`Path copied: in the picker press `, el("kbd", { text: "⌘⇧G" }), `, paste, Enter, then Open. (${ROOT_DIR[product]})`);
 }
 function copyRoot(product) {
+  if (!ROOT_DIR[product]) return;
   try { navigator.clipboard?.writeText(ROOT_DIR[product]).catch(() => {}); } catch { /* clipboard unavailable */ }
 }
 
-async function openPasted(info, btn, hint, fresh = false) {
+// Opens a pasted id. The local helper is asked first: it knows every session and T3 thread on this machine. A bare
+// UUID names no product, and a T3 thread's native sessions carry other ids. mode:
+//   "open"    the open button. Asks the helper, then that product's folder, but only for a link or path that
+//             names its product.
+//   "helper"  Retry. Asks the helper only.
+//   "folder"  a folder the user picks now, matched by the ids inside its files.
+// With no helper, a T3 thread or a bare id says so and offers Retry and an explicit folder pick. Nothing opens a
+// picker for them unasked.
+async function openPasted(info, btn, hint, mode = "open") {
   pasteRoot = info.id;
-  if (!fresh) {
+  if (mode !== "folder") {
     btn.disabled = true;
-    // this open owns the load from now: a newer open, Back or a drop cancels it, and its answer is then dropped
+    // this open owns the load from now: a newer open, Cancel, Back or a drop cancels it, and its answer is then dropped
     const claim = loads.begin(), stop = new AbortController();
     claim.onCancel(() => stop.abort());
-    setProgress(0, "Opening the session…");
+    const began = Date.now();
+    setProgress(0, "Asking the local helper…");
+    let files;
     try {
-      // a v2 T3 link names its environment: the resolver opens the thread only there
-      const files = await openLocalSession(info.id, { environmentId: info.product === "t3code" ? info.environmentId || null : null, onProgress: f => { if (claim.current()) setProgress(f, null); }, signal: stop.signal });
-      if (!claim.current()) return;
-      claim.finish();
-      if (files) return await loadFiles(files, info.id);
+      // A v2 T3 link names its environment, and the resolver opens the thread only there. A T3 family can take
+      // minutes to assemble. Its progress, and the time taken so far, show until it is ready or the user cancels.
+      files = await openLocalSession(info.id, { environmentId: info.product === "t3code" ? info.environmentId || null : null, healthMs: 3000, signal: stop.signal,
+        onProgress: f => { if (claim.current()) setProgress(f, `Assembling the T3 family · ${Math.round(f * 100)}% · ${elapsed(Date.now() - began)}`); } });
     } catch (error) {
       if (!claim.current() || error.name === "AbortError") return;
-      return showError(error.message);
+      claim.finish();
+      return helperMissing(info, error.message || String(error));
     } finally { btn.disabled = false; }
     if (!claim.current()) return;
+    claim.finish();
+    if (!files.unavailable) return loadFiles(files, info.id);
     $("#progress").hidden = true;
+    if (mode === "helper" || info.product === "t3code" || !info.product) return helperNotice(info, files.unavailable);
   }
-  // A T3 family exists only as a collected bundle, served by the local resolver (or dropped as a folder).
-  if (info.product === "t3code") return showT3Help();
-  const mem = !fresh && pickedRoots.get(info.product);
+  const product = info.product || null, key = product || "any";
+  // for a link that names its product: the folder picked for it on this page, or the one remembered
+  const mem = mode === "open" && product && pickedRoots.get(product);
   if (mem) return await holdsPaste(mem, info.id) ? loadFiles(narrowPicked(mem, info), info.id) : missingPaste(mem);
+  const askHint = () => { if (product) { copyRoot(product); copiedHint(hint, product); } else hint.replaceChildren(PICK_ANY); };
   if (typeof window.showDirectoryPicker === "function") {
-    const previous = await storedHandle(info.product);
-    let handle = fresh ? null : previous;
+    const previous = await storedHandle(key);
+    let handle = mode === "open" ? previous : null;
     if (handle && !(await readPermission(handle))) handle = null;
     if (!handle) {
-      copyRoot(info.product);
-      copiedHint(hint, info.product);
+      askHint();
       try {
-        handle = await window.showDirectoryPicker({ id: `trace-${info.product}`, mode: "read", ...(previous ? { startIn: previous } : {}) });
+        handle = await window.showDirectoryPicker({ id: `trace-${key}`, mode: "read", ...(previous ? { startIn: previous } : {}) });
       } catch (e) {
         if (e && e.name === "AbortError") return;
         return showError(`The folder picker failed: ${e?.message || e}`);
@@ -858,7 +953,7 @@ async function openPasted(info, btn, hint, fresh = false) {
         btn.disabled = false;
         return missingPaste(files);
       }
-      await saveHandle(info.product, handle);
+      await saveHandle(key, handle);
       return loadFiles(files, info.id);
     } catch (e) {
       btn.disabled = false;
@@ -866,84 +961,10 @@ async function openPasted(info, btn, hint, fresh = false) {
     }
   }
   // No File System Access (Brave by default, Firefox, Safari): a folder input, kept for this page.
-  copyRoot(info.product);
-  copiedHint(hint, info.product);
+  askHint();
   const input = $("#pick-root");
-  input.dataset.product = info.product;
+  input.dataset.product = key;
   input.click();
-}
-
-// Keep only what can belong to the session: for Claude Code the files whose path holds its id
-// (the .jsonl, subagents/, tool-results/); for Codex the date folders from the thread's day on.
-// The worker's loader narrows further by id.
-function narrowPicked(files, info) {
-  if (!info?.id) return files;
-  if (["opencode", "cursor"].includes(info.product) || (info.product === "claude-code" && !files.some(f=>f.path.includes(info.id)))) return files;
-  let keep;
-  if (info.product === "claude-code") keep = files.filter(f => f.path.includes(info.id));
-  else {
-    const d = new Date(info.ms), day = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-    keep = files.filter(f => {
-      // A capture filed beside the thread's rollout names the thread (tools/capture/file-capture.mjs).
-      if (!/\.jsonl$/.test(f.path)) return /\.har$/i.test(f.path) && f.path.toLowerCase().includes(info.id);
-      const m = f.path.match(/(?:^|\/)(\d{4})\/(\d{2})\/(\d{2})\//);
-      return !m || Number(m[1] + m[2] + m[3]) >= day;
-    });
-  }
-  return keep.length ? keep : files;
-}
-
-// Walks a picked directory handle to the session's files without listing unrelated sessions.
-async function filesFromHandle(root, info) {
-  const out = [];
-  const child = async (dir, name, kind) => { try { return kind === "dir" ? await dir.getDirectoryHandle(name) : await dir.getFileHandle(name); } catch { return null; } };
-  const walk = async (dir, prefix) => {
-    for await (const [name, h] of dir.entries()) {
-      if (h.kind === "file") out.push({ path: `${prefix}${name}`, file: await h.getFile(), handle: h });
-      else await walk(h, `${prefix}${name}/`);
-    }
-  };
-  if (["opencode", "cursor"].includes(info.product)) { await walk(root, ""); return out; }
-  if (info.product === "claude-code") {
-    let base = root;
-    const projects = await child(root, "projects", "dir");
-    if (projects) base = projects;
-    else { const inner = await child(root, ".claude", "dir"); const p = inner && await child(inner, "projects", "dir"); if (p) base = p; }
-    const tryDir = async (dir, prefix) => {
-      const f = await child(dir, `${info.id}.jsonl`, "file");
-      if (!f) return false;
-      out.push({ path: `${prefix}${info.id}.jsonl`, file: await f.getFile(), handle: f });
-      const folder = await child(dir, info.id, "dir");
-      if (folder) await walk(folder, `${prefix}${info.id}/`);
-      return true;
-    };
-    if (!(await tryDir(base, ""))) {
-      for await (const [name, h] of base.entries()) if (h.kind === "directory" && await tryDir(h, `${name}/`)) break;
-    }
-    if (!out.length) await walk(root, "");
-    return out;
-  }
-  // A capture filed beside the thread's rollout (tools/capture/file-capture.mjs) comes along.
-  const isThreadCapture = name => /\.har$/i.test(name) && name.toLowerCase().includes(info.id);
-  let base = root;
-  const sessions = await child(root, "sessions", "dir");
-  if (sessions) base = sessions;
-  const d = new Date(info.ms), day = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-  const num = s => (/^\d+$/.test(s) ? Number(s) : null);
-  for await (const [y, yh] of base.entries()) {
-    if (yh.kind === "file" && (/^rollout-.*\.jsonl$/.test(y) || isThreadCapture(y))) { out.push({ path: y, file: await yh.getFile(), handle: yh }); continue; }
-    if (yh.kind !== "directory" || num(y) == null || num(y) < d.getFullYear()) continue;
-    for await (const [m, mh] of yh.entries()) {
-      if (mh.kind !== "directory" || num(m) == null || num(y) * 100 + num(m) < Math.floor(day / 100)) continue;
-      for await (const [dd, dh] of mh.entries()) {
-        if (dh.kind !== "directory" || num(dd) == null || num(y) * 10000 + num(m) * 100 + num(dd) < day) continue;
-        for await (const [name, fh] of dh.entries()) {
-          if (fh.kind === "file" && (/\.jsonl$/.test(name) || isThreadCapture(name))) out.push({ path: `${y}/${m}/${dd}/${name}`, file: await fh.getFile(), handle: fh });
-        }
-      }
-    }
-  }
-  return out;
 }
 
 // The picked folder's handle is remembered in IndexedDB, so a later paste opens without a picker.
@@ -1004,7 +1025,6 @@ function drawHero() {
   Object.entries({ x1: cx, x2: cx, y1: 8, y2: H, stroke: "#eef1f5", "stroke-dasharray": "3 3" }).forEach(([k, v]) => cliff.setAttribute(k, v));
   svg.append(cliff);
   $("#hero").append(svg);
-  legend($("#hero-legend"));
 }
 
 // ---------- start ----------
@@ -1357,15 +1377,26 @@ function refreshSelectionBars() {
     bar.hidden = !n;
     if (!n) { bar.replaceChildren(); continue; }
     const omitted = sel.omitted;
-    bar.replaceChildren(el("span", { class: "meta", role: "status", text: `${fmtInt(n)} selected${omitted ? ` (+${fmtInt(omitted)} not listed)` : ""}` }),
-      el("button", { type: "button", class: "btn small", text: "Explain", onclick: () => openExplain({ agentId: S.agentId, threadKey: S.agent?.threadKey || null, network: selectionApi.anchor() }, { scope: "network" }) }),
+    bar.replaceChildren(el("span", { class: "meta", role: "status", text: `${fmtInt(n)} chosen for Explain${omitted ? ` (+${fmtInt(omitted)} not listed)` : ""}` }),
+      el("button", { type: "button", class: "btn small", text: `Explain ${fmtInt(n)}`, onclick: () => openExplain({ agentId: S.agentId, threadKey: S.agent?.threadKey || null, network: selectionApi.anchor() }, { scope: "network" }) }),
       el("button", { type: "button", class: "linkbtn", text: "Clear", onclick: () => selectionApi.clear() }));
   }
   for (const b of document.querySelectorAll(".fl-pick[data-key]")) { const on = sel.has(b.dataset.key); b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "✓" : "+"; }
+  for (const b of document.querySelectorAll(".net-pick-all")) { const g = b._group; if (g) pickAllLabel(b, g); }
 }
 const selectionBar = () => { const bar = el("div", { class: "net-selection", hidden: true }); queueMicrotask(refreshSelectionBars); return bar; };
-const pickButton = (key, kind, label) => el("button", { type: "button", class: "fl-pick", "data-key": key, "aria-pressed": String(selectionApi.has(key)), "aria-label": `Select ${label}`, title: "Select as evidence", text: selectionApi.has(key) ? "✓" : "+",
+// A row's evidence toggle: + adds the row to what Explain will read, ✓ takes it out. Its name says which row.
+const pickButton = (key, kind, label) => el("button", { type: "button", class: "fl-pick", "data-key": key, "aria-pressed": String(selectionApi.has(key)), "aria-label": `Choose ${label} for Explain`, title: "Choose for Explain", text: selectionApi.has(key) ? "✓" : "+",
   onclick: () => selectionApi.toggle({ key, kind, label }) });
+// A group's toggle: every listed call of that one group (never the whole session), with its count in its name.
+function pickAllLabel(b, g) {
+  const on = selectionApi.groupOn(g), n = g.members.length;
+  b.setAttribute("aria-pressed", String(on));
+  b.textContent = on ? `✓ ${fmtInt(n)} chosen` : `Choose ${fmtInt(n)}`;
+  b.setAttribute("aria-label", `${on ? "Remove" : "Choose"} the ${fmtInt(n)} listed ${g.from} → ${g.to} ${g.kind} for Explain`);
+}
+// A span or call duration: milliseconds under a second, seconds under a minute, then minutes and hours.
+const fmtSpan = ms => (ms == null || !Number.isFinite(ms) ? "–" : ms < 1000 ? `${Math.max(0, Math.round(ms))} ms` : ms < 60000 ? `${(ms / 1000).toFixed(ms < 10000 ? 1 : 0)} s` : fmtDur(ms));
 const JOIN_SHORT = { matched: "joined", unjoined: "not joined", ambiguous: "ambiguous join", "route-conflict": "route conflict" };
 const WAIT_SHORT = { "recorded-wait": "wait", "long-call-candidate": "long call" };
 
@@ -1373,10 +1404,10 @@ const WAIT_SHORT = { "recorded-wait": "wait", "long-call-candidate": "long call"
 // calls (a page at a time), each selectable and each opening its span ladder; Select all selects the group's members.
 // The spans are read the first time a fold opens (never on load); reading can be stopped, and a stopped or failed
 // read can be asked for again. Every answer lands only in the fold that asked, for the load that asked.
-function fleetNetSection(agent) {
+function fleetNetSection(agent, open = false) {
   if (!S.trace?.family || !agent.threadKey || text !== workerText) return null;
   const body = el("div", { class: "fleet-net-body" });
-  const box = disclosure(`fleet-net:${agent.threadKey}`, "fleet-net", "Network", false, body);
+  const box = open ? el("div", { class: "fleet-net open" }, body) : disclosure(`fleet-net:${agent.threadKey}`, "fleet-net", "Network", false, body);
   const gen = S.gen;
   let asked = false;
   const say = (t, ...more) => body.replaceChildren(el("p", { class: "m", role: "status", text: t }), ...more);
@@ -1393,10 +1424,15 @@ function fleetNetSection(agent) {
       try {
         const { calls: rows } = await fleetRequest({ type: "fleet-calls", keys });
         if (gen !== S.gen || !calls.isConnected) return;
-        for (const c of rows) calls.append(c.missing ? el("li", { class: "m", text: "A call no longer in the spans" }) : el("li", { class: "net-call" }, pickButton(c.key, "call", `${c.from} → ${c.to} call`),
-          el("button", { type: "button", class: "item", onclick: () => openLadder(c.key, body, () => rows_(r)) },
-            el("span", { class: "tool", text: `${fmtClock(c.t0)} · ${c.method || "?"}${c.status != null ? ` ${c.status}` : ""}` }),
-            el("span", { class: "meta", text: [fmtDur(c.t1 - c.t0), JOIN_SHORT[c.join], WAIT_SHORT[c.wait]].filter(Boolean).join(" · ") }))));
+        // one row per call: time · method path · status · duration, then how it joined; the row opens its span ladder
+        for (const c of rows) calls.append(c.missing ? el("li", { class: "m", text: "A call no longer in the spans" }) : el("li", { class: "net-call" }, pickButton(c.key, "call", `the ${fmtClock(c.t0)} ${c.method || ""} ${c.path || ""} call`.replace(/\s+/g, " ")),
+          el("button", { type: "button", class: "fl-call-row", title: `${c.from} → ${c.to} :${c.port}${c.path || ""} · ${fmtWhen(c.t0)}`, onclick: () => openLadder(c.key, body, () => rows_(r)) },
+            el("span", { class: "fl-call-t", text: fmtClock(c.t0) }),
+            el("span", { class: "net-method", text: c.method || "?" }),
+            el("span", { class: "net-path", text: c.path || "" }),
+            el("span", { class: `net-st ${c.status == null ? "none" : c.status >= 400 ? "warn" : "ok"}`, text: c.status != null ? String(c.status) : "no status" }),
+            el("span", { class: "net-size", text: fmtSpan(c.durationMs ?? (c.t1 - c.t0)) })),
+          JOIN_SHORT[c.join] !== "joined" || WAIT_SHORT[c.wait] ? el("span", { class: "fl-call-flags" }, ...[JOIN_SHORT[c.join] !== "joined" ? el("span", { class: "net-st warn", text: JOIN_SHORT[c.join] || c.join }) : null, WAIT_SHORT[c.wait] ? el("span", { class: "net-st", text: WAIT_SHORT[c.wait] }) : null].filter(Boolean)) : null));
         more.hidden = shown >= g.members.length;
         if (!more.hidden) more.textContent = `Show ${fmtInt(Math.min(PAGE, g.members.length - shown))} more`;
       } catch (e) { if (gen === S.gen) calls.append(el("li", { class: "m", text: e.message || String(e) })); }
@@ -1408,11 +1444,13 @@ function fleetNetSection(agent) {
       more.hidden = !on || !shown || shown >= g.members.length;
       if (on && !shown) page();
     } },
-      el("span", { class: "tool", text: `${g.from} → ${g.to} · ${g.kind}` }),
-      el("span", { class: "meta", text: [`${fmtInt(g.count)} call${g.count === 1 ? "" : "s"}`, g.joined < g.count ? `${fmtInt(g.joined)} joined` : null, g.ambiguous ? `${fmtInt(g.ambiguous)} ambiguous` : null, g.routeConflict ? `${fmtInt(g.routeConflict)} route conflict` : null,
+      el("span", { class: "fl-grp-route" }, el("b", { text: `${g.from} → ${g.to}` }), el("span", { class: "fl-grp-kind", text: g.kind })),
+      el("span", { class: "fl-grp-n", text: `${fmtInt(g.count)} call${g.count === 1 ? "" : "s"}` }),
+      el("span", { class: "meta fl-grp-meta", text: [g.joined < g.count ? `${fmtInt(g.joined)} joined` : null, g.ambiguous ? `${fmtInt(g.ambiguous)} ambiguous` : null, g.routeConflict ? `${fmtInt(g.routeConflict)} route conflict` : null,
         g.candidates ? `${fmtInt(g.candidates)} long` : null, g.shared ? `${fmtInt(g.shared)} shared` : null, `:${g.port}`, `${fmtClock(g.t0)}–${fmtClock(g.t1)}`].filter(Boolean).join(" · ") }));
-    const all = el("button", { type: "button", class: "pill net-pick-all", "aria-pressed": String(selectionApi.groupOn(g)), text: g.omitted ? `Select ${fmtInt(g.members.length)} listed` : "Select all",
-      onclick: e => { const on = selectionApi.toggleGroup(g); e.currentTarget.setAttribute("aria-pressed", String(on)); } });
+    const all = el("button", { type: "button", class: "btn small net-pick-all", title: g.omitted ? `The first ${fmtInt(g.members.length)} of ${fmtInt(g.count)} calls in this group` : "Every call in this group",
+      onclick: () => { selectionApi.toggleGroup(g); } });
+    all._group = g; pickAllLabel(all, g);
     if (g.basis?.includes("anchor-subtree")) tip(all, "Some of these calls are associated with this thread only through their delegation's span subtree.");
     return el("li", { class: "net-group" }, el("div", { class: "net-group-head" }, open, all), calls, more);
   };
@@ -1436,10 +1474,90 @@ function fleetNetSection(agent) {
       say(e.code === "cancelled" ? "Stopped." : e.message || String(e), el("button", { type: "button", class: "linkbtn", text: "Read again", onclick: read }));
     }
   };
-  box.addEventListener("toggle", () => { if (box.open) read(); });
-  if (box.open) queueMicrotask(read);
+  if (open) queueMicrotask(read);
+  else { box.addEventListener("toggle", () => { if (box.open) read(); }); if (box.open) queueMicrotask(read); }
   return box;
 }
+// The Network lens: a T3 family's transport between its environments (from its spans, read when the lens opens) and
+// one chosen thread's peer calls, then an attached HTTP capture, each under its own heading so a span's ownership
+// and a capture's association are never mixed. Without a family it is the capture's own lens.
+const hasNetworkLens = () => !!(S.network || S.trace?.family);
+function networkLensView(view) {
+  if (!S.trace?.family) return S.network ? networkLens({ ...view, network: S.network }, A) : [];
+  const out = [el("h2", { class: "sr-only", text: "Network" }), familyLinks(), threadNetPicker()];
+  if (S.network) out.push(el("h3", { class: "net-part-head", text: "Captured HTTP" }), ...networkLens({ ...view, network: S.network }, A));
+  else out.push(el("section", { class: "psec net-capture-empty" }, el("h3", { text: "Captured HTTP" }),
+    el("div", { class: "net-help-actions" }, el("span", { class: "meta", text: "No capture attached" }), el("button", { type: "button", class: "btn small", text: "Add a capture…", onclick: () => netHelp(true) }))));
+  return out;
+}
+// The family's peer calls per directed link, as the spans join them; read once per load, on asking.
+function familyLinks() {
+  const sec = el("section", { class: "psec fl-links" }, el("h3", { text: "Between environments" }));
+  const body = el("div");
+  sec.append(body);
+  const gen = S.gen;
+  // An environment filter keeps the links to or from that environment, and says so; a lab filter does not scope
+  // links between environments, and the lens says that rather than pretending it does.
+  const f = S.fleetFilter, env = f?.machine ? envLabelOf(f.machine) : null;
+  const draw = r => {
+    const { rows, total } = linkRows(r.rate, { envLabel: env });
+    // the scope in a few words: which links, and (under a lab filter) a marker that links are all labs' traffic
+    const allLabs = f?.lab ? tip(el("span", { class: "net-st", tabindex: "0", text: "all labs" }), `Links join environments, not labs: the ${f.lab} filter does not apply here.`) : null;
+    const scope = env || f?.lab ? el("p", { class: "note filter-scope" }, env ? `${fmtInt(rows.length)} of ${fmtInt(total)} links · ${env}` : `${fmtInt(total)} links`, " ", allLabs,
+      env ? " · " : null, env ? el("button", { type: "button", class: "linkbtn", text: "Show all", onclick: () => A.clearFilter() }) : null) : null;
+    if (!rows.length) return body.replaceChildren(...[scope, el("p", { class: "note", text: total ? "No peer calls on these links." : "No peer calls in the collected spans." })].filter(Boolean));
+    const num = v => el("td", { class: "num", text: v ? fmtInt(v) : "–" });
+    // ambiguous joins and route conflicts get columns only when some link has them; otherwise one line says none
+    const diag = rows.some(x => x.ambiguous || x.routeConflict);
+    body.replaceChildren(...[scope, el("div", { class: "net-scroll" }, el("table", { class: "atable net-table fl-links-table" },
+      el("thead", {}, el("tr", {}, el("th", { text: "From" }), el("th", { text: "To" }), el("th", { class: "num", text: "Calls" }), el("th", { class: "num", text: "Joined" }),
+        ...(diag ? [el("th", { class: "num", text: "Ambiguous" }), el("th", { class: "num", text: "Route conflict" })] : []))),
+      el("tbody", {}, rows.map(x => el("tr", {}, el("td", { text: x.from }), el("td", { text: x.to }), num(x.calls), num(x.joined), ...(diag ? [num(x.ambiguous), num(x.routeConflict)] : [])))))),
+      diag ? null : el("p", { class: "meta", text: "No ambiguous joins or route conflicts." }),
+      r.rejected ? el("p", { class: "warnline", text: `${fmtInt(r.rejected)} span line${r.rejected === 1 ? "" : "s"} unreadable; calls in them are missing.` }) : null].filter(Boolean));
+  };
+  if (S.fleetLinks?.gen === gen) { draw(S.fleetLinks); return sec; }
+  const read = async () => {
+    body.replaceChildren(el("p", { class: "m", role: "status", text: "Reading the family's spans…" }), el("button", { type: "button", class: "linkbtn", text: "Stop", onclick: () => worker?.postMessage({ type: "fleet-net-cancel" }) }));
+    try {
+      const r = await fleetRequest({ type: "fleet-net" }, p => { if (gen === S.gen && body.isConnected) body.firstChild.textContent = `Reading spans · ${fmtInt(p.lines)} lines · ${p.machine}`; });
+      if (gen !== S.gen) return;
+      S.fleetLinks = { gen, rate: r.rate, rejected: r.rejected };
+      if (body.isConnected) draw(S.fleetLinks);
+    } catch (e) {
+      if (gen !== S.gen || !body.isConnected) return;
+      body.replaceChildren(el("p", { class: "m", text: e.code === "cancelled" ? "Stopped." : e.message || String(e) }), el("button", { type: "button", class: "linkbtn", text: "Read again", onclick: read }));
+    }
+  };
+  queueMicrotask(read);
+  return sec;
+}
+// One thread's peer calls, chosen from a list of the family's threads (the same rows as its agent panel's Network).
+function threadNetPicker() {
+  // one choice per family thread (its qualified key), kept by the environment and lab filter as the landscape is;
+  // identical readable names are told apart by the end of their key (fleet/links.js threadChoices)
+  const keep = A.filteredOut ? t => !A.filteredOut(t) : () => true;
+  const names = readableAgentNames(S.trace.agents);
+  const { rows: choices, total } = threadChoices(S.trace.fleet?.threads, S.trace.agents, { keep, nameOf: a => names.get(a.id) || agentLabel(a) });
+  const rootKey = S.trace.agents.find(a => a.kind === "root")?.threadKey;
+  const rows = [...choices.filter(r => r.key === rootKey), ...choices.filter(r => r.key !== rootKey)];
+  const host = el("div", { class: "fl-thread-net" });
+  const pick = el("select", { class: "net-select", "aria-label": "Thread" }, el("option", { value: "", text: `Choose a thread (${fmtInt(rows.length)})` }),
+    rows.map(r => el("option", { value: r.key, selected: S.fleetNetThread === r.key ? true : null, title: r.key, text: r.label })));
+  const show = () => {
+    const r = rows.find(x => x.key === pick.value);
+    S.fleetNetThread = r?.key || null;
+    host.replaceChildren(...(r ? [fleetNetSection({ threadKey: r.key }, true), r.agentId ? el("button", { type: "button", class: "linkbtn", text: "Open its agent →", onclick: () => A.focusAgent(r.agentId) }) : null,
+      el("p", { class: "meta" }, "Thread ", compactValue(r.key, { kind: "id", what: "thread key" }))].filter(Boolean) : []));
+  };
+  pick.addEventListener("change", show);
+  show();
+  const scope = A.filterScope();
+  return el("section", { class: "psec" }, el("h3", { text: "Peer calls by thread" }),
+    scope ? el("p", { class: "note filter-scope" }, `${fmtInt(rows.length)} of ${fmtInt(total)} threads · ${scope} · `, el("button", { type: "button", class: "linkbtn", text: "Show all", onclick: () => A.clearFilter() })) : null,
+    el("label", { class: "net-choose" }, pick), host);
+}
+const envLabelOf = env => S.trace?.fleet?.machines?.find(m => m.id === env)?.label || env;
 // One peer call's span ladder, inside the fold that opened it, with a way back to its rows. Each span row and the
 // call itself can be selected as evidence.
 async function openLadder(call, host, back) {
@@ -1448,7 +1566,7 @@ async function openLadder(call, host, back) {
   try {
     const { ladder } = await fleetRequest({ type: "fleet-ladder", call });
     if (gen !== S.gen || !host.isConnected) return;
-    host.replaceChildren(selectionBar(), el("div", { class: "fleet-ladder" }, el("div", { class: "net-call-pick" }, pickButton(ladder.key, "call", `${ladder.from} → ${ladder.to} call`), el("span", { class: "meta", text: "Select this call" })),
+    host.replaceChildren(selectionBar(), el("div", { class: "fleet-ladder" }, el("div", { class: "net-call-pick" }, pickButton(ladder.key, "call", `${ladder.from} → ${ladder.to} call`), el("span", { class: "meta", text: "Choose this call for Explain" })),
       ...renderLadder(el, ladder, { fmtWhen, onBack: back, select: selectionApi })));
   } catch (e) {
     if (gen !== S.gen || !host.isConnected) return;
@@ -1508,6 +1626,9 @@ function setFleetFilter(f, { frame = false } = {}) {
   buildFleetFilter();
   scene?.setFilter(S.fleetFilter, { frame });
   if (S.mode === "2d") renderFlat();
+  // the overview's thread and agent lists follow the filter (panels.js agents lens); an open record stays as it is
+  // every lens follows the filter or says it does not (panels.js filterLine, wholeFamilyLine)
+  if (S.level === 0 && !S.inspector && !S.activity) paintPanel(sidebarState());
 }
 // B, the fleet ground: the same landscape rebuilt with its lanes grouped into one terrace per machine; the waits
 // between machines arrive as ribs once the family's spans are read.
@@ -1555,10 +1676,11 @@ async function openT3Family(rootThreadId) {
   claim.onCancel(() => stop.abort());
   try {
     netStatus("Opening its T3 family…", "busy");
-    const files = await openLocalSession(rootThreadId, { onProgress: f => { if (claim.current()) netStatus(`Assembling its T3 family · ${Math.round(f * 100)}%`, "busy"); }, signal: stop.signal });
+    const began = Date.now();
+    const files = await openLocalSession(rootThreadId, { healthMs: 3000, onProgress: f => { if (claim.current()) netStatus(`Assembling its T3 family · ${Math.round(f * 100)}% · ${elapsed(Date.now() - began)}`, "busy"); }, signal: stop.signal });
     if (!claim.current()) return;
     claim.finish();
-    if (!files) return netStatus(`The local helper is not answering. Start it: ${RESOLVER}`, "error");
+    if (files.unavailable) return netStatus(`${HELPER_STATE[files.unavailable] || HELPER_STATE.unreachable}${files.unavailable === "unreachable" ? ` Start it: ${RESOLVER}` : ""}`, "error");
     await loadFiles(files, null);
   } catch (e) { if (claim.current() && e.name !== "AbortError") netStatus(e.message || String(e), "error"); }
   finally { btn.disabled = false; }
@@ -1566,7 +1688,7 @@ async function openT3Family(rootThreadId) {
 // The four questions, "What went over the wire" while a network capture is attached, and "Everything on this
 // machine" (the session's local sources). Keys 1–6 follow this order.
 function lensList() {
-  return [...LENSES.map((l, i) => ({ ...l, icon: ["▱", "↗", "↙", "⋈"][i] })), ...(S.network ? [NETWORK_LENS] : []), ...(S.trace ? [SOURCES_LENS] : [])];
+  return [...LENSES.map((l, i) => ({ ...l, icon: ["▱", "↗", "↙", "⋈"][i] })), ...(hasNetworkLens() ? [NETWORK_LENS] : []), ...(S.trace ? [SOURCES_LENS] : [])];
 }
 function buildLenses() {
   const list = lensList();
@@ -1574,7 +1696,7 @@ function buildLenses() {
   $("#lenses").replaceChildren(...list.map((l, i) => el("button", {
     type: "button", "aria-pressed": String(S.lens === l.key), "data-lens": l.key, title: `${l.q} · ${i + 1}`,
     onclick: () => selectLens(l.key)
-  }, el("span", { class: "lens-icon", "aria-hidden": "true", text: l.icon }), el("span", { class: "lens-name", text: l.q }), el("kbd", { text: String(i + 1), "aria-hidden": "true" }))));
+  }, el("span", { class: "lens-icon", "aria-hidden": "true", text: l.icon }), el("span", { class: "lens-name", text: l.name || l.q }), el("kbd", { text: String(i + 1), "aria-hidden": "true" }))));
 }
 
 // The strata plus the marks the current view draws: the 3D view's flags and pins, the 2D chart's
@@ -1592,8 +1714,8 @@ function symbolLegend() {
   if (t) [...lg.children].forEach((c, j) => { if (STRATA[j] && !has.has(STRATA[j].key)) c.remove(); });
   const sym = (color, text) => el("span", { class: "k sym" }, el("i", { style: `background:${color}` }), text);
   const asks = !t || t.agents.some(a => a.asks.length), got = k => !t || acts.has(k);
-  if (S.mode === "2d") lg.append(...[asks ? sym(STRATA[STRATUM_INDEX.you].color, "tick: your ask") : null, got("outward") ? sym(STATUS.outward.color, "left the machine") : null, got("write") ? sym(STATUS.write.color, "wrote (lens 2)") : null].filter(Boolean));
-  else lg.append(...[asks ? sym(STRATA[STRATUM_INDEX.you].color, "flag: your ask") : null, got("outward") ? sym(STATUS.outward.color, "left the machine") : null, got("write") ? sym(STATUS.write.color, "wrote") : null, got("read") ? sym(STATUS.read.color, "read") : null].filter(Boolean));
+  if (S.mode === "2d") lg.append(...[asks ? sym(STRATA[STRATUM_INDEX.you].color, "tick: your ask") : null, got("outward") ? sym(STATUS.outward.color, "network (inferred)") : null, got("write") ? sym(STATUS.write.color, "wrote (lens 2)") : null].filter(Boolean));
+  else lg.append(...[asks ? sym(STRATA[STRATUM_INDEX.you].color, "flag: your ask") : null, got("outward") ? sym(STATUS.outward.color, "network (inferred)") : null, got("write") ? sym(STATUS.write.color, "wrote") : null, got("read") ? sym(STATUS.read.color, "read") : null].filter(Boolean));
 }
 
 function clipName(s) { s = String(s); return s.length > 48 ? `${s.slice(0, 47)}…` : s; }
@@ -1665,6 +1787,9 @@ function placePlayback() {
   const box = s => { const e = $(s); return e && !e.hidden ? e.getBoundingClientRect() : null; };
   const app = $("#app");
   app.style.removeProperty("--sheet"); app.style.removeProperty("--sheet0");
+  // the zoom and view tools keep their stylesheet places unless a narrow stage stacks them (below)
+  const zoom = $("#map-zoom"), tools = $(".viewtools");
+  for (const n of [zoom, tools]) if (n) for (const k of ["bottom", "left", "right"]) n.style.removeProperty(k);
   if (innerWidth <= 980) {
     host.classList.add("compact");
     Object.assign(host.style, { left: "", width: "" });
@@ -1678,6 +1803,19 @@ function placePlayback() {
   }
   const H = 72, GAP = 14; // room for the two-row layout, so the choice does not flip with it
   const mm = box("#minimap"), side = $(".side").getBoundingClientRect();
+  // A narrow stage beside a wide panel: one column over the session map, bottom up: the map, the transport across the
+  // column's whole width, then the view tools (left) and the zoom (right), on one row when both fit.
+  if (side.left < 760 && mm?.width && zoom && tools) {
+    const left = mm.left, width = Math.max(0, side.left - GAP - left), bottom = innerHeight - mm.top + 10;
+    Object.assign(host.style, { bottom: `${Math.round(bottom)}px`, left: `${Math.round(left)}px`, width: `${Math.round(width)}px` });
+    host.classList.toggle("compact", width < 520);
+    let row = bottom + (host.getBoundingClientRect().height || H) + 8;
+    Object.assign(tools.style, { left: `${Math.round(left)}px`, right: "auto", bottom: `${Math.round(row)}px` });
+    const tw = tools.getBoundingClientRect().width, zw = zoom.getBoundingClientRect().width;
+    if (tw + zw + 8 > width) row += tools.getBoundingClientRect().height + 8;
+    Object.assign(zoom.style, { left: "auto", right: `${Math.round(innerWidth - side.left + GAP)}px`, bottom: `${Math.round(row)}px` });
+    return;
+  }
   const others = ["#map-zoom", ".viewtools"].map(box).filter(r => r?.height);
   const rightEdge = (top, left) => Math.min(side.left, ...others.filter(r => r.top < top + H && r.bottom > top && r.right > left).map(r => r.left)) - GAP;
   let bottom = 22, left = (mm?.width ? mm.right : 14) + GAP, right = rightEdge(innerHeight - bottom - H, left), centred = true;
@@ -1839,8 +1977,15 @@ const A = {
   },
   // the record of one known thread (fleet/family.js inventory): its status, why, its bindings and T3's claims
   openThread(key) { if (key) set({ level: 0, agentId: null, reqIdx: null, stratum: null, block: null, inspector: 'thread', inventoryKey: key }, { reader: true }); },
+  // what T3 recorded of a thread's conversation, read whole from the bundle on request (worker fleet-records)
+  threadRecords: key => (S.trace?.family && text === workerText ? fleetRequest({ type: "fleet-records", threadKey: key }) : Promise.reject(new Error("Only a loaded T3 family records these."))),
+  // a recorded media file's exact bytes (worker bytes), for an inert image and a download
+  mediaBytes: file => (text === workerText ? fleetRequest({ type: "bytes", file }) : Promise.reject(new Error("This load has no recorded files to read."))),
+  fileName: i => S.trace?.files?.[i]?.name || null,
   inventory: () => S.trace?.inventory || [],
   filteredOut: agent => isFiltered(S.fleetFilter) && !matcher(S.fleetFilter)(agent),
+  // the active environment and lab filter in words ("Studio · OpenAI"), or null when nothing is filtered
+  filterScope: () => (isFiltered(S.fleetFilter) ? [S.fleetFilter.machine && envLabel(S.trace, S.fleetFilter.machine), S.fleetFilter.lab].filter(Boolean).join(" · ") : null),
   clearFilter: () => { setFleetFilter(null); render(false); },
   breakWords, voidWords,
   threadNotes: key => traceNotes(S.trace).filter(n => n.threadKey === key),
@@ -1859,7 +2004,7 @@ const A = {
   getText: (agentId, ref) => (text ? text(agentId, ref) : Promise.reject(new Error("no text source"))),
   // The network layer (network/panel.js): its lens, the per-request card, and bodies read on demand.
   // A palette jump (S.netFocus) is revealed once; later renders keep the user's own scroll.
-  networkLens: view => { const out = S.network ? networkLens({ ...view, network: S.network }, A) : []; S.netFocus = null; return out; },
+  networkLens: view => { const out = networkLensView(view); S.netFocus = null; return out; },
   wireCard: (agent, req) => (S.network ? wireCard(S.network, agent, req, A) : null),
   wireSummary: (agent, req) => (S.network ? wireSummary(S.network, agent, req) : null),
   wireTokens: (agent, req) => (S.network ? wireTokens(S.network, agent, req) : null),
@@ -1869,6 +2014,7 @@ const A = {
   help: topic => openHelp(topic),
   // Everything on this machine (sources/panel.js): the report comes with the session; content on request.
   sourcesLens: view => sourcesLens({ ...view, sources: S.sources, sourceOpen: S.sourceOpen }, A),
+  openOwnSession: () => backToLoader(),
   openInstructions: () => selectLens(SOURCES_LENS.key),
   openSource(sourceId, opts = {}) {
     const id = sessionRootId(), seq = sourcesSeq;
@@ -1895,8 +2041,11 @@ const A = {
   reading: () => S.reading,
   toggleReading() { S.reading = !S.reading; render(false, true); },
   // Per line of `text`: true when the site publishes that line (the product's wording). Null without an index.
-  async templateLines(text) {
-    const ix = await loadIndex();
+  // The lines of a text the site publishes, from the reference index of the product the inspected agent's own session
+  // ran (the index wraps one per product; a mixed family's bindings differ): never the root's, never read later from
+  // the global selection.
+  async templateLines(text, agent = null) {
+    const ix = indexFor(await loadIndex(), (S.trace?.family ? agent?.nativeProduct : null) || S.trace?.product || null);
     if (!ix || !ix.lines) return null;
     return String(text).split("\n").map(raw => normalizeLine(raw).length >= MIN_INDEXED_LINE && Object.prototype.hasOwnProperty.call(ix.lines, lineHash(raw)));
   },
@@ -2069,7 +2218,7 @@ function notesView() {
   const search = el("input", { type: "search", class: "agent-search", placeholder: "Find in notes…", "aria-label": "Find in notes", value: q, autocomplete: "off" });
   search.addEventListener("change", () => { S.notesQuery = search.value; notePages.clear(); render(false); });
   const total = groups.reduce((n, g) => n + g.count, 0);
-  const out = [el("h2", { text: "Recording notes" }), el("p", { class: "meta", text: `${fmtInt(total)} notes · ${fmtInt(groups.length)} kinds` }), search];
+  const out = [el("h2", { class: "sr-only", text: "Recording notes" }), el("p", { class: "meta", text: `${fmtInt(total)} notes · ${fmtInt(groups.length)} kinds` }), search];
   for (const g of groups) {
     const page = notePage(g, { page: notePages.get(g.key) || 0, query: q });
     if (q && !page.total) continue;
@@ -2081,9 +2230,9 @@ function notesView() {
       el("span", { class: "meta", text: `${fmtInt(page.page * 50 + 1)}–${fmtInt(Math.min(page.total, page.page * 50 + 50))} of ${fmtInt(page.total)}` }),
       el("button", { type: "button", class: "linkbtn", text: "Later →", disabled: page.page >= page.pages - 1 ? true : null, onclick: () => { notePages.set(g.key, page.page + 1); render(false); } })) : null;
     out.push(disclosure(`notes:${g.key}`, `note-group ${g.severity}`, el("summary", {},
-      // a plain note's group label is bounded (notes.js shapeLabel); its whole shape is the label's description, and
-      // each original note is whole in the list below
-      el("span", { class: "gcount", text: `${fmtInt(q ? page.total : g.count)} ×` }), tip(el("span", { class: "tool", text: g.label }), g.shape && g.shape !== g.label ? g.shape : null),
+      // a plain note's group label is bounded (notes.js shapeLabel); its tooltip is its first note, whole, and each
+      // original note is whole in the list below
+      el("span", { class: "gcount", text: `${fmtInt(q ? page.total : g.count)} ×` }), tip(el("span", { class: "tool", text: g.label }), g.shape && g.items[0]?.text !== g.label ? g.items[0]?.text : null),
       g.environments.length ? el("span", { class: "meta", text: g.environments.slice(0, 4).join(", ") + (g.environments.length > 4 ? ` +${g.environments.length - 4}` : "") }) : null), false, list, pager));
   }
   return out;
@@ -2119,7 +2268,7 @@ function wireFacts(agent, req) {
 // ---------- render ----------
 function render(levelChanged, readerOpened, restoring = false) {
   // The network lens exists only while a capture is attached (Back can name it after the capture is gone).
-  if (S.lens === NETWORK_LENS.key && !S.network) S.lens = "context";
+  if (S.lens === NETWORK_LENS.key && !hasNetworkLens()) S.lens = "context";
   if (S.lens === SOURCES_LENS.key && S.trace) loadSources(); // Back or Forward into the lens asks too (once per load)
   $("#app").dataset.level = String(S.level);
   $("#app").classList.toggle("reading", S.reading);
@@ -2222,7 +2371,6 @@ function renderCrumbs() {
     if (!fn || i === parts.length - 1) kids.push(el("span", { class: "crumb-here", text: name, "aria-current": "page" }));
     else kids.push(el("button", { type: "button", text: name, onclick: fn }));
   });
-  if (!TOUCH && S.level === 0 && S.mode === "3d") kids.push(el("span", { class: "keys", text: "Drag to pan · scroll to zoom · Shift-drag to orbit" }));
   c.replaceChildren(...kids);
 }
 
@@ -2391,7 +2539,8 @@ function showTip(hit) {
     kids.push(el("div", { text: `${s.name}: ≈ ${fmtTok(r.strata?.[hit.stratum] || 0)} · click to list its blocks` }));
   } else {
     const top = largestLayer(r);
-    kids.push(el("div", { class: "m", text: top ? `largest layer: ${top.name} ≈ ${fmtTok(top.tokens)}` : "split unknown: the log has no blocks for this request" }));
+    kids.push(el("div", { class: "m", text: top ? `largest layer: ${top.name} ≈ ${fmtTok(top.tokens)}${S.trace?.allocation?.status === "preserved" ? " (original estimate)" : ""}`
+      : S.trace?.allocation?.status === "unavailable" && a.harnessSource !== "unknown" ? "split by source unavailable in this example" : "split unknown: the log has no blocks for this request" }));
     if (r.action && r.action.kind === "tool") kids.push(el("div", { text: `${r.action.tool}${r.action.target ? `: ${targetLabel(r.action.target, 72)}` : ""}` }));
   }
   // In a T3 family every ridge says where it ran: the machine, the product and the model.

@@ -364,19 +364,19 @@ test("an unmatched call says only that no receiving span matched; what the recei
     const L = buildLadder(net, spans, net.calls[0]);
     return { L, text: renderLadder(textEl, L, { fmtWhen: () => "t" }).map(n => n.textContent).join(" · ") };
   };
-  // the receiver's window encloses the call, but its only span is of another trace
+  // the receiver's window encloses the call's raw time, but its only span is of another trace, so no pair fits the
+  // two clocks: where the call falls on the receiver's clock is unknown, and nothing is said of the window
   let r = say([machine("env-a", [link("env-b", 4001)]), machine("env-b")], new Map([["env-a", a], ["env-b", await archive(receiver({ trace: "bbbb" }))]]));
   assert.equal(r.L.join.status, "unjoined");
-  assert.match(r.text, /No receiving span matched the caller's trace and parent IDs · the call is inside the receiver's collected window/);
+  assert.equal(r.L.join.receiverWindow, "unknown", "no clock fit: never compared as if the clocks agreed");
+  assert.match(r.text, /No receiving span matched the caller's trace and parent IDs/);
+  assert.doesNotMatch(r.text, /collected window/);
   assert.doesNotMatch(r.text, /cover|lost|dropped|missing/i, "an unmatched join is not evidence of missing traffic or recording");
   // the receiver's spans collected, but no window recorded for it: nothing is said of coverage
   r = say([machine("env-a", [link("env-b", 4001)]), { id: "env-b", label: "ENV-B", peerLinks: [], part: {} }], new Map([["env-a", a], ["env-b", await archive(receiver({ trace: "bbbb" }))]]));
   assert.equal(r.L.join.receiverWindow, "unknown");
   assert.match(r.text, /No receiving span matched the caller's trace and parent IDs/);
   assert.doesNotMatch(r.text, /collected window/, "no window recorded is neither inside nor outside one");
-  // a window that ends before the call: outside it, said as such
-  r = say([machine("env-a", [link("env-b", 4001)]), machine("env-b", [], ["2026-01-01T00:00:00Z", "2026-01-01T00:05:00Z"])], new Map([["env-a", a], ["env-b", await archive(receiver({ trace: "bbbb" }))]]));
-  assert.match(r.text, /the call is outside the receiver's collected window/);
   // no spans collected from the receiver at all
   r = say([machine("env-a", [link("env-b", 4001)]), machine("env-b")], new Map([["env-a", a]]));
   assert.match(r.text, /No receiving span matched the caller's trace and parent IDs · the receiver's spans were not collected/);
@@ -402,4 +402,36 @@ test("a peer link's URL is parsed as a URL: a trailing slash, a path, a query or
   for (const url of ["http://localhost:20000/", "http://[::1]:20000/", "http://10.0.0.5:20000/"]) assert.equal(withLink(url).calls.length, 0, url);
   const L = buildLadder(withLink("http://127.0.0.1:20000/"), new Map([["env-a", a], ["env-b", b]]), withLink("http://127.0.0.1:20000/").calls[0]);
   assert.match(L.route.endpoints, /^caller 127\.0\.0\.1:20000/);
+});
+
+test("13 · a call is placed among the receiver's windows on the receiver's clock: moved by the link's fit, uncertain within its error, unknown with no fit", async () => {
+  const { receiverWindowOf } = await import("../fleet/net.js");
+  const { renderLadder } = await import("../fleet/ladder.js");
+  const fit = { residualMs: 500, epochs: [{ epoch: "?>?", since: T, until: T + 600e3, knots: [{ t: T, offsetMs: 60e3 }] }] };
+  const call = { t0: T + 300e3, t1: T + 301e3 };
+  const W = (a, b) => [[T + a, T + b]];
+  // raw [300 s, 301 s] is outside [310 s, 460 s]; on the receiver's clock (60 s ahead) it is inside, and the reverse
+  assert.equal(receiverWindowOf(call, W(310e3, 460e3), fit, null).state, "inside");
+  assert.equal(receiverWindowOf(call, W(290e3, 320e3), fit, null).state, "outside");
+  // a window edge inside the fit's error: uncertain, never a confident inside or outside
+  assert.equal(receiverWindowOf(call, W(360.2e3, 500e3), fit, null).state, "uncertain");
+  // no fit that applies (past the pairs that fit it, another caller process, no link): unknown, never a zero offset
+  assert.equal(receiverWindowOf({ t0: T + 700e3, t1: T + 701e3 }, W(0, 2000e3), fit, null).state, "unknown");
+  assert.equal(receiverWindowOf(call, W(0, 2000e3), fit, "proc-x").state, "unknown");
+  assert.equal(receiverWindowOf(call, W(0, 2000e3), undefined, null).state, "unknown");
+  assert.deepEqual(receiverWindowOf(call, W(310e3, 460e3), fit, null).clock, { offsetMs: 60e3, uncertaintyMs: 500, epoch: "?>?" });
+  // through the network: two matched calls fit the link's clock (the receiver 60 s ahead); an unjoined call between
+  // them, raw outside the receiver's window, is inside it on the receiver's clock, said as such in its ladder
+  const at = (x, base, trace) => callerChain({ t0: T + x, base, trace });
+  const recv = (x, base, trace) => receiver({ trace, parent: base + 3, id: 900 + base, t0: T + x + 6 + 60e3 + 10, t1: T + x + 1004 + 60e3 - 10 });
+  const callers = await archive([...at(0, 1, "aaaa"), ...at(600e3, 101, "bbbb"), ...at(300e3, 201, "cccc")]);
+  const receivers = await archive([...recv(0, 1, "aaaa"), ...recv(600e3, 101, "bbbb")]);
+  const iso = x => new Date(T + x).toISOString();
+  const net = buildNet([machine("env-a", [link("env-b", 4001)]), machine("env-b", [], [iso(355e3), iso(460e3)])], new Map([["env-a", callers], ["env-b", receivers]]));
+  const lone = net.calls.find(c => c.join.status === "unjoined");
+  assert.ok(lone && net.joins.length === 2);
+  assert.equal(lone.receiverWindow, "inside", "raw it would read outside: the receiver's window starts after its raw time");
+  assert.ok(Math.abs(lone.receiverClock.offsetMs - 60e3) < 50);
+  const text = renderLadder(textEl, buildLadder(net, new Map([["env-a", callers], ["env-b", receivers]]), lone), { fmtWhen: () => "t" }).map(n => n.textContent).join(" · ");
+  assert.match(text, /the call is inside the receiver's collected window/);
 });

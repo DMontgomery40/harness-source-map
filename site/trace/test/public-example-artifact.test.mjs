@@ -9,7 +9,7 @@ import {parseClaudeFile,buildClaudeTrace} from '../adapters/claude-code.js';
 test('published recorded example checksums and normal adapter preserve declared workload and joins',async()=>{
  const base=new URL('../examples/',import.meta.url);
  // Exercise the browser download/checksum/decompression path using public disk assets.
- const fetcher=async url=>{const bytes=fs.readFileSync(fileURLToPath(url));return {ok:true,json:async()=>JSON.parse(bytes),arrayBuffer:async()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.length)};};
+ const fetcher=async url=>new Response(fs.readFileSync(fileURLToPath(url)));
  const {manifest,files}=await loadPublicExample({id:'source-map-development',base,fetcher});
  const metas=new Map();
  for(const source of files.filter(source=>source.path.endsWith('.meta.json')))metas.set(source.path.replace(/\.meta\.json$/,'.jsonl'),JSON.parse(await source.file.text()));

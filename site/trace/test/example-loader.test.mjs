@@ -15,7 +15,7 @@ function fixture(){
 }
 test('public source downloads decompress to normal frozen files without any local or credential access',async()=>{
  const {manifest,raw,gzip}=fixture(),calls=[],progress=[];
- const {files}=await loadPublicExample({id:ID,base:new URL('https://example.test/trace/examples/'),fetcher:async(url,options)=>{calls.push({url:String(url),options});return String(url).endsWith('manifest.json')?{ok:true,json:async()=>manifest}:{ok:true,arrayBuffer:async()=>gzip.buffer.slice(gzip.byteOffset,gzip.byteOffset+gzip.length)};},onProgress:(...value)=>progress.push(value)});
+ const {files}=await loadPublicExample({id:ID,base:new URL('https://example.test/trace/examples/'),fetcher:async(url,options)=>{calls.push({url:String(url),options});return String(url).endsWith('manifest.json')?{ok:true,json:async()=>manifest}:new Response(gzip);},onProgress:(...value)=>progress.push(value)});
  assert.equal(files.length,1);assert.equal(files[0].path,'root.jsonl');assert.equal(await files[0].file.text(),raw.toString());assert.equal(files[0].frozen,true);assert.equal(files[0].publicExample,true);
  assert.equal(calls.length,2);assert.ok(calls.every(call=>new URL(call.url).origin==='https://example.test' && call.options.credentials==='omit' && call.options.redirect==='error'));assert.ok(progress.length>=3);
 });
@@ -31,7 +31,11 @@ test('manifests reject off-origin downloads, traversal, oversized files and miss
 });
 test('incomplete or changed immutable sources fail instead of reaching the session loader',async()=>{
  const {manifest,gzip}=fixture();manifest.files[0].sha256='0'.repeat(64);
- await assert.rejects(loadPublicExample({id:ID,fetcher:async url=>String(url).endsWith('manifest.json')?{ok:true,json:async()=>manifest}:{ok:true,arrayBuffer:async()=>gzip.buffer.slice(gzip.byteOffset,gzip.byteOffset+gzip.length)}}),/checksum did not match/);
+ await assert.rejects(loadPublicExample({id:ID,fetcher:async url=>String(url).endsWith('manifest.json')?{ok:true,json:async()=>manifest}:new Response(gzip)}),/checksum did not match/);
+ // a response with no readable body stream is refused as it is, never read whole and measured afterwards
+ const fresh=fixture();let measured=0;
+ await assert.rejects(loadPublicExample({id:ID,fetcher:async url=>String(url).endsWith('manifest.json')?{ok:true,json:async()=>fresh.manifest}:{ok:true,arrayBuffer:async()=>{measured++;return new ArrayBuffer(fresh.gzip.length);}}}),/no readable body/);
+ assert.equal(measured,0);
 });
 
 test('public examples suppress automatic Help loopback health while own-session defaults stay intact',()=>{
@@ -43,7 +47,7 @@ test('multipart gzip reconstructs one exact root file and rejects reordered part
  const {manifest,gzip,raw}=fixture();const cut=Math.floor(gzip.length/2),chunks=[gzip.subarray(0,cut),gzip.subarray(cut)];
  const source=manifest.files[0];delete source.url;
  source.parts=chunks.map((bytes,index)=>({url:`root.jsonl.gz.part-${index+1}`,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')}));
- const fetcher=async url=>String(url).endsWith('manifest.json')?{ok:true,json:async()=>manifest}:{ok:true,arrayBuffer:async()=>{const index=Number(String(url).split('-').pop())-1;const bytes=chunks[index];return bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.length);}};
+ const fetcher=async url=>String(url).endsWith('manifest.json')?{ok:true,json:async()=>manifest}:new Response(chunks[Number(String(url).split('-').pop())-1]);
  const {files}=await loadPublicExample({id:ID,fetcher});assert.equal(files.length,1);assert.equal(await files[0].file.text(),raw.toString());
  source.parts.reverse();await assert.rejects(loadPublicExample({id:ID,fetcher}),/checksum did not match/);
 });
@@ -53,7 +57,7 @@ test('four bounded downloads complete out of order but retain manifest order and
  const {files}=await loadPublicExample({id:ID,fetcher:async url=>{
   if(String(url).endsWith('manifest.json'))return {ok:true,json:async()=>manifest};
   const index=Number(/source-(\d+)/.exec(String(url))[1]);active++;maximum=Math.max(maximum,active);
-  return {ok:true,arrayBuffer:async()=>{await new Promise(resolve=>setTimeout(resolve,index===0?25:2));active--;finished.push(index);return gzip.buffer.slice(gzip.byteOffset,gzip.byteOffset+gzip.length);}};
+  return {ok:true,body:new ReadableStream({async pull(c){await new Promise(resolve=>setTimeout(resolve,index===0?25:2));active--;finished.push(index);c.enqueue(new Uint8Array(gzip));c.close();}})};
  },onProgress:(fraction,message)=>{if(message.startsWith('Loading sources:'))progress.push(fraction);}});
  assert.equal(maximum,4);assert.notEqual(finished[0],0);assert.deepEqual(files.map(file=>file.path),manifest.files.map(file=>file.path));
  assert.deepEqual(progress,Array.from({length:8},(_,index)=>index/7));
@@ -97,7 +101,7 @@ function published(id,members,extra={}){
  for(const [path,text] of members){const raw=Buffer.from(text),gz=gzipSync(raw);assets.set(`${path}.gz`,gz);files.push({path,url:`${path}.gz`,bytes:gz.length,uncompressedBytes:raw.length,sha256:sha(gz)});}
  const manifest={schemaVersion:1,id,title:'A synthetic family',privacyStatement:'Synthetic.',rootSessionId:'t-root',counts:{agents:1,subagents:0,requests:1},files,...extra};
  const asked=[];
- const fetcher=async u=>{const p=new URL(u).pathname.split(`/examples/${id}/`)[1];asked.push(p);if(p==='manifest.json')return {ok:true,json:async()=>structuredClone(manifest)};const b=assets.get(p);if(!b)return {ok:false};return {ok:true,arrayBuffer:async()=>b.buffer.slice(b.byteOffset,b.byteOffset+b.length)};};
+ const fetcher=async u=>{const p=new URL(u).pathname.split(`/examples/${id}/`)[1];asked.push(p);if(p==='manifest.json')return {ok:true,json:async()=>structuredClone(manifest)};const b=assets.get(p);if(!b)return {ok:false};return new Response(b);};
  return {manifest,fetcher,asked,base:new URL('https://example.test/trace/examples/')};
 }
 
@@ -121,6 +125,66 @@ test('.json, .jsonl, .ndjson and .txt are the logical names, each from its own .
  for(const p of ['a.json','a.jsonl','machines/e/spans.ndjson','machines/e/tool-results/r.txt']) assert.equal(validateExample(ok(p),at,'t3-multi-machine').files[0].path,p);
  for(const [p,u] of [['a.js','a.js.gz'],['a.html','a.html.gz'],['a.ndjson.gz','a.ndjson.gz.gz'],['a.txt','a.json.gz'],['spans.ndjson','spans.jsonl.gz'],['a.json','a.json'],['a.txt','a.txt.gz?v=2'],['a.txt','a.txt.gz#x'],['a.txt','../other/a.txt.gz'],['a.txt','https://cdn.test/a.txt.gz'],['a.txt','/trace/examples/source-map-development/a.txt.gz'],['../a.txt','a.txt.gz'],['a/./b.txt','a/b.txt.gz'],['a\\b.txt','a/b.txt.gz']])
   assert.throws(()=>validateExample(ok(p,u),at,'t3-multi-machine'),undefined,`${p} from ${u}`);
+});
+
+test('a provider log keeps its recorded name: .log and .log.<integer>, each from its own matching .gz asset or parts; a malformed suffix, a mismatched asset or a path outside the directory is refused',()=>{
+ const at='https://example.test/trace/examples/t3-multi-machine/manifest.json';
+ const ok=(path,urlPath=`${path}.gz`)=>{const {manifest}=published('t3-multi-machine',[[path,'x\n']]);manifest.files[0].url=urlPath;return manifest;};
+ for(const p of ['machines/e/provider-events/events.t-root.log','machines/e/provider-events/events.t-root.log.1','machines/e/provider-events/events.t-root.log.12','machines/e/provider-events/split/t-a-0123.log'])
+  assert.equal(validateExample(ok(p),at,'t3-multi-machine').files[0].path,p);
+ // a rotated log published in parts: each part the .gz of the same rotated name
+ const parted=ok('machines/e/provider-events/events.t.log.3');const f=parted.files[0];
+ f.parts=[{url:'machines/e/provider-events/events.t.log.3.gz.part-1',bytes:f.bytes-1,sha256:'a'.repeat(64)},{url:'machines/e/provider-events/events.t.log.3.gz.part-2',bytes:1,sha256:'b'.repeat(64)}];delete f.url;
+ assert.equal(validateExample(parted,at,'t3-multi-machine').files[0].parts.length,2);
+ for(const [p,u] of [
+  // a malformed suffix
+  ['a.log.','a.log..gz'],['a.log.x','a.log.x.gz'],['a.log.1a','a.log.1a.gz'],['a.log.-1','a.log.-1.gz'],['a.log.+1','a.log.+1.gz'],['a.log.1.2','a.log.1.2.gz'],['a.log. 1','a.log. 1.gz'],
+  ['a.log1','a.log1.gz'],['a.logs','a.logs.gz'],['a.LOG','a.LOG.gz'],['a.log.gz','a.log.gz.gz'],['a.log.1.gz','a.log.1.gz.gz'],
+  // an asset of another name: another rotation, the unrotated log, or a dot that is not literal
+  ['a.log.1','a.log.gz'],['a.log','a.log.1.gz'],['a.log.1','a.log.2.gz'],['a.log.1','a.log.11.gz'],['a.log.1','a.logx1.gz'],['a.log.1','a.log.1.gz.part-x'],['a.log.1','a.log.1'],['a.log','a.txt.gz'],['a.txt','a.log.gz'],
+  // outside the example's directory, or not a plain relative path
+  ['../a.log','a.log.gz'],['a/../b.log.1','b.log.1.gz'],['machines/e/./x.log','machines/e/x.log.gz'],['/abs.log','abs.log.gz'],['a\\b.log','a/b.log.gz'],
+  ['a.log.1','../other/a.log.1.gz'],['a.log','https://cdn.test/a.log.gz'],['a.log','/trace/examples/source-map-development/a.log.gz'],['a.log','a.log.gz?v=1'],['a.log.1','a.log.1.gz#x'],
+ ]) assert.throws(()=>validateExample(ok(p,u),at,'t3-multi-machine'),undefined,`${p} from ${u}`);
+});
+
+test('a family\'s provider logs, one rotated and published in parts, are downloaded exactly and read by the worker\'s family loader under their recorded names',async()=>{
+ const {members,bundle}=await syntheticFamily();
+ const t0=Date.parse('2026-01-01T00:00:00Z'),iso=ms=>new Date(t0+ms).toISOString();
+ const rows=JSON.parse(members[0][1]);
+ rows.threads.push({thread_id:'t-muse',payload_json:JSON.stringify({id:'t-muse',title:'From its rotated log',createdAt:iso(1000),lineage:{parentThreadId:'t-root'},modelSelection:{instanceId:'muse'}})},
+  {thread_id:'t-ag',payload_json:JSON.stringify({id:'t-ag',title:'From its log',createdAt:iso(2000),lineage:{parentThreadId:'t-root'},modelSelection:{instanceId:'antigravity'}})});
+ // a Muse log rotated to .log.1 (one model call), and an Antigravity log (request events only)
+ const rotated=`[${iso(5000)}] NTIVE: ${JSON.stringify({provider:'muse',method:'session/tokenUsage',params:{sessionId:'s-muse',promptTokens:1234,usage:{outputTokens:5}}})}\n`;
+ const plain=[[6000,'started'],[9000,'succeeded']].map(([ms,status])=>`[${iso(ms)}] NTIVE: ${JSON.stringify({observedAt:iso(ms),event:{kind:'request',provider:'antigravity',threadId:'t-ag',createdAt:iso(ms),payload:{method:'session/prompt',status}}})}`).join('\n')+'\n';
+ const logs=[['machines/env-a/provider-events/index.json',JSON.stringify([{name:'events.t-muse.log.1',threads:['t-muse']},{name:'events.t-ag.log',threads:['t-ag']}])],
+  ['machines/env-a/provider-events/events.t-muse.log.1',rotated],['machines/env-a/provider-events/events.t-ag.log',plain]];
+ const all=[[members[0][0],JSON.stringify(rows)],...members.slice(1),...logs];
+ const sizes=Object.fromEntries(all.map(([p,t])=>[p,Buffer.byteLength(t)]));
+ const b={...bundle,machines:[{...bundle.machines[0],files:all.map(([p])=>p),sizes},bundle.machines[1]]};
+ const g=published('t3-multi-machine',[['bundle.json',JSON.stringify(b)],...all],{counts:{agents:1,subagents:0,requests:1,environments:2}});
+ // the rotated log goes out as two parts of its own .gz
+ const rot=g.manifest.files.find(f=>f.path.endsWith('.log.1')),gz=gzipSync(Buffer.from(rotated)),cut=Math.floor(gz.length/2),pieces=[gz.subarray(0,cut),gz.subarray(cut)];
+ Object.assign(rot,{bytes:gz.length,sha256:sha(gz),parts:pieces.map((x,k)=>({url:`${rot.path}.gz.part-${k+1}`,bytes:x.length,sha256:sha(x)}))});delete rot.url;
+ const served=async u=>{const p=new URL(u).pathname.split('/examples/t3-multi-machine/')[1];const k=/\.log\.1\.gz\.part-(\d)$/.exec(p);return k?(g.asked.push(p),new Response(pieces[Number(k[1])-1])):g.fetcher(u);};
+ const {files}=await loadPublicExample({id:'t3-multi-machine',base:g.base,fetcher:served});
+ assert.ok(g.asked.includes('machines/env-a/provider-events/events.t-muse.log.1.gz.part-1')&&g.asked.includes('machines/env-a/provider-events/events.t-muse.log.1.gz.part-2')&&g.asked.includes('machines/env-a/provider-events/events.t-ag.log.gz'));
+ for(const [p,t] of logs)assert.equal(await files.find(f=>f.path===p).file.text(),t,`${p}: exactly as recorded`);
+ const {memorySource}=await import('../fleet/bundle.js');
+ const {loadFamily}=await import('../fleet/load.js');
+ const entries=await Promise.all(files.map(async f=>({path:f.path,identity:`example:${f.path}`,source:memorySource(f.path,new Uint8Array(await f.file.arrayBuffer()))})));
+ const {trace}=await loadFamily(entries,{});
+ const of=id=>trace.inventory.find(e=>e.threadId===id);
+ // without its log either thread would be "no-evidence": each is drawn or timed from its own log, and nothing else
+ assert.deepEqual([of('t-muse').status,of('t-ag').status],['events-only','events-only']);
+ const muse=trace.agents.find(a=>of('t-muse').agentIds.includes(a.id));
+ assert.deepEqual(muse.requests.map(r=>[r.t,r.tokens.context]),[[t0+5000,1234]],'the rotated log\'s one model call');
+ assert.equal(of('t-ag').from,t0+2000);
+ assert.equal(of('t-ag').to,t0+9000,'the log\'s last line');
+ // a malformed rotation in the bundle's own list stops before any member downloads
+ const bad=published('t3-multi-machine',[['bundle.json',JSON.stringify({...b,machines:[{...b.machines[0],files:[...b.machines[0].files,'machines/env-a/provider-events/events.t.log.1x'],sizes:{...sizes,'machines/env-a/provider-events/events.t.log.1x':3}},b.machines[1]]})],...all]);
+ await assert.rejects(loadPublicExample({id:'t3-multi-machine',base:bad.base,fetcher:bad.fetcher}),/T3 bundle does not match/);
+ assert.deepEqual(bad.asked,['manifest.json','bundle.json.gz']);
 });
 
 // A plain logical T3 bundle of two environments: one with a native rollout and spans, one not collected.

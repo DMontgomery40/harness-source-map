@@ -1,6 +1,7 @@
 // Observed instruction fields, never a reconstruction from the source catalog.
 // Cursor requestContext is client-to-AgentService evidence, not a provider prompt.
 import {addBlock, computeStrata, indexFor, readRef, windowBlocks} from '../model.js';
+import {markUnavailable} from '../estimates.js';
 import {reminderSpans} from '../adapters/instruction-spans.js';
 
 const textOf=value=>typeof value==='string'?value:Array.isArray(value)?value.map(p=>p?.text||'').join('\n'):'';
@@ -69,7 +70,10 @@ export async function projectInstructions(base, baseSources, evidence, index=nul
    ? 'Includes captured client instruction context sent to Cursor AgentService. Downstream provider assembly is not observed; layer sizes are estimates.'
    : 'Includes instructions from the captured provider request joined by exact tool-call ID; layer sizes are estimates.';
  }
- for(const agent of trace.agents){computeStrata(agent);delete agent._prefix;}
+ // A split the logs' own text does not size (a public example's preserved or unavailable allocation, estimates.js)
+ // is never recomputed from added blocks: a preserved basis is retired once blocks are added, as is never mixed.
+ if(base.allocation){if(count)markUnavailable(trace,base.allocation.status==='preserved'?'projection':base.allocation.reason||'projection');}
+ else for(const agent of trace.agents){computeStrata(agent);delete agent._prefix;}
  trace.capturedInstructionBlocks=count;
  return {trace,sources};
 }

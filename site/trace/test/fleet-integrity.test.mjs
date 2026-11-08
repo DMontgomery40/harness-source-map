@@ -353,19 +353,25 @@ test("the network cache keeps compact machines: no thread table, session index o
 
 test("thread keys used by the fixtures stay qualified", () => assert.notEqual(threadKey("env-a", "t-root"), threadKey("env-b", "t-root")));
 
-test("in-memory work takes a stop at its task boundaries: a span scan and a family parse whose reads never wait", async () => {
+test("in-memory work takes a stop whose reads never wait: a span scan at its task boundaries, a family parse at its next read", async () => {
   const { indexSpans } = await import("../fleet/spans.js");
   const span = i => JSON.stringify({ type: "span", name: "x", traceId: "aa", spanId: (i + 1).toString(16).padStart(16, "0"), kind: "internal", startTimeUnixNano: "1000000000", endTimeUnixNano: "2000000000" });
   const bytes = enc.encode(Array.from({ length: 300000 }, (_, i) => span(i)).join("\n") + "\n");
-  const ctl = new AbortController();
-  setTimeout(() => ctl.abort(), 5);
-  await assert.rejects(indexSpans(memorySource("spans", bytes), { gz: false, signal: ctl.signal }), e => e.name === "AbortError" && e.code === "cancelled");
-  // a family load stopped while parsing in memory rejects as stopped, and never notes the stop as an unreadable session
-  const files = bundleFiles();
+  // the stop is asked for from another task, queued at the scan's own first read (which, like every read here, returns
+  // at once): it is taken only if the scan reaches a task boundary before its 300,000 lines are done
+  const ctl = new AbortController(), spans = memorySource("spans", bytes);
+  let asked = false;
+  const source = { ...spans, slice: async (a, b) => { if (!asked) { asked = true; setTimeout(() => ctl.abort(), 0); } return spans.slice(a, b); } };
+  await assert.rejects(indexSpans(source, { gz: false, signal: ctl.signal }), e => e.name === "AbortError" && e.code === "cancelled");
+  assert.ok(asked);
+  // a family load stopped while it reads a session in memory (the stop arrives inside that read, which returns at once)
+  // rejects as stopped, and never notes the stop as an unreadable session
   const stop = new AbortController();
-  setTimeout(() => stop.abort(), 1);
+  let stoppedIn = null;
+  const files = bundleFiles().map(f => (/\/agent-sessions\/.+\.gz$/.test(f.path) ? { ...f, source: { ...f.source, slice: async (a, b) => { if (!stoppedIn) { stoppedIn = f.path; stop.abort(); } return f.source.slice(a, b); } } } : f));
   await assert.rejects(loadFamily(files, { cache: createExpandedCache(), signal: stop.signal }), e => e.name === "AbortError");
-  const done = await loadFamily(files, { cache: createExpandedCache() });
+  assert.match(stoppedIn, /agent-sessions\/codex\//, "stopped inside a session's read");
+  const done = await loadFamily(bundleFiles(), { cache: createExpandedCache() });
   assert.ok(!done.trace.noteRecords.some(n => n.condition === "session-unreadable"));
 });
 

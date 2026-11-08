@@ -66,7 +66,7 @@ test("the capture card starts with Record, Open file and Help, shows no command 
   // with a capture attached, its state and a way into it
   renderCaptureCard(box, { network: { kept: 12, calls: [{}, {}] }, product: "codex", route: null, matched: "2 matched" }, act);
   assert.match(box.textContent, /Attached · 12 requests · 2 model calls \(2 matched\)/);
-  assert.ok(byText(box, "Open it · 5") && byText(box, "Open another file…"));
+  assert.ok(byText(box, "Network") && byText(box, "Open another file…"));
 });
 
 test("a compact value shows a short label, reveals the exact value on demand, copies it exactly, and Esc closes it first", async () => {
@@ -152,6 +152,26 @@ test("provenance answers for the load that asked, walks every copy in time order
   release();
   assert.equal(await pending, null, "a reset (a new load) drops the late answer");
   assert.equal(whereText({ rung: "binary-only", where: { kind: "source", key: "src/x.rs", pos: 41 } }), "in the source: src/x.rs:41");
+});
+
+test("a provenance match names the build it was compared with beside the version each session recorded", async () => {
+  // two bindings of one product, each with its own recorded version; the match was made against one build
+  const trace = { family: true, version: "9.9.9", agents: [{ id: "a", nativeProduct: "codex", nativeVersion: "0.162.0-alpha.2" }, { id: "b", nativeProduct: "codex", nativeVersion: "0.150.1" }, { id: "c", nativeProduct: "codex" }] };
+  const part = { product: "codex", libName: "codex", compared: { literal: "codex-cli 0.162.0-alpha.2", reference: null }, versions: ["0.162.0-alpha.2", "0.150.1"],
+    pieces: [{ id: "p", name: "reminder", rung: "binary-only", where: { kind: "binary", key: "chunk.js", pos: 1 }, n: 3, reach: 3, blocks: [[0, 1], [1, 1], [2, 1]] }], agents: 3 };
+  const prov = createProvenance({ request: async () => [part] });
+  assert.equal((await prov.at(trace, "g", "a", 1)).basis, "compared with codex-cli 0.162.0-alpha.2, the session's own");
+  assert.equal((await prov.at(trace, "g", "b", 1)).basis, "compared with codex-cli 0.162.0-alpha.2 · session ran 0.150.1", "a cross-version match is said as one, never the root's version");
+  assert.equal((await prov.at(trace, "g", "c", 1)).basis, "compared with codex-cli 0.162.0-alpha.2 · session version not recorded");
+  // the reader asks for the lines the site publishes with the inspected agent, so the binding's own product index is used
+  const { renderPanel } = await import("../panels.js");
+  const seen = [];
+  const agent = { id: "x", kind: "root", name: "x", nativeProduct: "codex", requests: [{ i: 0, t: 1, tokens: { context: 10 }, window: [0, 0], strata: { injected: 10 }, scale: { injected: 1, harness: 1 } }], blocks: [{ i: 0, kind: "injected", label: "rules", own: true, est: 10, ownEst: 4, harnessEst: 6, chars: 40, ref: { file: 0, offset: 0, length: 1 } }], asks: [], compactions: [] };
+  const A = { getText: async () => ({ text: "x".repeat(40) }), templateLines: async (text, who) => { seen.push(who); return null; }, openBlock() {}, focusAgent() {} };
+  const host = document.createElement("aside");
+  renderPanel(host, { trace: { agents: [agent] }, level: 3, agent, agentId: "x", reqIdx: 0, stratum: "injected", block: 0, lens: "context", mode: "3d" }, A);
+  await new Promise(r => setTimeout(r, 0));
+  assert.equal(seen[0], agent);
 });
 
 test("opening through the local helper can be aborted while it waits, and changed bytes are refused rather than substituted", async () => {

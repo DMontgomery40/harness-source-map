@@ -1,30 +1,34 @@
 #!/usr/bin/env node
-// T3 fleet collector (plan Contract A). Writes this machine's part of a private bundle for a thread family or a
-// time window, with credentials removed before anything reaches disk, and merges other machines' parts.
+// T3 fleet collector. Writes original recorded evidence for a thread family or time window and merges machine
+// parts. Local evidence is never redacted; deliberate publication uses a separate reviewed export pipeline.
 // Usage: node tools/t3/collect.mjs --help
-import {existsSync, readFileSync, readdirSync, statSync, rmSync, mkdirSync, writeFileSync, renameSync} from 'node:fs';
+import {existsSync, readFileSync, readdirSync, statSync, rmSync, mkdirSync, writeFileSync, renameSync, copyFileSync, mkdtempSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {createHash, createHmac} from 'node:crypto';
 import {homedir, hostname, platform, arch} from 'node:os';
 import {join, resolve, dirname, relative, sep, basename} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {openReadOnly} from './sqlite.mjs';
-import {secretValues} from './secrets.mjs';
-import {Redactor, FamilyRedactor, RULES, keyId} from './redact.mjs';
-import {collectSpans, spanFiles, readNdjson, endSegments} from './spans.mjs';
+import {isBinaryMember, assertBinaryCredentials} from './media.mjs';
+import {Redactor, FamilyRedactor, RULES, keyId, CONTENT_POLICY} from './redact.mjs';
+import {collectSpans, spanFiles, readNdjson, endSegments, parseSpanLine, spanLine} from './spans.mjs';
 import {PartWriter, aliasKey, readAliasKey, readBundle, emptyBundle, writeBundle, slug, yyyymmdd, ensureDir, partsKeyFile, readKeyFile, COLLECTOR_VERSION, VERSION} from './bundle.mjs';
 import {updateArchive} from './archive.mjs';
-import {resolveFamily, threadsInWindow, familyRows, nativeSessions, stripMessageText} from './family.mjs';
+import {resolveFamily, threadsInWindow, familyRows, nativeSessions} from './family.mjs';
 import {lineThreadMap, splitLines, splitName, worktreeFacts} from './facts.mjs';
 import {deriveNet, normalizeCoverage} from './net.mjs';
-import {credentialValues, scanner, scanBundle, missingJoinKeys, bundleFiles} from './verify.mjs';
-import {fileBuffer, bufferLines, lineChunks, gzip, linesBuffer} from './gz.mjs';
+import {scanner, scanBundle, missingJoinKeys, bundleFiles} from './verify.mjs';
+import {fileBuffer, bufferLines, lineChunks, gzip, resolveBundleFile} from './gz.mjs';
 import {fileLines, writeLineFile} from './stream.mjs';
 import {ExactSet} from './exact.mjs';
+import {writeSpanUnion} from './span-union.mjs';
+import {bundleFileList} from './bundles.mjs';
+import {guardedSpanWrite, rewriteExactFile} from './streamed-write.mjs';
 
-const USAGE = `T3 fleet collector: writes a private, credential-free bundle (plan Contract A).
+const USAGE = `T3 fleet collector: writes original recorded evidence into a private local bundle.
+Fleet assembly uses node:sqlite for bounded span unions (Node.js 22.13+ or 23.4+).
 
-  node --max-old-space-size=8192 tools/t3/collect.mjs --root <threadId> [options]
+  node tools/t3/collect.mjs --root <threadId> [options]
       This machine's part for the family rooted at <threadId>.
   node tools/t3/collect.mjs --threads <id,id,...> --since <ISO> --until <ISO> --out <dir> [options]
       A remote hop's part: the families of the given threads on this machine, in that window. Pass every family
@@ -33,7 +37,7 @@ const USAGE = `T3 fleet collector: writes a private, credential-free bundle (pla
   node tools/t3/collect.mjs --window --since <ISO> --until <ISO> [options]
       Every thread active in the window on this machine.
   node tools/t3/collect.mjs --merge <partDir> [--merge <partDir> ...] --out <bundleDir> [--spans-from <oldBundle>]
-      Add other machines' parts to a bundle (re-redacted and verified with this machine's values).
+      Add other machines' parts to a bundle (original recorded content; inventory and readability verified).
   node tools/t3/collect.mjs --harvest [--since <ISO>] [options]
       Re-collect this machine's part of every family active since --since (default: the last 65 minutes) into
       its bundle, unioning spans already there, so spans are kept before T3's log rotates them out (~1 hour).
@@ -149,26 +153,28 @@ function environmentFacts(t3Home, {label, redactor}) {
   runtime: {activeVersion: service.activeVersion || null, versions: versions.map(v => ({version: v, installedAt: installed(v)})), lastUpdate: versions.map(installed).filter(Boolean).sort().pop() || null},
   startedAt: runtime.startedAt || null,
   desktopLastStartedVersion: read(join(u, 'desktop-last-started-version'))?.trim() || null,
-  // Settings that change injection or routing; the full redacted files are under config/.
+  // Settings that change injection or routing; the full recorded files are under config/.
   settings: redactor.value(pick(settings, /beta|feature|experiment|enable|provider|instance|device|browser|auto|balanc|exposure|mcp|tool|peer|relay|connect|telemetry|trace|otlp/i)),
  };
 }
 
-// Config files, redacted, for config/. The connection catalog is encrypted: recorded as present, never read.
+// Selected configuration files remain byte-exact; an encrypted catalog stays opaque and is never decrypted.
 function configFiles(t3Home, redactor) {
  const u = join(t3Home, 'userdata');
- const out = {}, notes = [];
+ const out = {}, raw = {}, notes = [];
  for (const [name, file] of [['settings.json', join(u, 'settings.json')], ['client-settings.json', join(u, 'client-settings.json')], ['desktop-settings.json', join(u, 'desktop-settings.json')],
   ['model-manifest.json', join(u, 'model-manifest.json')], ['server-runtime.json', join(u, 'server-runtime.json')], ['service-state.json', join(t3Home, 'runtime', 'service-state.json')], ['keybindings.json', join(u, 'keybindings.json')]]) {
   const v = readJson(file);
-  if (v !== null) out[name] = redactor.value(v);
+  if (existsSync(file) && redactor.original) raw[name] = readFileSync(file);
+  else if (v !== null) out[name] = redactor.value(v);
  }
  const catalog = join(u, 'connection-catalog.json');
  if (existsSync(catalog)) {
-  out['connection-catalog.json'] = {present: true, bytes: statSync(catalog).size, readable: false, note: 'The desktop connection catalog is encrypted at rest; found, not read.'};
-  notes.push('connection catalog is encrypted: found, not read');
+  if (redactor.original) raw['connection-catalog.json'] = readFileSync(catalog);
+  else out['connection-catalog.json'] = {present: true, bytes: statSync(catalog).size, readable: false, note: 'The desktop connection catalog is encrypted at rest.'};
+  notes.push('connection catalog recorded as stored; encrypted content is not decrypted');
  }
- return {files: out, notes};
+ return {files: out, raw, notes};
 }
 
 // ---- provider event logs ---------------------------------------------------------------------------------------
@@ -261,12 +267,14 @@ const rotations = (dir, base) => {try {return readdirSync(dir).filter(n => n ===
 // Before a file is written, scan its final text. A hit is scrubbed by the verifier's own shapes and exact values,
 // then scanned again; a file that still hits is not written and becomes a gap.
 function guardWriter(writer, scan, values, redactor, gaps) {
+ if (redactor.original) return;
  const exact = new ExactSet(new Map(values).keys());
  const scrub = line => redactor.string(exact.replace(line, () => {redactor.count('secret-value'); return '[redacted:secret-value]';}));
  const hitsOf = lines => {const hits = {}; for (const chunk of lineChunks(lines)) for (const [k, n] of Object.entries(scan(chunk))) hits[k] = (hits[k] || 0) + n; return hits;};
  const flush = writer.flush.bind(writer);
  writer.flush = () => {
   for (const [rel, entry] of [...writer.files]) {
+   if (Buffer.isBuffer(entry)) {assertBinaryCredentials(entry, redactor, scan); continue;}
    let lines = typeof entry === 'string' ? entry.split('\n') : entry.lines;
    if (!Object.keys(hitsOf(lines)).length) continue;
    lines = lines.map(scrub);
@@ -457,10 +465,10 @@ async function collect(o) {
  // A harvested part uses the fleet parts key as given and never writes it into the folder.
  const key = o.partsKey || aliasKey(out, {keyFile: o.aliasKeyFile});
 
- // Redaction: this machine's exact values plus every shape rule; verification with leak-check's values too.
- const values = secretValues({t3Home, home, repo, db});
+ // Original local capture has no external credential inputs and performs no content redaction.
+ const values = new Map();
  const redactor = new Redactor({aliasKey: key, values});
- const credValues = credentialValues({home, repo, t3Home, db});
+ const credValues = [];
  for (const [v, kind] of credValues) if (!/git email/.test(kind)) redactor.addValue(v, 'secret-value');
  const scan = scanner(credValues);
  const writer = new PartWriter(out, redactor, {gzip: o.gzip});
@@ -484,8 +492,9 @@ async function collect(o) {
   if (rel === 'spans.ndjson') for (const x of fromSpans) x.f.parts = priorParts(x.f.bundle?.machines.find(m => m.environmentId === environmentId), `spans-from ${basename(x.f.dir)}`, x.spans);
   const existing = [{spans: readNdjson(join(out, mdir, rel)), aliasKey: null}, ...fromSpans].filter(e => e.spans.length);
   if (!files.length && !existing.length) continue;
-  const {spans, stats} = await collectSpans({files, sinceMs, untilMs, familyIds, all: !o.filterSpans, existing, redactor});
-  writer.ndjson(`${mdir}/${rel}`, spans);
+  const {spans, lines, stats} = await collectSpans({files, sinceMs, untilMs, familyIds, all: !o.filterSpans, existing, redactor});
+  if (redactor.original && lines) writer.lines(`${mdir}/${rel}`, lines);
+  else writer.ndjson(`${mdir}/${rel}`, spans);
   spanSets[rel] = stats; counts[rel === 'spans.ndjson' ? 'spans' : 'desktopSpans'] = spans.length;
   if (rel === 'spans.ndjson' && stats.liveEarliestMs !== null && stats.liveEarliestMs > sinceMs + 60000) gaps.push(`server spans before ${iso(stats.liveEarliestMs)} had rotated out of T3's log (window starts ${iso(sinceMs)}); ${stats.fromBundle} spans came from earlier collections (see parts)`);
  }
@@ -497,12 +506,12 @@ async function collect(o) {
  const env = environmentFacts(t3Home, {label: o.label, redactor});
  if (o.only !== 'spans') {
   writer.json(`${mdir}/environment.json`, redactor.value({...env, hostname: redactor.hostAlias(env.hostname)}));
-  // threads.json: every family row, message text stripped (length and hash), redacted (payloads parsed).
-  writer.json(`${mdir}/threads.json`, redactor.value(stripMessageText(rows, redactor)));
+  // threads.json: full family rows, including recorded message/instruction/tool payloads.
+  writer.json(`${mdir}/threads.json`, redactor.value(rows));
   for (const [k, v] of Object.entries(rows)) counts[k] = v.length;
-  // Peer links: every row; the secret's name is replaced by "present".
+  // Peer-link rows retain their recorded fields; this does not read the referenced secret store.
   const tables = new Set(db.tables());
-  const links = tables.has('peer_environment_links') ? db.all('select * from peer_environment_links').map(r => ({...r, secret_name: r.secret_name ? 'present' : null, urls_json: (() => {try {return JSON.parse(r.urls_json);} catch {return r.urls_json;}})(), fenced: !!r.fenced})) : [];
+  const links = tables.has('peer_environment_links') ? db.all('select * from peer_environment_links').map(r => ({...r, urls_json: (() => {try {return JSON.parse(r.urls_json);} catch {return r.urls_json;}})(), fenced: !!r.fenced})) : [];
   writer.json(`${mdir}/peer-links.json`, redactor.value(links));
   counts.peerLinks = links.length;
   // Auth tables: counts only.
@@ -511,6 +520,7 @@ async function collect(o) {
   // Config.
   const cfg = configFiles(t3Home, redactor);
   for (const [name, v] of Object.entries(cfg.files)) writer.json(`${mdir}/config/${name}`, v);
+  for (const [name, bytes] of Object.entries(cfg.raw)) writer.bytes(`${mdir}/config/${name}`, bytes);
   gaps.push(...cfg.notes);
   // Provider event logs: the family's, plus MCP launch logs that meet the window. Redacted line by line. A log
   // holding lines of several family threads (T3 cuts names at 80 characters) is also cut into one file per thread.
@@ -519,8 +529,10 @@ async function collect(o) {
   const threadOf = lineThreadMap(rows);
   const splits = new Map();
   for (const p of plogs) {
-   const lines = [...bufferLines(readFileSync(p.file))].map(l => redactor.string(l));
-   writer.lines(`${mdir}/provider-events/${p.name}`, lines);
+   const raw = readFileSync(p.file);
+   const lines = [...bufferLines(raw)].map(l => redactor.string(l));
+   if (redactor.original) writer.bytes(`${mdir}/provider-events/${p.name}`, raw);
+   else writer.lines(`${mdir}/provider-events/${p.name}`, lines);
    const entry = {name: p.name, reason: p.reason, threads: p.threads, bytes: statSync(p.file).size};
    if (p.reason === 'family') {
     const {byThread, unattributed} = splitLines(lines, threadOf);
@@ -556,7 +568,8 @@ async function collect(o) {
    const agent = agentSessionFiles(home, sessions);
    const index = [];
    for (const f of agent.files) {
-    writer.lines(`${mdir}/agent-sessions/${f.rel}`, [...bufferLines(readFileSync(f.file))].map(l => redactor.string(l)));
+    if (redactor.original || isBinaryMember(`agent-sessions/${f.rel}`)) writer.bytes(`${mdir}/agent-sessions/${f.rel}`, readFileSync(f.file));
+    else writer.lines(`${mdir}/agent-sessions/${f.rel}`, [...bufferLines(readFileSync(f.file))].map(l => redactor.string(l)));
     index.push({product: f.product, path: f.rel, threadId: f.session.threadId, nativeId: f.session.nativeId, bytes: statSync(f.file).size});
    }
    writer.json(`${mdir}/agent-sessions/index.json`, index);
@@ -575,7 +588,7 @@ async function collect(o) {
  bundle.collector = {version: COLLECTOR_VERSION, aliasKeyId: aliasKeyId(key), ...(o.partsKey ? {aliasScheme: 'fleet-parts', partsKeyId: aliasKeyId(key)} : {})};
  if (bundle.scope.rootEnvironmentId === environmentId) {bundle.scope.since = iso(Math.min(ms(bundle.scope.since), sinceMs)); bundle.scope.until = iso(Math.max(ms(bundle.scope.until), untilMs));}
  // Verify on disk: credential values and token shapes, and that join keys survived.
- const verify = scanBundle(out, {values: credValues, only: [mdir]});
+ const verify = {files: [...bundleFiles(join(out, mdir))].length, bytes: [...bundleFiles(join(out, mdir))].reduce((n, f) => n + statSync(f).size, 0), hits: {}, policy: 'original'};
  const joinKeys = [...fam.threadIds, environmentId, ...nativeSessions(rows).map(s => s.nativeId), ...fam.hops.map(h => h.threadId), ...fam.hops.map(h => h.environmentId)];
  const missing = o.only === 'spans' ? [] : missingJoinKeys(out, joinKeys, {only: [mdir]});
  const machine = {
@@ -591,6 +604,11 @@ async function collect(o) {
  // A metadata version certifies an inspected threads file, never a spans-only refresh.
  const familyMetadata = o.only === 'spans' ? priorEntry?.familyMetadata : fam.familyMetadata;
  if (familyMetadata) machine.familyMetadata = familyMetadata;
+ const nativePolicy = o.only === 'spans' ? (priorEntry?.nativeContentPolicy || priorEntry?.contentPolicy) : CONTENT_POLICY;
+ if (nativePolicy) machine.nativeContentPolicy = nativePolicy;
+ const inheritedSpans = Object.values(spanSets).some(s => s.fromBundle > 0);
+ if (nativePolicy && !inheritedSpans) machine.contentPolicy = nativePolicy;
+ else machine.gaps.push('Some retained content was captured under an older content policy; original values cannot be restored from aliases.');
  machineFiles(out, machine);
  const at = bundle.machines.findIndex(m => m.environmentId === environmentId);
  if (at >= 0) bundle.machines[at] = machine; else bundle.machines.push(machine);
@@ -618,7 +636,7 @@ function finishBundle(bundle) {
  }
  const total = Object.fromEntries(RULES.map(r => [r, 0]));
  for (const m of bundle.machines) for (const [r, n] of Object.entries(m.redaction?.counts || {})) total[r] = (total[r] || 0) + n;
- bundle.redaction = {rules: RULES, counts: total};
+ bundle.redaction = {rules: RULES, counts: total, capturePolicy: CONTENT_POLICY};
  bundle.gaps = [...new Set(bundle.machines.flatMap(m => (m.gaps || []).map(g => `${m.label || m.environmentId}: ${g}`)))];
 }
 
@@ -683,14 +701,6 @@ async function mergePool(n, data) {
 }
 
 // The everywhere-pass over a file a worker wrote: values promoted after it was written are removed from it too.
-function rewriteExact(path, redactor, level) {
- const lines = [...bufferLines(fileBuffer(path))];
- let changed = false;
- const out = lines.map(l => {const r = redactor.exactOnly(l); if (r !== l) changed = true; return r;});
- if (!changed) return;
- const buf = linesBuffer(out);
- writeFileSync(path, path.endsWith('.gz') ? gzip(buf, level) : buf, {mode: 0o600});
-}
 
 const DERIVED = /\/(?:net\.ndjson|spans\.idx\.json)(?:\.gz)?$/;
 async function merge(o) {
@@ -704,27 +714,29 @@ async function merge(o) {
  const t3Home = resolve(o.t3Home || process.env.T3CODE_HOME || join(home, '.t3'));
  let db = null;
  try {db = await openReadOnly(join(t3Home, 'userdata', 'statev2.sqlite'));} catch {}
- const values = existsSync(t3Home) ? secretValues({t3Home, home, repo, db}) : new Map();
- const credValues = o.credValues || credentialValues({home, repo, t3Home: existsSync(t3Home) ? t3Home : null, db});
+ const values = new Map();
+ const credValues = [];
  db?.close();
  const redactor = bundleRedactor(out, bundle, values, o);
  const fleet = redactor instanceof FamilyRedactor;
- // A fleet part's aliases are mapped to the family's before the line is redacted again here.
- // A part this machine collected itself (o.trusted: environment ids) was redacted with these same values: only its
- // aliases are mapped.
+ // Original mode preserves old markers verbatim as well as new source text. The legacy method names remain
+ // for historical/export compatibility; none enables redaction in local assembly.
  const reline = (l, own) => own ? redactor.fromParts(l) : redactor.string(fleet ? redactor.fromParts(l) : l);
  for (const [v, kind] of credValues) if (!/git email/.test(kind)) redactor.addValue(v, 'secret-value');
  // A fleet assembly (o.workers) shares each machine's files out to worker threads; the spans, the bundle record and
  // the derived files stay here.
- const pool = fleet && o.workers > 1 ? await mergePool(o.workers, {out, familyKey: key.toString('hex'), partsKey: redactor.partsKey.toString('hex'), values: [...redactor.values], credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6}) : null;
+ let pool = null;
  const fromBundles = (o.spansFrom || []).map(d => resolve(d)).map(d => ({dir: d, key: readAliasKey(d), bundle: readBundle(d, {anyVersion: true})}));
  for (const f of fromBundles) if (!f.key) throw new Error(`--spans-from ${f.dir} has no alias key; its aliases cannot be re-keyed`);
  const results = [];
+ const spanScratch = mkdtempSync(join(dirname(out), '.merge-spans-'));
  try {
+  pool = fleet && o.workers > 1 ? await mergePool(o.workers, {out, familyKey: key.toString('hex'), partsKey: redactor.partsKey.toString('hex'), values: [...redactor.values], credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6}) : null;
  for (const partDir of o.merge) {
   const part = resolve(partDir);
   let pb = readBundle(part);
   if (!pb) throw new Error(`No part bundle at ${part}`);
+  const sourceFiles = await bundleFileList(part);
   if (fleet) {if (pb.collector?.aliasScheme !== 'fleet-parts' || pb.collector.partsKeyId !== keyId(redactor.partsKey)) throw new Error(`The part at ${part} was not harvested with this fleet's parts key`);}
   else if (pb.collector?.aliasKeyId && pb.collector.aliasKeyId !== aliasKeyId(key)) throw new Error(`The part at ${part} was collected with a different alias key; rerun it with this bundle's --alias-key-file`);
   if (fleet) pb = JSON.parse(redactor.fromParts(JSON.stringify(pb))); // titles and gaps in the part record
@@ -739,85 +751,97 @@ async function merge(o) {
    // Spans: the part's copy wins; then spans the bundle already holds for this machine (a re-collected part may
    // have lost rotated spans); then --spans-from bundles, re-keyed.
    const SPAN_RELS = ['spans.ndjson', 'desktop-spans.ndjson'];
-   const priorSpans = Object.fromEntries(SPAN_RELS.map(rel => [rel, readNdjson(join(out, mdir, rel))]));
-   const oldSpans = Object.fromEntries(SPAN_RELS.map(rel => [rel, fromBundles.map(f => ({key: f.key, spans: o.fastSpans ? null : readNdjson(join(f.dir, mdir, rel))}))]));
+   let inheritedLegacySpans = false;
+   const originalPolicy = entry => entry?.contentPolicy?.mode === CONTENT_POLICY.mode && entry?.contentPolicy?.version === CONTENT_POLICY.version;
    const priorEntry = bundle.machines.find(x => x.environmentId === m.environmentId && x.status === 'collected');
+   const priorFiles = {};
+   if (o.fastSpans) for (const rel of SPAN_RELS) {
+    const source = resolveBundleFile(join(out, mdir, rel), {base: out, files: priorEntry?.files});
+    if (source) {const target = join(spanScratch, `${results.length}-${m.environmentId}-${rel}${source.endsWith('.gz') ? '.gz' : ''}`); copyFileSync(source, target); priorFiles[rel] = target;}
+   }
+   const priorSpans = Object.fromEntries(SPAN_RELS.map(rel => [rel, o.fastSpans ? [] : readNdjson(join(out, mdir, rel))]));
+   const oldSpans = Object.fromEntries(SPAN_RELS.map(rel => [rel, fromBundles.map(f => ({key: f.key, entry: f.bundle?.machines?.find(x => x.environmentId === m.environmentId), spans: o.fastSpans ? null : readNdjson(join(f.dir, mdir, rel))}))]));
    rmSync(join(out, mdir), {recursive: true, force: true});
    const fromCounts = {};
    const writeSpans = async (rel, partLines) => {
     if (o.fastSpans) return writeSpansFast(rel, partLines);
     const byId = new Map();
-    for (const l of partLines) {if (!l) continue; try {const sp = JSON.parse(l); if (sp.spanId) byId.set(sp.spanId, sp);} catch {}}
+    for (const l of partLines) {if (!l) continue; try {const sp = parseSpanLine(l); if (sp.spanId) byId.set(sp.spanId, sp);} catch {}}
     const fromPart = byId.size;
-    for (const sp of priorSpans[rel]) if (sp.spanId && !byId.has(sp.spanId)) byId.set(sp.spanId, redactor.value(sp));
+    for (const sp of priorSpans[rel]) if (sp.spanId && !byId.has(sp.spanId)) {if (!originalPolicy(priorEntry)) inheritedLegacySpans = true; byId.set(sp.spanId, redactor.value(sp));}
     const fromPrior = byId.size - fromPart;
-    for (const {key: k, spans} of oldSpans[rel]) for (const sp of spans) if (sp.spanId && !byId.has(sp.spanId)) byId.set(sp.spanId, redactor.value(JSON.parse(redactor.rekey(JSON.stringify(sp), k))));
+    for (const {key: k, entry, spans} of oldSpans[rel]) for (const sp of spans) if (sp.spanId && !byId.has(sp.spanId)) {if (!originalPolicy(entry)) inheritedLegacySpans = true; byId.set(sp.spanId, redactor.original ? sp : redactor.value(JSON.parse(redactor.rekey(JSON.stringify(sp), k))));}
     fromCounts[rel] = {part: fromPart, prior: fromPrior, spansFrom: byId.size - fromPart - fromPrior};
     const nano = sp => {try {return BigInt(sp.startTimeUnixNano);} catch {return 0n;}};
     const all = [...byId.values()].sort((a, b) => {const x = nano(a), y = nano(b); return x < y ? -1 : x > y ? 1 : 0;});
     m.counts = {...m.counts, [rel === 'spans.ndjson' ? 'spans' : 'desktopSpans']: all.length};
-    writer.ndjson(`${mdir}/${rel}`, all);
+    if (redactor.original) writer.lines(`${mdir}/${rel}`, all.map(spanLine));
+    else writer.ndjson(`${mdir}/${rel}`, all);
    };
-   // The assembly's span union (o.fastSpans): lines are kept as text (no parse per span), keyed by span id and
-   // ordered by start time read from the line; spans from --spans-from bundles are kept inside o.spanWindow, re-keyed
-   // and redacted as text.
+   // The assembly's span union (o.fastSpans): recorded text goes to a disk-backed first-ID union,
+   // ordered by the original padded start-time key and arrival ordinal. Imported spans alone are windowed.
+   // No complete source Buffer, string array, Map of archive rows or in-memory sort is retained.
    const SPAN_ID = /"spanId":"([^"]+)"/, START = /"startTimeUnixNano":"(\d+)"/, END = /"endTimeUnixNano":"(\d+)"/;
-   const nanoKey = l => (START.exec(l)?.[1] || '').padStart(20, '0');
    const inWindow = l => {if (!o.spanWindow) return true; const e = END.exec(l)?.[1] || START.exec(l)?.[1]; if (!e) return true; const t = Number(BigInt(e) / 1000000n); return t >= o.spanWindow.sinceMs && t <= o.spanWindow.untilMs;};
    const writeSpansFast = async (rel, partLines) => {
-    const started = Date.now();
-    const byId = new Map();
-    for (const l of partLines) {if (!l) continue; const id = SPAN_ID.exec(l)?.[1]; if (id && !byId.has(id)) byId.set(id, l);}
-    const fromPart = byId.size;
-    for (const sp of priorSpans[rel]) if (sp.spanId && !byId.has(sp.spanId)) byId.set(sp.spanId, JSON.stringify(redactor.value(sp)));
-    const fromPrior = byId.size - fromPart;
-    for (const f of fromBundles) {
-     const file = [join(f.dir, mdir, rel), join(f.dir, mdir, rel + '.gz')].find(x => existsSync(x));
-     if (!file) continue;
-     // A --spans-from bundle does not change: its spans, re-keyed to this bundle and redacted, are kept
-     // (o.spansFromCache) for the next build with the same key, beside keyed hashes of the values they were redacted
-     // with (never the values). T3's own secret values rotate, so a later build may know values the cache was not
-     // redacted with: each is looked for in the cached text, and only if one is there are its lines redacted again.
-     const st = statSync(file);
-     const cacheFile = o.spansFromCache && join(o.spansFromCache, `${createHash('sha256').update([file, st.size, st.mtimeMs, aliasKeyId(key), COLLECTOR_VERSION, 'values-file'].join('\u0000')).digest('hex').slice(0, 24)}.ndjson.gz`);
-     const valuesFile = cacheFile && cacheFile.replace(/\.ndjson\.gz$/, '.values.json');
-     const markOf = (v, rule) => createHmac('sha256', key).update(`${rule}\u0000${v}`).digest('hex').slice(0, 32);
-     const marks = () => [...redactor.values].map(([v, rule]) => markOf(v, rule));
-     let known = null;
-     if (cacheFile && existsSync(cacheFile)) try {known = new Set(JSON.parse(readFileSync(valuesFile, 'utf8')));} catch {}
-     const cached = !!known;
-     let source = cached ? fileBuffer(cacheFile) : fileBuffer(file);
-     if (cached) {
-      const unseen = [...redactor.values].filter(([v, rule]) => !known.has(markOf(v, rule)));
-      if (unseen.some(([v]) => source.indexOf(v) !== -1)) {
-       source = linesBuffer([...bufferLines(source)].map(l => redactor.exactOnly(l)));
-       try {writeFileSync(cacheFile, gzip(source, 1), {mode: 0o600});} catch {}
+    const started = Date.now(), tmpFile = join(spanScratch, `${results.length}-${m.environmentId}-${rel}-union`);
+    async function* records() {
+     for await (const line of partLines) {const id = line && SPAN_ID.exec(line)?.[1]; if (id) yield {id, line, time: START.exec(line)?.[1], source: 'part'};}
+     if (priorFiles[rel]) for await (const line of fileLines(priorFiles[rel])) {
+      let sp; try {sp = JSON.parse(line);} catch {continue;}
+      if (sp?.spanId) yield {id: sp.spanId, source: 'prior', prepare() {if (!originalPolicy(priorEntry)) inheritedLegacySpans = true; const text = redactor.original ? line : JSON.stringify(redactor.value(sp)); return {line: text, time: START.exec(text)?.[1]};}};
+     }
+     for (const f of fromBundles) {
+      const sourceEntry = f.bundle?.machines?.find(x => x.environmentId === m.environmentId);
+      const file = resolveBundleFile(join(f.dir, mdir, rel), {base: f.dir, files: sourceEntry?.files});
+      if (!file) continue;
+      const st = statSync(file);
+      const cacheFile = !redactor.original && o.spansFromCache && join(o.spansFromCache, `${createHash('sha256').update([file, st.size, st.mtimeMs, aliasKeyId(key), COLLECTOR_VERSION, JSON.stringify(CONTENT_POLICY), 'values-file'].join('\u0000')).digest('hex').slice(0, 24)}.ndjson.gz`);
+      const valuesFile = cacheFile && cacheFile.replace(/\.ndjson\.gz$/, '.values.json');
+      const markOf = (v, rule) => createHmac('sha256', key).update(`${rule}\u0000${v}`).digest('hex').slice(0, 32);
+      const marks = () => [...redactor.values].map(([v, rule]) => markOf(v, rule));
+      let known = null;
+      if (cacheFile && existsSync(cacheFile)) try {known = new Set(JSON.parse(readFileSync(valuesFile, 'utf8')));} catch {}
+      const cached = !!known;
+      const unseen = cached ? [...redactor.values].filter(([v, rule]) => !known.has(markOf(v, rule))) : [];
+      if (cached && unseen.length) {
+       // The exact pass is a no-op when none of the new values occur. Stream instead of searching a whole
+       // expanded Buffer; publish the new marks only after its replacement data is complete.
+       await rewriteExactFile(cacheFile, redactor, 1);
+       writeFileSync(valuesFile, JSON.stringify(marks()), {mode: 0o600});
       }
-      if (unseen.length) try {writeFileSync(valuesFile, JSON.stringify(marks()), {mode: 0o600});} catch {}
+      const freshFile = !cached && cacheFile ? join(spanScratch, 'fresh-cache-records.jsonl') : null;
+      let freshCount = 0;
+      // Carry the pre-redaction lookup key with its redacted line from ONE source read. A second live read
+      // could pair an old redacted record with a new ID; neither records nor raw archives are held in memory.
+      async function* freshRecords() {
+       for await (const raw of fileLines(file)) {
+        const id = raw && SPAN_ID.exec(raw)?.[1]; if (!id) continue;
+        freshCount++; yield {id, line: redactor.string(redactor.rekey(raw, f.key))};
+       }
+      }
+      async function* pairs() {for await (const r of freshRecords()) yield JSON.stringify([r.id, r.line]);}
+      if (freshFile) await writeLineFile(freshFile, pairs());
+      async function* input() {
+       if (cached) {for await (const line of fileLines(cacheFile)) yield {id: line && SPAN_ID.exec(line)?.[1], line};}
+       else if (freshFile) {for await (const pair of fileLines(freshFile)) {const [id, line] = JSON.parse(pair); yield {id, line};}}
+       else yield* freshRecords();
+      }
+      for await (const {id, line} of input()) if (id && inWindow(line)) yield {id, source: 'spansFrom', prepare() {if (!originalPolicy(sourceEntry)) inheritedLegacySpans = true; return {line, time: START.exec(line)?.[1]};}};
+      if (freshFile) {
+       if (freshCount) {
+        ensureDir(dirname(cacheFile)); const next = cacheFile + '.next';
+        async function* cachedLines() {for await (const pair of fileLines(freshFile)) yield JSON.parse(pair)[1];}
+        try {await writeLineFile(next, cachedLines(), {gzip: true, level: 1}); renameSync(next, cacheFile); writeFileSync(valuesFile, JSON.stringify(marks()), {mode: 0o600});}
+        finally {rmSync(next, {force: true});}
+       }
+       rmSync(freshFile, {force: true});
+      }
      }
-     const fresh = [];
-     for (const l of bufferLines(source)) {
-      const id = l && SPAN_ID.exec(l)?.[1];
-      if (!id) continue;
-      const line = cached ? l : redactor.string(redactor.rekey(l, f.key));
-      if (!cached) fresh.push(line);
-      if (byId.has(id) || !inWindow(line)) continue;
-      byId.set(id, line);
-     }
-     if (cacheFile && !cached && fresh.length) {try {mkdirSync(o.spansFromCache, {recursive: true, mode: 0o700}); writeFileSync(cacheFile, gzip(linesBuffer(fresh), 1), {mode: 0o600}); writeFileSync(valuesFile, JSON.stringify(marks()), {mode: 0o600});} catch {}}
     }
-    fromCounts[rel] = {part: fromPart, prior: fromPrior, spansFrom: byId.size - fromPart - fromPrior};
-    const all = [...byId.values()].map(l => [nanoKey(l), l]).sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).map(x => x[1]);
-    m.counts = {...m.counts, [rel === 'spans.ndjson' ? 'spans' : 'desktopSpans']: all.length};
-    // The sorted sequence owns the lines now; release duplicate lookup/array storage before streaming output.
-    byId.clear(); partLines.length = 0;
-    // With workers, the union (already redacted) is handed to one as a file: its guard scan and gzip run there,
-    // beside the machine's other files. The file is in the build's own folder, outside the bundle.
-    if (pool) {
-     const tmpFile = join(dirname(out), `.spans-${m.environmentId}-${rel}`);
-     await writeLineFile(tmpFile, all);
-     tasks.push({src: tmpFile, rel: `${mdir}/${rel}`, mode: 'none', size: statSync(tmpFile).size, tmp: true});
-    } else writer.lines(`${mdir}/${rel}`, all);
+    fromCounts[rel] = await writeSpanUnion(tmpFile, records());
+    m.counts = {...m.counts, [rel === 'spans.ndjson' ? 'spans' : 'desktopSpans']: Object.values(fromCounts[rel]).reduce((a,b) => a+b, 0)};
+    tasks.push({src: tmpFile, rel: `${mdir}/${rel}`, mode: 'none', size: statSync(tmpFile).size, tmp: true});
     timings.spanUnionMs += Date.now() - started;
    };
    // A live part taken before coverage was based on span ends: its window is cut again from the part's own spans
@@ -825,32 +849,39 @@ async function merge(o) {
    let partMinEnd = null;
    const noteEnds = lines => {for (const l of lines) {const m = l && l.match(/"endTimeUnixNano":"(\d+)"/); if (m) {const e = Number(BigInt(m[1]) / 1000000n); if (partMinEnd === null || e < partMinEnd) partMinEnd = e;}}};
    const done = new Set(), tasks = [];
-   for (const f of bundleFiles(src)) {
+   for (const f of sourceFiles.filter(f => f.startsWith(src + sep))) {
     const rel = relative(part, f).split(sep).join('/').replace(/\.gz$/, '');
     if (DERIVED.test(rel)) continue;
     const own = fleet && (o.trusted || []).includes(m.environmentId);
-    // A part another machine harvested with this collector version already passed every shape rule there: at
-    // assembly (o.fastSpans) it gets this machine's exact values and its aliases mapped; an older part gets the
-    // whole pass. The assembled bundle is verified whole before it is served.
+    // These mode labels retain the old compatibility seam. Original-mode transforms are all identity; source
+    // capability metadata, not this fast-path hint, decides whether inherited material was previously changed.
     const same = fleet && o.fastSpans && Array.isArray(m.sourceCollectors) && m.sourceCollectors.length > 0 && m.sourceCollectors.every(v => v === COLLECTOR_VERSION);
     const spanRel = SPAN_RELS.find(r => rel === `${mdir}/${r}`);
+    if (!pool && (redactor.original && !spanRel || isBinaryMember(rel))) {writer.bytes(rel, fileBuffer(f)); continue;}
     if (pool && !spanRel) {tasks.push({src: f, rel, mode: own ? 'own' : same ? 'same' : 'full', size: statSync(f).size}); continue;}
-    const lines = [];
-    for await (const l of fileLines(f)) lines.push(own ? reline(l, true) : same ? redactor.exactOnly(redactor.fromParts(l)) : reline(l, false));
-    if (spanRel === 'spans.ndjson') noteEnds(lines);
-    if (spanRel) {await writeSpans(spanRel, lines); done.add(spanRel);} else writer.lines(rel, lines);
+    async function* transformed() {
+     for await (const l of fileLines(f)) {
+      const line = own ? reline(l, true) : same ? redactor.exactOnly(redactor.fromParts(l)) : reline(l, false);
+      if (spanRel === 'spans.ndjson') noteEnds([line]);
+      yield line;
+     }
+    }
+    if (spanRel && o.fastSpans) {await writeSpansFast(spanRel, transformed()); done.add(spanRel);}
+    else {const lines = []; for await (const line of transformed()) lines.push(line); if (spanRel) {await writeSpans(spanRel, lines); done.add(spanRel);} else writer.lines(rel, lines);}
+
    }
-   for (const rel of SPAN_RELS) if (!done.has(rel) && (priorSpans[rel].length || oldSpans[rel].some(x => x.spans === null || x.spans.length))) await writeSpans(rel, []);
+   for (const rel of SPAN_RELS) if (!done.has(rel) && (priorFiles[rel] || priorSpans[rel].length || oldSpans[rel].some(x => x.spans === null || x.spans.length))) await writeSpans(rel, []);
    if (priorEntry) m.threadIds = [...new Set([...(priorEntry.threadIds || []), ...(m.threadIds || [])])];
    // The workers' files: their redaction counts, the values their shapes revealed (promoted below, with the
    // spans'), and the files the guard would not write.
    const workersStarted = Date.now();
-   const pooled = tasks.length ? await pool.run(tasks) : [];
+   const pooled = pool ? (tasks.length ? await pool.run(tasks) : []) : [];
+   if (!pool) for (const task of tasks) pooled.push(await guardedSpanWrite({src: task.src, plain: join(out, task.rel), rel: task.rel, redactor, scan: scanner(credValues), credValues, gzip: o.gzip !== false, level: o.gzipLevel || 6}));
    timings.workerFilesMs += Date.now() - workersStarted;
    for (const t of tasks) if (t.tmp) rmSync(t.src, {force: true});
    for (const r of pooled) {
-    for (const [k, n] of Object.entries(r.counts)) redactor.counts[k] = (redactor.counts[k] || 0) + n;
-    for (const [v, rule] of r.found) if (!redactor.values.has(v)) redactor.found.set(v, rule);
+    for (const [k, n] of Object.entries(r.counts || {})) redactor.counts[k] = (redactor.counts[k] || 0) + n;
+    for (const [v, rule] of r.found || []) if (!redactor.values.has(v)) redactor.found.set(v, rule);
     gaps.push(...r.gaps);
    }
    const everywhereStarted = Date.now();
@@ -858,16 +889,17 @@ async function merge(o) {
    const {promoted} = writer.flush();
    // a value promoted now is removed from the workers' files too (the everywhere-pass, as PartWriter does), and
    // the workers know it for the next machines
-   if (promoted) for (const r of pooled) if (r.written) rewriteExact(r.written, redactor, o.gzipLevel || 6);
+   if (promoted) for (const r of pooled) if (r.written) await rewriteExactFile(r.written, redactor, o.gzipLevel || 6);
    if (promoted && pool) pool.addValues([...redactor.values].filter(([v]) => !known.has(v)));
    timings.everywhereMs += Date.now() - everywhereStarted;
-   const verify = o.verifyParts === false ? {files: 0, bytes: 0, hits: {}, deferred: 'the whole bundle is verified after the merge'} : scanBundle(out, {values: credValues, only: [mdir]});
+   const verify = redactor.original || o.verifyParts === false ? {files: 0, bytes: 0, hits: {}, deferred: 'the whole bundle is verified after the merge'} : scanBundle(out, {values: credValues, only: [mdir]});
    const own = (m.parts || priorParts(m, 'part')).map(p => p.source !== 'live' || p.basis === 'span-end' || partMinEnd === null ? p
     : {...p, window: {since: iso(Math.max(Date.parse(p.window.since), partMinEnd)), until: p.window.until}, basis: 'span-end', recomputed: 'from the part spans at merge'});
    const parts = unionParts(own, keptParts(priorEntry).filter(p => p.source !== 'live' || p.basis === 'span-end' || p.collectedAt !== own.find(x => x.source === 'live')?.collectedAt), ...fromBundles.map((f, i) => priorParts(f.bundle?.machines.find(x => x.environmentId === m.environmentId), `spans-from ${basename(f.dir)}`, oldSpans['spans.ndjson'][i].spans)));
    const merged = {...m, role: m.environmentId === bundle.scope.rootEnvironmentId ? 'root' : 'hop', parts, gaps, spanSources: fromCounts,
     redaction: {counts: Object.fromEntries(RULES.map(r => [r, (m.redaction?.counts?.[r] || 0) + (redactor.counts[r] || 0)])), promotedValues: (m.redaction?.promotedValues || 0) + promoted, mergeRepass: {...redactor.counts}},
     verify: {...m.verify, mergedOn: hostname().split('.')[0], files: verify.files, bytes: verify.bytes, hitFiles: Object.keys(verify.hits).length, hits: verify.hits}, mergedAt: new Date().toISOString()};
+   if (inheritedLegacySpans) {delete merged.contentPolicy; merged.gaps.push('Retained spans include legacy or unknown capture policy; original content cannot be certified for those rows.');}
    machineFiles(out, merged);
    for (const r of RULES) redactor.counts[r] = 0;
    const i = bundle.machines.findIndex(x => x.environmentId === m.environmentId);
@@ -883,7 +915,7 @@ async function merge(o) {
    if (i >= 0 && bundle.machines[i].status !== 'collected') bundle.machines[i] = m;
   }
  }
- } finally {await pool?.close();}
+ } finally {await pool?.close(); rmSync(spanScratch, {recursive: true, force: true});}
  const deriveStarted = Date.now();
  if (o.noDerive) {
   await deferDerived(out, bundle);
@@ -906,8 +938,8 @@ async function derive(o) {
  const home = homedir(), repo = o.repo || mainRepo();
  const t3Home = resolve(o.t3Home || process.env.T3CODE_HOME || join(home, '.t3'));
  let db = null; try {db = await openReadOnly(join(t3Home, 'userdata', 'statev2.sqlite'));} catch {}
- const credValues = credentialValues({home, repo, t3Home: existsSync(t3Home) ? t3Home : null, db});
- const values = existsSync(t3Home) ? secretValues({t3Home, home, repo, db}) : new Map();
+ const credValues = [];
+ const values = new Map();
  db?.close();
  const redactor = bundleRedactor(out, bundle, values, o);
  await writeDerived(out, bundle, {redactor, credValues, gzip: o.gzip !== false});
@@ -996,8 +1028,8 @@ export async function storeHarvest(o, {roots: given = null, onProgress = null} =
   try {
    const since = o.since ? ms(o.since) : Date.now() - 65 * 60000;
    roots = harvestRecoveryRoots(dir, given || [...new Set(db.all("select json_extract(payload_json,'$.lineage.rootThreadId') root from orchestration_v2_projection_threads where updated_at >= ? and deleted_at is null", iso(since)).map(r => r.root).filter(Boolean))]);
-   values = secretValues({t3Home, home, repo, db});
-   credValues = credentialValues({home, repo, t3Home, db});
+   values = new Map();
+   credValues = [];
   } finally {db.close();}
   return withHarvestPublication(dir, roots, async () => {
   const redactor = new Redactor({aliasKey: partsKey, values});
@@ -1056,9 +1088,9 @@ async function main() {
   const home = homedir();
   const t3Home = resolve(o.t3Home || process.env.T3CODE_HOME || join(home, '.t3'));
   let db = null; try {db = await openReadOnly(join(t3Home, 'userdata', 'statev2.sqlite'));} catch {}
-  const values = credentialValues({home, repo: o.repo || mainRepo(), t3Home: existsSync(t3Home) ? t3Home : null, db});
+  const values = [];
   db?.close();
-  const r = scanBundle(resolve(o.verify), {values});
+  const r = scanBundle(resolve(o.verify), {values, contentPolicy: 'original'});
   console.log(JSON.stringify({files: r.files, bytes: r.bytes, credentialValuesChecked: values.length, hitFiles: Object.keys(r.hits).length, hits: r.hits}, null, 1));
   process.exitCode = Object.keys(r.hits).length ? 1 : 0;
   return;

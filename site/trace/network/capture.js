@@ -1,10 +1,10 @@
 import {scopeVoice,summarizeVoice} from './voice.js';
 // A network capture attached to a loaded session: which entries belong to it, what each endpoint is,
 // what the model calls and side traffic reveal, and how they join to the session log. Runs in the worker;
-// what it returns (the capture summary) is redacted and holds no body text. Bodies are read later, one at
-// a time and redacted the same way (store.body).
-import { parseHar, entryInfo, bodyText, jsonOr, header, parseSSE, wsFrames } from "./har.js";
-import { createRedactor, REDACTED, BY_CAPTURE } from "./redact.js";
+// what it returns (the capture summary) holds no body text. Bodies and headers are read later, one at a time and
+// exactly as recorded (store.body, store.headers).
+import { parseHar, entryInfo, bodyText, jsonOr, header, wsFrames } from "./har.js";
+import { createRedactor, alreadyRedacted } from "./redact.js";
 import { classify, productOf, ROLES, DECISIONS } from "./catalog.js";
 import {
   claudeModelCall, growthbookFlags, growthbookAttributes, claudeBootstrap, claudeEventLog, claudeDatadog,
@@ -332,7 +332,7 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
   const kept = infos.filter((x) => keep[x.i]);
   const elsewhere = infos.length - kept.length;
 
-  // ---- classify, then read the revealing bodies and collect identity values before redacting anything
+  // ---- classify, then read the revealing bodies (shown as recorded: createRedactor passes everything through)
   const R = createRedactor();
   R.protect([...mine, ...others]);
   for (const decoded of decodedByEntry.values()) R.harvest(decoded);
@@ -352,7 +352,7 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
     if (j) R.harvest(j);
     for (const f of x.ws ? wsFrames(raw[x.i]) : []) if (f.json) R.harvest(f.json);
   }
-  // Identity inside raw bearer tokens (a JWT's email and name claims) joins the values removed everywhere.
+  // The transit report's first pass: what kinds of credential and identity went where (its rows keep no values).
   const { personal } = collectTransit({ entries: kept.map((x) => ({ entry: raw[x.i], reqJson: reqJson(x.i), resJson: resJson.get(x.i) ?? null })), R });
   const sockets = new Map(); // entry index -> { offset, frames, frameCall } for the websocket's calls
 
@@ -547,43 +547,60 @@ export async function analyzeCapture(files, trace, { now = () => Date.now() } = 
           ? decodedByEntry.get(c.entry)?.request : jsonOr(bodyText(raw[c.entry],'request'),{}))))
       })).filter(item=>item.parts.length);
     },
-    // The literal body of entry i, redacted: part "request" | "response" | "frames". { text, mode, cut }.
-    body(i, part) {
+    // The literal body of entry i, exactly as recorded: part "request" | "response" | "frames" ("reasoning": the
+    // received reasoning fields, gathered). -> { text, mode, cut, total, decoded? }. A JSON body keeps its spacing, line
+    // endings, duplicate keys and long numbers; an event stream keeps every line (comments, ids, retries, empty
+    // events); every frame keeps its data. The reader lays the text out by its kind (readable.js) and "As stored" shows
+    // exactly this text; the mode only names what the text is (what the capture's summary found in it is derived
+    // apart, above). A read stops at BODY_MAX characters (cut, and total says how long the whole is) unless `whole`
+    // asks for all of it, which a reader does only when asked to. A Cursor body decoded with the shipped descriptors
+    // is a view (decoded: true): `original` reads the body exactly as the capture stored it (its base64 when it stored
+    // base64), for any body.
+    body(i, part, { whole = false, original = false } = {}) {
       const e = raw[i];
       if (!e || !keep[i]) throw new Error("no such entry in the attached capture");
-      if (part === 'reasoning') return cut(chatReasoningText(e, R), 'received reasoning fields, redacted');
-      if (part === "frames") {
-        const lines = wsFrames(e).map((f,k) => `${f.dir === "send" ? "→ sent" : "← received"}${e._webSocketMessages[k]?._traceAssociation === "unattributed" ? " [unattributed]" : ""} ${f.t != null ? new Date(f.t).toISOString().slice(11, 23) : ""}\n${f.json ? JSON.stringify(R.json(harvested(R, f.json)), null, 2) : R.str(String(f.bytes)) + " bytes (not JSON)"}`);
-        return cut(lines.join("\n\n"), "websocket frames, redacted");
-      }
+      const out = (text, mode, extra = {}) => ({ ...(whole ? { text, mode, cut: false } : cut(text, mode)), total: text.length, ...extra });
+      if (part === 'reasoning') return out(chatReasoningText(e, R), 'received reasoning fields');
+      if (part === "frames") return out(framesText(e), "websocket frames");
+      const stored = part === "response" ? e.response?.content : part === "request" ? e.request?.postData : null;
+      if (original) return stored?.text == null || stored.text === "" ? { text: "", mode: "no body", cut: false, total: 0 } : out(R.str(String(stored.text)), stored.encoding === "base64" ? "as captured, base64" : "as captured");
       const text = bodyText(e, part);
-      if (text == null || text === "") return { text: "", mode: "no body", cut: false };
+      if (text == null || text === "") return { text: "", mode: "no body", cut: false, total: 0 };
       const mime = part === "response" ? infos[i].mime : String(header(e.request.headers, "content-type") || "");
       if (product === 'cursor' && /application\/connect\+proto/i.test(mime)) {
         const decoded = decodedByEntry.get(i)?.[part];
-        if (decoded) return cut(JSON.stringify(R.json(harvested(R, decoded)), null, 2), 'application/connect+proto, exact shipped AgentService descriptors, redacted');
-        const encoded = part === 'response' ? e.response?.content : e.request?.postData;
-        if (encoded?.encoding === 'base64') return cut(`Exact captured protobuf bytes (${encoded.size ?? 'unknown'} bytes), base64 encoded:\n\n${R.str(encoded.text || '')}`, 'application/connect+proto, opaque base64');
-        return cut(`Captured application/connect+proto body (${String(text).length} decoded characters). No shipped-schema decoder was applied:\n\n${R.str(text)}`, 'application/connect+proto, opaque');
+        if (decoded) return out(JSON.stringify(R.json(harvested(R, decoded)), null, 2), 'application/connect+proto, decoded with the exact shipped AgentService descriptors', { decoded: true });
+        // no decoder: the body exactly as captured (its base64 when the capture stored base64)
+        return out(R.str(String(stored?.text ?? text)), `application/connect+proto, ${stored?.encoding === 'base64' ? `${stored.size ?? 'unknown'} bytes as captured, base64` : 'as captured'}; no shipped-schema decoder was applied`);
       }
-      if (/event-stream/.test(mime) || /^\s*(event|data):/m.test(text.slice(0, 200))) {
-        const ev = parseSSE(text).map((s) => `event: ${s.event}\ndata: ${s.json ? JSON.stringify(R.json(harvested(R, s.json)), null, 2) : R.str(s.data)}`);
-        return cut(ev.join("\n\n"), "server-sent events, redacted");
-      }
-      const j = jsonOr(text, undefined);
-      if (j !== undefined) return cut(JSON.stringify(R.json(harvested(R, j)), null, 2), "JSON, redacted");
-      return cut(R.str(text), "text, redacted");
+      if (/event-stream/.test(mime) || /^\s*(event|data):/m.test(text.slice(0, 200))) return out(R.str(text), "server-sent events");
+      if (jsonOr(text, undefined) !== undefined) return out(R.str(text), "JSON");
+      return out(R.str(text), "text");
     },
     headers(i) {
       const e = raw[i];
       if (!e || !keep[i]) throw new Error("no such entry in the attached capture");
-      return { request: R.headers(e.request.headers), response: R.headers(e.response.headers) };
+      // the request's own URL first (a key in a query or path is read here), then each side's headers as recorded
+      return { url: `${e.request.method || ""} ${e.request.url || ""}`.trim(), request: R.headers(e.request.headers), response: R.headers(e.response.headers) };
     },
   };
   return { capture, store };
 }
 
 function harvested(R, j) { R.harvest(j); return j; }
+// A websocket's frames, each under a heading line Trace writes (its direction, time, "[unattributed]" when no exact
+// session correlation owns it, "binary, base64 as recorded" for a binary frame, and the exact length of its data),
+// then the frame's data exactly as the capture recorded it; frames apart by a blank line. The length lets a reader
+// (readable.js segments) take each frame whole, blank lines inside it and all.
+function framesText(e) {
+  const list = Array.isArray(e._webSocketMessages) ? e._webSocketMessages : [];
+  return wsFrames(e).map((f, k) => {
+    const m = list[k] || {}, data = typeof m.data === "string" ? m.data : m.data == null ? "" : JSON.stringify(m.data);
+    const head = [`${f.dir === "send" ? "→ sent" : "← received"}${m._traceAssociation === "unattributed" ? " [unattributed]" : ""}${f.t != null ? ` ${new Date(f.t).toISOString().slice(11, 23)}` : ""}`,
+      ...(Number(m.opcode) === 2 ? ["binary, base64 as recorded"] : []), `${data.length.toLocaleString("en-US")} character${data.length === 1 ? "" : "s"}`];
+    return `${head.join(" · ")}\n${data}`;
+  }).join("\n\n");
+}
 function cut(text, mode) {
   if (text.length <= BODY_MAX) return { text, mode, cut: false };
   return { text: `${text.slice(0, BODY_MAX)}\n\n[… cut at ${BODY_MAX.toLocaleString("en-US")} characters]`, mode, cut: true };
@@ -594,12 +611,12 @@ function windowName(name, w, unit = 1) {
   const d = min / 1440;
   return `${name} (${d >= 1 && Number.isInteger(d) ? `${d} d` : min >= 60 ? `${Math.round(min / 60)} h` : `${min} min`})`;
 }
-// The key paths in a redacted value whose values were removed.
+// The key paths of a value whose values the capture tool removed before Trace saw the file (Trace removes none).
 export function redactedKeys(v, path = "", out = []) {
   if (v && typeof v === "object") {
     for (const [k, x] of Object.entries(v)) {
       const p = Array.isArray(v) ? path : path ? `${path}.${k}` : k;
-      if (x === REDACTED || x === BY_CAPTURE || (Array.isArray(x) && x.length && x.every((y) => y === REDACTED))) { if (!out.includes(p)) out.push(p); }
+      if (alreadyRedacted(x) || (Array.isArray(x) && x.length && x.every(alreadyRedacted))) { if (!out.includes(p)) out.push(p); }
       else redactedKeys(x, p, out);
     }
   }

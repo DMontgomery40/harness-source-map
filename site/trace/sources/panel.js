@@ -1,12 +1,11 @@
 // Everything on this machine: every local source the harness's shipped code keeps about a session
 // (tools/sources, served by the loopback resolver), with whether it is here for this session and what it
-// holds. Content is read from the resolver one source at a time, redacted there the way the network layer
-// redacts a capture. Nothing is saved.
+// holds. Content is read from the resolver one source at a time and shown as recorded. Nothing is saved.
 import { el, fmtInt, fmtWhen } from "../panels.js";
 import { compactValue } from "../compact.js";
 import { readableOrStored, readableText, readableValue, recordList, splitCut, textKind } from "../readable.js";
 
-export const SOURCES_LENS = { key: "sources", q: "Everything on this machine", icon: "⌸" };
+export const SOURCES_LENS = { key: "sources", name: "Local files", q: "Everything on this machine", icon: "⌸" };
 import { productLabel } from '../products.js';
 const JOIN = {
   exact: "Session",
@@ -28,10 +27,16 @@ const size = (n) => (n == null ? "" : n < 1024 ? `${n} B` : n < 1048576 ? `${(n 
 
 // S.sources: null (asking), { unavailable, reason } or the resolver's report. S.sourceOpen: Map(id -> view).
 export function sourcesLens(S, A) {
-  const out = [el("h2", { text: SOURCES_LENS.q })];
+  const out = [el("h2", { class: "sr-only", text: SOURCES_LENS.q })];
   const rep = S.sources;
   const product = productLabel(S.trace.product);
   if (!rep) { out.push(el("p", { class: "meta", text: "Loading local files…" })); return out; }
+  // not a setup problem: the example's policy, a session with nothing to look up, or the helper's own answer
+  if (rep.unavailable && rep.code === "public-example") {
+    out.push(el("p", { text: rep.reason }), A.openOwnSession ? el("button", { class: "btn small", type: "button", text: "Open your own session", onclick: () => A.openOwnSession() }) : null);
+    return out;
+  }
+  if (rep.unavailable && (rep.code === "no-session-id" || rep.code === "answer")) { out.push(el("p", { text: rep.reason })); return out; }
   if (rep.unavailable) {
     out.push(el("p", { text: "Connect the local helper to browse files on this computer." }),
       el("details", { class: "net-fold" }, el("summary", { text: "Set up local access" }),

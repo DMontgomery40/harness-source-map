@@ -1,3 +1,4 @@
+import {assertBinaryCredentials} from './media.mjs';
 // Contract A bundle files: bundle.json, the alias key, and a buffered writer that applies the everywhere-pass
 // (every credential value found by shape anywhere in this run is removed from every file) before anything is
 // written. Files are written 0600 in 0700 folders.
@@ -82,13 +83,14 @@ export class PartWriter {
  constructor(bundleDir, redactor, {gzip: useGzip = true, level = 6} = {}) {this.dir = bundleDir; this.redactor = redactor; this.files = new Map(); this.gzip = useGzip; this.level = level;}
  put(rel, text) {this.files.set(rel.split(sep).join('/'), text);}
  lines(rel, lines) {this.files.set(rel.split(sep).join('/'), {lines});}
+ bytes(rel, bytes) {this.files.set(rel.split(sep).join('/'), Buffer.from(bytes));}
  json(rel, value) {this.put(rel, JSON.stringify(value, null, 1) + '\n');}
  ndjson(rel, rows) {this.lines(rel, rows.map(r => JSON.stringify(r)));}
  flush() {
   const promoted = this.redactor.promoteFound();
   const written = [];
   for (const [rel, text] of this.files) {
-   const final = typeof text === 'string' ? Buffer.from(promoted ? this.redactor.exactOnly(text) : text, 'utf8') : linesBuffer(promoted ? text.lines.map(l => this.redactor.exactOnly(l)) : text.lines);
+   const final = Buffer.isBuffer(text) ? assertBinaryCredentials(text, this.redactor) : typeof text === 'string' ? Buffer.from(promoted ? this.redactor.exactOnly(text) : text, 'utf8') : linesBuffer(promoted ? text.lines.map(l => this.redactor.exactOnly(l)) : text.lines);
    const plain = join(this.dir, rel);
    const compress = this.gzip && final.length >= GZIP_OVER;
    const path = compress ? plain + '.gz' : plain;

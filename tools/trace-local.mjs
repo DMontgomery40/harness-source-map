@@ -16,7 +16,7 @@ import {sourcesReport, readSource} from './sources/index.mjs';
 import {createDesktopRecorder} from './capture/desktop-capture.mjs';
 import {fileCapture} from './capture/file-capture.mjs';
 import {sessionContext} from './sources/context.mjs';
-import {findT3Bundle, bundleFileList} from './t3/bundles.mjs';
+import {findT3Bundle, bundleFileList, threadEnvironments, ambiguousThread} from './t3/bundles.mjs';
 import {ALIAS_KEY_FILE, partsKeyFile} from './t3/bundle.mjs';
 import {readBuffer, resolveBundleFile} from './t3/gz.mjs';
 import {assembleFamily, readParts, storesHold, incomingDir, fleetBuilds, t3Root} from './t3/assemble.mjs';
@@ -153,18 +153,17 @@ const defaultCaptureRoots=[...configuredPaths('captureRoots'),join(homedir(),'.h
 // v2 link names its environment too: then the bundle must hold that thread on that machine.
 const ENVIRONMENT_ID=/^[A-Za-z0-9-]{1,64}$/;
 export function holdsThreadOn(bundle,environmentId,threadId){
- const want=String(threadId).toLowerCase();
- if(bundle.scope?.rootEnvironmentId===environmentId && String(bundle.scope?.rootThreadId||'').toLowerCase()===want)return true;
- return (bundle.machines||[]).some(m=>m.environmentId===environmentId && (m.threadIds||[]).some(t=>String(t).toLowerCase()===want));
+ return threadEnvironments(bundle,threadId).has(environmentId);
 }
 async function t3Family(roots,id,environmentId=null){
  let decoded=null;try{decoded=decodeURIComponent(id);}catch{/* not escaped */}
+ let mismatch=false;
  for(const candidate of new Set([id,decoded].filter(Boolean))){
-  const hit=await findT3Bundle(roots,candidate);
-  if(hit && (!environmentId || holdsThreadOn(hit.bundle,environmentId,candidate)))return hit;
-  if(hit)return {mismatch:true};
+  const hit=await findT3Bundle(roots,candidate,{environmentId});
+  if(hit?.mismatch){mismatch=true;continue;}
+  if(hit)return hit;
  }
- return null;
+ return mismatch?{mismatch:true}:null;
 }
 // A file of a bundle the resolver may serve: inside the folder it was found in (lexically and after symlinks), and
 // never the bundle's alias key.
@@ -361,8 +360,9 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
       const settled=job.promise.then(r=>({r}),e=>({e}));
       const done=progress===true?await Promise.race([settled,new Promise(r=>setTimeout(r,1200,null))]):await settled;
       if(!done)return reply(202,{pending:true,progress:Math.round(job.progress*1000)/1000});
-      if(done.e){assemblyError=done.e;console.error('T3 family assembly failed:',done.e);}
+      if(done.e){if(done.e.code==='T3_THREAD_AMBIGUOUS')throw done.e;assemblyError=done.e;console.error('T3 family assembly failed:',done.e);}
       else if(done.r){
+       if(!environmentId && threadEnvironments(done.r.bundle,threadId).size>1)throw ambiguousThread();
        // the thread itself, or a hop to it from a machine whose part is in (its own machine has not sent it yet)
        const reached=(done.r.bundle.hops||[]).some(h=>h.to?.environmentId===environmentId&&h.to?.threadId===threadId);
        if(environmentId && !holdsThreadOn(done.r.bundle,environmentId,threadId) && !reached)return reply(404,{error:'That T3 family holds this thread, but not on the environment the link names.'});
@@ -464,13 +464,13 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
     }
     return reply(404,{error:'Not found'});
    }catch(error){
-    if(error?.code==='TRACE_SOURCE_CHANGED')return reply(409,{error:error.message,code:error.code});
+    if(error?.code==='TRACE_SOURCE_CHANGED'||error?.code==='T3_THREAD_AMBIGUOUS')return reply(409,{error:error.message,code:error.code});
     console.error('Trace resolver read failed:',error);return reply(500,{error:'Could not read the session'});
    }
   }
   if(siteRoot && req.method==='GET'){
    try{
-    const base=resolve(siteRoot);let path=resolve(base,'.'+decodeURIComponent(url.pathname));
+    const base=await realpath(siteRoot);let path=resolve(base,'.'+decodeURIComponent(url.pathname));
     if(!within(base,path))return reply(404,{error:'Not found'});
     if((await lstat(path)).isDirectory())path=join(path,'index.html');
     if(!within(base,await realpath(path)))return reply(404,{error:'Not found'});

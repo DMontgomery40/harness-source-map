@@ -38,10 +38,13 @@ export const DEFAULT_LIMITS = { items: 200, evidenceBytes: 256 * 1024, excerptBy
 const HEADROOM = 12 * 1024; // scope arrays, coverage, reasons and gaps
 const ID = "E000000";       // the longest item id, for measuring
 const iso = t => (Number.isFinite(t) ? new Date(t).toISOString() : null);
+// clip: the packer's own words, on one line. cut: recorded text (a target, a label, a title), exact up to n characters
+// and marked "…" only where it is cut: whitespace and line breaks as recorded.
 const clip = (s, n) => { s = String(s ?? "").replace(/\s+/g, " ").trim(); return s.length > n ? `${s.slice(0, n - 1)}…` : s; };
+const cut = (s, n) => { s = String(s ?? ""); return s.length > n ? `${s.slice(0, n - 1)}…` : s; };
 const layerName = k => STRATA.find(s => s.key === k)?.name || k;
 // A string cut to at most n UTF-8 bytes (never inside a character). Fact strings stay well under the helper's
-// 1024-byte field limit, so its own credential redaction (which can lengthen a value) never pushes one past it.
+// 1024-byte field limit.
 const FACT_BYTES = 900;
 const clipBytes = (s, n = FACT_BYTES) => {
   s = String(s);
@@ -89,10 +92,8 @@ export function scopeOptions(trace, anchor = {}) {
   return out;
 }
 
-// A packing session: aliases, the raw identities they stand for, candidate records, and the byte account.
-const TOKEN = /[A-Za-z0-9][A-Za-z0-9_\-:.%]{5,}/g;
-// an id-shaped value: a UUID, a long hex run, or a prefixed id (call_…, toolu_…, ses_…)
-const ID_SHAPE = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{16,}|(?:call|toolu|fc|ses|msg|req|run|thread|node|cmd|agent)[_-][A-Za-z0-9_-]{6,})$/i;
+// A packing session: the packet's own handles, the raw identities they stand beside, candidate records, and the byte
+// account.
 // The tools whose target is an identity (a recipient or the agent waited on), not a description or a command.
 const IDENTITY_TOOLS = /^(?:send_message|followup_task|wait_agent|interrupt_agent|close_agent|wait|SendMessage|TaskStop|KillShell|KillBash)$/;
 function packer(trace, limits) {
@@ -103,6 +104,9 @@ function packer(trace, limits) {
   const known = new Map();
   const P = {
     alias, known,
+    // what a request's layer split rests on (estimates.js): the same basis the chart shows, never a measurement
+    split: (a, r) => (r.strata ? (trace.allocation?.status === "preserved" ? "original estimate, preserved" : "estimated")
+      : trace.allocation?.status === "unavailable" && a.harnessSource !== "unknown" ? "unavailable in this example" : "unknown"),
     agent: id => name(alias.agents, "A", id),
     env: id => name(alias.envs, "M", id),
     thread: key => name(alias.threads, "T", key),
@@ -115,7 +119,7 @@ function packer(trace, limits) {
     unknown: v => name(alias.unknown, "X", v),
     budget: Math.max(4096, (limits.evidenceBytes || DEFAULT_LIMITS.evidenceBytes) - HEADROOM),
     maxItems: limits.items || DEFAULT_LIMITS.items,
-    // headroom under the helper's excerpt limit for its own credential redaction, which can lengthen text
+    // headroom under the helper's excerpt limit
     excerptMax: Math.min(limits.excerptBytes || DEFAULT_LIMITS.excerptBytes, DEFAULT_LIMITS.excerptBytes) - 256,
   };
   // Every identity the trace knows, by entity: an agent's own ids (and its binding's native id, when that is the
@@ -158,35 +162,19 @@ function packer(trace, limits) {
     if (!alias.ambiguous.has(v)) alias.ambiguous.set(v, { alias: `Y${alias.ambiguous.size + 1}`, names: list.map(c => c.make()) });
     return alias.ambiguous.get(v).alias;
   };
-  // in excerpt text only identifier-like values are replaced (8+ characters with a digit), so an ordinary word that
-  // happens to be an id (a subagent named "general-purpose") stays as written; structural fields replace them all
-  const idLike = v => v.length >= 8 && /\d/.test(v);
-  // One string through the boundary: every known raw identity becomes its alias; with ids (a structural field), any
-  // known identity whatever its shape, and any other id-shaped token (an X alias).
-  P.scrub = (s, { ids = false } = {}) => String(s).replace(TOKEN, tok => {
-    const usable = v => known.has(v) && (ids ? v.length >= 6 : idLike(v));
-    if (usable(tok)) return resolve(tok);
-    if (/[:.%]/.test(tok)) {
-      let changed = false;
-      const out = tok.split(/([:.%])/).map(p => {
-        if (usable(p)) { changed = true; return resolve(p); }
-        if (ids && ID_SHAPE.test(p)) { changed = true; return P.unknown(p); }
-        return p;
-      });
-      if (changed) return out.join("");
-    }
-    return ids && ID_SHAPE.test(tok) ? P.unknown(tok) : tok;
-  });
-  // A request's target. A call whose target is an identity (a message's recipient, the agent it waits on) names
-  // known entities exactly, whatever their shape, and an X alias for each value the trace does not know; any other
-  // target (a command, a path, a description) is a structural field. An exact known identity is always its alias.
+  // Recorded text goes out as it was recorded, credentials included: nothing in local Trace masks or replaces it (the
+  // worker's readers pass it through, and the helper sends exactly the bytes its preview showed, only on an explicit
+  // Send). The packer never rewrites names, ids, labels or paths. Its own references (A1, T2, B3, #4, E5) are
+  // structural handles it writes beside the record, never substitutes for it.
+  // A request's target, as recorded (bounded). A call whose target names known entities (a message's recipient, the
+  // agent it waits on) also carries each one's handle, so the record and the packet's own references meet.
   P.target = act => {
-    const v = String(act.target).trim();
-    if (known.has(v)) return resolve(v);
-    // an identity, or a list of them ("a, b"): each exactly, never left raw because it does not look like an id
+    const v = cut(String(act.target), 300);
+    if (known.has(v)) return `${v} (${resolve(v)})`;
     const list = v.split(/\s*,\s*/);
-    if (IDENTITY_TOOLS.test(act.tool || "") && list.every(x => /^\S+$/.test(x))) return list.slice(0, 12).map(x => (known.has(x) ? resolve(x) : P.unknown(x))).join(", ") + (list.length > 12 ? `, +${list.length - 12} more` : "");
-    return P.scrub(clip(v, 300), { ids: true });
+    if (IDENTITY_TOOLS.test(act.tool || "") && list.every(x => /^\S+$/.test(x)) && list.some(x => known.has(x)))
+      return list.slice(0, 12).map(x => (known.has(x) ? `${x} (${resolve(x)})` : x)).join(", ") + (list.length > 12 ? `, +${list.length - 12} more` : "");
+    return v;
   };
   // The Y aliases used, as one gap note: each names the entities its raw id could be.
   P.ambiguityNote = () => {
@@ -206,7 +194,7 @@ function requestItem(P, a, i, extra = {}) {
   return {
     item: { kind: "request", provenance: "derived", agent: P.agent(a.id), request: `#${i + 1}`, ...(Number.isFinite(r.t) ? { time: r.t } : {}),
       facts: flat({ request: i + 1, of: a.requests.length, at: iso(r.t), model: r.model || a.model || null, contextTokens: r.tokens?.context, outputTokens: r.tokens?.output,
-        cacheReadTokens: r.tokens?.cacheRead, layers: layers ? clip(layers, 1000) : null, layerSplit: r.strata ? "estimated" : "unknown", action: act ? (act.kind === "text" ? "text reply" : act.tool || "tool") : null,
+        cacheReadTokens: r.tokens?.cacheRead, layers: layers ? clip(layers, 1000) : null, layerSplit: P.split(a, r), action: act ? (act.kind === "text" ? "text reply" : act.tool || "tool") : null,
         actionClass: act?.class || null, target: act?.target ? P.target(act) : null, calls: act?.all?.length || (act ? 1 : null), ...extra }) },
     local: { type: "request", agentId: a.id, reqIdx: i },
   };
@@ -289,7 +277,8 @@ function networkItems(P, rec, gen) {
     receiver: rec.receiver ? P.span(rec.receiver.span.key) : null, receiverRoute: rec.receiver?.route || null, receiverTool: rec.receiver?.tool || null, receiverStartedAt: rec.receiver ? iso(rec.receiver.span.startMs) : null,
     conflictEnvironments: j.environments?.length ? j.environments.map(e => P.env(e)).join(", ") : null, endpoints: rec.transport.endpoints, carrier: "not recorded",
     clockPairLoMs: ms(rec.clock?.pairBoundsMs?.[0]), clockPairHiMs: ms(rec.clock?.pairBoundsMs?.[1]), clockFitMs: ms(rec.clock?.fitMs), clockAppliedMs: ms(rec.clock?.appliedMs), clockFitInsidePair: rec.clock ? rec.clock.inside : null,
-    receiverCollected: rec.coverage.receiverCollected, receiverWindow: { inside: "the call lies inside the receiver's collected window", outside: "the call lies outside the receiver's collected window", unknown: "the receiver's collected window is not recorded" }[rec.coverage.receiverWindow || "unknown"], rejectedLinesCaller: rec.coverage.rejectedLines?.caller || null, rejectedLinesReceiver: rec.coverage.rejectedLines?.receiver || null }) }, local });
+    receiverCollected: rec.coverage.receiverCollected, receiverWindow: { inside: "the call lies inside the receiver's collected window (on the receiver's clock)", outside: "the call lies outside the receiver's collected window (on the receiver's clock)",
+      uncertain: "the call is at the edge of the receiver's collected window, within the clocks' uncertainty", unknown: "unknown: no collected window, or no clock fit between the two environments at that time" }[rec.coverage.receiverWindow || "unknown"], rejectedLinesCaller: rec.coverage.rejectedLines?.caller || null, rejectedLinesReceiver: rec.coverage.rejectedLines?.receiver || null }) }, local });
   const anySubtree = [...own.threads, ...own.commands].some(o => o.basis === "anchor-subtree");
   out.push({ item: { kind: "network-ownership", provenance: !own.threads.length && !own.commands.length ? "unknown" : anySubtree ? "inferred" : "derived", facts: flat({ selection: N, membership: own.membership,
     threads: own.threads.length ? clip(ownerWords(P, own.threads), 1000) : "none named", commands: own.commands.length ? clip(ownerWords(P, own.commands.map(o => ({ ...o, known: null }))), 1000) : "none named",
@@ -318,6 +307,8 @@ export async function buildPacket({ trace, gen, spec, limits = DEFAULT_LIMITS, r
   // ---- what the scope covers ----
   let agentsIn = [], ranges = new Map(), inventoryFor = null, label = "";
   const callIds = [];
+  // a path's other end, reserved ahead of the generic excerpts: what came back (path scope only)
+  const handoff = [];
   if (spec.kind === "item" || spec.kind === "request" || spec.kind === "range" || spec.kind === "layer" || spec.kind === "agent" || spec.kind === "path") {
     const a = byId.get(spec.agentId);
     if (!a) return fail("unknown_agent");
@@ -383,6 +374,23 @@ export async function buildPacket({ trace, gen, spec, limits = DEFAULT_LIMITS, r
         if (up.truncated) gaps.push(`${pathAlias}: ${up.truncated} more step${up.truncated === 1 ? "" : "s"} above ${P.agent(up.steps.at(-1)?.from || alt.from)} not included.`);
         if (up.broken) gaps.push(`${pathAlias}: the path stops above ${P.agent(up.steps.at(-1)?.from || alt.from)}: ${up.broken}.`);
       }
+      // What came back, kept apart: the agent's last request (where its work ended), then each return its parent's
+      // log records (the report as it landed, and the parent request that first had it in context), up to four.
+      // A return's inclusion in a parent request says the report was in context, not that the parent acted on it.
+      // T3's completion and delivery claims ride on the top edge and are no recorded return. With none recorded, a
+      // gap says so.
+      if (n > 2) handoff.push({ agent: a, req: n - 1 });
+      const parent = byId.get(a.parentId), recorded = Array.isArray(a.returns) ? a.returns : [];
+      for (const r of recorded.slice(0, 4)) {
+        if (!parent) break;
+        want(parent.id);
+        const block = parent.blocks[r.block];
+        handoff.push({ agent: a, ret: { from: a, to: parent, r, block } });
+        if (block?.ref) handoff.push({ agent: parent, obs: { kind: "return-report", block: r.block, ref: block.ref, label: block.label, req: r.parentRequest ?? undefined } });
+        if (r.parentRequest != null && parent.requests[r.parentRequest]) handoff.push({ agent: parent, req: r.parentRequest });
+      }
+      if (recorded.length > 4) gaps.push(`${recorded.length - 4} more recorded return${recorded.length - 4 === 1 ? "" : "s"} of ${P.agent(a.id)} not included.`);
+      if (!recorded.length) gaps.push(`No return of ${P.agent(a.id)} is recorded${parent ? ` in ${P.agent(parent.id)}'s log` : ""}${a.t3?.status || a.t3?.delivery ? `; T3's own claim (${[a.t3.status, a.t3.delivery].filter(Boolean).join(", ")}) is no recorded return` : ""}.`);
       // the path's agents from the top down, the agent it explains last
       agentsIn = [...seenAgents.values()].reverse();
       if (n) ranges.set(a.id, [0, Math.min(n - 1, 1)]);
@@ -451,9 +459,9 @@ export async function buildPacket({ trace, gen, spec, limits = DEFAULT_LIMITS, r
       const bindings = (e.bindings || []).map(b => `${P.binding(P.bindingKey(e.key, b.product, b.nativeId))} ${[b.product || (b.driver ? `${b.driver} (no reader)` : "unknown product"), b.version].filter(Boolean).join(" ")} ${b.status}${b.agentId ? ` → ${P.agent(b.agentId)}` : ""}`);
       const listed = own.slice(0, MAX_LISTED);
       const agents = e.session ? [] : listed.map(a => `${P.agent(a.id)} ${a.kind === "root" ? "main" : a.continuation ? "later session" : a.t3 ? "thread main" : "native agent"} ${a.requests.length} req ${MARK}${a.id}\u0000`);
-      inventoryLines.push({ entity: e, own, line: [who, e.environmentId ? P.env(e.environmentId) : null, e.status, e.title ? `“${clip(e.title, 60)}”` : null, bounds,
+      inventoryLines.push({ entity: e, own, line: [who, e.environmentId ? P.env(e.environmentId) : null, e.status, e.title ? `“${cut(e.title, 60)}”` : null, bounds,
         parent ? `parent ${P.thread(parent.key)}${e.origin ? ` (${e.origin})` : ""}` : null, e.association === "title" ? "matched by title" : e.association === "ambiguous" ? `ambiguous among ${e.candidates?.length || "several"} agents` : null,
-        e.t3?.status ? `T3 says ${e.t3.status}${e.t3.delivery ? `, ${e.t3.delivery}` : ""}` : null, e.detail ? `gap: ${clip(e.detail, 120)}` : null,
+        e.t3?.status ? `T3 says ${e.t3.status}${e.t3.delivery ? `, ${e.t3.delivery}` : ""}` : null, e.detail ? `gap: ${cut(e.detail, 120)}` : null,
         bindings.length ? `bindings: ${bindings.join("; ")}` : (trace.family ? "bindings: none recorded" : null),
         e.session ? `${own[0]?.requests.length || 0} req ${MARK}${own[0]?.id}\u0000` : agents.length ? `agents: ${agents.join("; ")}${own.length > listed.length ? `; +${own.length - listed.length} more agents` : ""}` : null].filter(Boolean).join(" · ") });
     }
@@ -462,7 +470,7 @@ export async function buildPacket({ trace, gen, spec, limits = DEFAULT_LIMITS, r
   const withMarks = (line, f) => line.replace(/\u0000mark:([^\u0000]*)\u0000/g, (_, id) => f(id));
   // the inventory is measured with its widest marks; if it alone cannot fit, the scope is too wide
   const chunkLines = (lines, max) => { const out = []; let cur = [], size = 0; for (const l of lines) { const s = byteLength(l) + 16; if (cur.length && size + s > max) { out.push(cur); cur = []; size = 0; } cur.push(l); size += s; } if (cur.length) out.push(cur); return out; };
-  const measureLines = inventoryLines.map(x => P.scrub(withMarks(x.line, () => "[records only]"), { ids: true }));
+  const measureLines = inventoryLines.map(x => withMarks(x.line, () => "[records only]"));
   const invChunks = measureLines.length ? chunkLines(measureLines, P.excerptMax - 512) : [];
   const invBytes = invChunks.reduce((n, c) => n + byteLength(c.join("\n")) + c.length * 16 + 220, 0);
   const coverageBytes = 900;
@@ -524,6 +532,7 @@ export async function buildPacket({ trace, gen, spec, limits = DEFAULT_LIMITS, r
   const envOrder = [];
   const byEnv = new Map();
   for (const a of agentsIn) { const e = a.environmentId ?? ""; if (!byEnv.has(e)) { byEnv.set(e, []); envOrder.push(e); } byEnv.get(e).push(a); }
+  excerptPlan.push(...handoff);
   const rounds = Math.max(0, ...[...perAgent.values()].map(l => l.length));
   for (let k = 0; k < rounds; k++) {
     const queues = envOrder.map(e => byEnv.get(e).slice());
@@ -545,10 +554,17 @@ export async function buildPacket({ trace, gen, spec, limits = DEFAULT_LIMITS, r
   for (const c of excerptPlan) {
     candidates++;
     let built = null;
-    if (c.req != null) built = requestItem(P, c.agent, c.req, network ? flat(network(c.agent, c.agent.requests[c.req]) || {}) : {});
+    if (c.ret) {
+      const { from, to, r, block } = c.ret;
+      built = { item: { kind: "return", provenance: "derived", agent: P.agent(from.id), ...(Number.isFinite(r.t) ? { time: r.t } : {}),
+        facts: flat({ from: P.agent(from.id), to: P.agent(to.id), at: iso(r.t), landedAs: block?.label ? cut(block.label, 200) : null, via: r.via || null,
+          inParentRequest: r.parentRequest != null ? `#${r.parentRequest + 1}` : null, recordedBy: "the parent's own log",
+          meaning: r.parentRequest != null ? "the report was in that request's context; whether the parent acted on it is not recorded" : "the report is recorded; no request is known to have had it in context" }) },
+        local: { type: "request", agentId: to.id, reqIdx: r.parentRequest ?? null } };
+    } else if (c.req != null) built = requestItem(P, c.agent, c.req, network ? flat(network(c.agent, c.agent.requests[c.req]) || {}) : {});
     else if (c.diff) built = { item: { kind: "difference", provenance: "derived", agent: P.agent(c.agent.id), request: `#${c.diff.to + 1}`,
       facts: flat({ between: `#${c.diff.from + 1} → #${c.diff.to + 1}`, addedBlocks: c.diff.added.length, addedLayers: c.diff.kinds.map(layerName).join(", ") || null, windowStartMoved: c.diff.dropped || null,
-        firstAdded: c.diff.added.length ? clip(c.agent.blocks[c.diff.added[0]]?.label, 200) : null }) }, local: { type: "request", agentId: c.agent.id, reqIdx: c.diff.to } };
+        firstAdded: c.diff.added.length ? cut(c.agent.blocks[c.diff.added[0]]?.label, 200) : null }) }, local: { type: "request", agentId: c.agent.id, reqIdx: c.diff.to } };
     else if (c.obs) {
       const k = obsIndex.get(c);
       const r = k == null ? { status: "omitted" } : results.get(k);
@@ -562,7 +578,7 @@ export async function buildPacket({ trace, gen, spec, limits = DEFAULT_LIMITS, r
       const ri = c.obs.req ?? (c.obs.block != null ? c.agent.requests.findIndex(q => q.window && q.window[0] <= c.obs.block && q.window[1] >= c.obs.block) : null);
       built = { item: { kind: c.obs.kind, provenance: "observed", agent: P.agent(c.agent.id), ...(ri != null && ri >= 0 ? { request: `#${ri + 1}` } : {}),
         ...(Number.isFinite(c.obs.block != null ? c.agent.blocks[c.obs.block]?.t : c.agent.requests[ri]?.t) ? { time: c.obs.block != null ? c.agent.blocks[c.obs.block].t : c.agent.requests[ri].t } : {}),
-        text: r.text ?? "", facts: flat({ label: c.obs.label ? clip(c.obs.label, 200) : null, tool: c.obs.tool || null, layer: c.obs.layer ? layerName(c.obs.layer) : null, stage: stageOf(),
+        text: r.text ?? "", facts: flat({ label: c.obs.label ? cut(c.obs.label, 200) : null, tool: c.obs.tool || null, layer: c.obs.layer ? layerName(c.obs.layer) : null, stage: stageOf(),
           recorded: r.status === "empty" ? "empty value" : r.status === "line" ? "whole log line" : null, truncated: r.truncated || null, originalBytes: r.truncated ? r.bytes : null }) },
         local: { type: c.obs.block != null ? "block" : "call", agentId: c.agent.id, reqIdx: ri != null && ri >= 0 ? ri : null, block: c.obs.block ?? null, call: c.obs.call || null, ref: c.obs.ref,
           member: trace.files?.[c.obs.ref.file]?.name || null, status: r.status, gen, threadKey: c.agent.threadKey || null, binding: c.agent.binding || null, ...bindingOf(c.agent) } };
@@ -582,7 +598,7 @@ export async function buildPacket({ trace, gen, spec, limits = DEFAULT_LIMITS, r
   // ---- the final inventory, with what each agent got ----
   const invItems = [];
   if (inventoryLines.length) {
-    const lines = inventoryLines.map(x => P.scrub(withMarks(x.line, id => markOf(id, excerpted, represented)), { ids: true }));
+    const lines = inventoryLines.map(x => withMarks(x.line, id => markOf(id, excerpted, represented)));
     const chunks = chunkLines(lines, P.excerptMax - 512);
     chunks.forEach((c, k) => invItems.push({ item: { kind: "inventory", provenance: "derived", text: c.join("\n"), facts: flat({ entries: c.length, chunk: k + 1, of: chunks.length }) }, local: { type: "inventory", threadKeys: [] } }));
   }
@@ -598,17 +614,17 @@ export async function buildPacket({ trace, gen, spec, limits = DEFAULT_LIMITS, r
     bindingsWithoutRecording: trace.family && inventoryFor ? allBindings.filter(b => b.status !== "readable").length : null,
     environments: trace.family ? new Set(agentsIn.map(a => a.environmentId).concat((inventoryFor || []).map(e => e.environmentId))).size : null,
     requestsInScope: [...ranges.entries()].reduce((n, [, [a, b]]) => n + (b - a + 1), 0), excerptBudget: reasons.has("Excerpt budget") || reasons.has("Item limit") ? "reached" : "not reached",
-    unknownLayerSplits: agentsIn.some(a => a.requests.some(r => !r.strata)) ? "some requests have no recorded layer split" : null }) }, local: { type: "coverage" } };
+    unknownLayerSplits: trace.allocation?.status === "unavailable" ? `layer splits are unavailable in this example (${trace.allocation.reason})`
+      : agentsIn.some(a => a.requests.some(r => !r.strata)) ? "some requests have no recorded layer split" : null,
+    layerSplitBasis: trace.allocation?.status === "preserved" ? `original recording's estimates (${trace.allocation.method}), not measured per source` : null }) }, local: { type: "coverage" } };
 
   const lead = structural[0]?.item.kind === "coverage" ? [structural.shift()] : [coverageItem];
   const all = [...lead, ...invItems, ...structural, ...edges, ...excerptItems];
   all.forEach((x, k) => { x.item = { id: `E${k + 1}`, ...x.item }; });
   // the boundary: every outgoing string passes the alias pass (structural ones also lose other id-shaped values)
-  for (const x of all) {
-    if (typeof x.item.text === "string" && x.item.kind !== "inventory") x.item.text = P.scrub(x.item.text);
-    if (x.item.facts) for (const [k, v] of Object.entries(x.item.facts)) if (typeof v === "string") x.item.facts[k] = clipBytes(P.scrub(v, { ids: true }));
-  }
-  const outGaps = gaps.slice(0, 100).map(g => clipBytes(clip(P.scrub(g, { ids: true }), 1000)));
+  // bounded to the endpoint's field limits; nothing rewritten
+  for (const x of all) if (x.item.facts) for (const [k, v] of Object.entries(x.item.facts)) if (typeof v === "string") x.item.facts[k] = clipBytes(v);
+  const outGaps = gaps.slice(0, 100).map(g => clipBytes(clip(g, 1000)));
   // a raw id that several known entities share went out as a Y alias: what each could be is said, once
   const ambiguity = P.ambiguityNote();
   if (ambiguity) { if (outGaps.length >= 100) outGaps.pop(); outGaps.push(clipBytes(ambiguity)); }

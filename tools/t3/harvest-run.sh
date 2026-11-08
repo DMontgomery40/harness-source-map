@@ -6,7 +6,7 @@
 #   T3_HARVEST_STORE   store root; this machine's store is <root>/<environmentId>
 #   T3_HARVEST_LABEL   machine label
 #   T3_HARVEST_NODE    node binary
-#   T3_HARVEST_REPO    a main checkout whose .env values are removed too (optional)
+#   T3_HARVEST_REPO    optional main checkout passed to the collector; original content is not filtered
 #   T3_HARVEST_PUSH    ssh host to push to (VMs), e.g. mac
 #   T3_HARVEST_REMOTE  the incoming folder on that host, relative to its home
 #   harvest-run.sh [--since <ISO>] [--no-update]

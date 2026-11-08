@@ -34,7 +34,7 @@ test("a private real OpenCode capture retains exact session association and pass
   }
 });
 
-test("a private real native export keeps reasoning and message structure while credentials are scrubbed", {
+test("a private real native export keeps reasoning and message structure including original recorded credentials", {
   skip: !process.env.OPENCODE_REAL_EXPORT && "Set OPENCODE_REAL_EXPORT to a private native session export",
 }, async () => {
   const { sanitizeSessionExport, sessionProblems } = await import("../capture/opencode-capture.mjs");

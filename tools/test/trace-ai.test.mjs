@@ -46,11 +46,11 @@ test('models discovery sends no evidence and returns bounded public fields',asyn
  assert.equal(requests.length,1);assert.equal(requests[0].url,'/v1/models');assert.equal(requests[0].text,'');assert.equal(requests[0].auth,'Bearer synthetic-client-credential');
 });
 
-test('preview scrubs all occurrences, binds exact outbound bytes and citations, and is single-use',async t=>{
+test('preview preserves recorded content, binds exact outbound bytes and citations, and is single-use',async t=>{
  const {call,requests}=await harness(t);const data=evidence();data.items[0].text='Bearer synthetic-private-token-value. Again synthetic-private-token-value. /Users/example/private/file.txt';
  data.items[1].text='synthetic-client-credential';
  const p=await preview(call,{evidence:data});const serialized=JSON.stringify(p);
- assert.ok(!serialized.includes('synthetic-private-token-value'));assert.ok(!serialized.includes('synthetic-client-credential'));assert.ok(!serialized.includes('/Users/example'));
+ assert.ok(serialized.includes('synthetic-private-token-value'));assert.ok(serialized.includes('synthetic-client-credential'));assert.ok(serialized.includes('/Users/example/private/file.txt'));
  assert.deepEqual(p.citations,['E1','E2']);assert.equal(requests.length,0);
  assert.equal((await explain(call,p,{digest:'wrong'})).status,409);
  assert.equal((await explain(call,p,{traceGeneration:'stale'})).status,409);
@@ -59,7 +59,58 @@ test('preview scrubs all occurrences, binds exact outbound bytes and citations, 
  assert.equal(requests[0].text,p.outboundBody);assert.equal((await explain(call,p)).status,409);
 });
 
-test('credentials identified in evidence are removed everywhere even when short or join-shaped',async t=>{
+test('ANSI and control characters in recorded excerpts and fact values survive preview and Send unchanged',async t=>{
+ const {call,requests}=await harness(t),data=evidence();
+ const original='\u001b[31mterminal failure\u001b[0m\r\n'+Array.from({length:32},(_,i)=>String.fromCharCode(i)).join('')+'😀';
+ data.items[0].text=original;data.items[1].facts={terminal:original,empty:''};
+ const p=await preview(call,{evidence:data});
+ const packet=JSON.parse(JSON.parse(p.outboundBody).messages[1].content);
+ assert.deepEqual(packet.evidence,data);assert.equal(requests.length,0);
+ const response=await explain(call,p);assert.equal(response.status,200);assert.match(await response.text(),/event: done/);
+ assert.deepEqual(Buffer.from(requests[0].text),Buffer.from(p.outboundBody));
+ const sent=JSON.parse(JSON.parse(requests[0].text).messages[1].content);
+ assert.equal(sent.evidence.items[0].text,original);assert.equal(sent.evidence.items[1].facts.terminal,original);
+});
+
+test('recorded control characters retain excerpt and fact byte limits',async t=>{
+ const {call,requests}=await harness(t,{limits:{excerptBytes:32}}),data=evidence();
+ data.items[0].text='\u001b'.repeat(32);data.items[1].text='short';data.items[1].facts={terminal:'\u0000'.repeat(1024)};
+ await preview(call,{evidence:data});
+ for(const change of [e=>{e.items[0].text+='\u001b';},e=>{e.items[0].text='\u001b'+'😀'.repeat(8);},e=>{e.items[1].facts.terminal+='\u0000';},e=>{e.items[0].text=42;}]){
+  const e=structuredClone(data);change(e);
+  const res=await call('preview',{providerId:'local',prompt:'Explain.',traceGeneration:'g',evidence:e});
+  assert.equal(res.status,400);assert.equal((await res.json()).error.code,'invalid_string');
+ }
+ assert.equal(requests.length,0);
+});
+
+test('JSON escaping of recorded controls still counts toward evidence and outbound byte limits',async t=>{
+ for(const [limit,max,code] of [['evidenceBytes',4096,'evidence_too_large'],['outboundBytes',4096,'outbound_too_large']])await t.test(limit,async t=>{
+  const {call,requests}=await harness(t,{limits:{[limit]:max}}),data=evidence();
+  data.items[0].text='x'.repeat(1000);await preview(call,{evidence:data});
+  data.items[0].text='\u0000'.repeat(1000);
+  const res=await call('preview',{providerId:'local',prompt:'Explain.',traceGeneration:'g',evidence:data});
+  assert.equal(res.status,400);assert.equal((await res.json()).error.code,code);assert.equal(requests.length,0);
+ });
+});
+
+test('configuration and protocol strings still reject control characters',async t=>{
+ const {call,requests,proxy}=await harness(t);
+ for(const field of ['label','model','apiKey','baseUrl']){
+  const data=profile(proxy+'/v1');data[field]+='\u001b';
+  const res=await call('providers',data);assert.equal(res.status,400);assert.equal((await res.json()).error.code,'invalid_string');
+ }
+ for(const change of [e=>{e.scope.agentIds[0]+='\u001b';},e=>{e.items[0].kind+='\u001b';},e=>{e.items[0].agent+='\u001b';},e=>{e.items[0].request+='\u001b';},e=>{e.items[0].facts={'terminal\u001b':'recorded value'};}]){
+  const e=evidence();change(e);
+  const res=await call('preview',{providerId:'local',prompt:'Explain.',traceGeneration:'g',evidence:e});
+  assert.equal(res.status,400);assert.equal((await res.json()).error.code,'invalid_string');
+ }
+ assert.equal((await call('preview',{providerId:'local',model:'test\u001b',prompt:'Explain.',traceGeneration:'g',evidence:evidence()})).status,400);
+ assert.equal((await call('preview',{providerId:'local',prompt:'Explain.',traceGeneration:'g\u001b',evidence:evidence()})).status,400);
+ assert.equal(requests.length,0);
+});
+
+test('recorded credentials remain verbatim even when short or join-shaped',async t=>{
  const {call,requests}=await harness(t);
  const unmarked='aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
  let last;
@@ -69,39 +120,41 @@ test('credentials identified in evidence are removed everywhere even when short 
   const e=evidence();e.items=before?[marked,repeated]:[repeated,marked];
   last=await preview(call,{evidence:e});
   const sent=JSON.parse(JSON.parse(last.outboundBody).messages[1].content);
-  assert.ok(!JSON.stringify(sent).includes(secret),`identified credential survived: ${secret.length}/${before}/${embedded}`);
+  assert.deepEqual(sent.evidence,e,'no evidence field is rewritten because it resembles a credential');
+  assert.ok(JSON.stringify(sent).includes(secret));
   assert.ok(JSON.stringify(sent).includes(unmarked),'an unmarked join ID is not a credential');
   assert.deepEqual(sent.evidence.items.map(x=>x.id),e.items.map(x=>x.id));
  }
  assert.equal(requests.length,0);
  await (await explain(call,last)).text();
- assert.equal(requests[0].text,last.outboundBody,'the stronger scrub remains exactly preview-bound');
+ assert.equal(requests[0].text,last.outboundBody,'recorded credentials remain exactly preview-bound');
 });
 
-test('identified credentials cannot survive in outbound control fields or corrupt the evidence schema',async t=>{
+test('credential-looking evidence cannot silently corrupt matching protocol fields',async t=>{
  const {call,requests}=await harness(t);
  for(const secret of ['test-model','generation-1','E1234','observed']){
   const e=evidence();if(secret==='E1234')e.items[0].id=secret;
   e.items[1].facts={password:secret};
   const res=await call('preview',{providerId:'local',model:'test-model',prompt:'Explain.',traceGeneration:'generation-1',evidence:e});
-  assert.equal(res.status,400);
+  assert.equal(res.status,200);
+  const p=await res.json(),packet=JSON.parse(JSON.parse(p.outboundBody).messages[1].content);assert.deepEqual(packet.evidence,e);
  }
  assert.equal(requests.length,0);
 });
 
-test('redaction expansion cannot bypass the evidence excerpt byte limit',async t=>{
+test('credential-looking evidence does not expand behind the excerpt limit',async t=>{
  const {call,requests}=await harness(t,{limits:{excerptBytes:32}}),e=evidence();
  e.items[0]={id:'E1',kind:'record',provenance:'observed',facts:{password:'p4$$'}};
  e.items[1].text='p4$$ p4$$ p4$$';
  const res=await call('preview',{providerId:'local',prompt:'Explain.',traceGeneration:'g',evidence:e});
- assert.equal(res.status,400);assert.equal(requests.length,0);
+ assert.equal(res.status,200);assert.equal(requests.length,0);
 });
 
-test('redaction expansion cannot bypass the prompt byte limit',async t=>{
+test('credential-looking prompts do not expand behind the prompt limit',async t=>{
  const {call,requests}=await harness(t,{limits:{promptBytes:32}}),e=evidence();
  e.items[0].facts={password:'p4$$'};
  const res=await call('preview',{providerId:'local',prompt:'p4$$ p4$$ p4$$',traceGeneration:'g',evidence:e});
- assert.equal(res.status,400);assert.equal(requests.length,0);
+ assert.equal(res.status,200);assert.equal(requests.length,0);
 });
 
 test('scope coverage, unknown fields, duplicate citations and UTF-8 byte caps reject before upstream',async t=>{
@@ -220,9 +273,9 @@ test('capabilities expose server limits and selections enforce the advertised bo
  assert.equal(requests.length,0);
 });
 
-test('known credentials cannot become citation IDs or stream correlation IDs',async t=>{
+test('evidence citations are validated by format while transport correlation guards stay separate',async t=>{
  const {call,proxy}=await harness(t);await call('providers',{...profile(proxy+'/v1'),apiKey:'E1234'});const e=evidence();e.items[0].id='E1234';
- assert.equal((await call('preview',{providerId:'local',prompt:'Explain',traceGeneration:'g',evidence:e})).status,400);
+ assert.equal((await call('preview',{providerId:'local',prompt:'Explain',traceGeneration:'g',evidence:e})).status,200);
  const p=await preview(call);assert.equal((await explain(call,p,{runId:'E1234'})).status,400);
 });
 
@@ -232,4 +285,33 @@ test('helper AI routes preserve Host, Origin and request-marker guards',async t=
  assert.equal((await fetch(base+'/v1/ai/providers',{headers:{Origin:'https://untrusted.example','X-Trace-Request':'1'}})).status,403);
  const wrongHost=await new Promise((resolve,reject)=>get(base+'/v1/ai/providers',{headers:{Origin:base,'X-Trace-Request':'1',Host:'evil.example'}},res=>{res.resume();resolve(res.statusCode);}).on('error',reject));assert.equal(wrongHost,403);
  const res=await fetch(base+'/v1/ai/providers',{headers:{Origin:base,'X-Trace-Request':'1'}});assert.equal(res.status,200);assert.deepEqual(await res.json(),{providers:[]});
+});
+
+
+test('AI preview preserves actual identities, recorded credentials and ticket-looking text without source access',async t=>{
+ const {call,requests}=await harness(t),e=evidence();
+ const org='12345678-1234-4234-8234-123456789abc';
+ const prompt='Explain Morgan Example’s /Users/example/project-a/.claude/skills/build/SKILL.md and project '+org+'.';
+ const facts={organization_id:org,email:'morgan@example.test',host:'devbox.local',path:'/private/tmp/actual-project/tools/run.sh'};
+ const text='Original MCP tool result, system reminder and project label. /home/example/work /var/log/agent /etc/config 10.23.45.67 '+org+' morgan@example.test';
+ e.items[0].facts=facts;e.items[0].text=text;
+ e.items[1].text='Authorization: Bearer synthetic-transcript-auth-123456; repeated synthetic-transcript-auth-123456; sk-proj-'+ 'x'.repeat(40)+'; read http://127.0.0.1:8766/v1/file/abc123deadbeef';
+ const p=await preview(call,{prompt,evidence:e});assert.equal(requests.length,0,'preview cannot transmit evidence');
+ const packet=JSON.parse(JSON.parse(p.outboundBody).messages[1].content);assert.equal(packet.prompt,prompt);assert.equal(packet.evidence.items[0].text,text);assert.deepEqual(packet.evidence.items[0].facts,facts);
+ assert.deepEqual(packet.evidence,e);assert.ok(p.outboundBody.includes('synthetic-transcript-auth-123456'));assert.ok(p.outboundBody.includes('sk-proj-'+ 'x'.repeat(40)));assert.ok(p.outboundBody.includes('/v1/file/abc123deadbeef'));assert.ok(!p.outboundBody.includes('synthetic-client-credential'),'configuration key is not added to recorded evidence');
+ e.items[0].text='Changed after preview';await(await explain(call,p)).text();assert.equal(requests[0].text,p.outboundBody,'the exact reviewed packet is sent, not reassembled evidence');
+});
+
+test('MCP status, server names and recorded Authorization values all remain literal evidence',async t=>{
+ const {call,requests}=await harness(t),e=evidence();
+ const names=['github','linear','slack','notion','figma','context7'],token='synthetic-actual-auth-token-12345';
+ const recorded={needsAuthMcpServers:names,authorizedMcpServers:['docs'],Authorization:'Bearer '+token};
+ e.items[0].text=JSON.stringify(recorded);
+ e.items[1].text='The recorded servers are '+names.join(', ')+'. Repeated auth '+token+'.';
+ e.items[1].facts={needsAuthMcpServers:JSON.stringify(names),Authorization:'Bearer '+token};
+ const p=await preview(call,{prompt:'Explain authorization state for '+names.join(', ')+'.',evidence:e});
+ const packet=JSON.parse(JSON.parse(p.outboundBody).messages[1].content),record=JSON.parse(packet.evidence.items[0].text);
+ assert.deepEqual(record.needsAuthMcpServers,names);assert.deepEqual(record.authorizedMcpServers,['docs']);assert.equal(packet.evidence.items[1].facts.needsAuthMcpServers,JSON.stringify(names));
+ for(const name of names){assert.ok(packet.prompt.includes(name));assert.ok(packet.evidence.items[1].text.includes(name));}
+ assert.deepEqual(record,recorded);assert.equal(packet.evidence.items[1].facts.Authorization,'Bearer '+token);assert.ok(p.outboundBody.includes(token));assert.equal(requests.length,0);
 });

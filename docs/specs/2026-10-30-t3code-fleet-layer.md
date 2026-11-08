@@ -86,8 +86,8 @@ runtime behavior. The identity of a thread is its environment ID together with i
 - **Environment qualification.** Known remote seeds travel as `{environmentId, threadId}` pairs; a coincident local
   thread ID is not the same thread. Legacy unqualified upstream IDs are accepted only when child-side evidence names
   one parent environment. Conflicting environments produce an ambiguity gap without guessed membership.
-- **Metadata freshness.** Each machine part records `familyMetadata.version` independently of the credential
-  redaction version, and records whether its DB has the thread-creation table. The existing on-demand local refresh
+- **Metadata freshness.** Each machine part records `familyMetadata.version` independently of the content-policy version (and historical credential
+  redaction version), and records whether its DB has the thread-creation table. The existing on-demand local refresh
   upgrades older parts even when their threads have not changed; older remote parts remain readable with an explicit
   coverage gap until the ordinary harvest refreshes them. An inspected older DB without the table is marked
   `threadCreations: "unavailable"`, not repeatedly scheduled for an impossible schema upgrade. There is no automatic
@@ -151,7 +151,7 @@ All of these were found on the fleet. Every one is "found, not shown yet".
 | Event-loop stalls | `userdata/logs/event-loop-stalls.ndjson` | Server stalls over days |
 | Renderer samples | `userdata/logs/renderer-history.ndjson*` | Renderer memory over time |
 | Provider streams | `userdata/logs/provider/events.*.log` | Edge 4 and edge 5 launches |
-| State | `userdata/statev2.sqlite` (read-only) | Threads and lineage, runs, provider session bindings, subagents, peer links, auth sessions (redacted) |
+| State | `userdata/statev2.sqlite` (read-only) | Threads and lineage, runs, provider session bindings, subagents, peer links, selected recorded auth-session fields (as recorded) |
 | Config | `userdata/settings.json`, `client-settings.json`, `desktop-settings.json`, `model-manifest.json` | Settings that change what T3 injects, plus server exposure |
 | Build | `runtime/versions/`, `runtime/service-state.json`, `userdata/server-runtime.json` | Which T3 build was running, and its updates |
 | Connection catalog | `userdata/connection-catalog.json` | Encrypted. Found, not readable. Say so; don't guess. |
@@ -225,13 +225,14 @@ marker is legacy/unspecified. The assembly version invalidates earlier caches; t
 
 Deferred assembly still preserves coverage: existing `basis: "span-end"` parts need no extra span read, while
 legacy windows are normalized from span end times and split at five-minute silences. Reads use the
-manifest-declared representation, and source entries remain authoritative when derived entries change. Guarded
-writes, the credential everywhere-pass and full-bundle privacy verification remain required. The current browser
+manifest-declared representation, and source entries remain authoritative when derived entries change. Original-mode
+writes preserve source bytes, and full-bundle verification checks readability and inventory. Credential scanning
+and removal belong to deliberate publication, not local assembly. The current browser
 derives its network from raw spans; backend rows and indexes are not interchangeable with browser structures.
 Consumers must treat deferred outputs as not precomputed and use the source evidence, rather than interpret
 their absence as a coverage gap.
 
-It removes credentials before writing anything (§4.6). It reaches other machines through T3's own linked environments
+It preserves recorded credentials in local evidence (§4.6). It reaches other machines through T3's own linked environments
 or over SSH. On macOS, a process T3 starts lacks the
 Local Network permission until the user grants it to the T3 app. The collector says so instead of opening windows.
 
@@ -271,24 +272,28 @@ local receiver. The bundle format must not depend on which path was used.
     (tunnel)" unless the link's URLs or a caller span name the route.
   - The client's own route choice is not recorded locally.
 
-### 4.6 Privacy
+### 4.6 Local evidence and publication
 
-The layer uses the network layer's model (`docs/specs/2026-09-28-network-layer.md` §6):
-- Parsing and redaction run in the browser worker.
-- Nothing is persisted.
-- Join keys (thread, run, task, trace and span ids) stay.
+The layer follows the [network layer’s original-content contract](2026-09-28-network-layer.md#6-local-evidence-and-publication).
+Local collection, assembly, browser parsing, readers, search and AI evidence retain recorded source content,
+including actual credentials. Selected native files, provider logs, configuration and opaque media keep their
+original bytes. Thread records retain selected messages and tool payloads. Credential presence is neither a
+reason to alter a local record nor a verification failure. Collection does not read referenced secret stores
+or decrypt the desktop connection catalog to supply additional values.
 
-Bundles live only in `private/`, and the public site gets none of it.
+Bundles remain private. The deliberately selected public example is a separately reviewed export that removes
+actual credentials only. It does not change local collection or authorize publication of other recordings.
 
-**Credentials are removed before disk.** The collector redacts tokens, pairing codes, MCP launch credentials, secret
-values and relay endpoint keys before it writes the bundle, as the OpenCode spec requires. The browser worker redacts
-again, using the network layer's rule of removing a found value everywhere it appears. *(My call; the builder check
-raised it.)*
+The original October design removed credentials before disk and again in the browser. That behavior is
+superseded. Older transformed parts may still contain aliases or removal markers; they remain explicit historical
+gaps. Native-content policy and whole-bundle policy are tracked separately so retained legacy spans cannot claim
+restored original content. Unchanged old local inputs are refreshed under the current policy when their original
+sources remain available; a transformed file alone cannot restore missing text.
 
 **Tests use real recordings only.** The two older specs disagree on test data. The network layer used synthetic
 captures; the newer OpenCode spec forbids fabricated sessions and fixtures. This layer follows the newer rule:
-- Gate tests cover what can be checked without private data: source extraction, the bundle schema, redaction rules
-  against the pinned upstream source, and the UI shell.
+- Gate tests cover what can be checked without private data: source extraction, the bundle schema, original-content preservation
+  and the UI shell.
 - Tests against a real bundle are opt-in, run only on the machine that holds it, and assert counts and structure.
 
 So the collector is the first milestone, and real bundles come before the view. The first bundle can be the session

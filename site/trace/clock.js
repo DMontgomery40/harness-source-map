@@ -10,17 +10,39 @@
 // with nothing to animate; no timestamp at all means no clock.
 export const SWEEP_MS = 60000;   // one complete sweep of the axis at 1× (an initial, tunable review value)
 export const SPEEDS = [1, 2, 4, 8, 16];
+// EPS compares compressed x (a fraction of the axis) only. Times are compared exactly, by index: a tolerance
+// proportional to an epoch millisecond value spans whole seconds.
 const EPS = 1e-9;
+// A scrubbed position read back as a time (T of x) can sit a rounding error from the group it shows: this many ms.
+const ROUNDING_MS = 1e-3;
 
-// The distinct finite event times of a trace, sorted: requests, void bounds, and the task bounds T3 records.
-export function eventTimes(trace) {
+// The recorded times the clock and the layout share (minimap.js buildLayout spans the same ones, so the clock's
+// domain is never clamped by the axis): every request, and a bounded set of terminal records per agent: its first
+// and last block, each recorded return, its T3 task and run bounds and its parent run's end, and the first and last
+// activity its evidence records. Also every void's bounds and the trace's own start and end. Not every block: a
+// long log adds two times, not thousands.
+export function recordedTimes(trace) {
   const out = [];
   const add = t => { if (Number.isFinite(t)) out.push(t); };
   for (const a of trace?.agents || []) {
     for (const r of a.requests || []) add(r.t);
-    if (a.t3) { add(a.t3.startedAt); add(a.t3.completedAt); }
+    const bl = a.blocks || [];
+    if (bl.length) { add(bl[0].t); add(bl[bl.length - 1].t); }
+    for (const r of a.returns || []) add(r.t);
+    if (a.t3) {
+      add(a.t3.startedAt); add(a.t3.completedAt); add(a.t3.parentRunEnd);
+      for (const run of a.t3.runs || []) { add(run.requestedAt); add(run.completedAt); }
+    }
+    if (a.evidence) { add(a.evidence.firstActivity); add(a.evidence.lastActivity); }
   }
   for (const v of trace?.voids || []) { add(v.from); add(v.to); }
+  add(trace?.started); add(trace?.ended);
+  return out;
+}
+
+// The distinct finite event times of a trace, sorted (recordedTimes).
+export function eventTimes(trace) {
+  const out = recordedTimes(trace);
   out.sort((x, y) => x - y);
   const groups = [];
   for (const t of out) if (!groups.length || t !== groups[groups.length - 1]) groups.push(t);
@@ -37,8 +59,9 @@ export function createClock({ X, T, groups, speeds = SPEEDS, speed = 4, sweepMs 
   const list = [...speeds].sort((a, b) => a - b);
   let x = x1, exact = tLast, playing = false, rate = list.includes(speed) ? speed : list[Math.min(2, list.length - 1)];
   const clampX = v => Math.min(x1, Math.max(x0, v));
-  // the first group at or after t (lo), by binary search
+  // the first group at or after t, and the first strictly after it, by binary search
   const atOrAfter = t => { let lo = 0, hi = g.length; while (lo < hi) { const m = (lo + hi) >> 1; if (g[m] < t) lo = m + 1; else hi = m; } return lo; };
+  const after = t => { let lo = 0, hi = g.length; while (lo < hi) { const m = (lo + hi) >> 1; if (g[m] <= t) lo = m + 1; else hi = m; } return lo; };
   const now = () => (exact != null ? exact : T(x));
   const clock = {
     get x() { return x; },
@@ -66,10 +89,11 @@ export function createClock({ X, T, groups, speeds = SPEEDS, speed = 4, sweepMs 
     toStart() { clock.seekTime(tFirst); },
     // The previous or next distinct event group, paused there.
     step(d) {
-      const t = now();
+      // on a group: exactly the next or previous one; between groups (a scrub): the nearest beyond a rounding error
+      const t = now(), slack = exact != null ? 0 : ROUNDING_MS;
       let k;
-      if (d > 0) { k = atOrAfter(t + EPS * Math.max(1, Math.abs(t))); if (k < g.length && g[k] <= t) k++; }
-      else { k = atOrAfter(t) - 1; }
+      if (d > 0) k = after(t + slack);
+      else k = atOrAfter(t - slack) - 1;
       k = Math.max(0, Math.min(g.length - 1, k));
       clock.seekTime(g[k]);
       return g[k];
@@ -89,8 +113,8 @@ export function createClock({ X, T, groups, speeds = SPEEDS, speed = 4, sweepMs 
       if (x >= x1 - EPS) { x = x1; exact = tLast; playing = false; }
       return true;
     },
-    // The event groups crossed between two times (inclusive of the later): for activity and readouts.
-    groupsBetween(a, b) { const lo = atOrAfter(Math.min(a, b)), hi = atOrAfter(Math.max(a, b) + EPS); return [lo, hi]; },
+    // The event groups crossed between two times, both ends included, as [first, end) indexes: for activity and readouts.
+    groupsBetween(a, b) { return [atOrAfter(Math.min(a, b)), after(Math.max(a, b))]; },
   };
   return clock;
 }

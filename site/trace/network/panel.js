@@ -1,14 +1,14 @@
 // The network layer's panels: the "What went over the wire" lens and the per-request "On the wire" card.
-// Everything shown comes from the redacted capture summary (capture.js); bodies are read from the worker on
+// Everything shown comes from the capture summary (capture.js), values as recorded; bodies are read from the worker on
 // demand (A.networkBody) and shown in a reader like the block reader. All text goes in through textContent.
-import { el, fmtTok, fmtInt, fmtClock, fmtWhen, clip } from "../panels.js";
-import { compactValue } from "../compact.js";
+import { el, fmtTok, fmtInt, fmtClock, fmtWhen, clip, pagedText } from "../panels.js";
+import { compactValue, tip } from "../compact.js";
 import { RULES, partyOf } from "./transit.js";
 import { readableIn, readableOrStored, readableValue } from "../readable.js";
 import { foldOpen, setFold, valueOf, setValue } from "../panel-memory.js";
 import { modelBreakdown, findings, runs, entryGroups, hostTable, callSignature, callDelta, callTokens, wireTokenRows, latestLimits } from "./digest.js";
 
-export const NETWORK_LENS = { key: "network", q: "What went over the wire", icon: "⇄" };
+export const NETWORK_LENS = { key: "network", name: "Network", q: "What went over the wire", icon: "⇄" };
 import { productLabel } from '../products.js';
 const DOCS = { "claude-code": "../claude-code/", codex: "../codex/", opencode: '../opencode/', cursor: '../cursor/' };
 
@@ -36,6 +36,8 @@ function fold(title, open, key, ...kids) {
 function topFold(key, title, meta, ...kids) {
   return el("details", { class: "net-fold net-top", "data-net-section": key, "data-fold": key, open: foldOpen(key, false) || null }, summaryOf([title, meta]), ...kids);
 }
+// What a fold is about, one hover or keyboard focus away on its summary: never a paragraph to read before its contents.
+const why = (details, text) => { if (text && details?.children?.[0]) tip(details.children[0], text); return details; };
 // A dropdown whose choice is remembered per view; changing it redraws the panel in place.
 function choose(A, key, label, options, fallback = "") {
   const v = valueOf(key, fallback);
@@ -55,12 +57,29 @@ const PARTY = { third: "third party", first: "first party", local: "this machine
 const span = (t0, t1) => (t0 == null ? "" : t1 == null || t1 === t0 ? fmtClock(t0) : `${fmtClock(t0)}–${fmtClock(t1)}`);
 
 // ---------------------------------------------------------------- the reader for wire bodies
-// Kept across renders (full-screen reading re-renders the panel): { entry, part, title, at }. `at` is the row that
-// opened it (entry:<i> or card:<call index>): the reader renders right under that row, and Close returns there.
-let openBody = null, readerClaimed = false;
-function bodyButtons(A, entry, parts, title, at = null) {
-  return el("span", { class: "net-bodies" }, parts.map(([part, label]) => el("button", { class: "linkbtn", type: "button", text: label, onclick: () => { openBody = { entry, part, at, title: `${title} · ${label.toLowerCase()}` }; A.openNetworkBody ? A.openNetworkBody() : rerender(A); } })));
+// Kept across renders (full-screen reading re-renders the panel): { entry, part, title, at, x }. `at` is the row that
+// opened it (entry:<i>, card:<call index>, send:…): the reader renders right under that row, and Close returns there.
+// `x` is the capture entry (its address and facts head the reader); its parts are the reader's tabs.
+let openBody = null, readerClaimed = false, entryIndex = new Map();
+const PART_LABEL = { headers: "Headers", request: "Request", response: "Response", frames: "Frames", reasoning: "Received reasoning" };
+// The parts an entry has: headers always; a request body when one was sent; frames for a websocket, else a response.
+function partsOf(x) {
+  if (!x) return [["headers", "Headers"]];
+  return [["headers", "Headers"], ...(x.reqBytes ? [["request", "Request", fmtBytes(x.reqBytes)]] : []),
+    ...(x.ws ? [["frames", "Frames", `${fmtInt(x.ws)}`]] : x.resBytes ? [["response", "Response", fmtBytes(x.resBytes)]] : [])];
 }
+// The part a row opens first: what was sent, else what came back, else the headers.
+const firstPart = (x) => (x?.reqBytes ? "request" : x?.ws ? "frames" : x?.resBytes ? "response" : "headers");
+const fullUrl = (x) => `${x.host}${x.path}${x.query && x.query.length ? `?${x.query.join("&")}` : ""}`;
+const statusClass = (s) => (s == null ? "none" : s >= 400 ? "warn" : s >= 300 ? "redirect" : "ok");
+// A status as a small badge: the code, or "no response" (an entry with no HTTP answer recorded).
+const statusBadge = (s) => el("span", { class: `net-st ${statusClass(s)}`, text: s == null || s === 0 ? "no response" : String(s) });
+// What a row carries besides its address, status and size: when, which party, and how it is associated.
+function factsOf(x) {
+  return [x.t ? fmtWhen(x.t) : null, PARTY[x.party] || null, x.association === "unattributed" ? "unattributed" : null,
+    x.partial ? "incomplete at recorder checkpoint" : null, x.withheldBodies ? `${x.withheldBodies} bodies withheld by recorder` : null].filter(Boolean);
+}
+function openReader(A, spec) { openBody = spec; A.openNetworkBody ? A.openNetworkBody() : rerender(A); }
 function rerender(A) { if (A.rerender) A.rerender(); }
 // The reader, when this row (`at`) opened it.
 function readerAt(A, at, entry = null) {
@@ -68,28 +87,85 @@ function readerAt(A, at, entry = null) {
   readerClaimed = true;
   return wireReader(A);
 }
+// The tabs over an entry's parts: one selected (the open part) or none (a closed card). Clicking a tab opens that
+// part in the reader under `at`.
+function partTabs(A, spec, selected) {
+  return el("div", { class: "net-tabs", role: "tablist", "aria-label": "Parts of this request" }, spec.parts.map(([part, label, size]) => el("button", {
+    type: "button", role: "tab", class: "net-tab", "aria-selected": String(part === selected), tabindex: selected && part !== selected ? "-1" : "0",
+    onclick: () => openReader(A, { ...spec, part, title: `${spec.base} · ${label.toLowerCase()}` }),
+    onkeydown: (e) => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const tabs = [...e.currentTarget.parentElement.children], k = tabs.indexOf(e.currentTarget);
+      const next = tabs[(k + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+      e.preventDefault(); next.focus(); next.click();
+    },
+  }, label, size ? el("span", { class: "net-tab-size", text: ` ${size}` }) : null)));
+}
+const PAGE_CHARS = 400000;
 function wireReader(A) {
   if (!openBody) return null;
-  const { entry, part, title } = openBody;
+  const { entry, part, title, x } = openBody;
+  const spec = { ...openBody, parts: openBody.parts || partsOf(x) };
   const pre = el("pre", { class: "text", text: "Reading…" });
   const holder = el("div", {}, pre);
+  const tail = el("div", { class: "net-more" });
   const mode = el("span", { class: "mode" });
-  const full = A.reading ? el("button", { class: "linkbtn fullread", type: "button", text: A.reading() ? "Exit full screen" : "Read full screen", onclick: () => A.toggleReading() }) : null;
-  const box = el("div", { class: "reader net-reader" },
-    el("div", { class: "rhead" }, el("strong", { text: title }), mode, full, el("button", { class: "linkbtn close", type: "button", text: "Close", onclick: () => { openBody = null; rerender(A); } })),
-    el("p", { class: "note", text: "As it went over the wire, with credentials and identity redacted in your browser." }), holder);
-  (A.networkBody ? A.networkBody(entry, part) : Promise.reject(new Error("bodies are read in the worker"))).then((r) => {
+  const note = el("p", { class: "note", hidden: true });
+  const full = A.reading ? el("button", { class: "linkbtn fullread", type: "button", text: A.reading() ? "Exit full screen" : "Full screen", onclick: () => A.toggleReading() }) : null;
+  const close = el("button", { class: "linkbtn close", type: "button", text: "Close", "aria-label": "Close the request", onclick: () => { openBody = null; rerender(A); } });
+  const box = el("div", { class: "reader net-reader", role: "region", "aria-label": title },
+    el("div", { class: "rhead" }, partTabs(A, spec, part), el("span", { class: "net-reader-tools" }, mode, full, close)),
+    // the exact address (reveal and copy), then the facts the row kept to its tooltip
+    x ? el("div", { class: "net-reader-facts" }, el("span", { class: "net-method", text: x.method }), compactValue(fullUrl(x), { label: clip(`${x.host}${x.path}`, 72) + (x.query && x.query.length ? " …" : ""), what: "address" }), statusBadge(x.status),
+      el("span", { class: "meta", text: factsOf(x).join(" · ") })) : null,
+    note, holder, tail);
+  // Nothing the capture holds stays out of reach. The first read is bounded (the worker's first BODY_MAX characters);
+  // the whole text comes on request, read a page at a time (pagedText: Copy all and Download take all of it, exactly).
+  // A Cursor body decoded with the shipped descriptors is a view, never offered as stored: the bytes as the capture
+  // stored them are one click away.
+  const show = (r, opts) => {
     mode.textContent = r.mode || "";
-    const long = r.text && r.text.length > 400000;
-    pre.textContent = r.text ? (long ? `${r.text.slice(0, 400000)}\n\n[… ${fmtInt(r.text.length - 400000)} more characters below: Show all]` : r.text) : "(no body)";
-    if (r.text && !long) readableIn(holder, pre, pre.textContent, { key: `wire|${entry}|${part}` });
-    // Nothing the capture holds stays out of reach: a very long body shows in full on request (as stored, no layout).
-    if (long) holder.append(el("button", { class: "linkbtn", type: "button", text: `Show all ${fmtInt(r.text.length)} characters`, onclick: (e) => { pre.textContent = r.text; e.target.remove(); } }));
-    if (r.cut) holder.append(el("p", { class: "note", text: "The capture summary keeps the first 2,000,000 characters of a body; the HAR file holds the rest." }));
-  }).catch((e) => { pre.textContent = `Body unavailable: ${e?.message || e}`; });
+    note.hidden = !r.decoded;
+    note.textContent = r.decoded ? "Decoded view" : "";
+    holder.replaceChildren(pre); tail.replaceChildren();
+    if (!r.text) pre.textContent = "(no body)";
+    else if (r.cut) {
+      pre.textContent = r.text.slice(0, PAGE_CHARS);
+      tail.append(el("p", { class: "meta", role: "status", text: `Characters 1–${fmtInt(Math.min(PAGE_CHARS, r.text.length))} of ${fmtInt(r.total)}` }),
+        el("button", { class: "btn small", type: "button", text: `Read all ${fmtInt(r.total)} characters`, onclick: () => load({ ...opts, whole: true }) }));
+    } else {
+      const key = `wire|${entry}|${part}|${opts.original ? "stored" : "body"}`;
+      const pager = pagedText(r.text, { size: PAGE_CHARS, key, label: title, show: (page, start) => {
+        pre.textContent = page;
+        holder.replaceChildren(pre);
+        if (!r.decoded) readableIn(holder, pre, page, { key: `${key}|${start}` });
+      } });
+      if (pager) tail.append(pager);
+    }
+    if (r.decoded) note.append(" · ", el("button", { class: "linkbtn", type: "button", text: "Captured bytes", title: "The body exactly as the capture stored it", onclick: () => load({ original: true }) }));
+  };
+  const load = (opts) => {
+    pre.textContent = "Reading…"; holder.replaceChildren(pre); tail.replaceChildren();
+    (A.networkBody ? A.networkBody(entry, part, opts) : Promise.reject(new Error("bodies are read in the worker"))).then((r) => show(r, opts)).catch((e) => { pre.textContent = `Body unavailable: ${e?.message || e}`; });
+  };
+  load({});
   return box;
 }
 export function closeWireReader() { openBody = null; }
+// The capture's entries by index, each with its party, for the rows and the reader of this render.
+function indexEntries(cap) {
+  if (entryIndex.cap === cap) return;
+  entryIndex = new Map((cap.entries || []).map((x) => [x.i, { ...x, party: partyOf(cap.product, x.host) }]));
+  entryIndex.cap = cap;
+}
+// A reader spec for capture entry `i` (opened at row `at`, on `part`).
+function specFor(i, at, part = null, parts = null) {
+  const x = entryIndex.get(i) || null;
+  const base = x ? `${x.method} ${x.host}${x.path}` : `Request ${i}`;
+  const ps = parts || partsOf(x);
+  const p = part || firstPart(x);
+  return { entry: i, part: p, at, x, parts: ps, base, title: `${base} · ${(PART_LABEL[p] || p).toLowerCase()}` };
+}
 
 
 // ---------------------------------------------------------------- shared rows
@@ -119,8 +195,12 @@ const clockS = (t) => new Date(t).toLocaleTimeString("en-US", { hour: "numeric",
 const whenIso = (iso) => { const t = Date.parse(iso); return Number.isFinite(t) ? `${fmtWhen(t)} (${iso})` : iso; };
 // Which key it was (kind, last four characters, length, fingerprint), what it is (a JWT's issuer, scopes and
 // times), where and when it went, what each server answered (a 401 or 403 is how an expired or revoked key
-// shows), and every send. The value itself never reaches the page.
-function credentialCard(c) {
+// shows), and every send. The card names the key; its full value is in the headers and bodies, as recorded.
+// Where a send's value is read exactly: the request's URL and headers, or the body it went in.
+const SEND_PART = { "request header": "headers", cookie: "headers", "response header": "headers", "set-cookie": "headers", "URL query": "headers", "URL path": "headers", URL: "headers",
+  "request body": "request", "response body": "response", "websocket frame (sent)": "frames", "websocket frame (received)": "frames" };
+const PART_WORDS = { headers: "URL and headers", request: "request body", response: "response body", frames: "websocket frames" };
+function credentialCard(c, A) {
   const jwt = c.jwt, exp = jwt?.expires ? Date.parse(jwt.expires) : NaN;
   const head = [c.kind, c.ends ? `ends …${c.ends}` : null, c.chars != null ? `${fmtInt(c.chars)} chars` : null, `fp ${c.fp}${c.source === "capture" ? " (capture tool)" : ""}`].filter(Boolean).join(" · ");
   const where = [...new Set(c.sends.map((x) => (x.where ? `${x.where} (${x.channel})` : x.channel)))].join(", ");
@@ -129,26 +209,31 @@ function credentialCard(c) {
   const statuses = [...Object.entries(c.statuses || {}).sort((a, b) => b[1] - a[1]).map(([code, n]) => `${code} ×${fmtInt(n)}`),
     total > answered ? `no answer recorded ×${fmtInt(total - answered)}` : null].filter(Boolean).join(" · ");
   return el("li", { class: `net-transit net-cred${c.rejected || c.afterExpiry ? " flagged" : ""}`, "data-net-key": `cred:${c.source}:${c.fp}` },
-    el("div", { class: "net-transit-head" }, el("span", { class: "net-cat credential", text: "credential" }), el("b", { text: head })),
+    el("div", { class: "net-transit-head" }, el("span", { class: "net-cat credential", text: "credential" }), !c.ends && c.source === "capture" ? tip(el("b", { tabindex: "0", text: head }), "Recorded before the capture tool kept a key's last four characters; a new recording shows them.") : el("b", { text: head })),
     el("div", { class: "meta", text: `${fmtInt(c.count)}× to ${c.hosts.join(", ")}${where ? ` · in ${where}` : ""}${c.first ? ` · first ${clockS(c.first)}` : ""}${c.last && c.last !== c.first ? ` · last ${clockS(c.last)}` : ""}` }),
-    !c.ends && c.source === "capture" ? el("div", { class: "note", text: "Recorded before the capture tool kept a key's last four characters; a new recording shows them." }) : null,
     jwt ? el("div", { class: "meta", text: [jwt.alg && `alg ${jwt.alg}`, jwt.issuer && `issuer ${jwt.issuer}`, jwt.audience && `audience ${jwt.audience}`, jwt.scopes && jwt.scopes.length ? `scopes ${jwt.scopes.join(", ")}` : null, jwt.lifetime && `lifetime ${jwt.lifetime}`, jwt.issued && `issued ${whenIso(jwt.issued)}`, jwt.notBefore && `not before ${whenIso(jwt.notBefore)}`, jwt.expires && `expires ${whenIso(jwt.expires)}`].filter(Boolean).join(" · ") }) : null,
     Number.isFinite(exp) && c.last != null ? el("div", { class: c.afterExpiry ? "warnline" : "note", text: c.afterExpiry ? `Sent ${fmtInt(c.afterExpiry)}× after it expired at ${clockS(exp)}.` : `Still valid at its last send; it expires ${fmtWhen(exp)}.` }) : null,
     statuses ? el("div", { class: c.rejected ? "warnline" : "meta", text: `Server answers: ${statuses}${c.rejected ? ` · first 401/403 at ${clockS(c.firstRejected)}` : ""}` }) : null,
     fold(`Every send (${fmtInt(total)})`, false, `cred-sends:${c.source}:${c.fp}`,
-      el("ol", { class: "net-sends" }, c.sends.map((x) => el("li", {}, `${x.t != null ? clockS(x.t) : "–"} · ${x.host} · ${[x.method, x.url].filter(Boolean).join(" ")} · ${x.where || x.channel}`,
-        x.status != null ? chipText(String(x.status), x.status >= 400 ? "warn" : "") : null))),
+      el("ol", { class: "net-sends" }, c.sends.map((x, k) => {
+        // each send opens the exact request it went in, under this row: the value as recorded, never a placeholder
+        const part = SEND_PART[x.channel] || "headers", at = `send:${c.source}:${c.fp}:${k}`;
+        return el("li", { "data-net-key": at }, `${x.t != null ? clockS(x.t) : "–"} · ${x.host} · ${[x.method, x.url].filter(Boolean).join(" ")} · ${x.where || x.channel}`,
+          x.status != null ? chipText(String(x.status), x.status >= 400 ? "warn" : "") : null,
+          A && x.entry != null ? el("button", { class: "linkbtn net-open", type: "button", text: `Open ${PART_WORDS[part]}`, "aria-expanded": String(openBody?.at === at), onclick: () => openReader(A, specFor(x.entry, at, part)) }) : null,
+          A ? readerAt(A, at) : null);
+      })),
       c.moreSends ? el("p", { class: "note", text: `and ${fmtInt(c.moreSends)} more` }) : null));
 }
 // Rejected or expired first, then the most used; cookie values after the keys and tokens. The first ten show; the
 // rest are a fold away (opened when the palette points into one).
 const credOrder = (a, b) => (b.rejected + b.afterExpiry > 0) - (a.rejected + a.afterExpiry > 0) || (a.kind === "cookie value") - (b.kind === "cookie value") || b.count - a.count;
-function credentialList(list, focus) {
+function credentialList(list, focus, A) {
   if (!list.length) return [];
   const all = list.slice().sort(credOrder), head = all.slice(0, 10), rest = all.slice(10);
   const inRest = focus && rest.some((c) => focus.key === `cred:${c.source}:${c.fp}`);
-  return [el("ul", { class: "items net-transit-list" }, head.map(credentialCard)),
-    rest.length ? fold(`${fmtInt(rest.length)} more credentials`, inRest, "cred-rest", el("ul", { class: "items net-transit-list" }, rest.map(credentialCard))) : null];
+  return [el("ul", { class: "items net-transit-list" }, head.map(c => credentialCard(c, A))),
+    rest.length ? fold(`${fmtInt(rest.length)} more credentials`, inRest, "cred-rest", el("ul", { class: "items net-transit-list" }, rest.map(c => credentialCard(c, A)))) : null];
 }
 
 function transitRow(r, capture) {
@@ -159,7 +244,7 @@ function transitRow(r, capture) {
     el("div", { class: "net-transit-head" },
       el("span", { class: `net-cat ${r.cat}`, text: r.cat }), el("b", { text: what }), ...ruleChips(r)),
     r.ends && r.ends.length ? el("div", { class: "meta", text: `ends …${r.ends.join(", …")}` }) : null,
-    el("div", { class: "meta" }, `${r.host} · `, el("span", { class: `net-party ${r.party}`, text: PARTY[r.party] || "first party" }), ` · ${where} · ${fmtInt(r.count)}×${r.first ? ` · first ${fmtClock(r.first)}` : ""}${r.values > 1 ? ` · ${fmtInt(r.values)} different values` : ""}${r.fp && r.fp.length ? ` · fp ${r.fp[0]}${r.fpSource === "capture" ? " (capture tool)" : ""}` : ""}${d.described === "old" || d.described === "bare" ? " · redacted before Trace saw it" : ""}`),
+    el("div", { class: "meta" }, `${r.host} · `, el("span", { class: `net-party ${r.party}`, text: PARTY[r.party] || "first party" }), ` · ${where} · ${fmtInt(r.count)}×${r.first ? ` · first ${fmtClock(r.first)}` : ""}${r.values > 1 ? ` · ${fmtInt(r.values)} different values` : ""}${r.fp && r.fp.length ? ` · fp ${r.fp[0]}${r.fpSource === "capture" ? " (capture tool)" : ""}` : ""}${d.described === "old" || d.described === "bare" ? " · removed by the capture tool before Trace saw it" : ""}`),
     jwt ? el("div", { class: "meta" }, jwt) : null,
     d.fields ? el("div", { class: "meta", text: `with ${d.fields}` }) : null,
     d.secure != null ? el("div", { class: "meta", text: `cookie attributes: ${[d.secure ? "Secure" : "no Secure", d.httpOnly ? "HttpOnly" : "no HttpOnly", d.sameSite ? `SameSite=${d.sameSite}` : null].filter(Boolean).join(", ")}` }) : null,
@@ -174,14 +259,15 @@ export function networkLens(S, A) {
   const cap = S.network, trace = S.trace, product = cap.product;
   const focus = S.netFocus || null;
   readerClaimed = false;
+  indexEntries(cap);
   const out = [];
   if(cap.voice?.observed)out.push(section('WebRTC voice evidence',el('p',{text:`${fmtInt(cap.voice.messages)} data-channel messages · ${cap.voice.calls.length} observed call(s). Audio was not recorded.`})));
-  out.push(el("h2", { text: NETWORK_LENS.q }));
+  out.push(el("h2", { class: "sr-only", text: NETWORK_LENS.q }));
   const readerSlot = el("div", { class: "net-reader-slot" });
   const unattributed = cap.entries.filter(e => e.association === 'unattributed').length;
   out.push(el("p", { class: "meta net-source" }, `${cap.files.length > 3 ? "Network captures" : cap.files.join(", ")} · ${fmtInt(cap.kept)} of ${fmtInt(cap.total)} requests displayed · ${fmtInt(cap.entries.length - unattributed)} associated · ${fmtInt(unattributed)} unattributed`,
     cap.elsewhere ? ` · ${fmtInt(cap.elsewhere)} belonged to ${cap.otherSessions.length ? `other sessions (${cap.otherSessions.join(", ")})` : "other sessions"} and are left out` : "",
-    " · ", el("button", { class: "linkbtn", type: "button", text: "Replace the capture", onclick: () => A.addCapture && A.addCapture() })), readerSlot);
+    " · ", el("button", { class: "linkbtn", type: "button", text: "Replace", title: "Replace the capture", onclick: () => A.addCapture && A.addCapture() })), readerSlot);
   if (cap.notes.length) out.push(fold([plural(cap.notes.length, "note about this capture", "notes about this capture")], false, "net:notes", el("ul", { class: "net-notes" }, cap.notes.map((n) => el("li", { class: "note", text: n })))));
   out.push(findingsSection(cap, trace, A), callsSection(cap, trace, A));
   if (cap.transit && cap.transit.rows.length) out.push(transitSection(cap, A, focus));
@@ -216,26 +302,31 @@ function revealFold(key) {
 function findingsSection(cap, trace, A) {
   return el("section", { class: "psec net-sec net-findings" }, el("h3", { text: "Findings" }),
     modelsTable(cap),
-    el("div", { class: "net-finding-list" }, findings(cap, trace).map((f) => el("div", { class: `net-finding${f.warn ? " warn" : ""}`, "data-anchor": `finding:${f.id}` },
-      el("div", { class: "net-finding-head" }, el("b", { text: f.label }), el("button", { class: "linkbtn", type: "button", text: "Open →", onclick: () => openSection(A, f.open) })),
-      el("p", { text: f.text })))));
+    el("ul", { class: "net-finding-list" }, findings(cap, trace).map((f) => el("li", { class: `net-finding${f.warn ? " warn" : ""}`, "data-anchor": `finding:${f.id}` },
+      tip(el("button", { class: "net-finding-row", type: "button", onclick: () => openSection(A, f.open) }, el("b", { text: f.label }), el("span", { class: "meta", text: leadOf(f.text) })), f.text)))));
+}
+// A finding's first fact (its text up to the first " · ", "; " or sentence end), bounded.
+function leadOf(text, max = 76) {
+  const s = String(text ?? "").split(/ · |; |(?<=[a-z0-9)])\. /)[0].replace(/\.$/, "");
+  return s.length > max ? `${s.slice(0, max - 1)}…` : s;
 }
 // Calls by model: the main model first, every other model the harness called (side calls, prewarms) after it.
 function modelsTable(cap) {
   const rows = modelBreakdown(cap);
   const native = cap.product === 'opencode' || cap.product === 'cursor';
   if (!rows.length) return el("p", { class: "note", text: "No model calls in this capture." });
+  const tokensWhy = cap.product === 'cursor' ? 'This AgentService call summary does not extract token counts; open the decoded response when a shipped descriptor sidecar is loaded.' : cap.product === "codex" || cap.product === 'opencode' ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part.";
   const num = (n) => el("td", { class: "num", text: fmtTok(n) });
   return el("div", { class: "net-models-box", "data-anchor": "finding:models" },
     el("table", { class: "atable net-table net-models" },
       el("caption", { text: "Calls by model" }),
-      el("thead", {}, el("tr", {}, ...["Model", "Calls", native ? "Joined" : "In log", native ? "Unjoined" : "Not", "Input", "Output", "Cache read", "Cache write"].map((h, i) => el("th", { class: i ? "num" : null, text: h })))),
+      el("thead", {}, el("tr", {}, ...["Model", "Calls", native ? "Joined" : "In log", native ? "Unjoined" : "Not", "Input", "Output", "Cache read", "Cache write"].map((h, i) => (i === 4 ? tip(el("th", { class: "num", tabindex: "0", text: h }), tokensWhy) : el("th", { class: i ? "num" : null, text: h }))))),
       el("tbody", {}, rows.map((r) => el("tr", { class: r.main ? "net-main" : "net-side" },
         el("td", { class: "model", title: `${r.model} · ${Object.entries(r.kinds).map(([k, n]) => `${k} ×${n}`).join(", ")}` }, el("span", { class: "name", text: r.model }),
           el("span", { class: "meta", text: r.main ? " main" : r.notIn === r.calls ? native ? " side · no exact step match" : " side · not in your log" : " side" })),
         el("td", { class: "num", text: fmtInt(r.calls) }), el("td", { class: "num", text: fmtInt(r.inLog) }), el("td", { class: "num", text: fmtInt(r.notIn) }),
         num(r.input), num(r.output), num(r.cacheRead), num(r.cacheWrite))))),
-    el("p", { class: "note", text: cap.product === 'cursor' ? 'This AgentService call summary does not extract token counts; open the decoded response when a shipped descriptor sidecar is loaded.' : cap.product === "codex" || cap.product === 'opencode' ? "Tokens as each response reported them; Input counts cached tokens." : "Tokens as each response reported them; Input is the uncached part." }));
+  );
 }
 
 // ---------------------------------------------------------------- model calls
@@ -262,9 +353,8 @@ function callsSection(cap, trace, A) {
     .sort((a, b) => (rank.get(a[0]) ?? 99) - (rank.get(b[0]) ?? 99)).map(([k, n]) => `${k} ×${fmtInt(n)}`).join(", ");
   return topFold("sec:calls", "Model calls", `${fmtInt(inLog.length)} ${native ? 'joined' : 'in your log'}, ${fmtInt(notIn.length)} ${native ? 'unjoined' : 'not'} · ${byModel(cap.calls)}`,
     el("p", { class: "note", text: `Joined by ${cap.join.keys}.${product === "codex" && cap.join.items ? ` ${fmtInt(cap.join.itemsMatched)} of ${fmtInt(cap.join.items)} attributed input items match blocks in the log.` : ""}` }),
-    notIn.length ? fold([`${native ? 'Calls without an exact step match' : 'Requests not in your log'} (${fmtInt(notIn.length)})`, byModel(notIn)], true, "calls:notlog",
-      el("p", { class: "note", text: product === 'cursor' ? 'These AgentService calls carried no exact request ID matching a native step. Their captured payloads remain visible, but ownership stays unattributed.' : product === 'opencode' ? 'These captured calls have no exact native step join. A session header may identify their session; it does not identify a specific native step. Open a call to inspect the request as sent.' : product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent." }),
-      el("ul", { class: "items" }, notIn.map((c) => item(c)))) : null,
+    notIn.length ? why(fold([`${native ? 'Calls without an exact step match' : 'Requests not in your log'} (${fmtInt(notIn.length)})`, byModel(notIn)], true, "calls:notlog",
+      el("ul", { class: "items" }, notIn.map((c) => item(c)))), product === 'cursor' ? 'These AgentService calls carried no exact request ID matching a native step. Their captured payloads remain visible, but ownership stays unattributed.' : product === 'opencode' ? 'These captured calls have no exact native step join. A session header may identify their session; it does not identify a specific native step. Open a call to inspect the request as sent.' : product === "codex" ? "The harness sent these, and the rollout never records them: a prewarm (generate: false) primes the cache before the turn." : "Model calls the harness made besides the conversation (other request classes). The session log has no row for them. Open one to see it as sent.") : null,
     ...[...groups].map(([sig, list]) => {
       const c0 = list[0];
       const what = product === "codex" ? null : `${plural((c0.system || []).length, "system block")} · ${plural((c0.tools || []).length, "tool")} · ${plural((c0.betas || []).length, "beta")}`;
@@ -296,9 +386,8 @@ function transitSection(cap, A, focus) {
       rest.length ? (flagged.length ? fold([`${fmtInt(rest.length)} more places on this host, none flagged`], false, `transit-host-rest:${host}`, list(rest)) : list(rest)) : null);
   }).filter(Boolean);
   return topFold("sec:transit", "Sensitive data in transit", `${plural(creds.length, "credential")} · ${plural(tr.rows.length, "place")}, ${fmtInt(tr.counts.flagged)} flagged`,
-    el("p", { class: "note", text: "kind · length · last four · never the full value · fp groups equal values · identity removed" }),
-    creds.length ? fold(["Credentials sent", [`${fmtInt(creds.length)}`, rejected ? `${fmtInt(rejected)} rejected (401/403)` : null, expired ? `${fmtInt(expired)} sent after expiry` : null, multi.length ? `the same ${multi[0].kind} on ${plural(multi[0].hosts.length, "host")}` : null].filter(Boolean).join(" · ")], false, "transit:creds",
-      ...credentialList(creds, focus)) : null,
+    creds.length ? why(fold(["Credentials sent", [`${fmtInt(creds.length)}`, rejected ? `${fmtInt(rejected)} rejected (401/403)` : null, expired ? `${fmtInt(expired)} sent after expiry` : null, multi.length ? `the same ${multi[0].kind} on ${plural(multi[0].hosts.length, "host")}` : null].filter(Boolean).join(" · ")], false, "transit:creds",
+      ...credentialList(creds, focus, A)), "Each row: kind · length · last four · fp (equal values share one). The full values are in the headers and bodies.") : null,
     fold(["Where they travel", `${fired.length ? `${plural(fired.length, "rule")} fired` : "no rules fired"} · ${plural(hosts.length, "host")}, third parties first`], false, "transit:where",
       fired.length ? el("ol", { class: "net-rules" }, fired.map((x) => el("li", { "data-rule": x.id }, el("b", { text: `${x.id}. ${x.title}` }), el("span", { class: "note", text: ` ${x.why} (${fmtInt(x.rows)})` })))) : el("p", { class: "note", text: "None of the ten rules fired." }),
       multi.length ? el("p", { class: "warnline", text: multi.map((c) => `The same ${c.kind} goes to ${c.hosts.length} hosts: ${c.hosts.join(", ")}.`).join(" ") }) : null,
@@ -306,42 +395,105 @@ function transitSection(cap, A, focus) {
       ...hostFolds));
 }
 
-// ---------------------------------------------------------------- hosts and endpoints
+// ---------------------------------------------------------------- endpoints
+// One flat list of endpoints, filtered by role and by text, instead of role → endpoint → path → row nesting. An
+// endpoint names its destination once (its purpose, and the host only when that differs); its requests are rows of
+// method · path · status · size, each opening the tabbed reader under it. A one-request endpoint shows its row
+// directly. Hosts (party, traffic, what each received) are a table one fold below.
 function hostsSection(cap, A) {
   const hosts = hostTable(cap);
-  const byI = new Map(cap.entries.map((x) => [x.i, x]));
+  const byI = entryIndex;
   const bytes = cap.entries.reduce((s, x) => s + (x.reqBytes || 0) + (x.resBytes || 0), 0);
-  const received = (h) => [h.credentials.length ? plural(h.credentials.length, "credential kind") : null, h.identity.length ? plural(h.identity.length, "identity kind") : null, h.rules.length ? `rules ${h.rules.join(", ")}` : null].filter(Boolean).join(" · ") || "no credentials or identity";
-  // One host per row: the name on its own line (they are long), then what it got. Third parties first.
-  const table = el("ul", { class: "net-hosts" }, hosts.map((h) => el("li", { class: h.rules.length ? "warn" : null, title: h.roles.join(", ") },
-    el("div", {}, el("code", { class: "host", text: h.host }), el("span", { class: `net-party ${h.party}`, text: ` ${PARTY[h.party] || h.party}` })),
-    el("div", { class: "meta", text: `${plural(h.requests, "request")} · ${fmtBytes(h.up)} up → ${fmtBytes(h.down)} down · received ${received(h)}` }))));
-  const roles = el("div", { class: "net-roles" }, cap.roles.map((r) => fold([r.name, `${fmtInt(r.count)} · ${fmtBytes(r.bytes)}`], r.key === "model", `role:${r.key}`,
-    el("p", { class: "note", text: r.what }),
-    el("ul", { class: "items" }, r.endpoints.map((e) => endpointItem(cap, e, byI, A))))));
-  return topFold("sec:hosts", "Endpoints by role", `${plural(hosts.length, "host")}, ${fmtInt(hosts.filter((h) => h.party === "third").length)} third party · ${plural(cap.entries.length, "request")} · ${fmtBytes(bytes)}`,
-    el("h4", { text: "Hosts" }), table, el("h4", { text: "By role" }), roles);
+  const role = valueOf("eps:role", "");
+  const roles = cap.roles.filter((r) => !role || r.key === role);
+  const items = roles.flatMap((r) => r.endpoints.map((e) => ({ r, e })));
+  const nEndpoints = cap.roles.reduce((n, r) => n + r.endpoints.length, 0);
+  const rows = items.map(({ r, e }) => endpointItem(cap, e, byI, A, role ? null : r));
+  const input = el("input", { type: "search", class: "agent-search net-search", placeholder: "Filter host or path…", "aria-label": "Filter endpoints by host or path", autocomplete: "off" });
+  input.value = valueOf("eps:q", "");
+  const count = el("p", { class: "note net-count", role: "status" });
+  const filter = (save) => {
+    const q = String(input.value || "").trim().toLowerCase();
+    let n = 0;
+    rows.forEach((li) => { const hit = !q || li.dataset.find.includes(q); li.hidden = !hit; if (hit) n++; });
+    count.textContent = `${fmtInt(n)} of ${plural(nEndpoints, "endpoint")}`;
+    if (save) setValue("eps:q", input.value || "");
+  };
+  input.addEventListener("input", () => filter(true));
+  filter(false);
+  const roleSelect = choose(A, "eps:role", "Role", [["", `All roles (${fmtInt(cap.entries.length)})`], ...cap.roles.map((r) => [r.key, `${r.name} (${fmtInt(r.count)})`])]);
+  if (role) { const what = cap.roles.find((r) => r.key === role)?.what; if (what) tip(roleSelect, what); }
+  return topFold("sec:hosts", "Endpoints", `${plural(nEndpoints, "endpoint")} · ${plural(hosts.length, "host")}, ${fmtInt(hosts.filter((h) => h.party === "third").length)} third party · ${plural(cap.entries.length, "request")} · ${fmtBytes(bytes)}`,
+    el("div", { class: "net-filterbar" }, roleSelect, input), count,
+    el("ul", { class: "net-eps" }, rows),
+    hostsTable(hosts));
 }
-function endpointItem(cap, e, byI, A) {
+// Hosts: one row each, third parties first: party, requests, bytes up and down, and what it received.
+function hostsTable(hosts) {
+  const badges = (h) => [h.credentials.length ? el("span", { class: "net-st warn", title: h.credentials.join(", "), text: plural(h.credentials.length, "credential kind") }) : null,
+    h.identity.length ? el("span", { class: "net-st", title: h.identity.join(", "), text: plural(h.identity.length, "identity kind") }) : null,
+    h.rules.length ? el("span", { class: "net-st warn", text: `rule${h.rules.length === 1 ? "" : "s"} ${h.rules.join(", ")}` }) : null].filter(Boolean);
+  return fold([`Hosts (${fmtInt(hosts.length)})`, "party, traffic, credentials received"], false, "hosts",
+    el("div", { class: "net-scroll" }, el("table", { class: "atable net-table net-hosts-table" },
+      el("thead", {}, el("tr", {}, el("th", { text: "Host" }), el("th", { class: "num", text: "Requests" }), el("th", { class: "num", text: "Up → down" }), el("th", { text: "Received" }))),
+      el("tbody", {}, hosts.map((h) => el("tr", { class: h.rules.length ? "warn" : null, title: h.roles.join(", ") },
+        el("td", {}, el("code", { class: "host", text: h.host }), h.party !== "first" ? el("span", { class: `net-party ${h.party}`, text: ` ${PARTY[h.party] || h.party}` }) : null),
+        el("td", { class: "num", text: fmtInt(h.requests) }),
+        el("td", { class: "num", text: `${fmtBytes(h.up)} → ${fmtBytes(h.down)}` }),
+        el("td", {}, ...(badges(h).length ? badges(h) : [el("span", { class: "meta", text: "–" })]))))))));
+}
+function endpointItem(cap, e, byI, A, role = null) {
   const groups = entryGroups(e, byI);
-  const hostsOf = [...new Set(e.entries.map((i) => byI.get(i)?.host).filter(Boolean))];
-  const parties = [...new Set(hostsOf.map((h) => PARTY[partyOf(cap.product, h)]))];
-  return el("li", { "data-net-key": `endpoint:${e.label}` },
-    el("div", {}, el("b", { text: e.label }), el("span", { class: "meta", text: ` · ${hostsOf.join(", ")} · ${parties.join(", ")} · ${fmtInt(e.count)}× · ${fmtBytes(e.bytes)}` })),
-    el("p", { class: "note", text: e.reveals }),
-    groups.length === 1 ? entryList(cap, e, groups[0], A)
-      : groups.map((g) => fold([`${g.method} ${g.template}`, `${g.status || "no status"} · ×${fmtInt(g.items.length)} · ${fmtBytes(g.bytesUp)} → ${fmtBytes(g.bytesDown)}`], false, `epath:${e.label}|${g.sig}`, ...entryList(cap, e, g, A))));
+  const items = groups.flatMap((g) => g.items);
+  const hostsOf = [...new Set(items.map((x) => x.host).filter(Boolean))];
+  const parties = [...new Set(hostsOf.map((h) => partyOf(cap.product, h)))].filter((p) => p !== "first");
+  // the destination once: the purpose, then the host only when the purpose is not already the host
+  const host = hostsOf.length === 1 ? (hostsOf[0] === e.label ? null : hostsOf[0]) : `${fmtInt(hostsOf.length)} hosts`;
+  const warn = items.filter((x) => x.status >= 400).length;
+  const head = [tip(el("span", { class: "net-ep-name", tabindex: e.reveals ? "0" : null, text: e.label }), e.reveals),
+    host ? el("code", { class: "net-ep-host", title: hostsOf.join(", "), text: host }) : null,
+    ...parties.map((p) => el("span", { class: `net-party ${p}`, text: PARTY[p] })),
+    role ? el("span", { class: "net-role-tag", title: role.what || null, text: role.name }) : null,
+    el("span", { class: "net-ep-n", text: `${fmtInt(items.length)} ${items.length === 1 ? "request" : "requests"} · ${fmtBytes(e.bytes)}` }),
+    warn ? el("span", { class: "net-st warn", text: `${fmtInt(warn)} failed` }) : null];
+  const li = el("li", { class: "net-ep", "data-net-key": `endpoint:${e.label}`, "data-find": `${e.label} ${hostsOf.join(" ")} ${items.map((x) => x.path).join(" ")}`.toLowerCase() });
+  // one request: its row is the endpoint's whole body, no fold
+  if (items.length === 1) {
+    li.append(el("div", { class: "net-ep-head" }, ...head), el("ul", { class: "net-reqs" }, reqRow(A, items[0])));
+    return li;
+  }
+  const key = `ep:${e.label}`;
+  const body = groups.length === 1 ? entryList(A, e, groups[0])
+    // a heading only over a path that really repeats; a one-request group is its own row, method and path included
+    : groups.flatMap((g) => g.items.length === 1 ? entryList(A, e, g) : [el("div", { class: "net-grp-head" }, el("span", { class: "net-method", text: g.method }), el("code", { class: "net-path", text: g.template }),
+      g.status ? statusBadge(g.status) : statusBadge(null), el("span", { class: "meta", text: `×${fmtInt(g.items.length)} · ${fmtBytes(g.bytesUp)} → ${fmtBytes(g.bytesDown)}` })), ...entryList(A, e, g)]);
+  li.append(el("details", { class: "net-ep-fold", "data-fold": key, open: foldOpen(key, items.some((x) => openBody?.at === `entry:${x.i}`)) || null }, el("summary", { class: "net-ep-head" }, ...head), ...body));
+  return li;
 }
-// Every entry of a group: the first 25, then the rest one click away.
-function entryList(cap, e, g, A) {
-  const row = (x) => el("li", { "data-anchor": `entry:${x.i}` },
-    el("span", { class: "net-url" }, `${x.method} `, compactValue(`${x.host}${x.path}${x.query && x.query.length ? `?${x.query.join("&")}` : ""}`, { label: `${x.host}${x.path.length > 48 ? `${x.path.slice(0, 22)}…${x.path.slice(-22)}` : x.path}${x.query && x.query.length ? " …" : ""}`, what: "address" })),
-    el("span", { class: "meta", text: ` ${x.status || "no HTTP response"} · ${x.t ? `${fmtClock(x.t)} · ` : ""}${fmtBytes(x.reqBytes)} → ${fmtBytes(x.resBytes)}${x.ws ? ` · ${fmtInt(x.ws)} frames` : ""}${x.partial ? ' · incomplete at recorder checkpoint' : ''}${x.association === 'unattributed' ? ' · unattributed' : ''}${x.withheldBodies ? ` · ${x.withheldBodies} bodies withheld by recorder` : ''}${x.eager ? "" : " · read on demand"} ` }),
-    bodyButtons(A, x.i, [["headers", "Headers"], ...(x.reqBytes ? [["request", "Request"]] : []), ...(x.ws ? [["frames", "Frames"]] : x.resBytes ? [["response", "Response"]] : [])], `${x.method} ${x.host}${x.path}`, `entry:${x.i}`),
-    readerAt(A, `entry:${x.i}`));
+// One request: method · path · status · size, the whole row opening (and closing) its reader. Time, party and how it
+// is associated are its tooltip and the reader's facts; an incomplete or unattributed row says so beside it.
+function reqRow(A, x) {
+  const at = `entry:${x.i}`, open = openBody?.at === at;
+  const facts = factsOf(entryIndex.get(x.i) || x);
+  const path = `${x.path}${x.query && x.query.length ? "?…" : ""}`;
+  return el("li", { class: `net-req${open ? " open" : ""}`, "data-anchor": at, "data-net-key": at },
+    el("button", { class: "net-req-row", type: "button", "aria-expanded": String(open), title: [`${x.method} ${fullUrl(x)}`, ...facts].join("\n"),
+      onclick: () => (open ? (openBody = null, rerender(A)) : openReader(A, specFor(x.i, at))) },
+      el("span", { class: "net-method", text: x.method }),
+      el("span", { class: "net-path", text: path }),
+      statusBadge(x.status),
+      el("span", { class: "net-size", text: x.ws ? `${fmtInt(x.ws)} frames` : `${fmtBytes(x.reqBytes)} → ${fmtBytes(x.resBytes)}` })),
+    x.partial || x.association === "unattributed" || x.withheldBodies ? el("span", { class: "net-req-flags" },
+      x.partial ? el("span", { class: "net-st warn", text: "incomplete" }) : null,
+      x.association === "unattributed" ? el("span", { class: "net-st", text: "unattributed" }) : null,
+      x.withheldBodies ? el("span", { class: "net-st warn", text: `${x.withheldBodies} bodies withheld` }) : null) : null,
+    readerAt(A, at));
+}
+// Every request of a group: the first 25, then the rest one click away.
+function entryList(A, e, g) {
   const head = g.items.slice(0, 25), rest = g.items.slice(25);
-  return [el("ul", { class: "net-entries" }, head.map(row)),
-    rest.length ? fold([`The other ${fmtInt(rest.length)}`], false, `epath-all:${e.label}|${g.sig}`, el("ul", { class: "net-entries" }, rest.map(row))) : null];
+  return [el("ul", { class: "net-reqs" }, head.map((x) => reqRow(A, x))),
+    rest.length ? fold([`${fmtInt(rest.length)} more`], rest.some((x) => openBody?.at === `entry:${x.i}`), `epath-all:${e.label}|${g.sig}`, el("ul", { class: "net-reqs" }, rest.map((x) => reqRow(A, x)))) : null];
 }
 
 // ---------------------------------------------------------------- telemetry
@@ -382,22 +534,21 @@ function telemetrySection(cap, trace, A) {
   };
   order.addEventListener("toggle", () => { if (order.open) fill(); });
   if (order.open) fill();
-  return topFold("sec:telemetry", product === "codex" ? "Analytics events" : "Telemetry: how the harness assembled the prompt",
+  return why(topFold("sec:telemetry", product === "codex" ? "Analytics events" : "Telemetry: how the harness assembled the prompt",
     [plural(cap.events.length, "event"), decisions.length ? plural(decisions.length, "prompt-assembly decision") : null, plural(posts, "request")].filter(Boolean).join(" · "),
-    el("p", { class: "note", text: product === "codex" ? "Events the client reports: thread, turn, command, tool call, hook runs." : "Events the harness logs about its own prompt assembly (additional_metadata, decoded). Repeats in a row are merged; open a merged row to see each one. A call link opens the model call the event is about." }),
     choose(A, "telemetry:name", "Show", [["", `Every ${kind} (${fmtInt(list.length)})`], ...names.map(([n, c]) => [n, `${n} (${fmtInt(c)})`])]),
     timeline(rs.slice(0, 25), 0),
     rs.length > 25 ? fold([`The other ${fmtInt(rs.length - 25)} rows`], false, `telemetry-all:${pick}`, timeline(rs.slice(25), 25)) : null,
     fold([`All ${fmtInt(counts.length)} event names`, "with counts"], false, "events", el("ul", { class: "net-counts" }, counts.map(([n, c]) => el("li", { "data-net-key": `event:${n}` }, docLink(product, n), el("span", { class: "meta", text: ` ${fmtInt(c)}×` }))))),
-    order);
+    order), product === "codex" ? "Events the client reports: thread, turn, command, tool call, hook runs." : "Events the harness logs about its own prompt assembly (additional_metadata, decoded). Repeats in a row are merged; open a merged row to see each one. A call link opens the model call the event is about.");
 }
 
 // ---------------------------------------------------------------- what is switched on
 function onSection(cap, focus, A) {
   const product = cap.product, kids = [];
-  const betas = () => fold([`Betas (${fmtInt(cap.betas.length)})`], false, "betas",
-    el("p", { class: "note", text: product === "codex" ? "Beta switches the client sends when it opens the Responses websocket." : "The anthropic-beta header: API features the harness turns on for its calls." }),
-    el("ul", { class: "net-betas" }, cap.betas.map((b) => el("li", { "data-net-key": `beta:${b.name}` }, docLink(product, b.name), el("span", { class: "meta", text: ` ${b.source}${b.calls != null ? ` · ${fmtInt(b.calls)} of ${fmtInt(cap.calls.length)} calls` : ""}` })))));
+  const betas = () => why(fold([`Betas (${fmtInt(cap.betas.length)})`], false, "betas",
+    el("ul", { class: "net-betas" }, cap.betas.map((b) => el("li", { "data-net-key": `beta:${b.name}` }, docLink(product, b.name), el("span", { class: "meta", text: ` ${b.source}${b.calls != null ? ` · ${fmtInt(b.calls)} of ${fmtInt(cap.calls.length)} calls` : ""}` }))))),
+    product === "codex" ? "Beta switches the client sends when it opens the Responses websocket." : "The anthropic-beta header: API features the harness turns on for its calls.");
   const flags = (title) => fold([`${title} (${fmtInt(cap.flags.length)})`, `${fmtInt(cap.flags.filter((f) => f.source === "experiment").length)} from experiments`], false, "flags", flagTable(cap, focus));
   const catalog = () => fold([`Model catalog (${fmtInt(cap.catalog.length)}, ${fmtInt(cap.catalog.filter((m) => m.hidden).length)} hidden)`], false, "catalog",
     el("ul", { class: "items" }, cap.catalog.map((m) => el("li", { "data-net-key": `model:${m.slug}` }, el("b", { text: m.slug }), m.hidden ? el("span", { class: "net-mark warn", text: " hidden" }) : null,
@@ -410,7 +561,7 @@ function onSection(cap, focus, A) {
       const h = cap.handshake;
       kids.push(fold(["Websocket handshake", `${plural(h.betaFeatures.length, "beta feature")}`], false, "handshake",
         kv([["openai-beta", h.openaiBeta], ["x-codex-beta-features", h.betaFeatures.join(", ") || "–"], ["originator", h.originator], ["version", h.version], ["routing hint", h.routingHint],
-          ["x-codex-turn-metadata", h.turnMetadata ? el("code", { text: shortJson(h.turnMetadata, Infinity) }) : "–", "decoded; identity redacted"]]),
+          ["x-codex-turn-metadata", h.turnMetadata ? el("code", { text: shortJson(h.turnMetadata, Infinity) }) : "–", "decoded"]]),
         cap.metrics && Object.keys(cap.metrics.names).length ? fold([`${fmtInt(Object.keys(cap.metrics.names).length)} metrics reported`], false, "metrics", el("ul", { class: "net-counts" }, Object.entries(cap.metrics.names).map(([n, c]) => el("li", {}, el("code", { text: n }), el("span", { class: "meta", text: ` ${fmtInt(c)}` }))))) : null,
         cap.metrics && cap.metrics.shadowSelectionMethods.length ? el("p", { class: "meta", text: `Skill shadow selection methods: ${cap.metrics.shadowSelectionMethods.join(", ")}` }) : null));
     }
@@ -418,10 +569,10 @@ function onSection(cap, focus, A) {
   } else {
     if (cap.betas.length) kids.push(betas());
     if (cap.flags.length) kids.push(flags("Flags & experiments"));
-    if (cap.bootstrap) kids.push(fold(["client_data", `${plural(Object.keys(cap.bootstrap.clientData || {}).length, "key")}`], false, "clientdata",
-      el("p", { class: "note", text: "Opaque keys the server hands the CLI at start-up; the extraction's conditions cite some of them (\"client-data key …\")." }),
+    if (cap.bootstrap) kids.push(why(fold(["client_data", `${plural(Object.keys(cap.bootstrap.clientData || {}).length, "key")}`], false, "clientdata",
       readableOrStored(() => el("div", { class: "rd-box" }, readableValue(cap.bootstrap.clientData)), () => el("pre", { class: "text net-json", text: json(cap.bootstrap.clientData) })),
-      cap.bootstrap.modelOptions.length ? el("p", { class: "meta", text: `Extra model options: ${cap.bootstrap.modelOptions.map((m) => `${m.name || m.model}${m.disabled ? ` (${m.disabled})` : ""}`).join(", ")}` }) : null));
+      cap.bootstrap.modelOptions.length ? el("p", { class: "meta", text: `Extra model options: ${cap.bootstrap.modelOptions.map((m) => `${m.name || m.model}${m.disabled ? ` (${m.disabled})` : ""}`).join(", ")}` }) : null),
+      "Opaque keys the server hands the CLI at start-up; the extraction's conditions cite some of them (\"client-data key …\")."));
     if (cap.catalog.length) kids.push(catalog());
   }
   if (!kids.length) return null;
@@ -437,9 +588,9 @@ function accountSection(cap) {
   if (!facts.length && !ids.length && !rl.length) return null;
   const latest = latestLimits(rl).map((x) => `${x.key} ${pct(x.value)}`).join(" · ");
   return topFold("sec:account", "Account, plan & limits", [facts.length ? plural(facts.length, "fact") : null, rl.length ? plural(rl.length, "rate-limit reading") : null].filter(Boolean).join(" · "),
-    facts.length || ids.length ? fold([`Account & plan (${plural(facts.length, "fact")})`, ids.length ? `${plural(ids.length, "identity field")} redacted` : null], false, "account-facts",
+    facts.length || ids.length ? fold([`Account & plan (${plural(facts.length, "fact")})`, ids.length ? `${plural(ids.length, "field")} removed by the capture tool` : null], false, "account-facts",
       kv(facts.map((f) => [`${f.key}`, f.value, f.source])),
-      ids.length ? el("p", { class: "note", text: `Present, values redacted: ${ids.join(", ")}.` }) : null) : null,
+      ids.length ? el("p", { class: "note", text: `Removed by the capture tool before Trace saw it: ${ids.join(", ")}.` }) : null) : null,
     rl.length ? fold([`Rate limits over time (${fmtInt(rl.length)})`, latest ? `latest ${latest}` : null], false, "rate-limits", rateGauges(cap)) : null);
 }
 
@@ -448,21 +599,21 @@ function headersSection(cap) {
   const list = cap.headerNames, redacted = list.filter((h) => h.redacted).length;
   const input = el("input", { type: "search", class: "agent-search net-search", placeholder: "Find a header…", "aria-label": "Find a header", autocomplete: "off" });
   const side = el("select", { class: "net-select", "aria-label": "Which headers" },
-    [["", "Request and response"], ["request", "Request"], ["response", "Response"], ["redacted", "Values redacted"]].map(([v, t]) => el("option", { value: v, text: t, selected: v === valueOf("headers:side", "") ? true : null })));
+    [["", "Request and response"], ["request", "Request"], ["response", "Response"], ...(redacted ? [["redacted", "Removed by the capture tool"]] : [])].map(([v, t]) => el("option", { value: v, text: t, selected: v === valueOf("headers:side", "") ? true : null })));
   input.value = valueOf("headers:q", "");
   const count = el("p", { class: "note", role: "status" });
-  const rows = list.map((h) => el("li", { "data-net-key": `header:${h.name}` }, el("code", { text: h.name }), el("span", { class: "meta", text: ` ${h.side} · ${fmtInt(h.count)}×${h.redacted ? ` · value redacted${h.redacted === "capture" ? " by the capture tool" : ""}` : ""}` })));
+  const rows = list.map((h) => el("li", { "data-net-key": `header:${h.name}` }, el("code", { text: h.name }), el("span", { class: "meta", text: ` ${h.side} · ${fmtInt(h.count)}×${h.redacted ? " · value removed by the capture tool" : ""}` })));
   const filter = (save) => {
     const q = String(input.value || "").trim().toLowerCase(), s = String(side.value || "");
     let n = 0;
     list.forEach((h, i) => { const hit = (!q || h.name.includes(q)) && (!s || (s === "redacted" ? !!h.redacted : h.side === s)); rows[i].hidden = !hit; if (hit) n++; });
-    count.textContent = q || s ? `${fmtInt(n)} of ${fmtInt(list.length)} header names` : `${fmtInt(list.length)} header names · ${fmtInt(redacted)} with values redacted`;
+    count.textContent = q || s ? `${fmtInt(n)} of ${fmtInt(list.length)} header names` : `${fmtInt(list.length)} header names${redacted ? ` · ${fmtInt(redacted)} removed by the capture tool` : ""}`;
     if (save) { setValue("headers:q", input.value || ""); setValue("headers:side", side.value || ""); }
   };
   input.addEventListener("input", () => filter(true));
   side.addEventListener("change", () => filter(true));
   filter(false);
-  return topFold("sec:headers", "Headers", `${plural(list.length, "name")} · ${fmtInt(redacted)} with values redacted`,
+  return topFold("sec:headers", "Headers", `${plural(list.length, "name")}${redacted ? ` · ${fmtInt(redacted)} removed by the capture tool` : ""}`,
     el("div", { class: "net-filterbar" }, input, side), count, el("ul", { class: "net-counts" }, rows));
 }
 
@@ -574,10 +725,13 @@ function callCard(cap, c, trace, A, at) {
   const product = cap.product, n = c.index;
   const x = (cap.entries || []).find((e) => e.i === c.entry);
   const key = (part) => `wire:${n}:${part}`;
+  indexEntries(cap);
   const card = el("section", { class: "psec net-card", "data-net-call": String(n), "data-anchor": `card:${n}` }, el("h3", { text: "On the wire" }));
   const kids = [];
-  kids.push(el("p", { class: "meta net-route", text: [x ? `${x.method} ${x.host}${x.path}` : null, x ? PARTY[partyOf(product, x.host)] : null, c.status ?? x?.status ?? null,
-    c.timings ? `${fmtMs(c.timings.wait)} to first byte · ${fmtMs(c.timings.total)} total` : null].filter((v) => v != null && v !== "").join(" · ") }));
+  kids.push(el("div", { class: "net-route" }, x ? el("span", { class: "net-method", text: x.method }) : null,
+    x ? compactValue(fullUrl(x), { label: clip(`${x.host}${x.path}`, 64), what: "address" }) : null,
+    statusBadge(c.status ?? x?.status ?? null),
+    el("span", { class: "meta", text: [x && partyOf(product, x.host) !== "first" ? PARTY[partyOf(product, x.host)] : null, c.timings ? `${fmtMs(c.timings.wait)} to first byte · ${fmtMs(c.timings.total)} total` : null].filter(Boolean).join(" · ") })));
   if (at && at.same) kids.push(el("p", { class: "note", text: `The same HTTP call as ${at.agent.kind === "side" ? "the main thread's" : ""} request ${at.same.reqIdx + 1}: this row is one iteration of it.` }));
   kids.push(kv([
     [product === "codex" ? "Response id" : "Request id", c.requestId ? compactValue(c.requestId, { what: "id" }) : "–", c.joinedBy ? `joined by ${c.joinedBy}` : product === 'opencode' || product === 'cursor' ? 'no exact native step match' : "not in your log"],
@@ -586,7 +740,10 @@ function callCard(cap, c, trace, A, at) {
   ]));
   const http = product === 'claude-code' || c.transport === 'http';
   const parts = http ? [["headers", "Headers"], ["request", "Request as sent"], ["response", "Response"], ...(c.protocol === 'chat-completions' ? [['reasoning', 'Received reasoning']] : [])] : [["headers", "Handshake headers"], ["frames", "Frames"]];
-  kids.push(el("div", { class: "net-actions" }, bodyButtons(A, c.entry, parts, http ? `Call ${n + 1}` : "Responses websocket", `card:${n}`)), readerAt(A, `card:${n}`, c.entry));
+  // the parts as tabs: closed, a row of them; open, the reader under the card with the same tabs at its head
+  const spec = specFor(c.entry, `card:${n}`, null, parts);
+  const reader = readerAt(A, `card:${n}`, c.entry);
+  kids.push(reader || el("div", { class: "net-actions" }, partTabs(A, spec, null)));
   // Sensitive data sent with this call: open when something on it is flagged.
   const { rows, socket } = sensitiveRows(cap, c);
   const multi = new Map((cap.transit?.credentials || []).filter((y) => y.hosts.length > 1).map((y) => [y.kind, y]));
@@ -645,7 +802,7 @@ function callCard(cap, c, trace, A, at) {
       c.params.effort ? `effort ${c.params.effort}` : null,
       c.params.context_management ? `context_management ${shortJson(c.params.context_management, Infinity)}` : null,
       c.params.diagnostics ? `diagnostics ${shortJson(c.params.diagnostics, Infinity)}` : null,
-      c.params.metadataKeys.length ? `metadata keys: ${c.params.metadataKeys.join(", ")} (values redacted)` : null,
+      c.params.metadataKeys.length ? `metadata keys: ${c.params.metadataKeys.join(", ")}` : null,
       c.params.max_tokens ? `max_tokens ${fmtInt(c.params.max_tokens)}` : null,
     ].filter(Boolean);
     const billing = c.system.some((s) => s.billing);
@@ -664,7 +821,7 @@ function callCard(cap, c, trace, A, at) {
     const wireContext = (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
     kids.push(fold(["The response", [r.stop_reason || (r.complete === false ? "the stream ended early" : null), r.service_tier, u.output_tokens != null ? `${fmtInt(u.output_tokens)} output tokens` : null].filter(Boolean).join(" · ")], false, key("response"),
       // With a log row the token figures sit beside the log's in the request's Tokens table; without one, here.
-      logged ? el("p", { class: "note", text: "Token figures: in the Tokens table above, the log's beside the wire's." }) : el("div", {}, el("h4", { text: "Tokens (exact, from the response)" }), kv([
+      logged ? null : el("div", {}, el("h4", { text: "Tokens (exact, from the response)" }), kv([
         ["Input", fmtInt(u.input_tokens)], ["Cache read", fmtInt(u.cache_read_input_tokens)],
         ["Cache write", fmtInt(u.cache_creation_input_tokens), r.cacheSplit ? `5 min ${fmtInt(r.cacheSplit.m5)} · 1 h ${fmtInt(r.cacheSplit.h1)}` : null],
         ["Output", fmtInt(u.output_tokens), r.thinking_tokens != null ? `thinking ${fmtInt(r.thinking_tokens)}` : null],
@@ -687,7 +844,7 @@ function callCard(cap, c, trace, A, at) {
       c.additionalTools.length ? ["additional_tools", c.additionalTools.join(", "), "tools travel as an input item, not in the log"] : null,
       c.previousResponseId ? ["Previous response", el("code", { text: c.previousResponseId })] : null,
       ["Parameters", shortJson(c.params, Infinity)],
-      c.turnMetadata ? ["x-codex-turn-metadata", shortJson(c.turnMetadata, Infinity), "decoded; identity redacted"] : null,
+      c.turnMetadata ? ["x-codex-turn-metadata", shortJson(c.turnMetadata, Infinity), "decoded"] : null,
     ])));
     const r = c.response || {}, u = c.usage || {};
     kids.push(fold(["The response", [r.service_tier, u.output_tokens != null ? `${fmtInt(u.output_tokens)} output tokens` : null].filter(Boolean).join(" · ")], false, key("response"), kv([
@@ -696,7 +853,7 @@ function callCard(cap, c, trace, A, at) {
       logged ? null : ["Output", fmtInt(u.output_tokens), u.output_tokens_details ? `reasoning ${fmtInt(u.output_tokens_details.reasoning_tokens)}` : null],
       c.promptCache ? ["Prompt cache", shortJson(c.promptCache, Infinity)] : null,
       c.metadata ? ["Response metadata", shortJson(c.metadata, Infinity)] : null,
-    ]), logged ? el("p", { class: "note", text: "Token figures: in the Tokens table above, the log's beside the wire's." }) : null));
+    ])));
     if (c.attribution.length) kids.push(attributionTable(c, at, A, key));
     if (c.rateLimits) kids.push(fold(["Rate limits at this call"], false, key("rate"), el("p", { class: "meta net-meta", text: shortJson(c.rateLimits, Infinity) })));
   }
@@ -728,8 +885,8 @@ function attributionTable(c, at, A, key) {
   const table = (list) => el("div", { class: "net-scroll" }, el("table", { class: "atable net-attr" }, el("thead", {}, el("tr", {}, el("th", { text: "Item" }), el("th", { text: "In the log" }), el("th", { class: "num", text: "Input" }), el("th", { class: "num", text: "Cached" }), el("th", { class: "num", text: "Trace est." }))), el("tbody", {}, list.map(row))));
   const missing = c.attribution.filter((a) => !a.blocks.some((b) => !agent || b.agentId === agent.id)).length;
   const head = c.attribution.slice(0, 60), rest = c.attribution.slice(60);
-  return fold(["Tokens per input item (attribution, exact)", `${plural(c.attribution.length, "item")} · ${fmtInt(missing)} not in the log`], false, key("attribution"),
-    el("p", { class: "note", text: "The server counts input and cached tokens per input item; Trace's per-block figures are estimates. Items not in the log went over the wire only." }),
+  return why(fold(["Tokens per input item (attribution, exact)", `${plural(c.attribution.length, "item")} · ${fmtInt(missing)} not in the log`], false, key("attribution"),
     table(head),
-    rest.length ? fold([`The other ${fmtInt(rest.length)} items`], false, key("attribution-all"), table(rest)) : null);
+    rest.length ? fold([`The other ${fmtInt(rest.length)} items`], false, key("attribution-all"), table(rest)) : null),
+    "The server counts input and cached tokens per input item; Trace's per-block figures are estimates. Items not in the log went over the wire only.");
 }

@@ -51,7 +51,7 @@ test("checkHar deletes a capture with a credential and keeps a clean one", () =>
   const dirty = path.join(dir, "dirty.har"), clean = path.join(dir, "clean.har");
   writeFileSync(dirty, har([{ name: "authorization", value: FAKE.bearer }]));
   writeFileSync(clean, har([{ name: "authorization", value: "<redacted by trace-capture>" }], '{"model":"m"}'));
-  assert.deepEqual(checkHar(dirty), { ok: false, kinds: ["bearer token"], deleted: true });
+  assert.deepEqual(checkHar(dirty, {publicExport:true}), { ok: false, kinds: ["bearer token"], deleted: true });
   assert.equal(existsSync(dirty), false);
   assert.deepEqual(checkHar(clean), { ok: true, kinds: [], deleted: false });
   assert.equal(existsSync(clean), true);
@@ -64,7 +64,7 @@ test("the CLI exits non-zero, and says why, when the HAR is missing or dirty", (
   assert.match(missing.stderr, /no HAR was written/);
   const dirty = path.join(dir, "dirty.har");
   writeFileSync(dirty, har([], FAKE.anthropic));
-  const run = spawnSync(process.execPath, [cli, dirty], { encoding: "utf8" });
+  const run = spawnSync(process.execPath, [cli, dirty, "--public-export"], { encoding: "utf8" });
   assert.equal(run.status, 1);
   assert.match(run.stderr, /deleted .*Anthropic API key/);
   assert.equal(existsSync(dirty), false);

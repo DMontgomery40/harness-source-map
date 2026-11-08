@@ -129,8 +129,8 @@ const rowsWithPayload = rows => rows.map(r => {
  return out;
 });
 
-// Every row for the family's threads, payloads parsed. Message tables are not included (the bound agent sessions
-// and provider event logs carry the conversation).
+// Recorded rows for the family's threads, with payloads parsed. Message and turn-item bodies are evidence
+// even when a native transcript or provider log is unavailable.
 export function familyRows(db, threadIds) {
  const tables = new Set(db.tables());
  const q = (table, sql, ids = threadIds) => tables.has(table) && ids.length ? rowsWithPayload(inChunks(db, sql, ids)) : [];
@@ -141,6 +141,9 @@ export function familyRows(db, threadIds) {
  const PS = 'orchestration_v2_projection_provider_sessions', SUB = 'orchestration_v2_projection_subagents', CT = 'orchestration_v2_projection_context_transfers';
  return {
   threads,
+  messages: q('orchestration_v2_projection_messages', 'select * from orchestration_v2_projection_messages where thread_id in (?)'),
+  legacyMessages: q('projection_thread_messages', 'select * from projection_thread_messages where thread_id in (?)'),
+  turnItems: q('orchestration_v2_projection_turn_items', 'select * from orchestration_v2_projection_turn_items where thread_id in (?)'),
   threadCreations: threadCreations(db, threadIds, {tables}),
   legacyThreads: q('projection_threads', 'select * from projection_threads where thread_id in (?)'),
   runs: q('orchestration_v2_projection_runs', 'select * from orchestration_v2_projection_runs where thread_id in (?)'),

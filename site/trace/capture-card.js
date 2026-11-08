@@ -17,7 +17,7 @@ export function renderCaptureCard(box, state, act) {
     el("span", { text: n ? `Attached · ${fmtInt(n.kept)} requests · ${fmtInt(n.calls.length)} model call${n.calls.length === 1 ? "" : "s"}${state.matched ? ` (${state.matched})` : ""}` : "No capture" }),
     action("Close", act.close, "text-control"));
   const buttons = el("div", { class: "net-help-actions" },
-    n ? action("Open it · 5", act.openLens, "btn small primary") : null,
+    n ? action("Network", act.openLens, "btn small primary") : null,
     action("Record", () => act.record(routes.length === 1 ? routes[0].id : "choose"), `btn small${state.route ? " on" : ""}`),
     action(n ? "Open another file…" : "Open file…", act.openFile),
     action("Help", act.help, "text-control"));

@@ -23,46 +23,40 @@
   <div class="loader-inner">
     <header class="intro">
       <p class="brand"><a href="../">Reference</a> <span aria-hidden="true">/</span> Trace</p>
-      <h1>See one agent session as a landscape.</h1>
-      <p class="lede">Every agent, what filled its context, and the exact words behind each layer.</p>
+      <h1>See an agent session as a landscape.</h1>
       <div id="hero" class="hero" aria-hidden="true"></div>
-      <div id="hero-legend" class="legend"></div>
     </header>
 
-    <section class="load" aria-labelledby="load-h">
-      <div class="load-head"><h2 id="load-h">Open a session</h2><button id="help-loader" class="help-open" type="button">Help</button></div>
-      <div class="real-example">
-        <h3>New to Trace?</h3>
-        <p id="example-entry">A real T3 family: 64 agents across 4 environments and multiple providers · 8,348 requests · original text withheld</p>
-        <button id="open-example" class="btn" type="button">Open a real example</button>
-        <p id="example-status" class="example-description" role="status" aria-live="polite"></p>
-        <p id="example-description" class="example-description" aria-live="polite"></p>
-      </div>
+    <section class="load" aria-label="Open a session">
       <div class="find">
-        <label for="paste" class="find-label">Paste a session ID or thread link</label>
-        <input id="paste" class="paste" type="text" spellcheck="false" autocomplete="off"
-          placeholder="ses_…, a UUID, codex://threads/…, or t3-thread://…">
+        <div class="find-row">
+          <input id="paste" class="paste" type="text" spellcheck="false" autocomplete="off" aria-label="Session ID or thread link" aria-describedby="paste-out"
+            placeholder="Session ID or thread link">
+          <button id="paste-open" class="btn primary" type="button">Open</button>
+        </div>
         <div id="paste-out" class="paste-out" aria-live="polite"></div>
       </div>
-      <p class="or">Or drop the files yourself</p>
-      <div id="drop" class="drop" tabindex="0" role="button" aria-label="Drop a session file or folder, or press Enter to choose files">
-        <p class="drop-big">Drop a session file or folder here</p>
-        <p class="drop-help"><code>.jsonl</code> · <code>.json</code> exports · <code>.har</code> with its session · T3 bundle folders</p>
+      <div id="drop" class="drop" role="group" aria-label="Example or your files">
         <div class="drop-buttons">
-          <label class="btn">Choose files<input id="pick-files" type="file" multiple accept=".jsonl,.json,.har,application/json"></label>
-          <label class="btn">Choose a folder<input id="pick-folder" type="file" webkitdirectory multiple></label>
+          <button id="open-example" class="btn" type="button" title="A real T3 family: 64 agents across 4 environments and multiple providers · 8,348 requests">Example</button>
+          <label class="btn">Files<input id="pick-files" type="file" multiple accept=".jsonl,.json,.har,application/json"></label>
+          <label class="btn">Folder<input id="pick-folder" type="file" webkitdirectory multiple></label>
         </div>
+        <p class="drop-big">or drop them here</p>
       </div>
       <input id="pick-root" type="file" webkitdirectory multiple hidden>
       <div id="progress" class="progress" hidden>
-        <div class="bar"><i id="progress-fill"></i></div>
-        <p id="progress-text" class="progress-text" aria-live="polite">Reading…</p>
+        <div class="bar" role="progressbar" aria-label="Opening" aria-valuemin="0" aria-valuemax="100"><i id="progress-fill"></i></div>
+        <div class="progress-row"><p id="progress-text" class="progress-text">Reading…</p><button id="progress-cancel" class="btn small" type="button">Cancel</button></div>
+        <p id="progress-status" class="sr-only" role="status" aria-live="polite"></p>
       </div>
       <p id="load-error" class="error" role="alert" hidden></p>
-
-      <div class="private">
-        <strong>Session files are read in this tab.</strong>
-        <span>Nothing is sent unless you send an explanation.</span>
+      <div class="load-foot">
+        <details class="load-more"><summary>Formats and privacy</summary>
+          <p><code>.jsonl</code> or <code>.json</code> session exports, a <code>.har</code> capture with its session, or a T3 bundle folder.</p>
+          <p>Files are read in this tab. Nothing is sent unless you send an explanation.</p>
+        </details>
+        <button id="help-loader" class="help-open" type="button">Help</button>
       </div>
 
       <div id="dev" class="dev" hidden>

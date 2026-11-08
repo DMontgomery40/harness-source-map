@@ -24,6 +24,15 @@ export function rungWords(libName) {
 }
 
 const num = n => Number(n).toLocaleString("en-US");
+// Which build a match was made against, beside the version the inspected session recorded: the same build, another
+// one (the text matched in a build the session did not run), or unknown on either side. A match across versions
+// is still a match of the text, and is said as one.
+const ver = v => (/\d+\.\d+(?:\.\d+)?(?:-[\w.]+)?/.exec(String(v || "")) || [])[0] || null;
+export function comparedWords(recorded, compared) {
+  if (!compared) return recorded ? `no build compared · session ran ${recorded}` : "no build compared";
+  if (!recorded) return `compared with ${compared} · session version not recorded`;
+  return ver(recorded) && ver(recorded) === ver(compared) ? `compared with ${compared}, the session's own` : `compared with ${compared} · session ran ${recorded}`;
+}
 // What kind of place holds a binary-only piece's text: a CLI or app binary, a desktop app bundle (app.asar), or a
 // source tree (file:line). `where.kind` says so; an older model without it is read from the shelf name, else "binary".
 export const whereKind = w => w?.kind || (/app\.asar|bundle/i.test(w?.shelf || "") ? "bundle" : /\bsource\b/i.test(w?.shelf || "") ? "source" : "binary");
@@ -65,9 +74,11 @@ export function createProvenance({ request }) {
       const hit = held.byBlock.get(`${ai}:${block}`);
       if (!hit) return null;
       const [part, p, k] = hit;
+      const recorded = trace.agents[ai].nativeVersion || (trace.family ? null : trace.version) || null;
       return {
         label: `${p.name} · ${p.n} ${p.n === 1 ? "copy" : "copies"}`, list: p.blocks.map(([a, b]) => ({ agentId: trace.agents[a].id, block: b })), at: k,
-        piece: p, product: part.product, libName: part.libName, words: rungWords(part.libName)[p.rung] || p.rung, where: whereText(p), agents: part.agents
+        piece: p, product: part.product, libName: part.libName, words: rungWords(part.libName)[p.rung] || p.rung, where: whereText(p), agents: part.agents,
+        basis: p.rung === "outside" ? null : comparedWords(recorded, part.compared?.literal || part.compared?.reference || null)
       };
     },
     reset() { held = null; },

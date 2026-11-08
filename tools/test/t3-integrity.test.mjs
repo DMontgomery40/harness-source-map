@@ -1,7 +1,7 @@
 // Storage/schema regressions only: no session recordings or private fixture material.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, chmodSync} from 'node:fs';
+import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, chmodSync, statSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, dirname} from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -11,6 +11,7 @@ import {combineMachine, partActivity} from '../t3/assemble.mjs';
 import * as assembly from '../t3/assemble.mjs';
 import {partLaunches} from '../t3/launches.mjs';
 import {withStoreLock, withHarvestPublication, harvestRecoveryRoots} from '../t3/collect.mjs';
+import {bundleFileList} from '../t3/bundles.mjs';
 
 function scratch(t) { const dir = mkdtempSync(join(tmpdir(), 't3-integrity-')); t.after(() => rmSync(dir, {recursive: true, force: true})); return dir; }
 function put(file, value) { mkdirSync(dirname(file), {recursive: true}); writeFileSync(file, typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)); }
@@ -27,6 +28,21 @@ function part(dir, {compressed = true, missing = false, orphan = false} = {}) {
 }
 const combine = (p, out) => combineMachine([p], out, {sinceMs: 0, untilMs: 1000, partsKeyId: 'test-parts-key'});
 
+test('combined parts publish current physical sizes for rewritten and copied members', async t => {
+ const dir = scratch(t), p = part(join(dir, 'part')), out = join(dir, 'out');
+ const copied = 'machines/test-machine/provider.log.gz';
+ put(join(p.dir, copied), gzip('recorded provider bytes\n'));
+ p.entry.files.push(copied);
+ p.entry.sizes = Object.fromEntries(p.entry.files.map(file => [file, statSync(join(p.dir, file)).size]));
+ combine(p, out);
+ const files = await bundleFileList(out);
+ const machine = JSON.parse(readFileSync(join(out, 'bundle.json'))).machines[0];
+ assert.deepEqual(Object.keys(machine.sizes).sort(), machine.files);
+ for (const file of machine.files) assert.equal(machine.sizes[file], statSync(join(out, file)).size, file);
+ assert.deepEqual(readFileSync(join(out, copied)), readFileSync(join(p.dir, copied)));
+ assert.equal(files.length, machine.files.length + 1);
+});
+
 test('local refresh keeps remote thread identities qualified even when their IDs collide', () => {
  const fam = [{environmentId: 'remote', threadIds: new Set(['same-id']), hops: [{from: {environmentId: 'remote', threadId: 'same-id'}, to: {environmentId: 'local', threadId: 'local-child'}}]}];
  assert.equal(typeof assembly.localFamilySeeds, 'function');
@@ -41,6 +57,7 @@ test('unchanged local roots refresh legacy family metadata once, including inspe
  assert.equal(typeof assembly.rootsNeedingRefresh, 'function');
  assert.deepEqual(assembly.rootsNeedingRefresh(local, mine), ['test-root']);
  mine.get('test-root').entry.familyMetadata = {version: 1, threadCreations: 'unavailable'};
+ mine.get('test-root').entry.contentPolicy = {version: 1, mode: 'original'};
  assert.deepEqual(assembly.rootsNeedingRefresh(local, mine), []);
 });
 
@@ -215,10 +232,12 @@ test('a live duplicate receiver fails promptly without modifying the store', t =
 
 test('the early assembly cache return revalidates a receive that completes after input discovery', async t => {
  const f = receiveFixture(t), p = f.p;
+ put(join(f.store, '.receive-generation'), 'initial-publication');
+ p.receiveGeneration = assembly.receiveGeneration(f.store);
  const cached = join(f.dir, 'private/sessions/t3/fleet/test-mac-test-root/20000101T000000Z');
  put(join(cached, 'bundle.json'), readFileSync(join(p.dir, 'bundle.json')));
  for (const file of p.entry.files) put(join(cached, file), readFileSync(join(p.dir, file)));
- const identity = `${p.entry.collectedAt}:${createHash('sha256').update(JSON.stringify([p.entry.files, p.entry.sizes, [...p.threadIds], p.entry.familyMetadata, null])).digest('hex')}`;
+ const identity = `${p.entry.collectedAt}:${createHash('sha256').update(JSON.stringify([p.entry.files, p.entry.sizes, [...p.threadIds], p.entry.familyMetadata, p.entry.nativeContentPolicy, p.entry.contentPolicy, p.receiveGeneration])).digest('hex')}`;
  put(join(cached, 'assembly.json'), {version: assembly.ASSEMBLY_VERSION, builtAt: new Date().toISOString(), inputs: {'test-machine/families/test-root': identity}});
  const options = {repo: f.dir, t3Home: join(f.dir, 'absent-t3'), partsKey: Buffer.alloc(32, 1), threadId: 'test-root', environmentId: 'test-machine', refreshLocal: false};
  assert.equal((await assembly.assembleFamily(options)).reused, true, 'fixture reaches the early cache return');
@@ -227,10 +246,16 @@ test('the early assembly cache return revalidates a receive that completes after
   if (progress === 0.05) {f.run(); published = true;}
  }}), {code: 'T3_RECEIVE_UPDATE'});
  assert.equal(published, true);
+ rmSync(join(f.store, '.receive-generation'));
+ const legacyPart = assembly.readParts(f.incoming)[0];
+ const legacyIdentity = `${legacyPart.entry.collectedAt}:${createHash('sha256').update(JSON.stringify([legacyPart.entry.files, legacyPart.entry.sizes, [...legacyPart.threadIds], legacyPart.entry.familyMetadata, legacyPart.entry.nativeContentPolicy, legacyPart.entry.contentPolicy, null])).digest('hex')}`;
+ put(join(cached, 'assembly.json'), {version: assembly.ASSEMBLY_VERSION, builtAt: new Date().toISOString(), inputs: {'test-machine/families/test-root': legacyIdentity}});
+ await assert.rejects(assembly.assembleFamily({...options, onProgress: n => {if (n === 0.5) throw new Error('legacy rebuild required');}}), /legacy rebuild required/);
 });
 
 test('cold assembly defers network derivation, verifies its sources and invalidates the prior cache contract', async t => {
  const f = receiveFixture(t);
+ put(join(f.store, '.receive-generation'), 'initial-publication');
  const options = {repo: f.dir, t3Home: join(f.dir, 'absent-t3'), partsKey: Buffer.alloc(32, 1), threadId: 'test-root', environmentId: 'test-machine', refreshLocal: false, mergeWorkers: 1};
  const result = await assembly.assembleFamily(options);
  assert.equal(result.reused, false);
@@ -243,6 +268,11 @@ test('cold assembly defers network derivation, verifies its sources and invalida
  assert.equal(metadata.verify.hitFiles, 0);
  assert.ok(result.bundle.machines.every(m => !m.files.some(f => /\/(?:net\.ndjson|spans\.idx\.json)(?:\.gz)?$/.test(f))));
  assert.equal((await assembly.assembleFamily(options)).reused, true);
+ const source = JSON.parse(readFileSync(join(f.p.dir, 'bundle.json')));
+ source.machines[0].contentPolicy = {version: 1, mode: 'original'};
+ put(join(f.p.dir, 'bundle.json'), source);
+ await assert.rejects(assembly.assembleFamily({...options, onProgress: n => {if (n === 0.5) throw new Error('content policy rebuild observed');}}), /content policy rebuild observed/);
+ delete source.machines[0].contentPolicy; put(join(f.p.dir, 'bundle.json'), source);
  put(join(result.dir, 'assembly.json'), {...metadata, version: assembly.ASSEMBLY_VERSION - 1});
  await assert.rejects(assembly.assembleFamily({...options, onProgress: f => {if (f === 0.5) throw new Error('cold rebuild observed');}}), /cold rebuild observed/);
 });
@@ -306,4 +336,33 @@ test('on-demand recovery clears a dead lock after a complete publication without
  assert.deepEqual(JSON.parse(readFileSync(join(f.store, 'harvest.json'))), record);
  assert.deepEqual(JSON.parse(readFileSync(join(f.p.dir, f.file))), f.oldRows);
  assert.equal(assembly.readParts(f.incoming).length, 1);
+});
+
+test('ordinary local assembly preserves recorded credentials and validates readability without a publication scan', async t => {
+ const f=receiveFixture(t);put(join(f.store,'.receive-generation'),'original-recording');
+ const rows={...f.oldRows,threads:f.oldRows.threads.map((r,i)=>i?r:{...r,payload_json:{note:'Original project /Users/example/work',authorization:'Bearer synthetic-recorded-auth-123456',api_key:'sk-proj-'+ 'x'.repeat(40),password:'p4$$'}})};
+ put(join(f.p.dir,f.file),rows);
+ const options={repo:f.dir,t3Home:join(f.dir,'absent-t3'),partsKey:Buffer.alloc(32,1),threadId:'test-root',environmentId:'test-machine',refreshLocal:false,mergeWorkers:1};
+ const result=await assembly.assembleFamily(options);
+ const actual=JSON.parse(readBuffer(join(result.dir,f.file)));
+ assert.deepEqual(actual.threads.find(r=>r.thread_id==='test-root').payload_json,rows.threads[0].payload_json);
+ const metadata=JSON.parse(readFileSync(join(result.dir,'assembly.json')));assert.equal(metadata.verify.mode,'readability-and-inventory');assert.ok(metadata.verify.files>0);
+ assert.equal(JSON.parse(readFileSync(join(result.dir,'bundle.json'))).contentPolicy,undefined,'legacy inputs cannot claim original provenance');
+ const f2=receiveFixture(t);put(join(f2.store,'.receive-generation'),'current-original-recording');const manifest=JSON.parse(readFileSync(join(f2.p.dir,'bundle.json')));manifest.machines[0].contentPolicy={version:1,mode:'original'};manifest.machines[0].nativeContentPolicy={version:1,mode:'original'};put(join(f2.p.dir,'bundle.json'),manifest);
+ const fresh=await assembly.assembleFamily({...options,repo:f2.dir,t3Home:join(f2.dir,'absent-t3')});assert.deepEqual(JSON.parse(readFileSync(join(fresh.dir,'bundle.json'))).contentPolicy,{version:1,mode:'original'});
+});
+
+test('changed inputs published in the same second retain distinct immutable generations and select the latest',async t=>{
+ t.mock.timers.enable({apis:['Date'],now:new Date('2026-01-02T03:04:05.000Z')});
+ const f=receiveFixture(t);put(join(f.store,'.receive-generation'),'generation-one');
+ const options={repo:f.dir,t3Home:join(f.dir,'absent-t3'),partsKey:Buffer.alloc(32,1),threadId:'test-root',environmentId:'test-machine',refreshLocal:false,mergeWorkers:1};
+ const first=await assembly.assembleFamily(options),before=readBuffer(join(first.dir,f.file));
+ put(join(f.p.dir,f.file),f.newRows);put(join(f.store,'.receive-generation'),'generation-two');
+ const second=await assembly.assembleFamily(options);
+ assert.equal(first.reused,false);assert.equal(second.reused,false);assert.notEqual(first.dir,second.dir);
+ assert.deepEqual(readBuffer(join(first.dir,f.file)),before,'first generation remains byte-identical');
+ assert.deepEqual(JSON.parse(readBuffer(join(second.dir,f.file))).threads,f.newRows.threads);
+ assert.equal(assembly.latestBuild(dirname(first.dir)),second.dir);
+ const reused=await assembly.assembleFamily(options);assert.equal(reused.reused,true);assert.equal(reused.dir,second.dir);
+ const firstMeta=JSON.parse(readFileSync(join(first.dir,'assembly.json'))),secondMeta=JSON.parse(readFileSync(join(second.dir,'assembly.json')));assert.equal(firstMeta.builtAt,secondMeta.builtAt,'fixture freezes both publications in the exact same millisecond');
 });

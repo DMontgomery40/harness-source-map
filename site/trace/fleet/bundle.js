@@ -358,12 +358,13 @@ export async function plainEntry(entry, { cache = null, signal = null } = {}) {
   return { ...entry, path, source: await gzipSource(path, entry.source, { cache, key, signal }) };
 }
 
-// The bundle folder's prefix among the entries ("" when bundle.json is at the top), or null.
+// The bundle folder's prefix among the entries ("" when bundle.json is at the top), or null: the shallowest
+// bundle.json with a machines/ folder beside it, else the shallowest bundle.json (a family whose manifest declares
+// no collected file, such as one whose environments were not collected; isT3Bundle checks its format).
 export function bundlePrefix(entries) {
   const top = entries.filter(e => /(^|\/)bundle\.json$/.test(e.path)).map(e => e.path.slice(0, -"bundle.json".length));
-  // the shallowest bundle.json that has a machines/ folder beside it
   top.sort((a, b) => a.length - b.length);
-  return top.find(p => entries.some(e => e.path.startsWith(`${p}machines/`))) ?? null;
+  return top.find(p => entries.some(e => e.path.startsWith(`${p}machines/`))) ?? top[0] ?? null;
 }
 
 // Whether the entries are a T3 fleet bundle (reads bundle.json only).

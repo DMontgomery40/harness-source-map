@@ -88,10 +88,16 @@ button { font: inherit; color: inherit; }
 .progress .bar { height: 8px; border-radius: 4px; background: #1a212c; overflow: hidden; }
 .progress .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #7fb8ff, #c8f784); transition: width 0.2s; }
 .progress-text { margin: 8px 0 0; color: var(--ink-2); }
+.progress-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+.progress-row .progress-text { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.progress-row .btn { flex: none; }
 .error { color: #ffb4b4; background: #2a1316; border: 1px solid #5a2a30; border-radius: 8px; padding: 10px 12px; margin: 14px 0 0; }
 .error .error-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .error .error-actions .btn { color: var(--ink); }
-.find { margin: 22px 0 0; }
+.find { margin: 0; }
+.find-row { display: flex; gap: 8px; align-items: stretch; }
+.find-row .paste { flex: 1 1 auto; min-width: 0; }
+.find-row .btn { flex: none; justify-content: center; }
 .find-label { display: block; font-weight: 650; margin: 0 0 6px; }
 .find-note { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-3); }
 .paste {
@@ -106,10 +112,11 @@ button { font: inherit; color: inherit; }
   border-radius: 6px; color: var(--ink); word-break: break-all; font-size: 13px;
 }
 .paste-out p { margin: 6px 0; }
+.paste-out .paste-what { font-size: 13px; }
+.paste-out:empty { display: none; }
 .paste-out .paste-error { color: #ffb4b4; }
-.or { margin: 18px 0 8px; color: var(--ink-3); font-size: 13px; }
-.drop { padding: 18px 16px; }
-.drop-big { font-size: 16px; }
+.drop { margin: 14px 0 0; padding: 16px; }
+.drop .drop-big { font-size: 12.5px; font-weight: 500; color: var(--ink-3); margin: 10px 0 0; }
 .open-row { display: grid; gap: 8px; margin: 10px 0 4px; }
 .btn.open { justify-content: center; padding: 11px 16px; font-size: 15px; background: #1d3552; border-color: #5b8cc4; }
 .btn.open:hover { background: #244268; }
@@ -118,11 +125,11 @@ button { font: inherit; color: inherit; }
 .open-hint kbd { font: 12.5px var(--mono); background: #1a212c; border: 1px solid var(--line-2); border-radius: 4px; padding: 0 4px; color: var(--ink); }
 .paste-out details { margin-top: 8px; }
 .paste-out summary { cursor: pointer; color: var(--ink-2); font-size: 13.5px; }
-.private {
-  margin: 22px 0 0; padding: 12px 14px; border-left: 3px solid var(--you); background: #10170f;
-  border-radius: 0 8px 8px 0; color: var(--ink-2); display: grid; gap: 4px;
-}
-.private strong { color: var(--you); font-size: 15px; }
+/* The opener's foot: formats and privacy on request, and Help. */
+.load-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 14px 0 0; font-size: 12.5px; color: var(--ink-3); }
+.load-more summary { cursor: pointer; }
+.load-more p { margin: 6px 0 0; line-height: 1.5; }
+.load-more code { font-size: 12px; color: var(--ink-2); }
 .dev { margin: 18px 0 0; padding: 12px; border: 1px dashed var(--line-2); border-radius: 8px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .dev p { margin: 0 0 4px; width: 100%; }
 
@@ -291,6 +298,11 @@ button.lbl:focus-visible { outline: 2px solid #9cc7f5; outline-offset: 1px; }
 .kv dt { color: var(--ink-3); font-size: 13px; }
 .kv dd { margin: 0; font-variant-numeric: tabular-nums; }
 .kv dd .note { display: inline; margin-left: 6px; }
+/* an agent's facts as two pairs a line: the same terms and values in half the height */
+.kv.kv-pairs { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 3px 12px; }
+.kv.kv-pairs dd { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 520px) { .kv.kv-pairs { grid-template-columns: auto minmax(0, 1fr); } }
+.item .ask-text.loading { color: var(--ink-3); }
 .items { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
 .items li.on .item { background: #1c2a3d; }
 .item {
@@ -312,6 +324,12 @@ button.lbl:focus-visible { outline: 2px solid #9cc7f5; outline-offset: 1px; }
 .linkbtn { background: none; border: 0; padding: 2px 0; color: var(--link); cursor: pointer; text-align: left; font-size: 14px; }
 .linkbtn:hover { text-decoration: underline; }
 .linkbtn.next { font-size: 12.5px; padding-left: 25px; }
+/* Inbound: the row and its Next on one line; Next names the following action in its tooltip */
+.items li.row-with-next { display: flex; align-items: flex-start; gap: 6px; }
+.items li.row-with-next > .item { flex: 1 1 auto; min-width: 0; }
+.items li.row-with-next > .linkbtn.next { flex: none; padding: 6px 4px 0; white-space: nowrap; }
+/* Outbound: an inferred kind is a small muted tag, not a verdict */
+.item .egress-kind { font-size: 11.5px; color: var(--ink-2); border: 1px dashed var(--line-2); border-radius: 5px; padding: 0 5px; }
 .linkbtn.close { margin-left: auto; }
 .atable { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .atable th { text-align: left; color: var(--ink-3); font-weight: 600; font-size: 12.5px; padding: 4px 4px; border-bottom: 1px solid var(--line); }
@@ -363,6 +381,9 @@ button.lbl:focus-visible { outline: 2px solid #9cc7f5; outline-offset: 1px; }
 details.calls { margin: 8px 0 0; }
 .refbtns { display: grid; gap: 4px; margin: 8px 0 0; }
 .refbox pre.text { margin: 4px 0 6px; font: 12.5px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; max-height: 36vh; overflow: auto; background: #0b0e13; border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+
+.pager { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 8px 0 0; }
+.pager .meta { flex: 1 1 12em; min-width: 0; }
 details.calls summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
 details.calls li.call { padding: 3px 6px; display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
 details.calls code { color: var(--ink-2); word-break: break-all; font-size: 12.5px; }
@@ -381,8 +402,9 @@ svg.ov .hit:hover { fill: rgba(255, 255, 255, 0.12); }
 /* ---------- small screens ---------- */
 @media (max-width: 980px) {
   .loader { padding: 24px 16px; align-items: flex-start; }
-  .loader-inner { grid-template-columns: 1fr; gap: 24px; }
-  .intro .lede { font-size: 15.5px; }
+  .loader-inner { grid-template-columns: 1fr; gap: 18px; }
+  .intro h1 { margin: 0; }
+  .hero { display: none; }
   .load { padding: 18px; }
   .hud { top: 10px; left: 12px; right: 12px; max-width: none; gap: 4px; }
   .title { font-size: 15px; }
@@ -464,10 +486,12 @@ button:disabled { opacity: .4; cursor: default; }
 .t3-family { display: block; margin-top: 2px; color: var(--ink-3); }
 .t3-family:hover { color: var(--link); }
 .text-control:hover { color: var(--accent); }
-.lenses { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px; border: 0; padding: 5px; margin: 0 12px 8px; border-radius: 12px; background: #07111c; }
-.lenses button { position: relative; flex-direction: row; justify-content: flex-start; gap: 8px; padding: 7px 9px; font-size: 12px; min-height: 40px; border-radius: 8px; color: var(--ink-3); }
-/* Two to a row; an odd last lens takes its whole row rather than leaving a hole. */
-.lenses button:last-child:nth-child(odd) { grid-column: 1 / -1; }
+/* Short names, as many to a row as fit whole (each button's tooltip is the question its lens answers). In a narrow
+   sidebar the decorative icons step aside so every name fits. */
+.lenses { grid-template-columns: repeat(auto-fit,minmax(88px,1fr)); gap: 4px; border: 0; padding: 5px; margin: 0 12px 8px; border-radius: 12px; background: #07111c; container-type: inline-size; }
+.lenses button { position: relative; flex-direction: row; justify-content: flex-start; gap: 7px; padding: 6px 8px; font-size: 12.5px; min-height: 34px; border-radius: 8px; color: var(--ink-3); white-space: nowrap; min-width: 0; }
+.lenses .lens-name { overflow: hidden; text-overflow: ellipsis; }
+@container (max-width: 700px) { .lenses .lens-icon { display: none; } .lenses button { justify-content: center; } }
 .lenses .lens-icon { flex: none; font: 21px/1 var(--sans); width: 20px; text-align: center; }
 .lenses .lens-name { font-weight: 550; line-height: 1.4; }
 .lenses kbd { display: none; }
@@ -547,9 +571,6 @@ button:disabled { opacity: .4; cursor: default; }
 .intro h1 { font-weight: 550; letter-spacing: -1.8px; font-size: clamp(36px,4.4vw,58px); }
 .intro .lede { color: var(--ink-3); line-height: 1.7; }
 .load { border-color: #375162; background: #10202bd9; padding: 30px; border-radius: 20px; }
-.private { border: 0; background: none; padding: 0; margin-top: 20px; gap: 0; }
-.private strong { font-size: 13px; color: var(--accent); }
-.private span { font-size: 12px; color: var(--ink-3); }
 @media (min-width: 1550px) {
   .stats { grid-template-columns: repeat(6, minmax(0,1fr)); gap: 12px 18px; }
 }
@@ -574,8 +595,8 @@ button:disabled { opacity: .4; cursor: default; }
   /* Overview, Notes, Capture and Help stay reachable: one compact row above the lenses. */
   .side-heading { display: flex; min-height: 0; padding: 0 16px 6px; justify-content: flex-end; }
   .side-heading .side-actions { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: flex-end; }
-  .lenses { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px; margin: 0 16px; padding: 4px; background: #0d1c29f0; border: 1px solid #304859; }
-  .lenses button { flex-direction: row; padding: 7px 10px; gap: 8px; min-height: 39px; }
+  .lenses { display: grid; grid-template-columns: repeat(auto-fit,minmax(88px,1fr)); gap: 4px; margin: 0 16px; padding: 4px; background: #0d1c29f0; border: 1px solid #304859; }
+  .lenses button { flex-direction: row; padding: 6px 8px; gap: 6px; min-height: 34px; }
   .lenses .lens-icon { font-size: 19px; }
   .lenses .lens-name { font-size: 12px; }
   .crumbs { left: 18px; max-width: calc(100% - 36px); gap: 3px; }
@@ -727,9 +748,7 @@ button:disabled { opacity: .4; cursor: default; }
   .map-location-bar .inspect-layers { padding: 7px 9px; font-size: 10px; }
 }
 
-/* A novice entry alongside local session intake, and visible provenance after loading. */
-.real-example{padding:18px 20px;margin:18px 0 24px;border:1px solid var(--line,#343b43);border-radius:10px;background:#172126}
-.real-example h3{margin:0 0 8px;font-size:17px}.real-example p{line-height:1.55;color:#bbc8ce}.example-description:empty{display:none}
+/* The open example's provenance (its banner's details). */
 .example-banner{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:8px 10px;border:1px solid #44545c;border-radius:8px;background:#131c22ec;font-size:12px;line-height:1.5;color:#cbd7dc}
 .example-banner details{flex:1;min-width:0}.example-banner summary{cursor:pointer}.example-banner p{margin:8px 0 0}.example-banner .text-control{flex:none;font-size:12px}
 .example-label .meta{color:#9fb0b8}.example-provenance{margin:8px 0 0}.example-provenance dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:3px 10px;margin:6px 0 0}.example-provenance dt{color:#9fb0b8}.example-provenance dd{margin:0;overflow-wrap:anywhere}
@@ -745,7 +764,11 @@ button:disabled { opacity: .4; cursor: default; }
 
 /* A T3 family's machine and lab filter: plain toggles under the lens buttons (fleet/controls.js) */
 .fleet-filter { display: flex; flex-direction: column; gap: 6px; margin: 0 12px 8px; }
-.fleet-filter .ff-row { display: flex; flex-wrap: wrap; gap: 4px; }
+.fleet-filter .ff-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.fleet-filter .ff-pick { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-3); }
+.fleet-filter .ff-select { font: 12px var(--sans); color: var(--ink-2); background: #0b0f15; border: 1px solid #a0b4c829; border-radius: 7px; padding: 4px 6px; max-width: 13em; }
+.fleet-filter .ff-pick.on .ff-select { color: var(--accent); background: #1a3533; border-color: #395d55; }
+.fleet-filter .ff-ground { margin-left: auto; }
 .fleet-filter button { font: inherit; font-size: 12px; line-height: 1; padding: 6px 9px; border-radius: 7px; border: 1px solid #a0b4c829; background: transparent; color: var(--ink-3); cursor: pointer; }
 .fleet-filter button:hover { color: var(--ink); border-color: #c8d7e659; }
 .fleet-filter button[aria-pressed=true] { color: var(--accent); background: #1a3533; border-color: #395d55; }
