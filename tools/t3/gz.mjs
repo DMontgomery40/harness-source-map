@@ -3,6 +3,7 @@
 // 512 MB, and a busy machine's spans pass that within a few hours.
 import {gzipSync, gunzipSync} from 'node:zlib';
 import {existsSync, readFileSync} from 'node:fs';
+import {relative, sep} from 'node:path';
 
 // Files at or over this size are written gzip-compressed (unless --no-gzip).
 export const GZIP_OVER = 256 * 1024;
@@ -13,11 +14,28 @@ export const gzip = (data, level = 6) => gzipSync(typeof data === 'string' ? Buf
 // A file's bytes, gunzipped when it ends .gz.
 export const fileBuffer = file => {const buf = readFileSync(file); return file.endsWith('.gz') ? gunzipSync(buf) : buf;};
 
+// The manifest names the representation the producer actually wrote. Incremental copies made by older
+// harvesters can retain an obsolete twin; never let plain-file precedence or filesystem timestamps pick it.
+// Without a manifest, a single representation is safe; two are an integrity error requiring provenance.
+export function resolveBundleFile(file, {base, files} = {}) {
+ const candidates = [file, file + '.gz'];
+ if (files !== undefined) {
+  if (!base || !Array.isArray(files)) throw new Error('Bundle file selection needs a manifest base and files');
+  const declared = candidates.filter(f => files.includes(relative(base, f).split(sep).join('/')));
+  if (declared.length > 1) throw new Error('Ambiguous bundle file representations in manifest');
+  if (!declared.length) return null;
+  if (!existsSync(declared[0])) throw new Error('Missing manifest-declared bundle file');
+  return declared[0];
+ }
+ const present = candidates.filter(existsSync);
+ if (present.length > 1) throw new Error('Ambiguous bundle file representations; a manifest is required');
+ return present[0] || null;
+}
+
 // A bundle file's bytes whether it was written plain or as <file>.gz.
-export function readBuffer(file) {
- if (existsSync(file)) return readFileSync(file);
- if (existsSync(file + '.gz')) return gunzipSync(readFileSync(file + '.gz'));
- return null;
+export function readBuffer(file, options) {
+ const selected = resolveBundleFile(file, options);
+ return selected ? fileBuffer(selected) : null;
 }
 
 // Strings of at most about CHUNK bytes, each ending at a line end.

@@ -13,9 +13,10 @@ const PERSONAL_KEY=/^(?:email|phone|address|patient|patient_name|full_name|first
 const SENSITIVE=/\b(?:patient|clinical|diagnosis|medical record|social security|bank account|credit card|routing number|qEEG|Thrylen|FreeTaxUSA)\b/i;
 const PUBLIC_HOSTS=new Set(['openai.com','github.com','nodejs.org','python.org','developer.mozilla.org']);
 // Read both local env files for every caller, including the semantic pre-send boundary.
-export function localSecretValues(env=process.env,envText='',{envFiles=[path.resolve('.env'),path.join(os.homedir(),'.env')],read=file=>fs.readFileSync(file,'utf8')}={}) {
+export function localSecretValues(env=process.env,envText='',{envFiles=[path.resolve('.env'),path.join(os.homedir(),'.env')],read=file=>fs.readFileSync(file,'utf8'),minimumLength}={}) {
  const values=[];
- const collect=(key,value)=>{if(typeof value==='string'&&(value.length>=12||(SECRET_KEY.test(key)&&value.length>=6)))values.push(value);};
+ if(minimumLength!==undefined&&(!Number.isSafeInteger(minimumLength)||minimumLength<1))throw new Error('Invalid credential minimum length.');
+ const collect=(key,value)=>{if(typeof value!=='string')return;if(minimumLength!==undefined){if(value.length>=minimumLength&&!/^(?:""|''|``)$/.test(value))values.push(value);}else if(value.length>=12||(SECRET_KEY.test(key)&&value.length>=6))values.push(value);};
  for(const [key,value] of Object.entries(env))collect(key,value);
  const texts=[envText];
  for(const file of new Set(envFiles)){try{texts.push(read(file));}catch(error){if(error.code!=='ENOENT')throw new Error('Cannot read local environment privacy boundary.');}}

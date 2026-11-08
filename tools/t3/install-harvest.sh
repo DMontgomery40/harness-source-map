@@ -15,9 +15,10 @@
 #             its home (default harness-source-map/private/sessions/t3/incoming)
 # --backfill  after installing, run one cycle now that looks back this many days (default 14; 0 skips it)
 #
-# The fleet parts key (~/.config/harness-source-map/t3-parts.key, 0600) aliases every harvested part. The Mac makes
-# it once; a VM copies it from the --push host over the ssh link it already has. It never enters a repo, a part or a
-# bundle; each family bundle derives its own key from it (redact.mjs familyKey).
+# The fleet parts key (~/.config/harness-source-map/t3-parts.key, 0600) identifies compatible harvested parts
+# and derives each family key (redact.mjs familyKey), including compatibility with historical parts. Original
+# local content is not aliased. The Mac creates the key once; a VM copies it from the --push host over SSH.
+# The shared key stays outside the repo and published bundle members.
 set -euo pipefail
 SRC="$(cd "$(dirname "$0")/../.." && pwd)"
 CODE="${T3_HARVEST_HOME:-$HOME/harness-t3-harvest}"
@@ -41,7 +42,8 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-# The main checkout (a worktree's .git file names it): its .env values are removed from parts too.
+# Locate the main checkout for store defaults and the collector's repository setting. Original local
+# collection does not load its .env values for content filtering.
 main_checkout() {
   local common
   common="$(git -C "$SRC" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"

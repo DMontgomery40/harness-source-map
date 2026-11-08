@@ -1,5 +1,6 @@
 """Offline integration driver: runs inside installed mitmproxy, no listener/network."""
 import asyncio
+import base64
 import gzip
 import json
 import os
@@ -43,7 +44,7 @@ async def running():
         pieces = [b'data: {"input":"keep SSE", "access_to', ('ken":"' + secret + '"}\n\n').encode()]
         for part in pieces:
             assert f.response.stream(part) == part
-        # A checkpoint halfway through a credential value must not preserve its prefix.
+        # A checkpoint preserves the exact observed prefix of an unfinished value.
         partial = flow("https://example.test/truncated")
         partial.response = http.Response.make(200, b"", {"content-type": "text/event-stream"})
         partial.response.timestamp_end = None
@@ -51,14 +52,16 @@ async def running():
         prefix = secret[:14]
         assert partial.response.stream(('data: {"access_token":"' + prefix).encode())
         capture.checkpoint(force=True)
-        assert prefix not in open(destination).read()
+        assert prefix in open(destination).read()
         capture.flows.pop(partial.id)
         # Timer writes a still-open stream, including a token split across chunks.
         await asyncio.sleep(capture.interval * 2.5)
         saved = json.load(open(destination))
         sse = saved["log"]["entries"][0]
         assert "keep SSE" in sse["response"]["content"]["text"]
-        assert secret not in json.dumps(saved)
+        assert secret in json.dumps(saved)
+        assert sse["request"]["postData"]["text"] == f.request.content.decode()
+        assert next(h["value"] for h in sse["request"]["headers"] if h["name"].lower() == "authorization") == bearer
         assert sse["_traceCapture"]["partial"] is True
 
         w = flow("https://example.test/socket?token=" + secret)
@@ -76,7 +79,9 @@ async def running():
         assert entry["_traceCapture"]["partial"] is True
         assert len(entry["_webSocketMessages"]) == 2
         assert "keep WS" in entry["_webSocketMessages"][0]["data"]
-        assert secret not in json.dumps(saved)
+        assert secret in json.dumps(saved)
+        assert entry["_webSocketMessages"][0]["data"] == text_frame.content.decode()
+        assert base64.b64decode(entry["_webSocketMessages"][1]["data"]) == binary_frame.content
         assert secret.encode() in text_frame.content and secret.encode() in binary_frame.content
         assert w.request.headers["Authorization"] == bearer
 
@@ -88,7 +93,9 @@ async def running():
         partial_gzip = gzip.compress(payload)[:-8]  # unfinished but decoded stream content available
         assert compressed.response.stream(partial_gzip) == partial_gzip
         capture.checkpoint(force=True)
-        assert "keep gzip" in json.load(open(destination))["log"]["entries"][2]["response"]["content"]["text"]
+        saved_compressed = json.load(open(destination))["log"]["entries"][2]
+        assert "keep gzip" in saved_compressed["response"]["content"]["text"]
+        assert next(h["value"] for h in saved_compressed["response"]["headers"] if h["name"].lower() == "content-encoding") == "gzip"
         assert compressed.response.headers["content-encoding"] == "gzip"
         for encoding, data in (("br", brotli.compress(payload)), ("zstd", zstandard.ZstdCompressor().compress(payload))):
             extra = flow("https://example.test/" + encoding)
@@ -101,13 +108,13 @@ async def running():
             assert extra.response.headers["content-encoding"] == encoding
             capture.flows.pop(extra.id)
 
-        # Completed HTTPS body keeps its text and redacts only persisted fields.
+        # Completed HTTPS body keeps its text and recorded credentials.
         complete = flow("https://example.test/complete", json.dumps({"refresh_token": secret}).encode())
         complete.response = http.Response.make(200, json.dumps({"text": "keep HTTPS", "api_key": secret}).encode(), {"Set-Cookie": "session=" + secret + "; Secure; HttpOnly"})
         capture.response(complete)
         capture.done()  # forces the final open-flow checkpoint even when throttled
         saved_bytes = open(destination, "rb").read()
-        assert secret.encode() not in saved_bytes
+        assert secret.encode() in saved_bytes
         assert b"keep HTTPS" in saved_bytes
         assert stat.S_IMODE(os.stat(destination).st_mode) == 0o600
         assert not any(name.startswith(".trace-capture-") for name in os.listdir(os.path.dirname(destination)))

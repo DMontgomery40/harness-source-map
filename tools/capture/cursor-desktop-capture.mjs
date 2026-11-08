@@ -8,7 +8,7 @@ import { createServer, connect } from 'node:net';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, chmodSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
-import { checkHar, harSecrets } from './check-har.mjs';
+import { checkHar } from './check-har.mjs';
 import { exportCursorDesktopSession, exportCursorDesktopTranscript } from './cursor-desktop-export.mjs';
 import { cursorCaptureEvidence } from './cursor-agent-capture.mjs';
 import { siteOrigin } from '../../site/src/shared/site.mjs';
@@ -20,7 +20,7 @@ const HELP = `Record a future real Cursor desktop session in a new process.
 Cursor must be fully quit before this command starts. The recorder launches one
 future app process through a private process-scoped HTTPS observer. Complete one
 real task, then quit Cursor yourself. The exact changed native transcript, the
-credential-checked HAR, and the manifest stay private. System proxy and system
+locally recorded HAR, and the manifest stay private. System proxy and system
 trust are unchanged; only this process receives an ephemeral CA and exact SPKI
 allowlist. Protobuf payloads remain opaque unless a shipped schema decodes them.
 `;
@@ -229,16 +229,15 @@ export async function recordCursorDesktop(opts) {
   let har = null, evidence = null;
   let agentServiceRuns = 0;
   if (!existsSync(captureFile)) problems.push('No HTTPS traffic was observed in the launched process tree.');
-  else if (!checkHar(captureFile).ok) problems.push('The desktop HTTPS observation failed credential checks and is not offered to Trace.');
+  else if (!checkHar(captureFile).ok) problems.push('The desktop HTTPS observation failed HAR validation and is not offered to Trace.');
   else {
     har = JSON.parse(readFileSync(captureFile, 'utf8'));
-    if (harSecrets(har).length) throw new Error('Checked Cursor desktop HAR unexpectedly contains credentials.');
     har.log._traceProcessDestinations = {
       format: 'trace-cursor-process-destinations', version: 1, destinations,
       evidence: 'Passive process-tree socket samples. Remote IP and port are observed metadata; no hostname, request, session, or provider association is inferred.',
     };
     writeFileSync(captureFile, JSON.stringify(har, null, 2) + '\n', { mode: 0o600 });
-    if (!checkHar(captureFile).ok || harSecrets(har).length) throw new Error('Cursor process-destination metadata failed the final credential check.');
+    if (!checkHar(captureFile).ok) throw new Error('Cursor process-destination metadata failed final HAR validation.');
     const requestIds = (native?.messages || []).flatMap(row => {
       const value = row.value, out = [];
       if (typeof value?.providerOptions?.cursor?.requestId === 'string') out.push(value.providerOptions.cursor.requestId);
@@ -264,10 +263,10 @@ export async function recordCursorDesktop(opts) {
     selection: 'Exactly one root agent-transcripts/SESSION/SESSION.jsonl fingerprint changed while the recorder-owned Cursor process was the only desktop process. The legacy 3.17.8 SQLite adapter is used only when no current transcript changed and exactly one legacy store changed.',
     observation: 'Process-scoped HTTPS proxy with an ephemeral CA, plus passive remote-IP/port samples for the owned process tree. Cursor receives the exact CA SPKI allowlist and Node receives only that CA; system proxy and system trust are unchanged. Open or persistent flows remain marked partial.',
     networkBoundary: agentServiceRuns
-      ? `${agentServiceRuns} proxied AgentService/Run flow(s) were observed; their HAR bodies are credential-scrubbed captured bytes.`
+      ? `${agentServiceRuns} proxied AgentService/Run flow(s) were observed; their HAR bodies are original captured bytes.`
       : 'No proxied AgentService/Run flow was observed. The HAR proves only its listed traffic; the destination samples can prove a process socket to an IP and port, but cannot supply or associate request or response bodies.',
     association: 'Exact observed Cursor session or request identifiers only; current transcripts do not persist request IDs, and unknown traffic remains unattributed.',
-    credentials: 'Observed headers and bodies were scrubbed on detached in-memory copies before each HAR checkpoint and checked again after capture. Session content remains private.' };
+    credentials: 'Original observed headers, bodies and session content are retained locally.' };
   save(path.join(directory, 'manifest.json'), manifest);
   for (const problem of unique) console.error(`cursor-desktop-capture: ${problem}`);
   console.error(`cursor-desktop-capture: ${manifest.status}; private bundle: ${directory}`);

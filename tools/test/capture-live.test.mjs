@@ -51,7 +51,7 @@ test("last guard inspects basic auth, opaque query fields and base64 WebSocket/H
     t.after(()=>rmSync(dir,{recursive:true,force:true}));
     const file = path.join(dir, "dirty.har");
     writeFileSync(file, JSON.stringify(har), { mode: 0o600 });
-    assert.equal(checkHar(file).ok, false);
+    assert.equal(checkHar(file, {publicExport:true}).ok, false);
     assert.equal(existsSync(file), false);
   }
 });

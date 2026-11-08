@@ -2,13 +2,21 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {openLocalSession, localFileSource} from '../local-session.js';
 
-test('local session client falls back only when resolver is unavailable, not for missing or denied sessions', async()=>{
+test('local session client says why no helper served it, and never mistakes a missing session for that', async()=>{
  const down=()=>Promise.reject(new TypeError('unreachable'));
- assert.equal(await openLocalSession('id',{fetcher:down}),null);
+ assert.deepEqual(await openLocalSession('id',{fetcher:down}),{unavailable:'unreachable'});
  const missing=async url=>new Response(JSON.stringify(url.endsWith('/health')?{service:'trace-local',version:1}:{error:'Session not found'}),{status:url.endsWith('/health')?200:404});
  await assert.rejects(openLocalSession('id',{fetcher:missing}),/Session not found/);
  const wrong=async()=>new Response(JSON.stringify({service:'another-app'}));
- assert.equal(await openLocalSession('id',{fetcher:wrong}),null);
+ assert.deepEqual(await openLocalSession('id',{fetcher:wrong}),{unavailable:'not-trace'});
+ // a helper too busy to answer its health check in time (a heavy assembly) is not "not running"
+ const hung=(url,init)=>new Promise((_,reject)=>init.signal.addEventListener('abort',()=>reject(init.signal.reason),{once:true}));
+ const alive=setTimeout(()=>{},5000); // Node's AbortSignal.timeout timer does not hold the event loop open
+ assert.deepEqual(await openLocalSession('id',{fetcher:hung,healthMs:5}),{unavailable:'timeout'});
+ clearTimeout(alive);
+ // the user's cancel stops the wait as a cancel, not as an unavailable helper
+ const stop=new AbortController();setTimeout(()=>stop.abort(),5);
+ await assert.rejects(openLocalSession('id',{fetcher:hung,healthMs:5000,signal:stop.signal}),{name:'AbortError'});
 });
 
 test('local source reads byte ranges and never follows a manifest to an external host', async()=>{

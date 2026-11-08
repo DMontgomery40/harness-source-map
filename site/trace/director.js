@@ -346,3 +346,11 @@ export function nextShot(s, prev, now) {
   // 2. follow the leading column
   return follow(s, prev, now);
 }
+
+// Explicit follow (app.js): the camera keeps one lead point at the anchor, the family's time cut or one named
+// agent's column, at the zoom the user chose. It never cuts to another part of the landscape because something
+// there became busier: no spawn, wait or return shots. state: as nextShot, with lead the followed point.
+export function followShot(s, prev, now) {
+  if (!s.playing || !Number.isFinite(s.cutX) || !Number.isFinite(s.lead?.x)) return null;
+  return follow(s, prev, now);
+}

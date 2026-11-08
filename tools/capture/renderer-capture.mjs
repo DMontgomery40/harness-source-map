@@ -3,31 +3,16 @@
 import {createHash,randomBytes} from 'node:crypto';
 import {writeFile,rename} from 'node:fs/promises';
 import {join} from 'node:path';
-import {findSecrets,harSecrets} from './check-har.mjs';
-
-const MARK='<redacted by trace-capture: renderer credential>';
-const secret=/^(authorization|proxy-authorization|cookie|set-cookie|.*token.*|.*secret.*|password|code_verifier|.*api[-_]?key.*|chatgpt-account-id|openai-organization|openai-project)$/i;
-const media=/^(sdp|audio|audio_data|audioData|video|encoded_audio|pcm)$/i;
-function scrubString(value){return value.replace(/\bBearer\s+(?!<redacted)[A-Za-z0-9._~+/=-]+/gi,`Bearer ${MARK}`).replace(/\beyJ[A-Za-z0-9_-]{6,}\.eyJ[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]+/g,MARK).replace(/\b(?:sk-(?:ant-|proj-)?[A-Za-z0-9_-]{8,}|npm_[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{20,})/g,MARK);}
+// Historical export name retained for callers; local snapshots preserve values.
 export function sanitizeRecord(value){
- function walk(v,key='',depth=0){
-  if(depth>30)return '<withheld: depth>';
-  if(secret.test(key))return MARK;
-  if(media.test(key))return '<withheld: media or SDP>';
-  if(Array.isArray(v))return v.slice(0,10000).map(x=>walk(x,'',depth+1));
-  if(v&&typeof v==='object'){
-   if(typeof v.name==='string'&&typeof v.value==='string'&&secret.test(v.name))return {...v,value:MARK};
-   const out={};for(const [k,x] of Object.entries(v))out[k]=walk(x,k,depth+1);return out;
-  }
-  if(typeof v!=='string')return v;
-  if(v.length>2_000_000)return '<withheld: oversized payload>';
-  if(key==='url'||key==='redirectURL')try{const u=new URL(v);for(const k of [...u.searchParams.keys()])if(secret.test(k)||/^(code|sig|signature|auth)$/i.test(k))u.searchParams.set(k,MARK);return scrubString(u.href);}catch{}
-  if(v.startsWith('{')||v.startsWith('['))try{return JSON.stringify(walk(JSON.parse(v),'',depth+1));}catch{return '<withheld: undecodable JSON>';} 
-  return scrubString(v);
+ function walk(v,depth=0){
+  if(depth>30)throw new Error('Renderer capture limit: depth');
+  if(typeof v==='string'&&v.length>2_000_000)throw new Error('Renderer capture limit: payload');
+  if(Array.isArray(v)){if(v.length>10000)throw new Error('Renderer capture limit: array');return v.map(x=>walk(x,depth+1));}
+  if(v&&typeof v==='object')return Object.fromEntries(Object.entries(v).map(([k,x])=>[k,walk(x,depth+1)]));
+  return v;
  }
- const clean=walk(value);
- if(findSecrets(JSON.stringify(clean)).length)throw new Error('Renderer credential guard rejected a record');
- return clean;
+ return walk(value);
 }
 
 // Self-contained function installed only in the explicitly approved app renderer.
@@ -35,13 +20,20 @@ export function installVoiceObserver(binding){
  const g=globalThis,key='__traceVoiceObserver';
  if(g[key]?.active)return;
  const Native=g.RTCPeerConnection;if(typeof Native!=='function')return;
- let serial=0;const dispose=[],state={active:true};
+ let serial=0,binaryPending=0;const dispose=[],state={active:true};
  const emit=(record)=>{if(!state.active)return;try{g[binding](JSON.stringify({version:1,time:Date.now(),...record}));}catch{}};
  const listen=(target,type,fn)=>{target.addEventListener(type,fn);dispose.push(()=>target.removeEventListener(type,fn));};
  const patch=(target,key,fn)=>{const original=target[key];target[key]=fn(original);const replacement=target[key];dispose.push(()=>{if(target[key]===replacement)target[key]=original;});};
  const channel=(dc,peerId)=>{
   emit({kind:'channel',peerId});
-  const data=(direction,value)=>{if(typeof value==='string')emit({kind:'datachannel',peerId,direction,data:value});else emit({kind:'datachannel',peerId,direction,binary:true,bytes:value?.byteLength??value?.size??null});};
+  const data=(direction,value)=>{
+   const time=Date.now(),base={kind:'datachannel',peerId,direction,time};
+   if(typeof value==='string'){emit({...base,data:value});return;}
+   const bytes=value?.byteLength??value?.size??null;
+   if(bytes==null||bytes>1_500_000){emit({...base,binary:true,bytes,incomplete:true,reason:'binary capture limit or unsupported type'});return;}
+   const encode=buffer=>{try{const view=ArrayBuffer.isView(buffer)?new Uint8Array(buffer.buffer,buffer.byteOffset,buffer.byteLength):new Uint8Array(buffer);let text='';for(let i=0;i<view.length;i+=8192)text+=String.fromCharCode(...view.subarray(i,i+8192));emit({...base,binary:true,bytes,encoding:'base64',data:btoa(text)});}catch{emit({...base,binary:true,bytes,incomplete:true,reason:'binary capture encoding failed'});}};
+   if(typeof value.arrayBuffer==='function'){if(binaryPending>=32){emit({...base,binary:true,bytes,incomplete:true,reason:'binary capture concurrency limit'});return;}binaryPending++;Promise.resolve().then(()=>value.arrayBuffer()).then(encode,()=>emit({...base,binary:true,bytes,incomplete:true,reason:'binary capture read failed'})).finally(()=>binaryPending--);}else encode(value);
+  };
   patch(dc,'send',original=>function(value){const result=original.call(this,value);data('send',value);return result;});
   listen(dc,'message',event=>data('receive',event.data));
  };
@@ -107,7 +99,7 @@ export async function createRendererCapture({port,directory,expectedURL='app://-
     if(e._traceSignalingKey){const signal=signaling.get(e._traceSignalingKey);const location=Object.entries(r.headers||{}).find(([k])=>k.toLowerCase()==='location')?.[1];const callId=typeof location==='string'?location.split('?')[0].split('/').at(-1):null;if(callId&&/^rtc_[A-Za-z0-9_-]+$/.test(callId)){signal.callId=callId;associate(e._traceSignalingKey);}}
    }
    if(method==='Network.webSocketCreated'){if(entries.size>=100000&&!entries.has(id)){dropped++;return;}entries.set(id,sanitizeRecord({startedDateTime:new Date(now()).toISOString(),time:0,request:{method:'GET',url:p.url,headers:[],queryString:[],cookies:[],httpVersion:'',headersSize:-1,bodySize:0},response:{status:101,statusText:'',headers:[],cookies:[],content:{size:0,mimeType:''},httpVersion:'',redirectURL:'',headersSize:-1,bodySize:0},cache:{},timings:{send:0,wait:0,receive:0},_webSocketMessages:[],_traceSource:'electron-renderer'}));}
-   if(method==='Network.webSocketFrameReceived'||method==='Network.webSocketFrameSent'){const e=entries.get(id);if(!e)return;if(e._webSocketMessages.length>=100000){dropped++;return;}const r=p.response;try{const frame=sanitizeRecord({type:method.endsWith('Sent')?'send':'receive',time:now()/1000,opcode:r.opcode,data:r.opcode===1?r.payloadData:'<withheld: binary websocket frame>'});e._webSocketMessages.push(frame);}catch{dropped++;}}
+   if(method==='Network.webSocketFrameReceived'||method==='Network.webSocketFrameSent'){const e=entries.get(id);if(!e)return;if(e._webSocketMessages.length>=100000){dropped++;return;}const r=p.response;try{const frame=sanitizeRecord({type:method.endsWith('Sent')?'send':'receive',time:now()/1000,opcode:r.opcode,data:r.payloadData});e._webSocketMessages.push(frame);}catch{dropped++;}}
    }catch{dropped++;}
   });
   try{await c.send('Runtime.enable');await c.send('Network.enable',{maxPostDataSize:2_000_000});await c.send('Runtime.addBinding',{name:binding});await c.send('Page.enable');
@@ -116,8 +108,7 @@ export async function createRendererCapture({port,directory,expectedURL='app://-
  }
  async function poll(){if(stopped)return;const response=await fetcher(`http://127.0.0.1:${port}/json/list`,{signal:AbortSignal.timeout(2000)});if(!response.ok)throw new Error('Debugger targets unavailable');for(const target of await response.json())await attach(target);}
  async function checkpoint(){
-  const har={log:{version:'1.2',creator:{name:'Trace Electron observer',version:'1'},entries:[...entries.values()].map(e=>{const copy={...e};delete copy._traceSignalingKey;return copy;}),_traceVoice:records,_traceRenderer:{targets:connections.size,dropped,audio:'not recorded',existingPeers:'Only peer connections created after observer installation are visible.'}}};
-  if(findSecrets(JSON.stringify(har)).length||harSecrets(har).length)throw new Error('Renderer capture failed credential checks');
+  const har={log:{version:'1.2',creator:{name:'Trace Electron observer',version:'1'},entries:[...entries.values()].map(e=>{const copy={...e};delete copy._traceSignalingKey;return copy;}),_traceVoice:records,_traceRenderer:{targets:connections.size,dropped,audio:'RTP media is not recorded; observed datachannel payloads are retained.',existingPeers:'Only peer connections created after observer installation are visible.'}}};
   const path=join(directory,'renderer.har'),temp=path+'.tmp';await writeFile(temp,JSON.stringify(har),{mode:0o600});await rename(temp,path);return har;
  }
  async function stop(){if(stopped)return;stopped=true;try{await checkpoint();}finally{for(const [id,c] of connections){for(const [method,params] of [['Page.removeScriptToEvaluateOnNewDocument',{identifier:scriptIds.get(id)}],['Runtime.evaluate',{expression:'globalThis.__traceVoiceObserver?.stop()'}],['Runtime.removeBinding',{name:bindings.get(id)}]])try{await c.send(method,params);}catch{}c.close();}}}

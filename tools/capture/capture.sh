@@ -28,7 +28,7 @@ while [[ $# -gt 0 ]]; do
 done
 if [[ $# -eq 0 ]]; then usage >&2; exit 2; fi
 command -v mitmdump >/dev/null || { echo "capture: needs mitmproxy (brew install mitmproxy)" >&2; exit 1; }
-command -v node >/dev/null || { echo "capture: needs node for the credentials check" >&2; exit 1; }
+command -v node >/dev/null || { echo "capture: needs node for the HAR validation" >&2; exit 1; }
 
 conf="$(mktemp -d "${TMPDIR:-/tmp}/trace-capture.XXXXXX")"
 # Without -o the HAR is recorded in a private scratch folder and filed beside the session when it ends.

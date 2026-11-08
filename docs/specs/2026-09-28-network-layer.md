@@ -3,6 +3,8 @@
 Date: 2026-09-28. Status: MVP built in `site/trace/network/` (attach-only). The capture tool that makes
 the HARs lives in `tools/capture/` and has its own owner. Update (same day): a capture filed beside its
 session's log attaches on its own when the session opens (section 2, intake).
+Updated 2026-11-07: local capture and inspection preserve original recorded content, including credentials;
+the earlier automatic redaction design is superseded (§6).
 
 ## 1. Why
 
@@ -58,7 +60,7 @@ It is not about token cost, and nothing here frames it that way.
     variation; Codex/ChatGPT: `codex.feature.state`);
   - the telemetry decision timeline;
   - `client_data` (Claude Code) or the model catalog with its hidden models (Codex/ChatGPT);
-  - the websocket handshake, account and plan facts with identity redacted, and header names.
+  - the websocket handshake, account and plan facts as recorded, and header names and values.
 
   Flag, beta and event names link to the reference docs' search: `../claude-code/?q=<name>` and
   `../codex/?q=<name>`.
@@ -112,8 +114,9 @@ are not asserted. The test is skipped when the work folders are absent.
 
 ## 5. Sensitive data in transit (`network/transit.js`)
 
-The user asked for this: "sensitive information sent in not the best way should be included as well, not
-the token of course but the fact that the token was sent that way should be documented."
+The original September request described reporting a credential send without displaying its value. The
+current requirement is to preserve the exact recorded value too, so an unintended send can be inspected
+and compared with the intended destination. Detection and fingerprints supplement that evidence.
 
 **What a row is.** A row records one kind of thing, sent one way:
 - the kind: a credential kind, or an identity kind (email, name, account, organization, device,
@@ -129,7 +132,7 @@ the token of course but the fact that the token was sent that way should be docu
   a,b{x,y} | issuer … | audience … | scopes … | lifetime …>`, with `;` or ` | ` as the separator. Older
   forms are `<redacted Nch>` and the bare `<redacted by trace-capture>`. Descriptions are taken out whole
   before a cookie or Set-Cookie header is split.
-- For raw HARs from other tools, Trace derives the same facts itself before the value is dropped:
+- For original HARs, Trace derives the same facts while preserving the recorded value:
   - the kind, from the value's shape (Anthropic OAuth token, npm token, Datadog client key, JWT…) or from
     where it was found;
   - the length;
@@ -164,32 +167,32 @@ fingerprint ("the same Anthropic OAuth access token goes to 2 hosts"). The "On t
 rows for its call. The palette finds them. Local metadata (a peer message's socket path or pid) is not
 network and is not shown.
 
-## 6. Privacy model
+## 6. Local evidence and publication
 
-- **Everything runs in the browser.** The HAR is parsed, filtered, redacted and joined in the Web Worker.
-  The page receives only the redacted summary: no bodies, and system and tool text only as lengths and
-  short previews. A body is read from the worker one at a time, when asked for, and redacted the same
-  way.
-- **Redaction happens at parse time** (`network/redact.js`), in three layers:
-  - by header name: authorization, cookies, API keys, account/organization/workspace/device/installation
-    ids;
-  - by field name in JSON: email, account and organization uuids, device and installation ids, user and
-    account ids, safety identifiers, GrowthBook's `hashValue`, organization and full names, and
-    access/refresh/id tokens;
-  - by value: every value the first two layers removed is removed wherever else it appears (URL paths,
-    object keys such as `artifact_pins_by_org`, JSON inside strings, decoded telemetry). Token-shaped
-    strings (Bearer, JWTs, `sk-…`) and emails are removed too. Raw JWT email and name claims join that
-    value set.
-
-  A field shows that it was present, never its value. Values the capture tool had already removed read
-  "redacted by the capture tool".
-- **Join keys stay.** Session, thread, turn, request, message and response ids are the user's own join
-  keys, and they stay.
-- **Nothing is persisted.** No HAR content goes into saved views, history entries, IndexedDB or
-  localStorage. The capture lives in the worker's memory until the next load.
-- **Test data.** Tests use synthetic captures only (`site/trace/test/fixtures/network.mjs`, with planted
-  identity values that must never come out). Tests on the private captures run only on the machine that
-  has them, assert counts and structure, and never print a value.
+- **Local content stays original.** Capture, collection, parsing, readers, search and AI evidence retain
+  recorded text and bytes, including credentials, names, paths and identifiers. A credential in an
+  unexpected request is evidence of a leak. Trace must preserve it to make that send inspectable.
+- **Parsing runs in the browser worker.** Session association selects the relevant entries; the page
+  receives a summary and requests bodies from the worker on demand. Summaries and previews are bounded;
+  those bounds do not authorize rewriting source content. The reader exposes the recorded request URL,
+  headers, bodies and frames. `network/redact.js` retains its compatibility interface as a pass-through.
+- **Historical removals remain visible.** Older captures may contain the capture tool's redaction marks.
+  Trace shows those marks as recorded and identifies the prior removal. A transformed capture alone
+  cannot restore the missing value. September's browser and capture-time filtering was historical behavior,
+  not the current local contract.
+- **Transit analysis stays active.** Credential classification, fingerprints and destination comparisons
+  operate alongside the original evidence. Opening a send shows its exact recorded source.
+- **Explicit AI evidence preserves source text.** Packet limits may select bounded excerpts, with coverage
+  gaps stated; structural references accompany values rather than replacing them. The preview and explicit
+  Send use the same frozen evidence.
+- **Publication is separate.** Local recordings remain private. The deliberately selected public example
+  uses a separately reviewed export that removes actual credentials only; it does not establish a local
+  reader filter or authorize publishing other recordings. Historical gaps remain explicit.
+- **Nothing is persisted by the browser.** No HAR content goes into saved views, history entries, IndexedDB
+  or localStorage. The capture lives in the worker's memory until the next load.
+- **Test data.** Synthetic captures plant credentials at intended and unintended destinations and assert
+  exact source reads as well as transit findings. Private-capture tests run only where their prerequisites
+  exist and avoid printing private values.
 
 ## 7. Out of scope
 
@@ -219,11 +222,11 @@ network and is not shown.
   - `tools/capture/file-capture.mjs` (files a capture beside its session; `captureSessions` in `capture.js`)
     and `tools/trace-local.mjs` (the resolver serves a session's filed captures).
 - Tests:
-  - `site/trace/test/network.test.mjs`: parsing, redaction, catalog, join, belonging, truncated
+  - `site/trace/test/network.test.mjs`: parsing, original-content preservation, catalog, join, belonging, truncated
     streams, refusals, transit rules and fingerprints, provenance, private captures;
-  - `ui.test.mjs`: the lens and card render with nothing planted in the DOM text;
+  - `ui.test.mjs`: the lens and card expose exact planted evidence when its source is opened;
   - `search.test.mjs`: the Network scope.
-- Performance, measured on this machine in Node, including `JSON.parse` of the whole HAR, redaction,
+- Historical September performance, measured on this machine in Node, including `JSON.parse` of the whole HAR, then-active redaction,
   findings, the join and the transit scan:
   - the 23.5 MB Codex/ChatGPT capture: about 75 ms;
   - the 30.7 MB one: about 115 ms;

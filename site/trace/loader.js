@@ -4,7 +4,8 @@
 //
 // entries: [{ path, source }] where path is the dropped relative path (or an
 // absolute path in Node) and source is { name, size, slice(a, b) }.
-import { sessionId, OPENCODE_ID } from "./paste.js";
+import { sessionId, OPENCODE_ID, uuid7Ms } from "./paste.js";
+import { contentIdentity, identityCandidates, sameSession } from "./session-identity.js";
 import { readFirstLine, prepareIndex, indexFor } from "./model.js";
 import { isCodexFirstLine, parseCodexThread, buildCodexTrace, codexMeta } from "./adapters/codex.js";
 import { isClaudeRow, parseClaudeFile, buildClaudeTrace } from "./adapters/claude-code.js";
@@ -18,6 +19,7 @@ const SUB_PATH = /\/subagents\/(?:workflows\/[^/]+\/)?agent-([^/]+)\.jsonl$/;
 const isSub = (s) => SUB_PATH.test(s.path) || (s.row?.isSidechain === true && !!s.row?.agentId);
 const agentIdOf = (s) => SUB_PATH.exec(s.path)?.[1] ?? s.row?.agentId ?? /agent-([^/]+)\.jsonl$/.exec(s.path)?.[1] ?? null;
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+export const MEDIA = /\.(png|jpe?g|gif|webp)$/i;
 
 // The product of a .jsonl from its first line: null for JSON that is no transcript, undefined when the
 // first line is not JSON. A read error is thrown.
@@ -87,7 +89,8 @@ export async function findSessions(entries, skipped = []) {
     const sessionId = r.row?.sessionId || id;
     const subs = cc.filter((s) => isSub(s) && (s.path.includes(`${id}/subagents/`) || s.row?.sessionId === sessionId));
     const metas = entries.filter((e) => /\.meta\.json$/.test(e.path) && subs.some((s) => e.path.endsWith(`agent-${agentIdOf(s)}.meta.json`)));
-    const toolResults = entries.filter((e) => e.path.includes(`${id}/tool-results/`));
+    // a recorded image in the folder is the session's media (below), never a text tool result
+    const toolResults = entries.filter((e) => e.path.includes(`${id}/tool-results/`) && !MEDIA.test(e.path));
     const fam = [r, ...subs];
     sessions.push({ product: "claude-code", id, name: r.path, entries: fam, metas, toolResults, bytes: fam.reduce((n, f) => n + f.source.size, 0) });
   }
@@ -118,12 +121,8 @@ const HEAD = 16384;
 const baseName = (p) => p.split("/").pop();
 const decoder = new TextDecoder();
 
-// Unix ms of a UUIDv7, else null.
-export function uuid7Time(id) {
-  if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-7/i.test(id)) return null;
-  const ms = parseInt(id.replace(/-/g, "").slice(0, 12), 16);
-  return Number.isFinite(ms) ? ms : null;
-}
+// Unix ms of a UUIDv7 (version and variant checked, a plausible time), else null: other versions' bits are random.
+export const uuid7Time = (id) => uuid7Ms(id);
 const folderDay = (path) => { const m = /(?:^|\/)(\d{4})\/(\d{2})\/(\d{2})\//.exec(path); return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : null; };
 
 // Latest "timestamp" in the tail of a file (tolerates a partial or huge last line).
@@ -181,9 +180,19 @@ export async function narrowByHint(entries, hint, onProgress = () => {}) {
   const report = (done, total, found = null) => onProgress({ phase: "narrow", unit: "files", done, total, found, final: !!found });
 
   // Claude Code: by path, plus loose subagent files grouped by their sessionId.
-  const ccRoot = jsonl.find((e) => baseName(e.path).toLowerCase() === `${id}.jsonl`);
+  let ccRoot = jsonl.find((e) => baseName(e.path).toLowerCase() === `${id}.jsonl`);
   // agent-*.jsonl only: a Workflow run folder also holds its journal.jsonl, which is no transcript.
   const ccSubs = jsonl.filter((e) => inFolder(e, "subagents") && /^agent-[^/]+\.jsonl$/.test(baseName(e.path)));
+  // No file is named with the id (a renamed export): the file whose own content names it, asked as the page's
+  // preflight asks (session-identity.js), never a file named for another session.
+  let byContent = null;
+  if (!ccRoot && !ccSubs.length && !jsonl.some((e) => baseName(e.path).toLowerCase().includes(id))) {
+    for (const e of identityCandidates(jsonl.filter((x) => !/\/subagents\//.test(x.path)), id).list) {
+      const found = await contentIdentity(e.path, e.source.size, (a, b) => e.source.slice(a, b));
+      if (sameSession(found, id) && !found.agentId && ["claude-code", "codex"].includes(found.product)) { byContent = { entry: e, product: found.product }; break; }
+    }
+    if (byContent?.product === "claude-code") ccRoot = byContent.entry;
+  }
   if ((ccRoot && (await sniff(ccRoot))?.product === "claude-code") || ccSubs.length) {
     const loose = jsonl.filter((e) => /^agent-[^/]+\.jsonl$/.test(baseName(e.path)) && !/\/subagents\//.test(e.path) && !e.path.startsWith("subagents/"));
     report(0, loose.length + (ccRoot ? 1 : 0));
@@ -196,7 +205,7 @@ export async function narrowByHint(entries, hint, onProgress = () => {}) {
       if (s && s.product === "claude-code" && s.row && s.row.isSidechain === true && s.row.agentId && String(s.row.sessionId).toLowerCase() === id) subs.push({ ...e, ...s });
     }
     const metas = entries.filter((e) => /\.meta\.json$/.test(e.path) && (inFolder(e, "subagents") || subs.some((s) => !inFolder(s, "subagents") && e.path.endsWith(`agent-${agentIdOf(s)}.meta.json`))));
-    const toolResults = entries.filter((e) => inFolder(e, "tool-results"));
+    const toolResults = entries.filter((e) => inFolder(e, "tool-results") && !MEDIA.test(e.path));
     const fam = root ? [root, ...subs] : subs;
     const session = { product: "claude-code", id, name: root ? root.path : id, entries: fam, metas, toolResults, bytes: bytes(fam), ...(root ? {} : { orphan: true }) };
     const found = { product: "claude-code", id, root: root ? root.path : null, subagents: subs.length, toolResults: toolResults.length, files: fam.length, sniffed: n };
@@ -205,7 +214,8 @@ export async function narrowByHint(entries, hint, onProgress = () => {}) {
   }
 
   // Codex: the rollout named with the id, then its descendants in the time window.
-  const cxRoot = jsonl.find((e) => /^rollout-/.test(baseName(e.path)) && baseName(e.path).toLowerCase().includes(id)) || jsonl.find((e) => baseName(e.path).toLowerCase().includes(id));
+  const cxRoot = jsonl.find((e) => /^rollout-/.test(baseName(e.path)) && baseName(e.path).toLowerCase().includes(id)) || jsonl.find((e) => baseName(e.path).toLowerCase().includes(id))
+    || (byContent?.product === "codex" ? byContent.entry : null);
   if (!cxRoot || (await sniff(cxRoot))?.product !== "codex") return null;
   const start = uuid7Time(id) ?? (folderDay(cxRoot.path) != null ? folderDay(cxRoot.path) : null);
   const end = await lastTimestamp(cxRoot.source);
@@ -278,7 +288,7 @@ export async function loadTrace(entries, { root = null, onProgress = () => {}, i
   if (root && (UUID.test(String(root)) || OPENCODE_ID.test(String(root)))) {
     // A hinted id: take its files by path, never sniffing unrelated sessions.
     const hit = await narrowByHint(entries, root, onProgress);
-    if (!hit) throw new Error(`Session ${root} isn't in the picked folder. Pick ~/.codex/sessions, ~/.claude/projects, or the matching OpenCode/Cursor export folder; native stores need the local resolver`);
+    if (!hit) throw new Error(`No picked file is session ${root}.`);
     pick = hit.session;
     sessions = [pick];
   } else {
@@ -325,6 +335,8 @@ export async function loadTrace(entries, { root = null, onProgress = () => {}, i
     done += e.source.size;
   }
   for (const tr of pick.toolResults || []) { files.push({ name: tr.path, size: tr.source.size, role: "tool-result" }); sources.push(tr.source); }
+  // A Claude Code session folder's recorded images, kept as its media (shown inert, byte for byte, on request).
+  if (pick.product === "claude-code") for (const e of entries) if (MEDIA.test(e.path) && e.path.includes(`${pick.id}/`) && !files.some(f => f.name === e.path)) { files.push({ name: e.path, size: e.source.size, role: "media" }); sources.push(e.source); }
   onProgress({ phase: "build", done: total, total });
   const trace = pick.product === "codex" ? buildCodexTrace(parsed, files) : pick.product === 'opencode' ? buildOpenCodeTrace(parsed, files)
     : pick.product === 'cursor' ? buildCursorTrace(parsed, files) : buildClaudeTrace(parsed, files);

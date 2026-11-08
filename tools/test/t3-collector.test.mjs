@@ -1,25 +1,25 @@
-// T3 fleet collector (tools/t3). No synthetic fixtures (spec §4.6): the real-data tests are opt-in with
+// T3 fleet collector (tools/t3). Real-data tests are opt-in with
 // T3_REAL_TESTS=1, read the local T3 home and private bundles at runtime, skip when they are absent, and assert
 // counts and structure only. Ids are read at runtime; none is written here.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync, mkdtempSync, rmSync, readdirSync, statSync, readFileSync, mkdirSync, symlinkSync, writeFileSync} from 'node:fs';
-import {homedir, tmpdir} from 'node:os';
+import {homedir, tmpdir, hostname} from 'node:os';
 import {join, dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {collect, args, mergeHop, priorParts, unionParts, USAGE} from '../t3/collect.mjs';
 import {openReadOnly} from '../t3/sqlite.mjs';
-import {credentialValues, scanBundle, bundleFiles} from '../t3/verify.mjs';
+import {scanBundle} from '../t3/verify.mjs';
 import {readBundle, ALIAS_KEY_FILE, emptyBundle, validateBundle, VERSION} from '../t3/bundle.mjs';
 import {bundleFileList, findT3Bundle} from '../t3/bundles.mjs';
-import {Redactor, FamilyRedactor, familyKey, ALIAS_MARK} from '../t3/redact.mjs';
+import {Redactor, FamilyRedactor, familyKey, ALIAS_MARK, CONTENT_POLICY} from '../t3/redact.mjs';
 import {ExactSet} from '../t3/exact.mjs';
-import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir, addLaunchHops, assembleFamily, combineMachine} from '../t3/assemble.mjs';
+import {readParts, familyParts, familyRoot, fleetBuilds, incomingDir, addLaunchHops, assembleFamily, combineMachine, assertBundleInventory} from '../t3/assemble.mjs';
 import {spansInWindow} from '../t3/archive.mjs';
 import {readNdjsonLines} from '../t3/gz.mjs';
 import {stripMessageText} from '../t3/family.mjs';
-import {classifyName, classifySpan, cutParts, EDGE_KINDS, ROLES} from '../t3/net.mjs';
+import {classifyName, classifySpan, cutParts, deriveNet, EDGE_KINDS, ROLES} from '../t3/net.mjs';
 import {splitLines, splitName} from '../t3/facts.mjs';
 import {endSegments, GAP_MS} from '../t3/spans.mjs';
 import {GZIP_OVER} from '../t3/gz.mjs';
@@ -68,7 +68,7 @@ test('collector CLI documents every mode and rejects unknown arguments', () => {
  assert.equal(args([]).gzip, true);
 });
 
-test('collects a real family from the local T3 home: Contract A structure, credentials removed, join keys kept', {skip: !real ? 'set T3_REAL_TESTS=1' : !existsSync(db) && 'no local T3 home', timeout: 600000}, async () => {
+test('collects a real family from the local T3 home: Contract A structure, original recorded content and join keys kept', {skip: !real ? 'set T3_REAL_TESTS=1' : !existsSync(db) && 'no local T3 home', timeout: 600000}, async () => {
  const sql = await openReadOnly(db);
  // The most recently updated root thread on this machine (read at runtime).
  const [row] = sql.all("select thread_id from orchestration_v2_projection_threads where json_extract(payload_json,'$.lineage.rootThreadId') = thread_id order by updated_at desc limit 1");
@@ -89,26 +89,25 @@ test('collects a real family from the local T3 home: Contract A structure, crede
   for (const re of [/\/net\.ndjson(?:\.gz)?$/, /\/spans\.idx\.json(?:\.gz)?$/]) assert.ok(m.files.some(f => re.test(f)), String(re));
   assert.ok(m.parts.length >= 1 && m.parts.every(p => p.window.since <= p.window.until));
   assert.equal(m.clock.source, 'same-machine');
-  assert.match(JSON.parse(readFileSync(join(out, `machines/${m.environmentId}/environment.json`), 'utf8')).hostname, /^<lan-[0-9a-f]{10}>$/);
+  assert.ok(JSON.parse(readFileSync(join(out, `machines/${m.environmentId}/environment.json`), 'utf8')).hostname === hostname(), 'the original local hostname is retained');
+  assert.deepEqual(m.nativeContentPolicy, CONTENT_POLICY);
+  assertBundleInventory(out, b);
   assert.ok(m.files.some(f => /\/threads\.json(?:\.gz)?$/.test(f)));
   for (const f of m.files) assert.ok(existsSync(join(out, f)), f);
   // Large files are compressed; everything is private to the user.
   for (const f of m.files) {const st = statSync(join(out, f)); if (!f.endsWith('.gz')) assert.ok(st.size < GZIP_OVER, f); assert.equal(st.mode & 0o077, 0, f);}
   assert.equal(statSync(join(out, ALIAS_KEY_FILE)).mode & 0o077, 0);
-  assert.equal(m.verify.hitFiles, 0);
+  assert.ok(m.verify.files > 0 && m.verify.bytes > 0, 'collected bytes were checked for readability');
   assert.equal(m.verify.joinKeysMissing, 0);
-  assert.deepEqual(Object.keys(b.redaction.counts).sort(), [...b.redaction.rules].sort());
+  assert.deepEqual(b.redaction.capturePolicy, CONTENT_POLICY);
+  assert.ok(Object.values(m.redaction.counts).every(n => n === 0), 'fresh original collection performs no content transformations');
   for (const h of b.hops) assert.ok(h.to.environmentId && h.to.threadId);
   assert.equal(r.machine.environmentId, m.environmentId);
  } finally {rmSync(out, {recursive: true, force: true});}
 });
 
-test('real bundles in private/ are well formed, credential-free, and served by the resolver without the alias key', {skip: !real ? 'set T3_REAL_TESTS=1' : !realBundles().length && 'no private T3 bundles', timeout: 600000}, async t => {
- const home = homedir();
- let sql = null; try {sql = await openReadOnly(db);} catch {}
- const values = credentialValues({home, repo: mainRepo, t3Home: existsSync(t3Home) ? t3Home : null, db: sql});
- sql?.close();
- // Scans first: they block the event loop for a while, which would expire an idle keep-alive socket mid-test.
+test('real bundles in private/ remain readable as recorded and are served by the resolver without the alias key', {skip: !real ? 'set T3_REAL_TESTS=1' : !realBundles().length && 'no private T3 bundles', timeout: 600000}, async t => {
+ // Read/decompress before starting the server; this never reads credential stores or changes legacy bytes.
  for (const dir of realBundles()) {
   const b = anyBundle(dir);
   assert.ok(b.machines.length >= 1);
@@ -117,55 +116,54 @@ test('real bundles in private/ are well formed, credential-free, and served by t
    if (m.status === 'collected') for (const f of m.files) assert.ok(existsSync(join(dir, f)), f);
    else assert.ok(m.gaps.length >= 1, 'an uncollected machine says why');
   }
-  const scan = scanBundle(dir, {values});
-  assert.equal(Object.keys(scan.hits).length, 0, `credential hits in ${Object.keys(scan.hits).length} files`);
+  const checked = scanBundle(dir, {contentPolicy: 'original'});
+  assert.ok(checked.files > 0 && checked.bytes > 0, 'stored bytes are readable, including legacy transformed captures');
  }
  const server = createTraceServer({roots: {}, t3Roots: [bundleRoot]});
  await new Promise(r => server.listen(0, '127.0.0.1', r));
  t.after(() => new Promise(r => server.close(r)));
  const base = 'http://127.0.0.1:' + server.address().port;
- // Each root id is served from its newest-format bundle (a v2 re-collection sits beside the v1 it drew spans from).
+ // Each qualified root is served from its newest-format bundle (legacy copies remain readable).
  const roots = new Map();
  for (const dir of realBundles()) {
   const b = anyBundle(dir);
   if (!/^[0-9a-f-]{36}$/i.test(b.scope.rootThreadId || '')) continue;
-  const best = roots.get(b.scope.rootThreadId);
-  if (!best || b.version > best.b.version) roots.set(b.scope.rootThreadId, {dir, b});
+  const environmentId = b.scope.rootEnvironmentId || b.machines.find(m => m.threadIds?.includes(b.scope.rootThreadId))?.environmentId || null;
+  const key = JSON.stringify([environmentId, b.scope.rootThreadId]), best = roots.get(key);
+  if (!best || b.version > best.version) roots.set(key, {root: b.scope.rootThreadId, environmentId, version: b.version});
  }
- for (const [root, {dir, b}] of roots) {
-  assert.equal((await findT3Bundle([bundleRoot], root)).bundle.version, b.version);
-  const res = await fetch(base + '/v1/session', {method: 'POST', headers: {Origin: base, 'X-Trace-Request': '1', 'Content-Type': 'application/json'}, body: JSON.stringify({id: root})});
+ for (const {root, environmentId, version} of roots.values()) {
+  const {dir, bundle: b} = await findT3Bundle([bundleRoot], root, {environmentId});
+  assert.equal(b.version, version);
+  const res = await fetch(base + '/v1/session', {method: 'POST', headers: {Origin: base, 'X-Trace-Request': '1', 'Content-Type': 'application/json'}, body: JSON.stringify({id: root, ...(environmentId ? {environmentId} : {})})});
   assert.equal(res.status, 200);
   const manifest = await res.json();
   assert.equal(manifest.product, 't3code');
   assert.equal(manifest.files.length, (await bundleFileList(dir)).length);
-  assert.ok(manifest.files.every(f => !f.path.endsWith(ALIAS_KEY_FILE) && f.kind === 't3-bundle'));
+  assert.ok(manifest.files.every(f => !f.path.replace(/\.gz$/, '').endsWith(ALIAS_KEY_FILE) && f.kind === 't3-bundle'));
   assert.ok(manifest.files.some(f => f.path === 'bundle.json'));
-  assert.equal([...bundleFiles(dir)].length, manifest.files.length);
+  if (b.machines.every(m => Array.isArray(m.files))) {
+   assert.deepEqual(manifest.files.map(f => f.path).sort(), ['bundle.json', ...new Set(b.machines.flatMap(m => m.files))].sort(), 'only producer-declared members receive file tickets');
+  }
  }
 });
 
 // T3's desktop authenticates its WebSocket with ?wsTicket=…; spans keep it in url.full and, as a bare
 // "wsTicket=…", in url.query. The rule test uses the shape only, with an obviously fake value.
-test('URL credential rule covers camelCase *Ticket names and bare query attributes', async () => {
+test('explicit credentials-only export rule covers camelCase *Ticket names and bare query attributes', async () => {
   const {Redactor} = await import('../t3/redact.mjs');
-  const r = new Redactor({aliasKey: Buffer.alloc(32, 1)});
+  const r = new Redactor({contentPolicy:'credentials-only',aliasKey: Buffer.alloc(32, 1)});
   const fake = 'FAKE-not-a-real-ticket-0000';
   const out = r.string(`{"url.full":"http://127.0.0.1:3773/ws?wsTicket=${fake}","url.query":"wsTicket=${fake}"}`);
   assert.ok(!out.includes(fake), 'ticket value removed');
   assert.equal((out.match(/wsTicket=\[redacted:bearer\]/g) || []).length, 2);
 });
 
-test('real bundles carry no unredacted wsTicket (opt-in)', {skip: !process.env.T3_REAL_TESTS}, () => {
-  const root = resolve(here, '../../private/sessions/t3');
-  if (!existsSync(root)) return;
-  const leaks = [];
-  for (const dir of readdirSync(root)) for (const f of bundleFiles(join(root, dir))) {
-    const text = f.endsWith('.gz') ? execFileSync('gzip', ['-dc', f], {maxBuffer: 1 << 30}).toString() : readFileSync(f, 'utf8');
-    // Token-shaped values only: agent sessions about this very bug mention wsTicket=<JWT>, ${jwt} and the like.
-    for (const m of text.matchAll(/wsTicket=([A-Za-z0-9._~+\/=-]{16,})/g)) leaks.push(f);
-  }
-  assert.deepEqual([...new Set(leaks)], []);
+test('original local content retains recorded tickets and pre-existing legacy markers', () => {
+ const r = new Redactor({aliasKey: Buffer.alloc(32, 1)});
+ const recorded = 'wsTicket=FAKE-not-a-real-ticket-0000; prior=[redacted:bearer]';
+ assert.equal(r.string(recorded), recorded);
+ assert.equal(r.hostAlias('fake-host.local'), 'fake-host.local');
 });
 
 // ---- Contract A v2 rule tests (obviously fake values, built at runtime) ------------------------------------------
@@ -174,8 +172,8 @@ const b64 = o => Buffer.from(JSON.stringify(o)).toString('base64url');
 const fakeJwt = () => [b64({alg: 'none', typ: 'JWT'}), b64({sub: 'fake-subject-for-a-test', exp: 1}), b64('fake-signature-for-a-test')].join('.');
 const fakeKey = n => Buffer.alloc(32, n);
 
-test('redaction covers T3 token shapes: query-string JWTs, auth headers, client hashes, LAN addresses, hostname', () => {
- const r = new Redactor({aliasKey: fakeKey(3)});
+test('legacy compatibility redaction covers T3 token shapes: query-string JWTs, auth headers, client hashes, LAN addresses, hostname', () => {
+ const r = new Redactor({contentPolicy: 'legacy-private', aliasKey: fakeKey(3)});
  const jwt = fakeJwt();
  const line = JSON.stringify({'url.full': `http://127.0.0.1:3773/ws?wsTicket=${jwt}&clientDeviceType=desktop&clientOwner=f00df00df00df00d&clientDevice=0123fake4567`, 'url.query': `wsTicket=${jwt}`, authorization: `Bearer ${'fake'.repeat(6)}`, dpop: `DPoP ${'fake'.repeat(6)}`, 'client.address': '192.168.7.77', peer: '10.9.8.7', tailnet: '100.64.1.2', local: '127.0.0.1', public: '8.8.8.8'});
  const out = r.value(JSON.parse(line));
@@ -190,12 +188,12 @@ test('redaction covers T3 token shapes: query-string JWTs, auth headers, client 
  assert.ok(text.includes('127.0.0.1') && text.includes('8.8.8.8'), 'loopback and public addresses stay');
  // Stable within a bundle, different across bundles.
  assert.equal(r.string('x 192.168.7.77'), `x ${out['client.address']}`);
- assert.notEqual(new Redactor({aliasKey: fakeKey(4)}).string('x 192.168.7.77'), r.string('x 192.168.7.77'));
+ assert.notEqual(new Redactor({contentPolicy: 'legacy-private', aliasKey: fakeKey(4)}).string('x 192.168.7.77'), r.string('x 192.168.7.77'));
  assert.match(r.hostAlias('fake-host.local'), /^<lan-[0-9a-f]{10}>$/);
 });
 
 test('aliases unioned from another bundle are re-keyed to this bundle', () => {
- const old = new Redactor({aliasKey: fakeKey(5)}), now = new Redactor({aliasKey: fakeKey(6)});
+ const old = new Redactor({contentPolicy: 'legacy-private', aliasKey: fakeKey(5)}), now = new Redactor({contentPolicy: 'legacy-private', aliasKey: fakeKey(6)});
  const oldText = old.string('mail someone@fake-domain.test from 192.168.0.9 and other@fake-domain.test');
  now.string('mail someone@fake-domain.test from 192.168.0.9');
  const rekeyed = now.rekey(oldText, fakeKey(5));
@@ -206,9 +204,9 @@ test('aliases unioned from another bundle are re-keyed to this bundle', () => {
 });
 
 test('a family bundle\'s aliases are a function of the fleet part aliases, for every marker kind', () => {
- const parts = fakeKey(7), fam = new FamilyRedactor({familyKey: familyKey(parts, 'env-a', 'thread-a'), partsKey: parts});
- const other = new FamilyRedactor({familyKey: familyKey(parts, 'env-a', 'thread-b'), partsKey: parts});
- const part = new Redactor({aliasKey: parts});
+ const parts = fakeKey(7), fam = new FamilyRedactor({contentPolicy: 'legacy-private', familyKey: familyKey(parts, 'env-a', 'thread-a'), partsKey: parts});
+ const other = new FamilyRedactor({contentPolicy: 'legacy-private', familyKey: familyKey(parts, 'env-a', 'thread-b'), partsKey: parts});
+ const part = new Redactor({contentPolicy: 'legacy-private', aliasKey: parts});
  const text = 'mail someone@fake-domain.test from 192.168.0.9 on host-x ?clientOwner=abcdef12 user_' + 'a'.repeat(24);
  const partText = part.string(text) + ' ' + part.hostAlias('host-x') + ` <path-${part.alias('path:/fake/worktree')}>`;
  const mapped = fam.fromParts(partText);
@@ -234,7 +232,7 @@ test('the exact-value matcher finds what one alternation regex of the values fin
  }
 });
 
-test('fleet stores: every family joins across machines and its newest build is credential-free, with no part alias left (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : !existsSync(incomingDir(mainRepo)) && 'no fleet harvest on this machine', timeout: 600000}, () => {
+test('fleet stores: families join across machines and newest builds retain readable content with honest provenance (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : !existsSync(incomingDir(mainRepo)) && 'no fleet harvest on this machine', timeout: 600000}, () => {
  const parts = readParts(incomingDir(mainRepo));
  assert.ok(parts.length, 'the stores hold parts');
  for (const p of parts.slice(0, 50)) {
@@ -243,19 +241,19 @@ test('fleet stores: every family joins across machines and its newest build is c
   const root = familyRoot(fam);
   assert.ok(fam.some(q => q.environmentId === root.environmentId && q.root === root.threadId), 'the root is a part\'s local root');
  }
- const values = credentialValues({home: homedir(), repo: mainRepo, t3Home: existsSync(t3Home) ? t3Home : null, db: null});
  for (const dir of fleetBuilds(mainRepo)) {
   const b = readBundle(dir);
   assert.deepEqual(validateBundle(b), [], dir);
   assert.equal(b.collector.aliasScheme, 'fleet-family');
   for (const m of b.machines.filter(x => x.status === 'collected')) assert.ok(m.files.some(f => /\/threads\.json(\.gz)?$/.test(f)), `${dir}: ${m.label} has its threads`);
-  assert.deepEqual(scanBundle(dir, {values}).hits, {}, dir);
+  const checked = scanBundle(dir, {contentPolicy: 'original'});
+  assert.ok(checked.files > 0 && checked.bytes > 0, 'published bytes remain readable');
+  assertBundleInventory(dir, b);
+  // An original assembly may include legacy native files or span archives. Their existing aliases are
+  // evidence, not a failure; only a complete original-content claim requires every contributing machine.
+  if (b.contentPolicy?.mode === 'original') for (const m of b.machines.filter(x => x.status === 'collected')) assert.deepEqual(m.contentPolicy, CONTENT_POLICY);
   const a = JSON.parse(readFileSync(join(dir, 'assembly.json'), 'utf8'));
-  const partMarks = new Set();
-  for (const rel of Object.keys(a.inputs)) for (const f of bundleFiles(join(incomingDir(mainRepo), rel))) if (!/spans/.test(f)) for (const l of readNdjsonLines(f.replace(/\.gz$/, ''))) for (const m of l.matchAll(ALIAS_MARK)) partMarks.add(m[0]);
-  let left = 0;
-  for (const f of bundleFiles(dir)) if (!/spans/.test(f)) for (const l of readNdjsonLines(f.replace(/\.gz$/, ''))) for (const m of l.matchAll(ALIAS_MARK)) if (partMarks.has(m[0])) left++;
-  assert.equal(left, 0, `${dir}: part-key aliases left in the build`);
+  assert.ok(Object.keys(a.inputs).length > 0, 'published generation records its source inputs');
  }
 });
 
@@ -300,10 +298,8 @@ test('launched threads join their launcher\'s family by the launch call\'s own r
  } finally {rmSync(cache, {recursive: true, force: true});}
 });
 
-// [P2] a family opened while the hourly harvest held this machine's store was served with the stored parts and no
-// word that they were stale. Run against a scratch copy of the stores (links to the real ones) whose own machine
-// folder holds a live lock, so the real store is never written.
-test('a family opened while the harvest holds this machine\'s store marks its changed parts stale (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : (!existsSync(incomingDir(mainRepo)) || !existsSync(db)) && 'no fleet harvest or T3 home on this machine', timeout: 1800000}, async () => {
+// An actively written store is not a stable snapshot. Use a scratch store with a live lock; no real store writes.
+test('a family opened while the harvest holds this machine\'s store rejects an unstable snapshot (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : (!existsSync(incomingDir(mainRepo)) || !existsSync(db)) && 'no fleet harvest or T3 home on this machine', timeout: 1800000}, async () => {
  const env = readFileSync(join(t3Home, 'userdata', 'environment-id'), 'utf8').trim();
  const store = incomingDir(mainRepo), mine = join(store, env);
  if (!existsSync(mine)) return;
@@ -329,16 +325,7 @@ test('a family opened while the harvest holds this machine\'s store marks its ch
   for (const n of readdirSync(mine)) if (n !== '.lock') symlinkSync(join(mine, n), join(inc, env, n));
   mkdirSync(join(inc, env, '.lock'));
   writeFileSync(join(inc, env, '.lock', 'pid'), String(process.pid)); // a live owner: the harvest "holds" the store
-  const r = await assembleFamily({threadId: pick.root, environmentId: env, repo: tmp});
-  const m = r.bundle.machines.find(x => x.environmentId === env);
-  assert.ok(m.stale && m.stale.roots >= 1 && m.stale.why === 'harvest-held', 'the machine records its stale parts');
-  assert.ok(Date.parse(m.stale.since) <= Date.parse(m.stale.until));
-  assert.ok(m.gaps.some(g => g.startsWith('stale: ')) && r.bundle.gaps.some(g => g.includes('stale: ')), 'and says so as a gap of the bundle');
-  const a = JSON.parse(readFileSync(join(r.dir, 'assembly.json'), 'utf8'));
-  assert.ok(a.stale.some(x => x.root === pick.root && x.partCollectedAt === pick.entry.collectedAt), 'assembly.json names the stale part');
-  // served again while the store is still held: the same stale build, not a silent one
-  const again = await assembleFamily({threadId: pick.root, environmentId: env, repo: tmp});
-  assert.equal(again.dir, r.dir);
+  await assert.rejects(assembleFamily({threadId: pick.root, environmentId: env, repo: tmp, refreshLocal: false}), {code: 'T3_RECEIVE_UPDATE'});
  } finally {
   rmSync(tmp, {recursive: true, force: true});
  }
@@ -346,8 +333,8 @@ test('a family opened while the harvest holds this machine\'s store marks its ch
  assert.equal(existsSync(join(mine, 'harvest.json')) ? statSync(join(mine, 'harvest.json')).mtimeMs : null, before, 'nor written');
 });
 
-test('message text in rows is stripped to its length and a hash', () => {
- const r = new Redactor({aliasKey: fakeKey(7)});
+test('explicit legacy message-stripping utility retains lengths and hashes', () => {
+ const r = new Redactor({contentPolicy: 'legacy-private', aliasKey: fakeKey(7)});
  const row = {title: 'fake title kept', payload_json: {prompt: 'fake prompt text', result: 'fake result text', progress: 'fake progress', remoteChild: {threadId: 'fake-thread'}, workflow: {agents: [{label: 'fake', prompt: 'fake agent prompt'}]}, steps: [{text: 'fake step'}]}};
  const out = stripMessageText(row, r);
  const text = JSON.stringify(out);
@@ -441,21 +428,28 @@ test('validateBundle accepts the collector\'s empty bundle and names what a malf
 
 // ---- opt-in, on the real v2 bundles: counts and structure only ---------------------------------------------------
 
-test('real v2 bundles: schema, every family thread and hop, joins complete inside part windows (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : !v2Bundles().length && 'no v2 bundles', timeout: 600000}, () => {
+test('real v2 bundles: schema, every family thread and hop, joins complete inside part windows (opt-in)', {skip: !real ? 'set T3_REAL_TESTS=1' : !v2Bundles().length && 'no v2 bundles', timeout: 600000}, async () => {
  const families = [];
  for (const dir of v2Bundles()) {
   const b = readBundle(dir);
   assert.deepEqual(validateBundle(b), [], dir);
   const collected = b.machines.filter(m => m.status === 'collected');
+  const nets = new Map(collected.map(m => [m.environmentId, m.net]));
+  if (b.networkDerivation?.status === 'deferred') await deriveNet(collected.map(m => {
+   const machineDir = join(dir, 'machines', m.environmentId);
+   let ownPort = null; try {ownPort = JSON.parse(readFileSync(join(machineDir, 'environment.json'))).exposure?.port ?? null;} catch {}
+   return {...m, dir: machineDir, ownPort, fileOptions: {base: dir, files: m.files}};
+  }), {onMachine: (environmentId, d) => {nets.set(environmentId, {joins: d.rows.filter(r => r.type === 'join').length, missesInCoverage: d.rows.filter(r => r.type === 'miss' && r.inReceiverCoverage).length});}});
   for (const m of collected) {
    assert.ok(m.parts.length >= 1, 'coverage parts');
-   assert.ok(m.net, 'net derived');
-   assert.equal(m.net.missesInCoverage, 0, `${m.label}: every caller span inside the receiver's coverage has its receiving span`);
-   assert.equal(m.verify.hitFiles, 0);
+   const net = nets.get(m.environmentId);
+   assert.ok(net, 'net is materialized or explicitly derived for validation');
+   assert.equal(net.missesInCoverage, 0, `${m.label}: every caller span inside the receiver's coverage has its receiving span`);
+   assert.ok(m.verify.files > 0, 'machine records its readability inventory');
   }
   for (const h of b.hops) for (const end of [h.from, h.to]) assert.ok(b.machines.some(m => m.environmentId === end.environmentId), 'hop machines listed');
   const threads = new Set(collected.flatMap(m => m.threadIds.map(t => `${m.environmentId} ${t}`)));
-  families.push({threads: threads.size, hops: b.hops.length, joins: collected.reduce((n, m) => n + m.net.joins, 0), machines: collected.length});
+  families.push({threads: threads.size, hops: b.hops.length, joins: collected.reduce((n, m) => n + nets.get(m.environmentId).joins, 0), machines: collected.length});
  }
  // Design §14: planning has at least 31 threads and 23 hops, Scan-to-Make at least 28 and 7 (both families can grow).
  families.sort((a, b) => b.hops - a.hops);

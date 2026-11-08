@@ -8,6 +8,23 @@ import {createTraceServer} from '../trace-local.mjs';
 import {codexFiles, claudeFiles, CODEX, CC} from '../../site/trace/test/fixtures/make.mjs';
 const origin='https://gpt6aeon.dtmont.com';
 
+test('static serving accepts a symlinked site root but rejects members escaping its canonical directory', async t=>{
+ const dir=await mkdtemp(join(tmpdir(),'trace-static-'));t.after(()=>rm(dir,{recursive:true,force:true}));
+ const site=join(dir,'site'),linked=join(dir,'linked-site');
+ await mkdir(join(site,'trace'),{recursive:true});
+ await writeFile(join(site,'trace','index.html'),'<title>Trace fixture</title>');
+ await writeFile(join(site,'app.js'),'export const fixture = true;');
+ await writeFile(join(dir,'outside.txt'),'outside root');
+ await symlink(site,linked);await symlink(join(dir,'outside.txt'),join(site,'escape.txt'));
+ const server=createTraceServer({roots:{},siteRoot:linked});
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>server.close(r)));
+ const base='http://127.0.0.1:'+server.address().port;
+ const page=await fetch(base+'/trace/');assert.equal(page.status,200);assert.equal(await page.text(),'<title>Trace fixture</title>');
+ const asset=await fetch(base+'/app.js');assert.equal(asset.status,200);assert.equal(await asset.text(),'export const fixture = true;');
+ assert.equal((await fetch(base+'/escape.txt')).status,404);
+ assert.equal((await fetch(base+'/%2e%2e%2foutside.txt')).status,404);
+});
+
 test('local resolver opens only the requested family, refreshes new files, and rejects outside origins and paths', async t=>{
  const dir=await mkdtemp(join(tmpdir(),'trace-local-'));t.after(()=>rm(dir,{recursive:true,force:true}));
  const roots={codex:join(dir,'codex'), 'claude-code':join(dir,'claude')};

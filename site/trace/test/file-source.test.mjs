@@ -24,13 +24,63 @@ test('folder capture touches the hinted root only, preserving handles and unrela
  assert.equal(await got[0].file.text(),'root');assert.equal(got[1],other);assert.equal(got[2],handled);
 });
 
-test('a directory handle refreshes a stale File, retries bounded reads, and freezes the selected prefix for drill-down',async()=>{
- let calls=0,content='hello';
- const src=fileSource(stale,{async getFile(){calls++;return calls===1?stale:new Blob([content]);}});
+// A file on disk and the browser's File snapshots of it: a File reads only while the file is as it was when that
+// File was made (any write, an append, or a swap for other bytes of the same size makes it refuse, NotReadableError).
+function disk(text){
+ const d={bytes:new TextEncoder().encode(text),version:0,made:0,read:0,
+  write(next){d.bytes=new TextEncoder().encode(next);d.version++;},
+  file(){d.made++;const v=d.version,bytes=d.bytes;return {name:'active.jsonl',size:bytes.length,slice:(a,b)=>({arrayBuffer:async()=>{if(d.version!==v)throw changed();d.read+=Math.max(0,Math.min(b,bytes.length)-a);return bytes.slice(a,b).buffer;}})};}};
+ d.handle={getFile:async()=>d.file()};
+ return d;
+}
+const text=async(src,a,b)=>new TextDecoder().decode(await src.slice(a,b));
+
+test('one load reads one version: a same-size swap, a rewrite or an append after its first read is its error, never the new bytes',async()=>{
+ for(const change of ['world','hellp','hello and more']){
+  const d=disk('hello'),src=fileSource(d.file(),d.handle);
+  assert.equal(await text(src,0,5),'hello');
+  d.write(change);
+  await assert.rejects(src.slice(0,5),e=>e.code==='TRACE_SOURCE_CHANGED'&&e.cause?.name==='NotReadableError'&&/changed or is unavailable; select it again/.test(e.message),change);
+  await assert.rejects(src.snapshot(),e=>e.code==='TRACE_SOURCE_CHANGED','the snapshot is of the same File, so it is refused too');
+  assert.equal(d.made,1,'the handle is never asked for another File once this load has read');
+ }
+});
+
+test('a File that changed before this load read any of it is replaced once from its handle, then fixed for the load',async()=>{
+ const d=disk('hello'),first=d.file();
+ d.write('hello, appended while picking');
+ const src=fileSource(first,d.handle);
+ assert.equal(await text(src,0,5),'hello','the fresh File, read up to the size the load planned with');
+ assert.equal(d.made,2,'one fresh File');
+ assert.equal(await text(src,1,4),'ell');
+ d.write('swapped bytes of other lengths');
+ await assert.rejects(src.slice(0,5),e=>e.code==='TRACE_SOURCE_CHANGED');
+ assert.equal(d.made,2,'no second refresh after the load began reading');
+ // first reads that start together all move to the one fresh File
+ const r=disk('hello world'),given=r.file();r.write('hello world, appended');
+ const together=fileSource(given,r.handle);
+ assert.deepEqual(await Promise.all([0,1,2,3].map(i=>text(together,i,i+5))),['hello','ello ','llo w','lo wo']);
+ assert.equal(r.made,2);
+ // a fresh File shorter than what the load planned with is a changed file, not a shorter read
+ const e=disk('hello world'),pick=e.file();
+ e.write('hi');
+ await assert.rejects(fileSource(pick,e.handle).slice(0,5),err=>err.code==='TRACE_SOURCE_CHANGED');
+ // without a handle there is nothing to replace it with
+ const f=disk('hello'),gone=f.file();f.write('jello');
+ await assert.rejects(fileSource(gone).slice(0,5),err=>err.code==='TRACE_SOURCE_CHANGED');
+});
+
+test('the chosen session is copied from the load\'s own File, other files are read only where asked, and other failures keep their cause',async()=>{
+ const d=disk('{"a":1}\n'.repeat(1000)),src=fileSource(d.file(),d.handle);
+ assert.equal(await text(src,0,8),'{"a":1}\n');
+ assert.equal(d.read,8,'a head read reads the head: nothing is copied eagerly');
  await src.snapshot();
- content='changed and appended';
- assert.equal(new TextDecoder().decode(await src.slice(0,5)),'hello');
- assert.equal(calls,2);
+ d.write('x'.repeat(8000));
+ assert.equal(await text(src,8,16),'{"a":1}\n','after its snapshot the chosen session reads from memory, whatever happens on disk');
+ for(const name of ['NotFoundError','SecurityError']){
+  const bad={name:'gone.jsonl',size:5,slice:()=>({arrayBuffer:async()=>{throw new DOMException('unavailable',name);}})};
+  await assert.rejects(fileSource(bad,{getFile:async()=>bad}).slice(0,5),e=>e.cause?.name===name&&e.code!=='TRACE_SOURCE_CHANGED'&&/could not be read/.test(e.message),name);
+ }
  const denied=fileSource(stale,{getFile:async()=>stale});
  await assert.rejects(denied.snapshot(),/could not be read/i);
 });

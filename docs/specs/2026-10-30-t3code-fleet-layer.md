@@ -59,20 +59,39 @@ new T3 releases; the builder decides between the stable and nightly channels, an
 
 ### 4.1 Joining a thread family across machines
 
-Join keys, all found on a real four-machine fleet (2026-10-31):
+Join keys from the fleet investigation, qualified against upstream releases
+`v0.1.7-nightly.20261103.4106` (`e1e520c93c99`) and `v0.1.8-nightly.20261104.4192`
+(`7f6f47b27b44`). The source-map extraction remains separately pinned to 0.1.6; it must not be used to assert newer
+runtime behavior. The identity of a thread is its environment ID together with its thread ID.
 - **Local family.** Each thread row in `statev2.sqlite` keeps its lineage in `orchestration_v2_projection_threads.payload_json`:
   `lineage.parentThreadId`, `rootThreadId`, `relationshipToParent`, `delegatedFrom` and `forkedFrom`.
-- **Remote delegation.** The parent side's task records `remoteChild {environmentId, threadId, label}`. The child thread
-  on the other machine has `linkOrigin {sessionId, label, access}` and a null `parentThreadId`, so the parent side's
-  record is the only thread-level link to it.
-- **Launches.** A thread made with `t3_thread_launch` or `create_threads` has no T3 parent on either machine: a null
-  `parentThreadId`, no `delegatedFrom`, and, when launched across a peer link, only `linkOrigin` (which names the
-  launching machine's link, not the thread). The launching agent's own call result is the join: it returns the new
-  thread's id and its `t3-thread://` link. Assembly reads each part's transcripts for those results
-  (`tools/t3/launches.mjs`, Claude Code `tool_use`/`tool_result`, Codex/ChatGPT `McpToolCall`) and adds a hop of kind
-  `launch`. Its target is the machine whose store holds the thread (T3 has answered a `create_threads` call aimed at
-  another machine with a link to its own). No other mention of a thread id, and never time alone, joins it. Trace
-  draws it as the `launch-join` lineage break.
+- **Remote delegation.** The parent task records `remoteChild {environmentId, threadId, label, runId?}`. Remote
+  `delegate_task` also supplies `delegatedFrom {environmentId, threadId, title}` to the child. These are complementary
+  thread-level links. `linkOrigin {sessionId, label, access}` identifies the paired MCP session and its permissions;
+  derived work inherits it, so it cannot establish a parent thread. The delegation implementation is identical in
+  both checked releases. [Source](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/peer/RemoteDelegation.ts#L256-L307).
+- **Recorded thread creation.** `create_threads` creates ordinary local threads, then records a `thread_created`
+  item on the parent's timeline. Its row names the parent thread/run/node; its payload names the target thread/run,
+  provider and model. The family walk follows this relation in both directions and exports only allowlisted metadata
+  as `threads.json.threadCreations`. The collector emits a `launch` hop with `join.by: "turn-item"` and the item ID.
+  Missing target rows remain explicit gaps. Older schemas without the table still resolve other family links.
+  These releases do not forward `create_threads` to `target.environmentId`; the returned link and owning environment
+  are evidence of where it ran. [Creation](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/mcp/OrchestratorMcpService.ts#L2777-L2940),
+  [timeline record](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/orchestration-v2/Orchestrator.ts#L8713-L8747).
+- **Other launches.** General `t3_thread_launch` calls need not stamp a thread parent. Keep the launching agent's own
+  successful call/result join as a fallback: it returns the new thread ID and `t3-thread://` link. Assembly reads
+  each part's transcripts for those results (`tools/t3/launches.mjs`, Claude Code `tool_use`/`tool_result`,
+  Codex/ChatGPT `McpToolCall`) and adds a hop of kind `launch`. No unrelated mention of an ID, shared link, or time
+  overlap joins a family. A launch relation remains distinct from a delegated subagent relation.
+- **Environment qualification.** Known remote seeds travel as `{environmentId, threadId}` pairs; a coincident local
+  thread ID is not the same thread. Legacy unqualified upstream IDs are accepted only when child-side evidence names
+  one parent environment. Conflicting environments produce an ambiguity gap without guessed membership.
+- **Metadata freshness.** Each machine part records `familyMetadata.version` independently of the content-policy version (and historical credential
+  redaction version), and records whether its DB has the thread-creation table. The existing on-demand local refresh
+  upgrades older parts even when their threads have not changed; older remote parts remain readable with an explicit
+  coverage gap until the ordinary harvest refreshes them. An inspected older DB without the table is marked
+  `threadCreations: "unavailable"`, not repeatedly scheduled for an impossible schema upgrade. There is no automatic
+  historical fleet backfill and no manual family collection.
 - **Several sessions per thread.** A thread that moved provider (a Codex/ChatGPT rollout, then a Claude Code session)
   is bound to each in turn. Every session is drawn: the earliest as the thread's ridge, the rest as continuation
   ridges beside it. A provider-native subagent thread maps to its agent in its nearest drawn ancestor's session.
@@ -80,9 +99,10 @@ Join keys, all found on a real four-machine fleet (2026-10-31):
   and its `parentSpanId` is a span on the calling machine, so the span graph joins across machines with no extra keys.
   One caller can keep a single `traceId` for 30 minutes or more, so the layer joins spans on `parentSpanId`, not on
   `traceId` alone.
-- **Agent session.** Each T3 thread is bound to a provider session (`active_provider_thread_id` and the
-  provider-session-binding projections). That session is the Claude Code session id or the Codex/ChatGPT thread id that
-  Trace's existing adapters already open.
+- **Agent session.** T3 thread IDs, task/node IDs, run IDs, provider-session IDs and provider-thread IDs are separate
+  namespaces. Provider-thread rows map the app thread and provider session to `nativeThreadRef {driver, nativeId,
+  strength}`. That native ID locates the Claude Code session or Codex/ChatGPT rollout opened by Trace's adapters;
+  a T3 provider-session ID is not automatically a native conversation ID.
 
 ### 4.2 The edges
 
@@ -95,6 +115,31 @@ Join keys, all found on a real four-machine fleet (2026-10-31):
 | 5 | Agent → T3's MCP | Loopback HTTP `/mcp` with a per-launch credential | `McpHttpServer.*` and `tools/call` spans, plus `logs/provider/events.mcp-launch-*.log` |
 | 6 | Agent → model API | HTTPS | The existing network capture of that agent (Claude Code, Codex/ChatGPT, OpenCode, Cursor), attached to its node |
 
+Transport evidence is separate from task lineage. The checked releases expose primary, bearer, relay and SSH
+connection targets, all keyed by environment ID, and allow alternate routes to the same environment. Desktop SSH
+starts or reuses the remote server, forwards a local port to its remote loopback port with `ssh -N -L`, and uses the
+normal HTTP/WebSocket connection through that port. It does not require a `peer_environment_links` row.
+[Connection targets](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/client-runtime/src/connection/model.ts#L5-L54),
+[SSH forwarding](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/ssh/src/tunnel.ts#L1139-L1163),
+[SSH authorization](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/client-runtime/src/connection/resolver.ts#L198-L262).
+
+T3 Connect obtains an environment endpoint and authorization from the relay. The server's managed Cloudflare
+connector exposes that existing environment; it does not create a new thread or agent. Connect authorization can
+also be used over a direct endpoint. Server-to-server peer calls independently use HTTP MCP at the selected peer
+URL, which must answer with the expected environment ID. Thus a tunnel hostname, SSH alias or link row is a route,
+not a family key. [Connect authorization](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/client-runtime/src/authorization/service.ts#L260-L300),
+[direct endpoint](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/packages/client-runtime/src/authorization/service.ts#L471-L487),
+[Cloudflare connector](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/cloud/ManagedEndpointRuntime.ts#L659-L720),
+[peer client](https://github.com/pingdotgg/t3code/blob/v0.1.8-nightly.20261104.4192/apps/server/src/peer/PeerMcpClient.ts#L97-L175).
+
+The local DB can establish thread and provider relationships regardless of how a client reached it. Retained spans
+can establish observed routes, but the encrypted desktop catalog is not decrypted by collection. Removed routes,
+expired pairings, unharvested environments and rotated spans cannot be reconstructed from current peer links alone.
+The current network derivation reads server spans and retains broad legacy name classifications; it does not yet
+derive a complete desktop SSH route history from the separately preserved desktop spans. Keep this coverage limit
+visible when interpreting network edges. It does not mean that agents already harvested from their environment's
+DB are missing. A transport-classification correction requires its own regression validation.
+
 ### 4.3 Sources on each machine
 
 All of these were found on the fleet. Every one is "found, not shown yet".
@@ -106,7 +151,7 @@ All of these were found on the fleet. Every one is "found, not shown yet".
 | Event-loop stalls | `userdata/logs/event-loop-stalls.ndjson` | Server stalls over days |
 | Renderer samples | `userdata/logs/renderer-history.ndjson*` | Renderer memory over time |
 | Provider streams | `userdata/logs/provider/events.*.log` | Edge 4 and edge 5 launches |
-| State | `userdata/statev2.sqlite` (read-only) | Threads and lineage, runs, provider session bindings, subagents, peer links, auth sessions (redacted) |
+| State | `userdata/statev2.sqlite` (read-only) | Threads and lineage, runs, provider session bindings, subagents, peer links, selected recorded auth-session fields (as recorded) |
 | Config | `userdata/settings.json`, `client-settings.json`, `desktop-settings.json`, `model-manifest.json` | Settings that change what T3 injects, plus server exposure |
 | Build | `runtime/versions/`, `runtime/service-state.json`, `userdata/server-runtime.json` | Which T3 build was running, and its updates |
 | Connection catalog | `userdata/connection-catalog.json` | Encrypted. Found, not readable. Say so; don't guess. |
@@ -123,7 +168,71 @@ touched, the bundle holds:
 - the build and config files above;
 - the bound agent sessions.
 
-It removes credentials before writing anything (§4.6). It reaches other machines through T3's own linked environments
+The fleet harvest transfers changed files incrementally. The producer selects and packages those files under the
+same per-store lock used by collection, including span segments and their coverage metadata. It releases the lock
+before SSH sends the immutable archive. A live collector's lock is never taken over just because it is old. Failed
+packaging or transfer leaves the last-successful push marker unchanged, so the next cycle retries the delta.
+
+The receiver stages the complete archive before changing the live store. A durable `.receive-pending` journal
+retains every staged source while data files are installed, obsolete compression twins are removed, and manifests
+are installed last. It commits `.receive-generation`, then atomically retires the journal. An interrupted receive
+remains unreadable; the next receive replays that journal before installing its new input. The receiver does not
+hold an assembly reader lock or wait for a long merge to finish.
+
+Local collection uses its store lock and a `.harvest-pending` journal containing the attempted roots. An uncaught
+write/archive failure leaves the journal; caught per-root failures remain in `harvest.json`'s `errors`. Both prevent
+assembly and packaging from treating partial files as a complete publication. Ordinary harvests include those
+pending and failed roots in their next collection. When local recovery is needed, the resolver invokes that same
+harvest path before discovering parts, with a three-second lock wait; a failed repair remains an explicit error.
+If publication completed but its process died before lock cleanup, the resolver reclaims only the dead lock and
+rechecks publication state, without collecting the archive again. Live owners retain the same bounded wait.
+Recovery does not invent missing source data or guarantee repair of an unreadable archive.
+
+Assembly validates the receive generation, local harvest publication identity, and absence of active/incomplete
+publication before and after source reads: manifests, launch evidence, activity, and the combined parts including
+their archived spans. Both cached-build return paths revalidate their inputs. A receive that completes during a
+read is detected even if filenames, byte lengths, and thread IDs stay unchanged. Once stable parts are copied into
+the build directory, the expensive merge and verification need no source-store lock. Existing stores without
+publication markers remain readable as legacy publications.
+
+This deliberately favors integrity over availability: an active or incomplete encountered environment fails
+discovery explicitly, and can temporarily prevent opening an otherwise unrelated family. A previously frozen
+build is separate from the mutable store; this protocol does not promise live reads of a store while it is being
+rewritten, nor silently omit a failed environment.
+
+Assembly reads the representation named by the producer's `machines[].files` manifest. This also recovers older
+stores containing both forms without modifying either original. Ambiguous representations without a manifest,
+or a missing declared file, are integrity errors; filesystem timestamps do not establish which bytes are current.
+Before publishing or reusing an assembled bundle, every collected machine's declared thread inventory must match
+its thread rows, and every indexed root session must bind to a collected thread. Cache identity includes the file
+manifest, thread inventory, and publication identity as well as collection time. A valid subset of the rows cannot
+pass as a complete family.
+
+Helper family opens preserve that authority through serving: only `bundle.json` and declared machine members
+receive file tickets. Legacy machines without an inventory enumerate only their own regular files and reject
+ambiguous compression twins. Declared missing files, unsafe paths, and symbolic links fail instead of selecting
+other bytes. Declared `machines[].sizes[path]` values must match physical file byte lengths, including compressed
+bytes for gzip members. The current schema declares no per-file digest; message-text hashes are not file hashes.
+Disk-backed source tickets pin file identity and modification state, checking the open file before
+and after each lazy range read. Replacement or in-place modification invalidates the ticket with a reopen error,
+even when file size and modification time were preserved; ranges from different file versions are not combined.
+
+Assembly version 6 uses `noDerive` and records `networkDerivation: {version: 1, status: "deferred"}` in
+`bundle.json`. This defers the optional backend `net.ndjson` and `spans.idx.json` outputs; it does not indicate
+missing source evidence or zero traffic. Their plain/gzip files, manifest entries and stale `machine.net`
+statistics are removed, including on retained machines. Eager derivation records `status: "ready"`; an absent
+marker is legacy/unspecified. The assembly version invalidates earlier caches; the bundle remains format v2.
+
+Deferred assembly still preserves coverage: existing `basis: "span-end"` parts need no extra span read, while
+legacy windows are normalized from span end times and split at five-minute silences. Reads use the
+manifest-declared representation, and source entries remain authoritative when derived entries change. Original-mode
+writes preserve source bytes, and full-bundle verification checks readability and inventory. Credential scanning
+and removal belong to deliberate publication, not local assembly. The current browser
+derives its network from raw spans; backend rows and indexes are not interchangeable with browser structures.
+Consumers must treat deferred outputs as not precomputed and use the source evidence, rather than interpret
+their absence as a coverage gap.
+
+It preserves recorded credentials in local evidence (§4.6). It reaches other machines through T3's own linked environments
 or over SSH. On macOS, a process T3 starts lacks the
 Local Network permission until the user grants it to the T3 app. The collector says so instead of opening windows.
 
@@ -163,24 +272,28 @@ local receiver. The bundle format must not depend on which path was used.
     (tunnel)" unless the link's URLs or a caller span name the route.
   - The client's own route choice is not recorded locally.
 
-### 4.6 Privacy
+### 4.6 Local evidence and publication
 
-The layer uses the network layer's model (`docs/specs/2026-09-28-network-layer.md` §6):
-- Parsing and redaction run in the browser worker.
-- Nothing is persisted.
-- Join keys (thread, run, task, trace and span ids) stay.
+The layer follows the [network layer’s original-content contract](2026-09-28-network-layer.md#6-local-evidence-and-publication).
+Local collection, assembly, browser parsing, readers, search and AI evidence retain recorded source content,
+including actual credentials. Selected native files, provider logs, configuration and opaque media keep their
+original bytes. Thread records retain selected messages and tool payloads. Credential presence is neither a
+reason to alter a local record nor a verification failure. Collection does not read referenced secret stores
+or decrypt the desktop connection catalog to supply additional values.
 
-Bundles live only in `private/`, and the public site gets none of it.
+Bundles remain private. The deliberately selected public example is a separately reviewed export that removes
+actual credentials only. It does not change local collection or authorize publication of other recordings.
 
-**Credentials are removed before disk.** The collector redacts tokens, pairing codes, MCP launch credentials, secret
-values and relay endpoint keys before it writes the bundle, as the OpenCode spec requires. The browser worker redacts
-again, using the network layer's rule of removing a found value everywhere it appears. *(My call; the builder check
-raised it.)*
+The original October design removed credentials before disk and again in the browser. That behavior is
+superseded. Older transformed parts may still contain aliases or removal markers; they remain explicit historical
+gaps. Native-content policy and whole-bundle policy are tracked separately so retained legacy spans cannot claim
+restored original content. Unchanged old local inputs are refreshed under the current policy when their original
+sources remain available; a transformed file alone cannot restore missing text.
 
 **Tests use real recordings only.** The two older specs disagree on test data. The network layer used synthetic
 captures; the newer OpenCode spec forbids fabricated sessions and fixtures. This layer follows the newer rule:
-- Gate tests cover what can be checked without private data: source extraction, the bundle schema, redaction rules
-  against the pinned upstream source, and the UI shell.
+- Gate tests cover what can be checked without private data: source extraction, the bundle schema, original-content preservation
+  and the UI shell.
 - Tests against a real bundle are opt-in, run only on the machine that holds it, and assert counts and structure.
 
 So the collector is the first milestone, and real bundles come before the view. The first bundle can be the session

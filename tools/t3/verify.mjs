@@ -10,6 +10,7 @@ import {join, relative, sep} from 'node:path';
 import {secretValues} from './secrets.mjs';
 import {fileBuffer, bufferChunks} from './gz.mjs';
 import {ExactSet} from './exact.mjs';
+import {fileTextChunks} from './stream.mjs';
 
 const read = file => {try {return readFileSync(file, 'utf8');} catch {return '';}};
 
@@ -31,19 +32,10 @@ export const TOKEN_SHAPES = [
 // the other local credential files. Returns [[value, kind]].
 export function credentialValues({home, repo, t3Home, db}) {
  const values = new Map();
- const add = (v, kind) => {if (typeof v === 'string' && v.trim().length >= 12) values.set(v.trim(), kind);};
- try {const email = execFileSync('git', ['config', '--global', 'user.email'], {encoding: 'utf8'}).trim(); if (email) values.set(email, 'git email');} catch {}
- for (const line of [join(home, '.env'), repo && join(repo, '.env')].filter(Boolean).flatMap(f => read(f).split('\n'))) {
-  const value = line.replace(/^\s*(?:export\s+)?[A-Z0-9_]+\s*=\s*/, '').replace(/^["']|["']$/g, '').trim();
-  if (value !== line.trim()) add(value, 'local .env value');
- }
- const quoted = text => [...text.matchAll(/"([^"\\]{20,})"/g)].map(m => m[1]);
- for (const f of [join(home, '.codex/auth.json'), join(home, 'Library/Preferences/.wrangler/config/default.toml'), join(home, '.config/.wrangler/config/default.toml'), join(home, '.claude/.credentials.json')]) for (const v of quoted(read(f))) add(v, 'credential');
- for (const m of read(join(home, '.config/gh/hosts.yml')).matchAll(/oauth_token:\s*(\S+)/g)) add(m[1], 'credential');
- for (const m of read(join(home, '.npmrc')).matchAll(/_authToken=(\S+)/g)) add(m[1], 'credential');
- for (const m of read(join(home, '.netrc')).matchAll(/password\s+(\S+)/g)) add(m[1], 'credential');
- if (repo) try {for (const v of JSON.parse(read(join(repo, 'private', 'leak-values.json')) || '[]')) if (typeof v === 'string' && v.length >= 6) values.set(v, 'private capture value');} catch {}
- if (t3Home) for (const [v, rule] of secretValues({t3Home, home, repo, db})) values.set(v, `t3 ${rule}`);
+ // A publication deny-list historically mixed identities with secrets. Only explicitly typed credential records
+ // participate in private collection; bare historical strings remain publication-policy input, not auth evidence.
+ if (repo) try {for (const v of JSON.parse(read(join(repo, 'private', 'leak-values.json')) || '[]')) if (v?.kind === 'credential' && typeof v.value === 'string' && v.value.length >= 4) values.set(v.value, 'reviewed private credential');} catch {}
+ for (const [v, rule] of secretValues({t3Home: t3Home || join(home, '.t3'), home, repo, db})) values.set(v, `t3 ${rule}`);
  return [...values];
 }
 
@@ -73,8 +65,8 @@ export function scanner(values) {
 }
 
 // Scan files under dir (all of them, or those under one machine folder). Returns {files, bytes, hits: {rel: {kind: n}}}.
-export function scanBundle(dir, {values, only} = {}) {
- const scan = scanner(values);
+export function scanBundle(dir, {values, only, contentPolicy} = {}) {
+ const scan = contentPolicy === 'original' ? () => ({}) : scanner(values);
  const out = {files: 0, bytes: 0, hits: {}};
  for (const file of bundleFiles(dir)) {
   const rel = relative(dir, file).split(sep).join('/');
@@ -102,7 +94,7 @@ export function missingJoinKeys(dir, keys, {only} = {}) {
 
 // scanBundle across worker threads (the files shared out by size): the same scan and the same result, for a bundle
 // of hundreds of megabytes that a page is waiting on. Falls back to scanBundle where workers are unavailable.
-export async function scanBundleParallel(dir, {values, only, workers = null} = {}) {
+export async function scanBundleParallel(dir, {values, only, workers = null, memoryBudgetBytes = 512 * 1024 * 1024, contentPolicy} = {}) {
  const {Worker} = await import('node:worker_threads');
  const {availableParallelism} = await import('node:os');
  const files = [];
@@ -111,12 +103,19 @@ export async function scanBundleParallel(dir, {values, only, workers = null} = {
   if (only && !only.some(p => rel === p || rel.startsWith(p.endsWith('/') ? p : p + '/'))) continue;
   files.push({file, rel, size: statSync(file).size});
  }
- const n = Math.max(1, Math.min(workers || Math.min(8, (availableParallelism?.() || 4) - 1), files.length));
- if (n < 2) return scanBundle(dir, {values, only});
+ // A worker holds raw chunks, decoded strings and scanner temporaries; reserve four chunk sizes per worker.
+ // A single unusually long line may exceed the reservation, but independent files never multiply by CPU count.
+ const memoryWorkers = Math.max(1, Math.floor(memoryBudgetBytes / (4 * 32 * 1024 * 1024)));
+ const n = Math.max(1, Math.min(workers || Math.min(8, (availableParallelism?.() || 4) - 1), memoryWorkers, files.length));
+ if (n < 2) {
+  const out = {files: files.length, bytes: files.reduce((s, f) => s + f.size, 0), hits: {}};
+  for (const f of files) {const hits = await scanFileStream(f.file, {values, ...(contentPolicy === 'original' ? {scan: () => ({})} : {})}); if (Object.keys(hits).length) out.hits[f.rel] = hits;}
+  return out;
+ }
  const lots = Array.from({length: n}, () => ({size: 0, files: []}));
  for (const f of [...files].sort((a, b) => b.size - a.size)) {const lot = lots.reduce((x, y) => (y.size < x.size ? y : x)); lot.files.push(f); lot.size += f.size;}
  const run = lot => new Promise((resolve, reject) => {
-  const w = new Worker(new URL('./verify-worker.mjs', import.meta.url), {workerData: {values, files: lot.files.map(f => f.file)}});
+  const w = new Worker(new URL('./verify-worker.mjs', import.meta.url), {workerData: {values, contentPolicy, files: lot.files.map(f => f.file)}});
   w.once('message', resolve); w.once('error', reject);
   w.once('exit', code => {if (code) reject(new Error(`verify worker exited ${code}`));});
  });
@@ -125,4 +124,11 @@ export async function scanBundleParallel(dir, {values, only, workers = null} = {
  const relOf = new Map(files.map(f => [f.file, f.rel]));
  for (const r of results) for (const [file, hits] of Object.entries(r)) out.hits[relOf.get(file)] = hits;
  return out;
+}
+
+// Same line-aligned chunks and scanner counts as scanBundle, without whole-file gzip expansion.
+export async function scanFileStream(file, {values, scan = scanner(values)} = {}) {
+ const hits = {};
+ for await (const chunk of fileTextChunks(file)) for (const [k, n] of Object.entries(scan(chunk))) hits[k] = (hits[k] || 0) + n;
+ return hits;
 }

@@ -17,18 +17,6 @@ export function peakRequestIndex(agent) {
   return peak;
 }
 
-// Map-following is a panel view only: it never changes the camera's selection.
-// Explicit readers stay pinned until the user returns to the map.
-export function mapPanelState(state, focus) {
-  if (state.level !== 0 || state.mode !== '3d' || !focus?.detail) return state;
-  const agent = state.trace?.agents.find(a => a.id === focus.agentId);
-  if (!agent?.requests.length) return state;
-  const reqIdx = requestPosition(agent.requests.length, focus.reqIdx).index;
-  const stratum = agent.requests[reqIdx].strata?.[focus.stratum] > 0 ? focus.stratum : null;
-  return { ...state, followingMap: true, agent, agentId: agent.id, reqIdx, stratum, block: null,
-    level: focus.detail === 1 ? 1 : focus.detail >= 3 && stratum ? 3 : 2 };
-}
-
 // Camera presentation is an explicit choice. Map previews may follow zoom, but a
 // request/layer link always opens the focused core regardless of the entry state.
 export function isLandscape(state) {

@@ -3,6 +3,7 @@
 // The palette (palette.js) adds its commands as extra entries and renders the results.
 import { STRATA, STRATUM_INDEX, fmtTok, fmtWhen } from "./panels.js";
 import { requestCalls } from "./navigation.js";
+import { readableAgentNames, idLike } from "./ids.js";
 
 export const SCOPES = [
   { key: "all", name: "Everything" },
@@ -15,7 +16,9 @@ export const SCOPES = [
 
 const HAY_MAX = 2000; // heredocs and long commands: enough of the start to find them by
 const low = s => String(s ?? "").toLowerCase();
-export const agentName = a => (a.kind === "root" ? "Main thread" : a.name || a.id);
+// An agent's readable name (ids.js readableAgentNames), from the names of the trace last indexed.
+let names = new Map();
+export const agentName = a => names.get(a.id) || (a.kind === "root" ? "Main thread" : !idLike(a.name, a.id) ? a.name : `Task · …${String(a.id).slice(-6)}`);
 
 // entry: { kind, title, detail, hay, hay2, size, t, stratum, go }
 //   hay: the words a match in counts most (title), hay2: the context around it (agent, request, size).
@@ -24,6 +27,7 @@ export const agentName = a => (a.kind === "root" ? "Main thread" : a.name || a.i
 export function buildSearchIndex(trace) {
   const entries = [];
   const blockGroups = new Map();
+  names = readableAgentNames(trace.agents);
   for (const a of trace.agents) {
     const who = agentName(a);
     const reqOf = blockRequestLookup(a);
@@ -31,7 +35,7 @@ export function buildSearchIndex(trace) {
       const peak = a.requests.reduce((m, r) => Math.max(m, r.tokens?.context || 0), 0);
       entries.push({
         kind: "agent", title: who, detail: [a.kind === "root" ? null : a.description, a.model, `${a.requests.length} requests`, `peak ${fmtTok(peak)}`].filter(Boolean).join(" · "),
-        hay: low(`${who} ${a.name || ""} ${a.description || ""}`), hay2: low(`${a.kind} ${a.model || ""} ${a.path || ""}`),
+        hay: low(`${who} ${a.name || ""} ${a.description || ""}`), hay2: low(`${a.kind} ${a.model || ""} ${a.path || ""} ${a.id}`),
         size: peak, t: a.requests[0]?.t, stratum: "agents", go: { type: "agent", agentId: a.id }
       });
     }
@@ -63,10 +67,10 @@ export function buildSearchIndex(trace) {
     });
     for (const x of a.asks || []) {
       if (!a.blocks[x.block]) continue;
-      const human = x.from === "human" || x.from == null, title = human ? "You asked" : x.from === "harness" ? "The harness asked" : `Task for ${who}`;
+      const human = x.from === "human" || x.from == null, title = human ? "You asked" : x.from === "harness" ? "The harness asked" : who.startsWith("Task · ") ? who : `Task for ${who}`;
       entries.push({
         kind: "ask", title, detail: `${who}${x.request != null ? ` · request ${x.request + 1}` : ""} · ${fmtWhen(x.t)}`,
-        hay: "", hay2: low(`${who} ${title}`), human,
+        hay: "", hay2: low(`${who} ${title} ${a.id}`), human,
         size: a.blocks[x.block].est || 0, t: x.t, stratum: "you", askKey: `${a.id}\u0000${x.block}`,
         go: { type: "block", agentId: a.id, block: x.block }
       });
@@ -77,7 +81,7 @@ export function buildSearchIndex(trace) {
     const agents = new Set(g.list.map(x => x.agentId)).size;
     entries.push({
       kind: "block", title: g.label,
-      detail: [s?.name || g.kind, g.list.length > 1 ? `${g.list.length.toLocaleString("en-US")}×` : null, agents > 1 ? `${agents} agents` : null, g.est > 0 ? `≈ ${fmtTok(g.est)} total` : null, g.own ? "from your setup" : null, g.site].filter(Boolean).join(" · "),
+      detail: [s?.name || g.kind, g.list.length > 1 ? `${g.list.length.toLocaleString("en-US")}×` : null, agents > 1 ? `${agents} agents` : null, g.own ? "from your setup" : null, g.site].filter(Boolean).join(" · "),
       hay: low(g.label), hay2: low(`${s?.name || g.kind} ${g.kind} ${g.own ? "your setup own" : ""} ${g.site || ""}`),
       size: g.est, t: g.t, stratum: g.kind, count: g.list.length,
       go: g.list.length === 1 ? { type: "block", ...g.list[0] } : { type: "blocks", list: g.list }
@@ -86,7 +90,7 @@ export function buildSearchIndex(trace) {
   return { entries, asks: entries.filter(e => e.kind === "ask") };
 }
 
-const CLASS_WORDS = { outward: "left the machine", write: "wrote", read: "read", blocked: "blocked" };
+const CLASS_WORDS = { outward: "network-related (inferred)", write: "wrote", read: "read", blocked: "blocked" };
 
 // A network capture's searchable names (the palette's Network scope): endpoints, flags, betas, telemetry
 // events, header names, model calls and the sensitive-data rows. go: { type: "network", section, key }
@@ -105,7 +109,7 @@ export function buildNetworkEntries(capture) {
   for (const e of capture.events || []) { const x = events.get(e.name) || events.set(e.name, { n: 0, sink: e.sink, decision: e.decision, t: e.t }).get(e.name); x.n++; }
   for (const [name, n] of Object.entries(capture.telemetryCounts || {})) if (!events.has(name)) events.set(name, { n, sink: "telemetry", decision: false });
   for (const [name, x] of events) add("event", `event:${name}`, name, `${x.sink} · ${x.n.toLocaleString("en-US")}×${x.decision ? " · prompt-assembly decision" : ""}`, name, `telemetry event ${x.sink} ${x.decision ? "decision prompt assembly" : ""}`, { badge: "event", t: x.t });
-  for (const h of capture.headerNames || []) add("header", `header:${h.name}`, h.name, `${h.side} header · ${h.count.toLocaleString("en-US")}×${h.redacted ? " · value redacted" : ""}`, h.name, `header ${h.side} ${h.redacted ? "redacted credential identity" : ""}`, { badge: "header" });
+  for (const h of capture.headerNames || []) add("header", `header:${h.name}`, h.name, `${h.side} header · ${h.count.toLocaleString("en-US")}×${h.redacted ? " · value removed by the capture tool" : ""}`, h.name, `header ${h.side} ${h.redacted ? "removed capture tool" : ""}`, { badge: "header" });
   for (const c of capture.calls || []) {
     const m = c.matched && c.matched[0];
     const what = c.product === "codex" ? (c.kind === "side" ? "prewarm" : c.requestKind || "response") : c.requestClass || "main";

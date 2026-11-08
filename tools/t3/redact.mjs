@@ -1,14 +1,14 @@
-// Credential removal for T3 fleet bundles (plan Contract A). Everything the collector writes passes through one
-// Redactor, so a value found anywhere is removed everywhere, and aliases stay stable within a bundle.
-//
-// Join keys stay: thread, run, node, task, trace and span ids are hex or UUIDs and are never matched by shape alone.
-// Credentials are found by their shape in context (Bearer/DPoP headers, JWTs, sk- keys, credential-named fields and
-// URL parameters) and by exact value (T3's own secret store, auth tables, and the machine's .env/auth files).
+// Local capture defaults to original evidence, including recorded credentials. Explicit credential-only and
+// legacy modes are for deliberate exports/compatibility; collection never enables them. Original mode also
+// preserves inherited markers verbatim: it cannot recover bytes an older collector removed.
 import {createHash, createHmac} from 'node:crypto';
 import {ExactSet} from './exact.mjs';
 
 export const RULES = ['bearer', 'jwt', 'dpop', 'pairing-code', 'mcp-launch-credential', 'secret-value', 'relay-endpoint-key', 'email', 'account-id', 'client-hash', 'lan-address', 'hostname', 'message-text'];
-export const MIN_SECRET = 12;
+export const MIN_SECRET = 4;
+export const CONTENT_POLICY = Object.freeze({version: 1, mode: 'original'});
+const IDENTITY_RULE = /^(?:email|account-id|client-hash|lan-address|hostname|message-text)$/;
+export const isCredentialKey = key => CREDENTIAL_KEY.test(String(key).split('.').pop()) || /(?:^|_)(?:API_KEY|APIKEY|ACCESS_TOKEN|REFRESH_TOKEN|AUTH_TOKEN|PRIVATE_KEY|CLIENT_SECRET)$/i.test(String(key));
 // Join keys are never added to the exact list, whatever field they were found in: removing one everywhere would
 // cut thread, environment, session or span joins across the whole bundle.
 export const JOIN_KEY = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|(?:thread|run|node|provider-thread|provider-session|mcp|command)[:-][^\s]*)$/i;
@@ -23,7 +23,8 @@ const ruleForKey = key => /dpop/i.test(key) ? 'dpop' : /pairing/i.test(key) ? 'p
 // URL parameters that carry credentials.
 // A quote also opens a parameter: span attributes keep a bare query ("url.query":"wsTicket=…"). Any *ticket / *token
 // name counts, so camelCase names such as T3's desktop wsTicket are covered.
-const URL_PARAM = /([?&#"'](?:access_token|token|auth|code|pairing|pairing_code|pairingCode|pairingToken|key|api_key|apikey|secret|credential|sig|signature|dpop|jwt|session|ticket|[a-z_]*ticket|[a-z_]*token))=([^&#\s"'\\]{6,})/gi;
+const LEGACY_URL_PARAM = /([?&#"'](?:access_token|token|auth|code|pairing|pairing_code|pairingCode|pairingToken|key|api_key|apikey|secret|credential|sig|signature|dpop|jwt|session|ticket|[a-z_]*ticket|[a-z_]*token))=([^&#\s"'\\]{6,})/gi;
+const URL_PARAM = /([?&#"'](?:access_token|token|auth|pairing|pairing_code|pairingCode|pairingToken|api_key|apikey|secret|credential|sig|signature|dpop|jwt|ticket|[a-z_]*ticket|[a-z_]*token))=([^&#\s"'\\]{4,})/gi;
 const ruleForParam = name => /pair/i.test(name) ? 'pairing-code' : /dpop/i.test(name) ? 'dpop' : /jwt|token|auth|session|ticket/i.test(name) ? 'bearer' : 'secret-value';
 // T3's WebSocket URL names the connecting client by stable hashes (clientOwner, clientDevice; ws.ts): aliased, so
 // one client's connections still join within the bundle.
@@ -59,7 +60,11 @@ const CLERK_ID = /\b(?:user|org|sess|client)_[A-Za-z0-9]{24,}\b/g;
 
 export class Redactor {
  // aliasKey: Buffer for the per-bundle HMAC (emails, account ids). values: Map value -> rule (exact, removed everywhere).
- constructor({aliasKey, values = new Map()} = {}) {
+ constructor({aliasKey, values = new Map(), contentPolicy = CONTENT_POLICY.mode} = {}) {
+  if (![CONTENT_POLICY.mode, 'credentials-only', 'legacy-private'].includes(contentPolicy)) throw new Error('Unknown content policy');
+  this.contentPolicy = contentPolicy;
+  this.original = contentPolicy === 'original';
+  this.legacy = contentPolicy === 'legacy-private';
   if (!aliasKey || aliasKey.length < 16) throw new Error('Redactor needs a per-bundle alias key');
   this.aliasKey = aliasKey;
   this.counts = Object.fromEntries(RULES.map(r => [r, 0]));
@@ -69,11 +74,11 @@ export class Redactor {
   for (const [v, rule] of values) this.addValue(v, rule);
  }
  addValue(value, rule = 'secret-value') {
-  if (typeof value !== 'string') return;
+  if (this.original || typeof value !== 'string') return;
   const v = value.trim();
-  if (v.length < MIN_SECRET || this.values.has(v) || JOIN_KEY.test(v)) return;
+  if (v.length < MIN_SECRET || this.values.has(v) || (this.legacy && JOIN_KEY.test(v)) || (!this.legacy && IDENTITY_RULE.test(rule))) return;
   // An address found in a secret file is still an email: aliased, so it joins, rather than masked as a token.
-  if (/^[^\s@"]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v)) rule = 'email';
+  if (this.legacy && /^[^\s@"]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v)) rule = 'email';
   this.values.set(v, rule);
   this._exact = null;
  }
@@ -82,10 +87,11 @@ export class Redactor {
  aliasOf(value) {return Redactor.hmac(this.aliasKey, value);}
  static hmac(key, value) {return createHmac('sha256', key).update(value).digest('hex').slice(0, 10);}
  lanAlias(ip) {this.count('lan-address'); return `<lan-${this.alias('lan:' + ip)}>`;}
- hostAlias(host) {this.count('hostname'); return `<lan-${this.alias('host:' + String(host).toLowerCase())}>`;}
+ hostAlias(host) {if (!this.legacy) return String(host); this.count('hostname'); return `<lan-${this.alias('host:' + String(host).toLowerCase())}>`;}
  // Aliases written by another bundle's key, re-keyed to this one: an input this run also aliased maps to the
  // same alias it has here; any other gets a stable alias of its own (it cannot join, and says so by kind only).
  rekey(text, oldKey) {
+  if (this.original) return text;
   if (!oldKey || oldKey.equals(this.aliasKey) || typeof text !== 'string') return text;
   if (!this._rekey || !this._rekey.key.equals(oldKey) || this._rekey.size !== this.aliased.size) {
    const map = new Map();
@@ -104,20 +110,22 @@ export class Redactor {
   return this._exact;
  }
  count(rule, n = 1) {this.counts[rule] = (this.counts[rule] || 0) + n;}
- note(value, rule) {if (typeof value === 'string' && value.length >= MIN_SECRET && !this.values.has(value)) this.found.set(value, rule);}
+ note(value, rule) {if (this.original) return; if (typeof value === 'string' && value.length >= MIN_SECRET && !this.values.has(value)) this.found.set(value, rule);}
  // Redact one string (a log line, an attribute value, a whole JSON line).
  string(s) {
-  if (typeof s !== 'string' || s.length < 6) return s;
+  if (this.original) return s;
+  if (typeof s !== 'string' || s.length < MIN_SECRET) return s;
   const exact = this._exactRe();
   if (exact) s = exact.replace(s, m => this._exactMark(m));
   for (const {re, fn} of SHAPES) s = s.replace(re, (...args) => {const r = fn(...args); this.count(r.rule); this.note(r.value, r.rule); return r.out;});
-  s = s.replace(URL_PARAM, (m, name, value) => {
+  s = s.replace(this.legacy ? LEGACY_URL_PARAM : URL_PARAM, (m, name, value) => {
    if (value.startsWith('[redacted')) return m;
    const rule = ruleForParam(name.slice(1)); this.count(rule); this.note(value, rule); return `${name}=${marker(rule)}`;
   });
   s = s.replace(ENV_ASSIGN, (m, name, value) => {const rule = /DPOP/.test(name) ? 'dpop' : /PAIR/.test(name) ? 'pairing-code' : /MCP|LAUNCH/.test(name) ? 'mcp-launch-credential' : /TOKEN|AUTH/.test(name) ? 'bearer' : 'secret-value'; this.count(rule); this.note(value, rule); return `${name}=${marker(rule)}`;});
   s = this.keyed(s);
   s = s.replace(RELAY, (m, prefix, key) => {this.count('relay-endpoint-key'); return `${prefix}-${Redactor.relayAlias(key)}.t3coderelay.com`;});
+  if (!this.legacy) return s;
   s = s.replace(EMAIL, m => {if (EMAIL_ALLOW.test(m)) return m; this.count('email'); return `[redacted:email:${this.alias(m.toLowerCase())}]`;});
   s = s.replace(CLERK_ID, m => {this.count('account-id'); return `[redacted:account-id:${this.alias(m)}]`;});
   s = s.replace(CLIENT_HASH, (m, name, value) => {if (value.startsWith('[redacted')) return m; this.count('client-hash'); return `${name}=[redacted:client-hash:${this.alias(value)}]`;});
@@ -126,24 +134,26 @@ export class Redactor {
  }
  // "key": "value" pairs inside raw JSON text, plain or escaped once (JSON inside a JSON string).
  keyed(s) {
+  if (this.original) return s;
   if (!/(?:token|secret|password|authorization|cookie|credential|api.?key|dpop|pairing|account|user.?id|org|subject|e-?mail)/i.test(s)) return s;
   const pair = /(\\?")([A-Za-z0-9_.-]{2,40})\1(\s*:\s*)\1((?:[^"\\]|\\(?!"))*?)\1/g;
   return s.replace(pair, (m, q, key, colon, value) => {
    if (value.length < 4 || value.startsWith('[redacted')) return m;
    const bare = key.split('.').pop();
-   if (CREDENTIAL_KEY.test(bare)) {const rule = ruleForKey(bare); this.count(rule); this.note(value, rule); return `${q}${key}${q}${colon}${q}${marker(rule)}${q}`;}
-   if (EMAIL_KEY.test(bare) && value.includes('@')) {this.count('email'); return `${q}${key}${q}${colon}${q}[redacted:email:${this.alias(value.toLowerCase())}]${q}`;}
-   if (ACCOUNT_KEY.test(bare) && value.length >= 6 && !/^(?:null|user|agent|system|assistant|unknown)$/i.test(value)) {this.count('account-id'); return `${q}${key}${q}${colon}${q}[redacted:account-id:${this.alias(value)}]${q}`;}
+   if (isCredentialKey(bare)) {const rule = ruleForKey(bare); this.count(rule); this.note(value, rule); return `${q}${key}${q}${colon}${q}${marker(rule)}${q}`;}
+   if (this.legacy && EMAIL_KEY.test(bare) && value.includes('@')) {this.count('email'); return `${q}${key}${q}${colon}${q}[redacted:email:${this.alias(value.toLowerCase())}]${q}`;}
+   if (this.legacy && ACCOUNT_KEY.test(bare) && value.length >= 6 && !/^(?:null|user|agent|system|assistant|unknown)$/i.test(value)) {this.count('account-id'); return `${q}${key}${q}${colon}${q}[redacted:account-id:${this.alias(value)}]${q}`;}
    return m;
   });
  }
  // Redact a parsed JSON value: credential-named fields by key, every string by shape and value.
  value(v, key = '') {
+  if (this.original) return v;
   if (typeof v === 'string') {
    const bare = String(key).split('.').pop();
-   if (CREDENTIAL_KEY.test(bare) && v.length >= 4 && !v.startsWith('[redacted')) {const rule = ruleForKey(bare); this.count(rule); this.note(v, rule); return marker(rule);}
-   if (EMAIL_KEY.test(bare) && v.includes('@')) {this.count('email'); return `[redacted:email:${this.alias(v.toLowerCase())}]`;}
-   if (ACCOUNT_KEY.test(bare) && v.length >= 6 && !/^(?:null|user|agent|system|assistant|unknown)$/i.test(v)) {this.count('account-id'); return `[redacted:account-id:${this.alias(v)}]`;}
+   if (isCredentialKey(bare) && v.length >= 4 && !v.startsWith('[redacted')) {const rule = ruleForKey(bare); this.count(rule); this.note(v, rule); return marker(rule);}
+   if (this.legacy && EMAIL_KEY.test(bare) && v.includes('@')) {this.count('email'); return `[redacted:email:${this.alias(v.toLowerCase())}]`;}
+   if (this.legacy && ACCOUNT_KEY.test(bare) && v.length >= 6 && !/^(?:null|user|agent|system|assistant|unknown)$/i.test(v)) {this.count('account-id'); return `[redacted:account-id:${this.alias(v)}]`;}
    return this.string(v);
   }
   if (Array.isArray(v)) return v.map(x => this.value(x, key));
@@ -153,6 +163,7 @@ export class Redactor {
  // Values found by shape this run but not yet in the exact list: add them, so a final pass over the buffered
  // output removes them wherever else they appear. Returns how many were new.
  promoteFound() {
+  if (this.original) {this.found.clear(); return 0;}
   let n = 0;
   for (const [v, rule] of this.found) if (!this.values.has(v)) {this.addValue(v, rule); n++;}
   this.found.clear();
@@ -160,6 +171,7 @@ export class Redactor {
  }
  // The everywhere-pass: exact values only, no shape rules (already applied).
  exactOnly(s) {
+  if (this.original) return s;
   const exact = this._exactRe();
   if (!exact || typeof s !== 'string') return s;
   return exact.replace(s, m => this._exactMark(m));
@@ -182,13 +194,13 @@ export function familyKey(partsKey, rootEnvironmentId, rootThreadId) {
 export const keyId = key => createHash('sha256').update(key).digest('hex').slice(0, 12);
 
 export class FamilyRedactor extends Redactor {
- constructor({familyKey: fk, partsKey, values} = {}) {
+ constructor({familyKey: fk, partsKey, values, contentPolicy} = {}) {
   if (!partsKey || partsKey.length < 16) throw new Error('A family redactor needs the fleet parts key');
-  super({aliasKey: fk, values});
+  super({aliasKey: fk, values, contentPolicy});
   this.partsKey = partsKey;
  }
  partAlias(a) {return Redactor.hmac(this.aliasKey, `part:${a}`);}
  aliasOf(value) {return this.partAlias(Redactor.hmac(this.partsKey, value));}
  // A part's alias markers (written with the parts key), mapped to this family's.
- fromParts(text) {return typeof text === 'string' ? text.replace(ALIAS_MARK, remark(a => this.partAlias(a))) : text;}
+ fromParts(text) {return !this.original && typeof text === 'string' ? text.replace(ALIAS_MARK, remark(a => this.partAlias(a))) : text;}
 }

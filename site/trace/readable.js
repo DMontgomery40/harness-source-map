@@ -68,19 +68,53 @@ export function repairCut(t) {
   return null;
 }
 
-// Frames or server-sent events as Trace writes them (network/capture.js): blocks split by a blank line, each a
-// heading line ("→ sent 12:00:01.250", "event: …") and a JSON body ("data: " before it for an event).
-export function segments(t) {
+// Frames or server-sent events, as records ([{ head, value } | { head, text }]), or null when the text is neither or
+// is mostly not JSON. Only the layout is derived: "As stored" keeps the text itself.
+//   frames, as network/capture.js writes them: a heading line ("→ sent 12:00:01.250 · 1,234 characters") and then
+//     exactly that many characters of the frame's data as recorded (blank lines inside it and all), frames apart by a
+//     blank line; a heading without its length (an older reader's) splits at blank lines
+//   an event stream, as recorded: events apart by a blank line (any line ending); an event's data lines are its body
+//     (joined by line breaks, as the stream means them) and its other lines (event, id, retry, comments) its heading
+const FRAME_HEAD = /^(?:→ sent|← received)\b[^\n]* · ([\d,]+) characters?$/;
+const SSE_FIRST = /^(?:(?:event|data|id|retry)(?::|$)|:)/;
+const record = (head, body) => { const j = /^\s*[[{]/.test(body) && parseJson(body); return j ? { head, value: j.value } : { head, text: body }; };
+function frameRecords(t) {
+  const items = [];
+  for (let at = 0; at < t.length;) {
+    const nl = t.indexOf("\n", at), head = nl < 0 ? t.slice(at) : t.slice(at, nl), m = FRAME_HEAD.exec(head);
+    if (!m) return null;
+    const from = nl < 0 ? t.length : nl + 1, to = Math.min(t.length, from + Number(m[1].replace(/,/g, "")));
+    items.push(record(head, t.slice(from, to)));
+    if (to < t.length && !t.startsWith("\n\n", to)) return null;
+    at = to + 2;
+  }
+  return items.length ? items : null;
+}
+function streamRecords(t) {
+  const lines = t.split(/\r\n|\r|\n/), first = lines.find((l) => l !== "");
+  if (first == null || !SSE_FIRST.test(first)) return null;
+  const items = [];
+  let head = [], data = null;
+  const flush = () => { if (head.length || data) items.push(record(head.join(" · "), (data || []).join("\n"))); head = []; data = null; };
+  for (const l of lines) {
+    if (l === "") { flush(); continue; }
+    const k = l.indexOf(":");
+    if ((k < 0 ? l : l.slice(0, k)) === "data") (data ||= []).push(k < 0 ? "" : l.slice(k + 1).replace(/^ /, ""));
+    else head.push(l);
+  }
+  flush();
+  return items.length ? items : null;
+}
+function blockRecords(t) {
   const blocks = t.split(/\n{2,}/).filter((b) => b.trim());
   if (!blocks.length || !/^(?:→ sent|← received|event:)/.test(blocks[0])) return null;
-  let json = 0;
-  const items = blocks.map((b) => {
-    const nl = b.indexOf("\n"), head = nl < 0 ? b : b.slice(0, nl), body = nl < 0 ? "" : b.slice(nl + 1).replace(/^data: ?/, "");
-    const j = /^\s*[[{]/.test(body) && parseJson(body);
-    if (j) json++;
-    return j ? { head, value: j.value } : { head, text: body };
-  });
-  return json >= Math.max(1, items.length * 0.5) ? items : null;
+  return blocks.map((b) => { const nl = b.indexOf("\n"); return record(nl < 0 ? b : b.slice(0, nl), nl < 0 ? "" : b.slice(nl + 1).replace(/^data: ?/, "")); });
+}
+const mostlyJson = (items) => (items && items.filter((it) => "value" in it).length >= Math.max(1, items.length * 0.5) ? items : null);
+export function segments(t) {
+  const frames = frameRecords(t);
+  if (frames) return mostlyJson(frames);
+  return mostlyJson(streamRecords(t)) || mostlyJson(blockRecords(t));
 }
 
 // ---------- tags written on one line ----------
@@ -471,7 +505,7 @@ export function readableText(text, path = "", key = "") {
     node = el("div", {}, readableValue(r.value), el("p", { class: "meta rd-cut", text: "The text was cut inside the entry below; up to there it is shown above, and from there as stored:" }), longText(r.rest));
   }
   else if (kind === "jsonl") node = recordList(t.split("\n").filter((l) => l.trim()).map((l) => { const j = /^\s*[[{]/.test(l) && parseJson(l); return j ? { value: j.value } : { text: l }; }), { key });
-  else if (kind === "segments") node = recordList(segments(t.trim()), { key });
+  else if (kind === "segments") node = recordList(segments(t) || segments(t.trim()), { key });
   else if (kind === "log") node = logLines(t);
   else if (kind === "tags") node = longText(indentTags(t.trim()), { laid: true });
   else if (kind === "brackets") node = longText(indentDebug(t.trim()), { laid: true });

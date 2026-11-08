@@ -68,10 +68,9 @@ function gitWorktrees(repo) {
 const born = path => {try {const st = statSync(path); return (st.birthtimeMs > 0 ? st.birthtime : st.ctime).toISOString();} catch {return null;}};
 
 // worktrees.json: each family thread's worktree (T3's worktreePath and branch) and every worktree git lists for the
-// family's projects, joined on the path. Paths are aliased (per-bundle HMAC); the folder name stays, it is T3's own
-// short id. A git worktree no thread here owns is the orphaned-worktree case.
+// family's projects, joined on the original recorded path. A git worktree no thread here owns is the orphaned-worktree case.
 export function worktreeFacts(rows, redactor) {
- const pathAlias = p => `<path-${redactor.alias('path:' + resolve(p))}>`;
+ const pathAlias = p => redactor.legacy ? `<path-${redactor.alias('path:' + resolve(p))}>` : p;
  const threads = [];
  for (const t of rows.threads) {
   const p = t.payload_json || {};

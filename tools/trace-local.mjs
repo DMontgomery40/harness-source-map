@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Loopback-only Trace resolver. No uploads, arbitrary paths, or directory-listing API.
+// Loopback-only Trace resolver and explicit AI provider bridge. No arbitrary paths or directory-listing API.
 import {largeHarEntries, captureEntryMatches} from './trace-har.mjs';
 import {readFileSync} from 'node:fs';
 import {createServer} from 'node:http';
@@ -16,12 +16,14 @@ import {sourcesReport, readSource} from './sources/index.mjs';
 import {createDesktopRecorder} from './capture/desktop-capture.mjs';
 import {fileCapture} from './capture/file-capture.mjs';
 import {sessionContext} from './sources/context.mjs';
-import {findT3Bundle, bundleFileList} from './t3/bundles.mjs';
+import {findT3Bundle, bundleFileList, threadEnvironments, ambiguousThread} from './t3/bundles.mjs';
 import {ALIAS_KEY_FILE, partsKeyFile} from './t3/bundle.mjs';
+import {readBuffer, resolveBundleFile} from './t3/gz.mjs';
 import {assembleFamily, readParts, storesHold, incomingDir, fleetBuilds, t3Root} from './t3/assemble.mjs';
 import {mainRepo} from './t3/collect.mjs';
 import {openReadOnly} from './t3/sqlite.mjs';
 import {existsSync} from 'node:fs';
+import {createTraceAI} from './trace-ai.mjs';
 
 export const PORT = 8766;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -33,11 +35,17 @@ const defaultRoots = {cursor:join(homedir(),'.cursor'),codex:join(homedir(),'.co
  'claude-desktop':join(homedir(),'Library','Application Support','Claude','local-agent-mode-sessions')};
 
 async function fileEntry(root,path){
- const size=(await lstat(path)).size;
+ const signature=st=>`${st.dev}:${st.ino}:${st.size}:${st.mtimeNs}:${st.ctimeNs}`;
+ const initial=await lstat(path,{bigint:true}),size=Number(initial.size),version=signature(initial);
+ const changed=()=>Object.assign(new Error('Session file changed; reopen the session'),{code:'TRACE_SOURCE_CHANGED'});
  return {path,source:{name:path,size,async slice(a,b){
   if(!within(root,await realpath(path)))throw new Error('Outside session root');
-  const fh=await open(path,'r');try{const bytes=new Uint8Array(Math.max(0,Math.min(b,size)-a));let n=0;
-   while(n<bytes.length){const {bytesRead}=await fh.read(bytes,n,bytes.length-n,a+n);if(!bytesRead)break;n+=bytesRead;}return bytes.subarray(0,n);
+  const fh=await open(path,'r');try{
+   if(signature(await fh.stat({bigint:true}))!==version)throw changed();
+   const bytes=new Uint8Array(Math.max(0,Math.min(b,size)-a));let n=0;
+   while(n<bytes.length){const {bytesRead}=await fh.read(bytes,n,bytes.length-n,a+n);if(!bytesRead)break;n+=bytesRead;}
+   if(n!==bytes.length||signature(await fh.stat({bigint:true}))!==version)throw changed();
+   return bytes;
   }finally{await fh.close();}
  }}};
 }
@@ -107,22 +115,33 @@ const defaultT3Roots=[...new Set([...configuredPaths('t3Bundles'),fileURLToPath(
 // progress readable while it runs. A thread is T3's when this machine's T3 database or a harvested part holds it.
 export function createAssembler({repo=defaultT3Repo,t3Home=join(homedir(),'.t3'),assemble=assembleFamily,enabled=null}={}){
  const jobs=new Map();
+ // Heavy family builds share one resolver budget. A queued member of the same family reuses the completed build.
+ let assemblyTail=Promise.resolve();
  let partsAt=0,parts=[];
  const freshParts=()=>{if(Date.now()-partsAt>20000){parts=readParts(incomingDir(repo));partsAt=Date.now();}return parts;};
- async function isThread(threadId){
-  if(storesHold(freshParts(),threadId))return true;
+ async function localThread(threadId){
   let db;try{db=await openReadOnly(join(t3Home,'userdata','statev2.sqlite'));}catch{return false;}
   try{return db.all('select 1 from orchestration_v2_projection_threads where thread_id = ? limit 1',threadId).length>0;}catch{return false;}finally{db.close();}
+ }
+ async function isThread(threadId){
+  let interrupted;
+  try{if(storesHold(freshParts(),threadId))return true;}
+  catch(error){if(error.code!=='T3_RECEIVE_UPDATE')throw error;interrupted=error;}
+  // A known local thread must reach assembleFamily's publication recovery. An unreadable remote store
+  // cannot establish absence: preserve its retryable error unless local membership was positively found.
+  if(await localThread(threadId))return true;
+  if(interrupted)throw interrupted;
+  return false;
  }
  function job(threadId,environmentId){
   const key=`${environmentId||''}\u0000${threadId}`;
   let j=jobs.get(key);
   if(j && (!j.settled || Date.now()-j.settledAt<15000))return j;
   j={progress:0,settled:false};
-  j.promise=assemble({threadId,environmentId,repo,t3Home,onProgress:f=>{j.progress=Math.max(j.progress,f);}})
+  j.promise=assemblyTail.then(()=>assemble({threadId,environmentId,repo,t3Home,onProgress:f=>{j.progress=Math.max(j.progress,f);}}))
    .then(r=>{partsAt=0;if(r&&!r.reused){try{const a=JSON.parse(readFileSync(join(r.dir,'assembly.json'),'utf8'));console.log(`T3 family assembled in ${a.timings?.totalMs} ms: ${JSON.stringify(a.timings)}`);}catch{}}return r;})
    .finally(()=>{j.settled=true;j.settledAt=Date.now();setTimeout(()=>{if(jobs.get(key)===j)jobs.delete(key);},15000).unref?.();});
-  j.promise.catch(()=>{});
+  assemblyTail=j.promise.catch(()=>{});
   jobs.set(key,j);
   return j;
  }
@@ -134,18 +153,17 @@ const defaultCaptureRoots=[...configuredPaths('captureRoots'),join(homedir(),'.h
 // v2 link names its environment too: then the bundle must hold that thread on that machine.
 const ENVIRONMENT_ID=/^[A-Za-z0-9-]{1,64}$/;
 export function holdsThreadOn(bundle,environmentId,threadId){
- const want=String(threadId).toLowerCase();
- if(bundle.scope?.rootEnvironmentId===environmentId && String(bundle.scope?.rootThreadId||'').toLowerCase()===want)return true;
- return (bundle.machines||[]).some(m=>m.environmentId===environmentId && (m.threadIds||[]).some(t=>String(t).toLowerCase()===want));
+ return threadEnvironments(bundle,threadId).has(environmentId);
 }
 async function t3Family(roots,id,environmentId=null){
  let decoded=null;try{decoded=decodeURIComponent(id);}catch{/* not escaped */}
+ let mismatch=false;
  for(const candidate of new Set([id,decoded].filter(Boolean))){
-  const hit=await findT3Bundle(roots,candidate);
-  if(hit && (!environmentId || holdsThreadOn(hit.bundle,environmentId,candidate)))return hit;
-  if(hit)return {mismatch:true};
+  const hit=await findT3Bundle(roots,candidate,{environmentId});
+  if(hit?.mismatch){mismatch=true;continue;}
+  if(hit)return hit;
  }
- return null;
+ return mismatch?{mismatch:true}:null;
 }
 // A file of a bundle the resolver may serve: inside the folder it was found in (lexically and after symlinks), and
 // never the bundle's alias key.
@@ -157,7 +175,7 @@ async function servable(base,path){
 // A harness session that ran in a collected T3 family: the bundle's agent-sessions index names it by its native id.
 // Returns the family's root thread, the session's own T3 thread and machine, and the session's files in the bundle
 // (served when the session ran on another machine, so it is not in this one's folders). Any bundle version.
-async function t3Session(roots,id,builds=[]){
+export async function t3Session(roots,id,builds=[]){
  // every bundle holding the session (hand-collected, and the newest build of each assembled family); the newest
  // format wins, then the newest collection (as findT3Bundle chooses)
  let best=null;
@@ -168,16 +186,23 @@ async function t3Session(roots,id,builds=[]){
   let bundle;
   try{bundle=JSON.parse(await readFile(join(dir,'bundle.json'),'utf8'));}catch{continue;}
   if(bundle.format!=='t3-fleet-bundle')continue;
+  const bundleBase=await realpath(dir).catch(()=>null);if(!bundleBase)continue;
   for(const m of bundle.machines||[]){
-   const base=await realpath(join(dir,'machines',m.environmentId,'agent-sessions')).catch(()=>null);if(!base)continue;
-   let index;try{index=JSON.parse(await readFile(join(base,'index.json'),'utf8'));}catch{continue;}
+   const base=await realpath(join(dir,'machines',m.environmentId,'agent-sessions')).catch(()=>null);if(!base||!within(bundleBase,base))continue;
+   const selection={base:bundleBase,...(Array.isArray(m.files)?{files:m.files}:{})};
+   let index;
+   try{
+    const path=resolveBundleFile(join(base,'index.json'),selection);
+    if(!path||!await servable(base,path))continue;
+    index=JSON.parse(readBuffer(join(base,'index.json'),selection));
+   }catch{continue;}
    if(!Array.isArray(index))continue;
    const hit=index.find(e=>String(e.nativeId).toLowerCase()===id && typeof e.path==='string' && /\.jsonl$/.test(e.path) && !/\/subagents\//.test(e.path));
    if(!hit)continue;
    // the index is data from another machine: a path that leaves agent-sessions (or names the alias key) is never served
    const files=[];
    for(const e of index.filter(e=>e.threadId===hit.threadId && typeof e.path==='string' && (e.nativeId===hit.nativeId || e.path.includes(hit.nativeId)))){
-    for(const path of [resolve(base,e.path),resolve(base,e.path)+'.gz'])if(await servable(base,path)){files.push(path);break;}
+    try{const path=resolveBundleFile(resolve(base,e.path),selection);if(path&&await servable(base,path))files.push(path);}catch{/* ambiguous or missing manifest member is not served */}
    }
    const found={dir,base,product:hit.product,files,label:m.label,bundle,pointer:{rootThreadId:bundle.scope?.rootThreadId||null,threadId:hit.threadId,environmentId:m.environmentId,machine:m.label}};
    if(!best||(bundle.version||0)>(best.bundle.version||0)||((bundle.version||0)===(best.bundle.version||0)&&newest(bundle)>newest(best.bundle)))best=found;
@@ -188,6 +213,7 @@ async function t3Session(roots,id,builds=[]){
 }
 
 export function createTraceServer({roots=defaultRoots,captureRoots=roots===defaultRoots?defaultCaptureRoots:[],opencodeDatabases=roots===defaultRoots?defaultDatabases:[],t3Roots=roots===defaultRoots?defaultT3Roots:[],t3Assembler=roots===defaultRoots?createAssembler():null,t3Builds=roots===defaultRoots?()=>fleetBuilds(defaultT3Repo):()=>[],siteRoot=null,home,recorder=createDesktopRecorder({roots}),captureDirs=[...new Set([tmpdir(),'/tmp'])]}={}){
+ const ai=createTraceAI();
  const tickets=new Map();
  // The family of a session id, found the same way for the manifest and for its local sources (kept briefly,
  // so the Sources lens doesn't walk every project folder on each read).
@@ -274,6 +300,7 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
   if(url.pathname.startsWith('/v1/')){
    if(!trusted || req.headers['x-trace-request']!=='1')return reply(403,{error:'Forbidden request'});
    try{
+    if(url.pathname.startsWith('/v1/ai/'))return await ai.handle(req,res,url);
     if(url.pathname.startsWith('/v1/recording/')){
      if(url.pathname==='/v1/recording/capture'&&req.method==='GET'){try{return reply(200,await recorder.capture(url.searchParams.get('run')||''));}catch{return reply(404,{error:'Checked recording not available'});}}
      if(url.pathname==='/v1/recording/status'&&req.method==='GET')return reply(200,await recorder.status());
@@ -322,7 +349,7 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
        tickets.set(token,{entry,root:dir,expires:now+24*60*60*1000});
        files.push({path:relative(dir,path).split('\\').join('/'),kind:'t3-bundle',size:entry.source.size,url:'/v1/file/'+token});
       }
-      return reply(200,{id:id||t3id,product:'t3code',files,warnings:[...warnings,...(bundle.gaps||[])].slice(0,200)});
+      return reply(200,{id:id||t3id,product:'t3code',files,warnings:[...warnings,...(bundle.gaps||[])]});
      };
      const threadId=t3id||id;
      // The fleet harvest first: the family is assembled now from every machine's latest parts and this machine's
@@ -333,18 +360,19 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
       const settled=job.promise.then(r=>({r}),e=>({e}));
       const done=progress===true?await Promise.race([settled,new Promise(r=>setTimeout(r,1200,null))]):await settled;
       if(!done)return reply(202,{pending:true,progress:Math.round(job.progress*1000)/1000});
-      if(done.e){assemblyError=done.e;console.error('T3 family assembly failed:',done.e);}
+      if(done.e){if(done.e.code==='T3_THREAD_AMBIGUOUS')throw done.e;assemblyError=done.e;console.error('T3 family assembly failed:',done.e);}
       else if(done.r){
+       if(!environmentId && threadEnvironments(done.r.bundle,threadId).size>1)throw ambiguousThread();
        // the thread itself, or a hop to it from a machine whose part is in (its own machine has not sent it yet)
        const reached=(done.r.bundle.hops||[]).some(h=>h.to?.environmentId===environmentId&&h.to?.threadId===threadId);
        if(environmentId && !holdsThreadOn(done.r.bundle,environmentId,threadId) && !reached)return reply(404,{error:'That T3 family holds this thread, but not on the environment the link names.'});
-       return serveBundle(done.r.dir,done.r.bundle);
+       return await serveBundle(done.r.dir,done.r.bundle);
       }
      }
      // A hand-collected bundle.
      const t3=t3Roots.length?await t3Family(t3Roots,id||t3id,environmentId||null):null;
      if(t3?.mismatch)return reply(404,{error:'A collected T3 bundle holds that thread, but not on the environment the link names.'});
-     if(t3)return serveBundle(t3.dir,t3.bundle,assemblyError?[`The family could not be assembled from the fleet harvest (${String(assemblyError.message||assemblyError).slice(0,200)}); showing an earlier collection.`]:[]);
+     if(t3)return await serveBundle(t3.dir,t3.bundle,assemblyError?[`The family could not be assembled from the fleet harvest (${String(assemblyError.message||assemblyError).slice(0,200)}); showing an earlier collection.`]:[]);
      const notYet=assemblyError?`Could not assemble that T3 family: ${String(assemblyError.message||assemblyError).slice(0,300)}`
       :'No machine has reported that T3 thread yet. Every machine sends its T3 families each hour; open it again after the next harvest.';
      if(environmentId || !id)return reply(assemblyError?500:404,{error:notYet});
@@ -435,11 +463,14 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
      const bytes=await ticket.entry.source.slice(start,end);res.writeHead(200,{'Content-Type':'application/octet-stream','Content-Length':bytes.length});return res.end(bytes);
     }
     return reply(404,{error:'Not found'});
-   }catch(error){console.error('Trace resolver read failed:',error);return reply(500,{error:'Could not read the session'});}
+   }catch(error){
+    if(error?.code==='TRACE_SOURCE_CHANGED'||error?.code==='T3_THREAD_AMBIGUOUS')return reply(409,{error:error.message,code:error.code});
+    console.error('Trace resolver read failed:',error);return reply(500,{error:'Could not read the session'});
+   }
   }
   if(siteRoot && req.method==='GET'){
    try{
-    const base=resolve(siteRoot);let path=resolve(base,'.'+decodeURIComponent(url.pathname));
+    const base=await realpath(siteRoot);let path=resolve(base,'.'+decodeURIComponent(url.pathname));
     if(!within(base,path))return reply(404,{error:'Not found'});
     if((await lstat(path)).isDirectory())path=join(path,'index.html');
     if(!within(base,await realpath(path)))return reply(404,{error:'Not found'});
@@ -449,6 +480,7 @@ export function createTraceServer({roots=defaultRoots,captureRoots=roots===defau
   }
   reply(404,{error:'Not found'});
  });
+ server.once('close',()=>ai.close());
  return server;
 }
 

@@ -6,6 +6,7 @@
 import { el, fmtTok, fmtInt, STRATA, STRATUM_INDEX, STATUS, LENSES } from "./panels.js";
 import { buildSearchIndex, buildNetworkEntries, setAskText, search, parseQuery, matchRanges, SCOPES, agentName } from "./search.js";
 import { peakRequestIndex, requestCalls } from "./navigation.js";
+import { targetLabel, aroundMatch } from "./ids.js";
 import { KEYS, keyFor, isSearchChord, typingInto, inTransport, pressLeavesSpace } from "./keys.js";
 
 const $ = s => document.querySelector(s);
@@ -112,7 +113,7 @@ export function createPalette(ctx) {
     const root = trace.agents.find(a => a.kind === "root") || trace.agents[0];
     const peak = root ? peakRequestIndex(root) : -1;
     const out = [
-      ...LENSES.map((l, i) => cmd(l.q, () => ctx.selectLens(l.key), String(i + 1), "Question")),
+      ...LENSES.map((l, i) => cmd(l.name, () => ctx.selectLens(l.key), String(i + 1), `Lens · ${l.q}`)),
       root?.requests.length ? cmd("Open the main thread", () => ctx.A.focusAgent(root.id, 0), null, `${fmtInt(root.requests.length)} requests`) : null,
       peak >= 0 ? cmd("Jump to peak context", () => ctx.A.focusRequest(root.id, peak), null, `Request ${peak + 1} · ${fmtTok(root.requests[peak].tokens.context)} in context`) : null,
       ...KEYS.filter(k => k.command).map(k => cmd(k.command, () => ACTIONS[k.id](0), k.keys[0], k.detail)),
@@ -192,7 +193,9 @@ export function createPalette(ctx) {
   function emptyText(terms) {
     if (!terms.length) return "Nothing here yet.";
     if (scope === "text" && q.trim().length < MIN_TEXT) return `Type at least ${MIN_TEXT} characters to search the text.`;
+    liveFind();
     if ((scope === "all" || scope === "text") && ctx.finder() && !find.finished) return "Searching…";
+    if ((scope === "all" || scope === "text") && find.interrupted) return "The search was interrupted. Type to search again.";
     return `Nothing matches “${q.trim()}”.`;
   }
   function countFor(key, terms) {
@@ -225,11 +228,12 @@ export function createPalette(ctx) {
         out.set(kind, { items, total: all.length, all: all.slice(0, 1000), more: scope === "all" && all.length > items.length });
       }
     }
+    liveFind();
     if ((scope === "all" || scope === "text") && ctx.finder()) {
       const text = textItems();
       const sec = { items: scope === "all" ? text.slice(0, PER_SECTION.text) : text, total: text.length, all: text };
       sec.more = scope === "all" && text.length > sec.items.length;
-      sec.note = q.trim().length < MIN_TEXT ? `type ${MIN_TEXT}+ characters` : find.error ? "couldn't search the text" : !find.finished ? (find.total ? `searching · ${Math.round(find.done / find.total * 100)}%` : "searching…")
+      sec.note = q.trim().length < MIN_TEXT ? `type ${MIN_TEXT}+ characters` : find.interrupted ? "interrupted · type to search again" : find.error ? "couldn't search the text" : !find.finished ? (find.total ? `searching · ${Math.round(find.done / find.total * 100)}%` : "searching…")
         : find.truncated ? `first ${fmtInt(text.length)} matches` : text.length ? `${fmtInt(text.length)} match${text.length === 1 ? "" : "es"}` : "no matches";
       out.set("text", sec);
     }
@@ -257,7 +261,7 @@ export function createPalette(ctx) {
       if (!b) continue;
       const r = requestOf(a, h.block);
       out.push({ kind: "text", title: b.label || b.kind, snippet: h.snippet, stratum: b.kind,
-        detail: `${agentName(a)}${r != null ? ` · request ${r + 1}` : ""} · ≈ ${fmtTok(b.est)}`,
+        detail: `${agentName(a)}${r != null ? ` · request ${r + 1}` : ""}${b.est != null ? ` · ≈ ${fmtTok(b.est)}` : ""}`,
         go: { type: "block", agentId: a.id, block: h.block } });
     }
     return out;
@@ -273,7 +277,7 @@ export function createPalette(ctx) {
       el("i", { class: "pal-chip", style: color ? `background:${color}` : null, "aria-hidden": "true" }),
       el("div", { class: "pal-main" },
         el("div", { class: "pal-title" }, el("b", {}, ...marked(item.title, item.kind === "ask" ? [] : terms)),
-          item.target ? el("span", { class: item.kind === "ask" ? "pal-ask" : "pal-target" }, ...marked(item.target, terms)) : null),
+          item.target ? el("span", { class: item.kind === "ask" ? "pal-ask" : "pal-target" }, ...marked(item.kind === "call" ? callTarget(item.target, terms) : item.target, terms)) : null),
         item.snippet ? el("div", { class: "pal-snip" }, item.snippet.before, el("mark", { text: item.snippet.match }), item.snippet.after) : null,
         item.detail ? el("div", { class: "pal-meta", text: item.detail }) : null),
       badge);
@@ -378,35 +382,54 @@ export function createPalette(ctx) {
   }
 
   // ---------- full-text search in the worker ----------
-  function blankFind() { return { id: 0, q: "", hits: [], done: 0, total: 0, finished: true, truncated: false, error: null }; }
+  // A scan belongs to the worker it was sent to. When that worker is replaced (a load superseded, the parser failed)
+  // or the worker reports the scan cancelled, the scan is settled as interrupted: never "searching" for an answer
+  // that cannot come, and the same query runs again on the next try.
+  function blankFind() { return { id: 0, q: "", hits: [], done: 0, total: 0, finished: true, truncated: false, error: null, interrupted: false, worker: null }; }
+  function interrupt() {
+    if (find.finished && !find.id) return false;
+    if (!find.finished) { find = { ...find, finished: true, interrupted: true, error: "The search was interrupted." }; clearTimeout(findTimer); return true; }
+    return false;
+  }
+  // the worker in place is not the one this scan went to: it was interrupted
+  function liveFind() { if (!find.finished && find.worker && find.worker !== ctx.finder()) interrupt(); }
   function scheduleFind(delay = 220) {
     clearTimeout(findTimer);
+    liveFind();
     const text = q.trim();
     const w = ctx.finder();
     if (!w || text.length < MIN_TEXT || (scope !== "all" && scope !== "text")) { cancelFind(); if (!layer.hidden) render(); return; }
-    if (find.q === text && (find.id || !find.finished)) return;
+    if (find.q === text && find.worker === w && !find.interrupted && (find.id || !find.finished)) return;
     cancelFind();
-    find = { ...blankFind(), q: text, finished: false };
+    find = { ...blankFind(), q: text, finished: false, worker: w };
     findTimer = setTimeout(() => startFind(w, text), delay);
   }
   function startFind(w, text) {
+    if (w !== ctx.finder()) { interrupt(); if (!layer.hidden) render(); return; }
     if (listening !== w) { w.addEventListener("message", onWorker); listening = w; }
-    find = { ...blankFind(), id: ++findSeq, q: text, finished: false };
+    find = { ...blankFind(), id: ++findSeq, q: text, finished: false, worker: w };
     w.postMessage({ type: "find", q: text, id: find.id });
   }
   function cancelFind() {
     clearTimeout(findTimer);
-    if (find.id && !find.finished) ctx.finder()?.postMessage({ type: "find-cancel" });
+    if (find.id && !find.finished) find.worker?.postMessage({ type: "find-cancel" });
     find = blankFind();
   }
   function onWorker({ data }) {
     if (!data || data.id !== find.id || !String(data.type).startsWith("find-")) return;
     if (data.type === "find-hits") find.hits.push(...data.hits);
     else if (data.type === "find-progress") { find.done = data.done; find.total = data.total; }
-    else if (data.type === "find-done") { find.finished = true; find.truncated = !!data.truncated; find.error = data.error || null; }
+    else if (data.type === "find-done") {
+      find.finished = true; find.truncated = !!data.truncated; find.error = data.error || null;
+      if (data.cancelled) { find.interrupted = true; find.error = "The search was interrupted."; }
+    }
     if (!layer.hidden) renderSoon();
   }
-
+  // The app replaced or lost its worker: a scan in flight there is settled, and an open palette retries it.
+  function workerGone() {
+    if (!interrupt()) return;
+    if (!layer.hidden) { render(); scheduleFind(0); }
+  }
   // ---------- highlighting the words in the side panel after a jump ----------
   // A text box: a reader's text as stored, or its readable view.
   const TEXT_BOX = "pre, .rd-text, .rd-box";
@@ -495,7 +518,6 @@ export function createPalette(ctx) {
     zoom: d => click(d > 0 ? "#zoom-in" : "#zoom-out"),
     reset: () => click("#reset-view"),
     mode: () => click("#mode"),
-    harness: () => click("#harness-mode"),
     landmarks: () => click("#label-detail"),
     widen: () => click("#widen"),
     play: () => ctx.playback?.toggle(),
@@ -503,7 +525,9 @@ export function createPalette(ctx) {
     stepOn: () => ctx.playback?.step(1),
     slower: () => ctx.playback?.slower(),
     faster: () => ctx.playback?.faster(),
-    follow: () => ctx.playback?.follow()
+    follow: () => ctx.playback?.follow(),
+    activity: () => ctx.playback?.activity?.(),
+    explain: () => ctx.A.explain?.()
   };
   function agentsInOrder() { return trace.agents.filter(a => a.requests.length); }
   function stepAgent(d) {
@@ -554,9 +578,15 @@ export function createPalette(ctx) {
 
   function agentById(id) { return trace?.agents.find(a => a.id === id) || null; }
   renderBar();
-  return { setTrace, setNetwork, open, close, isOpen, handleKey, openHelp, walk };
+  return { setTrace, setNetwork, open, close, isOpen, handleKey, openHelp, walk, workerGone, get findState() { return { ...find, worker: !!find.worker }; } };
 }
 
+// A call's target in a result row: the part around its first match (the reason it is a result), else its compact
+// label; the call it opens shows the exact target.
+function callTarget(text, terms) {
+  const s = String(text ?? ""), hit = terms?.length ? matchRanges(s, terms)[0] : null;
+  return hit ? aroundMatch(s, hit[0], hit[1]) : targetLabel(s, 72);
+}
 function marked(text, terms) {
   const s = String(text ?? "");
   if (!terms?.length) return [s];

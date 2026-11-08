@@ -1,8 +1,7 @@
 # mitmproxy addon for tools/capture/capture.sh: records a CLI agent's HTTPS traffic for Trace.
 #
-# Only detached copies are scrubbed. The custom HAR checkpoint writer never serializes
-# live request/authentication data, and records open HTTP, SSE and WebSocket flows.
-# Credentials retain a run-local HMAC fingerprint and bounded shape descriptions.
+# Detached copies retain original observed content without mutating live traffic.
+# The HAR writer records open HTTP, SSE and WebSocket flows, including credentials.
 # HTTPS bodies and SSE bytes are retained in memory; passthrough stream callbacks
 # return the original bytes. Snapshots are atomic private files (0600).
 import asyncio
@@ -260,6 +259,7 @@ def scrub_message(message):
         message.content = clean
 
 
+# Legacy explicit-export utility; the local recorder never calls this.
 def scrub_flow(flow):
     scrub_query(flow.request)
     withheld = []
@@ -328,10 +328,9 @@ def sanitized_copy(flow, cutoff=None):
                 snapshot.response.headers.pop("content-encoding", None)
                 snapshot.response.content = decoded
             except Exception:
-                pass  # scrub_message withholds an undecodable snapshot, not the live body
+                pass  # retain the original encoded bytes when partial decompression fails
     snapshot.metadata.pop(TEE, None)
-    scrub_flow(snapshot)
-    snapshot.metadata["trace_capture_withheld_bodies"].extend(withheld)
+    snapshot.metadata["trace_capture_withheld_bodies"] = withheld
     snapshot.metadata["trace_capture_cutoff_partial"] = partial
     return snapshot
 
@@ -352,8 +351,8 @@ class TraceCapture:
         self.status = ""
         self.counts = {"flows": 0, "wsFrames": 0, "checkpointTime": None, "checkpoints": 0}
         # Completed HTTP bodies no longer change unless a later hook invalidates
-        # them. Retain their already-scrubbed HAR entries between checkpoints so
-        # large real package manifests are not decoded/redacted every second.
+        # them. Retain their completed HAR entries between checkpoints so
+        # large real package manifests are not decoded every second.
         # Open streams, errors and all WebSockets remain uncached.
         self.completed_entries = {}
 
@@ -471,7 +470,7 @@ class TraceCapture:
         self._record(flow)
 
     def websocket_message(self, flow):
-        # This hook precedes forwarding. Persist only the detached scrubbed copy.
+        # This hook precedes forwarding. Persist only the detached original-content copy.
         self._record(flow)
 
     def websocket_end(self, flow):
@@ -492,13 +491,20 @@ class TraceCapture:
         har = self.writer.make_har(snapshots)
         fresh = {}
         for entry, original, snapshot in zip(har["log"]["entries"], pending, snapshots):
+            # Partial decompression changes the detached content representation,
+            # not the headers observed on the wire (including encoding/length).
+            for direction in ("request", "response"):
+                message = getattr(original, direction)
+                if message is not None and getattr(snapshot, direction) is not None:
+                    entry[direction]["headers"] = [{"name": name, "value": value}
+                                                   for name, value in message.headers.items(multi=True)]
             entry["_traceCapture"] = {
                 "flowId": original.id,
                 "partial": snapshot.metadata.get("trace_capture_cutoff_partial", False) or
                     (snapshot.websocket.timestamp_end is None if snapshot.websocket else
                      snapshot.response is None or snapshot.response.timestamp_end is None),
                 "snapshotTime": time.time(),
-                "credentials": "redacted on detached copy",
+                "credentials": "original observed values retained",
                 "withheldBodies": snapshot.metadata.get("trace_capture_withheld_bodies", []),
             }
             fresh[original.id] = entry
@@ -523,7 +529,7 @@ class TraceCapture:
     @staticmethod
     def _write_private(path, data):
         destination = os.path.abspath(path)
-        # No raw file ever exists, including the temporary atomic-write file.
+        # Both the temporary file and published checkpoint have private permissions.
         fd, temporary = tempfile.mkstemp(prefix=".trace-capture-", dir=os.path.dirname(destination))
         try:
             os.fchmod(fd, 0o600)

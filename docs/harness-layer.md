@@ -28,7 +28,22 @@ on 2026-09-27.
 - **Hand-offs.** A click in the layer opens Trace's own reader at that block. A selection in Trace's
   sidebar drives the layer.
 
-## Status (2026-09-27): ported into `site/trace`
+## Status (2026-11-06): the separate view is removed
+- The Harness button, the `h` key, the palette command and the board view (`harness/view.js`,
+  `harness/mode.js`, `harness/harness.css`) are gone; old saved views open the landscape.
+- What the layer knew stays reachable without it: the block reader's **Where this text comes from** gives
+  the library and shipped-code location, the copy count and the agents reached, with a ‹ › stepper through
+  every copy; `c` / ⇧C walk the same copies. `site/trace/provenance.js` asks the worker for the model
+  (`harness/pieces.js`, unchanged) once per load and per native product, so a mixed T3 family uses each
+  binding's own reference and literal index.
+
+- The family network beside it (2026-11-06): span evidence is selectable by exact call, span or wait key, joins
+  require the same trace and parent span (ambiguous and route-conflict joins stay unresolved), owners are
+  environment-qualified with their basis, recorded waits are told from long calls, and the carrier is never
+  inferred. Explanations carry these records as aliases (`site/trace/fleet/{net,evidence}.js`,
+  `site/trace/ai/{packer,paths}.js`).
+
+## Status (2026-09-27): ported into `site/trace` (superseded above)
 - **The mode.** The Harness button sits beside 3D/2D, and the `h` key toggles it. Both appear in the "?"
   sheet and the command palette. Trace always opens in the 3D landscape; nothing opens straight into the layer (David,
   2026-09-27). Back and forward work.

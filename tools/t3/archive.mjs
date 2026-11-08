@@ -1,6 +1,7 @@
+import {CONTENT_POLICY} from './redact.mjs';
 // A machine's span archive for the fleet harvest. Spans belong to the machine, not to one family (a busy T3 server
 // writes about 10 MB of them every few minutes and keeps about an hour), so the harvest keeps every span once, in
-// hour segments by start time, redacted with the fleet parts key, and family parts carry none. Assembly cuts a
+// hour segments by start time, preserving original recorded rows, and family parts carry none. Assembly cuts a
 // family's window out of each machine's archive. coverage.json records, per span log, the stretches the archive
 // holds without loss: each read covers from the oldest line still in T3's log (by its span's end) to the read.
 import {readdirSync, existsSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
@@ -49,21 +50,25 @@ async function* logLines(file) {
 }
 
 // Adds every span in T3's span logs that the archive lacks. makeWriter() returns {writer, gaps}: a guarded
-// PartWriter rooted at dir (the pre-write credential scan runs on every segment). Segments older than retainDays are
+// PartWriter rooted at dir. Original rows are never content-scanned or rewritten. Segments older than retainDays are
 // removed. Returns per log: {read, added, segments written, coverage interval}.
 export async function updateArchive({logsDir, dir, redactor, makeWriter, retainDays = 14, now = Date.now()}) {
  ensureDir(join(dir, 'spans'));
  const coverage = readCoverage(dir);
+ coverage.contentPolicies ||= {};
  const report = {};
  const gaps = [];
  for (const [kind, base] of SPAN_LOGS) {
   const files = spanFiles(logsDir, base);
   if (!files.length) continue;
+  const legacyHours = new Set();
   const known = new Map(); // hour -> Set of span ids already archived
   const have = hour => {
    if (!known.has(hour)) {
     const ids = new Set();
     for (const line of readNdjsonLines(join(dir, 'spans', kind, `${hour}.ndjson`))) {const m = line.match(ID); if (m) ids.add(m[1]);}
+    const policy = coverage.contentPolicies[`spans/${kind}/${hour}.ndjson`];
+    if (ids.size && (policy?.version !== CONTENT_POLICY.version || policy?.mode !== CONTENT_POLICY.mode)) legacyHours.add(hour);
     known.set(hour, ids);
    }
    return known.get(hour);
@@ -83,7 +88,7 @@ export async function updateArchive({logsDir, dir, redactor, makeWriter, retainD
    if (span.spanId !== id) {bad++; continue;}
    ids.add(id);
    if (!added.has(hour)) added.set(hour, []);
-   added.get(hour).push(JSON.stringify(redactor.value(normalize(span))));
+   added.get(hour).push(redactor.original ? line : JSON.stringify(redactor.value(normalize(span))));
    n++;
   }
   const {writer, gaps: wgaps} = makeWriter();
@@ -91,7 +96,12 @@ export async function updateArchive({logsDir, dir, redactor, makeWriter, retainD
    const rel = `spans/${kind}/${hour}.ndjson`;
    writer.lines(rel, [...readNdjsonLines(join(dir, rel)), ...lines]);
   }
-  writer.flush();
+  const {written} = writer.flush();
+  for (const hour of added.keys()) {
+   const rel = `spans/${kind}/${hour}.ndjson`;
+   if (written.some(f => f === rel || f === rel + '.gz') && !legacyHours.has(hour)) coverage.contentPolicies[rel] = CONTENT_POLICY;
+   else delete coverage.contentPolicies[rel];
+  }
   gaps.push(...wgaps);
   const interval = liveEarliestEnd !== null ? {since: iso(Math.min(liveEarliestEnd, now)), until: iso(now), firstCollectedAt: iso(now), collectedAt: iso(now)} : null;
   coverage[kind] = unionIntervals([...(coverage[kind] || []), ...(interval ? [interval] : [])]);
@@ -129,3 +139,14 @@ export function coverageParts(dir, kind, sinceMs, untilMs, collector) {
 }
 
 export const archiveExists = dir => existsSync(join(dir, 'spans'));
+
+// Conservative per-segment certification: an old row retained in a new write remains old-policy evidence.
+export function archiveContentPolicy(dir, kind, sinceMs, untilMs) {
+ const policies = readCoverage(dir).contentPolicies || {};
+ for (const s of segments(dir, kind)) {
+  const h = hourMs(s.hour); if (h + HOUR < sinceMs || h > untilMs) continue;
+  const policy = policies[s.rel];
+  if (policy?.version !== CONTENT_POLICY.version || policy?.mode !== CONTENT_POLICY.mode) return undefined;
+ }
+ return CONTENT_POLICY;
+}

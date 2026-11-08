@@ -1,4 +1,6 @@
-// Parse a session identifier; bare UUIDs retain legacy folder hints, while the resolver checks content.
+// Parse a session identifier. A bare UUID names no product: Claude Code, Codex/ChatGPT, Cursor and T3 Code all use
+// UUIDs, and one T3 thread can run several native sessions under other ids. Only an explicit link or path names its
+// product; otherwise the local helper (or the content of the files the user picks) says which session it is.
 export const OPENCODE_ID = /^ses_[A-Za-z0-9_-]{1,160}$/;
 export const SESSION_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function sessionId(value) {
@@ -41,15 +43,23 @@ export function parsePaste(value) {
     if (mismatch !== -1) {
       const got = candidate.split("-")[mismatch].length;
       const missing = got < sizes[mismatch];
-      return { error: `Session ID is ${missing ? "incomplete" : "invalid"}: the ${names[mismatch]} group has ${got} of ${sizes[mismatch]} characters. Copy the full ID from Claude Code /status or the Codex thread link.` };
+      return { error: `That ID is ${missing ? "incomplete" : "invalid"}: its ${names[mismatch]} group has ${got} of ${sizes[mismatch]} characters. Copy the whole ID again.` };
     }
   }
   const uuid = (v.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i) || [])[0]?.toLowerCase() || null;
-  if (/^codex:\/\//i.test(v) || (uuid && uuid[14] === "7" && !/\.claude\//.test(v))) {
-    if (!uuid) return { error: "That deeplink has no thread id." };
-    const ms = parseInt(uuid.replace(/-/g, "").slice(0, 12), 16);
-    return { product: "codex", id: uuid, ms };
-  }
-  if (uuid) return { product: "claude-code", id: uuid, path: /\.jsonl$/.test(v) ? v : null };
-  return { error: "Paste an OpenCode ses_… ID, Cursor or Claude Code session UUID, Codex/ChatGPT thread link or ID, or a T3 Code thread link." };
+  if (/^codex:\/\//i.test(v)) return uuid ? { product: "codex", id: uuid, ms: uuid7Ms(uuid) } : { error: "That deeplink has no thread id." };
+  // a pasted path names its product by the store it sits in
+  if (uuid && /(?:^|[\\/])\.codex[\\/]|(?:^|[\\/])rollout-[^\\/]*\.jsonl$/i.test(v)) return { product: "codex", id: uuid, ms: uuid7Ms(uuid), path: v };
+  if (uuid && /(?:^|[\\/])\.claude[\\/]/.test(v)) return { product: "claude-code", id: uuid, path: /\.jsonl$/.test(v) ? v : null };
+  if (uuid) return { product: null, id: uuid, ms: uuid7Ms(uuid) };
+  return { error: "Paste a session or thread ID (a UUID or ses_…), a codex:// or t3-thread:// link, or a session file's path." };
+}
+
+// The creation time a UUIDv7 carries (RFC 9562: version 7, variant 10), when it is a plausible time; else null. A
+// hint for where a file may sit, never which product wrote it. Other versions carry no time: their bits are random.
+const PLAUSIBLE = [Date.UTC(2020, 0, 1), Date.UTC(2100, 0, 1)];
+export function uuid7Ms(id) {
+  if (typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) return null;
+  const ms = parseInt(id.replace(/-/g, "").slice(0, 12), 16);
+  return ms >= PLAUSIBLE[0] && ms < PLAUSIBLE[1] ? ms : null;
 }

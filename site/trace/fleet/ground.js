@@ -62,7 +62,7 @@ export function buildGround({ L, W, laneZ, subDepth, rootBack, shared, haze, cov
     const kerb = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-4, 0.06, z1), new THREE.Vector3(W + 5, 0.06, z1)]),
       new THREE.LineBasicMaterial({ color: "#8fd8c4", transparent: true, opacity: 0.5 }));
     group.add(floor, kerb);
-    const name = label(t.machine, "row quiet", new THREE.Vector3(-4.5, 0, z1 - 0.6), [1, 0.5]);
+    const name = label(t.label || t.machine, "row quiet", new THREE.Vector3(-4.5, 0, z1 - 0.6), [1, 0.5]);
     terraces.push({ ...t, z0, z1, floor, kerb, name });
   });
   const kerbOf = m => terraces.find(t => t.machine === m)?.z1;
@@ -75,7 +75,7 @@ export function buildGround({ L, W, laneZ, subDepth, rootBack, shared, haze, cov
       ribs.clear();
       const lit = [], dim = [];
       for (const w of waits) {
-        const za = kerbOf(w.from), zb = kerbOf(w.to);
+        const za = kerbOf(w.fromEnv ?? w.from), zb = kerbOf(w.toEnv ?? w.to);
         if (za == null || zb == null) continue;
         const x = L.X(w.t0) * W, dz = zb - za, peak = 2.4 + 0.16 * Math.abs(dz), list = w.family ? lit : dim, N = 18;
         for (let k = 0; k < N; k++) {
@@ -97,7 +97,7 @@ export function buildGround({ L, W, laneZ, subDepth, rootBack, shared, haze, cov
     // follow the machine filter: a terrace the filter leaves out dims with its kerb
     fade(match) {
       for (const t of terraces) {
-        const on = match({ machine: t.machine });
+        const on = match({ environmentId: t.machine });
         t.floor.material.uniforms.uFade.value = on ? 0 : 1;
         t.kerb.material.opacity = on ? 0.5 : 0.12;
       }

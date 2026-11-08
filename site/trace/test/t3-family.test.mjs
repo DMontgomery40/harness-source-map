@@ -31,8 +31,8 @@ test("a pasted T3 thread link opens that thread's family; ids are kept as writte
   assert.equal(parsePaste(delegated).id, delegated);
   assert.equal(parsePaste(`t3-thread://v2/${ENV}/${delegated}`).id, delegated);
   assert.ok(parsePaste("t3-thread://v2/x/").error);
-  // a bare UUID is still a harness session id first (the resolver also checks it against collected T3 bundles)
-  assert.equal(parsePaste(THREAD).product, "claude-code");
+  // a bare UUID names no product: a T3 thread made in T3's UI has one too, so the resolver decides
+  assert.equal(parsePaste(THREAD).product, null);
 });
 
 test("only T3 thread id shapes reach the resolver, never a path", () => {
@@ -66,10 +66,14 @@ test("the machine key cycles through every machine and back to all", () => {
 });
 
 test("the family landscape opens in 3D, and the fleet ground is never on at open, from a URL or from history", () => {
-  // start() chooses the mode from WebGL and reduced motion alone, the same for a family as for any session
-  assert.match(APP, /S\.mode = !reducedMotion && S\.webgl \? "3d" : "2d";/);
+  // start() chooses the mode from WebGL and reduced motion (and whether anything is timed to draw), the same for a
+  // family as for any session
+  assert.match(APP, /S\.mode = !reducedMotion && S\.webgl && !S\.layout\.empty \? "3d" : "2d";/);
   // every load starts on the landscape (A): start() resets the ground
-  assert.match(APP, /fleetFilter: null, familyReturn: null, ground: false \}\);/);
+  assert.match(APP, /fleetFilter: null, familyReturn: null, ground: false, activity: null, inventoryKey: null, netReader: null, netSel: null(?:, [A-Za-z]+: null)* \}\);/);
+  // no saved view or URL can reopen the removed Harness view: any other mode resolves to the landscape
+  assert.doesNotMatch(APP, /"harness"\)/);
+  assert.match(APP, /const viewMode = mode =>/);
   // no URL parameter turns it on
   assert.doesNotMatch(APP, /params\.(?:has|get)\(["'](?:ground|fleet)/);
   // no history entry or saved view carries it: it is not a view key, and a restored state is stripped of it
@@ -106,23 +110,19 @@ test("Back from anywhere leaves the fleet ground and rebuilds the ungrouped land
 });
 
 // Rule tests on obviously fake values (no session content).
-test("a family's credential rules remove keys and identity values but keep join ids", () => {
-  const FAKE = `sk-proj-${"FAKEFAKE".repeat(4)}`, THREAD = `mcp:launch:${"ab12".repeat(16)}`;
+test("a family's text reaches the page exactly as recorded: keys, passwords, emails and ids alike", () => {
+  const FAKE = `sk-proj-${"FAKEFAKE".repeat(4)}`, THREAD = `mcp:launch:${"ab12".repeat(16)}`, PASS = "Pw-FAKE-hunter2-0000";
   const bundle = { scope: { rootThreadId: THREAD, rootEnvironmentId: ENV }, hops: [] };
-  const machines = [{ id: ENV, rows: { threads: [{ thread_id: THREAD, payload_json: { userEmail: "someone@example.test", accountId: "acct-FAKE-0000-1111" } }] }, sessions: [] }];
+  const machines = [{ id: ENV, rows: { threads: [{ thread_id: THREAD, payload_json: { userEmail: "someone@example.test", password: PASS } }] }, sessions: [] }];
   const R = familyRedactor(bundle, machines);
-  const trace = { title: `deploy with ${FAKE}`, agents: [{ id: THREAD, thread: THREAD, name: "acct-FAKE-0000-1111 and someone@example.test", blocks: [{ ref: { file: 3, offset: 10, length: 5 }, label: FAKE }] }], fleet: { rootThreadId: THREAD } };
+  const trace = { title: `deploy with ${FAKE}`, agents: [{ id: THREAD, thread: THREAD, name: `someone@example.test, login ${PASS}`, blocks: [{ ref: { file: 3, offset: 10, length: 5 }, label: FAKE }] }], fleet: { rootThreadId: THREAD } };
+  const before = JSON.stringify(trace);
   R.trace(trace);
-  const text = JSON.stringify(trace);
-  assert.ok(!text.includes(FAKE) && !text.includes("someone@example.test") && !text.includes("acct-FAKE-0000-1111"));
-  assert.equal(trace.agents[0].id, THREAD);
-  assert.equal(trace.fleet.rootThreadId, THREAD);
-  assert.deepEqual(trace.agents[0].blocks[0].ref, { file: 3, offset: 10, length: 5 });
-  assert.ok(!R.str(`reader text ${FAKE}`).includes(FAKE));
-  // a search for the key itself finds nothing: the hit would confirm the guess
-  assert.deepEqual(R.hits([{ agentId: "a", block: 1, snippet: { before: "x ", match: FAKE, after: " y" } }], FAKE), []);
-  assert.equal(R.hits([{ agentId: "a", block: 1, snippet: { before: "x ", match: "deploy", after: " y" } }], "deploy").length, 1);
-  assert.deepEqual(R.hits([{ agentId: "a", block: 1, snippet: { before: "x ", match: FAKE, after: " y" } }])[0].snippet.match.includes(FAKE), false);
+  assert.equal(JSON.stringify(trace), before, "nothing is rewritten");
+  assert.equal(R.str(`reader text ${FAKE}`), `reader text ${FAKE}`);
+  // search finds a key like any other text
+  const hit = { agentId: "a", block: 1, snippet: { before: "x ", match: FAKE, after: " y" } };
+  assert.deepEqual(R.hits([hit], FAKE), [hit]);
 });
 
 test("a shared ref object is shifted once", () => {

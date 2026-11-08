@@ -1,10 +1,14 @@
 // T3 span logs (userdata/logs/server.trace.ndjson and desktop.trace.ndjson, each with up to 10 rotations).
 // Reads every rotation and keeps every span in the window (or, with the filter, the markers below plus their
-// ancestors), normalized and redacted. Spans already in a bundle are re-redacted and unioned by spanId, so a span
+// ancestors), retaining original record text. Spans already in a bundle are unioned by spanId, so a span
 // that has since rotated out of the log is not lost on a rerun.
 import {createReadStream, readdirSync, existsSync} from 'node:fs';
 import {createInterface} from 'node:readline';
 import {join} from 'node:path';
+import {readNdjsonLines} from './gz.mjs';
+const RAW_SPANS = new WeakMap();
+export function parseSpanLine(line) {const value = JSON.parse(line); if (value && typeof value === 'object') RAW_SPANS.set(value, line); return value;}
+export const spanLine = span => RAW_SPANS.get(span) ?? JSON.stringify(span);
 
 // (a) network, peer, RPC, MCP, relay, Connect, analytics, GitHub, provider-protocol, orchestration-dispatch and
 // environment-RPC markers, by span name.
@@ -58,9 +62,7 @@ export function segmentsOf(endTimes, sinceMs, untilMs) {
 }
 
 export function normalize(span) {
- const out = {};
- for (const k of KEEP_FIELDS) if (span[k] !== undefined) out[k] = span[k];
- return out;
+ return {...span}; // Recorded fields are evidence; derived indexes choose their own subset.
 }
 
 async function* lines(file) {
@@ -93,7 +95,7 @@ export async function collectSpans({files, sinceMs, untilMs, familyIds = [], all
   const inWindow = t === null || ((sinceMs == null || t >= sinceMs) && (untilMs == null || t <= untilMs));
   if (byId.has(span.spanId)) return; // the live copy (read first) wins; identical records repeat across a merge
   const hit = all ? inWindow : inWindow && (isMarker(span) || (needles.length && needles.some(n => raw.includes(n))));
-  byId.set(span.spanId, {span: normalize(span), keep: hit, inWindow, origin});
+  byId.set(span.spanId, {span: normalize(span), raw, keep: hit, inWindow, origin});
   if (inWindow) stats.inWindow++;
   if (origin) stats.fromBundle++;
  };
@@ -104,7 +106,7 @@ export async function collectSpans({files, sinceMs, untilMs, familyIds = [], all
    consider(span, line, null);
   }
  }
- for (const {spans, aliasKey} of existing) for (const span of spans) consider(span, JSON.stringify(span), {aliasKey});
+ for (const {spans, aliasKey} of existing) for (const span of spans) consider(span, spanLine(span), {aliasKey});
  // (c) ancestors of kept spans, whichever file or window they are in.
  const kept = [...byId.values()].filter(e => e.keep);
  for (const e of kept) {
@@ -122,8 +124,8 @@ export async function collectSpans({files, sinceMs, untilMs, familyIds = [], all
  for (const e of byId.values()) if (e.keep && e.origin) out.push(redactor ? redactor.value(e.origin.aliasKey ? JSON.parse(redactor.rekey(JSON.stringify(e.span), e.origin.aliasKey)) : e.span) : e.span);
  out.sort((a, b) => {const x = nanos(a.startTimeUnixNano) ?? 0n, y = nanos(b.startTimeUnixNano) ?? 0n; return x < y ? -1 : x > y ? 1 : 0;});
  stats.kept = out.length;
- return {spans: out, stats};
+ return {spans: out, ...(redactor?.original ? {lines: out.map(span => byId.get(span.spanId).raw)} : {}), stats};
 }
 
 // Spans already in a bundle, whether written plain or gzip-compressed.
-export {readNdjsonAny as readNdjson} from './gz.mjs';
+export function readNdjson(file) {const out = []; for (const line of readNdjsonLines(file)) {try {out.push(parseSpanLine(line));} catch {}} return out;}

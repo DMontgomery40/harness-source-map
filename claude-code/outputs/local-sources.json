@@ -1,7 +1,11 @@
 {
   "product": "claude-code",
   "extractedVersion": "2.1.295",
-  "generated": "2026-10-11",
+  "desktopSource": {
+    "version": "4.23118.0",
+    "asarSha256": "b13d251db5d4660f818b73fb1b340dd2b68396a644bac0290ef42e33269f3c14"
+  },
+  "generated": "2026-11-06",
   "sources": [
     {
       "id": "claude-code.transcript",
@@ -2410,8 +2414,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 10220465,
-          "literal": "lb=\"claude-code-sessions\",ub=\"local_\""
+          "offset": 5358915,
+          "literal": "i6e=\"claude-code-sessions\",a6e=\"local_\""
         }
       ],
       "credential": false,
@@ -2454,8 +2458,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 10451227,
-          "literal": "uC=\"local-agent-mode-sessions\""
+          "offset": 6710810,
+          "literal": "xw=\"local-agent-mode-sessions\""
         }
       ],
       "credential": false,
@@ -2483,7 +2487,7 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 18891397,
+          "offset": 12603734,
           "literal": "let i=r.default.join(e,\"audit.jsonl\")"
         }
       ],
@@ -2505,8 +2509,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 10451227,
-          "literal": "uC=\"local-agent-mode-sessions\""
+          "offset": 6710810,
+          "literal": "xw=\"local-agent-mode-sessions\""
         }
       ],
       "credential": false,
@@ -2527,8 +2531,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 12119856,
-          "literal": "this.vmStorageDir=n.default.join(a.app.getPath(\"userData\"),\"claude-code-vm\")"
+          "offset": 8655345,
+          "literal": "this.vmStorageDir=n.default.join(u.app.getPath(\"userData\"),\"claude-code-vm\")"
         }
       ],
       "credential": false,

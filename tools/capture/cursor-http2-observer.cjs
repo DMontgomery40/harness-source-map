@@ -1,6 +1,6 @@
 // Opt-in application-layer observer for Cursor Agent's real node:http2 traffic.
 // It does not proxy, replace certificates, change routing, or decode protobuf.
-// Bodies live in memory until credential-shaped bytes are redacted for a HAR checkpoint.
+// Original observed bytes are retained within explicit per-direction capture limits.
 'use strict';
 const fs = require('node:fs');
 const http2 = require('node:http2');
@@ -23,23 +23,11 @@ try {
   throw error;
 }
 
-const SECRET_HEADER = /^(?:authorization|proxy-authorization|cookie|set-cookie|x-api-key|api-key|x-csrf-token|.*[-_]token|.*[-_]secret)$/i;
-const redactHeader = (name, value) => SECRET_HEADER.test(name) && value ? '<redacted by trace-capture: credential header>' : String(value ?? '');
-const scrub = buffer => {
-  if (!buffer?.length) return Buffer.alloc(0);
-  let value = buffer.toString('latin1');
-  value = value
-    .replace(/Bearer\s+[A-Za-z0-9._~+/=-]{20,}/gi, 'Bearer <redacted by trace-capture: bearer token>')
-    .replace(/\bsk-(?:ant-|or-v1-|proj-)?[A-Za-z0-9_-]{20,}/g, '<redacted by trace-capture: API key>')
-    .replace(/\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g, '<redacted by trace-capture: JWT>')
-    .replace(/("(?:access_token|refresh_token|id_token|api_key|apiKey|session_token|client_secret|password|code_verifier|authorization|token)"\s*:\s*")(?!<redacted)[^"\\]+/gi, '$1<redacted by trace-capture: credential field>');
-  return Buffer.from(value, 'latin1');
-};
 const headerList = headers => Object.entries(headers || {}).filter(([name]) => !name.startsWith(':')).flatMap(([name, value]) =>
-  (Array.isArray(value) ? value : [value]).map(item => ({ name, value: redactHeader(name, item) })));
-const push = (flow, side, chunk) => {
+  (Array.isArray(value) ? value : [value]).map(item => ({ name, value: String(item ?? '') })));
+const push = (flow, side, chunk, encoding) => {
   if (chunk == null) return;
-  const value = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+  const value = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, typeof encoding === 'string' ? encoding : undefined);
   const key = side === 'request' ? 'requestBytes' : 'responseBytes';
   const held = flow[key].reduce((n, part) => n + part.length, 0);
   if (held >= LIMIT) { flow[`${side}Cut`] = true; return; }
@@ -49,7 +37,7 @@ const push = (flow, side, chunk) => {
 };
 const mime = headers => String(headers?.['content-type'] || headers?.['Content-Type'] || 'application/octet-stream');
 const content = (chunks, headers) => {
-  const body = scrub(Buffer.concat(chunks));
+  const body = Buffer.concat(chunks);
   return { size: body.length, mimeType: mime(headers), text: body.toString('base64'), encoding: 'base64' };
 };
 const publicEntry = flow => {
@@ -61,7 +49,7 @@ const publicEntry = flow => {
   const url = /^https?:\/\//.test(route) ? route : `${base}${route.startsWith('/') ? '' : '/'}${route}`;
   const reqContent = content(flow.requestBytes, flow.requestHeaders);
   const resContent = content(flow.responseBytes, flow.responseHeaders);
-  const partial = !flow.requestEnded || !flow.responseEnded;
+  const partial = !flow.requestEnded || !flow.responseEnded || flow.requestCut || flow.responseCut;
   const withheldBodies = [flow.requestCut ? 'request body after 32 MiB' : null, flow.responseCut ? 'response body after 32 MiB' : null].filter(Boolean);
   return {
     startedDateTime: new Date(flow.started).toISOString(), time: Math.max(0, (flow.ended || Date.now()) - flow.started),
@@ -95,10 +83,10 @@ http2.connect = function observedConnect(authority, ...args) {
     flows.push(flow);
     checkpoint();
     const write = stream.write;
-    stream.write = function observedWrite(chunk, encoding, callback) { push(flow, 'request', chunk); return write.call(this, chunk, encoding, callback); };
+    stream.write = function observedWrite(chunk, encoding, callback) { push(flow, 'request', chunk, encoding); return write.call(this, chunk, encoding, callback); };
     const end = stream.end;
     stream.end = function observedEnd(chunk, encoding, callback) {
-      if (chunk != null && typeof chunk !== 'function') push(flow, 'request', chunk);
+      if (chunk != null && typeof chunk !== 'function') push(flow, 'request', chunk, encoding);
       flow.requestEnded = true; checkpoint();
       return end.call(this, chunk, encoding, callback);
     };

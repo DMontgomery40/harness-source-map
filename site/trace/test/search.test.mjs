@@ -194,19 +194,23 @@ test("plain keys dispatch, modified keys don't; ⌘K and Ctrl+K open search", ()
   const ev = (key, mods = {}) => ({ key, metaKey: false, ctrlKey: false, altKey: false, shiftKey: false, ...mods });
   assert.equal(keyFor(ev("/")).row.id, "search");
   assert.deepEqual([keyFor(ev("n")).arg, keyFor(ev("N", { shiftKey: true })).arg], [1, -1]);
-  assert.deepEqual([keyFor(ev("c")).row.id, keyFor(ev("c")).arg, keyFor(ev("C", { shiftKey: true })).arg], ["copies", 1, -1], "c / ⇧C: next / previous copy of the open harness text");
+  assert.deepEqual([keyFor(ev("c")).row.id, keyFor(ev("c")).arg, keyFor(ev("C", { shiftKey: true })).arg], ["copies", 1, -1], "c / ⇧C: next / previous copy of the open text");
   assert.equal(keyFor(ev("]")).arg, 1);
   assert.equal(keyFor(ev("n", { metaKey: true })), null);
   assert.equal(keyFor(ev("a", { ctrlKey: true })), null);
-  assert.equal(keyFor(ev("x")), null);
+  assert.equal(keyFor(ev("x")).row.id, "explain", "x opens an explanation of the selection (nothing is sent)");
+  // the separate Harness view is gone: h is no key, and no row, command or sheet line names it
+  assert.equal(keyFor(ev("h")), null);
+  assert.ok(!KEYS.some(k => /harness layer/i.test(`${k.label} ${k.command || ""}`)));
+  assert.equal(keyFor(ev("q")), null);
   assert.ok(isSearchChord(ev("k", { metaKey: true })));
   assert.ok(isSearchChord(ev("K", { ctrlKey: true })));
   assert.ok(!isSearchChord(ev("k")));
   assert.ok(!isSearchChord(ev("k", { metaKey: true, shiftKey: true })));
 });
 
-test("playback keys: six rows of their own, each a palette command; Space, , . < > f dispatch", () => {
-  const want = { "Play or pause": " ", "Previous request": ",", "Next request": ".", Slower: "<", Faster: ">", "Camera follows the playhead, or stops following": "f" };
+test("playback keys: rows of their own, each a palette command; Space, , . g < > f dispatch", () => {
+  const want = { "Play or pause the family's time": " ", "Previous recorded event time": ",", "Next recorded event time": ".", "Who has recorded activity at this time": "g", Slower: "<", Faster: ">", "Camera follows the time, or stops following": "f" };
   const rows = KEYS.filter(k => k.group === "Playback");
   assert.deepEqual(rows.map(r => r.label), Object.keys(want));
   assert.equal(new Set(rows.map(r => r.id)).size, rows.length, "each row has its own action, so its palette command needs no argument");
@@ -216,7 +220,7 @@ test("playback keys: six rows of their own, each a palette command; Space, , . <
     assert.equal(r.keys.length, 1);
   }
   const ev = (key, mods = {}) => ({ key, metaKey: false, ctrlKey: false, altKey: false, shiftKey: false, ...mods });
-  assert.deepEqual([" ", ",", ".", "f"].map(k => keyFor(ev(k)).row.id), ["play", "stepBack", "stepOn", "follow"]);
+  assert.deepEqual([" ", ",", ".", "g", "f"].map(k => keyFor(ev(k)).row.id), ["play", "stepBack", "stepOn", "activity", "follow"]);
   assert.deepEqual(["<", ">"].map(k => keyFor(ev(k, { shiftKey: true })).row.id), ["slower", "faster"]);
   assert.equal(keyFor(ev(" ", { metaKey: true })), null);
   // Where Space plays, and that the page keeps it when playback declines: ui.test.mjs, on the fake DOM.

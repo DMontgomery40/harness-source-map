@@ -85,7 +85,7 @@ export function createMapOverview({meshes, bounds, points, direction, layout, ag
   const marker = document.createElementNS(ns,'circle'); marker.setAttribute('r','3'); marker.classList.add('map-position');
   overlay.append(windowShape, marker);
   const wrap = document.createElement('div'); wrap.className='map-terrain-wrap'; wrap.append(canvas,overlay);
-  const caption = document.createElement('div'); caption.className='map-caption'; caption.textContent='Click terrain to go there';
+  const caption = document.createElement('div'); caption.className='map-caption'; caption.textContent='';
   const ray = new THREE.Raycaster();
   let camera, w=0, h=0, selected=null, container, stale=true, drawnContent, drawnWindow='';
   function hit(e) {
@@ -102,10 +102,10 @@ export function createMapOverview({meshes, bounds, points, direction, layout, ag
   canvas.addEventListener('click', e => { const p=hit(e); if (p) onPick(p); });
   canvas.addEventListener('pointermove', e => {
     const p=hit(e), a=p && layout.info.get(p.agentId)?.agent;
-    caption.textContent=p ? `${a?.kind==='root'?'Main thread':a?.name || 'Agent'} · request ${p.reqIdx+1}` : 'Click terrain to go there';
+    caption.textContent=p ? `${a?.kind==='root'?'Main thread':a?.name || 'Agent'} · request ${p.reqIdx+1}` : '';
     canvas.style.cursor=p?'pointer':'default';
   });
-  canvas.addEventListener('pointerleave',()=>{caption.textContent='Click terrain to go there';});
+  canvas.addEventListener('pointerleave',()=>{caption.textContent='';});
   return {
     mount(host, nextWidth, nextHeight, point) {
       if (wrap.parentNode!==host) host.replaceChildren(wrap,caption);

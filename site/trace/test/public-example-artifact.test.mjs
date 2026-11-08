@@ -3,14 +3,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
-import {loadPublicExample,EXAMPLE_ID} from '../example-loader.js';
+import {loadPublicExample} from '../example-loader.js';
 import {parseClaudeFile,buildClaudeTrace} from '../adapters/claude-code.js';
 
 test('published recorded example checksums and normal adapter preserve declared workload and joins',async()=>{
  const base=new URL('../examples/',import.meta.url);
  // Exercise the browser download/checksum/decompression path using public disk assets.
- const fetcher=async url=>{const bytes=fs.readFileSync(fileURLToPath(url));return {ok:true,json:async()=>JSON.parse(bytes),arrayBuffer:async()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.length)};};
- const {manifest,files}=await loadPublicExample({base,fetcher});
+ const fetcher=async url=>new Response(fs.readFileSync(fileURLToPath(url)));
+ const {manifest,files}=await loadPublicExample({id:'source-map-development',base,fetcher});
  const metas=new Map();
  for(const source of files.filter(source=>source.path.endsWith('.meta.json')))metas.set(source.path.replace(/\.meta\.json$/,'.jsonl'),JSON.parse(await source.file.text()));
  const logs=files.filter(source=>source.path.endsWith('.jsonl')),parsed=[],descriptors=[];
@@ -20,7 +20,7 @@ test('published recorded example checksums and normal adapter preserve declared 
   parsed.push(await parseClaudeFile({size:source.file.size,slice:async(a,b)=>new Uint8Array(await source.file.slice(a,b).arrayBuffer())},i,{meta,agentId:meta?source.path.split('/').pop().replace(/^agent-|\.jsonl$/g,''):null}));
  }
  const trace=buildClaudeTrace(parsed,descriptors),root=trace.agents.find(agent=>agent.kind==='root'),byId=new Map(trace.agents.map(agent=>[agent.id,agent]));
- assert.equal(manifest.id,EXAMPLE_ID);
+ assert.equal(manifest.id,'source-map-development');
  assert.equal(root.id,manifest.rootSessionId);
  assert.deepEqual(manifest.counts,{agents:92,subagents:90,requests:5667});
  assert.equal(trace.agents.length,manifest.counts.agents);

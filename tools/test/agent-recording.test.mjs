@@ -39,7 +39,7 @@ test('private capture API serves a checked recording without requiring a local r
  await writeFile(join(dir,'config.json'),'{}');await writeFile(join(dir,'status.json'),'{"phase":"stopped","captureReady":true}');await writeFile(join(dir,'capture.har'),'{"log":{"entries":[]}}');
  const recorder=createDesktopRecorder({directory,runtime:{inspect:async()=>({}),appRunning:async()=>false}});
  assert.deepEqual((await recorder.capture(run)).log.entries,[]);await assert.rejects(recorder.capture('../outside'));
- await writeFile(join(dir,'capture.har'),'{"log":{"entries":[{"request":{"headers":[{"name":"Authorization","value":"Basic secret"}]},"response":{}}]}}');await assert.rejects(recorder.capture(run),e=>e.code==='CREDENTIALS');
+ await writeFile(join(dir,'capture.har'),'{"log":{"entries":[{"request":{"headers":[{"name":"Authorization","value":"Basic secret"}]},"response":{}}]}}');assert.equal((await recorder.capture(run)).log.entries[0].request.headers[0].value,'Basic secret');
 });
 
 test('an explicitly scheduled restart is executed once by the external worker',async t=>{

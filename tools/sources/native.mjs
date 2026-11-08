@@ -306,9 +306,7 @@ function picked(value, type) {
   }
   return out;
 }
-// Avoid pathological regex work on unbroken binary-like values in otherwise textual files.
-const boundedText = text => text.replace(/\S{2049,}/g, '‹overlong unbroken value withheld›');
-function cleaner(ctx) { const r = createRedactor(); r.protect(ctx.ids); return text => scrubText(r.str(boundedText(text))); }
+function cleaner(ctx) { const r = createRedactor(); r.protect(ctx.ids); return text => scrubText(r.str(text)); }
 
 // Legacy User Rules is a single exact key in the shared application database. Shipped
 // desktop getPersonalContext/updatePersonalContext use APPLICATION scope (-1).
@@ -345,7 +343,7 @@ function boundaries(product) {
 export async function nativeSourcesReport(session, opts) {
   const { ctx, recorded } = await nativeContext(session, opts);
   const list = await specs(ctx);
-  const sources = [{ id: `${ctx.product}.recorded-instructions`, name: 'Recorded instruction-bearing text', join: 'exact', status: recorded.length ? 'found' : 'none-for-session', read: true, path: 'Selected native session records', count: recorded.length, unit: 'record', catalog: { what: 'Exact text retained in native records, redacted on read. A synthetic flag or instruction wrapper is evidence of recorded content, not independent proof of its origin or final provider delivery.', evidence: [] } }];
+  const sources = [{ id: `${ctx.product}.recorded-instructions`, name: 'Recorded instruction-bearing text', join: 'exact', status: recorded.length ? 'found' : 'none-for-session', read: true, path: 'Selected native session records', count: recorded.length, unit: 'record', catalog: { what: 'Exact text retained in native records, including recorded credential and identity values. A synthetic flag or instruction wrapper is evidence of recorded content, not independent proof of its origin or final provider delivery.', evidence: [] } }];
   for (const s of list) {
     const { targets, rows, ...publicSpec } = s;
     if (rows) { sources.push({ ...publicSpec, status: rows.length ? 'found' : 'absent', count: rows.length, unit: 'record' }); continue; }
@@ -390,17 +388,21 @@ export async function readNativeSource(session, sourceId, opts = {}) {
   try {
     const st = await fd.stat();
     if (!st.isFile()) return { kind: 'note', text: 'Not a regular instruction file.' };
-    if (f.pick && st.size > MAX_TEXT * 2) return { kind: 'note', text: 'Configuration exceeds the bounded parse limit; content was not read.' };
     const buf = Buffer.alloc(Math.min(st.size, MAX_TEXT * 2)), { bytesRead } = await fd.read(buf, 0, buf.length, 0);
     if (buf.includes(0)) return { kind: 'note', text: 'Binary content is not read as instructions.' };
-    let text = buf.subarray(0, bytesRead).toString('utf8');
+    let text = buf.subarray(0, bytesRead).toString('utf8'), contentBasis = 'source', parseNote;
     if (f.pick) {
-      let value; try { value = picked(configJSON(text), f.pick); } catch { return { kind: 'note', text: 'Configuration is not valid JSON/JSONC; raw contents are withheld.' }; }
-      const bound = (v, depth = 0) => depth > 30 ? '‹nested value withheld›' : typeof v === 'string' ? boundedText(v) : Array.isArray(v) ? v.map(x => bound(x, depth + 1)) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, bound(x, depth + 1)])) : v;
-      value = bound(value);
-      const redactor = createRedactor(); redactor.protect(ctx.ids); redactor.harvest(value);
-      text = JSON.stringify(redactor.json(value), null, 2);
+      if (bytesRead < st.size) parseNote = 'Configuration exceeds the bounded parse limit; showing the original source excerpt.';
+      else {
+        try {
+          // Projection chooses instruction-bearing fields, without rewriting their values. If parsing or
+          // serialization cannot complete, retain the exact selected file text instead of inventing values.
+          const projected = JSON.stringify(picked(configJSON(text), f.pick), null, 2);
+          text = projected; contentBasis = 'projection';
+        } catch { parseNote = 'Configuration could not be projected as JSON/JSONC; showing the original source text.'; }
+      }
     }
-    return { kind: 'text', path: displayFile(f.path, ctx), bytes: st.size, join: 'snapshot', text: clean(text.slice(0, MAX_TEXT)), truncated: st.size > buf.length || text.length > MAX_TEXT };
+    return { kind: 'text', path: displayFile(f.path, ctx), bytes: st.size, join: 'snapshot', text: clean(text.slice(0, MAX_TEXT)), truncated: bytesRead < st.size || text.length > MAX_TEXT, contentBasis, ...(parseNote ? { parseNote } : {}) };
+
   } finally { await fd.close(); }
 }

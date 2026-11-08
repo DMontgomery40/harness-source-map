@@ -12,7 +12,7 @@ import { buildEvents } from "./director.js";
 import { fitNearPlane, unitsPerPixel, binExponent, clusterStable } from "./render-quality.js";
 import { blockPart } from "./model.js";
 import { createGeometry, topsOf } from "./landscape-geometry.js";
-import { BASE_H, landscapeRule, crestEvents, placeLabel, modelSwitches, mapDetail, cappedMarkerHeight, terrainPlacement, playheadEnd, cutXAt, agentPlayhead } from "./scene-rules.js";
+import { BASE_H, landscapeRule, crestEvents, placeLabel, modelSwitches, mapDetail, cappedMarkerHeight, terrainPlacement, agentPlayhead } from "./scene-rules.js";
 import { shouldRefreshDetail, shouldRedrawNavigator } from "./scene-rules.js";
 import { matcher, isFiltered } from "./fleet/filter.js";
 import { findBreaks } from "./fleet/breaks.js";
@@ -546,34 +546,29 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   scene.add(world);
 
   // ---- playhead ----
-  // P is a float in the root's request space (1234.37 is 37% through request 1234); it defaults to the
-  // end, the last request complete (playheadEnd), where nothing is cut and the landscape is exactly
-  // today's. The lead agent is the root unless the view focuses a subagent ridge: its own request-space
-  // playhead is what the director follows (leadScreenX) and getPlayhead reports.
-  const rootN = L.root.requests.length;
-  const rootEnd = playheadEnd(rootN);
-  const play = { P: rootEnd, playing: false };
+  // The family clock's time cut (clock.js): compressed x on the shared axis, everything beyond it a ghost; null is
+  // no cut, the clock at the true end of the family, where the whole landscape stands. The cut is the same for every
+  // ridge: reaching the root's last request is no end, and a delegate's later work stays ahead of it. The lead agent
+  // (the root, or a focused subagent ridge) reads its own request-space playhead at the cut for leadScreenX.
+  const play = { x: null, playing: false };
   let leadAgent = L.root;
-  const playState = { uP: play.P, cutX: NO_CUT };
-  const clampP = (P) => Math.max(0, Math.min(rootEnd, P));
-  // The cut's world x (scene-rules cutXAt): no cut from the last request on.
-  const rootX = i => xOf(L.root, i);
-  const cutXOf = P => cutXAt(P, rootN, rootX, NO_CUT);
-  // The focused agent's own request-space playhead (scene-rules agentPlayhead): a subagent past its last
-  // request, or with no cut, stands at its end, the last request complete. agentView is reused, so the
-  // per-frame call allocates nothing.
+  const playState = { uP: -1, cutX: NO_CUT };
+  const cutXOf = () => (play.x == null ? NO_CUT : play.x * W);
+  // An agent's own request-space playhead at the cut (scene-rules agentPlayhead): -1 before its first request, its
+  // end once the cut has passed its last. agentView is reused, so the per-frame call allocates nothing.
   const agentView = { agent: null, isRoot: false, n: 0, xAt: i => xOf(agentView.agent, i) };
-  function agentP(agent, P, cutX) {
-    if (agentView.agent !== agent) Object.assign(agentView, { agent, isRoot: agent === L.root, n: agent.requests.length });
-    return agentPlayhead(P, cutX, agentView, NO_CUT);
+  function agentP(agent, cutX) {
+    if (!agent) return -1;
+    if (agentView.agent !== agent) Object.assign(agentView, { agent, isRoot: false, n: agent.requests.length });
+    return agentPlayhead(0, cutX, agentView, NO_CUT);
   }
   const _pa = new THREE.Vector3();
   // Uniforms for this frame: the cut, on every ridge alike.
   function updatePlayhead() {
-    const cutX = cutXOf(play.P);
+    const cutX = cutXOf();
     cutU.uCutX.value = cutX;
     playState.cutX = cutX;
-    playState.uP = agentP(leadAgent, play.P, cutX);
+    playState.uP = agentP(leadAgent, cutX);
   }
 
   const heightAt = geom.heightAtSeg; // (agent, inf, seg, x, taper): face height on one segment, -1 off it
@@ -872,7 +867,8 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   // halfway (pale). Breaks are drawn over the ridges, so they read at first glance.
   const breaks = trace.family ? findBreaks(trace) : [];
   const disposed = new Set(breaks.filter(b => b.kind === "disposed").map(b => b.agentId));
-  const crossMachine = l => !!(l.child.machine && l.parent.machine && l.child.machine !== l.parent.machine);
+  const envOf = a => a.environmentId ?? a.machine;
+  const crossMachine = l => !!(envOf(l.child) && envOf(l.parent) && envOf(l.child) !== envOf(l.parent));
   const breakList = [];
   for (const b of breaks) {
     if (b.kind === "claimed-parent") {
@@ -909,7 +905,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     if (it.void.parentRequest != null) pr = Math.min(it.void.parentRequest, p.requests.length - 1);
     else while (pr + 1 < p.requests.length && p.requests[pr + 1].t <= it.void.from) pr++;
     const launch = !!it.void.launch;
-    const link = ribbons([{ from: [xOf(p, pr), crest(p, pr), zOf(p, pr) - (p.kind === "root" ? 1.2 : 0.4)], to: [it.x0, it.top, it.z - 0.3], ...(launch ? { cut: 0.8, brk: true, floor: LAUNCH_FLOOR } : {}) }], () => 1.3, () => (launch ? LAUNCH_COLOR : p.machine !== it.void.machine ? "#9fe6ff" : "#aab8cc"));
+    const link = ribbons([{ from: [xOf(p, pr), crest(p, pr), zOf(p, pr) - (p.kind === "root" ? 1.2 : 0.4)], to: [it.x0, it.top, it.z - 0.3], ...(launch ? { cut: 0.8, brk: true, floor: LAUNCH_FLOOR } : {}) }], () => 1.3, () => (launch ? LAUNCH_COLOR : (p.environmentId ?? p.machine) !== (it.void.environmentId ?? it.void.machine) ? "#9fe6ff" : "#aab8cc"));
     link.material.uniforms.uOpacity.value = 0.22;
     it.meshes.push(link);
     world.add(link);
@@ -1124,7 +1120,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   buildL0Labels();
   // A T3 family's fleet ground (fleet/ground.js): built only for a layout grouped by machine.
   const fleetGround = L.terraces?.length ? buildGround({ L, W, laneZ, subDepth: SUB_DEPTH, rootBack, shared, haze: HAZE, cut: m => cutByX(m),
-    coverage: Object.fromEntries((trace.fleet?.machines || []).map(m => [m.label, m.parts || []])), stale: Object.fromEntries((trace.fleet?.machines || []).filter(m => m.stale).map(m => [m.label, m.stale])), label: (t, cls, pos, c) => label(t, cls, pos, c, labelGroups.l0) }) : null;
+    coverage: Object.fromEntries((trace.fleet?.machines || []).map(m => [m.id, m.parts || []])), stale: Object.fromEntries((trace.fleet?.machines || []).filter(m => m.stale).map(m => [m.id, m.stale])), label: (t, cls, pos, c) => label(t, cls, pos, c, labelGroups.l0) }) : null;
   if (fleetGround) { world.add(fleetGround.group); fleetFades.push(match => fleetGround.fade(match)); }
 
   // ---- L1: core samples of the focused agent ----
@@ -1407,7 +1403,7 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
   }
   // The leading column's top as a fraction across the free area (NaN off to the camera's side or behind).
   function leadScreenX() {
-    const cx = cutXOf(play.P), agent = leadAgent, aP = agentP(agent, play.P, cx);
+    const cx = cutXOf(), agent = leadAgent, aP = agentP(agent, cx);
     const w = host.clientWidth - insets.left - insets.right;
     if (!(aP >= 0) || !(w > 0) || cx >= NO_CUT) return NaN;
     const i = Math.max(0, Math.min(agent.requests.length - 1, Math.floor(aP)));
@@ -2039,7 +2035,9 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
     if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5) { down = null; return; }
     down = null;
     const hit = pickAt(e.clientX, e.clientY);
-    if (!hit || hit.kind === "void" || (hit.kind === "break" && !hit.agentId)) return; // their words are on hover
+    if (!hit) return;
+    // a void, or a break with no ridge of its own: its thread's entry in the known-work inventory
+    if (hit.kind === "void" || (hit.kind === "break" && !hit.agentId)) { const v = hit.void || hit.break?.void || null; onPick({ kind: "thread", threadKey: v?.threadKey || hit.break?.threadKey || null, thread: v?.thread || hit.break?.thread || null }); return; }
     if (hit.kind === "stratum") onPick({ level: 3, agentId: hit.agentId, reqIdx: hit.reqIdx, stratum: hit.stratum });
     else if (hit.kind === "core") onPick({ level: 2, agentId: hit.agentId, reqIdx: hit.reqIdx });
     else if (hit.kind === "action") onPick({ level: 2, agentId: hit.agentId, reqIdx: hit.reqIdx, intent: 'action' });
@@ -2213,23 +2211,23 @@ export function createScene(host, { trace, layout: L, reducedMotion, onHover, on
       else if (level >= 2 && lifted.visible) frameL2(350);
       dirty = 3;
     },
-    // The playhead. P: root request space, clamped to [0, end] (the end, n - 1 + COMPLETE, is the last
-    // request complete: nothing cut). playing: keep rendering every frame. Cheap and idempotent: it stores
-    // state and asks for a frame; the cut follows in frame().
-    setPlayhead({ P, playing } = {}) {
-      if (P != null && Number.isFinite(+P)) play.P = clampP(+P);
+    // The playhead: { x } the clock's compressed x, or null for no cut (the family's end); playing keeps rendering
+    // every frame. Cheap and idempotent: it stores state and asks for a frame; the cut follows in frame().
+    setPlayhead({ x, playing } = {}) {
+      if (x === null) play.x = null;
+      else if (x != null && Number.isFinite(+x)) play.x = Math.max(0, Math.min(1, +x));
       if (playing !== undefined) play.playing = !!playing;
       dirty = Math.max(dirty, 1);
     },
     getPlayhead() {
-      return { P: play.P, playing: play.playing, n: rootN, cutX: playState.cutX, agentId: leadAgent.id, agentP: playState.uP };
+      return { x: play.x, playing: play.playing, cutX: playState.cutX, agentId: leadAgent?.id ?? null, agentP: playState.uP };
     },
     stats() {
       const gl = renderer.getContext();
       const ext = gl.getExtension("WEBGL_debug_renderer_info");
       return {
         calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, gpu: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : "unknown", labels: labels.domElement.childElementCount,
-        playhead: { P: play.P, playing: play.playing, cutX: playState.cutX }, mapZoom,
+        playhead: { x: play.x, playing: play.playing, cutX: playState.cutX }, mapZoom,
         mapRefreshes, navRedraws // map refreshes and navigator terrain redraws since load
       };
     },

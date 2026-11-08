@@ -26,11 +26,11 @@ node tools/capture/trace-desktop.mjs arm --restart --renderer --open-after-call
 
 `--renderer` launches Electron with an ephemeral remote-debugging port, expected to bind only to 127.0.0.1. This unauthenticated debugging endpoint gives other local processes potential inspection/control access and stays present until that app run exits, even after recording stops. Do not enable it as a workaround for denied UI control. The collector only observes the identified packaged main renderer's network traffic and instruments future WebRTC peer connections/data channels. It performs no UI input, navigation or storage reads. No certificate-error bypass, system proxy/keychain change, launchd service or persistent debugger setting is used.
 
-The optional observer captures renderer HTTPS request metadata/bodies, WebSocket frames, WebRTC string data-channel events and bounded RTP/transport statistics. Audio/video bytes, binary frames and SDP contents are withheld. It associates calls by matching the exact SDP offer in memory to the signaling request and the returned call ID. SDP is not written to disk. Existing peer connections created before instrumentation cannot be reconstructed. A run with no voice continues successfully with `voice.observed: false`; observer failure is reported separately and does not tear down normal app-server forwarding.
+The optional observer captures renderer HTTPS request metadata/bodies, text and binary WebSocket frames, WebRTC data-channel events and bounded RTP/transport statistics. Recorded credentials, media fields and SDP are retained; RTP audio/video streams themselves are not instrumented. Binary data-channel values use base64 within the explicit capture limits. It associates calls by matching the exact SDP offer to the signaling request and the returned call ID. Existing peer connections created before instrumentation cannot be reconstructed. A run with no voice continues successfully with `voice.observed: false`; observer failure is reported separately and does not tear down normal app-server forwarding.
 
 `--open-after-call` is opt-in and requires `--renderer`. After an observed, exactly associated call closes, the worker waits 60 seconds, freezes/checks the capture, and opens the local Trace recording view. No call means no delayed action. A local resolver using this version must already be running to serve that view; its start/status/stop buttons are not needed. The capture-only view works without a local session log and labels unattributed traffic. A matching local session can still be opened in the existing landscape.
 
-Credentials are removed before renderer checkpoints and checked again before merging/filing. Combined private HARs retain optional voice evidence in `log._traceVoice`. Per-thread filing excludes another known thread's voice evidence; unknown ownership is labelled unattributed. This is application-level network evidence, not a complete OS packet capture or decoded voice media. Real installed-app debugger/target compatibility and voice capture must be verified before claiming a successful real recording.
+Original recorded values, including credentials, remain in local renderer checkpoints and filed captures. Combined private HARs retain optional voice evidence in `log._traceVoice`. Per-thread filing excludes another known thread's voice evidence; unknown ownership is labelled unattributed. This is application-level network evidence, not a complete OS packet capture or decoded voice media. Real installed-app debugger/target compatibility and voice capture must be verified before claiming a successful real recording.
 
 ## Codex/ChatGPT desktop
 
@@ -44,7 +44,7 @@ setup is needed.
    scoped to its local app-server. It uses the existing account and profile. The recorder never quits an app for you.
 4. Make your requests in the desktop UI. The recording badge and traffic counters distinguish a running recorder from
    traffic actually received. Only future traffic is captured; previous turns cannot be recovered.
-5. Choose **Stop recording**. This freezes the capture, checks credentials and files each thread's relevant subset
+5. Choose **Stop recording**. This freezes the capture, validates the HAR and files each thread's relevant subset
    beside its rollout. Reopen the session in Trace and choose **What went over the wire**. Forwarding continues until
    the desktop app naturally exits, so Stop does not break an active chat. The helper can close; its recording worker
    stays alive to forward and clean up after the app exits.
@@ -89,11 +89,10 @@ run. Sharing and share synchronization are disabled in the wrapped process, incl
 
 Each invocation creates a private folder under `~/.harness-source-map/captures/` with:
 
-- `session-<id>.json`: native session exports with credentials scrubbed before writing. Transcript,
+- `session-<id>.json`: native session exports with original recorded values. Transcript,
   reasoning, tool inputs/outputs and file content remain private. These are logged session evidence;
   they do not establish the exact provider request.
-- `capture.har`: observed requests and streams with credentials redacted before disk by the existing
-  recorder and checked again. Unknown traffic is labeled unattributed.
+- `capture.har`: observed requests and streams, including original headers, credentials and bodies. Unknown traffic is labeled unattributed.
 - `manifest.json`: installed CLI version, observed session associations, completion status and
   capture/export problems. An incomplete recording exits nonzero and remains available for inspection.
 
@@ -108,7 +107,7 @@ Open the Trace URL printed at completion and drop the session JSON and HAR toget
 starts in the existing landscape. Requests are associated from actual `x-opencode-session-id`
 headers and native JSON `sessionID` events, never from timing or the latest stored session. Parent
 headers identify observed subagent relationships. Traffic without those identifiers stays unattributed.
-Keep the entire bundle private; credentials are removed, but prompts and source content are retained.
+Keep the entire bundle private; original credentials, prompts and source content are retained.
 
 Capture development uses only real sessions and traffic. Optional verification reads private files
 supplied at runtime without tracking their contents:
@@ -124,7 +123,7 @@ These checks skip when the corresponding private evidence path is absent. The or
 exercise command help and guards without making a provider call.
 `OPENCODE_REAL_MANIFEST` plus `OPENCODE_PROJECT_DIR` checks native export against an actual recorded
 session through the installed CLI. Export collection uses a temporary stdout PTY to avoid the
-installed Bun CLI cutting off large piped JSON. Bytes remain in memory until credential scrubbing;
+installed Bun CLI cutting off large piped JSON. Export bytes are collected in memory without content redaction;
 stderr stays separate, and collection has a 256 MiB limit and 60-second timeout.
 
 ### Claude Code and Codex/ChatGPT
@@ -163,36 +162,31 @@ Needs `mitmproxy` (`brew install mitmproxy`), `python3` and `node`.
   the command's own process tree trusts it, through `NODE_EXTRA_CA_CERTS` (Claude Code) and `CODEX_CA_CERTIFICATE`
   (Codex/ChatGPT), and it reaches the proxy through `HTTPS_PROXY`. Nothing is added to the system keychain. The CA is
   deleted when the command exits. `localhost` traffic (local MCP servers) is not proxied.
-- `trace_capture.py` keeps live traffic unchanged in memory, makes a detached copy at each checkpoint and scrubs that
-  copy before any disk write. Requests still authenticate; the recording holds credential descriptions. Each credential is replaced where it
-  was by a description such as `Bearer <redacted by trace-capture: JWT | 1849 chars | ends …x9Qw | fp 04b7401a | alg RS256 |
-  claims aud,exp,…,https://api.openai.com/profile{email,email_verified,name},… | issuer https://auth.openai.com |
-  lifetime 10d | issued 2026-09-30T15:51:00Z | expires 2026-10-10T15:51:00Z>`: its kind (OAuth access token, API key,
-  npm token, JWT, cookie…), length, its last four characters (for values of 16 or more, so you can tell which key it was:
-  against the one in your config, or across captures), a fingerprint that matches the same value elsewhere in the same
-  capture (and is meaningless outside it), and for a JWT its algorithm, claim names, issuer, audience, scopes, lifetime
-  and when it was issued and expires, never claim values. Account, organization and project ids get no ending. Trace
-  shows each credential with every send, its host and header, and the server's answer, so an expired or refused key
-  stands out. Cookies keep their names and Set-Cookie attributes. It covers auth,
-  cookie and API-key headers, bearer tokens, JWTs, API keys and OAuth token fields in bodies and websocket frames, and
-  token-like URL query parameters. Server-sent event streams pass through as they arrive, so an interactive session
-  still streams, and are teed into the recording.
-- Sanitized checkpoints preserve open WebSockets and partial SSE bodies. An incomplete body that cannot be decoded
-  safely is withheld and labelled. The CLI takes a final checkpoint on exit; the desktop recorder freezes one on Stop.
+- `trace_capture.py` leaves live traffic unchanged and writes detached, private checkpoints containing
+  original observed headers, query values, bodies and WebSocket frames, including credentials. SSE streams
+  pass through as they arrive and are teed into the recording. Open WebSockets and partial SSE bodies remain
+  inspectable. Decodable compressed stream bodies are represented as decoded content in HAR; undecodable
+  bytes remain available through the HAR writer's binary representation. Stop-cutoff omissions are explicit.
+  The CLI takes a final checkpoint on exit; the desktop recorder freezes one on Stop.
   `file-capture.mjs` reads exact session metadata (`x-claude-code-session-id`, `session-id`, `thread-id`, and
   Responses `client_metadata.thread_id/session_id`) and files each root's relevant subset. Request-local metadata
   overrides a reused socket's handshake. Unscoped entries are labelled unattributed. WebSocket traffic is kept in each
   entry's `_webSocketMessages`, the field Chrome DevTools uses.
-- `check-har.mjs` then scans the file for anything that still looks like a credential and deletes the file on a hit.
+- `check-har.mjs` validates local HAR structure and private file permissions without filtering content.
+  Its explicit `--public-export` mode additionally rejects credential-bearing export candidates; local recorders
+  never enable that mode. Public example publication uses its separately reviewed publication gate.
 
 ## What stays in the file
 
-Credential values are removed; the fact that each one was sent, where, and in what form stays (see above). Everything
-else stays, including your prompts, file contents the agent read, and account details (email, account and organization
-ids, plan). Treat a capture like the session log itself and keep it private.
-Trace hides identity fields when it shows a capture, and it never uploads or stores one.
+Original observed values stay in the local file: authorization headers, API keys, passwords, cookies,
+prompts, source content, account details, SDP and observed datachannel payloads. This lets Trace expose
+leaks in recorded traffic. Local recording does not authorize publication. Keep captures private.
 
 ## Limits
+
+- Renderer records have explicit depth, array and payload limits; rejected records increment the dropped count.
+  Binary datachannel payloads use base64 with their byte count; RTP media itself is not instrumented.
+- The HTTP/2 observer retains up to 32 MiB per direction and labels truncated captures partial.
 
 - Stop retains streamed bytes observed before its cutoff. A buffered body that spans Stop is withheld and marked
   partial, because its earlier bytes cannot be separated reliably.

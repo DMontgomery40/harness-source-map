@@ -14,12 +14,11 @@ test('optional voice observer does nothing until a peer exists and preserves sen
  scope.pc.close();assert.equal(records.at(-1).state,'closed');
  vm.runInContext(`(${installVoiceObserver.toString()})('emit')`,scope);scope.dc.send('again');assert.equal(records.filter(r=>r.kind==='datachannel').length,3,'installation is idempotent');
 });
-test('renderer records scrub credentials before persistence and withhold audio and binary payloads',()=>{
- const clean=sanitizeRecord({kind:'datachannel',data:JSON.stringify({type:'event',access_token:'test-secret-token',token:'other-secret',audio:'private-audio',text:'Bearer abcdefghijklmnopqrstuvwxyz0123456789'})});
- assert.doesNotMatch(JSON.stringify(clean),/test-secret|other-secret|private-audio|abcdefghijklmnopqrstuvwxyz/);
- assert.match(clean.data,/redacted/);
- const request=sanitizeRecord({kind:'http',url:'https://chatgpt.com/wham/realtime/calls?token=very-secret',headers:[{name:'Authorization',value:'Basic opaque'},{name:'Cookie',value:'session=secret'}],sdp:'private-sdp'});
- assert.doesNotMatch(JSON.stringify(request),/very-secret|opaque|session=secret|private-sdp/);
+test('renderer records preserve credentials, media, SDP and literal JSON',()=>{
+ const record={kind:'datachannel',data:JSON.stringify({type:'event',access_token:'test-secret-token',audio:'recorded-audio',text:'Bearer synthetic-token'})};
+ assert.deepEqual(sanitizeRecord(record),record);
+ const request={kind:'http',url:'https://example.test/calls?token=synthetic',headers:[{name:'Authorization',value:'Basic opaque'},{name:'Cookie',value:'session=secret'}],sdp:'recorded-sdp'};
+ assert.deepEqual(sanitizeRecord(request),request);
 });
 test('no voice is a successful empty enrichment and exact call IDs remain observable',()=>{
  assert.deepEqual(voiceSummary([]),{observed:false,peers:0,messages:0,calls:[],closedCalls:[]});
@@ -39,7 +38,7 @@ test('renderer collector records HTTP and exact-SDP call association; no voice d
  emit({method:'Runtime.bindingCalled',params:{name:binding,executionContextId:1,payload:JSON.stringify({kind:'offer',peerId:'peer-1',time:1,sdp:'exact-offer'})}});
  emit({method:'Runtime.bindingCalled',params:{name:binding,executionContextId:1,payload:JSON.stringify({kind:'datachannel',peerId:'peer-1',time:2,direction:'receive',data:'{"type":"response.done","access_token":"secret"}'})}});
  emit({method:'Runtime.bindingCalled',params:{name:binding,executionContextId:1,payload:JSON.stringify({kind:'state',peerId:'peer-1',time:3,state:'closed'})}});
- await collector.stop();const text=await readFile(join(directory,'renderer.har'),'utf8');assert.doesNotMatch(text,/fixture-secret|exact-offer|"access_token":"secret"/);
+ await collector.stop();const text=await readFile(join(directory,'renderer.har'),'utf8');assert.match(text,/fixture-secret/);assert.match(text,/exact-offer/);
  const har=JSON.parse(text);assert.equal(har.log.entries.length,1);assert.equal(collector.status().voice.messages,1);assert.deepEqual(collector.status().voice.closedCalls,['rtc_test']);
  const association=har.log._traceVoice.find(r=>r.kind==='association');assert.equal(association.threadId,'11111111-2222-4333-8444-555555555555');
  assert.ok(commands.some(([method])=>method==='Runtime.removeBinding'));
@@ -64,3 +63,18 @@ test('observer cleanup still removes instrumentation when future-script removal 
  const commands=[];let closed=false;const connection={on:()=>{},send:async(method,params)=>{commands.push([method,params]);if(method==='Page.removeScriptToEvaluateOnNewDocument')throw new Error('fixture failure');return {identifier:'script'};},close:()=>{closed=true;}};
  const collector=await createRendererCapture({port:9876,directory,fetcher:async()=>({ok:true,json:async()=>[{id:'test',type:'page',url:'app://-/index.html',webSocketDebuggerUrl:'ws://127.0.0.1:9876/devtools/page/test'}]}),connect:async()=>connection});await collector.poll();await collector.stop();assert.ok(commands.some(([method,params])=>method==='Runtime.evaluate'&&params.expression==='globalThis.__traceVoiceObserver?.stop()'));assert.ok(commands.some(([method])=>method==='Runtime.removeBinding'));assert.equal(closed,true);
 });
+
+test('voice observer retains binary typed-array and Blob payloads and declares size limits',async()=>{
+ const {scope,records}=context();scope.btoa=btoa;scope.Blob=Blob;
+ vm.runInContext(`(${installVoiceObserver.toString()})('emit');pc=new RTCPeerConnection();dc=pc.createDataChannel('data');dc.send(new Uint8Array([0,255,65]));dc.send(new Blob([new Uint8Array([1,254,66])]));dc.send(new Uint8Array(1500001));`,scope);
+ await new Promise(resolve=>setImmediate(resolve));
+ const messages=records.filter(r=>r.kind==='datachannel');assert.deepEqual(messages.filter(r=>r.data).map(r=>[...Buffer.from(r.data,'base64')]),[[0,255,65],[1,254,66]]);assert.equal(messages.find(r=>r.bytes===1500001).incomplete,true);assert.equal(messages.find(r=>r.bytes===1500001).data,undefined);
+});
+
+test('renderer writes binary WebSocket bytes verbatim and counts oversized dropped records',async t=>{
+ const {mkdtemp,readFile,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const {join}=await import('node:path');const {createRendererCapture}=await import('../capture/renderer-capture.mjs');const directory=await mkdtemp(join(tmpdir(),'renderer-binary-'));t.after(()=>rm(directory,{recursive:true,force:true}));let emit;
+ const collector=await createRendererCapture({port:9876,directory,fetcher:async()=>({ok:true,json:async()=>[{id:'test',type:'page',url:'app://-/index.html',webSocketDebuggerUrl:'ws://127.0.0.1:9876/devtools/page/test'}]}),connect:async()=>({on:fn=>emit=fn,send:async()=>({identifier:'test'}),close:()=>{}})});await collector.poll();
+ emit({method:'Network.webSocketCreated',params:{requestId:'1',url:'wss://example.test/?token=synthetic'}});const bytes=Buffer.from([0,255,65]);emit({method:'Network.webSocketFrameReceived',params:{requestId:'1',response:{opcode:2,payloadData:bytes.toString('base64')}}});emit({method:'Network.webSocketFrameSent',params:{requestId:'1',response:{opcode:1,payloadData:'x'.repeat(2_000_001)}}});await collector.stop();const {stat}=await import('node:fs/promises');assert.equal((await stat(directory)).mode&0o777,0o700);assert.equal((await stat(join(directory,'renderer.har'))).mode&0o777,0o600);const har=JSON.parse(await readFile(join(directory,'renderer.har')));assert.deepEqual(Buffer.from(har.log.entries[0]._webSocketMessages[0].data,'base64'),bytes);assert.equal(har.log._traceRenderer.dropped,1);assert.equal(har.log.entries[0]._webSocketMessages.length,1);
+});
+
+ test('binary Blob reads have a bounded pending queue with an explicit incomplete record',()=>{const {scope,records}=context();scope.btoa=btoa;vm.runInContext(`(${installVoiceObserver.toString()})('emit');pc=new RTCPeerConnection();dc=pc.createDataChannel('data');for(let i=0;i<33;i++)dc.send({size:1,arrayBuffer:()=>new Promise(()=>{})});`,scope);const failure=records.find(r=>r.incomplete);assert.equal(failure.reason,'binary capture concurrency limit');assert.equal(failure.bytes,1);});

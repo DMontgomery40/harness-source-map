@@ -11,7 +11,8 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // imported, so --write here never rewrites make.mjs's fixtures).
 const uuid7 = (ms, n) => { const h = ms.toString(16).padStart(12, "0"); return `${h.slice(0, 8)}-${h.slice(8, 12)}-7000-8000-${String(n).padStart(12, "0")}`; };
 
-// Identity planted in the captures: none of these may reach the page.
+// Identity and credentials planted in the captures. Local Trace shows them exactly as recorded; the transit report
+// identifies and groups them (kinds, hosts, fingerprints) without changing any value.
 export const PLANTED = {
   email: "casey.synthetic@example.test",
   org: "5f0c1d2e-0000-4000-8000-00000000a0a0",

@@ -204,23 +204,13 @@ test("navigator: redraws when its content changed, at most 10 Hz while playing",
   assert.deepEqual(shouldRedrawNavigator(last, { t: 1000 + DETAIL_PLAY_MS, key: "context|80.5", playing: true }), { redraw: true, pending: false });
 });
 
-// The playhead on the landscape: the root's end is its last request complete, and a focused subagent stands at
-// its own end once the cut has reached its last request (or there is no cut).
-test("playhead rules: the end is the last request complete; a finished subagent stands at its end", async () => {
-  const { playheadEnd, cutXAt, agentPlayhead, tread } = await import("../scene-rules.js");
-  const { COMPLETE } = await import("../playback.js");
+// An agent's own playhead at the family clock's cut: -1 before its first request, mid-run between requests, and its
+// end (its last request complete) once the cut has passed its last request or there is no cut.
+test("an agent's own playhead at the cut: before, during and after its own requests", async () => {
+  const { playheadEnd, agentPlayhead, COMPLETE } = await import("../scene-rules.js");
   assert.equal(COMPLETE, 0.65);
-  // request i complete: the cut stands past the end of i's tread (the midpoint to i + 1) and short of i + 1
-  const xs = [0, 1, 1.5, 4, 4.01, 9];
-  for (let i = 0; i + 1 < xs.length; i++) {
-    const cut = cutXAt(i + COMPLETE, xs.length, k => xs[k], 1e30), [, t1] = tread(k => xs[k], 0, xs.length - 1, i, 0.3);
-    assert.ok(cut > t1 && cut < xs[i + 1], `request ${i}: cut ${cut}, tread end ${t1}, next ${xs[i + 1]}`);
-  }
   assert.deepEqual([playheadEnd(0), playheadEnd(1), playheadEnd(1701)], [0, 0.65, 1700.65]);
   const NO = 1e30, x = i => i * 2;
-  assert.equal(cutXAt(3.25, 10, x, NO), 6.5);
-  for (const P of [9, 9.65, 12]) assert.equal(cutXAt(P, 10, x, NO), NO, `no cut at P ${P}`);
-  assert.equal(cutXAt(0.5, 1, x, NO), NO, "a one-request root is never cut");
   const sub = { isRoot: false, n: 5, xAt: i => 10 + i }; // its requests at x 10 .. 14
   const cases = [
     ["the root reads the root's P", 1700.65, 3, { isRoot: true, n: 1701, xAt: x }, 1700.65],

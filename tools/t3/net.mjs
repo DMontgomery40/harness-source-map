@@ -8,9 +8,10 @@
 //   wait       a forwarded-wait chunk (PeerMcpClient.call under PeerForwarding.waitForThread), with the thread and
 //              command ids found in its OrchestratorMcpService.delegateTask subtree
 //   bin        per minute and edge kind: spans and errors
-import {fileBuffer, bufferLines} from './gz.mjs';
+import {fileLines} from './stream.mjs';
+import {resolveBundleFile} from './gz.mjs';
 import {segmentsOf} from './spans.mjs';
-import {existsSync, readFileSync} from 'node:fs';
+import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 
 // The seven edge kinds (design §7). `internal` is server work with no edge; `local` a probe of a local port that is
@@ -66,26 +67,38 @@ const msOf = v => {const n = nanos(v); return n === null ? null : Number(n / 100
 const isError = s => (s.exit && s.exit._tag && s.exit._tag !== 'Success') || Number(s.attributes?.['http.response.status_code']) >= 400;
 const iso = ms => new Date(ms).toISOString();
 
+const ATTRIBUTES = ['http.request.method', 'server.address', 'server.port', 'url.path', 'http.route', 'user_agent.original', 'client.address', 'http.response.status_code', 'orchestration_v2.thread_id', 'orchestration_v2.command_id'];
+
 // A machine's spans, light: what the derivations need, plus each span's byte range in the decompressed archive.
-export function readSpans(dir) {
- const file = ['spans.ndjson.gz', 'spans.ndjson'].map(f => join(dir, f)).find(existsSync);
- if (!file) return {spans: [], index: {}};
- const spans = [], index = {};
+export async function readSpans(dir, {receiversOnly = false, keepEnds = false, base, files} = {}) {
+ const file = resolveBundleFile(join(dir, 'spans.ndjson'), {base, files});
+ if (!file) return {spans: [], index: {}, ends: []};
+ const spans = [], index = {}, ends = [];
+ const names = new Map(), traces = new Map();
+ const intern = (map, value) => {if (!map.has(value)) map.set(value, value); return map.get(value);};
  let offset = 0;
- for (const line of bufferLines(fileBuffer(file))) {
+ for await (const line of fileLines(file)) {
   const bytes = Buffer.byteLength(line, 'utf8') + 1;
   if (line) {
    let s; try {s = JSON.parse(line);} catch {s = null;}
    if (s?.spanId) {
-    index[s.spanId] = [offset, offset + bytes - 1];
     const a = s.attributes || {};
-    spans.push({name: s.name, kind: s.kind, traceId: s.traceId, spanId: s.spanId, parentSpanId: s.parentSpanId || null, start: msOf(s.startTimeUnixNano), end: msOf(s.endTimeUnixNano), durationMs: s.durationMs ?? null, error: !!isError(s),
-     attributes: a['http.request.method'] || a['orchestration_v2.thread_id'] || a['orchestration_v2.command_id'] ? a : undefined});
+    if (keepEnds) ends.push(msOf(s.endTimeUnixNano));
+    if (!receiversOnly) index[s.spanId] = [offset, offset + bytes - 1];
+    if (!receiversOnly || (s.kind === 'server' && s.parentSpanId && a['http.request.method'])) {
+     let attributes;
+     if (a['http.request.method'] || a['orchestration_v2.thread_id'] || a['orchestration_v2.command_id']) {
+      attributes = {};
+      for (const k of ATTRIBUTES) if (Object.hasOwn(a, k)) attributes[k] = a[k];
+     }
+     spans.push({name: intern(names, s.name), kind: s.kind, traceId: intern(traces, s.traceId), spanId: s.spanId, parentSpanId: s.parentSpanId || null,
+      start: msOf(s.startTimeUnixNano), end: msOf(s.endTimeUnixNano), durationMs: s.durationMs ?? null, error: !!isError(s), attributes});
+    }
    }
   }
   offset += bytes;
  }
- return {spans, index};
+ return {spans, index, ends};
 }
 
 const readJson = f => {try {return JSON.parse(readFileSync(f, 'utf8'));} catch {return null;}};
@@ -101,33 +114,55 @@ function peerLinks(dir) {
 // A coverage part recorded without the span-end basis (a start-time live part, or a window from a v1 entry) is cut
 // to where this machine's spans actually end inside it, split at silences of GAP_MS.
 export function cutParts(parts, spans) {
- const ends = spans.map(s => s.end);
+ return cutPartsAtEnds(parts, spans.map(s => s.end));
+}
+function cutPartsAtEnds(parts, ends) {
  return (parts || []).flatMap(p => {
   if (p.basis === 'span-end' || !p.window?.since || !p.window?.until) return [p];
   return segmentsOf(ends, Date.parse(p.window.since), Date.parse(p.window.until)).map(([a, b]) => ({...p, window: {since: iso(a), until: iso(b)}, basis: 'span-end', recomputed: 'cut to the bundle spans, split at 5-minute silences'}));
  });
 }
 
+// Coverage is part of the bundle contract even when the viewer derives network rows itself. Modern span-end
+// parts need no archive read. Legacy windows need only end timestamps, never receiver maps, graphs or indexes.
+export async function normalizeCoverage(dir, parts = [], fileOptions) {
+ if (!parts.some(p => p.basis !== 'span-end' && p.window?.since && p.window?.until)) return parts;
+ const file = resolveBundleFile(join(dir, 'spans.ndjson'), fileOptions);
+ const ends = [];
+ if (file) for await (const line of fileLines(file)) {
+  let span; try {span = JSON.parse(line);} catch {continue;}
+  if (span?.spanId) ends.push(msOf(span.endTimeUnixNano));
+ }
+ return cutPartsAtEnds(parts, ends);
+}
+
 const WAIT_CHAIN = ['PeerForwarding.forward', 'PeerForwarding.waitForThread', 'RemoteDelegation.followOnce', 'RemoteDelegation.delegate', 'OrchestratorMcpService.delegateTask'];
 
 // Derive every collected machine's rows. machines: [{environmentId, label, dir, parts, ownPort}]. Returns
-// Map environmentId -> {rows, index}.
-export function deriveNet(machines) {
- const loaded = machines.map(m => {const r = readSpans(m.dir); return {...m, ...r, parts: cutParts(m.parts, r.spans), links: peerLinks(m.dir)};});
- // Receiving spans everywhere, by the caller span id they name.
- const receivers = new Map();
- for (const m of loaded) for (const s of m.spans) if (s.kind === 'server' && s.parentSpanId && s.attributes?.['http.request.method']) {
-  const list = receivers.get(s.parentSpanId) || [];
-  list.push({m, s}); receivers.set(s.parentSpanId, list);
+// Resolves to Map environmentId -> {rows, index}; onMachine emits and releases each result instead.
+export async function deriveNet(machines, {onMachine = null} = {}) {
+ // First retain only cross-machine receivers and coverage. Rich span graphs live for one machine at a time.
+ const loaded = [], receivers = new Map();
+ for (const machine of machines) {
+  const keepEnds = (machine.parts || []).some(p => p.basis !== 'span-end' && p.window?.since && p.window?.until);
+  const r = await readSpans(machine.dir, {...machine.fileOptions, receiversOnly: true, keepEnds});
+  const m = {...machine, parts: keepEnds ? cutPartsAtEnds(machine.parts, r.ends) : machine.parts || [], links: peerLinks(machine.dir)};
+  loaded.push(m);
+  for (const s of r.spans) {
+   const list = receivers.get(s.parentSpanId) || [];
+   list.push({m, s}); receivers.set(s.parentSpanId, list);
+  }
  }
  const coverage = new Map(loaded.map(m => [m.environmentId, (m.parts || []).map(p => p.window).filter(w => w?.since && w?.until).map(w => [Date.parse(w.since), Date.parse(w.until)])]));
  const covered = (env, t) => (coverage.get(env) || []).some(([a, b]) => t >= a && t <= b);
  const out = new Map();
- for (const m of loaded) {
+ for (const meta of loaded) {
+  const m = {...meta, ...await readSpans(meta.dir, meta.fileOptions)};
   const rows = [];
   const peerHosts = new Set(m.links.hosts.keys());
   const ctx = {peerHosts, ownPort: m.ownPort};
-  const byId = new Map(m.spans.map(s => [s.spanId, s]));
+  const byId = new Map();
+  for (const s of m.spans) byId.set(s.spanId, s);
   const children = new Map();
   for (const s of m.spans) if (s.parentSpanId) {const l = children.get(s.parentSpanId) || []; l.push(s); children.set(s.parentSpanId, l);}
   rows.push({type: 'meta', environmentId: m.environmentId, label: m.label || null, kinds: EDGE_KINDS, roles: ROLES, parts: m.parts || [], peerLinks: m.links.rows.map(r => ({environmentId: r.environment_id, label: r.label, urls: r.urls_json, access: r.access, fenced: !!r.fenced})), spans: m.spans.length});
@@ -186,7 +221,11 @@ export function deriveNet(machines) {
     chain, chainComplete: WAIT_CHAIN.every(n => chain.includes(n)), delegateTaskSpanId: task?.spanId || null, threadIds: [...threadIds], commandIds: [...commandIds]});
   }
   rows.push(...[...bins.values()].sort((x, y) => x.minute < y.minute ? -1 : x.minute > y.minute ? 1 : x.kind < y.kind ? -1 : 1));
-  out.set(m.environmentId, {rows, index: m.index, parts: m.parts});
+  const result = {rows, index: m.index, parts: m.parts};
+  // Serialization may allocate a large index string. Drop the traversal graph before handing it to the writer.
+  byId.clear(); children.clear(); m.spans.length = 0;
+  if (onMachine) await onMachine(m.environmentId, result);
+  else out.set(m.environmentId, result);
  }
  return out;
 }

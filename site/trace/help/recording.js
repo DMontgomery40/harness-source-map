@@ -78,12 +78,10 @@ export function createRecordingPanel({trace=()=>null,openHelp=()=>{},fetcher=glo
   document.body.append(badge);
   const panel=el('div',{class:'help-recorder'},
     el('h4',{class:'help-h4',text:'Codex/ChatGPT desktop recorder'}),
-    el('p',{class:'help-p',text:'Start the local resolver, then open http://127.0.0.1:8766/trace/ in a browser outside the desktop app. This keeps the recording controls available when you quit the app.'}),
-    el('p',{class:'help-p',text:'Record future traffic from a desktop run started here. Earlier turns cannot be recovered. Quit an already-running desktop app yourself only when you are ready; this recorder never quits it or closes chats.'}),
+    el('p',{class:'help-p',text:'Records a future desktop run started here. It never quits a running app or closes chats.'}),
     statusText,traffic,runtime,
     el('div',{class:'recording-actions'},check,start,stop),
-    el('p',{class:'help-p',text:'The scope is the local app-server’s HTTPS and WebSocket traffic. Electron webview traffic and remotely hosted chats are outside this capture. TLS verification stays on, and system trust settings do not change.'}),
-    el('p',{class:'help-p',text:'Stop freezes the capture and files it automatically when traffic identifies its sessions. Forwarding continues until the desktop app naturally exits, so Stop does not interrupt chats.'}),
+    el('p',{class:'help-p note',text:'Scope: the local app-server’s HTTPS and WebSocket traffic, TLS verification on. Stop freezes and files the capture; forwarding continues until the app exits.'}),
     attachmentText,attach);
   let lastPhase='';
   function render({status,busy,active}) {
