@@ -2,10 +2,10 @@
   "product": "claude-code",
   "extractedVersion": "2.1.295",
   "desktopSource": {
-    "version": "4.23118.0",
-    "asarSha256": "b13d251db5d4660f818b73fb1b340dd2b68396a644bac0290ef42e33269f3c14"
+    "version": "5.1231.2",
+    "asarSha256": "cfe170ed5c2a0db693ca7f13f1b859c45bd707c924e93f1eece3a92545d9bd96"
   },
-  "generated": "2026-11-06",
+  "generated": "2026-11-11",
   "sources": [
     {
       "id": "claude-code.transcript",
@@ -2414,8 +2414,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 5358915,
-          "literal": "i6e=\"claude-code-sessions\",a6e=\"local_\""
+          "offset": 7971567,
+          "literal": "V8e=\"claude-code-sessions\",H8e=\"local_\""
         }
       ],
       "credential": false,
@@ -2458,8 +2458,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 6710810,
-          "literal": "xw=\"local-agent-mode-sessions\""
+          "offset": 9347175,
+          "literal": "IC=\"local-agent-mode-sessions\""
         }
       ],
       "credential": false,
@@ -2487,7 +2487,7 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 12603734,
+          "offset": 26892059,
           "literal": "let i=r.default.join(e,\"audit.jsonl\")"
         }
       ],
@@ -2509,8 +2509,8 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 6710810,
-          "literal": "xw=\"local-agent-mode-sessions\""
+          "offset": 9347175,
+          "literal": "IC=\"local-agent-mode-sessions\""
         }
       ],
       "credential": false,
@@ -2531,7 +2531,7 @@
       "evidence": [
         {
           "file": "Claude.app/Contents/Resources/app.asar",
-          "offset": 8655345,
+          "offset": 11362176,
           "literal": "this.vmStorageDir=n.default.join(u.app.getPath(\"userData\"),\"claude-code-vm\")"
         }
       ],
