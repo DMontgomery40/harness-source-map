@@ -7,6 +7,7 @@ import { createRecordingPanel } from "./recording.js";
 import { resolverHealth } from "../local-session.js";
 
 import { productLabel } from '../products.js';
+import { idWhereList } from "../id-where.js";
 import { routesFor, FILE_CAPTURE, RESOLVER } from "../capture-routes.js";
 const LOCAL = "http://127.0.0.1:8766";
 const TOPICS = [
@@ -136,16 +137,16 @@ export function createHelp(ctx) {
     const parts = {
       open: () => [
         h("Open a session"),
+        steps([["Paste its ID or link", "Where to copy it:"]]),
+        idWhereList(),
         steps([
-          ["Paste an id or a link", "A Claude Code, Cursor or OpenCode session id, a codex:// link, or a t3-thread:// link (a T3 family needs the local helper)."],
-          ["Pick the folder once", "~/.claude/projects or ~/.codex/sessions. Chrome remembers it."],
+          ["Open", "The local helper finds it. T3 threads need the helper; for other sessions, you can choose their files or folder."],
           ["Or drop the files", "A .jsonl or .json export, with its same-named folder for subagents; a recording folder with its capture.har."],
-        ]),
-        cmd("In the folder picker, press ⌘⇧G and paste:", "~/.claude/projects"),
+        ], 2),
       ],
       everything: () => [
         h("See everything on this machine"),
-        p(`${product || "A harness"} keeps more than its log about a session. The local helper reads those sources and sends this session's part, credentials removed.`),
+        p(`${product || "A harness"} keeps more than its log about a session. The local helper reads those sources and sends this session's part, credentials included (nothing is redacted).`),
         steps([["Start the local helper", "In a clone of harness-source-map:"]]),
         cmd(null, RESOLVER),
         steps([["Open Trace from it", "No local-network prompt this way."]], 2),

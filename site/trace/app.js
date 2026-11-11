@@ -6,6 +6,7 @@ import { buildLayout, renderOverview, renderAgentColumns, legend } from "./minim
 import { lineHash, normalizeLine, MIN_INDEXED_LINE, indexFor } from "./model.js";
 import { capturePickedFiles } from "./file-source.js";
 import { parsePaste } from "./paste.js";
+import { idWhereList } from "./id-where.js";
 import { contentIdentity, identityCandidates, sameSession } from "./session-identity.js";
 import { keepPicked, narrowPicked, filesFromHandle } from "./opener.js";
 import { openLocalSession, localSources, localSource } from "./local-session.js";
@@ -108,6 +109,7 @@ function setupLoader() {
   $("#add-capture").addEventListener("click", () => netHelp());
   $("#help-open").addEventListener("click", () => openHelp());
   $("#help-loader").addEventListener("click", () => openHelp("open"));
+  $("#id-where")?.append(idWhereList());
   $("#pick-har").addEventListener("change", e => {
     const files = [...e.target.files].map(f => ({ path: f.name, file: f }));
     e.target.value = "";

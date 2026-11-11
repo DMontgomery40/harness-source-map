@@ -105,6 +105,15 @@ button { font: inherit; color: inherit; }
   border: 1px solid var(--line-2); border-radius: 8px; padding: 10px 12px;
 }
 .paste::placeholder { color: #8f99a7; }
+/* "Where do I find it?": one row per product, under the paste box and in Help */
+.id-where { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-3); }
+.id-where > summary { cursor: pointer; width: fit-content; }
+.id-where > summary:hover, .id-where[open] > summary { color: var(--ink-2); }
+.id-where-list { display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; margin: 8px 0 2px; font-size: 12.5px; line-height: 1.45; }
+.id-where-list dt { color: var(--ink-3); }
+.id-where-list dd { margin: 0; color: var(--ink-2); }
+.id-where-list code, .id-where-list kbd { font: 12px var(--mono); color: var(--ink); background: #1a212c; border: 1px solid var(--line-2); border-radius: 4px; padding: 0 4px; }
+@media (max-width: 420px) { .id-where-list { grid-template-columns: 1fr; gap: 0; } .id-where-list dd { margin-bottom: 4px; } }
 .paste-out { margin-top: 10px; color: var(--ink-2); }
 .paste-out .path { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; }
 .paste-out code {
